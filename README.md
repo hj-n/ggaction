@@ -3,16 +3,19 @@
 `ggaction` is a JavaScript library for representing chart authoring as immutable,
 traceable actions.
 
-The repository is currently implementing
-[STEP 1](./agent_docs/impl/STEP1.md). Immutable chart programs and hierarchical
-action tracing are available. The primitive actions and Canvas renderer are not
-implemented yet.
+The first vertical slice is implemented: immutable programs, hierarchical
+action traces, the three authoring primitives, and a Canvas renderer for
+concrete `canvas` and `circle` graphics.
 
 ```javascript
 import { chart } from "ggaction";
 
 const program = chart();
 ```
+
+See the runnable [cars scatterplot example](./examples/cars-scatterplot/),
+which renders 392 rows from `data/cars.json` through the low-level extension
+API. Domain-specific chart actions will be added in later steps.
 
 ## Development
 

@@ -15,7 +15,7 @@ const cars = JSON.parse(
   readFileSync(new URL("../../data/cars.json", import.meta.url), "utf8")
 );
 
-test.skip("renders the cars scatterplot from a user program", () => {
+test("renders the cars scatterplot from a user program", () => {
   const program = createCarsScatterplot(cars);
 
   const dataset = program.semanticSpec.datasets.find(item => item.id === "cars");

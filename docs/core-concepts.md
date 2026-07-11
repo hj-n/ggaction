@@ -63,8 +63,9 @@ long-term user-facing domain API. All three primitive actions are implemented.
 
 ## Rendering
 
-Once implemented, `render()` will read only a fully materialized `graphicSpec`.
-It must not inspect semantic state, authoring context, or the action trace to
-infer missing values.
+`render(program, canvasContext)` reads only the fully materialized
+`graphicSpec`. It does not inspect semantic state, authoring context, or the
+action trace to infer missing values.
 
-STEP 1 initially targets Canvas with concrete `canvas` and `circle` graphics.
+The initial Canvas renderer supports concrete `canvas` and `circle` graphics.
+Every circle must already contain its final `x`, `y`, `radius`, and `fill`.
