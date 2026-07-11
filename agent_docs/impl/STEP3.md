@@ -23,7 +23,7 @@ const program = chart()
 ## 진행 상태
 
 - [x] `_withContext` private immutable helper
-- [ ] Margin 기본값과 정규화
+- [x] Margin 기본값과 정규화
 - [ ] `editCanvas`
 - [ ] Canvas context와 bounds 갱신
 - [ ] `createCanvas`
