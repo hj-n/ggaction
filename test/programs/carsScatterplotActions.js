@@ -3,20 +3,23 @@ import { chart, render } from "../../src/index.js";
 import { createCarsScatterplotAxesValues } from "./carsScatterplotAxes.js";
 
 export function createCarsScatterplotActions(cars) {
+  const width = 640;
+  const height = 400;
+  const margin = {
+    top: 30,
+    right: 30,
+    bottom: 60,
+    left: 70
+  };
   const { validCars, bounds, x, y, fill, xTicks, yTicks } =
-    createCarsScatterplotAxesValues(cars);
+    createCarsScatterplotAxesValues(cars, { width, height, margin });
 
   return chart()
     .createCanvas({
-      width: 640,
-      height: 400,
+      width,
+      height,
       background: "white",
-      margin: {
-        top: bounds.top,
-        right: 640 - bounds.right,
-        bottom: 400 - bounds.bottom,
-        left: bounds.left
-      }
+      margin
     })
     .editSemantic({ property: "dataset[cars].values", value: validCars })
     .editSemantic({ property: "layer[points].mark.type", value: "point" })

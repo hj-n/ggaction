@@ -29,6 +29,21 @@ test("precomputes point, tick, and label values for the axes program", () => {
   assert.equal(values.yTicks.positions.every(Number.isFinite), true);
 });
 
+test("derives plot bounds from canvas dimensions and margins", () => {
+  const values = createCarsScatterplotAxesValues(cars, {
+    width: 800,
+    height: 500,
+    margin: { top: 40, right: 50, bottom: 70, left: 80 }
+  });
+
+  assert.deepEqual(values.bounds, {
+    left: 80,
+    right: 750,
+    top: 40,
+    bottom: 430
+  });
+});
+
 test("authors axes in a separate concrete scatterplot program", () => {
   const program = createCarsScatterplotAxes(cars);
 

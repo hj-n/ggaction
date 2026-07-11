@@ -6,11 +6,15 @@ const ORIGIN_COLORS = Object.freeze({
   Japan: "#54a24b"
 });
 
-const PLOT_BOUNDS = Object.freeze({
-  left: 70,
-  right: 610,
-  top: 30,
-  bottom: 340
+const DEFAULT_LAYOUT = Object.freeze({
+  width: 640,
+  height: 400,
+  margin: Object.freeze({
+    top: 30,
+    right: 30,
+    bottom: 60,
+    left: 70
+  })
 });
 
 function selectValidCars(cars) {
@@ -40,8 +44,22 @@ function extent(values) {
   return [Math.min(...values), Math.max(...values)];
 }
 
-export function createCarsScatterplotAxesValues(cars) {
+export function createCarsScatterplotAxesValues(
+  cars,
+  {
+    width = DEFAULT_LAYOUT.width,
+    height = DEFAULT_LAYOUT.height,
+    margin = DEFAULT_LAYOUT.margin
+  } = {}
+) {
   const validCars = selectValidCars(cars);
+  const resolvedMargin = { ...DEFAULT_LAYOUT.margin, ...margin };
+  const bounds = Object.freeze({
+    left: resolvedMargin.left,
+    right: width - resolvedMargin.right,
+    top: resolvedMargin.top,
+    bottom: height - resolvedMargin.bottom
+  });
   const horsepower = validCars.map(car => car.Horsepower);
   const mileage = validCars.map(car => car.Miles_per_Gallon);
   const xDomain = extent(horsepower);
@@ -51,16 +69,16 @@ export function createCarsScatterplotAxesValues(cars) {
 
   return {
     validCars,
-    bounds: PLOT_BOUNDS,
-    x: mapDomain(horsepower, xDomain, [PLOT_BOUNDS.left, PLOT_BOUNDS.right]),
-    y: mapDomain(mileage, yDomain, [PLOT_BOUNDS.bottom, PLOT_BOUNDS.top]),
+    bounds,
+    x: mapDomain(horsepower, xDomain, [bounds.left, bounds.right]),
+    y: mapDomain(mileage, yDomain, [bounds.bottom, bounds.top]),
     fill: validCars.map(car => ORIGIN_COLORS[car.Origin]),
     xTicks: {
       values: xTickValues,
       positions: mapDomain(
         xTickValues,
         xDomain,
-        [PLOT_BOUNDS.left, PLOT_BOUNDS.right]
+        [bounds.left, bounds.right]
       ),
       labels: xTickValues.map(String)
     },
@@ -69,7 +87,7 @@ export function createCarsScatterplotAxesValues(cars) {
       positions: mapDomain(
         yTickValues,
         yDomain,
-        [PLOT_BOUNDS.bottom, PLOT_BOUNDS.top]
+        [bounds.bottom, bounds.top]
       ),
       labels: yTickValues.map(String)
     }
