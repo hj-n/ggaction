@@ -10,6 +10,24 @@ title: Canvas Actions
 Canvas actions provide chart-level control without exposing graphical IDs or
 raw property paths.
 
+## `createCanvas`
+
+`createCanvas` creates the program's single canvas and establishes the bounds
+available to later positioning actions:
+
+```javascript
+const program = chart().createCanvas({
+  width: 640,
+  height: 400,
+  background: "white",
+  margin: { top: 30, right: 30, bottom: 60, left: 70 }
+});
+```
+
+All options are optional. The defaults are 640×400, a white background, and
+margins of 30 top, 30 right, 60 bottom, and 70 left. A program may contain only
+one canvas.
+
 ## `editCanvas`
 
 `editCanvas` updates selected properties on an existing canvas and returns a
@@ -29,3 +47,6 @@ an object may update `top`, `right`, `bottom`, or `left` independently.
 Margin is authoring context rather than a drawable canvas property. It defines
 the bounds available to later positioning actions without adding an abstract
 margin instruction to the concrete `graphicSpec`.
+
+`createCanvas` is a composite action: it creates the concrete canvas and calls
+`editCanvas` internally. The action trace retains this nested structure.

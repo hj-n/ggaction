@@ -26,8 +26,8 @@ const program = chart()
 - [x] Margin 기본값과 정규화
 - [x] `editCanvas`
 - [x] Canvas context와 bounds 갱신
-- [ ] `createCanvas`
-- [ ] Nested trace, validation, immutability test
+- [x] `createCanvas`
+- [x] Nested trace, validation, immutability test
 - [ ] `carsScatterplotActions` 프로그램
 - [ ] Acceptance 및 PNG render test
 - [ ] 영어 사용자 문서

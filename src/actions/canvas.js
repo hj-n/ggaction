@@ -1,6 +1,7 @@
 import { action } from "../core/action.js";
 import {
   createGraphicBounds,
+  DEFAULT_CANVAS,
   DEFAULT_MARGIN,
   normalizeMargin,
   validateCanvasState
@@ -87,6 +88,44 @@ const editCanvas = action(
   }
 );
 
+const createCanvas = action(
+  {
+    op: "createCanvas",
+    description: "Create and configure the chart canvas."
+  },
+  function (args = {}) {
+    validateOptions(args, "createCanvas", { allowEmpty: true });
+
+    const existingCanvas = Object.values(this.graphicSpec.objects).find(
+      graphic => graphic.type === "canvas"
+    );
+
+    if (existingCanvas) {
+      throw new Error("createCanvas requires a program without a canvas.");
+    }
+
+    const options = {
+      width: Object.hasOwn(args, "width")
+        ? args.width
+        : DEFAULT_CANVAS.width,
+      height: Object.hasOwn(args, "height")
+        ? args.height
+        : DEFAULT_CANVAS.height,
+      background: Object.hasOwn(args, "background")
+        ? args.background
+        : DEFAULT_CANVAS.background,
+      margin: Object.hasOwn(args, "margin")
+        ? args.margin
+        : DEFAULT_CANVAS.margin
+    };
+
+    return this.createGraphics({ id: "canvas", type: "canvas" }).editCanvas(
+      options
+    );
+  }
+);
+
 export function registerCanvasActions(ProgramClass) {
   ProgramClass.prototype.editCanvas = editCanvas;
+  ProgramClass.prototype.createCanvas = createCanvas;
 }

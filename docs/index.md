@@ -17,7 +17,7 @@ retaining both semantic intent and fully materialized graphics.
 | Page | Description |
 | --- | --- |
 | [Core concepts](./core-concepts.md) | `ChartProgram`, actions, primitives, traces, and rendering boundaries |
-| [Canvas actions](./canvas-actions.md) | Edit chart canvases and their authoring bounds |
+| [Canvas actions](./canvas-actions.md) | Create and edit chart canvases and their authoring bounds |
 | [Action authoring](./action-authoring.md) | Extend ggaction with custom, traceable actions |
 | [PNG rendering](./png-rendering.md) | Export completed programs to PNG files in Node.js |
 | [Repository README](https://github.com/hj-n/ggaction#readme) | Project status and development commands |
