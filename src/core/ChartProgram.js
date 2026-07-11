@@ -3,15 +3,16 @@ import {
   countActionNodes,
   createActionNode
 } from "./action.js";
-import { cloneAndFreeze } from "./immutable.js";
+import { cloneAndFreeze, isOwned } from "./immutable.js";
 import {
   createEmptyGraphicSpec,
   createEmptySemanticSpec,
   createTraceRoot
 } from "./specs.js";
+import { registerPrimitiveActions } from "../actions/primitives.js";
 
 function ownState(value) {
-  return Object.isFrozen(value) ? value : cloneAndFreeze(value);
+  return isOwned(value) ? value : cloneAndFreeze(value);
 }
 
 export class ChartProgram {
@@ -71,6 +72,8 @@ export class ChartProgram {
     });
   }
 }
+
+registerPrimitiveActions(ChartProgram);
 
 export function chart() {
   return new ChartProgram();

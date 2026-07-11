@@ -71,3 +71,18 @@ test("rejects mutation of stored program state", () => {
     program.context.currentData = "cars";
   }, TypeError);
 });
+
+test("takes ownership of shallow-frozen constructor input", () => {
+  const semanticSpec = Object.freeze({
+    datasets: Object.freeze([]),
+    layers: Object.freeze([]),
+    scales: Object.freeze([]),
+    coordinates: Object.freeze([]),
+    guides: Object.freeze({ custom: { title: "Before" } })
+  });
+  const program = new ChartProgram({ semanticSpec });
+
+  semanticSpec.guides.custom.title = "After";
+
+  assert.equal(program.semanticSpec.guides.custom.title, "Before");
+});

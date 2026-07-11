@@ -51,10 +51,25 @@ the calling action. Completed actions return with an empty action stack.
 
 ## Primitive actions
 
-The extension layer also includes the low-level `editSemantic`,
-`createGraphics`, and `editGraphics` methods on chart programs. They let action
-authors define explicit semantic and graphical changes without an automatic
-semantic-to-graphic compiler.
+The extension layer also includes low-level primitive methods on chart
+programs. They let action authors define explicit semantic and graphical
+changes without an automatic semantic-to-graphic compiler.
 
-The primitive methods are part of the STEP 1 contract but are not implemented
-yet. Their API reference will be added as each primitive becomes available.
+### `editSemantic`
+
+`editSemantic` creates or replaces one supported semantic property:
+
+```javascript
+const next = program.editSemantic({
+  property: "layer[points].mark.type",
+  value: "point"
+});
+```
+
+The method validates the property path, returns a new program, and records an
+`editSemantic` trace node. Inserted arrays and objects are copied and frozen.
+Dataset values must be an array of row objects and cannot be replaced after the
+dataset is created.
+
+`createGraphics` and `editGraphics` remain part of the STEP 1 contract and will
+be documented as their implementations become available.

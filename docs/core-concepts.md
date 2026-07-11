@@ -50,8 +50,8 @@ action. This behavior is implemented.
 | `editGraphics` | Create or replace one concrete property on an existing graphic |
 
 These primitives form the internal authoring foundation. They are not the
-long-term user-facing domain API. Their runtime behavior is not implemented
-yet.
+long-term user-facing domain API. `editSemantic` is implemented;
+`createGraphics` and `editGraphics` are not implemented yet.
 
 ## Semantic and graphical state
 

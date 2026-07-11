@@ -1,4 +1,4 @@
-import { cloneAndFreeze, isPlainObject } from "./immutable.js";
+import { cloneAndFreeze, freezeOwned, isPlainObject } from "./immutable.js";
 
 function summarizeObject(value) {
   const summary = {};
@@ -32,12 +32,12 @@ export function countActionNodes(node) {
 }
 
 export function createActionNode({ id, op, description, args }) {
-  return Object.freeze({
+  return freezeOwned({
     id,
     op,
     description,
     args,
-    children: Object.freeze([])
+    children: freezeOwned([])
   });
 }
 
@@ -46,9 +46,9 @@ export function appendActionNode(root, parentId, actionNode) {
     if (node.id === parentId) {
       return {
         found: true,
-        node: Object.freeze({
+        node: freezeOwned({
           ...node,
-          children: Object.freeze([...node.children, actionNode])
+          children: freezeOwned([...node.children, actionNode])
         })
       };
     }
@@ -62,9 +62,9 @@ export function appendActionNode(root, parentId, actionNode) {
 
         return {
           found: true,
-          node: Object.freeze({
+          node: freezeOwned({
             ...node,
-            children: Object.freeze(children)
+            children: freezeOwned(children)
           })
         };
       }

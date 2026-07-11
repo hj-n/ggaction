@@ -1,3 +1,5 @@
+const ownedValues = new WeakSet();
+
 export function isPlainObject(value) {
   if (value === null || typeof value !== "object") {
     return false;
@@ -7,12 +9,21 @@ export function isPlainObject(value) {
   return prototype === Object.prototype || prototype === null;
 }
 
-export function cloneAndFreeze(value, ancestors = new WeakSet()) {
-  if (value === null || typeof value !== "object") {
-    return value;
+export function freezeOwned(value) {
+  if (value !== null && typeof value === "object") {
+    Object.freeze(value);
+    ownedValues.add(value);
   }
 
-  if (Object.isFrozen(value)) {
+  return value;
+}
+
+export function isOwned(value) {
+  return value !== null && typeof value === "object" && ownedValues.has(value);
+}
+
+export function cloneAndFreeze(value, ancestors = new WeakSet()) {
+  if (value === null || typeof value !== "object") {
     return value;
   }
 
@@ -38,5 +49,5 @@ export function cloneAndFreeze(value, ancestors = new WeakSet()) {
   }
 
   ancestors.delete(value);
-  return Object.freeze(clone);
+  return freezeOwned(clone);
 }
