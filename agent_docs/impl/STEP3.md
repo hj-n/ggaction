@@ -30,7 +30,7 @@ const program = chart()
 - [x] Nested trace, validation, immutability test
 - [x] `carsScatterplotActions` 프로그램
 - [ ] Acceptance 및 PNG render test
-- [ ] 영어 사용자 문서
+- [x] 영어 사용자 문서
 - [ ] 브라우저와 고해상도 PNG 확인
 
 ## 기본값
