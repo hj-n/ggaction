@@ -1,0 +1,182 @@
+import { chart, render } from "../../src/index.js";
+
+import { createCarsScatterplotAxesValues } from "./carsScatterplotAxes.js";
+
+export function createCarsScatterplotActions(cars) {
+  const { validCars, bounds, x, y, fill, xTicks, yTicks } =
+    createCarsScatterplotAxesValues(cars);
+
+  return chart()
+    .createCanvas({
+      width: 640,
+      height: 400,
+      background: "white",
+      margin: {
+        top: bounds.top,
+        right: 640 - bounds.right,
+        bottom: 400 - bounds.bottom,
+        left: bounds.left
+      }
+    })
+    .editSemantic({ property: "dataset[cars].values", value: validCars })
+    .editSemantic({ property: "layer[points].mark.type", value: "point" })
+    .editSemantic({ property: "layer[points].data", value: "cars" })
+    .createGraphics({ id: "xAxis", type: "line" })
+    .editGraphics({ target: "xAxis", property: "x1", value: bounds.left })
+    .editGraphics({ target: "xAxis", property: "y1", value: bounds.bottom })
+    .editGraphics({ target: "xAxis", property: "x2", value: bounds.right })
+    .editGraphics({ target: "xAxis", property: "y2", value: bounds.bottom })
+    .editGraphics({ target: "xAxis", property: "stroke", value: "#334155" })
+    .editGraphics({ target: "xAxis", property: "strokeWidth", value: 1 })
+    .createGraphics({ id: "yAxis", type: "line" })
+    .editGraphics({ target: "yAxis", property: "x1", value: bounds.left })
+    .editGraphics({ target: "yAxis", property: "y1", value: bounds.top })
+    .editGraphics({ target: "yAxis", property: "x2", value: bounds.left })
+    .editGraphics({ target: "yAxis", property: "y2", value: bounds.bottom })
+    .editGraphics({ target: "yAxis", property: "stroke", value: "#334155" })
+    .editGraphics({ target: "yAxis", property: "strokeWidth", value: 1 })
+    .createGraphics({
+      id: "xTicks",
+      type: "line",
+      length: xTicks.positions.length
+    })
+    .editGraphics({ target: "xTicks", property: "x1", value: xTicks.positions })
+    .editGraphics({ target: "xTicks", property: "y1", value: bounds.bottom })
+    .editGraphics({ target: "xTicks", property: "x2", value: xTicks.positions })
+    .editGraphics({
+      target: "xTicks",
+      property: "y2",
+      value: bounds.bottom + 6
+    })
+    .editGraphics({ target: "xTicks", property: "stroke", value: "#64748b" })
+    .editGraphics({ target: "xTicks", property: "strokeWidth", value: 1 })
+    .createGraphics({
+      id: "yTicks",
+      type: "line",
+      length: yTicks.positions.length
+    })
+    .editGraphics({
+      target: "yTicks",
+      property: "x1",
+      value: bounds.left - 6
+    })
+    .editGraphics({ target: "yTicks", property: "y1", value: yTicks.positions })
+    .editGraphics({ target: "yTicks", property: "x2", value: bounds.left })
+    .editGraphics({ target: "yTicks", property: "y2", value: yTicks.positions })
+    .editGraphics({ target: "yTicks", property: "stroke", value: "#64748b" })
+    .editGraphics({ target: "yTicks", property: "strokeWidth", value: 1 })
+    .createGraphics({
+      id: "points",
+      type: "circle",
+      length: validCars.length
+    })
+    .editGraphics({ target: "points", property: "x", value: x })
+    .editGraphics({ target: "points", property: "y", value: y })
+    .editGraphics({ target: "points", property: "fill", value: fill })
+    .editGraphics({ target: "points", property: "radius", value: 3 })
+    .createGraphics({
+      id: "xLabels",
+      type: "text",
+      length: xTicks.positions.length
+    })
+    .editGraphics({ target: "xLabels", property: "x", value: xTicks.positions })
+    .editGraphics({
+      target: "xLabels",
+      property: "y",
+      value: bounds.bottom + 18
+    })
+    .editGraphics({ target: "xLabels", property: "text", value: xTicks.labels })
+    .editGraphics({ target: "xLabels", property: "fill", value: "#334155" })
+    .editGraphics({ target: "xLabels", property: "fontSize", value: 12 })
+    .editGraphics({
+      target: "xLabels",
+      property: "fontFamily",
+      value: "sans-serif"
+    })
+    .editGraphics({ target: "xLabels", property: "fontWeight", value: "normal" })
+    .editGraphics({ target: "xLabels", property: "textAlign", value: "center" })
+    .editGraphics({ target: "xLabels", property: "textBaseline", value: "top" })
+    .createGraphics({
+      id: "yLabels",
+      type: "text",
+      length: yTicks.positions.length
+    })
+    .editGraphics({
+      target: "yLabels",
+      property: "x",
+      value: bounds.left - 12
+    })
+    .editGraphics({ target: "yLabels", property: "y", value: yTicks.positions })
+    .editGraphics({ target: "yLabels", property: "text", value: yTicks.labels })
+    .editGraphics({ target: "yLabels", property: "fill", value: "#334155" })
+    .editGraphics({ target: "yLabels", property: "fontSize", value: 12 })
+    .editGraphics({
+      target: "yLabels",
+      property: "fontFamily",
+      value: "sans-serif"
+    })
+    .editGraphics({ target: "yLabels", property: "fontWeight", value: "normal" })
+    .editGraphics({ target: "yLabels", property: "textAlign", value: "right" })
+    .editGraphics({
+      target: "yLabels",
+      property: "textBaseline",
+      value: "middle"
+    })
+    .createGraphics({ id: "xTitle", type: "text" })
+    .editGraphics({
+      target: "xTitle",
+      property: "x",
+      value: (bounds.left + bounds.right) / 2
+    })
+    .editGraphics({ target: "xTitle", property: "y", value: 382 })
+    .editGraphics({ target: "xTitle", property: "text", value: "Horsepower" })
+    .editGraphics({ target: "xTitle", property: "fill", value: "#334155" })
+    .editGraphics({ target: "xTitle", property: "fontSize", value: 13 })
+    .editGraphics({
+      target: "xTitle",
+      property: "fontFamily",
+      value: "sans-serif"
+    })
+    .editGraphics({ target: "xTitle", property: "fontWeight", value: 600 })
+    .editGraphics({ target: "xTitle", property: "textAlign", value: "center" })
+    .editGraphics({
+      target: "xTitle",
+      property: "textBaseline",
+      value: "middle"
+    })
+    .createGraphics({ id: "yTitle", type: "text" })
+    .editGraphics({ target: "yTitle", property: "x", value: 18 })
+    .editGraphics({
+      target: "yTitle",
+      property: "y",
+      value: (bounds.top + bounds.bottom) / 2
+    })
+    .editGraphics({
+      target: "yTitle",
+      property: "text",
+      value: "Miles per Gallon"
+    })
+    .editGraphics({ target: "yTitle", property: "fill", value: "#334155" })
+    .editGraphics({ target: "yTitle", property: "fontSize", value: 13 })
+    .editGraphics({
+      target: "yTitle",
+      property: "fontFamily",
+      value: "sans-serif"
+    })
+    .editGraphics({ target: "yTitle", property: "fontWeight", value: 600 })
+    .editGraphics({ target: "yTitle", property: "textAlign", value: "center" })
+    .editGraphics({
+      target: "yTitle",
+      property: "textBaseline",
+      value: "middle"
+    })
+    .editGraphics({
+      target: "yTitle",
+      property: "rotation",
+      value: -Math.PI / 2
+    });
+}
+
+export function renderCarsScatterplotActions(program, canvasContext) {
+  render(program, canvasContext);
+}
