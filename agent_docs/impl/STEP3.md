@@ -31,7 +31,19 @@ const program = chart()
 - [x] `carsScatterplotActions` 프로그램
 - [x] Acceptance 및 PNG render test
 - [x] 영어 사용자 문서
-- [ ] 브라우저와 고해상도 PNG 확인
+- [x] 브라우저와 고해상도 PNG 확인
+
+## 검증 결과
+
+- 일반 unit/acceptance test 58개 통과
+- PNG render test 3개 통과
+- Chromium Canvas: 640×400
+- circle 392개, line 10개, text 10개 렌더링
+- `currentGraphicBounds`: `{ x: 70, y: 30, width: 540, height: 310 }`
+- 첫 action: `createCanvas`
+- nested action: `createGraphics`, `editCanvas`
+- browser console error 0개
+- `pixelRatio: 2` PNG: 1280×800
 
 ## 기본값
 
