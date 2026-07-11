@@ -76,11 +76,11 @@ conceptual commit으로 push한 뒤 다음 단계로 진행한다.
 
 - [x] `line` property validation과 Canvas rendering
 - [x] `text` property validation과 Canvas rendering
-- [ ] 수동 axis 좌표와 label 계산
-- [ ] axis가 포함된 cars scatterplot program
-- [ ] acceptance test와 PNG render test
+- [x] 수동 axis 좌표와 label 계산
+- [x] axis가 포함된 cars scatterplot program
+- [x] acceptance test와 PNG render test
 - [ ] 브라우저와 고해상도 PNG 확인
-- [ ] 관련 영어 사용자 문서 갱신
+- [x] 관련 영어 사용자 문서 갱신
 
 ## 테스트
 
