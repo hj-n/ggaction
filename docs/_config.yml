@@ -1,0 +1,4 @@
+title: ggaction
+description: Immutable, traceable chart authoring actions.
+theme: minima
+markdown: kramdown

@@ -52,6 +52,7 @@
 - Do not leave known contradictions between the implementation and its documentation.
 - Documentation updates must always accompany the implementation change they describe and must be included in the same conceptual commit.
 - When behavior, APIs, stored structures, or implementation contracts change, update the relevant README or current documentation before considering the change complete.
+- Write public-facing files such as `README.md` and pages under `docs/` in English.
 - Write implementation step plans in Korean under `agent_docs/impl/STEP1.md`, `STEP2.md`, `STEP3.md`, and so on.
 - Preserve `agent_docs/INITIAL_ARCHITECTURE.md` as an initial design record unless the user explicitly asks to revise it; it does not need to mirror every later implementation decision.
 - Keep historical design references distinct from documentation of the current behavior.

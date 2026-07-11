@@ -85,9 +85,9 @@ render(program, canvasContext)
 
 ## 문서화
 
-- `README.md`: 프로젝트 목적, 설정, cars 예제, user-facing `chart()`와
+- 영어 `README.md`: 프로젝트 목적, 설정, cars 예제, user-facing `chart()`와
   `render()`를 설명한다.
-- `docs/CORE_CONCEPTS.md`: `ChartProgram`, `action()`, 세 primitive, trace,
+- 영어 `docs/` 위키: 문서 홈과 `ChartProgram`, `action()`, 세 primitive, trace,
   immutability와 semantic/graphic 경계를 설명한다.
 - 모든 내부 helper를 개별 문서화하지 않는다.
 - `agent_docs/INITIAL_ARCHITECTURE.md`는 초기 설계 기록으로 유지한다.
