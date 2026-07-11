@@ -17,10 +17,19 @@ See the runnable [cars scatterplot example](./examples/cars-scatterplot/),
 which renders 392 rows from `data/cars.json` through the low-level extension
 API. Domain-specific chart actions will be added in later steps.
 
+Completed programs can also be exported directly in Node.js:
+
+```javascript
+import { renderToPNG } from "ggaction/png";
+
+await renderToPNG(program, { output: "./output/chart.png" });
+```
+
 ## Development
 
 ```bash
 npm test
+npm run test:render
 ```
 
 ## Documentation
@@ -28,3 +37,4 @@ npm test
 - [Documentation home](./docs/index.md)
 - [Core concepts](./docs/core-concepts.md)
 - [Action authoring](./docs/action-authoring.md)
+- [PNG rendering](./docs/png-rendering.md)

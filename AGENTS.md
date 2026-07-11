@@ -27,8 +27,9 @@
 - Maintain three clear layers: the default Chart Authoring API, the public Action Authoring API, and private library internals.
 - The default `ggaction` entry point serves chart authors through domain-specific actions and rendering.
 - The `ggaction/extension` entry point serves action authors through `ChartProgram`, `action()`, primitive actions, and trace inspection.
+- The Node-only `ggaction/png` entry point exports completed programs without adding Node dependencies to the browser entry point.
 - Encourage extension authors to subclass `ChartProgram` instead of modifying the shared base prototype, so independently authored extensions do not collide.
-- Do not expose private path-parsing, structural-copy, validation, or rendering-dispatch helpers through either public entry point.
+- Do not expose private path-parsing, structural-copy, validation, or rendering-dispatch helpers through public entry points.
 - Do not expose raw graphical IDs or raw graphical property paths when a meaningful domain action can represent the operation.
 - Public actions accept meaningful option objects, such as `editXAxisLine({ lineWidth: 3 })`.
 - Every public action accepts one parameter object and returns a new `ChartProgram`.
@@ -48,6 +49,7 @@
 
 - Write source code, test descriptions, fixtures, and example-program code in English. Implementation step documents remain in Korean.
 - Keep representative user-authored programs in separate files under `test/programs/` and execute those files from acceptance tests.
+- Pair each representative program with a PNG export test under `test/render/`; write generated images to the gitignored `test/output/` directory.
 - Keep the user program focused on realistic library usage. Assertions, mocks, and test-only inspection belong in the importing test file rather than in the user program.
 
 ## Semantic and Graphical Boundary

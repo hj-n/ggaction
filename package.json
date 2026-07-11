@@ -5,12 +5,17 @@
   "type": "module",
   "exports": {
     ".": "./src/index.js",
-    "./extension": "./src/extension.js"
+    "./extension": "./src/extension.js",
+    "./png": "./src/renderers/png.js"
   },
   "scripts": {
-    "test": "node --test test/unit/*.test.js test/acceptance/*.test.js"
+    "test": "node --test test/unit/*.test.js test/acceptance/*.test.js",
+    "test:render": "node --test test/render/*.test.js"
   },
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^1.0.2"
   }
 }
