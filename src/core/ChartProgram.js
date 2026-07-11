@@ -15,6 +15,7 @@ import {
   createTraceRoot
 } from "./specs.js";
 import { registerPrimitiveActions } from "../actions/primitives.js";
+import { registerCanvasActions } from "../actions/canvas.js";
 
 function ownState(value) {
   return isOwned(value) ? value : cloneAndFreeze(value);
@@ -94,6 +95,7 @@ export class ChartProgram {
 }
 
 registerPrimitiveActions(ChartProgram);
+registerCanvasActions(ChartProgram);
 
 export function chart() {
   return new ChartProgram();
