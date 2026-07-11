@@ -79,8 +79,16 @@ conceptual commit으로 push한 뒤 다음 단계로 진행한다.
 - [x] 수동 axis 좌표와 label 계산
 - [x] axis가 포함된 cars scatterplot program
 - [x] acceptance test와 PNG render test
-- [ ] 브라우저와 고해상도 PNG 확인
+- [x] 브라우저와 고해상도 PNG 확인
 - [x] 관련 영어 사용자 문서 갱신
+
+## 검증 결과
+
+- Chromium Canvas: 640×400
+- circle 392개, line 10개, text 10개 렌더링
+- browser console error 0개
+- `pixelRatio: 2` PNG: 1280×800
+- PNG render test 2개 통과
 
 ## 테스트
 
