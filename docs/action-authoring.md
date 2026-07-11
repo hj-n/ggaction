@@ -71,5 +71,23 @@ The method validates the property path, returns a new program, and records an
 Dataset values must be an array of row objects and cannot be replaced after the
 dataset is created.
 
-`createGraphics` and `editGraphics` remain part of the STEP 1 contract and will
-be documented as their implementations become available.
+### `createGraphics`
+
+`createGraphics` establishes a concrete graphic's identity and type without
+assigning visual property values:
+
+```javascript
+const next = program.createGraphics({
+  id: "points",
+  type: "circle",
+  length: 2
+});
+```
+
+Omitting `length` creates one graphic. Supplying a non-negative `length` for a
+drawable type creates a homogeneous collection with generated child IDs such
+as `points:0` and `points:1`. Repeating an equivalent creation is idempotent;
+reusing an ID with a conflicting definition throws an error.
+
+`editGraphics` remains part of the STEP 1 contract and will be documented when
+its implementation becomes available.

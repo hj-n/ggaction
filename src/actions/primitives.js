@@ -5,6 +5,10 @@ import {
   isPlainObject
 } from "../core/immutable.js";
 import { parseSemanticPath } from "../core/semanticPath.js";
+import {
+  isDrawableGraphicType,
+  validateGraphicType
+} from "../core/graphicSchema.js";
 
 const CONTEXT_KEYS = Object.freeze({
   dataset: "currentData",
@@ -15,6 +19,7 @@ const CONTEXT_KEYS = Object.freeze({
 });
 
 const MARK_TYPES = new Set(["point", "line", "bar", "area"]);
+const GRAPHIC_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
 
 function setNestedProperty(source, path, value) {
   const [key, ...rest] = path;
@@ -107,6 +112,87 @@ const editSemantic = action(
   }
 );
 
+function createGraphicDefinition({ id, type, length }) {
+  if (length === undefined) {
+    return freezeOwned({
+      type,
+      properties: freezeOwned({})
+    });
+  }
+
+  return freezeOwned({
+    type,
+    children: freezeOwned(
+      Array.from({ length }, (_, index) =>
+        freezeOwned({
+          id: `${id}:${index}`,
+          properties: freezeOwned({})
+        })
+      )
+    )
+  });
+}
+
+function hasEquivalentGraphicDefinition(existing, { type, length }) {
+  if (existing.type !== type) {
+    return false;
+  }
+
+  if (length === undefined) {
+    return !Object.hasOwn(existing, "children");
+  }
+
+  return existing.children?.length === length;
+}
+
+const createGraphics = action(
+  {
+    op: "createGraphics",
+    description: "Create a concrete graphic or homogeneous collection."
+  },
+  function ({ id, type, length } = {}) {
+    if (typeof id !== "string" || !GRAPHIC_ID_PATTERN.test(id)) {
+      throw new TypeError(
+        "createGraphics requires an id containing only letters, numbers, _ or -."
+      );
+    }
+
+    const validatedType = validateGraphicType(type);
+
+    if (
+      length !== undefined &&
+      (!Number.isInteger(length) || length < 0)
+    ) {
+      throw new TypeError("createGraphics length must be a non-negative integer.");
+    }
+
+    if (length !== undefined && !isDrawableGraphicType(validatedType)) {
+      throw new Error(`Graphic type "${validatedType}" does not accept length.`);
+    }
+
+    const existing = this.graphicSpec.objects[id];
+
+    if (existing !== undefined) {
+      if (hasEquivalentGraphicDefinition(existing, { type: validatedType, length })) {
+        return this;
+      }
+
+      throw new Error(`Graphic "${id}" already exists with a different definition.`);
+    }
+
+    const graphicSpec = freezeOwned({
+      objects: freezeOwned({
+        ...this.graphicSpec.objects,
+        [id]: createGraphicDefinition({ id, type: validatedType, length })
+      }),
+      order: freezeOwned([...this.graphicSpec.order, id])
+    });
+
+    return this._clone({ graphicSpec });
+  }
+);
+
 export function registerPrimitiveActions(ProgramClass) {
   ProgramClass.prototype.editSemantic = editSemantic;
+  ProgramClass.prototype.createGraphics = createGraphics;
 }
