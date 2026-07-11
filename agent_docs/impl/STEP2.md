@@ -74,7 +74,7 @@ conceptual commit으로 push한 뒤 다음 단계로 진행한다.
 
 ## 진행 상태
 
-- [ ] `line` property validation과 Canvas rendering
+- [x] `line` property validation과 Canvas rendering
 - [ ] `text` property validation과 Canvas rendering
 - [ ] 수동 axis 좌표와 label 계산
 - [ ] axis가 포함된 cars scatterplot program

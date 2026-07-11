@@ -67,5 +67,6 @@ long-term user-facing domain API. All three primitive actions are implemented.
 `graphicSpec`. It does not inspect semantic state, authoring context, or the
 action trace to infer missing values.
 
-The initial Canvas renderer supports concrete `canvas` and `circle` graphics.
+The Canvas renderer supports concrete `canvas`, `circle`, and `line` graphics.
 Every circle must already contain its final `x`, `y`, `radius`, and `fill`.
+Every line must contain `x1`, `y1`, `x2`, `y2`, `stroke`, and `strokeWidth`.

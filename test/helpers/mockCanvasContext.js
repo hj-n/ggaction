@@ -1,7 +1,9 @@
 export function createMockCanvasContext() {
   const calls = [];
   let fillStyle = "#000000";
+  let strokeStyle = "#000000";
   let globalAlpha = 1;
+  let lineWidth = 1;
 
   return {
     canvas: { width: 0, height: 0 },
@@ -16,6 +18,15 @@ export function createMockCanvasContext() {
       calls.push({ op: "setFillStyle", value });
     },
 
+    get strokeStyle() {
+      return strokeStyle;
+    },
+
+    set strokeStyle(value) {
+      strokeStyle = value;
+      calls.push({ op: "setStrokeStyle", value });
+    },
+
     get globalAlpha() {
       return globalAlpha;
     },
@@ -23,6 +34,15 @@ export function createMockCanvasContext() {
     set globalAlpha(value) {
       globalAlpha = value;
       calls.push({ op: "setGlobalAlpha", value });
+    },
+
+    get lineWidth() {
+      return lineWidth;
+    },
+
+    set lineWidth(value) {
+      lineWidth = value;
+      calls.push({ op: "setLineWidth", value });
     },
 
     save() {
@@ -53,8 +73,20 @@ export function createMockCanvasContext() {
       calls.push({ op: "arc", args });
     },
 
+    moveTo(...args) {
+      calls.push({ op: "moveTo", args });
+    },
+
+    lineTo(...args) {
+      calls.push({ op: "lineTo", args });
+    },
+
     fill() {
       calls.push({ op: "fill", fillStyle, globalAlpha });
+    },
+
+    stroke() {
+      calls.push({ op: "stroke", strokeStyle, lineWidth, globalAlpha });
     }
   };
 }
