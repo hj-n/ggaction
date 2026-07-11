@@ -72,6 +72,16 @@ ChartProgram
 각 구현 단위는 관련 테스트와 영어 사용자 문서를 함께 갱신하고, 작은
 conceptual commit으로 push한 뒤 다음 단계로 진행한다.
 
+## 진행 상태
+
+- [ ] `line` property validation과 Canvas rendering
+- [ ] `text` property validation과 Canvas rendering
+- [ ] 수동 axis 좌표와 label 계산
+- [ ] axis가 포함된 cars scatterplot program
+- [ ] acceptance test와 PNG render test
+- [ ] 브라우저와 고해상도 PNG 확인
+- [ ] 관련 영어 사용자 문서 갱신
+
 ## 테스트
 
 - 단일 line과 line collection unit test
