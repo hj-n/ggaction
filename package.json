@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "description": "A chart-authoring action library.",
   "type": "module",
-  "exports": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./extension": "./src/extension.js"
+  },
   "scripts": {
     "test": "node --test test/unit/*.test.js test/acceptance/*.test.js"
   },

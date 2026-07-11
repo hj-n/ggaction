@@ -19,11 +19,16 @@
 - The renderer reads only the fully materialized, backend-neutral `graphicSpec`.
 - There is no automatic compiler from `semanticSpec` to `graphicSpec`.
 - Every domain action must explicitly define and invoke the graphical materialization required by its semantic changes.
-- `editSemantic`, `createGraphics`, and `editGraphics` are internal authoring primitives, not ordinary user-facing APIs.
+- `editSemantic`, `createGraphics`, and `editGraphics` are low-level authoring primitives exposed through the public extension layer, not the ordinary chart-authoring API.
 - Users interact through domain-specific actions.
 
 ## User-Facing API Design
 
+- Maintain three clear layers: the default Chart Authoring API, the public Action Authoring API, and private library internals.
+- The default `ggaction` entry point serves chart authors through domain-specific actions and rendering.
+- The `ggaction/extension` entry point serves action authors through `ChartProgram`, `action()`, primitive actions, and trace inspection.
+- Encourage extension authors to subclass `ChartProgram` instead of modifying the shared base prototype, so independently authored extensions do not collide.
+- Do not expose private path-parsing, structural-copy, validation, or rendering-dispatch helpers through either public entry point.
 - Do not expose raw graphical IDs or raw graphical property paths when a meaningful domain action can represent the operation.
 - Public actions accept meaningful option objects, such as `editXAxisLine({ lineWidth: 3 })`.
 - Every public action accepts one parameter object and returns a new `ChartProgram`.

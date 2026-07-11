@@ -24,3 +24,4 @@ npm test
 
 - [Documentation home](./docs/index.md)
 - [Core concepts](./docs/core-concepts.md)
+- [Action authoring](./docs/action-authoring.md)

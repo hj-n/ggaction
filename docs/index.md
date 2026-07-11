@@ -17,4 +17,5 @@ retaining both semantic intent and fully materialized graphics.
 | Page | Description |
 | --- | --- |
 | [Core concepts](./core-concepts.md) | `ChartProgram`, actions, primitives, traces, and rendering boundaries |
+| [Action authoring](./action-authoring.md) | Extend ggaction with custom, traceable actions |
 | [Repository README](https://github.com/hj-n/ggaction#readme) | Project status and development commands |

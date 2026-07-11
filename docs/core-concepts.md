@@ -10,6 +10,17 @@ title: Core Concepts
 This page gives users the minimum conceptual model needed to understand the
 library. It is not an implementation reference.
 
+## Public API layers
+
+`ggaction` has two public API layers for different audiences:
+
+- **Chart Authoring API:** domain-specific actions for people building charts.
+- **Action Authoring API:** `ChartProgram`, `action()`, primitives, and trace
+  inspection for people extending the library.
+
+Implementation helpers remain private. See [Action authoring](./action-authoring.md)
+for the extension API.
+
 ## `ChartProgram`
 
 `ChartProgram` holds semantic state, concrete graphical state, authoring
@@ -27,6 +38,8 @@ const program = chart();
 The `action()` wrapper records an authoring method call in the trace. Wrapped
 actions called inside another wrapped action become children of the calling
 action. This behavior is implemented.
+
+`action()` and `ChartProgram` are exported from `ggaction/extension`.
 
 ## Primitive actions
 
