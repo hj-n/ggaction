@@ -10,12 +10,17 @@ concrete `canvas` and `circle` graphics.
 ```javascript
 import { chart } from "ggaction";
 
-const program = chart().createCanvas({
-  width: 640,
-  height: 400,
-  margin: { top: 30, right: 30, bottom: 60, left: 70 },
-  background: "white"
-});
+const program = chart()
+  .createCanvas({
+    width: 640,
+    height: 400,
+    margin: { top: 30, right: 30, bottom: 60, left: 70 },
+    background: "white"
+  })
+  .createData({
+    id: "cars",
+    values: cars
+  });
 ```
 
 See the runnable [cars scatterplot example](./examples/cars-scatterplot/),
@@ -45,5 +50,6 @@ npm run test:render
 - [Documentation home](./docs/index.md)
 - [Core concepts](./docs/core-concepts.md)
 - [Canvas actions](./docs/canvas-actions.md)
+- [Data actions](./docs/data-actions.md)
 - [Action authoring](./docs/action-authoring.md)
 - [PNG rendering](./docs/png-rendering.md)

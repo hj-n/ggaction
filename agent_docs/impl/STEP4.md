@@ -17,13 +17,13 @@ const program = chart()
 ## 진행 상태
 
 - [x] Dataset ID validation
-- [ ] Dataset values validation
-- [ ] `createData`
-- [ ] Dataset immutability와 duplicate 검사
-- [ ] Nested trace와 context test
+- [x] Dataset values validation
+- [x] `createData`
+- [x] Dataset immutability와 duplicate 검사
+- [x] Nested trace와 context test
 - [ ] `carsScatterplotActions`의 dataset primitive 교체
 - [ ] Acceptance 및 PNG render test
-- [ ] 영어 사용자 문서
+- [x] 영어 사용자 문서
 - [ ] 브라우저와 고해상도 PNG 확인
 
 ## API
