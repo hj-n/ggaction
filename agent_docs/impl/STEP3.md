@@ -20,6 +20,19 @@ const program = chart()
   });
 ```
 
+## 진행 상태
+
+- [ ] `_withContext` private immutable helper
+- [ ] Margin 기본값과 정규화
+- [ ] `editCanvas`
+- [ ] Canvas context와 bounds 갱신
+- [ ] `createCanvas`
+- [ ] Nested trace, validation, immutability test
+- [ ] `carsScatterplotActions` 프로그램
+- [ ] Acceptance 및 PNG render test
+- [ ] 영어 사용자 문서
+- [ ] 브라우저와 고해상도 PNG 확인
+
 ## 기본값
 
 ```javascript
@@ -189,19 +202,6 @@ return chart()
 ```
 
 이후 STEP에서 primitive 구간을 high-level action으로 차례대로 교체한다.
-
-## 진행 상태
-
-- [ ] `_withContext` private immutable helper
-- [ ] Margin 기본값과 정규화
-- [ ] `editCanvas`
-- [ ] Canvas context와 bounds 갱신
-- [ ] `createCanvas`
-- [ ] Nested trace, validation, immutability test
-- [ ] `carsScatterplotActions` 프로그램
-- [ ] Acceptance 및 PNG render test
-- [ ] 영어 사용자 문서
-- [ ] 브라우저와 고해상도 PNG 확인
 
 ## 후속 rematerialization 의무
 

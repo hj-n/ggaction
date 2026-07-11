@@ -8,6 +8,16 @@
 labels, titles를 직접 그린다. Scale이나 guide에 의한 자동 생성은 아직
 구현하지 않는다.
 
+## 진행 상태
+
+- [x] `line` property validation과 Canvas rendering
+- [x] `text` property validation과 Canvas rendering
+- [x] 수동 axis 좌표와 label 계산
+- [x] axis가 포함된 cars scatterplot program
+- [x] acceptance test와 PNG render test
+- [x] 브라우저와 고해상도 PNG 확인
+- [x] 관련 영어 사용자 문서 갱신
+
 ## 구현 범위
 
 1. **`line` graphic을 지원한다.**
@@ -71,16 +81,6 @@ ChartProgram
 
 각 구현 단위는 관련 테스트와 영어 사용자 문서를 함께 갱신하고, 작은
 conceptual commit으로 push한 뒤 다음 단계로 진행한다.
-
-## 진행 상태
-
-- [x] `line` property validation과 Canvas rendering
-- [x] `text` property validation과 Canvas rendering
-- [x] 수동 axis 좌표와 label 계산
-- [x] axis가 포함된 cars scatterplot program
-- [x] acceptance test와 PNG render test
-- [x] 브라우저와 고해상도 PNG 확인
-- [x] 관련 영어 사용자 문서 갱신
 
 ## 검증 결과
 
