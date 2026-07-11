@@ -51,10 +51,12 @@ const GRAPHIC_PROPERTIES = Object.freeze({
     "y",
     "text",
     "fill",
-    "font",
     "fontSize",
+    "fontFamily",
+    "fontWeight",
     "textAlign",
     "textBaseline",
+    "rotation",
     "opacity",
     "style",
     "length"

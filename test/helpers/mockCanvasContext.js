@@ -4,6 +4,9 @@ export function createMockCanvasContext() {
   let strokeStyle = "#000000";
   let globalAlpha = 1;
   let lineWidth = 1;
+  let font = "10px sans-serif";
+  let textAlign = "start";
+  let textBaseline = "alphabetic";
 
   return {
     canvas: { width: 0, height: 0 },
@@ -45,6 +48,33 @@ export function createMockCanvasContext() {
       calls.push({ op: "setLineWidth", value });
     },
 
+    get font() {
+      return font;
+    },
+
+    set font(value) {
+      font = value;
+      calls.push({ op: "setFont", value });
+    },
+
+    get textAlign() {
+      return textAlign;
+    },
+
+    set textAlign(value) {
+      textAlign = value;
+      calls.push({ op: "setTextAlign", value });
+    },
+
+    get textBaseline() {
+      return textBaseline;
+    },
+
+    set textBaseline(value) {
+      textBaseline = value;
+      calls.push({ op: "setTextBaseline", value });
+    },
+
     save() {
       calls.push({ op: "save" });
     },
@@ -63,6 +93,14 @@ export function createMockCanvasContext() {
 
     scale(...args) {
       calls.push({ op: "scale", args });
+    },
+
+    translate(...args) {
+      calls.push({ op: "translate", args });
+    },
+
+    rotate(...args) {
+      calls.push({ op: "rotate", args });
     },
 
     beginPath() {
@@ -87,6 +125,18 @@ export function createMockCanvasContext() {
 
     stroke() {
       calls.push({ op: "stroke", strokeStyle, lineWidth, globalAlpha });
+    },
+
+    fillText(...args) {
+      calls.push({
+        op: "fillText",
+        args,
+        fillStyle,
+        globalAlpha,
+        font,
+        textAlign,
+        textBaseline
+      });
     }
   };
 }

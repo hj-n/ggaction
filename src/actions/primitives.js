@@ -232,6 +232,7 @@ function validateConcreteGraphicValue(type, property, value) {
     "radius",
     "strokeWidth",
     "fontSize",
+    "rotation",
     "opacity",
     "gap"
   ]);
