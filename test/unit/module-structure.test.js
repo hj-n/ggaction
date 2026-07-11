@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { chart, render } from "../../src/index.js";
 
-test("공개 module 경계를 제공한다", () => {
+test("exports the public module boundaries", () => {
   assert.equal(typeof chart, "function");
   assert.equal(typeof render, "function");
 });

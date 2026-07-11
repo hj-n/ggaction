@@ -5,13 +5,13 @@ import test from "node:test";
 import {
   createCarsScatterplotValues,
   mapLinear
-} from "../helpers/carsScatterplotValues.js";
+} from "../programs/carsScatterplot.js";
 
 const cars = JSON.parse(
   readFileSync(new URL("../../data/cars.json", import.meta.url), "utf8")
 );
 
-test("cars scatterplot에 필요한 concrete 값을 계산한다", () => {
+test("precomputes concrete values for the cars scatterplot", () => {
   const values = createCarsScatterplotValues(cars);
 
   assert.equal(cars.length, 406);
@@ -30,6 +30,6 @@ test("cars scatterplot에 필요한 concrete 값을 계산한다", () => {
   ]));
 });
 
-test("동일한 domain 값은 range 중앙에 배치한다", () => {
+test("maps a constant domain to the range midpoint", () => {
   assert.deepEqual(mapLinear([5, 5], [0, 100]), [50, 50]);
 });

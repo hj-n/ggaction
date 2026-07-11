@@ -1,3 +1,5 @@
+import { chart, render } from "../../src/index.js";
+
 const ORIGIN_COLORS = Object.freeze({
   USA: "#4c78a8",
   Europe: "#f58518",
@@ -69,4 +71,70 @@ export function createCarsScatterplotValues(cars) {
   });
 
   return { validCars, x, y, fill };
+}
+
+export function createCarsScatterplot(cars) {
+  const { validCars, x, y, fill } = createCarsScatterplotValues(cars);
+
+  return chart()
+    .editSemantic({
+      property: "dataset[cars].values",
+      value: validCars
+    })
+    .editSemantic({
+      property: "layer[points].mark.type",
+      value: "point"
+    })
+    .editSemantic({
+      property: "layer[points].data",
+      value: "cars"
+    })
+    .createGraphics({
+      id: "canvas",
+      type: "canvas"
+    })
+    .editGraphics({
+      target: "canvas",
+      property: "width",
+      value: 640
+    })
+    .editGraphics({
+      target: "canvas",
+      property: "height",
+      value: 400
+    })
+    .editGraphics({
+      target: "canvas",
+      property: "background",
+      value: "white"
+    })
+    .createGraphics({
+      id: "points",
+      type: "circle",
+      length: validCars.length
+    })
+    .editGraphics({
+      target: "points",
+      property: "x",
+      value: x
+    })
+    .editGraphics({
+      target: "points",
+      property: "y",
+      value: y
+    })
+    .editGraphics({
+      target: "points",
+      property: "fill",
+      value: fill
+    })
+    .editGraphics({
+      target: "points",
+      property: "radius",
+      value: 3
+    });
+}
+
+export function renderCarsScatterplot(program, canvasContext) {
+  render(program, canvasContext);
 }

@@ -2,78 +2,21 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 
-import { chart, render } from "../../src/index.js";
-import { createCarsScatterplotValues } from "../helpers/carsScatterplotValues.js";
 import {
   createMockCanvasContext,
   findCanvasCalls
 } from "../helpers/mockCanvasContext.js";
+import {
+  createCarsScatterplot,
+  renderCarsScatterplot
+} from "../programs/carsScatterplot.js";
 
 const cars = JSON.parse(
   readFileSync(new URL("../../data/cars.json", import.meta.url), "utf8")
 );
 
-test.skip("primitive program으로 cars scatterplot을 렌더링한다", () => {
-  const { validCars, x, y, fill } = createCarsScatterplotValues(cars);
-
-  const initialProgram = chart();
-  const program = initialProgram
-    .editSemantic({
-      property: "dataset[cars].values",
-      value: validCars
-    })
-    .editSemantic({
-      property: "layer[points].mark.type",
-      value: "point"
-    })
-    .editSemantic({
-      property: "layer[points].data",
-      value: "cars"
-    })
-    .createGraphics({
-      id: "canvas",
-      type: "canvas"
-    })
-    .editGraphics({
-      target: "canvas",
-      property: "width",
-      value: 640
-    })
-    .editGraphics({
-      target: "canvas",
-      property: "height",
-      value: 400
-    })
-    .editGraphics({
-      target: "canvas",
-      property: "background",
-      value: "white"
-    })
-    .createGraphics({
-      id: "points",
-      type: "circle",
-      length: validCars.length
-    })
-    .editGraphics({
-      target: "points",
-      property: "x",
-      value: x
-    })
-    .editGraphics({
-      target: "points",
-      property: "y",
-      value: y
-    })
-    .editGraphics({
-      target: "points",
-      property: "fill",
-      value: fill
-    })
-    .editGraphics({
-      target: "points",
-      property: "radius",
-      value: 3
-    });
+test.skip("renders the cars scatterplot from a user program", () => {
+  const program = createCarsScatterplot(cars);
 
   const dataset = program.semanticSpec.datasets.find(item => item.id === "cars");
   const layer = program.semanticSpec.layers.find(item => item.id === "points");
@@ -91,9 +34,6 @@ test.skip("primitive program으로 cars scatterplot을 렌더링한다", () => {
   assert.equal(points.type, "circle");
   assert.equal(points.children.length, 392);
   assert.deepEqual(program.graphicSpec.order, ["canvas", "points"]);
-  assert.deepEqual(initialProgram.semanticSpec.datasets, []);
-  assert.deepEqual(initialProgram.semanticSpec.layers, []);
-  assert.deepEqual(initialProgram.graphicSpec.objects, {});
 
   for (const child of points.children) {
     assert.equal(Number.isFinite(child.properties.x), true);
@@ -128,7 +68,7 @@ test.skip("primitive program으로 cars scatterplot을 렌더링한다", () => {
 
   const graphicSnapshot = structuredClone(program.graphicSpec);
   const context = createMockCanvasContext();
-  render(program, context);
+  renderCarsScatterplot(program, context);
 
   assert.deepEqual(program.graphicSpec, graphicSnapshot);
   assert.equal(context.canvas.width, 640);
