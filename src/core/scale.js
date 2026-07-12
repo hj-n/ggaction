@@ -15,6 +15,19 @@ export const TABLEAU10 = cloneAndFreeze([
   "#bab0ac"
 ]);
 
+export const DASH10 = cloneAndFreeze([
+  [],
+  [8, 4],
+  [3, 3],
+  [12, 4],
+  [8, 3, 2, 3],
+  [12, 3, 3, 3],
+  [2, 2],
+  [10, 3, 2, 3, 2, 3],
+  [14, 4, 4, 4],
+  [6, 2, 2, 2]
+]);
+
 function validatePair(value, label) {
   if (
     !Array.isArray(value) ||
@@ -161,6 +174,46 @@ export function validateColorRange(range) {
   return cloneAndFreeze(range);
 }
 
+function isDashPattern(pattern) {
+  return (
+    Array.isArray(pattern) &&
+    pattern.length % 2 === 0 &&
+    pattern.every(value => Number.isFinite(value) && value >= 0)
+  );
+}
+
+export function validateStrokeDashRange(range) {
+  if (range === "auto") {
+    return range;
+  }
+
+  if (
+    !Array.isArray(range) ||
+    range.length === 0 ||
+    !range.every(isDashPattern)
+  ) {
+    throw new TypeError(
+      "StrokeDash range must contain one or more even-length non-negative finite patterns."
+    );
+  }
+
+  return cloneAndFreeze(range);
+}
+
+export function validateOrdinalRange(range) {
+  if (range === "auto") return range;
+
+  if (Array.isArray(range) && range.every(item => typeof item === "string")) {
+    return validateColorRange(range);
+  }
+
+  if (Array.isArray(range) && range.every(Array.isArray)) {
+    return validateStrokeDashRange(range);
+  }
+
+  return validateColorRange(range);
+}
+
 export function validateSemanticScaleDomain(domain) {
   if (domain === "auto") {
     return domain;
@@ -277,6 +330,11 @@ export function resolveColorRange(range) {
   }
 
   return validated;
+}
+
+export function resolveStrokeDashRange(range) {
+  const validated = validateStrokeDashRange(range);
+  return validated === "auto" ? DASH10 : validated;
 }
 
 export function mapOrdinalValues(values, domain, range) {

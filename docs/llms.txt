@@ -45,6 +45,7 @@ and language models.
 - encodeRadius is fixed circle appearance, not a Polar radial encoding.
 - Temporal line encodeX resolves a time scale but does not yet materialize path points.
 - Aggregate line encodeY computes mean groups and explicitly materializes sorted paths.
+- Line encodeColor and encodeStrokeDash regroup and style concrete series paths.
 
 ## Current scope
 
@@ -53,6 +54,7 @@ quantitative x/y, nominal color, fixed radius, complete axes, browser Canvas,
 and PNG output. `createLineMark` creates semantic line identity and an empty
 path collection. Temporal line `encodeX` records its encoding and resolves a
 time scale. Aggregate line `encodeY` supports `mean`, resolves its y scale from
-derived values, and materializes the currently known series. Line color and
-strokeDash authoring actions are not implemented yet. Do not assume roadmap
-features are implemented.
+derived values, and materializes the currently known series. Line `encodeColor`
+and `encodeStrokeDash` group and style series through ordinal scales. Legend,
+title, and remaining line-guide domain actions are not implemented yet. Do not
+assume roadmap features are implemented.

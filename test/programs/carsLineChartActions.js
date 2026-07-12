@@ -11,6 +11,7 @@ export function createCarsLineChartActions(cars) {
   const xTickPositions = xAxis.ticks.map(tick => tick.position);
   const yTickPositions = yAxis.ticks.map(tick => tick.position);
   const legendY = values.legend.items.map(item => item.y);
+  const seriesStrokeDashes = [[], [8, 4], [3, 3]];
 
   return chart()
     .createCanvas({ width, height, margin, background: "white" })
@@ -27,40 +28,15 @@ export function createCarsLineChartActions(cars) {
       aggregate: "mean",
       scale: { nice: true, zero: false }
     })
-    .editSemantic({
-      property: "layer[trends].encoding.color.field",
-      value: "Origin"
+    .encodeColor({
+      field: "Origin",
+      fieldType: "nominal",
+      scale: { palette: "tableau10" }
     })
-    .editSemantic({
-      property: "layer[trends].encoding.color.fieldType",
-      value: "nominal"
+    .encodeStrokeDash({
+      field: "Origin",
+      fieldType: "nominal"
     })
-    .editSemantic({
-      property: "layer[trends].encoding.color.scale",
-      value: "color"
-    })
-    .editSemantic({
-      property: "layer[trends].encoding.strokeDash.field",
-      value: "Origin"
-    })
-    .editSemantic({
-      property: "layer[trends].encoding.strokeDash.fieldType",
-      value: "nominal"
-    })
-    .editSemantic({
-      property: "layer[trends].encoding.strokeDash.scale",
-      value: "strokeDash"
-    })
-    .editSemantic({ property: "scale[color].type", value: "ordinal" })
-    .editSemantic({ property: "scale[color].domain", value: "auto" })
-    .editSemantic({
-      property: "scale[color].range",
-      value: { palette: "tableau10" }
-    })
-    .editSemantic({ property: "scale[strokeDash].type", value: "ordinal" })
-    .editSemantic({ property: "scale[strokeDash].domain", value: "auto" })
-    .editSemantic({ property: "scale[strokeDash].range", value: "auto" })
-    .rematerializeLineMark({ id: "trends" })
     .editSemantic({ property: "guide.axis.x.scale", value: "x" })
     .editSemantic({ property: "guide.axis.x.coordinate", value: "main" })
     .editSemantic({ property: "guide.axis.x.title", value: "Year" })
@@ -81,27 +57,6 @@ export function createCarsLineChartActions(cars) {
     .editSemantic({ property: "guide.legend.series.title", value: "Origin" })
     .editSemantic({ property: "title.text", value: values.title.text })
     .editSemantic({ property: "title.subtitle", value: values.title.subtitle })
-    .editGraphics({
-      target: "trends",
-      property: "length",
-      value: values.series.length
-    })
-    .editGraphics({
-      target: "trends",
-      property: "points",
-      value: values.series.map(series => series.points)
-    })
-    .editGraphics({
-      target: "trends",
-      property: "stroke",
-      value: values.series.map(series => series.color)
-    })
-    .editGraphics({ target: "trends", property: "strokeWidth", value: 2 })
-    .editGraphics({
-      target: "trends",
-      property: "strokeDash",
-      value: values.series.map(series => series.strokeDash)
-    })
     .createGraphics({ id: "xAxisLine", type: "line" })
     .editGraphics({ target: "xAxisLine", property: "x1", value: xAxis.line.x1 })
     .editGraphics({ target: "xAxisLine", property: "y1", value: xAxis.line.y1 })
@@ -206,7 +161,7 @@ export function createCarsLineChartActions(cars) {
     .editGraphics({
       target: "seriesLegendSymbols",
       property: "strokeDash",
-      value: values.legend.items.map(item => item.strokeDash)
+      value: seriesStrokeDashes
     })
     .createGraphics({
       id: "seriesLegendLabels",

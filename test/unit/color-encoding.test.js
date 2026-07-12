@@ -70,9 +70,16 @@ test("supports explicit color domains, ranges, and palette descriptors", () => {
     field: "origin",
     scale: { range: { palette: "tableau10" } }
   });
+  const paletteAlias = createPointProgram().encodeColor({
+    field: "origin",
+    scale: { palette: "tableau10" }
+  });
 
   assert.deepEqual(explicit.resolvedScales.color.range, ["navy", "green"]);
   assert.deepEqual(palette.semanticSpec.scales[0].range, {
+    palette: "tableau10"
+  });
+  assert.deepEqual(paletteAlias.semanticSpec.scales[0].range, {
     palette: "tableau10"
   });
 });
@@ -110,5 +117,12 @@ test("validates color encoding inputs", () => {
   assert.throws(
     () => program.encodeColor({ field: "origin", scale: { type: "linear" } }),
     /Unsupported color scale type/
+  );
+  assert.throws(
+    () => program.encodeColor({
+      field: "origin",
+      scale: { palette: "tableau10", range: ["red"] }
+    }),
+    /both palette and range/
   );
 });

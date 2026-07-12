@@ -20,18 +20,18 @@ nominal field를 기준으로 series를 나누고 각 concrete path에 stroke와
 
 ## 진행 상태
 
-- [ ] Line `encodeColor` target과 option 확장
-- [ ] `scale.palette`와 기존 `scale.range` 규칙
-- [ ] `encodeStrokeDash` public action
-- [ ] Built-in dash range 10개
-- [ ] Explicit dash range validation
-- [ ] Nominal field 기반 series regrouping
-- [ ] Color/strokeDash scale resolution
-- [ ] Path stroke와 dash materialization
-- [ ] Canvas 변경 시 semantic style 재적용
-- [ ] 별도 actions program의 raw series block 제거
-- [ ] Unit, acceptance, PNG regression
-- [ ] 영어 API/action/LLM 문서 갱신
+- [x] Line `encodeColor` target과 option 확장
+- [x] `scale.palette`와 기존 `scale.range` 규칙
+- [x] `encodeStrokeDash` public action
+- [x] Built-in dash range 10개
+- [x] Explicit dash range validation
+- [x] Nominal field 기반 series regrouping
+- [x] Color/strokeDash scale resolution
+- [x] Path stroke와 dash materialization
+- [x] Canvas 변경 시 semantic style 재적용
+- [x] 별도 actions program의 raw series block 제거
+- [x] Unit, acceptance, PNG regression
+- [x] 영어 API/action/LLM 문서 갱신
 
 ## API
 
@@ -178,6 +178,19 @@ Axes, legend, title의 primitive/helper 값은 후속 단계까지 유지한다.
 - Legend domain action
 - Axis와 title domain action
 - User-facing line appearance edit action
+
+## 검증 결과
+
+- Unit/acceptance test 180개 통과
+- PNG render regression 5개 통과
+- Automatic dash range 10개와 category 순환 검증
+- Explicit dash range와 invalid pattern validation 검증
+- Point fill과 line stroke의 `encodeColor` 동작 모두 유지
+- 동일 nominal field의 color/strokeDash grouping deduplication 검증
+- Canvas 변경 후 semantic stroke/dash 재적용 검증
+- Actions program의 line mark 본체에서 raw semantic/graphic 호출 제거
+- STEP1 primitive line program과 test 변경 없음
+- 고해상도 actions line chart 직접 확인
 
 ## 완료 조건
 

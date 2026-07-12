@@ -17,14 +17,14 @@ This page describes implemented behavior only.
 | Marks | Semantic point/circle mark; semantic line with aggregate path materialization |
 | Position | Quantitative point x/y; temporal line x and aggregate quantitative line y |
 | Aggregation | Immutable mean aggregation grouped by current non-aggregate line encodings |
-| Color | Nominal field with ordinal scale and `tableau10` palette |
+| Color | Nominal point fill or line stroke with ordinal scale and `tableau10` palette |
+| Stroke dash | Nominal line series with explicit or automatic ten-pattern range |
 | Constant appearance | Circle radius |
 | Coordinates | Named Cartesian and Polar semantic resources; x/y use Cartesian |
 | Guides | Bottom x-axis and left y-axis, including lines, ticks, labels, titles |
 | Rendering | Browser Canvas and Node PNG |
 | Graphics | Concrete canvas, circle, line, text, and point-array path nodes |
 
-Line color/strokeDash authoring actions, Polar guide graphics, additional mark
-types, public transforms, facets, legends, and program composition are not
-implemented in the current phase. They are not part of the current API
-reference.
+Polar guide graphics, additional mark types, public transforms, facets, legend
+domain actions, and program composition are not implemented in the current
+phase. They are not part of the current API reference.

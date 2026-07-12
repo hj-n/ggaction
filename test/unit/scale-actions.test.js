@@ -50,6 +50,30 @@ test("treats equivalent scale creation as idempotent and rejects conflicts", () 
   );
 });
 
+test("stores and reuses explicit ordinal dash ranges", () => {
+  const range = [[], [8, 4]];
+  const program = chart().createScale({
+    id: "strokeDash",
+    type: "ordinal",
+    range
+  });
+  const repeated = program.createScale({
+    id: "strokeDash",
+    type: "ordinal",
+    range: [[], [8, 4]]
+  });
+
+  assert.deepEqual(program.semanticSpec.scales, [
+    {
+      id: "strokeDash",
+      type: "ordinal",
+      domain: "auto",
+      range
+    }
+  ]);
+  assert.equal(repeated.semanticSpec, program.semanticSpec);
+});
+
 test("materializes an automatic scale into concrete graphical values", () => {
   const before = createEncodedMark().createScale({ id: "x" });
   const program = before.rematerializeScale({ id: "x" });

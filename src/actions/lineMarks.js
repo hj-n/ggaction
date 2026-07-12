@@ -1,6 +1,6 @@
 import { action } from "../core/action.js";
 import { deriveLineSeries } from "../core/lineSeries.js";
-import { mapLinearValues } from "../core/scale.js";
+import { mapLinearValues, mapOrdinalValues } from "../core/scale.js";
 import { validateUserId } from "../core/identifiers.js";
 
 const DEFAULT_LINE_STROKE = "#4c78a8";
@@ -53,9 +53,17 @@ const rematerializeLineMark = action(
       throw new Error(`Line mark "${id}" requires x and y scales.`);
     }
 
-    const resolved = this
+    let resolved = this
       .rematerializeScale({ id: xScaleId })
       .rematerializeScale({ id: yScaleId });
+
+    for (const channel of ["color", "strokeDash"]) {
+      const scaleId = layer.encoding?.[channel]?.scale;
+      if (scaleId !== undefined) {
+        resolved = resolved.rematerializeScale({ id: scaleId });
+      }
+    }
+
     const xScale = resolved.resolvedScales[xScaleId];
     const yScale = resolved.resolvedScales[yScaleId];
     const points = derived.series.map(series => {
@@ -72,15 +80,31 @@ const rematerializeLineMark = action(
 
       return series.values.map((_, index) => ({ x: x[index], y: y[index] }));
     });
-    const strokes = points.map(
-      (_, index) => existingChildren[index]?.properties.stroke ?? DEFAULT_LINE_STROKE
-    );
+    const colorEncoding = layer.encoding?.color;
+    const dashEncoding = layer.encoding?.strokeDash;
+    const strokes = colorEncoding?.scale === undefined
+      ? points.map(
+          (_, index) =>
+            existingChildren[index]?.properties.stroke ?? DEFAULT_LINE_STROKE
+        )
+      : mapOrdinalValues(
+          derived.series.map(series => series.key[colorEncoding.field]),
+          resolved.resolvedScales[colorEncoding.scale].domain,
+          resolved.resolvedScales[colorEncoding.scale].range
+        );
     const strokeWidths = points.map(
-      (_, index) => existingChildren[index]?.properties.strokeWidth ?? DEFAULT_LINE_WIDTH
+      (_, index) =>
+        existingChildren[index]?.properties.strokeWidth ?? DEFAULT_LINE_WIDTH
     );
-    const strokeDashes = points.map(
-      (_, index) => existingChildren[index]?.properties.strokeDash ?? []
-    );
+    const strokeDashes = dashEncoding?.scale === undefined
+      ? points.map(
+          (_, index) => existingChildren[index]?.properties.strokeDash ?? []
+        )
+      : mapOrdinalValues(
+          derived.series.map(series => series.key[dashEncoding.field]),
+          resolved.resolvedScales[dashEncoding.scale].domain,
+          resolved.resolvedScales[dashEncoding.scale].range
+        );
 
     return resolved
       .editGraphics({ target: id, property: "length", value: points.length })

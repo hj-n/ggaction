@@ -15,6 +15,7 @@ import {
   validatePositionChannel,
   validateScaleDomain,
   validateScaleRange,
+  validateStrokeDashRange,
   validateTimeScaleType
 } from "../core/scale.js";
 
@@ -32,6 +33,7 @@ const COLOR_ENCODING_OPTIONS = Object.freeze([
   "fieldType",
   "scale"
 ]);
+const STROKE_DASH_ENCODING_OPTIONS = COLOR_ENCODING_OPTIONS;
 const SCALE_OPTIONS = Object.freeze([
   "id",
   "type",
@@ -40,6 +42,8 @@ const SCALE_OPTIONS = Object.freeze([
   "nice",
   "zero"
 ]);
+const ORDINAL_SCALE_OPTIONS = Object.freeze(["id", "type", "domain", "range"]);
+const COLOR_SCALE_OPTIONS = Object.freeze([...ORDINAL_SCALE_OPTIONS, "palette"]);
 const RADIUS_OPTIONS = Object.freeze(["value", "target"]);
 
 function validateOptions(args, supported, operation) {
@@ -151,8 +155,35 @@ function resolveColorScaleDefinition(program, options) {
     throw new TypeError("Encoding scale must be a plain object.");
   }
 
-  validateOptions(options, SCALE_OPTIONS, "scale");
+  validateOptions(options, COLOR_SCALE_OPTIONS, "scale");
+  if (options.palette !== undefined && options.range !== undefined) {
+    throw new Error("Color scale cannot specify both palette and range.");
+  }
   const id = validateUserId(options.id ?? "color", "Scale id");
+  const existing = program.semanticSpec.scales.find(item => item.id === id);
+  const requestedRange = options.palette === undefined
+    ? options.range
+    : { palette: options.palette };
+
+  return {
+    id,
+    type: validateOrdinalScaleType(
+      options.type ?? existing?.type ?? "ordinal"
+    ),
+    domain: validateOrdinalDomain(
+      options.domain ?? existing?.domain ?? "auto"
+    ),
+    range: validateColorRange(requestedRange ?? existing?.range ?? "auto")
+  };
+}
+
+function resolveStrokeDashScaleDefinition(program, options) {
+  if (!isPlainObject(options)) {
+    throw new TypeError("Encoding scale must be a plain object.");
+  }
+
+  validateOptions(options, ORDINAL_SCALE_OPTIONS, "scale");
+  const id = validateUserId(options.id ?? "strokeDash", "Scale id");
   const existing = program.semanticSpec.scales.find(item => item.id === id);
 
   return {
@@ -163,7 +194,9 @@ function resolveColorScaleDefinition(program, options) {
     domain: validateOrdinalDomain(
       options.domain ?? existing?.domain ?? "auto"
     ),
-    range: validateColorRange(options.range ?? existing?.range ?? "auto")
+    range: validateStrokeDashRange(
+      options.range ?? existing?.range ?? "auto"
+    )
   };
 }
 
@@ -271,21 +304,16 @@ const encodeY = action(
 const encodeColor = action(
   {
     op: "encodeColor",
-    description: "Encode a nominal field as point color."
+    description: "Encode a nominal field as graphical color."
   },
   function (args = {}) {
     validateOptions(args, COLOR_ENCODING_OPTIONS, "encodeColor");
     const fieldType = validateNominalFieldType(args.fieldType ?? "nominal");
-    const { id: target, dataset } = resolveTarget(
-      this,
-      args.target,
-      ["point"],
-      "point mark"
-    );
+    const { id: target, dataset, layer } = resolveTarget(this, args.target);
     readNominalField(dataset.values, args.field);
     const scale = resolveColorScaleDefinition(this, args.scale ?? {});
 
-    return this
+    const next = this
       .editSemantic({
         property: `layer[${target}].encoding.color.field`,
         value: args.field
@@ -298,8 +326,50 @@ const encodeColor = action(
         property: `layer[${target}].encoding.color.scale`,
         value: scale.id
       })
+      .createScale(scale);
+
+    return layer.mark.type === "line"
+      ? next.rematerializeLineMark({ id: target })
+      : next.rematerializeScale({ id: scale.id });
+  }
+);
+
+const encodeStrokeDash = action(
+  {
+    op: "encodeStrokeDash",
+    description: "Encode a nominal field as line stroke dash."
+  },
+  function (args = {}) {
+    validateOptions(
+      args,
+      STROKE_DASH_ENCODING_OPTIONS,
+      "encodeStrokeDash"
+    );
+    const fieldType = validateNominalFieldType(args.fieldType ?? "nominal");
+    const { id: target, dataset } = resolveTarget(
+      this,
+      args.target,
+      ["line"],
+      "line mark"
+    );
+    readNominalField(dataset.values, args.field);
+    const scale = resolveStrokeDashScaleDefinition(this, args.scale ?? {});
+
+    return this
+      .editSemantic({
+        property: `layer[${target}].encoding.strokeDash.field`,
+        value: args.field
+      })
+      .editSemantic({
+        property: `layer[${target}].encoding.strokeDash.fieldType`,
+        value: fieldType
+      })
+      .editSemantic({
+        property: `layer[${target}].encoding.strokeDash.scale`,
+        value: scale.id
+      })
       .createScale(scale)
-      .rematerializeScale({ id: scale.id });
+      .rematerializeLineMark({ id: target });
   }
 );
 
@@ -335,5 +405,6 @@ export function registerEncodingActions(ProgramClass) {
   ProgramClass.prototype.encodeX = encodeX;
   ProgramClass.prototype.encodeY = encodeY;
   ProgramClass.prototype.encodeColor = encodeColor;
+  ProgramClass.prototype.encodeStrokeDash = encodeStrokeDash;
   ProgramClass.prototype.encodeRadius = encodeRadius;
 }

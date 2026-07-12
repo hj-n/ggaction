@@ -54,3 +54,5 @@ Line mark creation does not infer one default series, coordinates, encodings,
 or path points. Temporal `encodeX` resolves the horizontal scale while leaving
 the collection empty. Aggregate line `encodeY` then derives the currently known
 series, resizes the collection, and materializes sorted concrete point arrays.
+`encodeColor` and `encodeStrokeDash` can further regroup those paths and apply
+semantic series styles.

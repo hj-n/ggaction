@@ -50,7 +50,7 @@ chart()
 - [x] Temporal x encoding과 scale
 - [x] Quantitative mean aggregation
 - [x] Series grouping과 시간순 정렬
-- [ ] Color와 strokeDash encoding
+- [x] Color와 strokeDash encoding
 - [ ] Line chart axes
 - [ ] Combined series legend
 - [ ] Chart title과 subtitle

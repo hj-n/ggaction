@@ -74,6 +74,8 @@ value per child. Generated child IDs such as `points:1` can be targeted.
 idempotent semantic scale. `rematerializeScale({ id })` resolves all consumers
 and invokes concrete graphic edits, including connected axis updates. Aggregate
 line consumers resolve their domains from derived means rather than raw rows.
+Ordinal ranges may contain color strings, the `tableau10` descriptor, or
+validated even-length stroke-dash patterns for the matching channel.
 
 ```javascript
 program

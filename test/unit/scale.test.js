@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  DASH10,
   mapLinearValues,
   mapOrdinalValues,
   readQuantitativeField,
@@ -11,6 +12,7 @@ import {
   resolveOrdinalDomain,
   resolveScaleDomain,
   resolveScaleRange,
+  resolveStrokeDashRange,
   validateFieldType,
   validateColorRange,
   validateNominalFieldType,
@@ -18,7 +20,8 @@ import {
   validatePositionChannel,
   validateScaleDomain,
   validateScaleRange,
-  validateScaleType
+  validateScaleType,
+  validateStrokeDashRange
 } from "../../src/core/scale.js";
 
 test("reads finite quantitative field values", () => {
@@ -128,4 +131,14 @@ test("validates nominal fields, ordinal domains, and color ranges", () => {
     () => readNominalField([{ value: null }], "value"),
     /nominal value/
   );
+});
+
+test("resolves and validates ordinal stroke dash ranges", () => {
+  assert.deepEqual(resolveStrokeDashRange("auto"), DASH10);
+  assert.equal(DASH10.length, 10);
+  assert.deepEqual(validateStrokeDashRange([[], [8, 4]]), [[], [8, 4]]);
+  assert.throws(() => validateStrokeDashRange([]), /one or more/);
+  assert.throws(() => validateStrokeDashRange([[3]]), /even-length/);
+  assert.throws(() => validateStrokeDashRange([[3, -1]]), /non-negative/);
+  assert.throws(() => validateStrokeDashRange([[3, Infinity]]), /finite/);
 });

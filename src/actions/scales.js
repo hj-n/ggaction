@@ -11,11 +11,12 @@ import {
   resolveContinuousDomain,
   resolveOrdinalDomain,
   resolveScaleRange,
+  resolveStrokeDashRange,
   validateScaleDomain,
   validateScaleRange,
   validateScaleType,
   validateOrdinalDomain,
-  validateColorRange,
+  validateOrdinalRange,
   validateLinearScaleType,
   validateTimeScaleType,
   validateOrdinalScaleType
@@ -44,11 +45,17 @@ function sameScaleSetting(left, right) {
     return true;
   }
 
-  if (!Array.isArray(left) || !Array.isArray(right)) {
+  if (Array.isArray(left) && Array.isArray(right)) {
+    return left.length === right.length && left.every(
+      (value, index) => sameScaleSetting(value, right[index])
+    );
+  }
+
+  if (!Array.isArray(left) && !Array.isArray(right)) {
     return left?.palette !== undefined && left.palette === right?.palette;
   }
 
-  return left.length === right.length && left.every((value, i) => value === right[i]);
+  return false;
 }
 
 function assertEquivalentScale(existing, expected) {
@@ -77,7 +84,7 @@ function findScaleConsumers(program, id) {
   const consumers = [];
 
   for (const layer of program.semanticSpec.layers) {
-    for (const channel of ["x", "y", "color"]) {
+    for (const channel of ["x", "y", "color", "strokeDash"]) {
       const encoding = layer.encoding?.[channel];
 
       if (encoding?.scale === id) {
@@ -100,10 +107,17 @@ function resolveConsumerValues(program, consumer) {
     );
   }
 
-  if (consumer.channel === "color") {
+  if (consumer.channel === "color" || consumer.channel === "strokeDash") {
+    if (
+      consumer.channel === "strokeDash" &&
+      consumer.layer.mark?.type !== "line"
+    ) {
+      throw new Error("strokeDash scale materialization currently requires a line mark.");
+    }
+
     if (consumer.encoding.fieldType !== "nominal") {
       throw new Error(
-        `Color scale materialization requires a nominal encoding on mark "${consumer.layer.id}".`
+        `${consumer.channel} scale materialization requires a nominal encoding on mark "${consumer.layer.id}".`
       );
     }
 
@@ -149,7 +163,7 @@ const createScale = action(
       range:
         type !== "ordinal"
           ? validateScaleRange(args.range ?? "auto")
-          : validateColorRange(args.range ?? "auto")
+          : validateOrdinalRange(args.range ?? "auto")
     };
 
     if (args.nice !== undefined) {
@@ -232,8 +246,8 @@ const rematerializeScale = action(
       values: resolveConsumerValues(this, consumer)
     }));
     const allValues = valuesByConsumer.flatMap(item => item.values);
-    const isColor = channel === "color";
-    const domain = isColor
+    const isOrdinal = channel === "color" || channel === "strokeDash";
+    const domain = isOrdinal
       ? resolveOrdinalDomain(scale.domain, allValues)
       : resolveContinuousDomain({
           domain: scale.domain,
@@ -242,15 +256,21 @@ const rematerializeScale = action(
           nice: scale.nice,
           zero: scale.zero
         });
-    const range = isColor
-      ? resolveColorRange(scale.range)
-      : resolveScaleRange(
-          scale.range,
-          channel,
-          this.context.currentGraphicBounds
-        );
+    let range;
+
+    if (channel === "color") {
+      range = resolveColorRange(scale.range);
+    } else if (channel === "strokeDash") {
+      range = resolveStrokeDashRange(scale.range);
+    } else {
+      range = resolveScaleRange(
+        scale.range,
+        channel,
+        this.context.currentGraphicBounds
+      );
+    }
     let next = this._withResolvedScale(id, {
-      type: isColor
+      type: isOrdinal
         ? validateOrdinalScaleType(scale.type)
         : scale.type === "time"
           ? validateTimeScaleType(scale.type)
@@ -266,8 +286,8 @@ const rematerializeScale = action(
 
       next = next.editGraphics({
         target: consumer.layer.id,
-        property: isColor ? "fill" : channel,
-        value: isColor
+        property: channel === "color" ? "fill" : channel,
+        value: isOrdinal
           ? mapOrdinalValues(values, domain, range)
           : mapLinearValues(values, domain, range)
       });

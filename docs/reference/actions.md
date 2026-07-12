@@ -24,6 +24,7 @@ These are the recommended chart-authoring actions currently supported.
 | Encoding | `encodeX({ field, target?, fieldType?, coordinate?, scale? })` | [Encodings](../api/encodings.md) |
 | Encoding | `encodeY({ field, target?, fieldType?, aggregate?, coordinate?, scale? })` | [Encodings](../api/encodings.md) |
 | Encoding | `encodeColor({ field, target?, fieldType?, scale? })` | [Encodings](../api/encodings.md) |
+| Encoding | `encodeStrokeDash({ field, target?, fieldType?, scale? })` | [Encodings](../api/encodings.md) |
 | Appearance | `encodeRadius({ value, target? })` | [Encodings](../api/encodings.md) |
 | Axes | `createAxes({ coordinate?, x?, y? })` | [Axes](../api/axes.md) |
 

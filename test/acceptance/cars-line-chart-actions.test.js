@@ -110,7 +110,7 @@ test("authors and renders the cars line chart with the line mark action", () => 
     12, 12, 12
   ]);
   assert.deepEqual(trends.children.map(child => child.properties.strokeDash), [
-    [], [6, 4], [2, 3]
+    [], [8, 4], [3, 3]
   ]);
   assert.deepEqual(
     program.graphicSpec.objects.seriesLegendLabels.children.map(
@@ -122,7 +122,7 @@ test("authors and renders the cars line chart with the line mark action", () => 
     program.graphicSpec.objects.seriesLegendSymbols.children.map(
       child => child.properties.strokeDash
     ),
-    [[], [6, 4], [2, 3]]
+    [[], [8, 4], [3, 3]]
   );
   assert.equal(program.graphicSpec.objects.chartTitle.properties.text,
     "The trend of acceleration by year");
@@ -152,7 +152,7 @@ test("authors and renders the cars line chart with the line mark action", () => 
   assert.equal(findCanvasCalls(context, "lineTo").length, 51);
   assert.deepEqual(
     findCanvasCalls(context, "setLineDash").slice(0, 3).map(call => call.value),
-    [[], [6, 4], [2, 3]]
+    [[], [8, 4], [3, 3]]
   );
 
   const topLevelOps = new Set(program.trace.children.map(node => node.op));
@@ -162,10 +162,11 @@ test("authors and renders the cars line chart with the line mark action", () => 
     "createLineMark",
     "encodeX",
     "encodeY",
+    "encodeColor",
+    "encodeStrokeDash",
     "editSemantic",
-    "rematerializeLineMark",
-    "editGraphics",
-    "createGraphics"
+    "createGraphics",
+    "editGraphics"
   ]);
   assert.equal(program.trace.children.some(node =>
     ["createGuides", "createLegend", "createTitle"].includes(node.op)
@@ -188,6 +189,12 @@ test("authors and renders the cars line chart with the line mark action", () => 
     "createScale",
     "rematerializeLineMark"
   ]);
+  assert.equal(
+    program.trace.children.some(
+      node => node.op === "editGraphics" && node.args.target === "trends"
+    ),
+    false
+  );
   assert.deepEqual(program.actionStack, []);
   assert.equal(Object.isFrozen(program.semanticSpec.title), true);
   assert.equal(Object.isFrozen(trends.children[0].properties.points), true);

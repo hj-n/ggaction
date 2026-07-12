@@ -123,30 +123,64 @@ preserving existing line appearance.
 
 ## `encodeColor(options)`
 
-Maps a nominal field to concrete point fills.
+Maps a nominal field to concrete point fills or line-series strokes. On a line
+mark, the field also participates in series grouping.
 
 | Option | Type | Default |
 | --- | --- | --- |
 | `field` | non-empty string | required |
-| `target` | point mark ID | current mark |
+| `target` | point or line mark ID | current mark |
 | `fieldType` | `"nominal"` | `"nominal"` |
 | `scale.id` | scale ID | `"color"` |
 | `scale.type` | `"ordinal"` | `"ordinal"` |
 | `scale.domain` | `"auto"` or category array | `"auto"` |
 | `scale.range` | `"auto"`, color array, or palette descriptor | `"auto"` |
+| `scale.palette` | `"tableau10"` | omitted |
 
 ```javascript
 program.encodeColor({
   field: "Origin",
-  scale: {
-    domain: ["USA", "Europe", "Japan"],
-    range: ["#4c78a8", "#f58518", "#54a24b"]
-  }
+  scale: { palette: "tableau10" }
 });
 ```
 
-`{ palette: "tableau10" }` selects the supported named palette. Automatic
-domains preserve first-appearance order.
+`scale.palette` is the concise form of
+`scale.range: { palette: "tableau10" }`. Do not provide `palette` and `range`
+together. Automatic domains preserve first-appearance order. Point marks
+receive `fill`; line paths receive `stroke` and are regrouped when needed.
+
+## `encodeStrokeDash(options)`
+
+Maps a nominal field to line-series dash patterns.
+
+```javascript
+program.encodeStrokeDash({ field: "Origin" });
+```
+
+| Option | Type | Default |
+| --- | --- | --- |
+| `field` | non-empty string | required |
+| `target` | line mark ID | current mark |
+| `fieldType` | `"nominal"` | `"nominal"` |
+| `scale.id` | scale ID | `"strokeDash"` |
+| `scale.type` | `"ordinal"` | `"ordinal"` |
+| `scale.domain` | `"auto"` or category array | `"auto"` |
+| `scale.range` | `"auto"` or dash-pattern array | `"auto"` |
+
+The automatic range contains ten patterns and cycles for additional categories:
+
+```javascript
+[
+  [], [8, 4], [3, 3], [12, 4], [8, 3, 2, 3],
+  [12, 3, 3, 3], [2, 2], [10, 3, 2, 3, 2, 3],
+  [14, 4, 4, 4], [6, 2, 2, 2]
+]
+```
+
+An explicit range must contain at least one pattern. Each pattern is empty
+(`solid`) or contains an even number of non-negative finite values. If color
+and strokeDash use the same field, it appears only once in the series key.
+Canvas rematerialization reapplies both semantic styles.
 
 ## `encodeRadius({ value, target? })`
 
