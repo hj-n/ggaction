@@ -16,7 +16,14 @@ domain action으로 생성한다.
 - [x] Unit, trace, immutability test
 - [x] Acceptance 및 PNG render test
 - [x] 영어 사용자 문서
-- [ ] 브라우저와 고해상도 PNG 확인
+- [x] 브라우저와 고해상도 PNG 확인
+
+## 검증 결과
+
+- 구현 시점 unit/acceptance test 111개 및 PNG test 3개 통과
+- Nice/explicit tick과 Canvas rematerialization 확인
+- Chromium 640×400 Canvas와 console error 0개 확인
+- `pixelRatio: 2` PNG 1280×800 확인
 
 ## API
 

@@ -1,11 +1,11 @@
 ---
 layout: default
-title: Axis Line Actions
+title: Axis Component Actions
 ---
 
 [Documentation home](./index.md) · [Visual encodings](./encoding-actions.md)
 
-# Axis Line Actions
+# Axis Component Actions
 
 Create bottom and left axis lines after position encodings have resolved their
 scales:

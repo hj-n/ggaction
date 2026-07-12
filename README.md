@@ -74,6 +74,6 @@ npm run test:render
 - [Data actions](./docs/data-actions.md)
 - [Mark actions](./docs/mark-actions.md)
 - [Position encodings](./docs/encoding-actions.md)
-- [Axis line actions](./docs/guide-actions.md)
+- [Axis component actions](./docs/guide-actions.md)
 - [Action authoring](./docs/action-authoring.md)
 - [PNG rendering](./docs/png-rendering.md)

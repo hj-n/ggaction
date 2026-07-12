@@ -21,7 +21,7 @@ retaining both semantic intent and fully materialized graphics.
 | [Data actions](./data-actions.md) | Create immutable named datasets |
 | [Mark actions](./mark-actions.md) | Create semantic marks and their concrete graphical collections |
 | [Visual encodings](./encoding-actions.md) | Map fields and constants to concrete point properties |
-| [Axis line actions](./guide-actions.md) | Create and edit inferred x/y axis lines |
+| [Axis component actions](./guide-actions.md) | Create and edit inferred axis lines, ticks, and labels |
 | [Action authoring](./action-authoring.md) | Extend ggaction with custom, traceable actions |
 | [PNG rendering](./png-rendering.md) | Export completed programs to PNG files in Node.js |
 | [Repository README](https://github.com/hj-n/ggaction#readme) | Project status and development commands |

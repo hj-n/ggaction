@@ -14,10 +14,23 @@ configuration을 기본 source로 공유한다.
 - [x] `createYAxisLabels` / `editYAxisLabels`
 - [x] Scale·Canvas rematerialization
 - [x] 대표 프로그램 primitive 교체
-- [ ] Unit, trace, immutability test
-- [ ] Acceptance 및 PNG render test
+- [x] Unit, trace, immutability test
+- [x] Acceptance 및 PNG render test
 - [x] 영어 사용자 문서
-- [ ] 브라우저와 고해상도 PNG 확인
+- [x] 브라우저와 고해상도 PNG 확인
+
+## 검증 결과
+
+- 일반 unit/acceptance test 114개 통과
+- PNG render test 3개 통과
+- x labels `["50", "100", "150", "200"]` 확인
+- y labels `["10", "20", "30", "40"]` 확인
+- Tick values config 공유와 explicit conflict validation 확인
+- `"auto"`와 `{ decimals }` formatting 확인
+- Scale·Canvas rematerialization과 immutable earlier program 확인
+- Chromium Canvas 640×400, 392개 point와 axis labels 렌더링
+- 브라우저 console error 0개
+- `pixelRatio: 2` PNG 1280×800 확인
 
 ## API
 
