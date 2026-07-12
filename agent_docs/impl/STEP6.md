@@ -25,10 +25,24 @@ const program = chart()
 - [x] `encodeY`
 - [x] Canvas 변경 시 positional scale rematerialization
 - [x] `carsScatterplotActions`의 수동 x/y 계산 제거
-- [ ] Unit, trace, immutability test
-- [ ] Acceptance 및 PNG render test
+- [x] Unit, trace, immutability test
+- [x] Acceptance 및 PNG render test
 - [x] 영어 사용자 문서
-- [ ] 브라우저와 고해상도 PNG 확인
+- [x] 브라우저와 고해상도 PNG 확인
+
+## 검증 결과
+
+- 일반 unit/acceptance test 92개 통과
+- PNG render test 3개 통과
+- `carsScatterplotActions`에서 수동 point x/y 계산 제거
+- semantic x/y encoding과 `linear`, `auto` scale 저장 확인
+- resolved x domain `[46, 230]`, range `[70, 610]` 확인
+- resolved y domain `[9, 46.6]`, range `[340, 30]` 확인
+- shared scale consumer와 Canvas resize rematerialization 확인
+- nested `encodeX`, `encodeY`, `createScale`, `rematerializeScale` trace 확인
+- Chromium Canvas 640×400, 392개 point 렌더링
+- 브라우저 console error 0개
+- `pixelRatio: 2` PNG 1280×800 확인
 
 ## API
 
