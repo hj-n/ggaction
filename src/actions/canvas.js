@@ -74,7 +74,9 @@ function rematerializePositionScales(program) {
     if (
       (scale.range === "auto" ||
         program.semanticSpec.guides.axis?.x?.scale === scale.id ||
-        program.semanticSpec.guides.axis?.y?.scale === scale.id) &&
+        program.semanticSpec.guides.axis?.y?.scale === scale.id ||
+        program.semanticSpec.guides.grid?.horizontal?.scale === scale.id ||
+        program.semanticSpec.guides.grid?.vertical?.scale === scale.id) &&
       program.resolvedScales[scale.id] !== undefined &&
       usesPositionalScale(program, scale.id)
     ) {

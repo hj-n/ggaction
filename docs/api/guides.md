@@ -57,3 +57,6 @@ createGuides
 
 Chart titles are not guides. Create them separately with
 [`createTitle`](./titles.md).
+
+Grid lines are currently created separately with
+[`createGrid`](./grids.md); `createGuides` does not select grids yet.

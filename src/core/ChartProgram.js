@@ -151,6 +151,26 @@ export class ChartProgram {
     });
   }
 
+  _withGridConfig(direction, config) {
+    if (!["horizontal", "vertical"].includes(direction)) {
+      throw new Error(`Unknown grid direction "${direction}".`);
+    }
+    if (!isPlainObject(config)) {
+      throw new TypeError("Grid config must be a plain object.");
+    }
+
+    const owned = cloneAndFreeze(config);
+    return this._clone({
+      guideConfigs: freezeOwned({
+        ...this.guideConfigs,
+        grid: freezeOwned({
+          ...this.guideConfigs.grid,
+          [direction]: owned
+        })
+      })
+    });
+  }
+
   _withTitleConfig(config) {
     if (!isPlainObject(config)) {
       throw new TypeError("Title config must be a plain object.");

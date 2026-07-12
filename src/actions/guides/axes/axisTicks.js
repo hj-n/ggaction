@@ -1,50 +1,14 @@
 import { action } from "../../../core/action.js";
-import { resolveHistogramBins } from "../../../core/histogram.js";
 import { validateUserId } from "../../../core/identifiers.js";
+import { mapLinearValues } from "../../../core/scale.js";
 import {
-  mapLinearValues,
-  readQuantitativeField
-} from "../../../core/scale.js";
-import { niceTicks, timeTicks } from "../../../core/ticks.js";
+  DEFAULT_TICK_COUNT,
+  inferHistogramBoundaries,
+  valuesFromTickConfig
+} from "../tickValues.js";
 
 const OPTIONS = Object.freeze(["scale", "position", "count", "values", "length", "color", "lineWidth"]);
-const DEFAULTS = Object.freeze({ count: 5, length: 6, color: "#64748b", lineWidth: 1 });
-
-function inferHistogramBoundaries(program, channel, scaleId) {
-  if (channel !== "x") return undefined;
-
-  const consumers = program.semanticSpec.layers.filter(
-    layer =>
-      layer.encoding?.x?.scale === scaleId &&
-      layer.encoding.x.bin !== undefined
-  );
-  if (consumers.length === 0) return undefined;
-  if (consumers.length > 1) {
-    throw new Error(
-      `Axis ticks cannot infer shared histogram bins for scale "${scaleId}".`
-    );
-  }
-
-  const [layer] = consumers;
-  const encoding = layer.encoding.x;
-  const dataset = program.semanticSpec.datasets.find(
-    item => item.id === layer.data
-  );
-  const scale = program.semanticSpec.scales.find(item => item.id === scaleId);
-  if (dataset === undefined || scale === undefined) {
-    throw new Error(
-      `Axis ticks require histogram data and scale "${scaleId}".`
-    );
-  }
-
-  return resolveHistogramBins({
-    values: readQuantitativeField(dataset.values, encoding.field),
-    maxBins: encoding.bin.maxBins,
-    domain: scale.domain,
-    nice: scale.nice ?? true,
-    zero: scale.zero ?? false
-  }).boundaries;
-}
+const DEFAULTS = Object.freeze({ count: DEFAULT_TICK_COUNT, length: 6, color: "#64748b", lineWidth: 1 });
 
 function validateOptions(args, operation, create) {
   for (const key of Object.keys(args)) if (!OPTIONS.includes(key) || (!create && key === "scale")) throw new Error(`Unknown ${operation} option "${key}".`);
@@ -66,11 +30,7 @@ function geometry(program, channel, config) {
   const bounds = program.context.currentGraphicBounds;
   if (!["linear", "time"].includes(scale?.type) || !bounds) throw new Error("Axis ticks require a resolved continuous scale and Canvas bounds.");
   const domain = scale.domain;
-  const values = config.mode === "values"
-    ? config.values
-    : scale.type === "time"
-      ? timeTicks(domain, config.count)
-      : niceTicks(domain, config.count);
+  const values = valuesFromTickConfig(program, config);
   const low = Math.min(...domain), high = Math.max(...domain);
   if (!values.every(value => value >= low && value <= high)) throw new RangeError("Tick values must be inside the scale domain.");
   const positions = mapLinearValues(values, domain, scale.range);

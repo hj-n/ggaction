@@ -15,14 +15,14 @@ Histogram의 raw horizontal grid 코드를 다음 호출로 교체한다.
 
 - [x] `createGraphics`의 `before`/`after` placement 구현
 - [x] Placement validation, immutability, trace test
-- [ ] Axis/grid 공통 tick 추론 구현
-- [ ] `createHorizontalGrid` 구현
-- [ ] `createVerticalGrid` 구현
-- [ ] Aggregate `createGrid` 구현
-- [ ] Scale과 Canvas 변경 시 grid rematerialization
-- [ ] Histogram progression의 raw grid 코드 제거
-- [ ] 사용자 문서 갱신
-- [ ] 전체 테스트와 PNG 검증
+- [x] Axis/grid 공통 tick 추론 구현
+- [x] `createHorizontalGrid` 구현
+- [x] `createVerticalGrid` 구현
+- [x] Aggregate `createGrid` 구현
+- [x] Scale과 Canvas 변경 시 grid rematerialization
+- [x] Histogram progression의 raw grid 코드 제거
+- [x] 사용자 문서 갱신
+- [x] 전체 테스트와 PNG 검증
 
 ## API
 
@@ -138,3 +138,10 @@ canvas → horizontalGridLines → bars → axes → legend → title
 - Grid band fill
 - 기존 arbitrary graphic을 이동하는 `moveGraphics`
 - Axis와 grid의 강제 동시 생성
+
+## 검증 결과
+
+- Unit/acceptance test 259개 통과
+- PNG render test 8개 통과
+- Horizontal grid가 bars보다 먼저 렌더링되고 axis ticks와 정렬됨을 확인
+- Primitive, encoding, action histogram progression의 최종 결과 일치

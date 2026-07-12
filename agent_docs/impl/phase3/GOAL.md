@@ -51,7 +51,7 @@ chart는 별도 grid option 없이 horizontal grid를 가진다.
 - [x] Bar `encodeColor`
 - [x] Atomic `encodeHistogram`
 - [x] Histogram axes
-- [ ] Horizontal/vertical grid
+- [x] Horizontal/vertical grid
 - [ ] `createGuides` default horizontal grid
 - [ ] Bottom bar legend
 - [ ] Centered title

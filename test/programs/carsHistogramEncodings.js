@@ -31,7 +31,8 @@ export function createCarsHistogramEncodings(cars) {
     .createGraphics({
       id: "horizontalGridLines",
       type: "line",
-      length: horizontalGrid.length
+      length: horizontalGrid.length,
+      before: "bars"
     })
     .editGraphics({
       target: "horizontalGridLines",

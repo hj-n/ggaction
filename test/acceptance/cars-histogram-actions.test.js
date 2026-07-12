@@ -73,6 +73,23 @@ test("authors histogram mark and encodings through chart actions", () => {
     ["rematerializeScale", "rematerializeScale", "rematerializeScale"]
   );
 
+  const grid = program.trace.children.find(node => node.op === "createGrid");
+  assert.deepEqual(grid.args, {});
+  assert.deepEqual(grid.children.map(node => node.op), [
+    "createHorizontalGrid"
+  ]);
+  assert.deepEqual(grid.children[0].children.map(node => node.op), [
+    "editSemantic",
+    "editSemantic",
+    "createGraphics",
+    "rematerializeHorizontalGrid"
+  ]);
+  assert.deepEqual(program.graphicSpec.order.slice(0, 3), [
+    "canvas",
+    "horizontalGridLines",
+    "bars"
+  ]);
+
   const axes = program.trace.children.find(node => node.op === "createAxes");
   assert.deepEqual(axes.args, {});
   assert.deepEqual(axes.children.map(node => node.op), [
@@ -103,6 +120,22 @@ test("authors histogram mark and encodings through chart actions", () => {
           "scale[color].domain",
           "scale[color].range"
         ].includes(node.args.property)
+    ),
+    false
+  );
+  assert.equal(
+    program.trace.children.some(
+      node =>
+        node.op === "editSemantic" &&
+        node.args.property.startsWith("guide.grid.")
+    ),
+    false
+  );
+  assert.equal(
+    program.trace.children.some(
+      node =>
+        node.op === "createGraphics" &&
+        node.args.id === "horizontalGridLines"
     ),
     false
   );

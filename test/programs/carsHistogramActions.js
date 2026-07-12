@@ -12,7 +12,6 @@ export function createCarsHistogramActions(cars) {
     margin,
     maxBins: 10
   });
-  const horizontalGrid = values.grid.horizontal;
   const legendItems = values.legend.items;
 
   return chart()
@@ -28,51 +27,7 @@ export function createCarsHistogramActions(cars) {
       field: "Origin",
       scale: { palette: "tableau10" }
     })
-    .createGraphics({
-      id: "horizontalGridLines",
-      type: "line",
-      length: horizontalGrid.length
-    })
-    .editGraphics({
-      target: "horizontalGridLines",
-      property: "x1",
-      value: horizontalGrid.map(line => line.x1)
-    })
-    .editGraphics({
-      target: "horizontalGridLines",
-      property: "y1",
-      value: horizontalGrid.map(line => line.y1)
-    })
-    .editGraphics({
-      target: "horizontalGridLines",
-      property: "x2",
-      value: horizontalGrid.map(line => line.x2)
-    })
-    .editGraphics({
-      target: "horizontalGridLines",
-      property: "y2",
-      value: horizontalGrid.map(line => line.y2)
-    })
-    .editGraphics({
-      target: "horizontalGridLines",
-      property: "stroke",
-      value: "#e2e8f0"
-    })
-    .editGraphics({
-      target: "horizontalGridLines",
-      property: "strokeWidth",
-      value: 1
-    })
-    .editGraphics({
-      target: "horizontalGridLines",
-      property: "strokeDash",
-      value: horizontalGrid.map(() => [])
-    })
-    .editSemantic({ property: "guide.grid.horizontal.scale", value: "y" })
-    .editSemantic({
-      property: "guide.grid.horizontal.coordinate",
-      value: "main"
-    })
+    .createGrid()
     .editSemantic({ property: "guide.legend.color.scale", value: "color" })
     .editSemantic({ property: "guide.legend.color.title", value: "Origin" })
     .createAxes()

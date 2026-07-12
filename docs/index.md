@@ -40,6 +40,7 @@ example, then use the API pages when you need to customize one part.
 - [Coordinates](./api/coordinates.md)
 - [Guides](./api/guides.md)
 - [Axes](./api/axes.md)
+- [Grids](./api/grids.md)
 - [Legends](./api/legends.md)
 - [Titles](./api/titles.md)
 - [Browser and PNG rendering](./api/rendering.md)

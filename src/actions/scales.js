@@ -398,6 +398,12 @@ const rematerializeScale = action(
     if (next.guideConfigs.axis?.y?.labels?.scale === id) next = next.editYAxisLabels();
     if (next.guideConfigs.axis?.x?.title?.scale === id) next = next.editXAxisTitle();
     if (next.guideConfigs.axis?.y?.title?.scale === id) next = next.editYAxisTitle();
+    if (next.guideConfigs.grid?.horizontal?.scale === id) {
+      next = next.rematerializeHorizontalGrid();
+    }
+    if (next.guideConfigs.grid?.vertical?.scale === id) {
+      next = next.rematerializeVerticalGrid();
+    }
 
     return next;
   }

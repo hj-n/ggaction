@@ -26,8 +26,8 @@ test("replaces raw bar and position blocks with chart actions", () => {
   assert.deepEqual(program.graphicSpec.objects, primitive.graphicSpec.objects);
   assert.deepEqual(program.graphicSpec.order.slice(0, 3), [
     "canvas",
-    "bars",
-    "horizontalGridLines"
+    "horizontalGridLines",
+    "bars"
   ]);
   assert.deepEqual(
     program.trace.children.slice(0, 5).map(node => node.op),

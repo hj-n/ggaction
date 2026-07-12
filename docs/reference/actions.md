@@ -141,6 +141,15 @@ createAxes({ coordinate?, x?, y? })
 Create Cartesian axes directly, including inferred histogram bin-boundary
 ticks. [Axes](../api/axes.md)
 
+### `createGrid`
+
+```javascript
+createGrid({ horizontal?, vertical? })
+```
+
+Create inferred horizontal and/or vertical Cartesian grid lines behind related
+marks. [Grids](../api/grids.md)
+
 ### `createLegend`
 
 ```javascript
@@ -176,6 +185,7 @@ Use these actions for explicit semantic resources or focused axis control.
 | Axis labels | `createXAxisLabels`, `createYAxisLabels`, `editXAxisLabels`, `editYAxisLabels` |
 | Tick/label groups | `createXAxisTicksAndLabels`, `createYAxisTicksAndLabels`, `editXAxisTicksAndLabels`, `editYAxisTicksAndLabels` |
 | Axis titles | `createXAxisTitle`, `createYAxisTitle`, `editXAxisTitle`, `editYAxisTitle` |
+| Grid directions | `createHorizontalGrid`, `createVerticalGrid` |
 
 See [Coordinates](../api/coordinates.md) and
 [Advanced axis components](../advanced/axis-components.md).
@@ -189,7 +199,7 @@ are available on programs used by extension actions.
 | --- | --- |
 | Wrapper | `action({ op, description }, implementation)` |
 | Semantic primitive | `editSemantic({ property, value })` |
-| Graphic primitive | `createGraphics({ id, type, length? })` |
+| Graphic primitive | `createGraphics({ id, type, length?, before?, after? })` |
 | Graphic primitive | `editGraphics({ target, property, value })` |
 | Scale action | `createScale({ id, type?, domain?, range?, nice?, zero? })` |
 | Scale action | `rematerializeScale({ id })` |
