@@ -25,6 +25,7 @@ import { registerAxisTickActions } from "../actions/axisTicks.js";
 import { registerAxisLabelActions } from "../actions/axisLabels.js";
 import { registerAxisTickGroupActions } from "../actions/axisTickGroups.js";
 import { registerAxisTitleActions } from "../actions/axisTitles.js";
+import { registerAxisActions } from "../actions/axes.js";
 
 function ownState(value) {
   return isOwned(value) ? value : cloneAndFreeze(value);
@@ -162,6 +163,7 @@ registerAxisTickActions(ChartProgram);
 registerAxisLabelActions(ChartProgram);
 registerAxisTickGroupActions(ChartProgram);
 registerAxisTitleActions(ChartProgram);
+registerAxisActions(ChartProgram);
 
 export function chart() {
   return new ChartProgram();
