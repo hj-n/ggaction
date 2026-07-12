@@ -1,4 +1,5 @@
 import { action } from "../core/action.js";
+import { getPositionCoordinateDefaults } from "../core/coordinate.js";
 import { validateUserId } from "../core/identifiers.js";
 import { isPlainObject } from "../core/immutable.js";
 import {
@@ -15,7 +16,14 @@ import {
   validateScaleRange
 } from "../core/scale.js";
 
-const ENCODING_OPTIONS = Object.freeze([
+const POSITION_ENCODING_OPTIONS = Object.freeze([
+  "field",
+  "target",
+  "fieldType",
+  "scale",
+  "coordinate"
+]);
+const COLOR_ENCODING_OPTIONS = Object.freeze([
   "field",
   "target",
   "fieldType",
@@ -50,7 +58,33 @@ function resolveTarget(program, target) {
     throw new Error(`Point mark "${id}" requires circle graphics.`);
   }
 
-  return { id, dataset };
+  return { id, dataset, layer };
+}
+
+function resolvePositionCoordinate(program, channel, layer, requestedId) {
+  const defaults = getPositionCoordinateDefaults(channel);
+  const existingId = layer.coordinate;
+
+  if (requestedId !== undefined) {
+    validateUserId(requestedId, "Coordinate id");
+  }
+
+  if (existingId !== undefined && requestedId !== undefined && existingId !== requestedId) {
+    throw new Error(
+      `Layer "${layer.id}" already uses coordinate "${existingId}".`
+    );
+  }
+
+  const id = existingId ?? requestedId ?? defaults.id;
+  const coordinate = program.semanticSpec.coordinates.find(item => item.id === id);
+
+  if (coordinate !== undefined && coordinate.type !== defaults.type) {
+    throw new Error(
+      `${channel} encoding requires a ${defaults.type} coordinate, but "${id}" is ${coordinate.type}.`
+    );
+  }
+
+  return { id, type: defaults.type };
 }
 
 function resolveScaleDefinition(program, channel, options) {
@@ -92,14 +126,25 @@ function resolveColorScaleDefinition(program, options) {
 }
 
 function encodePosition(program, channel, args, operation) {
-  validateOptions(args, ENCODING_OPTIONS, operation);
+  validateOptions(args, POSITION_ENCODING_OPTIONS, operation);
   validatePositionChannel(channel);
   const fieldType = validateFieldType(args.fieldType ?? "quantitative");
-  const { id: target, dataset } = resolveTarget(program, args.target);
+  const { id: target, dataset, layer } = resolveTarget(program, args.target);
   readQuantitativeField(dataset.values, args.field);
   const scale = resolveScaleDefinition(program, channel, args.scale ?? {});
+  const coordinate = resolvePositionCoordinate(
+    program,
+    channel,
+    layer,
+    args.coordinate
+  );
 
   return program
+    .createCoordinate({
+      id: coordinate.id,
+      type: coordinate.type,
+      layers: [target]
+    })
     .editSemantic({
       property: `layer[${target}].encoding.${channel}.field`,
       value: args.field
@@ -142,7 +187,7 @@ const encodeColor = action(
     description: "Encode a nominal field as point color."
   },
   function (args = {}) {
-    validateOptions(args, ENCODING_OPTIONS, "encodeColor");
+    validateOptions(args, COLOR_ENCODING_OPTIONS, "encodeColor");
     const fieldType = validateNominalFieldType(args.fieldType ?? "nominal");
     const { id: target, dataset } = resolveTarget(this, args.target);
     readNominalField(dataset.values, args.field);

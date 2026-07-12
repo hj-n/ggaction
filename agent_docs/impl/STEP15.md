@@ -13,15 +13,15 @@ graphics만 만든다.
 
 ## 진행 상태
 
-- [ ] Positional channel family와 기본 coordinate 규칙
-- [ ] `encodeX`/`encodeY`의 선택적 `coordinate` option
-- [ ] Encoding 단계의 coordinate 생성·검증·layer 연결
-- [ ] Cartesian/Polar coordinate 충돌 검증
-- [ ] `createAxes`의 coordinate 생성과 type 추론 제거
-- [ ] Encoding 및 axis trace 수정
-- [ ] Unit, acceptance, immutability test
-- [ ] 영어 사용자 문서
-- [ ] PNG 및 브라우저 렌더 확인
+- [x] Positional channel family와 기본 coordinate 규칙
+- [x] `encodeX`/`encodeY`의 선택적 `coordinate` option
+- [x] Encoding 단계의 coordinate 생성·검증·layer 연결
+- [x] Cartesian/Polar coordinate 충돌 검증
+- [x] `createAxes`의 coordinate 생성과 type 추론 제거
+- [x] Encoding 및 axis trace 수정
+- [x] Unit, acceptance, immutability test
+- [x] 영어 사용자 문서
+- [x] PNG 및 브라우저 렌더 확인
 
 ## 규칙
 
@@ -66,3 +66,10 @@ createAxes
 - 명시적 coordinate와 기본 coordinate가 일관되게 검증된다.
 - Polar channel 확장이 공통 coordinate resolver를 재사용할 수 있다.
 - 대표 scatterplot의 결과와 고해상도 PNG가 유지된다.
+
+## 구현 결과
+
+- Unit/acceptance test 140개 통과
+- 고해상도 PNG render test 3개 통과
+- 브라우저에서 640×400 Canvas와 392개 데이터 렌더링 확인
+- 브라우저 warning/error 없음

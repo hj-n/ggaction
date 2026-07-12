@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { chart } from "../../src/core/ChartProgram.js";
+import { getPositionCoordinateDefaults } from "../../src/core/coordinate.js";
 
 function createPointProgram(values = [
   { horsepower: 50, mpg: 40 },
@@ -25,6 +26,10 @@ test("encodes horizontal and vertical quantitative positions", () => {
     x: { field: "horsepower", fieldType: "quantitative", scale: "x" },
     y: { field: "mpg", fieldType: "quantitative", scale: "y" }
   });
+  assert.equal(layer.coordinate, "main");
+  assert.deepEqual(program.semanticSpec.coordinates, [
+    { id: "main", type: "cartesian" }
+  ]);
   assert.deepEqual(program.semanticSpec.scales, [
     { id: "x", type: "linear", domain: "auto", range: "auto" },
     { id: "y", type: "linear", domain: "auto", range: "auto" }
@@ -42,6 +47,8 @@ test("encodes horizontal and vertical quantitative positions", () => {
     [20, 140]
   );
   assert.equal(before.semanticSpec.layers[0].encoding, undefined);
+  assert.equal(before.semanticSpec.layers[0].coordinate, undefined);
+  assert.deepEqual(before.semanticSpec.coordinates, []);
 });
 
 test("records the explicit nested encoding action hierarchy", () => {
@@ -52,12 +59,17 @@ test("records the explicit nested encoding action hierarchy", () => {
   assert.deepEqual(
     node.children.map(child => child.op),
     [
+      "createCoordinate",
       "editSemantic",
       "editSemantic",
       "editSemantic",
       "createScale",
       "rematerializeScale"
     ]
+  );
+  assert.deepEqual(
+    node.children[0].children.map(child => child.op),
+    ["editSemantic", "editSemantic"]
   );
   assert.deepEqual(
     node.children.at(-1).children.map(child => child.op),
@@ -70,6 +82,7 @@ test("supports explicit targets and scale definitions", () => {
     field: "horsepower",
     target: "points",
     fieldType: "quantitative",
+    coordinate: "plot",
     scale: {
       id: "horsepower",
       type: "linear",
@@ -86,6 +99,10 @@ test("supports explicit targets and scale definitions", () => {
       range: [0, 100]
     }
   ]);
+  assert.deepEqual(program.semanticSpec.coordinates, [
+    { id: "plot", type: "cartesian" }
+  ]);
+  assert.equal(program.semanticSpec.layers[0].coordinate, "plot");
   assert.deepEqual(program.resolvedScales.horsepower, {
     type: "linear",
     domain: [0, 200],
@@ -137,5 +154,52 @@ test("rejects sharing one scale across x and y channels", () => {
   assert.throws(
     () => withX.encodeY({ field: "mpg", scale: { id: "position" } }),
     /cannot be shared across channels/
+  );
+});
+
+test("reuses a layer coordinate and rejects incompatible coordinate choices", () => {
+  const attached = createPointProgram().createCoordinate({
+    id: "plot",
+    type: "cartesian",
+    layers: ["points"]
+  });
+  const encoded = attached.encodeX({ field: "horsepower" });
+
+  assert.equal(encoded.semanticSpec.layers[0].coordinate, "plot");
+  assert.deepEqual(encoded.semanticSpec.coordinates, [
+    { id: "plot", type: "cartesian" }
+  ]);
+  assert.throws(
+    () => attached.encodeX({ field: "horsepower", coordinate: "other" }),
+    /already uses coordinate/
+  );
+
+  const polar = createPointProgram().createCoordinate({
+    id: "polar",
+    type: "polar",
+    layers: ["points"]
+  });
+  assert.throws(
+    () => polar.encodeX({ field: "horsepower" }),
+    /requires a cartesian coordinate/
+  );
+});
+
+test("position coordinate defaults include future Polar channels", () => {
+  assert.deepEqual(getPositionCoordinateDefaults("x"), {
+    id: "main",
+    type: "cartesian"
+  });
+  assert.deepEqual(getPositionCoordinateDefaults("theta"), {
+    id: "polar",
+    type: "polar"
+  });
+  assert.deepEqual(getPositionCoordinateDefaults("radius"), {
+    id: "polar",
+    type: "polar"
+  });
+  assert.throws(
+    () => getPositionCoordinateDefaults("color"),
+    /Unknown positional channel/
   );
 });

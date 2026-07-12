@@ -34,6 +34,30 @@ program.encodeX({
 });
 ```
 
+## Coordinates
+
+Position encodings establish their semantic coordinate before materializing
+point positions. `encodeX` and `encodeY` create and attach the default `main`
+Cartesian coordinate when the layer does not already have one.
+
+Select a named Cartesian coordinate explicitly when needed:
+
+```javascript
+program.encodeX({
+  field: "Horsepower",
+  coordinate: "detail"
+});
+```
+
+The coordinate is created if missing. If the layer already uses another
+coordinate, or the selected coordinate is not Cartesian, the encoding fails
+instead of replacing the existing semantic relationship.
+
+Future angular and radial position actions will use the same rule with a
+default Polar coordinate. The future `encodeR({ field })` action denotes a
+semantic radial position; it is distinct from the graphical
+`encodeRadius({ value })` action documented below.
+
 ## Scale options
 
 Each position channel uses a scale with the channel name as its default ID.

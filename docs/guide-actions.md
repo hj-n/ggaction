@@ -18,17 +18,18 @@ program.createAxes({
 });
 ```
 
-`createAxes` inspects the program's encodings. It creates a Cartesian coordinate,
-attaches the relevant layers, infers each channel's scale, and calls
-`createXAxis` and `createYAxis` only for channels that exist. Use `false` to
+`createAxes` inspects the program's encodings and their stored coordinates. It
+infers each channel's scale and calls `createXAxis` and `createYAxis` only for
+channels that exist. Position encoding actions have already created and
+attached the coordinate; creating axes does not change it. Use `false` to
 exclude an encoded channel:
 
 ```javascript
 program.createAxes({ y: false });
 ```
 
-The default coordinate ID is `main`. An explicit descriptor can select another
-coordinate or require a particular type:
+An explicit descriptor can select an existing coordinate or require its stored
+type:
 
 ```javascript
 program.createAxes({
@@ -37,9 +38,9 @@ program.createAxes({
 ```
 
 If one channel uses multiple scales, select the desired scale with `x.scale` or
-`y.scale`. Ambiguous coordinates and scales produce errors instead of choosing
-silently. Theta/radius channels are recognized as Polar, but Polar axis graphics
-are not implemented in this release.
+`y.scale`. Missing or ambiguous coordinates and scales produce errors instead
+of being created or chosen silently. Theta/radius channels are recognized as
+Polar, but Polar axis graphics are not implemented in this release.
 
 Extension authors can create semantic coordinates directly without creating
 guide graphics:

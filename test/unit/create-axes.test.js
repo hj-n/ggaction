@@ -20,7 +20,7 @@ function encodedProgram({ x = true, y = true } = {}) {
   return program;
 }
 
-test("createAxes infers a Cartesian coordinate and both encoded axes", () => {
+test("createAxes reads a stored Cartesian coordinate and creates both axes", () => {
   const before = encodedProgram();
   const program = before.createAxes({
     x: { title: { text: "Horsepower" } },
@@ -31,14 +31,14 @@ test("createAxes infers a Cartesian coordinate and both encoded axes", () => {
     { id: "main", type: "cartesian" }
   ]);
   assert.equal(program.semanticSpec.layers[0].coordinate, "main");
-  assert.equal(before.semanticSpec.layers[0].coordinate, undefined);
+  assert.deepEqual(program.semanticSpec.coordinates, before.semanticSpec.coordinates);
+  assert.equal(before.semanticSpec.layers[0].coordinate, "main");
   assert.equal(program.semanticSpec.guides.axis.x.scale, "x");
   assert.equal(program.semanticSpec.guides.axis.y.scale, "y");
 
   const node = program.trace.children.at(-1);
   assert.equal(node.op, "createAxes");
   assert.deepEqual(node.children.map(child => child.op), [
-    "createCoordinate",
     "createXAxis",
     "createYAxis"
   ]);
@@ -54,12 +54,24 @@ test("createAxes creates only encoded axes and supports false opt-out", () => {
   assert.equal(withoutY.semanticSpec.guides.axis.y, undefined);
   assert.deepEqual(
     withoutY.trace.children.at(-1).children.map(child => child.op),
-    ["createCoordinate", "createXAxis"]
+    ["createXAxis"]
   );
 });
 
 test("createAxes reuses an explicitly named coordinate", () => {
-  const program = encodedProgram().createAxes({
+  const program = chart()
+    .createCanvas({ width: 300, height: 200, margin: 20 })
+    .createData({
+      id: "cars",
+      values: [
+        { horsepower: 100, mpg: 30 },
+        { horsepower: 200, mpg: 20 }
+      ]
+    })
+    .createPointMark({ id: "points", data: "cars" })
+    .encodeX({ field: "horsepower", coordinate: "plot" })
+    .encodeY({ field: "mpg", coordinate: "plot" })
+    .createAxes({
     coordinate: { id: "plot", type: "auto" },
     x: { position: "bottom" },
     y: { position: "left" }
@@ -101,12 +113,13 @@ test("createAxes rejects missing, disabled, Polar, and mixed channels", () => {
   );
   assert.throws(
     () => encoded.createAxes({ coordinate: { type: "polar" } }),
-    /does not yet support Polar axes/
+    /has type "cartesian", not "polar"/
   );
 
   const polar = chart()
     .createData({ id: "polarData", values: [{ angle: 1 }] })
     .createPointMark({ id: "polarPoints", data: "polarData" })
+    .createCoordinate({ id: "polar", type: "polar", layers: ["polarPoints"] })
     .editSemantic({
       property: "layer[polarPoints].encoding.theta.field",
       value: "angle"
@@ -118,6 +131,37 @@ test("createAxes rejects missing, disabled, Polar, and mixed channels", () => {
     value: "horsepower"
   });
   assert.throws(() => mixed.createAxes(), /mixed Cartesian and Polar/);
+
+  const missingCoordinate = chart()
+    .createData({ id: "raw", values: [{ value: 1 }] })
+    .createPointMark({ id: "rawPoints", data: "raw" })
+    .editSemantic({
+      property: "layer[rawPoints].encoding.x.scale",
+      value: "x"
+    });
+  assert.throws(
+    () => missingCoordinate.createAxes(),
+    /stored coordinate/
+  );
+});
+
+test("createAxes ignores a separate Polar layer when selecting Cartesian axes", () => {
+  const program = encodedProgram()
+    .createData({ id: "polarData", values: [{ angle: 1 }] })
+    .createPointMark({ id: "polarPoints", data: "polarData" })
+    .createCoordinate({
+      id: "polar",
+      type: "polar",
+      layers: ["polarPoints"]
+    })
+    .editSemantic({
+      property: "layer[polarPoints].encoding.theta.field",
+      value: "angle"
+    })
+    .createAxes();
+
+  assert.equal(program.semanticSpec.guides.axis.x.scale, "x");
+  assert.equal(program.semanticSpec.guides.axis.y.scale, "y");
 });
 
 test("createAxes validates its public options", () => {

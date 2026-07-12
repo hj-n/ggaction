@@ -66,6 +66,7 @@
 - Canvas properties, themes, fonts, strokes, and other appearance-only values are graphical.
 - Output density such as PNG `pixelRatio` is a renderer option and must not rewrite logical values in `graphicSpec`.
 - When a semantic change affects existing concrete output, the responsible domain action must explicitly rematerialize every affected graphical consumer.
+- Positional encoding actions own coordinate inference and layer attachment. Guide actions read stored coordinates and must not create or repair them.
 - Once scale consumers exist, canvas width, height, or margin edits must explicitly invoke wrapped rematerialization actions for every affected scale, mark, and guide; never leave stale concrete coordinates or rely on automatic compilation.
 
 ## Documentation and Implementation Consistency

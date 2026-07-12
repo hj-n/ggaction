@@ -48,22 +48,29 @@ function inspectChannels(layers) {
   const cartesianLayers = layers.filter(
     layer => layer.encoding?.x !== undefined || layer.encoding?.y !== undefined
   );
-  const hasPolar = layers.some(
+  const polarLayers = layers.filter(
     layer =>
       layer.encoding?.theta !== undefined || layer.encoding?.radius !== undefined
   );
+  const hasMixedLayer = layers.some(layer => {
+    const hasCartesian =
+      layer.encoding?.x !== undefined || layer.encoding?.y !== undefined;
+    const hasPolar =
+      layer.encoding?.theta !== undefined || layer.encoding?.radius !== undefined;
+    return hasCartesian && hasPolar;
+  });
 
-  if (cartesianLayers.length > 0 && hasPolar) {
+  if (hasMixedLayer) {
     throw new Error(
       "createAxes cannot infer a coordinate from mixed Cartesian and Polar channels."
     );
   }
 
-  return { cartesianLayers, hasPolar };
+  return { cartesianLayers, hasPolar: polarLayers.length > 0 };
 }
 
 function resolveCoordinate(program, descriptor, cartesianLayers, hasPolar) {
-  if (hasPolar || descriptor.type === "polar") {
+  if (hasPolar && cartesianLayers.length === 0) {
     throw new Error("createAxes does not yet support Polar axes.");
   }
 
@@ -79,41 +86,48 @@ function resolveCoordinate(program, descriptor, cartesianLayers, hasPolar) {
     )
   ];
 
+  if (cartesianLayers.some(layer => layer.coordinate === undefined)) {
+    throw new Error(
+      "createAxes requires every positional layer to have a stored coordinate."
+    );
+  }
+
   if (descriptor.id === undefined && referencedIds.length > 1) {
     throw new Error(
       "createAxes found multiple coordinates; provide coordinate.id explicitly."
     );
   }
 
-  const id = validateUserId(
-    descriptor.id ?? referencedIds[0] ?? "main",
-    "Coordinate id"
-  );
+  const id = validateUserId(descriptor.id ?? referencedIds[0], "Coordinate id");
   const existing = program.semanticSpec.coordinates.find(item => item.id === id);
-  const inferredType = existing?.type ?? "cartesian";
-  const type = descriptor.type === undefined || descriptor.type === "auto"
-    ? inferredType
-    : descriptor.type;
 
-  if (type !== "cartesian") {
-    throw new Error("createAxes does not yet support Polar axes.");
+  if (existing === undefined) {
+    throw new Error(`Unknown coordinate "${id}".`);
   }
 
-  if (existing !== undefined && existing.type !== type) {
+  if (
+    descriptor.type !== undefined &&
+    descriptor.type !== "auto" &&
+    descriptor.type !== existing.type
+  ) {
     throw new Error(
-      `Coordinate "${id}" already exists with type "${existing.type}".`
+      `Coordinate "${id}" has type "${existing.type}", not "${descriptor.type}".`
     );
   }
 
   const layers = cartesianLayers.filter(
-    layer => layer.coordinate === undefined || layer.coordinate === id
+    layer => layer.coordinate === id
   );
 
   if (layers.length === 0) {
     throw new Error(`createAxes found no layers for coordinate "${id}".`);
   }
 
-  return { id, type, layers };
+  if (existing.type !== "cartesian") {
+    throw new Error("createAxes does not yet support Polar axes.");
+  }
+
+  return { id, layers };
 }
 
 function hasChannel(layers, channel) {
@@ -158,7 +172,7 @@ function resolveAxisArgs(layers, channel, option) {
 const createAxes = action(
   {
     op: "createAxes",
-    description: "Infer a coordinate and create its Cartesian axes."
+    description: "Read a semantic coordinate and create its Cartesian axes."
   },
   function (args = {}) {
     const coordinateDescriptor = validateArgs(args);
@@ -178,11 +192,7 @@ const createAxes = action(
       throw new Error("createAxes requires at least one selected axis.");
     }
 
-    let program = this.createCoordinate({
-      id: coordinate.id,
-      type: coordinate.type,
-      layers: coordinate.layers.map(layer => layer.id)
-    });
+    let program = this;
 
     if (x !== undefined) program = program.createXAxis(x);
     if (y !== undefined) program = program.createYAxis(y);

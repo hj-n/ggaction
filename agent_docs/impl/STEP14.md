@@ -1,5 +1,8 @@
 # STEP 14 — Coordinate-Aware Axes
 
+> 후속 STEP15에서 coordinate 생성 책임을 positional encoding으로 이동했다.
+> 이 문서는 STEP14 완료 당시의 구현 단계를 기록한다.
+
 ## 목표
 
 Encoding channels와 coordinate를 해석해 필요한 complete-axis action을
