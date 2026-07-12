@@ -20,6 +20,7 @@ const ENTITY_PATHS = Object.freeze({
       "encoding.y.datum",
       "encoding.y.fieldType",
       "encoding.y.scale",
+      "encoding.y.aggregate",
       "encoding.theta.field",
       "encoding.theta.datum",
       "encoding.theta.fieldType",
@@ -32,6 +33,10 @@ const ENTITY_PATHS = Object.freeze({
       "encoding.color.datum",
       "encoding.color.fieldType",
       "encoding.color.scale",
+      "encoding.strokeDash.field",
+      "encoding.strokeDash.datum",
+      "encoding.strokeDash.fieldType",
+      "encoding.strokeDash.scale",
       "encoding.size.field",
       "encoding.size.datum",
       "encoding.size.fieldType",
@@ -44,7 +49,7 @@ const ENTITY_PATHS = Object.freeze({
   },
   scale: {
     collection: "scales",
-    properties: new Set(["type", "domain", "range"])
+    properties: new Set(["type", "domain", "range", "nice", "zero"])
   },
   coordinate: {
     collection: "coordinates",
@@ -64,8 +69,13 @@ const GUIDE_PATHS = new Set([
   "legend.size.scale",
   "legend.size.title",
   "legend.opacity.scale",
-  "legend.opacity.title"
+  "legend.opacity.title",
+  "legend.series.channels",
+  "legend.series.scales",
+  "legend.series.title"
 ]);
+
+const TITLE_PATHS = new Set(["text", "subtitle"]);
 
 function splitPropertyPath(property) {
   return property.split(".");
@@ -109,6 +119,21 @@ export function parseSemanticPath(property) {
       kind: "guide",
       id: propertyPath.split(".").slice(0, 2).join("."),
       collection: "guides",
+      path: Object.freeze(splitPropertyPath(propertyPath))
+    });
+  }
+
+  if (property.startsWith("title.")) {
+    const propertyPath = property.slice("title.".length);
+
+    if (!TITLE_PATHS.has(propertyPath)) {
+      throw new Error(`Unknown semantic property "${property}".`);
+    }
+
+    return Object.freeze({
+      kind: "title",
+      id: "title",
+      collection: "title",
       path: Object.freeze(splitPropertyPath(propertyPath))
     });
   }

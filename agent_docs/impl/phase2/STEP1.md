@@ -15,8 +15,8 @@ acceptance contract로 사용한다.
 
 ## 진행 상태
 
-- [ ] 최종 semanticSpec contract
-- [ ] Primitive semantic path와 value validation 확장
+- [x] 최종 semanticSpec contract
+- [x] Primitive semantic path와 value validation 확장
 - [ ] Cars line-chart 값 계산 helper
 - [ ] Series별 concrete path와 strokeDash rendering
 - [ ] Primitive x/y axes

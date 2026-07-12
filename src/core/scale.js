@@ -59,6 +59,22 @@ export function validateScaleType(type) {
   return type;
 }
 
+export function validateSemanticScaleType(type) {
+  if (type !== "linear" && type !== "ordinal" && type !== "time") {
+    throw new Error(`Unsupported scale type "${type}".`);
+  }
+
+  return type;
+}
+
+export function validateSemanticFieldType(fieldType) {
+  if (!new Set(["quantitative", "nominal", "temporal"]).has(fieldType)) {
+    throw new Error(`Unsupported semantic field type "${fieldType}".`);
+  }
+
+  return fieldType;
+}
+
 export function validateLinearScaleType(type) {
   if (type !== "linear") {
     throw new Error(`Unsupported position scale type "${type}".`);

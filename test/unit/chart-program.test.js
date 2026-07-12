@@ -12,7 +12,8 @@ test("creates an immutable program with canonical empty state", () => {
     layers: [],
     scales: [],
     coordinates: [],
-    guides: {}
+    guides: {},
+    title: {}
   });
   assert.deepEqual(program.graphicSpec, {
     objects: {},
@@ -86,7 +87,8 @@ test("takes ownership of shallow-frozen constructor input", () => {
     layers: Object.freeze([]),
     scales: Object.freeze([]),
     coordinates: Object.freeze([]),
-    guides: Object.freeze({ custom: { title: "Before" } })
+    guides: Object.freeze({ custom: { title: "Before" } }),
+    title: Object.freeze({})
   });
   const program = new ChartProgram({ semanticSpec });
 

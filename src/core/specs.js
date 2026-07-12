@@ -6,7 +6,8 @@ export function createEmptySemanticSpec() {
     layers: [],
     scales: [],
     coordinates: [],
-    guides: {}
+    guides: {},
+    title: {}
   });
 }
 

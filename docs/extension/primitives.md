@@ -26,6 +26,10 @@ Property paths use singular user-ID selectors such as `layer[points]` and
 library-defined keys such as `encoding.x.field`. Unknown paths are rejected.
 Dataset values cannot be replaced after creation.
 
+The primitive semantic grammar also supports the current line-chart contract,
+including temporal field types, `mean` aggregation, `strokeDash` encodings,
+scale `nice`/`zero` policies, combined series legends, and chart title text.
+
 ## `createGraphics({ id, type, length? })`
 
 Creates one concrete object or a homogeneous drawable collection.
