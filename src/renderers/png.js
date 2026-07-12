@@ -3,7 +3,7 @@ import { dirname, resolve } from "node:path";
 
 import { createCanvas } from "@napi-rs/canvas";
 
-import { render } from "./canvas.js";
+import { render } from "./canvas/index.js";
 
 export async function renderToPNG(program, { output, pixelRatio = 1 } = {}) {
   if (typeof output !== "string" || output.length === 0) {

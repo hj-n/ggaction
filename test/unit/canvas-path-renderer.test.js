@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { chart } from "../../src/index.js";
-import { render } from "../../src/renderers/canvas.js";
+import { render } from "../../src/renderers/canvas/index.js";
 import {
   createMockCanvasContext,
   findCanvasCalls
