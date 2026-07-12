@@ -22,6 +22,7 @@ export function createCarsScatterplotActions(cars) {
       margin
     })
     .createData({ id: "cars", values: validCars })
+    .createPointMark({ id: "points" })
     .createGraphics({ id: "xAxis", type: "line" })
     .editGraphics({ target: "xAxis", property: "x1", value: bounds.left })
     .editGraphics({ target: "xAxis", property: "y1", value: bounds.bottom })
@@ -66,7 +67,6 @@ export function createCarsScatterplotActions(cars) {
     .editGraphics({ target: "yTicks", property: "y2", value: yTicks.positions })
     .editGraphics({ target: "yTicks", property: "stroke", value: "#64748b" })
     .editGraphics({ target: "yTicks", property: "strokeWidth", value: 1 })
-    .createPointMark({ id: "points" })
     .editGraphics({ target: "points", property: "x", value: x })
     .editGraphics({ target: "points", property: "y", value: y })
     .editGraphics({ target: "points", property: "fill", value: fill })
