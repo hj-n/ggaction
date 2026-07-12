@@ -1,0 +1,32 @@
+<aside class="docs-sidebar" aria-label="Documentation navigation">
+  <div class="docs-search">
+    <label for="docs-search-input">Search documentation</label>
+    <input
+      id="docs-search-input"
+      type="search"
+      placeholder="Search docs"
+      autocomplete="off"
+      aria-controls="docs-search-results"
+    />
+    <ul id="docs-search-results" class="docs-search-results" hidden></ul>
+  </div>
+
+  <nav class="docs-sidenav">
+    {% for group in site.data.navigation %}
+      <section class="docs-nav-group">
+        <h2>{{ group.title }}</h2>
+        <ul>
+          {% for item in group.items %}
+            {% assign item_url = item.url | relative_url %}
+            <li>
+              <a
+                href="{{ item_url }}"
+                {% if page.url == item.url %}class="is-active" aria-current="page"{% endif %}
+              >{{ item.title }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endfor %}
+  </nav>
+</aside>

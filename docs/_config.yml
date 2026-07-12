@@ -1,4 +1,9 @@
 title: ggaction
 description: Immutable, traceable chart authoring actions.
+version: 0.0.0-dev
+repository_url: https://github.com/hj-n/ggaction
 theme: minima
 markdown: kramdown
+permalink: pretty
+exclude:
+  - README.md
