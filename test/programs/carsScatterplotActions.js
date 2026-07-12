@@ -11,7 +11,7 @@ export function createCarsScatterplotActions(cars) {
     bottom: 60,
     left: 70
   };
-  const { validCars, bounds, x, y, fill, xTicks, yTicks } =
+  const { validCars, bounds, fill, xTicks, yTicks } =
     createCarsScatterplotAxesValues(cars, { width, height, margin });
 
   return chart()
@@ -23,6 +23,8 @@ export function createCarsScatterplotActions(cars) {
     })
     .createData({ id: "cars", values: validCars })
     .createPointMark({ id: "points" })
+    .encodeX({ field: "Horsepower" })
+    .encodeY({ field: "Miles_per_Gallon" })
     .createGraphics({ id: "xAxis", type: "line" })
     .editGraphics({ target: "xAxis", property: "x1", value: bounds.left })
     .editGraphics({ target: "xAxis", property: "y1", value: bounds.bottom })
@@ -67,8 +69,6 @@ export function createCarsScatterplotActions(cars) {
     .editGraphics({ target: "yTicks", property: "y2", value: yTicks.positions })
     .editGraphics({ target: "yTicks", property: "stroke", value: "#64748b" })
     .editGraphics({ target: "yTicks", property: "strokeWidth", value: 1 })
-    .editGraphics({ target: "points", property: "x", value: x })
-    .editGraphics({ target: "points", property: "y", value: y })
     .editGraphics({ target: "points", property: "fill", value: fill })
     .editGraphics({ target: "points", property: "radius", value: 3 })
     .createGraphics({
