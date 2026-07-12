@@ -17,17 +17,17 @@ y가 모두 존재하면 현재 semantic encoding을 기준으로 derived series
 
 ## 진행 상태
 
-- [ ] Line `encodeY` option과 target validation
-- [ ] Immutable mean aggregation과 derived series 계산
-- [ ] 현재 non-aggregate encoding 기반 grouping
-- [ ] Temporal x 기준 series 정렬
-- [ ] Aggregate 결과 기반 y domain resolution
-- [ ] `zero → nice` automatic domain 처리
-- [ ] Wrapped line path materialization action
-- [ ] Canvas 변경 시 scale/path rematerialization
-- [ ] 별도 actions program의 raw y block 교체
-- [ ] Unit, acceptance, PNG regression
-- [ ] 영어 Encoding/action/LLM 문서 갱신
+- [x] Line `encodeY` option과 target validation
+- [x] Immutable mean aggregation과 derived series 계산
+- [x] 현재 non-aggregate encoding 기반 grouping
+- [x] Temporal x 기준 series 정렬
+- [x] Aggregate 결과 기반 y domain resolution
+- [x] `zero → nice` automatic domain 처리
+- [x] Wrapped line path materialization action
+- [x] Canvas 변경 시 scale/path rematerialization
+- [x] 별도 actions program의 raw y block 교체
+- [x] Unit, acceptance, PNG regression
+- [x] 영어 Encoding/action/LLM 문서 갱신
 
 ## Action 구조
 
@@ -138,6 +138,19 @@ Canvas width, height, margin 변경으로 automatic range가 바뀌면 positiona
 - `encodeColor`의 line grouping orchestration
 - `encodeStrokeDash`
 - Legend와 title domain action
+
+## 검증 결과
+
+- Unit/acceptance test 172개 통과
+- PNG render regression 5개 통과
+- Aggregate 전 source dataset과 이전 program immutable 유지
+- x-only grouping으로 정렬된 단일 mean path 생성
+- Nominal series field 도입 후 multiple path regrouping 검증
+- Explicit domain의 `nice`/`zero` override와 automatic domain 순서 검증
+- Canvas bounds 변경 후 x/y scale과 line points 동시 갱신
+- Geometry rematerialization 중 기존 stroke/width/dash 보존
+- STEP1 primitive line program과 test 변경 없음
+- 고해상도 actions line chart 직접 확인
 
 ## 완료 조건
 

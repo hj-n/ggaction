@@ -23,7 +23,8 @@ const POSITION_ENCODING_OPTIONS = Object.freeze([
   "target",
   "fieldType",
   "scale",
-  "coordinate"
+  "coordinate",
+  "aggregate"
 ]);
 const COLOR_ENCODING_OPTIONS = Object.freeze([
   "field",
@@ -172,12 +173,24 @@ function encodePosition(program, channel, args, operation) {
   const fieldType = validateFieldType(args.fieldType ?? "quantitative");
   const { id: target, dataset, layer } = resolveTarget(program, args.target);
 
-  if (layer.mark.type === "line" && (channel !== "x" || fieldType !== "temporal")) {
-    throw new Error("Line position encoding currently supports temporal x only.");
-  }
-
-  if (layer.mark.type === "point" && fieldType !== "quantitative") {
-    throw new Error("Point position encoding currently requires quantitative fields.");
+  if (layer.mark.type === "point") {
+    if (fieldType !== "quantitative") {
+      throw new Error("Point position encoding currently requires quantitative fields.");
+    }
+    if (args.aggregate !== undefined) {
+      throw new Error("Point position encoding does not support aggregate.");
+    }
+  } else if (channel === "x") {
+    if (fieldType !== "temporal") {
+      throw new Error("Line x encoding currently requires a temporal field.");
+    }
+    if (args.aggregate !== undefined) {
+      throw new Error("Line x encoding does not support aggregate.");
+    }
+  } else if (fieldType !== "quantitative" || args.aggregate !== "mean") {
+    throw new Error(
+      'Line y encoding currently requires a quantitative field and aggregate "mean".'
+    );
   }
 
   if (fieldType === "temporal") {
@@ -199,7 +212,7 @@ function encodePosition(program, channel, args, operation) {
     args.coordinate
   );
 
-  return program
+  let next = program
     .createCoordinate({
       id: coordinate.id,
       type: coordinate.type,
@@ -212,19 +225,33 @@ function encodePosition(program, channel, args, operation) {
     .editSemantic({
       property: `layer[${target}].encoding.${channel}.fieldType`,
       value: fieldType
-    })
+    });
+
+  if (layer.mark.type === "line" && channel === "y") {
+    next = next.editSemantic({
+      property: `layer[${target}].encoding.y.aggregate`,
+      value: args.aggregate
+    });
+  }
+
+  next = next
     .editSemantic({
       property: `layer[${target}].encoding.${channel}.scale`,
       value: scale.id
     })
-    .createScale(scale)
-    .rematerializeScale({ id: scale.id });
+    .createScale(scale);
+
+  if (layer.mark.type === "line" && channel === "y") {
+    return next.rematerializeLineMark({ id: target });
+  }
+
+  return next.rematerializeScale({ id: scale.id });
 }
 
 const encodeX = action(
   {
     op: "encodeX",
-    description: "Encode a quantitative field as horizontal position."
+    description: "Encode a field as horizontal position."
   },
   function (args = {}) {
     return encodePosition(this, "x", args, "encodeX");
@@ -234,7 +261,7 @@ const encodeX = action(
 const encodeY = action(
   {
     op: "encodeY",
-    description: "Encode a quantitative field as vertical position."
+    description: "Encode a field as vertical position."
   },
   function (args = {}) {
     return encodePosition(this, "y", args, "encodeY");

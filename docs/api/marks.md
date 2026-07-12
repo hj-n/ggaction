@@ -51,5 +51,6 @@ program.graphicSpec.objects.trends;
 ```
 
 Line mark creation does not infer one default series, coordinates, encodings,
-or path points. Later line-chart encoding actions explicitly determine series
-groups, resize the collection, and materialize concrete point arrays.
+or path points. Temporal `encodeX` resolves the horizontal scale while leaving
+the collection empty. Aggregate line `encodeY` then derives the currently known
+series, resizes the collection, and materializes sorted concrete point arrays.

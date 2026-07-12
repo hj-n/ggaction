@@ -123,7 +123,7 @@ test("validates temporal x fields and scale policies", () => {
       field: "year",
       fieldType: "temporal"
     }),
-    /currently supports temporal x only/
+    /requires a quantitative field and aggregate "mean"/
   );
 });
 

@@ -1,5 +1,6 @@
 import { action } from "../core/action.js";
 import { validateUserId } from "../core/identifiers.js";
+import { deriveLineSeries } from "../core/lineSeries.js";
 import {
   mapLinearValues,
   mapOrdinalValues,
@@ -107,6 +108,14 @@ function resolveConsumerValues(program, consumer) {
     }
 
     return readNominalField(dataset.values, consumer.encoding.field);
+  }
+
+  if (
+    consumer.layer.mark?.type === "line" &&
+    consumer.layer.encoding?.y?.aggregate === "mean"
+  ) {
+    const derived = deriveLineSeries(dataset.values, consumer.layer);
+    return consumer.channel === "x" ? derived.xValues : derived.yValues;
   }
 
   if (consumer.encoding.fieldType === "temporal") {

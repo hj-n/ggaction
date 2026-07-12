@@ -70,9 +70,10 @@ value per child. Generated child IDs such as `points:1` can be targeted.
 
 ## Scale materialization
 
-`createScale({ id, type?, domain?, range? })` creates an idempotent semantic
-scale. `rematerializeScale({ id })` resolves all consumers and invokes concrete
-graphic edits, including connected axis updates.
+`createScale({ id, type?, domain?, range?, nice?, zero? })` creates an
+idempotent semantic scale. `rematerializeScale({ id })` resolves all consumers
+and invokes concrete graphic edits, including connected axis updates. Aggregate
+line consumers resolve their domains from derived means rather than raw rows.
 
 ```javascript
 program

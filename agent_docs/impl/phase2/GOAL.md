@@ -46,16 +46,16 @@ chart()
 
 ## 진행 상태
 
-- [ ] Line mark와 series별 concrete path graphics
+- [x] Line mark와 series별 concrete path graphics
 - [x] Temporal x encoding과 scale
-- [ ] Quantitative mean aggregation
-- [ ] Series grouping과 시간순 정렬
+- [x] Quantitative mean aggregation
+- [x] Series grouping과 시간순 정렬
 - [ ] Color와 strokeDash encoding
 - [ ] Line chart axes
 - [ ] Combined series legend
 - [ ] Chart title과 subtitle
 - [ ] `createGuides` aggregate action
-- [ ] Canvas와 고해상도 PNG rendering
+- [x] Canvas와 고해상도 PNG rendering
 - [ ] 사용자 문서와 LLM reference
 
 ## Semantic 목표

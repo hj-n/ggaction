@@ -85,6 +85,23 @@ function rematerializePositionScales(program) {
   return next;
 }
 
+function rematerializeCompleteLineMarks(program) {
+  let next = program;
+
+  for (const layer of program.semanticSpec.layers) {
+    if (
+      layer.mark?.type === "line" &&
+      layer.encoding?.x?.scale !== undefined &&
+      layer.encoding?.y?.scale !== undefined &&
+      layer.encoding.y.aggregate === "mean"
+    ) {
+      next = next.rematerializeLineMark({ id: layer.id });
+    }
+  }
+
+  return next;
+}
+
 const editCanvas = action(
   {
     op: "editCanvas",
@@ -116,6 +133,7 @@ const editCanvas = action(
       Object.hasOwn(args, "margin")
     ) {
       next = rematerializePositionScales(next);
+      next = rematerializeCompleteLineMarks(next);
     }
 
     return next;

@@ -81,6 +81,46 @@ At this stage x encoding resolves and stores the time scale but leaves the line
 path empty. Later line actions materialize paths after y and series grouping are
 known.
 
+## Aggregate line `encodeY(options)`
+
+After temporal x is encoded, `encodeY` can aggregate a quantitative field and
+materialize a renderable line.
+
+```javascript
+program.encodeY({
+  field: "Acceleration",
+  fieldType: "quantitative",
+  aggregate: "mean",
+  scale: { nice: true, zero: false }
+});
+```
+
+| Option | Type | Default |
+| --- | --- | --- |
+| `field` | non-empty string | required |
+| `target` | line mark ID | current mark |
+| `fieldType` | `"quantitative"` | `"quantitative"` |
+| `aggregate` | `"mean"` | required for the current line API |
+| `coordinate` | coordinate ID | layer coordinate, then `"main"` |
+| `scale.id` | scale ID | `"y"` |
+| `scale.type` | `"linear"` | `"linear"` |
+| `scale.domain` | `"auto"` or two finite numbers | `"auto"` |
+| `scale.range` | `"auto"` or two finite numbers | `"auto"` |
+| `scale.nice` | boolean | omitted |
+| `scale.zero` | boolean | omitted |
+
+The source dataset remains unchanged. The action groups by the currently
+encoded non-aggregate fields, computes each mean, and sorts every series by its
+normalized temporal x value. With only x and y encodings, this produces one
+series grouped by x. Later series encodings can split the same aggregate model
+into multiple paths.
+
+Automatic y domains use the aggregate means, not the raw rows. `zero` is
+applied before `nice`; an explicit domain overrides both. The first complete
+line uses a solid default stroke and is immediately renderable. Canvas size or
+margin edits explicitly rematerialize its scales and path points while
+preserving existing line appearance.
+
 ## `encodeColor(options)`
 
 Maps a nominal field to concrete point fills.

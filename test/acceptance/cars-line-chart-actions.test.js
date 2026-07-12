@@ -92,6 +92,16 @@ test("authors and renders the cars line chart with the line mark action", () => 
     text: "The trend of acceleration by year",
     subtitle: "from 1970 to 1982"
   });
+  assert.deepEqual(program.resolvedScales.x, {
+    type: "time",
+    domain: [Date.UTC(1970, 0, 1), Date.UTC(1982, 0, 1)],
+    range: [80, 550]
+  });
+  assert.deepEqual(program.resolvedScales.y, {
+    type: "linear",
+    domain: [10, 20],
+    range: [400, 80]
+  });
 
   const trends = program.graphicSpec.objects.trends;
   assert.equal(trends.type, "path");
@@ -151,7 +161,9 @@ test("authors and renders the cars line chart with the line mark action", () => 
     "createData",
     "createLineMark",
     "encodeX",
+    "encodeY",
     "editSemantic",
+    "rematerializeLineMark",
     "editGraphics",
     "createGraphics"
   ]);
@@ -165,6 +177,16 @@ test("authors and renders the cars line chart with the line mark action", () => 
     "editSemantic",
     "editSemantic",
     "createGraphics"
+  ]);
+  const encodeY = program.trace.children.find(node => node.op === "encodeY");
+  assert.deepEqual(encodeY.children.map(node => node.op), [
+    "createCoordinate",
+    "editSemantic",
+    "editSemantic",
+    "editSemantic",
+    "editSemantic",
+    "createScale",
+    "rematerializeLineMark"
   ]);
   assert.deepEqual(program.actionStack, []);
   assert.equal(Object.isFrozen(program.semanticSpec.title), true);
