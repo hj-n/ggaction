@@ -21,8 +21,8 @@ const program = chart()
 - [x] Immutable resolved scale state
 - [x] `createScale`
 - [x] `rematerializeScale`
-- [ ] `encodeX`
-- [ ] `encodeY`
+- [x] `encodeX`
+- [x] `encodeY`
 - [ ] Canvas 변경 시 positional scale rematerialization
 - [ ] `carsScatterplotActions`의 수동 x/y 계산 제거
 - [ ] Unit, trace, immutability test
