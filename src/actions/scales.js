@@ -211,6 +211,8 @@ const rematerializeScale = action(
 
     if (next.guideConfigs.axis?.x?.ticks?.scale === id) next = next.editXAxisTicks();
     if (next.guideConfigs.axis?.y?.ticks?.scale === id) next = next.editYAxisTicks();
+    if (next.guideConfigs.axis?.x?.labels?.scale === id) next = next.editXAxisLabels();
+    if (next.guideConfigs.axis?.y?.labels?.scale === id) next = next.editYAxisLabels();
 
     return next;
   }

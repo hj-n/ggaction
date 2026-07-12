@@ -22,6 +22,7 @@ import { registerScaleActions } from "../actions/scales.js";
 import { registerEncodingActions } from "../actions/encodings.js";
 import { registerAxisLineActions } from "../actions/axisLines.js";
 import { registerAxisTickActions } from "../actions/axisTicks.js";
+import { registerAxisLabelActions } from "../actions/axisLabels.js";
 
 function ownState(value) {
   return isOwned(value) ? value : cloneAndFreeze(value);
@@ -106,7 +107,12 @@ export class ChartProgram {
     });
   }
 
-  _withGuideConfig(channel, config) {
+  _withGuideConfig(channel, component, config) {
+    if (config === undefined) {
+      config = component;
+      component = "ticks";
+    }
+
     const owned = cloneAndFreeze(config);
     return this._clone({
       guideConfigs: freezeOwned({
@@ -115,7 +121,7 @@ export class ChartProgram {
           ...this.guideConfigs.axis,
           [channel]: freezeOwned({
             ...this.guideConfigs.axis?.[channel],
-            ticks: owned
+            [component]: owned
           })
         })
       })
@@ -151,6 +157,7 @@ registerScaleActions(ChartProgram);
 registerEncodingActions(ChartProgram);
 registerAxisLineActions(ChartProgram);
 registerAxisTickActions(ChartProgram);
+registerAxisLabelActions(ChartProgram);
 
 export function chart() {
   return new ChartProgram();
