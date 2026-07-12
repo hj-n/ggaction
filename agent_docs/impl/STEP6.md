@@ -16,8 +16,8 @@ const program = chart()
 
 ## 진행 상태
 
-- [ ] Encoding과 scale 입력 검증
-- [ ] Linear scale 계산
+- [x] Encoding과 scale 입력 검증
+- [x] Linear scale 계산
 - [x] Immutable resolved scale state
 - [ ] `createScale`
 - [ ] `rematerializeScale`
