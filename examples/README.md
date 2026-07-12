@@ -16,3 +16,9 @@ the Chart API to materialize 392 circles and the Canvas renderer to draw them.
 Open <http://localhost:8000/examples/cars-line-chart-primitives/>. This Phase 2
 contract chart uses the explicit primitive program under `test/programs/` to
 render three Origin paths, axes, a combined color/dash legend, and chart title.
+
+## Cars line chart
+
+Open <http://localhost:8000/examples/cars-line-chart/>. This is the ordinary
+chart-authoring example: it creates the same aggregate line chart entirely with
+`createLineMark`, encoding, guide, and title actions.

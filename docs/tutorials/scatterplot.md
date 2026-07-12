@@ -7,7 +7,9 @@ title: Cars Scatterplot Tutorial
 
 # Cars Scatterplot Tutorial
 
-The repository includes a runnable Phase 1 example in
+![Horsepower versus miles per gallon](../assets/images/cars-scatterplot.png)
+
+The repository includes a runnable example in
 [`examples/cars-scatterplot`](https://github.com/hj-n/ggaction/tree/main/examples/cars-scatterplot).
 It loads `data/cars.json`, removes rows missing either positional field, and
 authors the chart entirely through chart actions.
@@ -35,9 +37,11 @@ const program = chart()
   .encodeY({ field: "Miles_per_Gallon" })
   .encodeColor({ field: "Origin" })
   .encodeRadius({ value: 3 })
-  .createAxes({
-    x: { title: { text: "Horsepower" } },
-    y: { title: { text: "Miles per Gallon" } }
+  .createGuides({
+    axes: {
+      x: { title: { text: "Horsepower" } },
+      y: { title: { text: "Miles per Gallon" } }
+    }
   });
 
 const context = document.querySelector("#chart").getContext("2d");
@@ -54,10 +58,10 @@ render(program, context);
 | `encodeX`, `encodeY` | Fields, scales, Cartesian coordinate | Concrete x/y values |
 | `encodeColor` | Nominal color field and scale | Concrete fill colors |
 | `encodeRadius` | — | Constant circle radius |
-| `createAxes` | Axis scale/title guides | Concrete lines, ticks, labels, titles |
+| `createGuides` | Axis scale/title guides | Concrete lines, ticks, labels, titles |
 
 Position encodings create the default `main` Cartesian coordinate before axes
-are requested. `createAxes` reads that stored relationship and creates guide
+are requested. `createGuides` calls the axis action, which reads that stored relationship and creates guide
 graphics; it does not create or repair coordinates.
 
-See [Encodings](../api/encodings.md) and [Axes](../api/axes.md) for customization.
+See [Encodings](../api/encodings.md) and [Guides](../api/guides.md) for customization.
