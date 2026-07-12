@@ -34,28 +34,10 @@ export function createCarsLineChartActions(cars) {
     })
     .createAxes({ y: { ticksAndLabels: { count: 6 } } })
     .createLegend()
-    .editSemantic({ property: "title.text", value: values.title.text })
-    .editSemantic({ property: "title.subtitle", value: values.title.subtitle })
-    .createGraphics({ id: "chartTitle", type: "text" })
-    .editGraphics({ target: "chartTitle", property: "x", value: values.title.x })
-    .editGraphics({ target: "chartTitle", property: "y", value: values.title.titleY })
-    .editGraphics({ target: "chartTitle", property: "text", value: values.title.text })
-    .editGraphics({ target: "chartTitle", property: "fill", value: "#0f172a" })
-    .editGraphics({ target: "chartTitle", property: "fontSize", value: 20 })
-    .editGraphics({ target: "chartTitle", property: "fontFamily", value: "sans-serif" })
-    .editGraphics({ target: "chartTitle", property: "fontWeight", value: 700 })
-    .editGraphics({ target: "chartTitle", property: "textAlign", value: "left" })
-    .editGraphics({ target: "chartTitle", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "chartSubtitle", type: "text" })
-    .editGraphics({ target: "chartSubtitle", property: "x", value: values.title.x })
-    .editGraphics({ target: "chartSubtitle", property: "y", value: values.title.subtitleY })
-    .editGraphics({ target: "chartSubtitle", property: "text", value: values.title.subtitle })
-    .editGraphics({ target: "chartSubtitle", property: "fill", value: "#64748b" })
-    .editGraphics({ target: "chartSubtitle", property: "fontSize", value: 13 })
-    .editGraphics({ target: "chartSubtitle", property: "fontFamily", value: "sans-serif" })
-    .editGraphics({ target: "chartSubtitle", property: "fontWeight", value: "normal" })
-    .editGraphics({ target: "chartSubtitle", property: "textAlign", value: "left" })
-    .editGraphics({ target: "chartSubtitle", property: "textBaseline", value: "middle" });
+    .createTitle({
+      text: "The trend of acceleration by year",
+      subtitle: "from 1970 to 1982"
+    });
 }
 
 export function renderCarsLineChartActions(program, canvasContext) {

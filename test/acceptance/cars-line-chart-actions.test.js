@@ -166,12 +166,10 @@ test("authors and renders the cars line chart with the line mark action", () => 
     "encodeStrokeDash",
     "createAxes",
     "createLegend",
-    "editSemantic",
-    "createGraphics",
-    "editGraphics"
+    "createTitle"
   ]);
   assert.equal(program.trace.children.some(node =>
-    ["createGuides", "createTitle"].includes(node.op)
+    node.op === "createGuides"
   ), false);
   const createLineMark = program.trace.children.find(
     node => node.op === "createLineMark"
@@ -224,6 +222,22 @@ test("authors and renders the cars line chart with the line mark action", () => 
     ),
     false
   );
+  const titleGraphics = new Set(["chartTitle", "chartSubtitle"]);
+  assert.equal(
+    program.trace.children.some(
+      node => node.op === "createGraphics" && titleGraphics.has(node.args.id)
+    ),
+    false
+  );
+  const createTitle = program.trace.children.find(
+    node => node.op === "createTitle"
+  );
+  assert.deepEqual(createTitle.children.map(node => node.op), [
+    "editSemantic",
+    "editSemantic",
+    "createTitleText",
+    "createSubtitleText"
+  ]);
   assert.deepEqual(program.actionStack, []);
   assert.equal(Object.isFrozen(program.semanticSpec.title), true);
   assert.equal(Object.isFrozen(trends.children[0].properties.points), true);

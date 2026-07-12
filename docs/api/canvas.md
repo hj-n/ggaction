@@ -41,7 +41,8 @@ const resized = program.editCanvas({
 ```
 
 Width, height, or margin changes explicitly rematerialize connected automatic
-position scales and existing axes. Background-only edits do not.
+position scales, line marks, axes, legends, and chart titles. Background-only
+edits do not.
 
 Margin is authoring context used to derive plot bounds; it is not a drawable
 node in `graphicSpec`.

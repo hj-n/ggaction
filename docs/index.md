@@ -33,6 +33,7 @@ lower-level control.
 - [Coordinates](./api/coordinates.md)
 - [Axes](./api/axes.md)
 - [Legends](./api/legends.md)
+- [Titles](./api/titles.md)
 - [Browser and PNG rendering](./api/rendering.md)
 
 ## Go deeper

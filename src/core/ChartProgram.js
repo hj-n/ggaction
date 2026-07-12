@@ -24,6 +24,7 @@ import { registerEncodingActions } from "../actions/encodings.js";
 import { registerCoordinateActions } from "../actions/coordinates.js";
 import { registerGuideAxisActions } from "../actions/guides/axes/index.js";
 import { registerLegendActions } from "../actions/guides/legends/index.js";
+import { registerTitleActions } from "../actions/titles.js";
 
 function ownState(value) {
   return isOwned(value) ? value : cloneAndFreeze(value);
@@ -35,6 +36,7 @@ export class ChartProgram {
     graphicSpec = createEmptyGraphicSpec(),
     resolvedScales = {},
     guideConfigs = {},
+    titleConfig,
     children = {},
     context = {},
     trace = createTraceRoot(),
@@ -44,6 +46,9 @@ export class ChartProgram {
     this.graphicSpec = ownState(graphicSpec);
     this.resolvedScales = ownState(resolvedScales);
     this.guideConfigs = ownState(guideConfigs);
+    this.titleConfig = titleConfig === undefined
+      ? undefined
+      : ownState(titleConfig);
     this.children = ownState(children);
     this.context = ownState(context);
     this.trace = ownState(trace);
@@ -57,6 +62,7 @@ export class ChartProgram {
     graphicSpec = this.graphicSpec,
     resolvedScales = this.resolvedScales,
     guideConfigs = this.guideConfigs,
+    titleConfig = this.titleConfig,
     children = this.children,
     context = this.context,
     trace = this.trace,
@@ -67,6 +73,7 @@ export class ChartProgram {
       graphicSpec,
       resolvedScales,
       guideConfigs,
+      titleConfig,
       children,
       context,
       trace,
@@ -146,6 +153,14 @@ export class ChartProgram {
     });
   }
 
+  _withTitleConfig(config) {
+    if (!isPlainObject(config)) {
+      throw new TypeError("Title config must be a plain object.");
+    }
+
+    return this._clone({ titleConfig: cloneAndFreeze(config) });
+  }
+
   _enterAction({ op, description, args }) {
     const id = `a${countActionNodes(this.trace) + 1}`;
     const parentId = this.actionStack.at(-1) ?? this.trace.id;
@@ -177,6 +192,7 @@ registerEncodingActions(ChartProgram);
 registerCoordinateActions(ChartProgram);
 registerGuideAxisActions(ChartProgram);
 registerLegendActions(ChartProgram);
+registerTitleActions(ChartProgram);
 
 export function chart() {
   return new ChartProgram();

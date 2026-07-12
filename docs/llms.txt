@@ -27,6 +27,7 @@ and language models.
 - Coordinates: ./api/coordinates.md
 - Axes: ./api/axes.md
 - Legends: ./api/legends.md
+- Titles: ./api/titles.md
 - Rendering: ./api/rendering.md
 - Advanced axis components: ./advanced/axis-components.md
 - Action authoring: ./extension/action-authoring.md
@@ -49,6 +50,7 @@ and language models.
 - Line encodeColor and encodeStrokeDash regroup and style concrete series paths.
 - createAxes supports linear and UTC time scales plus aggregate-aware title inference.
 - createLegend combines compatible line color and strokeDash encodings into one concrete series legend.
+- createTitle stores semantic title text and materializes a plot-aligned top title with an optional subtitle.
 
 ## Current scope
 
@@ -60,6 +62,7 @@ time scale. Aggregate line `encodeY` supports `mean`, resolves its y scale from
 derived values, and materializes the currently known series. Line `encodeColor`
 and `encodeStrokeDash` group and style series through ordinal scales. A
 right-side line-series legend is available through `createLegend`; compatible
-color and strokeDash channels share one legend. Title and `createGuides` domain
-actions are not implemented yet. Time and aggregate axes are available through
-`createAxes`. Do not assume roadmap features are implemented.
+color and strokeDash channels share one legend. A plot-aligned top title and
+optional subtitle are available through `createTitle`. The `createGuides`
+aggregate action is not implemented yet. Time and aggregate axes are available
+through `createAxes`. Do not assume roadmap features are implemented.

@@ -113,6 +113,17 @@ function rematerializeLegend(program) {
   return program.rematerializeLegend();
 }
 
+function rematerializeTitle(program) {
+  if (
+    program.semanticSpec.title.text === undefined ||
+    program.titleConfig === undefined
+  ) {
+    return program;
+  }
+
+  return program.rematerializeTitle();
+}
+
 const editCanvas = action(
   {
     op: "editCanvas",
@@ -146,6 +157,7 @@ const editCanvas = action(
       next = rematerializePositionScales(next);
       next = rematerializeCompleteLineMarks(next);
       next = rematerializeLegend(next);
+      next = rematerializeTitle(next);
     }
 
     return next;

@@ -28,6 +28,7 @@ These are the recommended chart-authoring actions currently supported.
 | Appearance | `encodeRadius({ value, target? })` | [Encodings](../api/encodings.md) |
 | Axes | `createAxes({ coordinate?, x?, y? })` | [Axes](../api/axes.md) |
 | Legend | `createLegend({ target?, channels?, position?, title?, symbol?, labels?, titleStyle?, itemGap?, border? })` | [Legends](../api/legends.md) |
+| Title | `createTitle({ text, subtitle?, position?, align?, offset?, gap?, titleStyle?, subtitleStyle? })` | [Titles](../api/titles.md) |
 
 ## Advanced Chart API
 

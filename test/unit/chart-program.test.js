@@ -21,6 +21,7 @@ test("creates an immutable program with canonical empty state", () => {
   });
   assert.deepEqual(program.resolvedScales, {});
   assert.deepEqual(program.guideConfigs, {});
+  assert.equal(program.titleConfig, undefined);
   assert.deepEqual(program.children, {});
   assert.deepEqual(program.context, {});
   assert.deepEqual(program.trace, {
@@ -48,6 +49,8 @@ test("creates independent empty programs", () => {
   assert.notEqual(first.graphicSpec, second.graphicSpec);
   assert.notEqual(first.resolvedScales, second.resolvedScales);
   assert.notEqual(first.guideConfigs, second.guideConfigs);
+  assert.equal(first.titleConfig, undefined);
+  assert.equal(second.titleConfig, undefined);
   assert.notEqual(first.trace, second.trace);
 });
 
@@ -63,6 +66,7 @@ test("clones only the supplied program branches", () => {
   assert.equal(next.graphicSpec, original.graphicSpec);
   assert.equal(next.resolvedScales, original.resolvedScales);
   assert.equal(next.guideConfigs, original.guideConfigs);
+  assert.equal(next.titleConfig, original.titleConfig);
   assert.equal(next.trace, original.trace);
   assert.deepEqual(original.context, {});
   assert.deepEqual(next.context, { currentData: "cars" });

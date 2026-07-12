@@ -22,10 +22,12 @@ This page describes implemented behavior only.
 | Constant appearance | Circle radius |
 | Coordinates | Named Cartesian and Polar semantic resources; x/y use Cartesian |
 | Guides | Bottom/left linear or UTC time axes; one right-side line-series legend combining color and stroke dash |
+| Titles | One plot-aligned top title with an optional single-line subtitle |
 | Rendering | Browser Canvas and Node PNG |
 | Graphics | Concrete canvas, circle, line, rect, text, and point-array path nodes |
 
 Polar guide graphics, additional mark types, public transforms, facets,
 additional legend types or positions, and program composition are not
-implemented in the current phase. They are not part of the current API
-reference.
+implemented in the current phase. Additional title positions, automatic text
+wrapping, and text measurement are also unsupported. These features are not
+part of the current API reference.
