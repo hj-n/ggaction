@@ -39,7 +39,13 @@ test("renders the cars scatterplot created with the canvas action", () => {
     height: 310
   });
   assert.equal(program.context.currentData, "cars");
+  assert.equal(program.context.currentMark, "points");
   assert.equal(program.semanticSpec.datasets[0].values.length, 392);
+  assert.deepEqual(program.semanticSpec.layers, [
+    { id: "points", mark: { type: "point" }, data: "cars" }
+  ]);
+  assert.equal(program.graphicSpec.objects.points.type, "circle");
+  assert.equal(program.graphicSpec.objects.points.children.length, 392);
   assert.equal(findCanvasCalls(context, "arc").length, 392);
   assert.equal(findCanvasCalls(context, "stroke").length, 10);
   assert.equal(findCanvasCalls(context, "fillText").length, 10);
@@ -63,6 +69,28 @@ test("renders the cars scatterplot created with the canvas action", () => {
   assert.deepEqual(createData.children[0].args, {
     property: "dataset[cars].values",
     valueCount: 392
+  });
+
+  const createPointMark = program.trace.children.find(
+    node => node.op === "createPointMark"
+  );
+  assert.deepEqual(createPointMark.args, { id: "points" });
+  assert.deepEqual(
+    createPointMark.children.map(node => node.op),
+    ["editSemantic", "editSemantic", "createGraphics"]
+  );
+  assert.deepEqual(createPointMark.children[0].args, {
+    property: "layer[points].mark.type",
+    value: "point"
+  });
+  assert.deepEqual(createPointMark.children[1].args, {
+    property: "layer[points].data",
+    value: "cars"
+  });
+  assert.deepEqual(createPointMark.children[2].args, {
+    id: "points",
+    type: "circle",
+    length: 392
   });
   assert.deepEqual(program.actionStack, []);
 });

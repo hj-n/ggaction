@@ -25,8 +25,8 @@ const program = chart()
 - [x] Semantic point와 graphical circle 생성
 - [x] Collection length와 빈 dataset 처리
 - [x] Nested trace와 context test
-- [ ] `carsScatterplotActions`의 mark primitive 교체
-- [ ] Acceptance 및 PNG render test
+- [x] `carsScatterplotActions`의 mark primitive 교체
+- [x] Acceptance 및 PNG render test
 - [x] 영어 사용자 문서
 - [ ] 브라우저와 고해상도 PNG 확인
 
