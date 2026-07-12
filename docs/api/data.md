@@ -1,11 +1,9 @@
 ---
 layout: default
-title: Data API
+title: Data
 ---
 
-[Documentation home](../index.md) · [Marks](./marks.md)
-
-# Data API
+# Data
 
 ## `createData({ id, values })`
 

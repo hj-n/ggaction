@@ -3,8 +3,6 @@ layout: default
 title: Actions and Trace Trees
 ---
 
-[Documentation home](../index.md) · [Action authoring](../extension/action-authoring.md)
-
 # Actions and Trace Trees
 
 Every chart-authoring method is an action. Calling a high-level action records

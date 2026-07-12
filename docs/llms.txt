@@ -9,6 +9,7 @@ and language models.
 - Documentation index: ./index.md
 - Getting started: ./getting-started.md
 - Complete scatterplot tutorial: ./tutorials/scatterplot.md
+- Complete line chart tutorial: ./tutorials/line-chart.md
 - Complete action reference: ./reference/actions.md
 - Supported features: ./supported-features.md
 
@@ -24,6 +25,10 @@ and language models.
 - Data: ./api/data.md
 - Marks: ./api/marks.md
 - Encodings: ./api/encodings.md
+- Position encodings: ./api/position-encodings.md
+- Series encodings: ./api/series-encodings.md
+- Constant appearance: ./api/appearance.md
+- Scale options: ./api/scales.md
 - Coordinates: ./api/coordinates.md
 - Guides: ./api/guides.md
 - Axes: ./api/axes.md
@@ -55,6 +60,9 @@ and language models.
 - createGuides calls the applicable createAxes and createLegend wrapped actions; it never creates chart titles.
 
 ## Current scope
+
+The documented build is version 0.0.0-dev and is not published to npm. Use the
+repository source directly.
 
 The implemented end-to-end Chart API covers Cartesian point scatterplots and
 temporal mean-aggregate line charts with browser Canvas and PNG output.

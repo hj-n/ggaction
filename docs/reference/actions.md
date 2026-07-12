@@ -3,37 +3,148 @@ layout: default
 title: Action Reference
 ---
 
-[Documentation home](../index.md) · [Supported features](../supported-features.md)
-
 # Action Reference
 
-All actions accept one plain option object and return a new immutable
+Every action accepts one plain option object and returns a new immutable
 `ChartProgram`. Unknown options are rejected.
+
+## Quick navigation
+
+- [Chart authoring](#chart-authoring-api)
+- [Advanced chart actions](#advanced-chart-api)
+- [Extension actions](#extension-api)
+- [Rendering functions](#rendering-functions)
 
 ## Chart Authoring API
 
-These are the recommended chart-authoring actions currently supported.
+These actions form the recommended chart-building path.
 
-| Action | Signature | Documentation |
-| --- | --- | --- |
-| Canvas | `createCanvas({ width?, height?, background?, margin? })` | [Canvas](../api/canvas.md) |
-| Canvas | `editCanvas({ width?, height?, background?, margin? })` | [Canvas](../api/canvas.md) |
-| Data | `createData({ id, values })` | [Data](../api/data.md) |
-| Mark | `createPointMark({ id, data?, shape? })` | [Marks](../api/marks.md) |
-| Mark | `createLineMark({ id, data? })` | [Marks](../api/marks.md) |
-| Encoding | `encodeX({ field, target?, fieldType?, coordinate?, scale? })` | [Encodings](../api/encodings.md) |
-| Encoding | `encodeY({ field, target?, fieldType?, aggregate?, coordinate?, scale? })` | [Encodings](../api/encodings.md) |
-| Encoding | `encodeColor({ field, target?, fieldType?, scale? })` | [Encodings](../api/encodings.md) |
-| Encoding | `encodeStrokeDash({ field, target?, fieldType?, scale? })` | [Encodings](../api/encodings.md) |
-| Appearance | `encodeRadius({ value, target? })` | [Encodings](../api/encodings.md) |
-| Guides | `createGuides({ axes?, legend? })` | [Guides](../api/guides.md) |
-| Axes | `createAxes({ coordinate?, x?, y? })` | [Axes](../api/axes.md) |
-| Legend | `createLegend({ target?, channels?, position?, title?, symbol?, labels?, titleStyle?, itemGap?, border? })` | [Legends](../api/legends.md) |
-| Title | `createTitle({ text, subtitle?, position?, align?, offset?, gap?, titleStyle?, subtitleStyle? })` | [Titles](../api/titles.md) |
+### `createCanvas`
+
+```javascript
+createCanvas({ width?, height?, background?, margin? })
+```
+
+Create the program's Canvas and plot bounds. [Canvas options](../api/canvas.md)
+
+### `editCanvas`
+
+```javascript
+editCanvas({ width?, height?, background?, margin? })
+```
+
+Edit Canvas properties and rematerialize connected consumers.
+[Canvas options](../api/canvas.md)
+
+### `createData`
+
+```javascript
+createData({ id, values })
+```
+
+Create one immutable named dataset. [Data](../api/data.md)
+
+### `createPointMark`
+
+```javascript
+createPointMark({ id, data?, shape? })
+```
+
+Create a semantic point mark with a circle realization. [Marks](../api/marks.md)
+
+### `createLineMark`
+
+```javascript
+createLineMark({ id, data? })
+```
+
+Create a semantic line mark and empty path collection. [Marks](../api/marks.md)
+
+### `encodeX`
+
+```javascript
+encodeX({ field, target?, fieldType?, coordinate?, scale? })
+```
+
+Create a quantitative point or temporal line x encoding.
+[Position encodings](../api/position-encodings.md)
+
+### `encodeY`
+
+```javascript
+encodeY({ field, target?, fieldType?, aggregate?, coordinate?, scale? })
+```
+
+Create a quantitative point or aggregate line y encoding.
+[Position encodings](../api/position-encodings.md)
+
+### `encodeColor`
+
+```javascript
+encodeColor({ field, target?, fieldType?, scale? })
+```
+
+Create nominal point color or line-series color.
+[Series encodings](../api/series-encodings.md)
+
+### `encodeStrokeDash`
+
+```javascript
+encodeStrokeDash({ field, target?, fieldType?, scale? })
+```
+
+Create nominal line-series dash patterns.
+[Series encodings](../api/series-encodings.md)
+
+### `encodeRadius`
+
+```javascript
+encodeRadius({ value, target? })
+```
+
+Apply a constant point radius. [Constant appearance](../api/appearance.md)
+
+### `createGuides`
+
+```javascript
+createGuides({ axes?, legend? })
+```
+
+Create applicable axes and a line-series legend. [Guides](../api/guides.md)
+
+### `createAxes`
+
+```javascript
+createAxes({ coordinate?, x?, y? })
+```
+
+Create Cartesian axes directly. [Axes](../api/axes.md)
+
+### `createLegend`
+
+```javascript
+createLegend({
+  target?, channels?, position?, title?, symbol?, labels?,
+  titleStyle?, itemGap?, border?
+})
+```
+
+Create one combined line-series legend. [Legends](../api/legends.md)
+
+### `createTitle`
+
+```javascript
+createTitle({
+  text, subtitle?, position?, align?, offset?, gap?,
+  titleStyle?, subtitleStyle?
+})
+```
+
+Create a chart title and optional subtitle. [Titles](../api/titles.md)
 
 ## Advanced Chart API
 
-These actions provide explicit semantic resources or focused axis control.
+Use these actions for explicit semantic resources or focused axis control.
 
 | Group | Actions |
 | --- | --- |
@@ -46,12 +157,12 @@ These actions provide explicit semantic resources or focused axis control.
 | Axis titles | `createXAxisTitle`, `createYAxisTitle`, `editXAxisTitle`, `editYAxisTitle` |
 
 See [Coordinates](../api/coordinates.md) and
-[Advanced axis components](../advanced/axis-components.md) for option schemas.
+[Advanced axis components](../advanced/axis-components.md).
 
 ## Extension API
 
 Import `action` and `ChartProgram` from `ggaction/extension`. Primitive methods
-are available on `ChartProgram` instances used by extension actions.
+are available on programs used by extension actions.
 
 | API | Signature |
 | --- | --- |
@@ -67,7 +178,7 @@ See [Action authoring](../extension/action-authoring.md) and
 
 ## Rendering functions
 
-Rendering functions are not actions and do not modify or extend the trace.
+Rendering functions are not actions and do not modify the trace.
 
 | Import | Signature |
 | --- | --- |

@@ -3,8 +3,6 @@ layout: default
 title: Action Authoring
 ---
 
-[Documentation home](../index.md) · [Primitive API](./primitives.md)
-
 # Action Authoring
 
 The extension entry point is for developers adding traceable domain actions.

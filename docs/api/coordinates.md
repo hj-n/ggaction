@@ -1,11 +1,9 @@
 ---
 layout: default
-title: Coordinate API
+title: Coordinates
 ---
 
-[Documentation home](../index.md) · [Encodings](./encodings.md) · [Axes](./axes.md)
-
-# Coordinate API
+# Coordinates
 
 Position encoding actions normally manage coordinates automatically:
 
@@ -39,4 +37,4 @@ Equivalent repeated creation is allowed. A conflicting type or an attempt to
 reattach a layer that already uses another coordinate produces an error.
 
 Polar semantic coordinates are valid resources, but Polar position actions and
-guide graphics are not implemented in the current phase.
+guide graphics are not supported in the current release.

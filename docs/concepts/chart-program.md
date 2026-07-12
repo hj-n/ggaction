@@ -3,8 +3,6 @@ layout: default
 title: ChartProgram and Immutability
 ---
 
-[Documentation home](../index.md) · [Semantic and graphical state](./semantic-and-graphics.md)
-
 # ChartProgram and Immutability
 
 `chart()` returns an empty `ChartProgram`. A program contains the authored chart

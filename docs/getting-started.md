@@ -3,16 +3,15 @@ layout: default
 title: Getting Started
 ---
 
-[Documentation home](./index.md) · [Scatterplot tutorial](./tutorials/scatterplot.md)
-
 # Getting Started
 
 This example creates and renders a complete scatterplot. Every method returns a
 new `ChartProgram`, so the calls can be chained.
 
-## Run the repository example
+## Use the repository build
 
-The current development build can be run directly from source:
+`ggaction` is not published to npm yet. Clone the repository and run its browser
+examples directly from source:
 
 ```bash
 git clone https://github.com/hj-n/ggaction.git
@@ -21,8 +20,9 @@ npm install
 python3 -m http.server 4173
 ```
 
-Open `http://localhost:4173/examples/cars-scatterplot/`. The remaining examples
-use package imports to show the intended consumer API.
+Open `http://localhost:4173/examples/cars-scatterplot/` or
+`http://localhost:4173/examples/cars-line-chart/`. Documentation examples use
+package-style imports to show the intended consumer API.
 
 ## 1. Add a canvas
 
@@ -53,9 +53,11 @@ const program = chart()
   .encodeY({ field: "mpg" })
   .encodeColor({ field: "origin" })
   .encodeRadius({ value: 4 })
-  .createAxes({
-    x: { title: { text: "Horsepower" } },
-    y: { title: { text: "Miles per gallon" } }
+  .createGuides({
+    axes: {
+      x: { title: { text: "Horsepower" } },
+      y: { title: { text: "Miles per gallon" } }
+    }
   });
 ```
 
@@ -77,5 +79,7 @@ actions. It does not compile `semanticSpec` during rendering.
 
 - Use the [cars scatterplot tutorial](./tutorials/scatterplot.md) with the
   repository dataset.
+- Build temporal aggregate series in the
+  [cars line chart tutorial](./tutorials/line-chart.md).
 - Check the [action index](./reference/actions.md) for signatures and defaults.
 - Export the same program with [PNG rendering](./api/rendering.md#png-output).

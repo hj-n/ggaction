@@ -3,8 +3,6 @@ layout: default
 title: Cars Scatterplot Tutorial
 ---
 
-[Documentation home](../index.md) · [Getting started](../getting-started.md)
-
 # Cars Scatterplot Tutorial
 
 ![Horsepower versus miles per gallon](../assets/images/cars-scatterplot.png)

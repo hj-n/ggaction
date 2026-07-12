@@ -1,11 +1,9 @@
 ---
 layout: default
-title: Rendering API
+title: Rendering
 ---
 
-[Documentation home](../index.md) · [Semantic and graphical state](../concepts/semantic-and-graphics.md)
-
-# Rendering API
+# Rendering
 
 Rendering consumes a completed program's `graphicSpec`. It does not read
 datasets, semantic encodings, context, or trace to infer missing output.

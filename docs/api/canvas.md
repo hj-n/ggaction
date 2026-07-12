@@ -1,11 +1,9 @@
 ---
 layout: default
-title: Canvas API
+title: Canvas
 ---
 
-[Documentation home](../index.md) · [Action index](../reference/actions.md)
-
-# Canvas API
+# Canvas
 
 ## `createCanvas(options?)`
 

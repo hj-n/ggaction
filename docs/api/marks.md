@@ -1,11 +1,9 @@
 ---
 layout: default
-title: Mark API
+title: Marks
 ---
 
-[Documentation home](../index.md) · [Data](./data.md) · [Encodings](./encodings.md)
-
-# Mark API
+# Marks
 
 ## `createPointMark({ id, data?, shape? })`
 

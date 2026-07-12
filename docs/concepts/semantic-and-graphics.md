@@ -3,8 +3,6 @@ layout: default
 title: Semantic and Graphical State
 ---
 
-[Documentation home](../index.md) · [ChartProgram](./chart-program.md)
-
 # Semantic and Graphical State
 
 `ggaction` keeps chart meaning separate from its fully resolved graphics.

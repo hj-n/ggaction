@@ -1,11 +1,9 @@
 ---
 layout: default
-title: Legends API
+title: Legends
 ---
 
-[Documentation home](../index.md) · [Guides](./guides.md) · [Encodings](./encodings.md) · [Action reference](../reference/actions.md)
-
-# Legends API
+# Legends
 
 ## `createLegend(options?)`
 

@@ -3,8 +3,6 @@ layout: default
 title: Supported Features
 ---
 
-[Documentation home](./index.md) · [Action index](./reference/actions.md)
-
 # Supported Features
 
 This page describes implemented behavior only.
@@ -28,6 +26,6 @@ This page describes implemented behavior only.
 
 Polar guide graphics, additional mark types, public transforms, facets,
 additional legend types or positions, and program composition are not
-implemented in the current phase. Additional title positions, automatic text
+implemented in the current release. Additional title positions, automatic text
 wrapping, and text measurement are also unsupported. These features are not
 part of the current API reference.

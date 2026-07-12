@@ -1,11 +1,9 @@
 ---
 layout: default
-title: Guides API
+title: Guides
 ---
 
-[Documentation home](../index.md) · [Axes](./axes.md) · [Legends](./legends.md)
-
-# Guides API
+# Guides
 
 ## `createGuides(options?)`
 

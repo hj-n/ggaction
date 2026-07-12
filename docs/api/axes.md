@@ -1,11 +1,9 @@
 ---
 layout: default
-title: Axes API
+title: Axes
 ---
 
-[Documentation home](../index.md) · [Guides](./guides.md) · [Coordinates](./coordinates.md) · [Advanced components](../advanced/axis-components.md)
-
-# Axes API
+# Axes
 
 ## `createAxes(options?)`
 

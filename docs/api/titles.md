@@ -1,11 +1,9 @@
 ---
 layout: default
-title: Titles API
+title: Titles
 ---
 
-[Documentation home](../index.md) · [Canvas](./canvas.md) · [Action reference](../reference/actions.md)
-
-# Titles API
+# Titles
 
 ## `createTitle(options)`
 

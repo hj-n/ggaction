@@ -21,6 +21,14 @@
       url: /api/marks/
     - title: Encodings
       url: /api/encodings/
+    - title: Position Encodings
+      url: /api/position-encodings/
+    - title: Series Encodings
+      url: /api/series-encodings/
+    - title: Constant Appearance
+      url: /api/appearance/
+    - title: Scale Options
+      url: /api/scales/
     - title: Coordinates
       url: /api/coordinates/
     - title: Guides

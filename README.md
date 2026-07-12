@@ -18,9 +18,11 @@ const program = chart()
   .encodeY({ field: "Miles_per_Gallon" })
   .encodeColor({ field: "Origin" })
   .encodeRadius({ value: 3 })
-  .createAxes({
-    x: { title: { text: "Horsepower" } },
-    y: { title: { text: "Miles per Gallon" } }
+  .createGuides({
+    axes: {
+      x: { title: { text: "Horsepower" } },
+      y: { title: { text: "Miles per Gallon" } }
+    }
   });
 
 render(program, document.querySelector("#chart").getContext("2d"));
@@ -29,17 +31,22 @@ render(program, document.querySelector("#chart").getContext("2d"));
 The renderer reads only fully materialized, backend-neutral graphics. Semantic
 state is never automatically compiled during rendering.
 
+> **Status:** the documented API is `0.0.0-dev`. The package is not published
+> to npm yet; use the repository build while the API is under development.
+
 ## Documentation
 
 - [Getting started](./docs/getting-started.md)
 - [Cars scatterplot tutorial](./docs/tutorials/scatterplot.md)
+- [Cars line chart tutorial](./docs/tutorials/line-chart.md)
 - [Chart concepts](./docs/concepts/chart-program.md)
 - [Complete action reference](./docs/reference/actions.md)
 - [Supported features](./docs/supported-features.md)
 - [Documentation index](./docs/index.md)
 
-The runnable [cars scatterplot](./examples/cars-scatterplot/) uses 392 rows from
-`data/cars.json`. Completed programs can also be exported through
+The runnable [cars scatterplot](./examples/cars-scatterplot/) and
+[aggregate line chart](./examples/cars-line-chart/) use `data/cars.json`.
+Completed programs can also be exported through
 [`ggaction/png`](./docs/api/rendering.md#png-output).
 
 ## Development

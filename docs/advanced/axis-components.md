@@ -3,8 +3,6 @@ layout: default
 title: Advanced Axis Components
 ---
 
-[Documentation home](../index.md) · [Recommended axes API](../api/axes.md)
-
 # Advanced Axis Components
 
 Use these actions when a complete `createAxes` call is not sufficient. All
