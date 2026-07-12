@@ -18,6 +18,7 @@ import { registerPrimitiveActions } from "../actions/primitives.js";
 import { registerCanvasActions } from "../actions/canvas.js";
 import { registerDataActions } from "../actions/data.js";
 import { registerMarkActions } from "../actions/marks.js";
+import { registerScaleActions } from "../actions/scales.js";
 
 function ownState(value) {
   return isOwned(value) ? value : cloneAndFreeze(value);
@@ -123,6 +124,7 @@ registerPrimitiveActions(ChartProgram);
 registerCanvasActions(ChartProgram);
 registerDataActions(ChartProgram);
 registerMarkActions(ChartProgram);
+registerScaleActions(ChartProgram);
 
 export function chart() {
   return new ChartProgram();

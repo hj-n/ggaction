@@ -19,8 +19,8 @@ const program = chart()
 - [x] Encoding과 scale 입력 검증
 - [x] Linear scale 계산
 - [x] Immutable resolved scale state
-- [ ] `createScale`
-- [ ] `rematerializeScale`
+- [x] `createScale`
+- [x] `rematerializeScale`
 - [ ] `encodeX`
 - [ ] `encodeY`
 - [ ] Canvas 변경 시 positional scale rematerialization
