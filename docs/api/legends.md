@@ -7,67 +7,120 @@ title: Legends
 
 ## `createLegend(options?)`
 
-Creates one series legend for a line mark. With no options, it combines the
-mark's color and stroke-dash encodings when they describe the same field and
-ordered domain.
+Creates one inferred categorical legend. It supports combined line-series
+legends and color-grouped histogram legends.
 
-```javascript
+~~~javascript
 program.createLegend();
-```
+~~~
 
-Each legend item uses a concrete line symbol, so color and dash pattern can be
-shown together.
+Defaults depend on the selected mark:
+
+| Mark | Channels | Position | Symbol |
+| --- | --- | --- | --- |
+| line | encoded `color` and/or `strokeDash` | `right` | line |
+| bar histogram | `color` | `bottom`, centered | swatch |
 
 | Option | Type | Default |
 | --- | --- | --- |
-| `target` | line mark ID | current or unique encoded line mark |
-| `channels` | unique array of `"color"` and/or `"strokeDash"` | encoded channels in that order |
-| `position` | `"right"` | `"right"` |
-| `title` | non-empty string | shared field name |
-| `symbol` | `{ length?, lineWidth? }` | `{ length: 32, lineWidth: 2 }` |
+| `target` | compatible mark ID | current or unique compatible mark |
+| `channels` | unique categorical channel array | compatible encoded channels |
+| `position` | `"right"` or `"bottom"` | inferred from mark |
+| `align` | `"left"`, `"center"`, or `"right"` | `"center"` |
+| `title` | non-empty string | encoded field name |
+| `symbol` | `"auto"`, shorthand object, or layered recipe | inferred from mark |
 | `labels` | label style object | default sans-serif label style |
 | `titleStyle` | title style object | default sans-serif title style |
-| `itemGap` | positive number | `28` |
+| `itemGap` | positive number | `28` for line, `20` for histogram |
 | `border` | boolean or border style object | `false` |
 
-`labels` accepts `offset`, `color`, `fontSize`, `fontFamily`, and `fontWeight`.
-`titleStyle` accepts the same font and color properties except `offset`.
+Current line legends support right position. Histogram legends support bottom
+position and can use left, center, or right alignment.
 
-The selected scales must be resolved ordinal scales. Combined channels must
-encode the same field and have identical domains in identical order. Otherwise,
-`createLegend` rejects the ambiguous or incompatible definition. A legend with
-only color or only stroke dash is also supported.
+## Layered symbols
+
+Legend symbols are graphical recipes composed from line, point, and swatch
+layers. The default line shorthand remains supported:
+
+~~~javascript
+lineProgram.createLegend({
+  symbol: { length: 32, lineWidth: 2 }
+});
+~~~
+
+Histogram swatch shorthand supports `width`, `height`, `stroke`, and
+`strokeWidth`.
+
+Use layers for a composite symbol:
+
+~~~javascript
+lineProgram.createLegend({
+  symbol: {
+    layers: [
+      { type: "line", length: 32, lineWidth: 2 },
+      { type: "point", shape: "circle", size: 4 }
+    ]
+  }
+});
+~~~
+
+Supported layers are:
+
+~~~javascript
+{ type: "line", length?, lineWidth? }
+{ type: "point", shape?: "circle", size?, fill?, stroke?, strokeWidth? }
+{ type: "swatch", width?, height?, stroke?, strokeWidth? }
+~~~
+
+Every layer shares the same item anchors. A line and point therefore overlap
+as one composite symbol. Recipes are private appearance configuration; the
+final `graphicSpec` contains only concrete line, circle, and rect primitives.
+
+## Items and semantics
+
+Items follow the resolved ordinal domain order. Color and dash appearance come
+from the matching resolved ranges. Combined line channels must encode the same
+field and have identical ordered domains.
+
+A bar color legend stores `guide.legend.color` with its scale and title. A
+combined line legend stores `guide.legend.series` with its channels, scales, and
+title. Positions, fonts, symbols, and border appearance are graphical state.
 
 ## Optional border
 
-The default `border: false` creates no background graphic. Pass `true` to use
-the default background and border settings:
+The default creates no background. Pass true for default border settings or an
+object with color, lineWidth, padding, and background.
 
-```javascript
-program.createLegend({ border: true });
-```
+~~~javascript
+program.createLegend({
+  border: {
+    color: "#cbd5e1",
+    lineWidth: 1,
+    padding: 8,
+    background: "white"
+  }
+});
+~~~
 
-Equivalent defaults are:
+The background is rendered before every symbol layer, label, and title.
 
-```javascript
-{
-  color: "#cbd5e1",
-  lineWidth: 1,
-  padding: 12,
-  background: "transparent"
-}
-```
+## Updates and trace
 
-Pass an object to override any of `color`, `lineWidth`, `padding`, or
-`background`.
+Canvas changes and relevant encoding actions explicitly rematerialize the
+legend from the latest ordinal domains and ranges. The renderer still reads
+only concrete `graphicSpec` values.
 
-## Stored result and updates
+~~~text
+createLegend
+└─ createCategoricalLegend
+   ├─ createLegendBackground?
+   ├─ createLegendSymbols
+   │  ├─ createLegendSymbolLines?
+   │  ├─ createLegendSymbolPoints?
+   │  └─ createLegendSymbolSwatches?
+   ├─ createLegendLabels
+   └─ createLegendTitle
+~~~
 
-The semantic guide stores its channels, scale IDs, and title. Concrete symbols,
-labels, title text, and the optional background are stored in `graphicSpec`.
-Canvas size and margin changes explicitly rematerialize the legend layout, and
-legend rematerialization reads the latest shared resolved scale domain.
-
-The current scope supports one right-positioned line-series legend. Point
-legends, multiple legends, other positions, and interactive legends are not
-implemented.
+Continuous legends, point-mark legends, multiple legend blocks, and
+interactive legends are not currently supported.

@@ -75,6 +75,10 @@ test("records semantic and component actions beneath createLegend", () => {
 
   assert.equal(node.op, "createLegend");
   assert.deepEqual(node.children.map(child => child.op), [
+    "createCategoricalLegend"
+  ]);
+  const categorical = node.children[0];
+  assert.deepEqual(categorical.children.map(child => child.op), [
     "editSemantic",
     "editSemantic",
     "editSemantic",
@@ -82,9 +86,44 @@ test("records semantic and component actions beneath createLegend", () => {
     "createLegendLabels",
     "createLegendTitle"
   ]);
-  assert.deepEqual(node.children[3].children.map(child => child.op), [
-    "createGraphics",
-    "editLegendSymbols"
+  assert.deepEqual(categorical.children[3].children.map(child => child.op), [
+    "createLegendSymbolLines"
+  ]);
+  assert.deepEqual(
+    categorical.children[3].children[0].children.map(child => child.op),
+    ["createGraphics", "editLegendSymbolLines"]
+  );
+});
+
+test("supports composite line and point symbol recipes", () => {
+  const program = createSeriesLine().createLegend({
+    symbol: {
+      layers: [
+        { type: "line", length: 32, lineWidth: 2 },
+        { type: "point", shape: "circle", size: 4 }
+      ]
+    }
+  });
+  const lines = program.graphicSpec.objects.seriesLegendSymbolLines.children;
+  const points = program.graphicSpec.objects.seriesLegendSymbolPoints.children;
+
+  assert.equal(lines.length, points.length);
+  assert.deepEqual(
+    points.map(child => child.properties.y),
+    lines.map(child => child.properties.y1)
+  );
+  assert.deepEqual(
+    points.map(child => child.properties.x),
+    lines.map(child =>
+      (child.properties.x1 + child.properties.x2) / 2
+    )
+  );
+  const symbols = program.trace.children.at(-1).children[0].children.find(
+    child => child.op === "createLegendSymbols"
+  );
+  assert.deepEqual(symbols.children.map(child => child.op), [
+    "createLegendSymbolLines",
+    "createLegendSymbolPoints"
   ]);
 });
 
@@ -134,7 +173,10 @@ test("creates and renders an optional background before legend content", () => {
     "seriesLegendLabels",
     "seriesLegendTitle"
   ]);
-  assert.equal(program.trace.children.at(-1).children[3].op, "createLegendBackground");
+  assert.equal(
+    program.trace.children.at(-1).children[0].children[3].op,
+    "createLegendBackground"
+  );
 });
 
 test("rematerializes legend and border layout after Canvas edits", () => {
@@ -218,11 +260,11 @@ test("validates combined fields, domains, targets, and appearance options", () =
   );
   assert.throws(
     () => createSeriesLine().createLegend({ target: "missing" }),
-    /Unknown line series legend target/
+    /Unknown categorical legend target/
   );
   assert.throws(
     () => createSeriesLine().createLegend().createLegend(),
-    /missing series legend/
+    /missing legend/
   );
   assert.throws(
     () => createSeriesLine().createLegend().encodeColor({ field: "category" }),

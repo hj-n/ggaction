@@ -53,7 +53,7 @@ chart는 별도 grid option 없이 horizontal grid를 가진다.
 - [x] Histogram axes
 - [x] Horizontal/vertical grid
 - [ ] `createGuides` default horizontal grid
-- [ ] Bottom bar legend
+- [x] Bottom bar legend
 - [ ] Centered title
 - [ ] Browser example, tutorial, PNG regression
 - [ ] 사용자 문서와 LLM reference

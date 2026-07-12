@@ -1,5 +1,5 @@
-import { registerSeriesLegendActions } from "./seriesLegend.js";
+import { registerCategoricalLegendActions } from "./categoricalLegend.js";
 
 export function registerLegendActions(ProgramClass) {
-  registerSeriesLegendActions(ProgramClass);
+  registerCategoricalLegendActions(ProgramClass);
 }

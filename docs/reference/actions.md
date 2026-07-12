@@ -154,12 +154,13 @@ marks. [Grids](../api/grids.md)
 
 ```javascript
 createLegend({
-  target?, channels?, position?, title?, symbol?, labels?,
+  target?, channels?, position?, align?, title?, symbol?, labels?,
   titleStyle?, itemGap?, border?
 })
 ```
 
-Create one combined line-series legend. [Legends](../api/legends.md)
+Create one categorical line-series or histogram color legend with layered
+symbols. [Legends](../api/legends.md)
 
 ### `createTitle`
 

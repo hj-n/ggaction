@@ -108,6 +108,25 @@ test("authors histogram mark and encodings through chart actions", () => {
     ),
     ["0", "30", "60", "90", "120"]
   );
+
+  const legend = program.trace.children.find(node => node.op === "createLegend");
+  assert.deepEqual(legend.args, {});
+  assert.deepEqual(legend.children.map(node => node.op), [
+    "createCategoricalLegend"
+  ]);
+  assert.deepEqual(legend.children[0].children.map(node => node.op), [
+    "editSemantic",
+    "editSemantic",
+    "createLegendSymbols",
+    "createLegendLabels",
+    "createLegendTitle"
+  ]);
+  assert.deepEqual(
+    program.graphicSpec.objects.colorLegendLabels.children.map(
+      child => child.properties.text
+    ),
+    ["USA", "Europe", "Japan"]
+  );
   assert.equal(
     program.trace.children.some(
       node =>
@@ -120,6 +139,26 @@ test("authors histogram mark and encodings through chart actions", () => {
           "scale[color].domain",
           "scale[color].range"
         ].includes(node.args.property)
+    ),
+    false
+  );
+  assert.equal(
+    program.trace.children.some(
+      node =>
+        node.op === "editSemantic" &&
+        node.args.property.startsWith("guide.legend.")
+    ),
+    false
+  );
+  assert.equal(
+    program.trace.children.some(
+      node =>
+        node.op === "createGraphics" &&
+        [
+          "colorLegendSymbols",
+          "colorLegendLabels",
+          "colorLegendTitle"
+        ].includes(node.args.id)
     ),
     false
   );

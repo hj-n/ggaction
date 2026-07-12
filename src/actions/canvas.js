@@ -123,8 +123,10 @@ function rematerializeCompleteBarMarks(program) {
 
 function rematerializeLegend(program) {
   if (
-    program.semanticSpec.guides.legend?.series === undefined ||
-    program.guideConfigs.legend?.series === undefined
+    (program.semanticSpec.guides.legend?.series === undefined ||
+      program.guideConfigs.legend?.series === undefined) &&
+    (program.semanticSpec.guides.legend?.color === undefined ||
+      program.guideConfigs.legend?.color === undefined)
   ) {
     return program;
   }

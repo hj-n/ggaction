@@ -68,8 +68,10 @@ function validateOptions(args, supported, operation) {
 
 function rematerializeExistingLegend(program) {
   if (
-    program.semanticSpec.guides.legend?.series === undefined ||
-    program.guideConfigs.legend?.series === undefined
+    (program.semanticSpec.guides.legend?.series === undefined ||
+      program.guideConfigs.legend?.series === undefined) &&
+    (program.semanticSpec.guides.legend?.color === undefined ||
+      program.guideConfigs.legend?.color === undefined)
   ) {
     return program;
   }
@@ -516,7 +518,9 @@ const encodeColor = action(
     }
 
     if (layer.mark.type === "bar") {
-      return next.rematerializeBarMark({ id: target });
+      return rematerializeExistingLegend(
+        next.rematerializeBarMark({ id: target })
+      );
     }
 
     return next.rematerializeScale({ id: scale.id });

@@ -134,7 +134,14 @@ export class ChartProgram {
     });
   }
 
-  _withLegendConfig(config) {
+  _withLegendConfig(kind, config) {
+    if (config === undefined) {
+      config = kind;
+      kind = "series";
+    }
+    if (!["series", "color"].includes(kind)) {
+      throw new Error(`Unknown legend kind "${kind}".`);
+    }
     if (!isPlainObject(config)) {
       throw new TypeError("Legend config must be a plain object.");
     }
@@ -145,7 +152,7 @@ export class ChartProgram {
         ...this.guideConfigs,
         legend: freezeOwned({
           ...this.guideConfigs.legend,
-          series: owned
+          [kind]: owned
         })
       })
     });
