@@ -19,10 +19,10 @@ acceptance contract로 사용한다.
 - [x] Primitive semantic path와 value validation 확장
 - [x] Cars line-chart 값 계산 helper
 - [x] Series별 concrete path와 strokeDash rendering
-- [ ] Primitive x/y axes
-- [ ] Primitive combined series legend
-- [ ] Primitive chart title과 subtitle
-- [ ] 별도 user program과 acceptance test
+- [x] Primitive x/y axes
+- [x] Primitive combined series legend
+- [x] Primitive chart title과 subtitle
+- [x] 별도 user program과 acceptance test
 - [ ] 고해상도 PNG render test
 - [ ] 브라우저 결과 확인
 - [ ] 관련 영어 primitive/rendering 문서
