@@ -28,7 +28,7 @@ The primitive semantic grammar also supports the current line-chart contract,
 including temporal field types, `mean` aggregation, `strokeDash` encodings,
 scale `nice`/`zero` policies, combined series legends, and chart title text.
 
-## `createGraphics({ id, type, length? })`
+## `createGraphics({ id, type, length?, before?, after? })`
 
 Creates one concrete object or a homogeneous drawable collection.
 
@@ -39,6 +39,20 @@ program.createGraphics({ id: "points", type: "circle", length: 2 });
 Supported types are `canvas`, `container`, `circle`, `rect`, `line`, `text`,
 and `path`. `length` is a non-negative integer accepted only for drawable types.
 Equivalent repeated creation is idempotent.
+
+`before` or `after` can place a new top-level graphic relative to an existing
+top-level graphic. They are mutually exclusive, the referenced graphic must
+already exist, and no graphic can be placed before the Canvas. When neither is
+provided, creation appends to `graphicSpec.order` as usual.
+
+```javascript
+program.createGraphics({
+  id: "grid",
+  type: "line",
+  length: 5,
+  before: "bars"
+});
+```
 
 Line-chart series use backend-neutral `path.points` arrays rather than SVG `d`
 strings. Each point is a finite `{ x, y }` object. `path.strokeDash` and

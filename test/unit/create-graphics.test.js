@@ -50,6 +50,69 @@ test("treats an equivalent repeated creation as idempotent", () => {
   assert.equal(second.trace.children.length, 2);
 });
 
+test("places new graphics before or after an existing top-level graphic", () => {
+  const base = chart()
+    .createGraphics({ id: "canvas", type: "canvas" })
+    .createGraphics({ id: "bars", type: "rect", length: 0 });
+  const before = base.createGraphics({
+    id: "grid",
+    type: "line",
+    length: 0,
+    before: "bars"
+  });
+  const after = before.createGraphics({
+    id: "labels",
+    type: "text",
+    length: 0,
+    after: "bars"
+  });
+
+  assert.deepEqual(base.graphicSpec.order, ["canvas", "bars"]);
+  assert.deepEqual(after.graphicSpec.order, [
+    "canvas",
+    "grid",
+    "bars",
+    "labels"
+  ]);
+  assert.equal(Object.isFrozen(after.graphicSpec.order), true);
+  assert.deepEqual(after.trace.children.at(-1).args, {
+    id: "labels",
+    type: "text",
+    length: 0,
+    after: "bars"
+  });
+});
+
+test("keeps equivalent placement idempotent and rejects conflicting placement", () => {
+  const program = chart()
+    .createGraphics({ id: "canvas", type: "canvas" })
+    .createGraphics({ id: "bars", type: "rect", length: 0 })
+    .createGraphics({
+      id: "grid",
+      type: "line",
+      length: 0,
+      before: "bars"
+    });
+  const repeated = program.createGraphics({
+    id: "grid",
+    type: "line",
+    length: 0,
+    before: "bars"
+  });
+
+  assert.equal(repeated.graphicSpec, program.graphicSpec);
+  assert.throws(
+    () =>
+      program.createGraphics({
+        id: "grid",
+        type: "line",
+        length: 0,
+        after: "bars"
+      }),
+    /conflicting placement/
+  );
+});
+
 test("rejects invalid and conflicting graphic definitions", () => {
   assert.throws(
     () => chart().createGraphics({ id: "points", type: "ellipse" }),
@@ -72,5 +135,40 @@ test("rejects invalid and conflicting graphic definitions", () => {
   assert.throws(
     () => program.createGraphics({ id: "shape", type: "rect" }),
     /different definition/
+  );
+  assert.throws(
+    () =>
+      program.createGraphics({
+        id: "other",
+        type: "circle",
+        before: "shape",
+        after: "shape"
+      }),
+    /cannot use before and after together/
+  );
+  assert.throws(
+    () =>
+      program.createGraphics({
+        id: "other",
+        type: "circle",
+        before: "missing"
+      }),
+    /Unknown graphic placement target/
+  );
+  assert.throws(
+    () =>
+      chart()
+        .createGraphics({ id: "canvas", type: "canvas" })
+        .createGraphics({ id: "other", type: "circle", before: "canvas" }),
+    /before the canvas/
+  );
+  assert.throws(
+    () =>
+      program.createGraphics({
+        id: "other",
+        type: "circle",
+        before: "other"
+      }),
+    /relative to itself/
   );
 });
