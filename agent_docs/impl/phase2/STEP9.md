@@ -22,14 +22,14 @@ Axes와 legend를 기존 wrapped action으로 조합하는 aggregate guide actio
 
 ## 진행 상태
 
-- [ ] `createGuides` top-level option validation
-- [ ] Axes applicability inference
-- [ ] Line-series legend applicability inference
-- [ ] Explicit `false` opt-out
-- [ ] Existing wrapped guide action orchestration
-- [ ] 별도 actions program의 개별 guide 호출 교체
-- [ ] Unit, acceptance, PNG regression
-- [ ] 영어 Guides/action/LLM 문서 갱신
+- [x] `createGuides` top-level option validation
+- [x] Axes applicability inference
+- [x] Line-series legend applicability inference
+- [x] Explicit `false` opt-out
+- [x] Existing wrapped guide action orchestration
+- [x] 별도 actions program의 개별 guide 호출 교체
+- [x] Unit, acceptance, PNG regression
+- [x] 영어 Guides/action/LLM 문서 갱신
 
 ## API
 
@@ -119,3 +119,10 @@ Legend option을 생략해도 supported line-series encoding이 있으므로 자
 - Actions program에 개별 top-level guide 생성 호출이 남지 않는다.
 - Primitive line program과 Phase 1 scatterplot 결과가 유지된다.
 - 관련 test와 문서가 통과하고 변경이 commit/push된다.
+
+## 검증 결과
+
+- Unit/acceptance test 208개 통과
+- PNG render regression 5개 통과
+- `cars-line-chart-actions.png`에서 axes, combined legend, title 결과 확인
+- STEP1 primitive line program과 Phase 1 scatterplot program 변경 없음

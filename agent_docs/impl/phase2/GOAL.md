@@ -54,9 +54,9 @@ chart()
 - [x] Line chart axes
 - [x] Combined series legend
 - [x] Chart title과 subtitle
-- [ ] `createGuides` aggregate action
+- [x] `createGuides` aggregate action
 - [x] Canvas와 고해상도 PNG rendering
-- [ ] 사용자 문서와 LLM reference
+- [x] 사용자 문서와 LLM reference
 
 ## Semantic 목표
 

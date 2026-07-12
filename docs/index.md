@@ -31,6 +31,7 @@ lower-level control.
 - [Marks](./api/marks.md)
 - [Encodings](./api/encodings.md)
 - [Coordinates](./api/coordinates.md)
+- [Guides](./api/guides.md)
 - [Axes](./api/axes.md)
 - [Legends](./api/legends.md)
 - [Titles](./api/titles.md)

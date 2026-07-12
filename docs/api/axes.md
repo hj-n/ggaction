@@ -3,7 +3,7 @@ layout: default
 title: Axes API
 ---
 
-[Documentation home](../index.md) · [Coordinates](./coordinates.md) · [Advanced components](../advanced/axis-components.md)
+[Documentation home](../index.md) · [Guides](./guides.md) · [Coordinates](./coordinates.md) · [Advanced components](../advanced/axis-components.md)
 
 # Axes API
 

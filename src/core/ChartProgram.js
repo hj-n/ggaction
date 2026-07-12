@@ -22,8 +22,7 @@ import { registerLineMarkActions } from "../actions/lineMarks.js";
 import { registerScaleActions } from "../actions/scales.js";
 import { registerEncodingActions } from "../actions/encodings.js";
 import { registerCoordinateActions } from "../actions/coordinates.js";
-import { registerGuideAxisActions } from "../actions/guides/axes/index.js";
-import { registerLegendActions } from "../actions/guides/legends/index.js";
+import { registerGuideActions } from "../actions/guides/index.js";
 import { registerTitleActions } from "../actions/titles.js";
 
 function ownState(value) {
@@ -190,8 +189,7 @@ registerScaleActions(ChartProgram);
 registerLineMarkActions(ChartProgram);
 registerEncodingActions(ChartProgram);
 registerCoordinateActions(ChartProgram);
-registerGuideAxisActions(ChartProgram);
-registerLegendActions(ChartProgram);
+registerGuideActions(ChartProgram);
 registerTitleActions(ChartProgram);
 
 export function chart() {

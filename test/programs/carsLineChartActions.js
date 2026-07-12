@@ -32,8 +32,9 @@ export function createCarsLineChartActions(cars) {
       field: "Origin",
       fieldType: "nominal"
     })
-    .createAxes({ y: { ticksAndLabels: { count: 6 } } })
-    .createLegend()
+    .createGuides({
+      axes: { y: { ticksAndLabels: { count: 6 } } }
+    })
     .createTitle({
       text: "The trend of acceleration by year",
       subtitle: "from 1970 to 1982"
