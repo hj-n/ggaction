@@ -47,6 +47,11 @@ strings. Each point is a finite `{ x, y }` object. `path.strokeDash` and
 `line.strokeDash` accept non-negative finite number arrays; an empty array is a
 solid stroke.
 
+The complete Phase 2 primitive contract is available in
+[`carsLineChartPrimitives.js`](https://github.com/hj-n/ggaction/blob/main/test/programs/carsLineChartPrimitives.js).
+It explicitly authors semantic line state, paths, axes, a combined legend, and
+title graphics without Phase 2 domain actions.
+
 ## `editGraphics({ target, property, value })`
 
 Sets one validated concrete property.
