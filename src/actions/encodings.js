@@ -22,6 +22,7 @@ const ENCODING_OPTIONS = Object.freeze([
   "scale"
 ]);
 const SCALE_OPTIONS = Object.freeze(["id", "type", "domain", "range"]);
+const RADIUS_OPTIONS = Object.freeze(["value", "target"]);
 
 function validateOptions(args, supported, operation) {
   for (const key of Object.keys(args)) {
@@ -165,8 +166,32 @@ const encodeColor = action(
   }
 );
 
+const encodeRadius = action(
+  {
+    op: "encodeRadius",
+    description: "Set a constant graphical radius on a point mark."
+  },
+  function (args = {}) {
+    validateOptions(args, RADIUS_OPTIONS, "encodeRadius");
+    const { id: target } = resolveTarget(this, args.target);
+
+    if (!Number.isFinite(args.value) || args.value < 0) {
+      throw new RangeError(
+        "encodeRadius requires a non-negative finite value."
+      );
+    }
+
+    return this.editGraphics({
+      target,
+      property: "radius",
+      value: args.value
+    });
+  }
+);
+
 export function registerEncodingActions(ProgramClass) {
   ProgramClass.prototype.encodeX = encodeX;
   ProgramClass.prototype.encodeY = encodeY;
   ProgramClass.prototype.encodeColor = encodeColor;
+  ProgramClass.prototype.encodeRadius = encodeRadius;
 }

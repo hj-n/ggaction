@@ -23,7 +23,7 @@ const program = chart()
 - [x] Ordinal domain과 range resolution
 - [x] Color scale materialization
 - [x] `encodeColor`
-- [ ] `encodeRadius`
+- [x] `encodeRadius`
 - [x] Shared color scale rematerialization
 - [ ] `carsScatterplotActions`의 수동 fill/radius 제거
 - [ ] Unit, trace, immutability test
