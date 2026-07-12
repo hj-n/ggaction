@@ -109,3 +109,25 @@ child ID such as `points:1` may also be targeted directly.
 
 All edits return a new program, copy caller-owned values, validate properties
 against the graphic type, and record an `editGraphics` trace node.
+
+## Scale materialization actions
+
+Extensions that define new positional authoring actions may create a semantic
+scale and explicitly materialize its consumers:
+
+```javascript
+const next = program
+  .createScale({
+    id: "x",
+    type: "linear",
+    domain: "auto",
+    range: "auto"
+  })
+  .rematerializeScale({ id: "x" });
+```
+
+`createScale` is idempotent for an equivalent definition and rejects a
+conflicting definition. `rematerializeScale` resolves the shared domain and
+Canvas range, then records concrete `editGraphics` calls beneath its trace
+node. It never runs automatically because semantic state changed; the
+responsible action must call it explicitly.

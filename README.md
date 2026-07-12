@@ -3,9 +3,9 @@
 `ggaction` is a JavaScript library for representing chart authoring as immutable,
 traceable actions.
 
-The first vertical slice is implemented: immutable programs, hierarchical
-action traces, the three authoring primitives, and a Canvas renderer for
-concrete `canvas` and `circle` graphics.
+The current vertical slice includes immutable programs, hierarchical action
+traces, Canvas, data and point-mark actions, quantitative x/y encodings, and a
+Canvas renderer for concrete `canvas`, `circle`, `line`, and `text` graphics.
 
 ```javascript
 import { chart } from "ggaction";
@@ -23,19 +23,26 @@ const program = chart()
   })
   .createPointMark({
     id: "points"
+  })
+  .encodeX({
+    field: "Horsepower"
+  })
+  .encodeY({
+    field: "Miles_per_Gallon"
   });
 ```
 
 See the runnable [cars scatterplot example](./examples/cars-scatterplot/),
-which renders 392 rows from `data/cars.json` through the low-level extension
-API. Domain-specific chart actions will be added in later steps.
+which renders 392 rows from `data/cars.json`. The example uses chart actions
+for Canvas, data, mark, and position authoring; constant point appearance still
+uses the extension primitives until dedicated appearance actions are added.
 
 Completed programs can also be exported directly in Node.js:
 
 ```javascript
 import { renderToPNG } from "ggaction/png";
 
-await renderToPNG(program, {
+await renderToPNG(completedProgram, {
   output: "./output/chart.png",
   pixelRatio: 2
 });
@@ -55,5 +62,6 @@ npm run test:render
 - [Canvas actions](./docs/canvas-actions.md)
 - [Data actions](./docs/data-actions.md)
 - [Mark actions](./docs/mark-actions.md)
+- [Position encodings](./docs/encoding-actions.md)
 - [Action authoring](./docs/action-authoring.md)
 - [PNG rendering](./docs/png-rendering.md)

@@ -34,8 +34,9 @@ The public mark is semantic `point`; its initial graphical realization is a
 shape is currently `circle`.
 
 Point creation does not assign x, y, fill, radius, a coordinate system, or a
-scale. The graphic remains incomplete until later encoding or graphical actions
-materialize those concrete properties. The renderer never infers them.
+scale. Use [`encodeX` and `encodeY`](./encoding-actions.md) to materialize
+positions. Constant appearance still requires a later graphical or domain
+action. The renderer never infers missing properties.
 
 A constant shape selects graphical appearance. A future field-driven shape
 encoding will record semantic intent and explicitly materialize its graphics.
