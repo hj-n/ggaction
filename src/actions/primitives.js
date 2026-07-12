@@ -6,6 +6,11 @@ import {
 } from "../core/immutable.js";
 import { parseSemanticPath } from "../core/semanticPath.js";
 import {
+  validateScaleDomain,
+  validateScaleRange,
+  validateScaleType
+} from "../core/scale.js";
+import {
   isDrawableGraphicType,
   isStructuralGraphicType,
   validateGraphicProperty,
@@ -85,6 +90,18 @@ function validateSemanticValue(parsed, value) {
     !MARK_TYPES.has(value)
   ) {
     throw new Error(`Unknown mark type "${value}".`);
+  }
+
+  if (parsed.kind === "scale") {
+    const property = parsed.path.join(".");
+
+    if (property === "type") {
+      validateScaleType(value);
+    } else if (property === "domain") {
+      validateScaleDomain(value);
+    } else if (property === "range") {
+      validateScaleRange(value);
+    }
   }
 }
 

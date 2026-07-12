@@ -22,7 +22,11 @@ function validateOptions(args, supported, operation) {
 }
 
 function samePairOrAuto(left, right) {
-  if (left === "auto" || right === "auto") {
+  if (left === right) {
+    return true;
+  }
+
+  if (!Array.isArray(left) || !Array.isArray(right)) {
     return left === right;
   }
 

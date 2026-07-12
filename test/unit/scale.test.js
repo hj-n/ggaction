@@ -41,6 +41,10 @@ test("maps linear values and centers a constant domain", () => {
     100
   ]);
   assert.deepEqual(mapLinearValues([2, 2], [2, 2], [10, 20]), [15, 15]);
+  assert.throws(
+    () => mapLinearValues([NaN], [2, 2], [10, 20]),
+    /finite numbers/
+  );
 });
 
 test("validates the STEP6 scale vocabulary and bounds", () => {

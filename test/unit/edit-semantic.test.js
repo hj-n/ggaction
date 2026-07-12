@@ -90,3 +90,30 @@ test("summarizes array values in the trace", () => {
     valueCount: 2
   });
 });
+
+test("validates semantic scale values through the primitive API", () => {
+  assert.throws(
+    () =>
+      chart().editSemantic({
+        property: "scale[x].type",
+        value: "linar"
+      }),
+    /Unsupported scale type/
+  );
+  assert.throws(
+    () =>
+      chart().editSemantic({
+        property: "scale[x].domain",
+        value: [0]
+      }),
+    /two finite numbers/
+  );
+  assert.throws(
+    () =>
+      chart().editSemantic({
+        property: "scale[x].range",
+        value: [0, Infinity]
+      }),
+    /two finite numbers/
+  );
+});

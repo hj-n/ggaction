@@ -127,3 +127,15 @@ test("validates position encoding inputs before changing the program", () => {
     /Mark id/
   );
 });
+
+test("rejects sharing one scale across x and y channels", () => {
+  const withX = createPointProgram().encodeX({
+    field: "horsepower",
+    scale: { id: "position" }
+  });
+
+  assert.throws(
+    () => withX.encodeY({ field: "mpg", scale: { id: "position" } }),
+    /cannot be shared across x and y/
+  );
+});

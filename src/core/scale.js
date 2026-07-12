@@ -112,6 +112,10 @@ export function mapLinearValues(values, domain, range) {
   const [domainStart, domainEnd] = validatePair(domain, "Resolved domain");
   const [rangeStart, rangeEnd] = validatePair(range, "Resolved range");
 
+  if (!values.every(Number.isFinite)) {
+    throw new TypeError("Linear scale values must be finite numbers.");
+  }
+
   if (domainStart === domainEnd) {
     const midpoint = (rangeStart + rangeEnd) / 2;
     return cloneAndFreeze(values.map(() => midpoint));
@@ -121,12 +125,8 @@ export function mapLinearValues(values, domain, range) {
   const rangeSpan = rangeEnd - rangeStart;
 
   return cloneAndFreeze(
-    values.map(value => {
-      if (!Number.isFinite(value)) {
-        throw new TypeError("Linear scale values must be finite numbers.");
-      }
-
-      return rangeStart + ((value - domainStart) / domainSpan) * rangeSpan;
-    })
+    values.map(
+      value => rangeStart + ((value - domainStart) / domainSpan) * rangeSpan
+    )
   );
 }
