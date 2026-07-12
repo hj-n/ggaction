@@ -14,10 +14,23 @@ X/Y axis title의 semantic text와 concrete text graphic을 domain action으로
 - [x] `createYAxisTitle` / `editYAxisTitle`
 - [x] Scale·Canvas rematerialization
 - [x] 대표 프로그램 title primitive 제거
-- [ ] Unit, trace, immutability test
-- [ ] Acceptance 및 PNG render test
+- [x] Unit, trace, immutability test
+- [x] Acceptance 및 PNG render test
 - [x] 영어 사용자 문서
-- [ ] 브라우저와 고해상도 PNG 확인
+- [x] 브라우저와 고해상도 PNG 확인
+
+## 검증 결과
+
+- 일반 unit/acceptance test 122개 통과
+- PNG render test 3개 통과
+- Field title inference와 semantic guide title 저장 확인
+- start/center/end와 numeric data-space `at` 확인
+- X title `(340, 382)`, Y title `(18, 185)` 및 Y rotation 확인
+- Scale·Canvas rematerialization과 immutable earlier program 확인
+- 대표 프로그램 top-level raw primitive action 0개 확인
+- Chromium Canvas 640×400, 392개 point와 완전한 axes 렌더링
+- 브라우저 console error 0개
+- `pixelRatio: 2` PNG 1280×800 확인
 
 ## API
 
