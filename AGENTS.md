@@ -31,6 +31,7 @@
 - Encourage extension authors to subclass `ChartProgram` instead of modifying the shared base prototype, so independently authored extensions do not collide.
 - Do not expose private path-parsing, structural-copy, validation, or rendering-dispatch helpers through public entry points.
 - Do not expose raw graphical IDs or raw graphical property paths when a meaningful domain action can represent the operation.
+- Name chart-authoring actions after semantic concepts such as `createPointMark`; keep concrete realizations such as `circle` inside action implementations and `graphicSpec`.
 - Public actions accept meaningful option objects, such as `editXAxisLine({ lineWidth: 3 })`.
 - Every public action accepts one parameter object and returns a new `ChartProgram`.
 - Validate library-defined closed vocabularies such as channels and types.
@@ -59,6 +60,7 @@
 
 - `semanticSpec` records what the chart means; `graphicSpec` records the concrete graphical result.
 - A semantic point mark may be realized by a graphical `circle` primitive.
+- A constant point shape is graphical appearance, while a field-driven shape is semantic encoding that must be explicitly materialized.
 - User-specified scale domains and ranges are semantic. Resolved primitive values such as x, y, radius, and color are graphical.
 - Dataset values are immutable after creation; filtering, aggregation, and other data changes must create transforms or derived datasets rather than replace source values.
 - Canvas properties, themes, fonts, strokes, and other appearance-only values are graphical.
