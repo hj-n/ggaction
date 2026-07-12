@@ -76,8 +76,8 @@ test("renders the cars scatterplot created with the canvas action", () => {
   ]);
   assert.deepEqual(program.semanticSpec.guides, {
     axis: {
-      x: { scale: "x", title: "Horsepower" },
-      y: { scale: "y", title: "Miles per Gallon" }
+      x: { coordinate: "main", scale: "x", title: "Horsepower" },
+      y: { coordinate: "main", scale: "y", title: "Miles per Gallon" }
     }
   });
   assert.deepEqual(program.resolvedScales, {
@@ -128,8 +128,8 @@ test("renders the cars scatterplot created with the canvas action", () => {
   ]);
   const xAxis = createAxes.children[0];
   const yAxis = createAxes.children[1];
-  const xTickGroup = xAxis.children[1];
-  const yTickGroup = yAxis.children[1];
+  const xTickGroup = xAxis.children[2];
+  const yTickGroup = yAxis.children[2];
   assert.deepEqual(xTickGroup.children.map(node => node.op), [
     "createXAxisTicks",
     "createXAxisLabels"
@@ -139,16 +139,17 @@ test("renders the cars scatterplot created with the canvas action", () => {
     "createYAxisLabels"
   ]);
   assert.deepEqual(xAxis.children.map(node => node.op), [
+    "editSemantic",
     "createXAxisLine",
     "createXAxisTicksAndLabels",
     "createXAxisTitle"
   ]);
   assert.deepEqual(yAxis.children.map(node => node.op), [
+    "editSemantic",
     "createYAxisLine",
     "createYAxisTicksAndLabels",
     "createYAxisTitle"
   ]);
-
   const createCanvas = program.trace.children[0];
   assert.equal(createCanvas.op, "createCanvas");
   assert.deepEqual(

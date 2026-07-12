@@ -42,19 +42,29 @@ function validateConfig(channel, config) {
 }
 
 function inferText(program, channel, scaleId) {
-  const fields = new Set();
+  const titles = new Set();
   for (const layer of program.semanticSpec.layers) {
     const encoding = layer.encoding?.[channel];
-    if (encoding?.scale === scaleId && typeof encoding.field === "string" && encoding.field.length) fields.add(encoding.field);
+    if (
+      encoding?.scale === scaleId &&
+      typeof encoding.field === "string" &&
+      encoding.field.length
+    ) {
+      titles.add(
+        encoding.aggregate === undefined
+          ? encoding.field
+          : `${encoding.aggregate}(${encoding.field})`
+      );
+    }
   }
-  if (fields.size !== 1) throw new Error(`Axis title text cannot be inferred for scale "${scaleId}".`);
-  return [...fields][0];
+  if (titles.size !== 1) throw new Error(`Axis title text cannot be inferred for scale "${scaleId}".`);
+  return [...titles][0];
 }
 
 function resolveGeometry(program, channel, config) {
   const scale = program.resolvedScales[config.scale];
   const bounds = program.context.currentGraphicBounds;
-  if (scale?.type !== "linear" || !bounds) throw new Error("Axis title requires a resolved linear scale and Canvas bounds.");
+  if (!["linear", "time"].includes(scale?.type) || !bounds) throw new Error("Axis title requires a resolved continuous scale and Canvas bounds.");
   let along;
   if (config.at === "start") along = scale.range[0];
   else if (config.at === "center") along = (scale.range[0] + scale.range[1]) / 2;

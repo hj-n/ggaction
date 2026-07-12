@@ -60,6 +60,18 @@ test("routes shared scale and position to every child", () => {
   }
 });
 
+test("stores an explicitly selected coordinate on a complete axis", () => {
+  const program = encodedProgram().createXAxis({ coordinate: "main" });
+  const node = program.trace.children.at(-1);
+
+  assert.equal(program.semanticSpec.guides.axis.x.coordinate, "main");
+  assert.equal(node.children[0].op, "editSemantic");
+  assert.throws(
+    () => encodedProgram().createXAxis({ coordinate: "missing" }),
+    /Unknown coordinate/
+  );
+});
+
 test("validates nested options and rejects partial duplicate axes", () => {
   const program = encodedProgram();
 

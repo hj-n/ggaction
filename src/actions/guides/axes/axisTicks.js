@@ -1,7 +1,7 @@
 import { action } from "../../../core/action.js";
 import { validateUserId } from "../../../core/identifiers.js";
 import { mapLinearValues } from "../../../core/scale.js";
-import { niceTicks } from "../../../core/ticks.js";
+import { niceTicks, timeTicks } from "../../../core/ticks.js";
 
 const OPTIONS = Object.freeze(["scale", "position", "count", "values", "length", "color", "lineWidth"]);
 const DEFAULTS = Object.freeze({ count: 5, length: 6, color: "#64748b", lineWidth: 1 });
@@ -24,9 +24,13 @@ function validateConfig(channel, config) {
 function geometry(program, channel, config) {
   const scale = program.resolvedScales[config.scale];
   const bounds = program.context.currentGraphicBounds;
-  if (scale?.type !== "linear" || !bounds) throw new Error("Axis ticks require a resolved linear scale and Canvas bounds.");
+  if (!["linear", "time"].includes(scale?.type) || !bounds) throw new Error("Axis ticks require a resolved continuous scale and Canvas bounds.");
   const domain = scale.domain;
-  const values = config.mode === "values" ? config.values : niceTicks(domain, config.count);
+  const values = config.mode === "values"
+    ? config.values
+    : scale.type === "time"
+      ? timeTicks(domain, config.count)
+      : niceTicks(domain, config.count);
   const low = Math.min(...domain), high = Math.max(...domain);
   if (!values.every(value => value >= low && value <= high)) throw new RangeError("Tick values must be inside the scale domain.");
   const positions = mapLinearValues(values, domain, scale.range);

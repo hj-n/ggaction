@@ -35,6 +35,8 @@ test("createAxes reads a stored Cartesian coordinate and creates both axes", () 
   assert.equal(before.semanticSpec.layers[0].coordinate, "main");
   assert.equal(program.semanticSpec.guides.axis.x.scale, "x");
   assert.equal(program.semanticSpec.guides.axis.y.scale, "y");
+  assert.equal(program.semanticSpec.guides.axis.x.coordinate, "main");
+  assert.equal(program.semanticSpec.guides.axis.y.coordinate, "main");
 
   const node = program.trace.children.at(-1);
   assert.equal(node.op, "createAxes");

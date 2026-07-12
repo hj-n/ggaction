@@ -132,12 +132,12 @@ test("authors and renders the cars line chart with the line mark action", () => 
     "canvas",
     "trends",
     "xAxisLine",
-    "yAxisLine",
     "xAxisTicks",
-    "yAxisTicks",
     "xAxisLabels",
-    "yAxisLabels",
     "xAxisTitle",
+    "yAxisLine",
+    "yAxisTicks",
+    "yAxisLabels",
     "yAxisTitle",
     "seriesLegendSymbols",
     "seriesLegendLabels",
@@ -164,6 +164,7 @@ test("authors and renders the cars line chart with the line mark action", () => 
     "encodeY",
     "encodeColor",
     "encodeStrokeDash",
+    "createAxes",
     "editSemantic",
     "createGraphics",
     "editGraphics"
@@ -192,6 +193,22 @@ test("authors and renders the cars line chart with the line mark action", () => 
   assert.equal(
     program.trace.children.some(
       node => node.op === "editGraphics" && node.args.target === "trends"
+    ),
+    false
+  );
+  const axisGraphics = new Set([
+    "xAxisLine",
+    "xAxisTicks",
+    "xAxisLabels",
+    "xAxisTitle",
+    "yAxisLine",
+    "yAxisTicks",
+    "yAxisLabels",
+    "yAxisTitle"
+  ]);
+  assert.equal(
+    program.trace.children.some(
+      node => node.op === "createGraphics" && axisGraphics.has(node.args.id)
     ),
     false
   );

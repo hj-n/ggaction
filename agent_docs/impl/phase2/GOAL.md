@@ -51,7 +51,7 @@ chart()
 - [x] Quantitative mean aggregation
 - [x] Series grouping과 시간순 정렬
 - [x] Color와 strokeDash encoding
-- [ ] Line chart axes
+- [x] Line chart axes
 - [ ] Combined series legend
 - [ ] Chart title과 subtitle
 - [ ] `createGuides` aggregate action

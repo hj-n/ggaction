@@ -1,8 +1,10 @@
 import { action } from "../../../core/action.js";
 import { isPlainObject } from "../../../core/immutable.js";
+import { validateUserId } from "../../../core/identifiers.js";
 
 const TOP_OPTIONS = Object.freeze([
   "scale",
+  "coordinate",
   "position",
   "line",
   "ticksAndLabels",
@@ -85,8 +87,36 @@ function makeCreateAxis(channel) {
       const shared = {};
       if (Object.hasOwn(args, "scale")) shared.scale = args.scale;
       if (Object.hasOwn(args, "position")) shared.position = args.position;
+      let next = this;
 
-      return this[operation.line]({
+      if (Object.hasOwn(args, "coordinate")) {
+        const coordinate = validateUserId(args.coordinate, "Coordinate id");
+        const scale = args.scale ?? channel;
+        const exists = next.semanticSpec.coordinates.some(
+          item => item.id === coordinate
+        );
+        const hasConsumer = next.semanticSpec.layers.some(
+          layer =>
+            layer.coordinate === coordinate &&
+            layer.encoding?.[channel]?.scale === scale
+        );
+
+        if (!exists) {
+          throw new Error(`Unknown coordinate "${coordinate}".`);
+        }
+        if (!hasConsumer) {
+          throw new Error(
+            `${operation.create} found no ${channel} encoding for coordinate "${coordinate}" and scale "${scale}".`
+          );
+        }
+
+        next = next.editSemantic({
+          property: `guide.axis.${channel}.coordinate`,
+          value: coordinate
+        });
+      }
+
+      return next[operation.line]({
         ...shared,
         ...(args.line ?? {})
       })[operation.ticksAndLabels]({

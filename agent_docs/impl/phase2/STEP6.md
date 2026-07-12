@@ -7,20 +7,20 @@ Actions line-chart program의 raw x/y axis graphics 전체를 다음 action 하�
 교체한다.
 
 ```javascript
-.createAxes()
+.createAxes({ y: { ticksAndLabels: { count: 6 } } })
 ```
 
 ## 진행 상태
 
-- [ ] UTC calendar tick interval 선택
-- [ ] Time scale tick generation
-- [ ] Temporal label automatic formatting
-- [ ] Time scale axis line/tick/label/title 지원
-- [ ] Aggregate-aware axis title inference
-- [ ] Canvas 변경 시 temporal axis rematerialization
-- [ ] 별도 actions program의 raw axis block 제거
-- [ ] Unit, acceptance, PNG regression
-- [ ] 영어 Axes/action/LLM 문서 갱신
+- [x] UTC calendar tick interval 선택
+- [x] Time scale tick generation
+- [x] Temporal label automatic formatting
+- [x] Time scale axis line/tick/label/title 지원
+- [x] Aggregate-aware axis title inference
+- [x] Canvas 변경 시 temporal axis rematerialization
+- [x] 별도 actions program의 raw axis block 제거
+- [x] Unit, acceptance, PNG regression
+- [x] 영어 Axes/action/LLM 문서 갱신
 
 ## Action 구조
 
@@ -115,8 +115,10 @@ STEP1 primitive line program과 test는 변경하지 않는다. `carsLineChartAc
 - `xAxis`, `yAxis`, tick position helper 변수
 - raw axis guide semantic edits
 
-Line mark action chain 뒤에 `.createAxes()`를 추가한다. Legend와 chart title의
-primitive/helper graphics는 후속 단계까지 유지한다.
+Line mark action chain 뒤에 `.createAxes({ y: { ticksAndLabels: { count: 6 } } })`를
+추가한다. Explicit y count는 기존 primitive chart의 2-unit tick layout을 유지하기
+위한 user-facing 선택이다. Legend와 chart title의 primitive/helper graphics는
+후속 단계까지 유지한다.
 
 ## 구현 순서
 
@@ -135,6 +137,19 @@ primitive/helper graphics는 후속 단계까지 유지한다.
 - Top/right axes
 - Grid lines
 - Legend, chart title, `createGuides`
+
+## 검증 결과
+
+- Unit/acceptance test 189개 통과
+- PNG render regression 5개 통과
+- 1970–1982 domain에서 2년 간격 UTC ticks와 labels 생성
+- Linear aggregate y-axis의 10, 12, ..., 20 layout 유지
+- `Year`, `mean(Acceleration)` title inference 검증
+- Canvas 변경 후 time scale과 axis component rematerialization 검증
+- Semantic axis에 resolved coordinate ID 저장
+- Actions program의 raw axis semantic/graphic 호출 제거
+- STEP1 primitive line program과 test 변경 없음
+- 고해상도 actions line chart 직접 확인
 
 ## 완료 조건
 

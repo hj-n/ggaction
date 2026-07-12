@@ -8,8 +8,8 @@ title: Advanced Axis Components
 # Advanced Axis Components
 
 Use these actions when a complete `createAxes` call is not sufficient. All
-component actions require a resolved linear scale and Canvas bounds. x supports
-`bottom`; y supports `left`.
+component actions require a resolved continuous (`linear` or `time`) scale and
+Canvas bounds. x supports `bottom`; y supports `left`.
 
 ## Complete single-channel axes
 
@@ -29,6 +29,10 @@ program.createXAxis({
 `createXAxis` and `createYAxis` call the line, tick-and-label, and title actions
 as trace children. Complete-axis aggregate edit actions are not implemented;
 use the focused edit actions below.
+
+Create also accepts `coordinate`, an existing coordinate ID consumed by the
+selected channel and scale. `createAxes` supplies this automatically and stores
+it on the semantic guide.
 
 ## Lines
 
@@ -59,8 +63,8 @@ program.editXAxisTicks({ length: 8, color: "black" });
 | --- | --- |
 | `scale` | Create-only scale ID; defaults to channel |
 | `position` | `bottom` for x, `left` for y |
-| `count` | Positive requested nice-tick count; default `5` |
-| `values` | Exact finite data-space values; mutually exclusive with `count` |
+| `count` | Positive requested tick density; default `5` |
+| `values` | Exact finite data-space values or timestamps; mutually exclusive with `count` |
 | `length` | Non-negative tick length; default `6` |
 | `color` | Stroke color; default `#64748b` |
 | `lineWidth` | Non-negative width; default `1` |
@@ -76,6 +80,10 @@ Labels accept `scale` on creation plus `position`, `count`, `values`, `offset`,
 `format`, `color`, `fontSize`, `fontFamily`, and `fontWeight`. Format is
 `"auto"` or `{ decimals: nonNegativeInteger }`. Default offsets are 18 for x
 and 12 for y; default font size is 12.
+
+Time scales use UTC calendar ticks and require `format: "auto"`. Automatic
+labels select year, month, day, hour, minute, or second precision from the
+resolved domain span. Decimal formatting is limited to linear scales.
 
 Labels reuse existing tick values when count/values are omitted. Conflicting
 tick and label configurations produce an error.
@@ -109,7 +117,7 @@ program.editXAxisTitle({ text: "Engine horsepower", at: "start" });
 
 | Option | Meaning |
 | --- | --- |
-| `text` | Non-empty title; inferred from one connected field when omitted |
+| `text` | Non-empty title; inferred from one connected field/aggregate when omitted |
 | `scale` | Create-only scale ID; defaults to channel |
 | `position` | `bottom` for x, `left` for y |
 | `at` | `start`, `center`, `end`, or an in-domain data value |

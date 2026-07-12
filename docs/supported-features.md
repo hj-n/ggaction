@@ -21,7 +21,7 @@ This page describes implemented behavior only.
 | Stroke dash | Nominal line series with explicit or automatic ten-pattern range |
 | Constant appearance | Circle radius |
 | Coordinates | Named Cartesian and Polar semantic resources; x/y use Cartesian |
-| Guides | Bottom x-axis and left y-axis, including lines, ticks, labels, titles |
+| Guides | Bottom/left linear or UTC time axes with lines, ticks, labels, aggregate-aware titles |
 | Rendering | Browser Canvas and Node PNG |
 | Graphics | Concrete canvas, circle, line, text, and point-array path nodes |
 

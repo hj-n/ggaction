@@ -194,8 +194,12 @@ const createAxes = action(
 
     let program = this;
 
-    if (x !== undefined) program = program.createXAxis(x);
-    if (y !== undefined) program = program.createYAxis(y);
+    if (x !== undefined) {
+      program = program.createXAxis({ ...x, coordinate: coordinate.id });
+    }
+    if (y !== undefined) {
+      program = program.createYAxis({ ...y, coordinate: coordinate.id });
+    }
 
     return program;
   }

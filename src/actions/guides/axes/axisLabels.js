@@ -1,7 +1,7 @@
 import { action } from "../../../core/action.js";
 import { validateUserId } from "../../../core/identifiers.js";
 import { mapLinearValues } from "../../../core/scale.js";
-import { niceTicks } from "../../../core/ticks.js";
+import { formatTimeTick, niceTicks, timeTicks } from "../../../core/ticks.js";
 
 const OPTIONS = Object.freeze([
   "scale", "position", "count", "values", "offset", "format", "color",
@@ -54,12 +54,23 @@ function assertTickCompatibility(ticks, config, operation) {
 function resolve(program, channel, config) {
   const scale = program.resolvedScales[config.scale];
   const bounds = program.context.currentGraphicBounds;
-  if (scale?.type !== "linear" || !bounds) throw new Error("Axis labels require a resolved linear scale and Canvas bounds.");
-  const values = config.mode === "values" ? config.values : niceTicks(scale.domain, config.count);
+  if (!["linear", "time"].includes(scale?.type) || !bounds) throw new Error("Axis labels require a resolved continuous scale and Canvas bounds.");
+  if (scale.type === "time" && config.format !== "auto") throw new Error('Time axis labels currently require format "auto".');
+  const values = config.mode === "values"
+    ? config.values
+    : scale.type === "time"
+      ? timeTicks(scale.domain, config.count)
+      : niceTicks(scale.domain, config.count);
   const low = Math.min(...scale.domain), high = Math.max(...scale.domain);
   if (!values.every(value => value >= low && value <= high)) throw new RangeError("Label values must be inside the scale domain.");
   const positions = mapLinearValues(values, scale.domain, scale.range);
-  const text = values.map(value => config.format === "auto" ? String(value) : value.toFixed(config.format.decimals));
+  const text = values.map(value =>
+    scale.type === "time"
+      ? formatTimeTick(value, scale.domain)
+      : config.format === "auto"
+        ? String(value)
+        : value.toFixed(config.format.decimals)
+  );
   return channel === "x"
     ? { values, x: positions, y: bounds.y + bounds.height + config.offset, text, textAlign: "center", textBaseline: "top" }
     : { values, x: bounds.x - config.offset, y: positions, text, textAlign: "right", textBaseline: "middle" };

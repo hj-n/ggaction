@@ -14,8 +14,7 @@ action for ordinary chart authoring.
 
 ```javascript
 program.createAxes({
-  x: { title: { text: "Horsepower" } },
-  y: { title: { text: "Miles per Gallon" } }
+  y: { ticksAndLabels: { count: 6 } }
 });
 ```
 
@@ -41,6 +40,20 @@ Each x/y axis option supports:
 Use either `count` or exact data-space `values` for ticks. Ambiguous coordinates
 or scales must be selected explicitly. `createAxes` reads stored coordinates;
 it never creates or repairs them.
+
+Linear scales create numeric nice ticks. Time scales choose a UTC calendar
+interval near the requested count and format labels automatically. For example,
+a 1970–1982 domain produces labels such as `1970`, `1972`, ..., `1982`.
+Explicit time values are finite timestamps.
+
+Titles are inferred from the unique encoding consuming each scale. Aggregate
+encodings include their operation, so `mean` on `Acceleration` becomes
+`mean(Acceleration)`. Pass `title.text` when inference is ambiguous or a custom
+label is desired.
+
+The selected coordinate ID is stored on each semantic axis. Canvas size and
+margin edits explicitly rematerialize continuous scales and every connected
+axis component.
 
 The trace preserves its decomposition:
 
