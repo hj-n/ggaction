@@ -50,7 +50,7 @@ function niceCeilingStep(span, count) {
   const rough = span / count;
   const power = 10 ** Math.floor(Math.log10(rough));
   const fraction = rough / power;
-  const factor = [1, 2, 5, 10].find(candidate => candidate >= fraction);
+  const factor = [1, 2, 3, 5, 10].find(candidate => candidate >= fraction);
   return factor * power;
 }
 

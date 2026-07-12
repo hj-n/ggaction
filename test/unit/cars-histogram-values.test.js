@@ -24,7 +24,7 @@ test("derives deterministic bins, stacks, and concrete histogram values", () => 
     step: 50
   });
   assert.deepEqual(values.scales.y, {
-    domain: [0, 150],
+    domain: [0, 120],
     range: [330, 80]
   });
   assert.deepEqual(

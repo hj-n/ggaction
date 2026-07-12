@@ -132,6 +132,7 @@ valid Displacement/Origin rows
 - `Origin`은 non-empty string이어야 한다.
 - `maxBins`는 positive integer다.
 - Nice bin step은 deterministic해야 하며 bin 수가 `maxBins`를 넘지 않는다.
+- Nice step 후보는 `1, 2, 3, 5 × 10ⁿ`을 사용한다.
 - Bin은 `[start, end)`이고 마지막 bin만 maximum을 포함한다.
 - Origin 순서는 valid row의 first appearance order다.
 - 각 bin 안에서 Origin domain 순서대로 count를 0부터 누적한다.

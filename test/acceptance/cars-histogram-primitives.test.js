@@ -198,11 +198,11 @@ test("authors and renders the complete primitive cars histogram", () => {
     "chartSubtitle"
   ]);
 
-  assert.equal(findCanvasCalls(context, "stroke").length, 38);
+  assert.equal(findCanvasCalls(context, "stroke").length, 40);
   assert.equal(findCanvasCalls(context, "fillRect").length, 19);
-  assert.equal(findCanvasCalls(context, "fillText").length, 22);
-  assert.equal(findCanvasCalls(context, "moveTo").length, 38);
-  assert.equal(findCanvasCalls(context, "lineTo").length, 92);
+  assert.equal(findCanvasCalls(context, "fillText").length, 23);
+  assert.equal(findCanvasCalls(context, "moveTo").length, 40);
+  assert.equal(findCanvasCalls(context, "lineTo").length, 94);
 
   const topLevelOps = new Set(program.trace.children.map(node => node.op));
   assert.deepEqual([...topLevelOps], [
@@ -242,7 +242,7 @@ test("owns histogram input and renders from graphicSpec alone", () => {
   assert.equal(program.semanticSpec.datasets[0].values[0].Displacement, stored);
   const context = createMockCanvasContext();
   renderCarsHistogramPrimitives({ graphicSpec: program.graphicSpec }, context);
-  assert.equal(findCanvasCalls(context, "stroke").length, 38);
+  assert.equal(findCanvasCalls(context, "stroke").length, 40);
   assert.equal(findCanvasCalls(context, "fillRect").length, 19);
-  assert.equal(findCanvasCalls(context, "fillText").length, 22);
+  assert.equal(findCanvasCalls(context, "fillText").length, 23);
 });
