@@ -39,13 +39,12 @@ nice bin boundaries use `1, 2, 3, 5 × 10ⁿ` steps and never create more than
 do not expand them.
 
 The resolved scale domain contains the outer bin boundaries. Concrete bin
-counts and rect geometry are deferred until the remaining histogram encodings
-are present.
+counts and rect geometry are materialized once count/zero-stack y is present.
 
 A histogram count y scale defaults to `nice: true` and `zero: true`. Its
 automatic domain uses total counts per x bin rather than raw source values.
-The x and y scale actions both leave concrete rect geometry unchanged until
-bar materialization is available.
+The x action leaves the collection empty; the y action resolves both scales and
+materializes concrete histogram rectangles.
 
 ## Ordinal scales
 

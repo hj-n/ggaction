@@ -85,7 +85,7 @@ encodeY({ field?, target?, fieldType?, aggregate?, stack?, coordinate?, scale? }
 ```
 
 Create a quantitative point, aggregate line, or inferred count/zero-stack bar
-y encoding.
+y encoding. A complete bar x/y pair materializes concrete histogram rects.
 [Position encodings](../api/position-encodings.md)
 
 ### `encodeColor`

@@ -370,9 +370,7 @@ const rematerializeScale = action(
     for (const { consumer, values } of valuesByConsumer) {
       if (
         consumer.layer.mark?.type === "line" ||
-        (consumer.layer.mark?.type === "bar" &&
-          (consumer.encoding.bin !== undefined ||
-            consumer.encoding.aggregate === "count"))
+        consumer.layer.mark?.type === "bar"
       ) {
         continue;
       }

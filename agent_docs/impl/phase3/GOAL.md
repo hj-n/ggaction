@@ -47,7 +47,7 @@ chart는 별도 grid option 없이 horizontal grid를 가진다.
 - [x] `createBarMark`
 - [x] Bar binned `encodeX`
 - [x] Bar count/stack `encodeY`
-- [ ] Histogram rect materialization
+- [x] Histogram rect materialization
 - [ ] Bar `encodeColor`
 - [ ] Atomic `encodeHistogram`
 - [ ] Histogram axes

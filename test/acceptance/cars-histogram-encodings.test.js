@@ -78,8 +78,12 @@ test("replaces raw bar and position blocks with chart actions", () => {
     "editSemantic",
     "editSemantic",
     "createScale",
-    "rematerializeScale"
+    "rematerializeBarMark"
   ]);
+  assert.deepEqual(
+    encodeY.children.at(-1).children.slice(0, 2).map(node => node.op),
+    ["rematerializeScale", "rematerializeScale"]
+  );
   assert.deepEqual(program.resolvedScales.y, {
     type: "linear",
     domain: [0, 120],

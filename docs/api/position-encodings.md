@@ -64,9 +64,8 @@ Automatic nice bins use `1, 2, 3, 5 × 10ⁿ` steps and never exceed
 `nice` and `zero`. The resolved x domain spans bin boundaries, while the
 automatic range uses current plot bounds.
 
-This action intentionally leaves the bar's rect collection empty. Add
-`encodeY()` to resolve count/zero-stack meaning and the y scale; automatic
-rectangle materialization remains deferred.
+This action leaves the bar's rect collection empty until `encodeY()` resolves
+count/zero-stack meaning and materializes the histogram rectangles.
 
 ## Count/stack bar `encodeY(options?)`
 
@@ -98,9 +97,10 @@ An explicit field must match the binned x field. The automatic y domain uses
 the largest total bin count, applies zero, and then applies a nice boundary.
 Values outside an explicit x domain are not counted.
 
-This action resolves the y scale but deliberately leaves the rect collection
-empty. Automatic bar geometry is added by a later histogram materialization
-action.
+This action resolves the y scale and materializes one concrete rectangle per
+non-empty bin. Without a color encoding, rectangles use the default blue fill,
+white stroke, and `0.5` stroke width. Canvas geometry edits explicitly
+rematerialize the connected scales and rectangles.
 
 ## Temporal line `encodeX(options)`
 

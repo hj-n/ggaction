@@ -152,21 +152,27 @@ export function countHistogramBins(values, boundaries) {
   }
 
   const counts = Array(boundaries.length - 1).fill(0);
-  const start = boundaries[0];
-  const stop = boundaries.at(-1);
 
   for (const value of values) {
-    if (value < start || value > stop) continue;
-
-    let low = 0;
-    let high = boundaries.length - 1;
-    while (low + 1 < high) {
-      const middle = Math.floor((low + high) / 2);
-      if (value < boundaries[middle]) high = middle;
-      else low = middle;
-    }
-    counts[Math.min(low, counts.length - 1)] += 1;
+    const index = findHistogramBinIndex(value, boundaries);
+    if (index !== -1) counts[index] += 1;
   }
 
   return cloneAndFreeze(counts);
+}
+
+export function findHistogramBinIndex(value, boundaries) {
+  if (!Number.isFinite(value)) {
+    throw new TypeError("Histogram value must be finite.");
+  }
+  if (value < boundaries[0] || value > boundaries.at(-1)) return -1;
+
+  let low = 0;
+  let high = boundaries.length - 1;
+  while (low + 1 < high) {
+    const middle = Math.floor((low + high) / 2);
+    if (value < boundaries[middle]) high = middle;
+    else low = middle;
+  }
+  return Math.min(low, boundaries.length - 2);
 }

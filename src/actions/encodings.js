@@ -407,6 +407,10 @@ function encodePosition(program, channel, args, operation) {
     return next.rematerializeLineMark({ id: target });
   }
 
+  if (layer.mark.type === "bar" && channel === "y") {
+    return next.rematerializeBarMark({ id: target });
+  }
+
   return next.rematerializeScale({ id: scale.id });
 }
 

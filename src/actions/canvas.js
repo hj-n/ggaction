@@ -102,6 +102,23 @@ function rematerializeCompleteLineMarks(program) {
   return next;
 }
 
+function rematerializeCompleteBarMarks(program) {
+  let next = program;
+
+  for (const layer of program.semanticSpec.layers) {
+    if (
+      layer.mark?.type === "bar" &&
+      layer.encoding?.x?.bin !== undefined &&
+      layer.encoding?.y?.aggregate === "count" &&
+      layer.encoding.y.stack === "zero"
+    ) {
+      next = next.rematerializeBarMark({ id: layer.id });
+    }
+  }
+
+  return next;
+}
+
 function rematerializeLegend(program) {
   if (
     program.semanticSpec.guides.legend?.series === undefined ||
@@ -156,6 +173,7 @@ const editCanvas = action(
     ) {
       next = rematerializePositionScales(next);
       next = rematerializeCompleteLineMarks(next);
+      next = rematerializeCompleteBarMarks(next);
       next = rematerializeLegend(next);
       next = rematerializeTitle(next);
     }

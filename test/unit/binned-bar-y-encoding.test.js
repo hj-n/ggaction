@@ -44,7 +44,15 @@ test("infers a count/zero-stack bar y encoding", () => {
     domain: [0, 120],
     range: [330, 80]
   });
-  assert.equal(program.graphicSpec.objects.bars.children.length, 0);
+  assert.equal(program.graphicSpec.objects.bars.children.length, 9);
+  assert.equal(
+    program.graphicSpec.objects.bars.children.every(child =>
+      ["x", "y", "width", "height"].every(property =>
+        Number.isFinite(child.properties[property])
+      )
+    ),
+    true
+  );
   assert.equal(before.semanticSpec.layers[0].encoding.y, undefined);
 
   const node = program.trace.children.at(-1);
@@ -58,7 +66,19 @@ test("infers a count/zero-stack bar y encoding", () => {
     "editSemantic",
     "editSemantic",
     "createScale",
-    "rematerializeScale"
+    "rematerializeBarMark"
+  ]);
+  assert.deepEqual(node.children.at(-1).children.map(child => child.op), [
+    "rematerializeScale",
+    "rematerializeScale",
+    "editGraphics",
+    "editGraphics",
+    "editGraphics",
+    "editGraphics",
+    "editGraphics",
+    "editGraphics",
+    "editGraphics",
+    "editGraphics"
   ]);
 });
 
@@ -84,13 +104,21 @@ test("accepts explicit equivalent semantics and scale bounds", () => {
   });
 });
 
-test("rematerializes histogram scales without creating rects", () => {
+test("rematerializes histogram scales and rects after Canvas edits", () => {
   const program = histogramProgram().encodeY();
   const edited = program.editCanvas({ width: 500, height: 500 });
 
   assert.deepEqual(edited.resolvedScales.x.range, [80, 440]);
   assert.deepEqual(edited.resolvedScales.y.range, [370, 80]);
-  assert.equal(edited.graphicSpec.objects.bars.children.length, 0);
+  assert.equal(edited.graphicSpec.objects.bars.children.length, 9);
+  assert.equal(
+    edited.graphicSpec.objects.bars.children[0].properties.width,
+    40
+  );
+  assert.notEqual(
+    edited.graphicSpec.objects.bars.children[0].properties.height,
+    program.graphicSpec.objects.bars.children[0].properties.height
+  );
   assert.equal(program.graphicSpec.objects.canvas.properties.width, 432);
 });
 
