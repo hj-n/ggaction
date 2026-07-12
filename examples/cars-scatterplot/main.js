@@ -14,7 +14,9 @@ const program = chart()
   .encodeX({ field: "Horsepower" })
   .encodeY({ field: "Miles_per_Gallon" })
   .encodeColor({ field: "Origin" })
-  .encodeRadius({ value: 3 });
+  .encodeRadius({ value: 3 })
+  .createXAxisLine()
+  .createYAxisLine();
 
 const canvas = document.querySelector("#chart");
 render(program, canvas.getContext("2d"));

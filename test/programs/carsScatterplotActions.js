@@ -27,20 +27,8 @@ export function createCarsScatterplotActions(cars) {
     .encodeY({ field: "Miles_per_Gallon" })
     .encodeColor({ field: "Origin" })
     .encodeRadius({ value: 3 })
-    .createGraphics({ id: "xAxis", type: "line" })
-    .editGraphics({ target: "xAxis", property: "x1", value: bounds.left })
-    .editGraphics({ target: "xAxis", property: "y1", value: bounds.bottom })
-    .editGraphics({ target: "xAxis", property: "x2", value: bounds.right })
-    .editGraphics({ target: "xAxis", property: "y2", value: bounds.bottom })
-    .editGraphics({ target: "xAxis", property: "stroke", value: "#334155" })
-    .editGraphics({ target: "xAxis", property: "strokeWidth", value: 1 })
-    .createGraphics({ id: "yAxis", type: "line" })
-    .editGraphics({ target: "yAxis", property: "x1", value: bounds.left })
-    .editGraphics({ target: "yAxis", property: "y1", value: bounds.top })
-    .editGraphics({ target: "yAxis", property: "x2", value: bounds.left })
-    .editGraphics({ target: "yAxis", property: "y2", value: bounds.bottom })
-    .editGraphics({ target: "yAxis", property: "stroke", value: "#334155" })
-    .editGraphics({ target: "yAxis", property: "strokeWidth", value: 1 })
+    .createXAxisLine()
+    .createYAxisLine()
     .createGraphics({
       id: "xTicks",
       type: "line",

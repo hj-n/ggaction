@@ -19,10 +19,10 @@ endpoint를 resolved scale과 Canvas bounds에서 추론한다.
 - [x] `createXAxisLine`
 - [x] `createYAxisLine`
 - [x] Scale·Canvas 변경 시 rematerialization
-- [ ] `carsScatterplotActions`의 수동 axis line 제거
+- [x] `carsScatterplotActions`의 수동 axis line 제거
 - [ ] Unit, trace, immutability test
 - [ ] Acceptance 및 PNG render test
-- [ ] 영어 사용자 문서
+- [x] 영어 사용자 문서
 - [ ] 브라우저와 고해상도 PNG 확인
 
 ## API

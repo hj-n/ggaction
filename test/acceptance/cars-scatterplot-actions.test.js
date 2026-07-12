@@ -70,6 +70,9 @@ test("renders the cars scatterplot created with the canvas action", () => {
     { id: "y", type: "linear", domain: "auto", range: "auto" },
     { id: "color", type: "ordinal", domain: "auto", range: "auto" }
   ]);
+  assert.deepEqual(program.semanticSpec.guides, {
+    axis: { x: { scale: "x" }, y: { scale: "y" } }
+  });
   assert.deepEqual(program.resolvedScales, {
     x: { type: "linear", domain: [46, 230], range: [70, 610] },
     y: { type: "linear", domain: [9, 46.6], range: [340, 30] },
@@ -95,6 +98,12 @@ test("renders the cars scatterplot created with the canvas action", () => {
   assert.equal(findCanvasCalls(context, "arc").length, 392);
   assert.equal(findCanvasCalls(context, "stroke").length, 10);
   assert.equal(findCanvasCalls(context, "fillText").length, 10);
+  assert.deepEqual(program.graphicSpec.objects.xAxisLine.properties, {
+    x1: 70, y1: 340, x2: 610, y2: 340, stroke: "#334155", strokeWidth: 1
+  });
+  assert.deepEqual(program.graphicSpec.objects.yAxisLine.properties, {
+    x1: 70, y1: 340, x2: 70, y2: 30, stroke: "#334155", strokeWidth: 1
+  });
 
   const createCanvas = program.trace.children[0];
   assert.equal(createCanvas.op, "createCanvas");
