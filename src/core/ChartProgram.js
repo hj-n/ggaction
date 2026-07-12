@@ -23,6 +23,7 @@ import { registerScaleActions } from "../actions/scales.js";
 import { registerEncodingActions } from "../actions/encodings.js";
 import { registerCoordinateActions } from "../actions/coordinates.js";
 import { registerGuideAxisActions } from "../actions/guides/axes/index.js";
+import { registerLegendActions } from "../actions/guides/legends/index.js";
 
 function ownState(value) {
   return isOwned(value) ? value : cloneAndFreeze(value);
@@ -128,6 +129,23 @@ export class ChartProgram {
     });
   }
 
+  _withLegendConfig(config) {
+    if (!isPlainObject(config)) {
+      throw new TypeError("Legend config must be a plain object.");
+    }
+
+    const owned = cloneAndFreeze(config);
+    return this._clone({
+      guideConfigs: freezeOwned({
+        ...this.guideConfigs,
+        legend: freezeOwned({
+          ...this.guideConfigs.legend,
+          series: owned
+        })
+      })
+    });
+  }
+
   _enterAction({ op, description, args }) {
     const id = `a${countActionNodes(this.trace) + 1}`;
     const parentId = this.actionStack.at(-1) ?? this.trace.id;
@@ -158,6 +176,7 @@ registerLineMarkActions(ChartProgram);
 registerEncodingActions(ChartProgram);
 registerCoordinateActions(ChartProgram);
 registerGuideAxisActions(ChartProgram);
+registerLegendActions(ChartProgram);
 
 export function chart() {
   return new ChartProgram();

@@ -12,19 +12,19 @@ Line chart의 color와 strokeDash encoding을 읽어 combined series legend를
 
 ## 진행 상태
 
-- [ ] `createLegend` option과 target inference
-- [ ] Color/strokeDash channel 결합 규칙
-- [ ] Scale domain compatibility validation
-- [ ] Semantic series guide 저장
-- [ ] Legend symbol collection
-- [ ] Legend label collection
-- [ ] Legend title graphic
-- [ ] Optional background/border rect
-- [ ] Wrapped legend rematerialization actions
-- [ ] Canvas 변경 시 legend layout 갱신
-- [ ] 별도 actions program의 raw legend block 제거
-- [ ] Unit, acceptance, PNG regression
-- [ ] 영어 Legend/action/LLM 문서 갱신
+- [x] `createLegend` option과 target inference
+- [x] Color/strokeDash channel 결합 규칙
+- [x] Scale domain compatibility validation
+- [x] Semantic series guide 저장
+- [x] Legend symbol collection
+- [x] Legend label collection
+- [x] Legend title graphic
+- [x] Optional background/border rect
+- [x] Wrapped legend rematerialization actions
+- [x] Canvas 변경 시 legend layout 갱신
+- [x] 별도 actions program의 raw legend block 제거
+- [x] Unit, acceptance, PNG regression
+- [x] 영어 Legend/action/LLM 문서 갱신
 
 ## API
 
@@ -258,3 +258,10 @@ STEP1 primitive line program과 test는 변경하지 않는다. `carsLineChartAc
 - Actions program에서 raw legend code가 제거된다.
 - Primitive line program과 scatterplot 결과가 유지된다.
 - 관련 test와 문서가 통과하고 변경이 commit/push된다.
+
+## 검증 결과
+
+- Unit/acceptance test 197개 통과
+- PNG render regression 5개 통과
+- `cars-line-chart-actions.png`에서 color와 strokeDash가 결합된 Origin legend 확인
+- STEP1 primitive line program과 Phase 1 scatterplot program 변경 없음

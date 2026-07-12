@@ -21,10 +21,11 @@ This page describes implemented behavior only.
 | Stroke dash | Nominal line series with explicit or automatic ten-pattern range |
 | Constant appearance | Circle radius |
 | Coordinates | Named Cartesian and Polar semantic resources; x/y use Cartesian |
-| Guides | Bottom/left linear or UTC time axes with lines, ticks, labels, aggregate-aware titles |
+| Guides | Bottom/left linear or UTC time axes; one right-side line-series legend combining color and stroke dash |
 | Rendering | Browser Canvas and Node PNG |
-| Graphics | Concrete canvas, circle, line, text, and point-array path nodes |
+| Graphics | Concrete canvas, circle, line, rect, text, and point-array path nodes |
 
-Polar guide graphics, additional mark types, public transforms, facets, legend
-domain actions, and program composition are not implemented in the current
-phase. They are not part of the current API reference.
+Polar guide graphics, additional mark types, public transforms, facets,
+additional legend types or positions, and program composition are not
+implemented in the current phase. They are not part of the current API
+reference.

@@ -97,6 +97,29 @@ test("renders at a higher pixel density without changing logical coordinates", (
   ]);
 });
 
+test("renders a backend-neutral filled and stroked rect", () => {
+  const program = createGraphicSpec();
+  program.objects.frame = {
+    type: "rect",
+    properties: {
+      x: 5,
+      y: 6,
+      width: 40,
+      height: 30,
+      fill: "white",
+      stroke: "gray",
+      strokeWidth: 1
+    }
+  };
+  program.order.splice(1, 0, "frame");
+  const context = createMockCanvasContext();
+
+  render({ graphicSpec: program }, context);
+
+  assert.deepEqual(findCanvasCalls(context, "fillRect")[1].args, [5, 6, 40, 30]);
+  assert.equal(findCanvasCalls(context, "stroke")[0].strokeStyle, "gray");
+});
+
 test("rejects incomplete and unsupported concrete graphics", () => {
   const missingRadius = createGraphicSpec();
   delete missingRadius.objects.points.children[0].properties.radius;
@@ -107,11 +130,11 @@ test("rejects incomplete and unsupported concrete graphics", () => {
   );
 
   const unsupported = createGraphicSpec();
-  unsupported.objects.points.type = "rect";
+  unsupported.objects.points.type = "container";
 
   assert.throws(
     () => render({ graphicSpec: unsupported }, createMockCanvasContext()),
-    /does not support "rect" yet/
+    /does not support "container" yet/
   );
 
   const invalidOpacity = createGraphicSpec();

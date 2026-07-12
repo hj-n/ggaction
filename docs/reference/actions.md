@@ -27,6 +27,7 @@ These are the recommended chart-authoring actions currently supported.
 | Encoding | `encodeStrokeDash({ field, target?, fieldType?, scale? })` | [Encodings](../api/encodings.md) |
 | Appearance | `encodeRadius({ value, target? })` | [Encodings](../api/encodings.md) |
 | Axes | `createAxes({ coordinate?, x?, y? })` | [Axes](../api/axes.md) |
+| Legend | `createLegend({ target?, channels?, position?, title?, symbol?, labels?, titleStyle?, itemGap?, border? })` | [Legends](../api/legends.md) |
 
 ## Advanced Chart API
 

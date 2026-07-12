@@ -52,7 +52,7 @@ chart()
 - [x] Series grouping과 시간순 정렬
 - [x] Color와 strokeDash encoding
 - [x] Line chart axes
-- [ ] Combined series legend
+- [x] Combined series legend
 - [ ] Chart title과 subtitle
 - [ ] `createGuides` aggregate action
 - [x] Canvas와 고해상도 PNG rendering

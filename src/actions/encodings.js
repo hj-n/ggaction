@@ -54,6 +54,17 @@ function validateOptions(args, supported, operation) {
   }
 }
 
+function rematerializeExistingLegend(program) {
+  if (
+    program.semanticSpec.guides.legend?.series === undefined ||
+    program.guideConfigs.legend?.series === undefined
+  ) {
+    return program;
+  }
+
+  return program.rematerializeLegend();
+}
+
 function resolveTarget(
   program,
   target,
@@ -328,9 +339,13 @@ const encodeColor = action(
       })
       .createScale(scale);
 
-    return layer.mark.type === "line"
-      ? next.rematerializeLineMark({ id: target })
-      : next.rematerializeScale({ id: scale.id });
+    if (layer.mark.type === "line") {
+      return rematerializeExistingLegend(
+        next.rematerializeLineMark({ id: target })
+      );
+    }
+
+    return next.rematerializeScale({ id: scale.id });
   }
 );
 
@@ -355,7 +370,7 @@ const encodeStrokeDash = action(
     readNominalField(dataset.values, args.field);
     const scale = resolveStrokeDashScaleDefinition(this, args.scale ?? {});
 
-    return this
+    const next = this
       .editSemantic({
         property: `layer[${target}].encoding.strokeDash.field`,
         value: args.field
@@ -370,6 +385,8 @@ const encodeStrokeDash = action(
       })
       .createScale(scale)
       .rematerializeLineMark({ id: target });
+
+    return rematerializeExistingLegend(next);
   }
 );
 

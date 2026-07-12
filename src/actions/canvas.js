@@ -102,6 +102,17 @@ function rematerializeCompleteLineMarks(program) {
   return next;
 }
 
+function rematerializeLegend(program) {
+  if (
+    program.semanticSpec.guides.legend?.series === undefined ||
+    program.guideConfigs.legend?.series === undefined
+  ) {
+    return program;
+  }
+
+  return program.rematerializeLegend();
+}
+
 const editCanvas = action(
   {
     op: "editCanvas",
@@ -134,6 +145,7 @@ const editCanvas = action(
     ) {
       next = rematerializePositionScales(next);
       next = rematerializeCompleteLineMarks(next);
+      next = rematerializeLegend(next);
     }
 
     return next;

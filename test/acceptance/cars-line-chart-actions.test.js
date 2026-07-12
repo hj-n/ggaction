@@ -165,12 +165,13 @@ test("authors and renders the cars line chart with the line mark action", () => 
     "encodeColor",
     "encodeStrokeDash",
     "createAxes",
+    "createLegend",
     "editSemantic",
     "createGraphics",
     "editGraphics"
   ]);
   assert.equal(program.trace.children.some(node =>
-    ["createGuides", "createLegend", "createTitle"].includes(node.op)
+    ["createGuides", "createTitle"].includes(node.op)
   ), false);
   const createLineMark = program.trace.children.find(
     node => node.op === "createLineMark"
@@ -209,6 +210,17 @@ test("authors and renders the cars line chart with the line mark action", () => 
   assert.equal(
     program.trace.children.some(
       node => node.op === "createGraphics" && axisGraphics.has(node.args.id)
+    ),
+    false
+  );
+  const legendGraphics = new Set([
+    "seriesLegendSymbols",
+    "seriesLegendLabels",
+    "seriesLegendTitle"
+  ]);
+  assert.equal(
+    program.trace.children.some(
+      node => node.op === "createGraphics" && legendGraphics.has(node.args.id)
     ),
     false
   );
