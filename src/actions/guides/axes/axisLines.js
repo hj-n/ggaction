@@ -1,5 +1,5 @@
-import { action } from "../core/action.js";
-import { validateUserId } from "../core/identifiers.js";
+import { action } from "../../../core/action.js";
+import { validateUserId } from "../../../core/identifiers.js";
 
 const DEFAULT_STYLE = Object.freeze({ color: "#334155", lineWidth: 1 });
 const CREATE_OPTIONS = Object.freeze(["scale", "position", "color", "lineWidth"]);

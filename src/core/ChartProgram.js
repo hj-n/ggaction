@@ -21,13 +21,7 @@ import { registerMarkActions } from "../actions/marks.js";
 import { registerScaleActions } from "../actions/scales.js";
 import { registerEncodingActions } from "../actions/encodings.js";
 import { registerCoordinateActions } from "../actions/coordinates.js";
-import { registerAxisLineActions } from "../actions/axisLines.js";
-import { registerAxisTickActions } from "../actions/axisTicks.js";
-import { registerAxisLabelActions } from "../actions/axisLabels.js";
-import { registerAxisTickGroupActions } from "../actions/axisTickGroups.js";
-import { registerAxisTitleActions } from "../actions/axisTitles.js";
-import { registerAxisActions } from "../actions/axes.js";
-import { registerAxisCollectionActions } from "../actions/axisCollections.js";
+import { registerGuideAxisActions } from "../actions/guides/axes/index.js";
 
 function ownState(value) {
   return isOwned(value) ? value : cloneAndFreeze(value);
@@ -161,13 +155,7 @@ registerMarkActions(ChartProgram);
 registerScaleActions(ChartProgram);
 registerEncodingActions(ChartProgram);
 registerCoordinateActions(ChartProgram);
-registerAxisLineActions(ChartProgram);
-registerAxisTickActions(ChartProgram);
-registerAxisLabelActions(ChartProgram);
-registerAxisTickGroupActions(ChartProgram);
-registerAxisTitleActions(ChartProgram);
-registerAxisActions(ChartProgram);
-registerAxisCollectionActions(ChartProgram);
+registerGuideAxisActions(ChartProgram);
 
 export function chart() {
   return new ChartProgram();

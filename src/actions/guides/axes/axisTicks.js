@@ -1,7 +1,7 @@
-import { action } from "../core/action.js";
-import { validateUserId } from "../core/identifiers.js";
-import { mapLinearValues } from "../core/scale.js";
-import { niceTicks } from "../core/ticks.js";
+import { action } from "../../../core/action.js";
+import { validateUserId } from "../../../core/identifiers.js";
+import { mapLinearValues } from "../../../core/scale.js";
+import { niceTicks } from "../../../core/ticks.js";
 
 const OPTIONS = Object.freeze(["scale", "position", "count", "values", "length", "color", "lineWidth"]);
 const DEFAULTS = Object.freeze({ count: 5, length: 6, color: "#64748b", lineWidth: 1 });

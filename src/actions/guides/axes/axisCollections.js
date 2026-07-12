@@ -1,6 +1,6 @@
-import { action } from "../core/action.js";
-import { isPlainObject } from "../core/immutable.js";
-import { validateUserId } from "../core/identifiers.js";
+import { action } from "../../../core/action.js";
+import { isPlainObject } from "../../../core/immutable.js";
+import { validateUserId } from "../../../core/identifiers.js";
 
 const TOP_OPTIONS = Object.freeze(["coordinate", "x", "y"]);
 const COORDINATE_OPTIONS = Object.freeze(["id", "type"]);

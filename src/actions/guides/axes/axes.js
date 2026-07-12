@@ -1,5 +1,5 @@
-import { action } from "../core/action.js";
-import { isPlainObject } from "../core/immutable.js";
+import { action } from "../../../core/action.js";
+import { isPlainObject } from "../../../core/immutable.js";
 
 const TOP_OPTIONS = Object.freeze([
   "scale",
