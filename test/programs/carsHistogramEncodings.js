@@ -21,6 +21,7 @@ export function createCarsHistogramEncodings(cars) {
   return chart()
     .createCanvas({ width, height, margin, background: "white" })
     .createData({ id: "cars", values: values.validCars })
+    .createBarMark({ id: "bars" })
     .createGraphics({
       id: "horizontalGridLines",
       type: "line",
@@ -61,7 +62,6 @@ export function createCarsHistogramEncodings(cars) {
       property: "strokeDash",
       value: horizontalGrid.map(() => [])
     })
-    .createBarMark({ id: "bars" })
     .editSemantic({ property: "layer[bars].coordinate", value: "main" })
     .editSemantic({
       property: "layer[bars].encoding.x.field",
@@ -337,4 +337,3 @@ export function createCarsHistogramEncodings(cars) {
 export function renderCarsHistogramEncodings(program, canvasContext) {
   render(program, canvasContext);
 }
-

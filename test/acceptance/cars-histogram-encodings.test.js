@@ -2,14 +2,16 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 
-import { createMockCanvasContext } from "../helpers/mockCanvasContext.js";
+import {
+  createMockCanvasContext,
+  findCanvasCalls
+} from "../helpers/mockCanvasContext.js";
 import {
   createCarsHistogramEncodings,
   renderCarsHistogramEncodings
 } from "../programs/carsHistogramEncodings.js";
 import {
-  createCarsHistogramPrimitives,
-  renderCarsHistogramPrimitives
+  createCarsHistogramPrimitives
 } from "../programs/carsHistogramPrimitives.js";
 
 const cars = JSON.parse(
@@ -21,11 +23,11 @@ test("replaces raw bar creation with createBarMark", () => {
   const program = createCarsHistogramEncodings(cars);
 
   assert.deepEqual(program.semanticSpec, primitive.semanticSpec);
-  assert.deepEqual(program.graphicSpec, primitive.graphicSpec);
+  assert.deepEqual(program.graphicSpec.objects, primitive.graphicSpec.objects);
   assert.deepEqual(program.graphicSpec.order.slice(0, 3), [
     "canvas",
-    "horizontalGridLines",
-    "bars"
+    "bars",
+    "horizontalGridLines"
   ]);
 
   const createBarMark = program.trace.children.find(
@@ -65,20 +67,16 @@ test("replaces raw bar creation with createBarMark", () => {
   assert.deepEqual(program.actionStack, []);
 });
 
-test("renders the mark-action progression identically from graphicSpec", () => {
+test("renders the mark-action progression from graphicSpec alone", () => {
   const program = createCarsHistogramEncodings(cars);
-  const primitive = createCarsHistogramPrimitives(cars);
   const context = createMockCanvasContext();
-  const primitiveContext = createMockCanvasContext();
 
   renderCarsHistogramEncodings(
     { graphicSpec: program.graphicSpec },
     context
   );
-  renderCarsHistogramPrimitives(
-    { graphicSpec: primitive.graphicSpec },
-    primitiveContext
-  );
 
-  assert.deepEqual(context.calls, primitiveContext.calls);
+  assert.equal(findCanvasCalls(context, "stroke").length, 40);
+  assert.equal(findCanvasCalls(context, "fillRect").length, 19);
+  assert.equal(findCanvasCalls(context, "fillText").length, 23);
 });

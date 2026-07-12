@@ -109,15 +109,15 @@ editGraphics(bars.length = fixture rect count)
 editGraphics(bars concrete properties)
 ```
 
-`createGraphics`는 생성 순서대로 render order에 추가한다. STEP2의 raw horizontal
-grid는 `createBarMark`보다 먼저 생성하여 다음 순서를 유지한다.
+Progression program은 사용자가 읽는 자연스러운 작성 순서를 유지한다.
 
 ```text
-canvas -> horizontalGridLines -> bars -> axes -> legend -> title
+createCanvas -> createData -> createBarMark -> remaining raw operations
 ```
 
-최종 `createGrid` action은 이후 단계에서 mark보다 뒤에 보이도록 graphical order를
-직접 책임진다.
+따라서 STEP2의 raw horizontal grid는 bars 다음에 생성되어 일시적으로 bars 위에
+렌더링된다. 최종 `createGrid` action은 이후 단계에서 grid graphic을 mark보다 먼저
+배치하여 background order를 직접 책임진다.
 
 ## 구현 순서
 
@@ -126,7 +126,7 @@ canvas -> horizontalGridLines -> bars -> axes -> legend -> title
 3. Semantic bar와 빈 rect collection을 unit test한다.
 4. Default inference, invalid input, duplicate, trace, immutability를 검증한다.
 5. Primitive program/test를 복사해 progression program/test를 만든다.
-6. Raw grid를 먼저 생성하고 raw mark block을 `createBarMark`로 교체한다.
+6. `createData` 직후 raw mark block을 `createBarMark`로 교체한다.
 7. Fixture rect count와 concrete properties를 primitive edit로 적용한다.
 8. 두 progression의 semantic/graphic 결과가 동일한지 acceptance test한다.
 9. 두 PNG를 모두 생성하고 직접 확인한다.
@@ -148,7 +148,7 @@ canvas -> horizontalGridLines -> bars -> axes -> legend -> title
 - Trace에 세 wrapped child action이 기록된다.
 - Primitive histogram program/test는 수정되지 않는다.
 - Progression program은 STEP1과 동일한 최종 semantic/graphic 결과를 만든다.
-- Grid가 bars보다 먼저 렌더링된다.
+- Progression chain에서 `createCanvas`, `createData`, `createBarMark`가 연속된다.
 - 관련 public/LLM 문서가 현재 API와 일치한다.
 - 전체 test와 두 histogram PNG regression이 통과한다.
 - 변경이 하나의 conceptual commit으로 push된다.
@@ -158,5 +158,5 @@ canvas -> horizontalGridLines -> bars -> axes -> legend -> title
 - Unit/acceptance: 221 tests passed
 - PNG regression: 7 tests passed
 - 신규 output: `test/output/cars-histogram-encodings.png` (2×, 864×920)
-- Primitive와 progression의 `semanticSpec`, `graphicSpec`, Canvas draw calls 일치
-- 직접 확인: horizontal grid가 bars 뒤에 있고 STEP1과 동일한 layout 유지
+- Primitive와 progression의 `semanticSpec`, graphical objects 일치
+- 직접 확인: STEP1과 동일한 geometry를 유지하며 raw grid는 일시적으로 bars 위에 렌더링
