@@ -88,6 +88,16 @@ Create a quantitative point, aggregate line, or inferred count/zero-stack bar
 y encoding. A complete bar x/y pair materializes concrete histogram rects.
 [Position encodings](../api/position-encodings.md)
 
+### `encodeHistogram`
+
+```javascript
+encodeHistogram({ field, target?, coordinate?, maxBins?, stack?, xScale?, yScale? })
+```
+
+Compose binned bar `encodeX` and count/zero-stack `encodeY` as one atomic
+histogram action. `maxBins` defaults to `10`; `stack` defaults to `"zero"`.
+[Encodings](../api/encodings.md)
+
 ### `encodeColor`
 
 ```javascript

@@ -49,7 +49,7 @@ chart는 별도 grid option 없이 horizontal grid를 가진다.
 - [x] Bar count/stack `encodeY`
 - [x] Histogram rect materialization
 - [ ] Bar `encodeColor`
-- [ ] Atomic `encodeHistogram`
+- [x] Atomic `encodeHistogram`
 - [ ] Histogram axes
 - [ ] Horizontal/vertical grid
 - [ ] `createGuides` default horizontal grid

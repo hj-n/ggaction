@@ -102,6 +102,15 @@ non-empty bin. Without a color encoding, rectangles use the default blue fill,
 white stroke, and `0.5` stroke width. Canvas geometry edits explicitly
 rematerialize the connected scales and rectangles.
 
+The equivalent atomic form is:
+
+```javascript
+program.encodeHistogram({
+  field: "Displacement",
+  maxBins: 10
+});
+```
+
 ## Temporal line `encodeX(options)`
 
 Map a temporal field to the horizontal position scale of a line mark.

@@ -13,7 +13,7 @@ This page describes implemented behavior only.
 | Canvas | Create/edit width, height, background, margin |
 | Data | Immutable arrays of plain row objects |
 | Marks | Semantic point/circle mark; semantic line with aggregate path materialization; semantic bar with histogram rect materialization |
-| Position | Quantitative point x/y; temporal line x and aggregate quantitative line y; binned bar x and inferred count/zero-stack bar y |
+| Position | Quantitative point x/y; temporal line x and aggregate quantitative line y; explicit or atomic binned/count bar encodings |
 | Aggregation | Immutable line mean aggregation; derived histogram bin totals and concrete uncolored rects |
 | Color | Nominal point fill or line stroke with ordinal scale and `tableau10` palette |
 | Stroke dash | Nominal line series with explicit or automatic ten-pattern range |

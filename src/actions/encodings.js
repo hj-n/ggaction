@@ -48,6 +48,15 @@ const SCALE_OPTIONS = Object.freeze([
 const ORDINAL_SCALE_OPTIONS = Object.freeze(["id", "type", "domain", "range"]);
 const COLOR_SCALE_OPTIONS = Object.freeze([...ORDINAL_SCALE_OPTIONS, "palette"]);
 const RADIUS_OPTIONS = Object.freeze(["value", "target"]);
+const HISTOGRAM_OPTIONS = Object.freeze([
+  "field",
+  "target",
+  "coordinate",
+  "maxBins",
+  "stack",
+  "xScale",
+  "yScale"
+]);
 
 function validateOptions(args, supported, operation) {
   for (const key of Object.keys(args)) {
@@ -341,7 +350,7 @@ function encodePosition(program, channel, args, operation) {
     program,
     channel,
     fieldType,
-    args.scale ?? {},
+    Object.hasOwn(args, "scale") ? args.scale : {},
     layer.mark.type === "bar"
       ? channel === "x"
         ? { nice: true, zero: false }
@@ -431,6 +440,30 @@ const encodeY = action(
   },
   function (args = {}) {
     return encodePosition(this, "y", args, "encodeY");
+  }
+);
+
+const encodeHistogram = action(
+  {
+    op: "encodeHistogram",
+    description: "Encode a binned count/zero-stack histogram."
+  },
+  function (args = {}) {
+    validateOptions(args, HISTOGRAM_OPTIONS, "encodeHistogram");
+    const x = {
+      field: args.field,
+      bin: { maxBins: args.maxBins ?? 10 }
+    };
+    const y = { stack: args.stack ?? "zero" };
+
+    for (const key of ["target", "coordinate"]) {
+      if (Object.hasOwn(args, key)) x[key] = args[key];
+    }
+    if (Object.hasOwn(args, "target")) y.target = args.target;
+    if (Object.hasOwn(args, "xScale")) x.scale = args.xScale;
+    if (Object.hasOwn(args, "yScale")) y.scale = args.yScale;
+
+    return this.encodeX(x).encodeY(y);
   }
 );
 
@@ -543,6 +576,7 @@ const encodeRadius = action(
 export function registerEncodingActions(ProgramClass) {
   ProgramClass.prototype.encodeX = encodeX;
   ProgramClass.prototype.encodeY = encodeY;
+  ProgramClass.prototype.encodeHistogram = encodeHistogram;
   ProgramClass.prototype.encodeColor = encodeColor;
   ProgramClass.prototype.encodeStrokeDash = encodeStrokeDash;
   ProgramClass.prototype.encodeRadius = encodeRadius;

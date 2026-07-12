@@ -30,6 +30,25 @@ barProgram.encodeX({
 }).encodeY();
 ```
 
+## Atomic histogram
+
+`encodeHistogram` is the concise equivalent of binned bar `encodeX` followed
+by count/zero-stack `encodeY`.
+
+```javascript
+program.encodeHistogram({
+  field: "Displacement",
+  maxBins: 10
+});
+```
+
+It accepts optional `target`, `coordinate`, `stack`, `xScale`, and `yScale`
+options. The action directly records `encodeX` and `encodeY` as its children;
+it does not duplicate binning, scale, count, or rect materialization logic.
+
+Use the explicit channel actions when x and y need to be authored as separate
+steps. Both forms produce the same semantic and graphical result.
+
 ## Series
 
 [`encodeColor` and `encodeStrokeDash`](./series-encodings.md) create nominal
