@@ -38,10 +38,8 @@ const program = chart()
   })
   .createXAxisLine()
   .createYAxisLine()
-  .createXAxisTicks()
-  .createYAxisTicks()
-  .createXAxisLabels()
-  .createYAxisLabels();
+  .createXAxisTicksAndLabels()
+  .createYAxisTicksAndLabels();
 ```
 
 See the runnable [cars scatterplot example](./examples/cars-scatterplot/),

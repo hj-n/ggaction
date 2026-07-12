@@ -29,10 +29,8 @@ export function createCarsScatterplotActions(cars) {
     .encodeRadius({ value: 3 })
     .createXAxisLine()
     .createYAxisLine()
-    .createXAxisTicks()
-    .createYAxisTicks()
-    .createXAxisLabels()
-    .createYAxisLabels()
+    .createXAxisTicksAndLabels()
+    .createYAxisTicksAndLabels()
     .createGraphics({ id: "xTitle", type: "text" })
     .editGraphics({
       target: "xTitle",

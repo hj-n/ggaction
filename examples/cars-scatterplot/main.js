@@ -17,10 +17,8 @@ const program = chart()
   .encodeRadius({ value: 3 })
   .createXAxisLine()
   .createYAxisLine()
-  .createXAxisTicks()
-  .createYAxisTicks()
-  .createXAxisLabels()
-  .createYAxisLabels();
+  .createXAxisTicksAndLabels()
+  .createYAxisTicksAndLabels();
 
 const canvas = document.querySelector("#chart");
 render(program, canvas.getContext("2d"));

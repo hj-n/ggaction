@@ -80,3 +80,29 @@ program.editXAxisLabels({
 
 Scale and Canvas rematerialization recomputes label values, strings, positions,
 and collection length.
+
+## Ticks and labels together
+
+Use the aggregate actions when both components share one scale and tick-value
+configuration:
+
+```javascript
+program.createXAxisTicksAndLabels({
+  count: 5,
+  ticks: { length: 6 },
+  labels: { offset: 18, fontSize: 12 }
+});
+```
+
+The parent action records `createXAxisTicks` and `createXAxisLabels` as child
+actions. Y-axis and edit variants follow the same structure:
+
+```javascript
+program.editYAxisTicksAndLabels({
+  values: [10, 20, 30, 40],
+  labels: { color: "black" }
+});
+```
+
+Shared count or values edits update ticks first and labels second. Component-only
+appearance edits invoke only the affected leaf action.

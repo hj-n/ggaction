@@ -114,6 +114,20 @@ test("renders the cars scatterplot created with the canvas action", () => {
   );
   assert.equal(program.guideConfigs.axis.x.labels.mode, "count");
   assert.equal(program.guideConfigs.axis.y.labels.mode, "count");
+  const xTickGroup = program.trace.children.find(
+    node => node.op === "createXAxisTicksAndLabels"
+  );
+  const yTickGroup = program.trace.children.find(
+    node => node.op === "createYAxisTicksAndLabels"
+  );
+  assert.deepEqual(xTickGroup.children.map(node => node.op), [
+    "createXAxisTicks",
+    "createXAxisLabels"
+  ]);
+  assert.deepEqual(yTickGroup.children.map(node => node.op), [
+    "createYAxisTicks",
+    "createYAxisLabels"
+  ]);
 
   const createCanvas = program.trace.children[0];
   assert.equal(createCanvas.op, "createCanvas");
