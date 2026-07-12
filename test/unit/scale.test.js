@@ -3,10 +3,17 @@ import test from "node:test";
 
 import {
   mapLinearValues,
+  mapOrdinalValues,
   readQuantitativeField,
+  readNominalField,
+  resolveColorRange,
+  resolveOrdinalDomain,
   resolveScaleDomain,
   resolveScaleRange,
   validateFieldType,
+  validateColorRange,
+  validateNominalFieldType,
+  validateOrdinalDomain,
   validatePositionChannel,
   validateScaleDomain,
   validateScaleRange,
@@ -66,5 +73,42 @@ test("validates the STEP6 scale vocabulary and bounds", () => {
   assert.throws(
     () => resolveScaleRange("auto", "x", undefined),
     /requires graphical bounds/
+  );
+});
+
+test("resolves nominal domains and tableau10 color ranges", () => {
+  const values = readNominalField(
+    [{ origin: "USA" }, { origin: "Europe" }, { origin: "USA" }],
+    "origin"
+  );
+  const domain = resolveOrdinalDomain("auto", values);
+  const range = resolveColorRange({ palette: "tableau10" });
+
+  assert.deepEqual(domain, ["USA", "Europe"]);
+  assert.deepEqual(range.slice(0, 3), ["#4c78a8", "#f58518", "#e45756"]);
+  assert.deepEqual(mapOrdinalValues(values, domain, range), [
+    "#4c78a8",
+    "#f58518",
+    "#4c78a8"
+  ]);
+});
+
+test("validates nominal fields, ordinal domains, and color ranges", () => {
+  assert.equal(validateNominalFieldType("nominal"), "nominal");
+  assert.deepEqual(validateOrdinalDomain(["USA", "Europe"]), [
+    "USA",
+    "Europe"
+  ]);
+  assert.deepEqual(validateColorRange(["red", "blue"]), ["red", "blue"]);
+  assert.throws(() => validateNominalFieldType("quantitative"), /Unsupported/);
+  assert.throws(() => validateOrdinalDomain(["USA", "USA"]), /unique/);
+  assert.throws(() => validateColorRange([]), /non-empty color strings/);
+  assert.throws(
+    () => validateColorRange({ palette: "unknown" }),
+    /tableau10/
+  );
+  assert.throws(
+    () => readNominalField([{ value: null }], "value"),
+    /nominal value/
   );
 });

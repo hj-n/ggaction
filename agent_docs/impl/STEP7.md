@@ -18,9 +18,9 @@ const program = chart()
 
 ## 진행 상태
 
-- [ ] Nominal field와 ordinal scale validation
-- [ ] `tableau10` palette
-- [ ] Ordinal domain과 range resolution
+- [x] Nominal field와 ordinal scale validation
+- [x] `tableau10` palette
+- [x] Ordinal domain과 range resolution
 - [ ] Color scale materialization
 - [ ] `encodeColor`
 - [ ] `encodeRadius`

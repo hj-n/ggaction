@@ -104,16 +104,16 @@ test("validates semantic scale values through the primitive API", () => {
     () =>
       chart().editSemantic({
         property: "scale[x].domain",
-        value: [0]
+        value: []
       }),
-    /two finite numbers/
+    /non-empty array/
   );
   assert.throws(
     () =>
       chart().editSemantic({
         property: "scale[x].range",
-        value: [0, Infinity]
+        value: { palette: "unknown" }
       }),
-    /two finite numbers/
+    /unsupported value/
   );
 });

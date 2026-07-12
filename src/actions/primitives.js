@@ -6,8 +6,8 @@ import {
 } from "../core/immutable.js";
 import { parseSemanticPath } from "../core/semanticPath.js";
 import {
-  validateScaleDomain,
-  validateScaleRange,
+  validateSemanticScaleDomain,
+  validateSemanticScaleRange,
   validateScaleType
 } from "../core/scale.js";
 import {
@@ -98,9 +98,9 @@ function validateSemanticValue(parsed, value) {
     if (property === "type") {
       validateScaleType(value);
     } else if (property === "domain") {
-      validateScaleDomain(value);
+      validateSemanticScaleDomain(value);
     } else if (property === "range") {
-      validateScaleRange(value);
+      validateSemanticScaleRange(value);
     }
   }
 }
