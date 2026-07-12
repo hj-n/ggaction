@@ -27,6 +27,7 @@ export class ChartProgram {
   constructor({
     semanticSpec = createEmptySemanticSpec(),
     graphicSpec = createEmptyGraphicSpec(),
+    resolvedScales = {},
     children = {},
     context = {},
     trace = createTraceRoot(),
@@ -34,6 +35,7 @@ export class ChartProgram {
   } = {}) {
     this.semanticSpec = ownState(semanticSpec);
     this.graphicSpec = ownState(graphicSpec);
+    this.resolvedScales = ownState(resolvedScales);
     this.children = ownState(children);
     this.context = ownState(context);
     this.trace = ownState(trace);
@@ -45,6 +47,7 @@ export class ChartProgram {
   _clone({
     semanticSpec = this.semanticSpec,
     graphicSpec = this.graphicSpec,
+    resolvedScales = this.resolvedScales,
     children = this.children,
     context = this.context,
     trace = this.trace,
@@ -53,6 +56,7 @@ export class ChartProgram {
     return new this.constructor({
       semanticSpec,
       graphicSpec,
+      resolvedScales,
       children,
       context,
       trace,
@@ -71,6 +75,25 @@ export class ChartProgram {
       context: freezeOwned({
         ...this.context,
         ...ownedPatch
+      })
+    });
+  }
+
+  _withResolvedScale(id, scale) {
+    if (typeof id !== "string" || id.length === 0) {
+      throw new TypeError("Resolved scale id must be a non-empty string.");
+    }
+
+    if (!isPlainObject(scale)) {
+      throw new TypeError("Resolved scale must be a plain object.");
+    }
+
+    const ownedScale = cloneAndFreeze(scale);
+
+    return this._clone({
+      resolvedScales: freezeOwned({
+        ...this.resolvedScales,
+        [id]: ownedScale
       })
     });
   }

@@ -18,6 +18,7 @@ test("creates an immutable program with canonical empty state", () => {
     objects: {},
     order: []
   });
+  assert.deepEqual(program.resolvedScales, {});
   assert.deepEqual(program.children, {});
   assert.deepEqual(program.context, {});
   assert.deepEqual(program.trace, {
@@ -31,6 +32,7 @@ test("creates an immutable program with canonical empty state", () => {
   assert.equal(Object.isFrozen(program), true);
   assert.equal(Object.isFrozen(program.semanticSpec), true);
   assert.equal(Object.isFrozen(program.semanticSpec.datasets), true);
+  assert.equal(Object.isFrozen(program.resolvedScales), true);
   assert.equal(Object.isFrozen(program.trace.children), true);
 });
 
@@ -41,6 +43,7 @@ test("creates independent empty programs", () => {
   assert.notEqual(first, second);
   assert.notEqual(first.semanticSpec, second.semanticSpec);
   assert.notEqual(first.graphicSpec, second.graphicSpec);
+  assert.notEqual(first.resolvedScales, second.resolvedScales);
   assert.notEqual(first.trace, second.trace);
 });
 
@@ -54,6 +57,7 @@ test("clones only the supplied program branches", () => {
   assert.equal(next instanceof ChartProgram, true);
   assert.equal(next.semanticSpec, original.semanticSpec);
   assert.equal(next.graphicSpec, original.graphicSpec);
+  assert.equal(next.resolvedScales, original.resolvedScales);
   assert.equal(next.trace, original.trace);
   assert.deepEqual(original.context, {});
   assert.deepEqual(next.context, { currentData: "cars" });
@@ -108,4 +112,40 @@ test("updates private context immutably without changing the trace", () => {
 test("rejects non-object private context patches", () => {
   assert.throws(() => chart()._withContext(null), /plain object/);
   assert.throws(() => chart()._withContext([]), /plain object/);
+});
+
+test("stores resolved scales immutably without changing authoring state", () => {
+  const scale = {
+    type: "linear",
+    domain: [0, 10],
+    range: [20, 100]
+  };
+  const original = chart();
+  const next = original._withResolvedScale("x", scale);
+
+  scale.domain[0] = -10;
+
+  assert.deepEqual(original.resolvedScales, {});
+  assert.deepEqual(next.resolvedScales, {
+    x: {
+      type: "linear",
+      domain: [0, 10],
+      range: [20, 100]
+    }
+  });
+  assert.equal(next.semanticSpec, original.semanticSpec);
+  assert.equal(next.graphicSpec, original.graphicSpec);
+  assert.equal(next.trace, original.trace);
+  assert.equal(Object.isFrozen(next.resolvedScales.x.domain), true);
+});
+
+test("validates private resolved scale updates", () => {
+  assert.throws(
+    () => chart()._withResolvedScale("", { type: "linear" }),
+    /non-empty string/
+  );
+  assert.throws(
+    () => chart()._withResolvedScale("x", []),
+    /plain object/
+  );
 });
