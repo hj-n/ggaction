@@ -34,6 +34,7 @@
 - Name chart-authoring actions after semantic concepts such as `createPointMark`; keep concrete realizations such as `circle` inside action implementations and `graphicSpec`.
 - Public actions accept meaningful option objects, such as `editXAxisLine({ lineWidth: 3 })`.
 - Every public action accepts one parameter object and returns a new `ChartProgram`.
+- Keep create and edit contracts consistent. A create action requires a missing resource, may treat an equivalent repeated definition as idempotent when explicitly intended, and must reject conflicting definitions. An edit action requires an existing resource and must reject an empty edit.
 - Validate library-defined closed vocabularies such as channels and types.
 - Treat user-defined IDs as names: validate their basic form, uniqueness when creating, and existence when referencing rather than checking them against a library vocabulary.
 
@@ -41,9 +42,11 @@
 
 - Define every authoring action through the shared `action()` wrapper.
 - Component actions invoked by higher-level actions must also be wrapped actions when they represent meaningful authoring steps.
+- Aggregate actions must orchestrate wrapped child actions instead of duplicating their behavior or hiding meaningful authoring steps inside untraced helpers.
 - Do not hide meaningful action decomposition inside untraced helpers.
 - Every trace has a virtual `program` root, and nested wrapped calls form its action hierarchy.
 - Context updates are part of successful immutable state transitions; they are not separate actions or trace nodes.
+- Treat context only as transient convenience for interpreting the next action. Completed semantic meaning and renderable output must be persisted in `semanticSpec` or `graphicSpec`, never only in context.
 - Update context through a private immutable helper rather than a public or wrapped `setContext` action.
 - When `editSemantic` can infer the current semantic resource from its validated path, high-level actions must rely on that transition instead of duplicating it with `_withContext`.
 - Keep trace arguments lightweight. Do not copy large datasets or fully materialized value arrays into the trace.
@@ -59,6 +62,8 @@
 ## Semantic and Graphical Boundary
 
 - `semanticSpec` records what the chart means; `graphicSpec` records the concrete graphical result.
+- The action that first introduces a semantic concept owns its inference, validation, and storage. Downstream actions must read the stored decision rather than silently creating, repairing, or re-inferring missing semantic state.
+- Persist every inferred semantic decision, including resolved resource IDs and types, in `semanticSpec`; do not leave a resolved decision only in context or an implementation-local value.
 - A semantic point mark may be realized by a graphical `circle` primitive.
 - A constant point shape is graphical appearance, while a field-driven shape is semantic encoding that must be explicitly materialized.
 - User-specified scale domains and ranges are semantic. Resolved primitive values such as x, y, radius, and color are graphical.
@@ -77,6 +82,7 @@
 - Write public-facing files such as `README.md` and pages under `docs/` in English.
 - Treat `docs/` as user documentation: prioritize installation, user-facing APIs, observable behavior, examples, and the minimum core concepts users need.
 - Organize public documentation by audience and task: getting started and tutorials first, then chart API, advanced chart API, and extension API. Keep one canonical action reference with exact signatures for discovery by users and language models.
+- Whenever a public action is added, removed, renamed, or changes signature, update `docs/reference/actions.md`, its relevant API page, and the current scope in `docs/llms.txt` in the same conceptual commit.
 - Keep unimplemented roadmap ideas out of current API documentation except where a concise limitation is required to explain an accepted value or error.
 - Do not exhaustively document internal modules, helper functions, data structures, or implementation mechanics in public docs unless users must understand them to use the library correctly.
 - Group implementation step plans by phase under paths such as `agent_docs/impl/phase1/STEP1.md` and `agent_docs/impl/phase2/STEP1.md`. Write every STEP document in Korean.
@@ -99,6 +105,7 @@
 - For minor, reversible details that do not affect public contracts, proceed with the simplest consistent choice and state the assumption.
 - Ask the user before making costly or difficult-to-reverse decisions involving public APIs, persisted schemas, or immutability semantics.
 - Keep unresolved architectural questions explicit rather than concealing them in implementation details.
+- Never resolve ambiguity by silently choosing the first dataset, mark, scale, coordinate, or other named resource. Require an explicit ID whenever the available state does not determine one unique choice.
 
 ## Simplicity
 
