@@ -4,6 +4,8 @@ import { noOptions, validateKeys } from "../../core/validation.js";
 import { resolveGraphicBounds } from "../../layout/canvas.js";
 import { resolveLayout as resolveLegendLayout } from
   "../guides/legends/categorical/layout.js";
+import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from
+  "../../theme/defaults.js";
 
 const OPTIONS = Object.freeze([
   "text",
@@ -27,15 +29,15 @@ const DEFAULTS = Object.freeze({
   offset: 0,
   gap: 8,
   titleStyle: Object.freeze({
-    color: "#0f172a",
+    color: DEFAULT_COLORS.strongText,
     fontSize: 22,
-    fontFamily: "sans-serif",
+    fontFamily: DEFAULT_FONT_FAMILY,
     fontWeight: 600
   }),
   subtitleStyle: Object.freeze({
-    color: "#64748b",
+    color: DEFAULT_COLORS.mutedText,
     fontSize: 14,
-    fontFamily: "sans-serif",
+    fontFamily: DEFAULT_FONT_FAMILY,
     fontWeight: "normal"
   })
 });

@@ -10,9 +10,15 @@ import {
   inferHistogramBoundaries,
   valuesFromTickConfig
 } from "../tickValues.js";
+import { DEFAULT_COLORS } from "../../../theme/defaults.js";
 
 const OPTIONS = Object.freeze(["scale", "position", "count", "values", "length", "color", "lineWidth"]);
-const DEFAULTS = Object.freeze({ count: DEFAULT_TICK_COUNT, length: 6, color: "#64748b", lineWidth: 1 });
+const DEFAULTS = Object.freeze({
+  count: DEFAULT_TICK_COUNT,
+  length: 6,
+  color: DEFAULT_COLORS.mutedText,
+  lineWidth: 1
+});
 
 function validateOptions(args, operation, create) {
   for (const key of Object.keys(args)) if (!OPTIONS.includes(key) || (!create && key === "scale")) throw new Error(`Unknown ${operation} option "${key}".`);

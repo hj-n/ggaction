@@ -2,8 +2,9 @@ import { action } from "../../../core/action.js";
 import { validateUserId } from "../../../core/identifiers.js";
 import { validateKeys } from "../../../core/validation.js";
 import { resolveGraphicBounds } from "../../../layout/canvas.js";
+import { DEFAULT_COLORS } from "../../../theme/defaults.js";
 
-const DEFAULT_STYLE = Object.freeze({ color: "#334155", lineWidth: 1 });
+const DEFAULT_STYLE = Object.freeze({ color: DEFAULT_COLORS.text, lineWidth: 1 });
 const CREATE_OPTIONS = Object.freeze(["scale", "position", "color", "lineWidth"]);
 const EDIT_OPTIONS = Object.freeze(["position", "color", "lineWidth"]);
 

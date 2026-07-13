@@ -2,6 +2,8 @@ import { action } from "../../../core/action.js";
 import { validateKeys } from "../../../core/validation.js";
 import { mapLinearValues } from "../../../grammar/scales.js";
 import { resolveGraphicBounds } from "../../../layout/canvas.js";
+import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from
+  "../../../theme/defaults.js";
 
 const SIZE_OPTIONS = Object.freeze(["target", "count"]);
 
@@ -50,9 +52,13 @@ function bounds(program) {
 
 function styleText(program, id, { title = false } = {}) {
   return program
-    .editGraphics({ target: id, property: "fill", value: title ? "#0f172a" : "#334155" })
+    .editGraphics({
+      target: id,
+      property: "fill",
+      value: title ? DEFAULT_COLORS.strongText : DEFAULT_COLORS.text
+    })
     .editGraphics({ target: id, property: "fontSize", value: title ? 13 : 12 })
-    .editGraphics({ target: id, property: "fontFamily", value: "sans-serif" })
+    .editGraphics({ target: id, property: "fontFamily", value: DEFAULT_FONT_FAMILY })
     .editGraphics({ target: id, property: "fontWeight", value: title ? 600 : "normal" })
     .editGraphics({ target: id, property: "textAlign", value: "left" })
     .editGraphics({ target: id, property: "textBaseline", value: "middle" });
@@ -88,7 +94,11 @@ export const rematerializeSizeLegend = action(
         property: "radius",
         value: areas.map(area => Math.sqrt(area / Math.PI))
       })
-      .editGraphics({ target: "sizeLegendSymbols", property: "fill", value: "#94a3b8" })
+      .editGraphics({
+        target: "sizeLegendSymbols",
+        property: "fill",
+        value: DEFAULT_COLORS.sizeSymbol
+      })
       .editGraphics({ target: "sizeLegendSymbols", property: "opacity", value: 0.7 })
       .editGraphics({ target: "sizeLegendLabels", property: "length", value: values.length })
       .editGraphics({ target: "sizeLegendLabels", property: "x", value: originX + 44 })

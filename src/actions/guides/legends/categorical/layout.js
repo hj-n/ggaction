@@ -2,6 +2,7 @@ import { isPlainObject } from "../../../../core/immutable.js";
 import { noOptions } from "../../../../core/validation.js";
 import { mapOrdinalValues } from "../../../../grammar/scales.js";
 import { resolveGraphicBounds } from "../../../../layout/canvas.js";
+import { DEFAULT_COLORS } from "../../../../theme/defaults.js";
 
 export function activeConfig(program) {
   const entries = ["series", "color"]
@@ -240,7 +241,7 @@ export function resolveLayout(program, config) {
 }
 
 export function resolveAppearance(program, config) {
-  let colors = config.domain.map(() => "#4c78a8");
+  let colors = config.domain.map(() => DEFAULT_COLORS.mark);
   let dashes = config.domain.map(() => []);
   let shapes = config.domain.map(() => "circle");
   for (let index = 0; index < config.channels.length; index += 1) {

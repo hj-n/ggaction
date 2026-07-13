@@ -6,6 +6,8 @@ import {
   mapLinearValues,
   mapOrdinalPositionValues
 } from "../../../grammar/scales.js";
+import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from
+  "../../../theme/defaults.js";
 
 const CREATE_OPTIONS = Object.freeze([
   "text", "scale", "position", "at", "offset", "rotation", "color",
@@ -13,9 +15,9 @@ const CREATE_OPTIONS = Object.freeze([
 ]);
 const EDIT_OPTIONS = CREATE_OPTIONS.filter(key => key !== "scale");
 const DEFAULTS = Object.freeze({
-  color: "#334155",
+  color: DEFAULT_COLORS.text,
   fontSize: 13,
-  fontFamily: "sans-serif",
+  fontFamily: DEFAULT_FONT_FAMILY,
   fontWeight: 600
 });
 

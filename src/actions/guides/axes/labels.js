@@ -7,6 +7,8 @@ import {
   mapOrdinalPositionValues
 } from "../../../grammar/scales.js";
 import { formatTimeTick, niceTicks, timeTicks } from "../../../grammar/ticks.js";
+import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from
+  "../../../theme/defaults.js";
 
 const OPTIONS = Object.freeze([
   "scale", "position", "count", "values", "offset", "format", "color",
@@ -15,9 +17,9 @@ const OPTIONS = Object.freeze([
 
 const DEFAULTS = Object.freeze({
   count: 5,
-  color: "#334155",
+  color: DEFAULT_COLORS.text,
   fontSize: 12,
-  fontFamily: "sans-serif",
+  fontFamily: DEFAULT_FONT_FAMILY,
   fontWeight: "normal"
 });
 

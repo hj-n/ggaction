@@ -8,6 +8,8 @@ import {
   validateKeys,
   validateObject
 } from "./validation.js";
+import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from
+  "../../../../theme/defaults.js";
 
 export const CHANNELS = Object.freeze(["color", "strokeDash", "shape"]);
 const OPTIONS = Object.freeze([
@@ -47,19 +49,19 @@ const BORDER_OPTIONS = Object.freeze([
 ]);
 const COMMON_DEFAULTS = Object.freeze({
   labels: Object.freeze({
-    color: "#334155",
+    color: DEFAULT_COLORS.text,
     fontSize: 12,
-    fontFamily: "sans-serif",
+    fontFamily: DEFAULT_FONT_FAMILY,
     fontWeight: "normal"
   }),
   titleStyle: Object.freeze({
-    color: "#334155",
+    color: DEFAULT_COLORS.text,
     fontSize: 13,
-    fontFamily: "sans-serif",
+    fontFamily: DEFAULT_FONT_FAMILY,
     fontWeight: 600
   }),
   border: Object.freeze({
-    color: "#cbd5e1",
+    color: DEFAULT_COLORS.border,
     lineWidth: 1,
     padding: 12,
     background: "transparent"

@@ -2,6 +2,7 @@ import { action } from "../../core/action.js";
 import { validateUserId } from "../../core/identifiers.js";
 import { isPlainObject } from "../../core/immutable.js";
 import { validateKeys } from "../../core/validation.js";
+import { DEFAULT_COLORS } from "../../theme/defaults.js";
 
 const REGRESSION_OPTIONS = Object.freeze([
   "target", "x", "y", "groupBy", "confidence", "band", "line"
@@ -78,7 +79,7 @@ export const createRegressionBand = action(
       .createAreaMark({
         id,
         data: args.data,
-        fill: args.color ?? "#111111",
+        fill: args.color ?? DEFAULT_COLORS.regressionBand,
         opacity: args.opacity ?? 0.18
       })
       .encodeX({

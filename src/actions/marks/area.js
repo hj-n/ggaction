@@ -10,6 +10,7 @@ import {
   resolveMarkData,
   validateMarkOptions
 } from "./shared.js";
+import { DEFAULT_COLORS } from "../../theme/defaults.js";
 
 const CREATE_OPTIONS = Object.freeze(["id", "data", "fill", "opacity"]);
 const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);
@@ -23,7 +24,7 @@ const createAreaMark = action(
     validateMarkOptions(args, CREATE_OPTIONS, "createAreaMark");
     const id = validateUserId(args.id, "Area mark id");
     const { data } = resolveMarkData(this, args);
-    const fill = args.fill ?? "#4c78a8";
+    const fill = args.fill ?? DEFAULT_COLORS.mark;
     const opacity = args.opacity ?? 0.2;
     if (typeof fill !== "string" || fill.length === 0) {
       throw new TypeError("Area fill must be a non-empty string.");

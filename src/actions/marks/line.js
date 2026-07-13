@@ -7,8 +7,9 @@ import {
   resolveMarkData,
   validateMarkOptions
 } from "./shared.js";
+import { DEFAULT_COLORS } from "../../theme/defaults.js";
 
-const DEFAULT_LINE_STROKE = "#4c78a8";
+const DEFAULT_LINE_STROKE = DEFAULT_COLORS.mark;
 const DEFAULT_LINE_WIDTH = 2;
 const CREATE_OPTIONS = Object.freeze(["id", "data", "strokeWidth"]);
 const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);

@@ -12,10 +12,11 @@ import {
   resolveMarkData,
   validateMarkOptions
 } from "./shared.js";
+import { DEFAULT_COLORS } from "../../theme/defaults.js";
 
 const POINT_MARK_OPTIONS = Object.freeze(["id", "data", "shape"]);
 const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);
-const DEFAULT_POINT_FILL = "#4c78a8";
+const DEFAULT_POINT_FILL = DEFAULT_COLORS.mark;
 
 const createPointMark = action(
   {

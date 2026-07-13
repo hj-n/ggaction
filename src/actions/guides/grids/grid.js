@@ -8,6 +8,7 @@ import {
   inferGridTickConfig,
   valuesFromTickConfig
 } from "../tickValues.js";
+import { DEFAULT_COLORS } from "../../../theme/defaults.js";
 
 const GRID_OPTIONS = Object.freeze([
   "scale",
@@ -20,7 +21,7 @@ const GRID_OPTIONS = Object.freeze([
 ]);
 const AGGREGATE_OPTIONS = Object.freeze(["horizontal", "vertical"]);
 const DEFAULT_STYLE = Object.freeze({
-  color: "#e2e8f0",
+  color: DEFAULT_COLORS.grid,
   lineWidth: 1,
   strokeDash: Object.freeze([])
 });

@@ -1,4 +1,6 @@
-export const DEFAULT_BAR_FILL = "#4c78a8";
+import { DEFAULT_COLORS } from "../../../theme/defaults.js";
+
+export const DEFAULT_BAR_FILL = DEFAULT_COLORS.mark;
 export const DEFAULT_BAR_STROKE = "white";
 export const DEFAULT_BAR_STROKE_WIDTH = 0.5;
 
