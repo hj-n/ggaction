@@ -1,8 +1,8 @@
 import test from "node:test";
 
 import { createCarsHistogram } from "../../examples/cars-histogram/program.js";
-import { loadCars } from "../fixtures/data.js";
-import { assertRenderedPNG } from "../helpers/renderPNG.js";
+import { loadCars } from "../support/data.js";
+import { assertRenderedPNG } from "../support/png.js";
 import { createCarsHistogramPrimitives } from "../programs/carsHistogramPrimitives.js";
 
 const cars = loadCars();

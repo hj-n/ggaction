@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { createJobsGroupedBar } from "../../examples/jobs-grouped-bar/program.js";
-import { loadJobs } from "../fixtures/data.js";
+import { loadJobs } from "../support/data.js";
 import { createJobsGroupedBarPrimitives } from "../programs/jobsGroupedBarPrimitives.js";
 
 const jobs = loadJobs();

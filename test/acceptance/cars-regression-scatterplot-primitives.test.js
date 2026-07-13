@@ -3,11 +3,11 @@ import test from "node:test";
 
 import { createCarsRegressionScatterplotValues } from
   "../fixtures/carsRegressionScatterplotValues.js";
-import { loadCars } from "../fixtures/data.js";
+import { loadCars } from "../support/data.js";
 import {
   createMockCanvasContext,
   findCanvasCalls
-} from "../helpers/mockCanvasContext.js";
+} from "../support/canvas.js";
 import {
   createCarsRegressionScatterplotPrimitives,
   renderCarsRegressionScatterplotPrimitives

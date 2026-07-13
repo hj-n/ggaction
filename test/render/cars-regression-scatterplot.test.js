@@ -2,8 +2,8 @@ import test from "node:test";
 
 import { createCarsRegressionScatterplot } from
   "../../examples/cars-regression-scatterplot/program.js";
-import { loadCars } from "../fixtures/data.js";
-import { assertRenderedPNG } from "../helpers/renderPNG.js";
+import { loadCars } from "../support/data.js";
+import { assertRenderedPNG } from "../support/png.js";
 import { createCarsRegressionScatterplotPrimitives } from
   "../programs/carsRegressionScatterplotPrimitives.js";
 

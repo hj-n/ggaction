@@ -4,7 +4,7 @@ import test from "node:test";
 import { chart } from "../../src/core/ChartProgram.js";
 import { createCarsDensityAreaValues } from
   "../fixtures/carsDensityAreaValues.js";
-import { loadCars } from "../fixtures/data.js";
+import { loadCars } from "../support/data.js";
 
 function densityData({ groupBy = "Origin" } = {}) {
   return chart()

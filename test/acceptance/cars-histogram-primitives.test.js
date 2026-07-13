@@ -4,13 +4,13 @@ import test from "node:test";
 import {
   createMockCanvasContext,
   findCanvasCalls
-} from "../helpers/mockCanvasContext.js";
+} from "../support/canvas.js";
 import {
   createCarsHistogramPrimitives,
   renderCarsHistogramPrimitives
 } from "../programs/carsHistogramPrimitives.js";
 import { createCarsHistogramValues } from "../fixtures/carsHistogramValues.js";
-import { loadCars } from "../fixtures/data.js";
+import { loadCars } from "../support/data.js";
 
 const cars = loadCars();
 const layout = {

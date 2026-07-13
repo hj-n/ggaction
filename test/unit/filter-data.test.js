@@ -4,7 +4,7 @@ import test from "node:test";
 import { chart } from "../../src/index.js";
 import { createCarsRegressionScatterplotValues } from
   "../fixtures/carsRegressionScatterplotValues.js";
-import { loadCars } from "../fixtures/data.js";
+import { loadCars } from "../support/data.js";
 
 const rows = [
   { category: "A", value: 1 },

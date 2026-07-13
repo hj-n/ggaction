@@ -4,13 +4,13 @@ import test from "node:test";
 import {
   createMockCanvasContext,
   findCanvasCalls
-} from "../helpers/mockCanvasContext.js";
+} from "../support/canvas.js";
 import {
   createJobsGroupedBarPrimitives,
   renderJobsGroupedBarPrimitives
 } from "../programs/jobsGroupedBarPrimitives.js";
 import { createJobsGroupedBarValues } from "../fixtures/jobsGroupedBarValues.js";
-import { loadJobs } from "../fixtures/data.js";
+import { loadJobs } from "../support/data.js";
 
 const jobs = loadJobs();
 const layout = {

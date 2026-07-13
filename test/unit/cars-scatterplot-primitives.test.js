@@ -5,7 +5,7 @@ import {
   createCarsScatterplotPrimitives,
   createCarsScatterplotPrimitiveValues
 } from "../programs/carsScatterplotPrimitives.js";
-import { loadCars } from "../fixtures/data.js";
+import { loadCars } from "../support/data.js";
 
 const cars = loadCars();
 

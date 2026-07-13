@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { createCarsRegressionScatterplotValues } from
   "../fixtures/carsRegressionScatterplotValues.js";
-import { loadCars } from "../fixtures/data.js";
+import { loadCars } from "../support/data.js";
 
 function assertApproximately(actual, expected, tolerance = 1e-12) {
   assert.ok(

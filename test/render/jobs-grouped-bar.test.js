@@ -1,8 +1,8 @@
 import test from "node:test";
 
 import { createJobsGroupedBar } from "../../examples/jobs-grouped-bar/program.js";
-import { loadJobs } from "../fixtures/data.js";
-import { assertRenderedPNG } from "../helpers/renderPNG.js";
+import { loadJobs } from "../support/data.js";
+import { assertRenderedPNG } from "../support/png.js";
 import { createJobsGroupedBarPrimitives } from "../programs/jobsGroupedBarPrimitives.js";
 
 const jobs = loadJobs();

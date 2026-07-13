@@ -1,8 +1,8 @@
 import test from "node:test";
 
 import { createCarsLineChart } from "../../examples/cars-line-chart/program.js";
-import { loadCars } from "../fixtures/data.js";
-import { assertRenderedPNG } from "../helpers/renderPNG.js";
+import { loadCars } from "../support/data.js";
+import { assertRenderedPNG } from "../support/png.js";
 import { createCarsLineChartPrimitives } from "../programs/carsLineChartPrimitives.js";
 
 const cars = loadCars();

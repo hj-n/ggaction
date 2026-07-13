@@ -1,8 +1,8 @@
 import test from "node:test";
 
 import { createCarsScatterplot } from "../../examples/cars-scatterplot/program.js";
-import { loadCars } from "../fixtures/data.js";
-import { assertRenderedPNG } from "../helpers/renderPNG.js";
+import { loadCars } from "../support/data.js";
+import { assertRenderedPNG } from "../support/png.js";
 import { createCarsScatterplotPrimitives } from "../programs/carsScatterplotPrimitives.js";
 
 const cars = loadCars();

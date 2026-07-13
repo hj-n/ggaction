@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { createCarsHistogram } from "../../examples/cars-histogram/program.js";
-import { loadCars } from "../fixtures/data.js";
+import { loadCars } from "../support/data.js";
 import { createCarsHistogramPrimitives } from "../programs/carsHistogramPrimitives.js";
 
 const cars = loadCars();

@@ -5,7 +5,7 @@ import { render } from "../../src/renderers/canvas/index.js";
 import {
   createMockCanvasContext,
   findCanvasCalls
-} from "../helpers/mockCanvasContext.js";
+} from "../support/canvas.js";
 
 function createGraphicSpec() {
   return {

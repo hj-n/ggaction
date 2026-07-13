@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { chart } from "../../src/index.js";
-import { loadCars } from "../fixtures/data.js";
+import { loadCars } from "../support/data.js";
 
 const cars = loadCars().filter(row => Number.isFinite(row.Displacement));
 

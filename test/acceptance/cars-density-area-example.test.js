@@ -4,8 +4,8 @@ import test from "node:test";
 import { createCarsDensityArea } from
   "../../examples/cars-density-area/program.js";
 import { render } from "../../src/index.js";
-import { loadCars } from "../fixtures/data.js";
-import { createMockCanvasContext } from "../helpers/mockCanvasContext.js";
+import { loadCars } from "../support/data.js";
+import { createMockCanvasContext } from "../support/canvas.js";
 import { createCarsDensityAreaPrimitives } from
   "../programs/carsDensityAreaPrimitives.js";
 

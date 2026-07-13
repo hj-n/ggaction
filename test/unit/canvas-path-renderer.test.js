@@ -6,7 +6,7 @@ import { render } from "../../src/renderers/canvas/index.js";
 import {
   createMockCanvasContext,
   findCanvasCalls
-} from "../helpers/mockCanvasContext.js";
+} from "../support/canvas.js";
 
 function canvasProgram() {
   return chart().createCanvas({ width: 200, height: 120, margin: 10 });

@@ -8,7 +8,7 @@ import {
 } from "../../src/grammar/density.js";
 import { createCarsDensityAreaValues } from
   "../fixtures/carsDensityAreaValues.js";
-import { loadCars } from "../fixtures/data.js";
+import { loadCars } from "../support/data.js";
 
 test("derives grouped Gaussian KDE on one shared sample grid", () => {
   const expected = createCarsDensityAreaValues(loadCars());

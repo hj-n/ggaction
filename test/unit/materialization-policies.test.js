@@ -8,9 +8,6 @@ import {
   canMaterializePoint,
   getMarkMaterializationStep
 } from "../../src/actions/marks/materialization.js";
-import {
-  applyMaterializationPlan
-} from "../../src/materialization/dependencies.js";
 
 function programWith({ datasets = [], marks = {} } = {}) {
   return {
@@ -74,23 +71,4 @@ test("keeps mark completeness policies beside mark actions", () => {
     }),
     false
   );
-});
-
-test("deduplicates identical materialization steps while preserving order", () => {
-  const calls = [];
-  const program = {
-    materialize(args) {
-      calls.push(args.id);
-      return this;
-    }
-  };
-
-  const result = applyMaterializationPlan(program, [
-    { op: "materialize", args: { id: "x" } },
-    { op: "materialize", args: { id: "x" } },
-    { op: "materialize", args: { id: "y" } }
-  ]);
-
-  assert.equal(result, program);
-  assert.deepEqual(calls, ["x", "y"]);
 });

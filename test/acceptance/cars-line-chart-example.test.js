@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { createCarsLineChart } from "../../examples/cars-line-chart/program.js";
-import { loadCars } from "../fixtures/data.js";
+import { loadCars } from "../support/data.js";
 import { createCarsLineChartPrimitives } from "../programs/carsLineChartPrimitives.js";
 
 const cars = loadCars();
