@@ -60,6 +60,7 @@
 - Update context through a private immutable helper rather than a public or wrapped `setContext` action.
 - When `editSemantic` can infer the current semantic resource from its validated path, high-level actions must rely on that transition instead of duplicating it with `_withContext`.
 - Keep trace arguments lightweight. Do not copy large datasets or fully materialized value arrays into the trace.
+- When a transform creates a derived dataset for a mark, rebind that mark through an explicit wrapped semantic action so the dependency is visible in the trace. Do not make consumers switch datasets implicitly through context or untraced mutation.
 
 ## Tests and Example Programs
 
@@ -73,6 +74,7 @@
 - For every high-level user-facing action, test its shortest valid call after the required prerequisites are present so the default API does not become progressively more verbose.
 - Complete each chart development cycle with one public vertical slice whose browser example, standalone user program, acceptance test, PNG regression, and tutorial use the same chart-authoring API flow.
 - Verify browser Canvas and PNG output separately. Browser checks must cover logical Canvas dimensions and console/page errors; PNG checks must cover `pixelRatio` and physical output dimensions.
+- Establish deterministic numeric fixtures for statistical transforms before relying on graphical or PNG verification. Test quantities such as coefficients, confidence bounds, sample positions, and density values independently from their materialization.
 
 ## Semantic and Graphical Boundary
 
@@ -96,6 +98,12 @@
 - Design shared guides around their semantic role, such as a categorical legend, and express mark-specific symbols through graphical recipes instead of forking the complete guide implementation by mark type.
 - Give each guide type one chart-independent documented default, such as a right-side legend. Alternate placement must come from an explicit public option rather than a different hidden default for each chart type.
 - Generic aggregate actions must select only semantic combinations that their child actions currently support. Determine applicability from persisted mark, encoding, scale, and coordinate state rather than from resource presence alone.
+- Statistical transforms must record enough provenance to reproduce and interpret their results: the source dataset, transform type, input and output fields, grouping, method, and every resolved parameter or default that affects the derived values.
+- Derived-data output order must be deterministic and documented. Unless a transform defines another semantic order, preserve group order by first appearance in the source and use a stable, explicit order within each group.
+- Keep statistical computation, semantic data authoring, and graphical materialization separate. Pure grammar modules compute derived values, data actions own transform provenance and derived datasets, and mark actions turn those values into concrete graphics.
+- User-facing guide text must not expose generated internal field names when transform provenance can recover the original meaning. Infer titles from source fields and semantic roles such as `Density` rather than names such as `Acceleration_density`.
+- Layers that jointly express one visual relationship, such as points, fitted lines, confidence bands, density curves, and their baselines, must use compatible coordinates and shared scales. Convert baselines and bounds through those scales rather than treating semantic values as raw graphical coordinates.
+- Layout actions that share reserved space must compute and validate their actual occupied bounds. When the requested title, legend, or similar block does not fit, report a clear layout error instead of silently expanding the Canvas or changing the user's margins.
 
 ## Documentation and Implementation Consistency
 
