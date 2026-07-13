@@ -170,11 +170,29 @@ test("validates aggregate and directional grid options", () => {
     /even-length array/
   );
   assert.throws(
+    () => program.createGrid({ horizontal: { count: 0 } }),
+    /positive integer/
+  );
+  assert.throws(
+    () => program.createGrid({ horizontal: { values: [] } }),
+    /non-empty finite number array/
+  );
+  assert.throws(
+    () => program.createGrid({ horizontal: { color: "" } }),
+    /non-empty string/
+  );
+  assert.throws(
+    () => program.createGrid({ horizontal: { lineWidth: -1 } }),
+    /non-negative/
+  );
+  assert.throws(
     () => program.createGrid({ extra: true }),
     /Unknown createGrid option/
   );
 
   const created = program.createGrid();
   assert.throws(() => created.createGrid(), /requires a missing grid/);
+  assert.throws(() => program.rematerializeGrid(), /existing grid/);
+  assert.throws(() => created.rematerializeGrid({ force: true }), /does not accept/);
   assert.equal(program.semanticSpec.guides.grid, undefined);
 });

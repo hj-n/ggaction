@@ -144,6 +144,53 @@ test("rejects incomplete and unsupported concrete graphics", () => {
     () => render({ graphicSpec: invalidOpacity }, createMockCanvasContext()),
     /requires opacity from 0 to 1/
   );
+
+  const negativeRadius = createGraphicSpec();
+  negativeRadius.objects.points.children[0].properties.radius = -1;
+  assert.throws(
+    () => render({ graphicSpec: negativeRadius }, createMockCanvasContext()),
+    /non-negative radius/
+  );
+
+  const invalidFill = createGraphicSpec();
+  invalidFill.objects.points.children[0].properties.fill = null;
+  assert.throws(
+    () => render({ graphicSpec: invalidFill }, createMockCanvasContext()),
+    /string fill/
+  );
+});
+
+test("rejects invalid concrete rect appearance and dimensions", () => {
+  function withRect(properties) {
+    const graphicSpec = createGraphicSpec();
+    graphicSpec.objects.frame = { type: "rect", properties };
+    graphicSpec.order.splice(1, 0, "frame");
+    return graphicSpec;
+  }
+  const valid = {
+    x: 5,
+    y: 6,
+    width: 40,
+    height: 30,
+    fill: "white",
+    stroke: "gray",
+    strokeWidth: 1
+  };
+
+  for (const [patch, message] of [
+    [{ width: -1 }, /non-negative rect dimensions/],
+    [{ fill: null }, /string fill/],
+    [{ stroke: null }, /string stroke/],
+    [{ opacity: 2 }, /opacity from 0 to 1/]
+  ]) {
+    assert.throws(
+      () => render(
+        { graphicSpec: withRect({ ...valid, ...patch }) },
+        createMockCanvasContext()
+      ),
+      message
+    );
+  }
 });
 
 test("rejects invalid pixel ratios", () => {

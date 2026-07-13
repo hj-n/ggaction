@@ -27,6 +27,7 @@ import {
   validateScaleType,
   validateStrokeDashRange
 } from "../../src/grammar/scales.js";
+import { niceTimeDomain } from "../../src/grammar/scales/temporal.js";
 
 test("reads finite quantitative field values", () => {
   const values = readQuantitativeField([{ value: 1 }, { value: 4 }], "value");
@@ -87,6 +88,42 @@ test("stabilizes a near-constant nice domain", () => {
 
   assert.equal(resolved[0], resolved[1]);
   assert.equal(resolved[0] > 0.1, true);
+});
+
+test("rounds time domains at calendar boundaries across supported spans", () => {
+  const cases = [
+    [
+      [Date.UTC(2021, 5, 15), Date.UTC(2024, 2, 10)],
+      [Date.UTC(2021, 0, 1), Date.UTC(2025, 0, 1)]
+    ],
+    [
+      [Date.UTC(2024, 0, 15), Date.UTC(2024, 5, 2)],
+      [Date.UTC(2024, 0, 1), Date.UTC(2024, 6, 1)]
+    ],
+    [
+      [Date.UTC(2024, 0, 1, 12), Date.UTC(2024, 0, 8, 4)],
+      [Date.UTC(2024, 0, 1), Date.UTC(2024, 0, 9)]
+    ],
+    [
+      [Date.UTC(2024, 0, 1, 1, 20), Date.UTC(2024, 0, 1, 6, 10)],
+      [Date.UTC(2024, 0, 1, 1), Date.UTC(2024, 0, 1, 7)]
+    ],
+    [
+      [Date.UTC(2024, 0, 1, 1, 2, 20), Date.UTC(2024, 0, 1, 1, 8, 10)],
+      [Date.UTC(2024, 0, 1, 1, 2), Date.UTC(2024, 0, 1, 1, 9)]
+    ],
+    [[1_250, 4_100], [1_000, 5_000]]
+  ];
+
+  for (const [domain, expected] of cases) {
+    assert.deepEqual(niceTimeDomain(domain), expected);
+  }
+  const constant = [Date.UTC(2024, 0, 1), Date.UTC(2024, 0, 1)];
+  assert.equal(niceTimeDomain(constant), constant);
+  assert.deepEqual(
+    niceTimeDomain([Date.UTC(2024, 0, 1), Date.UTC(2025, 0, 1)]),
+    [Date.UTC(2024, 0, 1), Date.UTC(2025, 0, 1)]
+  );
 });
 
 test("validates the continuous scale vocabulary and bounds", () => {
