@@ -177,10 +177,10 @@ test("authors and renders the complete primitive regression scatterplot", () => 
     "yAxisTicks",
     "yAxisLabels",
     "yAxisTitle",
-    "originLegendLines",
-    "originLegendPoints",
-    "originLegendLabels",
-    "originLegendTitle",
+    "seriesLegendSymbolLines",
+    "seriesLegendSymbolPoints",
+    "seriesLegendLabels",
+    "seriesLegendTitle",
     "sizeLegendSymbols",
     "sizeLegendLabels",
     "sizeLegendTitle"
@@ -190,7 +190,7 @@ test("authors and renders the complete primitive regression scatterplot", () => 
   assert.equal(findCanvasCalls(context, "fillRect").length, 81);
   assert.equal(findCanvasCalls(context, "closePath").length, 2);
   assert.equal(findCanvasCalls(context, "fillText").length, 20);
-  assert.equal(findCanvasCalls(context, "stroke").length, 98);
+  assert.equal(findCanvasCalls(context, "stroke").length, 99);
 
   const topLevelOps = new Set(program.trace.children.map(node => node.op));
   assert.deepEqual([...topLevelOps], [

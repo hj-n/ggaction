@@ -337,7 +337,7 @@ Use these actions for explicit semantic resources or focused axis control.
 | Tick/label groups | `createXAxisTicksAndLabels`, `createYAxisTicksAndLabels`, `editXAxisTicksAndLabels`, `editYAxisTicksAndLabels` |
 | Axis titles | `createXAxisTitle`, `createYAxisTitle`, `editXAxisTitle`, `editYAxisTitle` |
 | Grid directions | `createHorizontalGrid`, `createVerticalGrid` |
-| Point legends | `createPointSeriesLegend`, `createSizeLegend`, `rematerializePointSeriesLegend`, `rematerializeSizeLegend` |
+| Point size legend | `createSizeLegend`, `rematerializeSizeLegend` |
 
 See [Coordinates](../api/coordinates.md) and
 [Advanced axis components](../advanced/axis-components.md).

@@ -13,29 +13,29 @@ export const rematerializeLegend = action(
   { op: "rematerializeLegend", description: "Rematerialize every categorical legend component." },
   function (args = {}) {
     noOptions(args, "rematerializeLegend");
-    if (
-      this.guideConfigs.legend?.point !== undefined ||
-      this.guideConfigs.legend?.size !== undefined
-    ) {
-      let next = this;
-      if (this.guideConfigs.legend?.point !== undefined) {
-        next = next.rematerializePointSeriesLegend();
-      }
-      if (this.guideConfigs.legend?.size !== undefined) {
-        next = next.rematerializeSizeLegend();
-      }
-      return next;
+    let next = this;
+    const hasCategorical =
+      this.guideConfigs.legend?.series !== undefined ||
+      this.guideConfigs.legend?.color !== undefined;
+    if (hasCategorical) {
+      const { kind, config } = activeConfig(this);
+      const definition = resolveCurrentDefinition(this, config);
+      next = sameValues(config.domain, definition.domain)
+        ? this
+        : this._withLegendConfig(kind, {
+            ...config,
+            domain: definition.domain
+          });
+      if (config.border !== false) next = next.editLegendBackground();
+      next = next
+        .editLegendSymbols()
+        .editLegendLabels()
+        .editLegendTitle();
     }
-    const { kind, config } = activeConfig(this);
-    const definition = resolveCurrentDefinition(this, config);
-    let next = sameValues(config.domain, definition.domain)
-      ? this
-      : this._withLegendConfig(kind, { ...config, domain: definition.domain });
-    if (config.border !== false) next = next.editLegendBackground();
-    return next
-      .editLegendSymbols()
-      .editLegendLabels()
-      .editLegendTitle();
+    if (this.guideConfigs.legend?.size !== undefined) {
+      next = next.rematerializeSizeLegend();
+    }
+    return next;
   }
 );
 
@@ -123,17 +123,44 @@ export const createLegend = action(
       ? pointCandidates.length === 1 ? pointCandidates[0] : undefined
       : pointCandidates.find(layer => layer.id === args.target);
     if (requestedPoint !== undefined) {
-      const unknown = Object.keys(args).find(
-        key => !["target", "count"].includes(key)
-      );
-      if (unknown !== undefined) {
-        throw new Error(`Unknown point legend option "${unknown}".`);
+      const { count, ...categoricalArgs } = args;
+      if (
+        requestedPoint.encoding?.size?.scale !== undefined &&
+        categoricalArgs.position !== undefined &&
+        categoricalArgs.position !== "right"
+      ) {
+        throw new Error(
+          "Combined point series and size legends currently require right position."
+        );
       }
-      let next = this.createPointSeriesLegend({ target: requestedPoint.id });
+      const hasMatchingLine = this.semanticSpec.layers.some(candidate =>
+        candidate.mark?.type === "line" &&
+        candidate.encoding?.color?.field === requestedPoint.encoding.color.field &&
+        candidate.encoding.color.scale === requestedPoint.encoding.color.scale
+      );
+      const symbol = categoricalArgs.symbol ?? {
+        layers: [
+          ...(hasMatchingLine
+            ? [{ type: "line", length: 32, lineWidth: 3 }]
+            : []),
+          {
+            type: "point",
+            size: Math.sqrt(64 / Math.PI),
+            stroke: "white",
+            strokeWidth: 0
+          }
+        ]
+      };
+      let next = this.createCategoricalLegend({
+        ...categoricalArgs,
+        target: requestedPoint.id,
+        channels: categoricalArgs.channels ?? ["color", "shape"],
+        symbol
+      });
       if (requestedPoint.encoding?.size?.scale !== undefined) {
         next = next.createSizeLegend({
           target: requestedPoint.id,
-          ...(args.count === undefined ? {} : { count: args.count })
+          ...(count === undefined ? {} : { count })
         });
       }
       return next;

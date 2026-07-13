@@ -4,7 +4,7 @@ import { CHANNELS } from "./options.js";
 import { nonEmptyString } from "./validation.js";
 
 function isCategoricalTarget(layer) {
-  if (layer?.mark?.type === "line") {
+  if (["line", "point"].includes(layer?.mark?.type)) {
     return CHANNELS.some(
       channel => layer.encoding?.[channel]?.scale !== undefined
     );
@@ -70,7 +70,7 @@ export function resolveDefinition(program, layer, requestedChannels, requestedTi
     new Set(channels).size !== channels.length
   ) {
     throw new Error(
-      "Legend channels must be a non-empty unique color/strokeDash array."
+      "Legend channels must be a non-empty unique color/strokeDash/shape array."
     );
   }
   if (kind === "color" && !sameValues(channels, ["color"])) {

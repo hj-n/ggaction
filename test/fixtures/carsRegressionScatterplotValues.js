@@ -452,8 +452,9 @@ export function createCarsRegressionScatterplotValues(
   }));
   const originLegendX = bounds.x + bounds.width + 30;
   const originLegendItems = groupDomain.map((group, index) => {
-    const y = bounds.y + 56 + index * 34;
-    const area = 64;
+    const y = bounds.y + 52 + index * 28;
+    const radius = Math.sqrt(64 / Math.PI);
+    const side = radius * Math.sqrt(Math.PI);
     const shape = shapeRange[index];
     const symbol = shape === "circle"
       ? {
@@ -461,19 +462,21 @@ export function createCarsRegressionScatterplotValues(
           properties: {
             x: originLegendX + 16,
             y,
-            radius: Math.sqrt(area / Math.PI),
-            fill: colorRange[index]
+            radius,
+            fill: colorRange[index],
+            stroke: "white",
+            strokeWidth: 0
           }
         }
       : {
           type: "rect",
           properties: {
-            x: originLegendX + 16 - Math.sqrt(area) / 2,
-            y: y - Math.sqrt(area) / 2,
-            width: Math.sqrt(area),
-            height: Math.sqrt(area),
+            x: originLegendX + 16 - side / 2,
+            y: y - side / 2,
+            width: side,
+            height: side,
             fill: colorRange[index],
-            stroke: colorRange[index],
+            stroke: "white",
             strokeWidth: 0
           }
         };
@@ -482,9 +485,15 @@ export function createCarsRegressionScatterplotValues(
       color: colorRange[index],
       shape,
       y,
-      line: { x1: originLegendX, y1: y, x2: originLegendX + 32, y2: y },
+      line: {
+        x1: originLegendX,
+        y1: y,
+        x2: originLegendX + 32,
+        y2: y,
+        strokeDash: []
+      },
       symbol,
-      label: { x: originLegendX + 44, y, text: group }
+      label: { x: originLegendX + 42, y, text: group }
     };
   });
   const sizeLegendValues = Array.from(
@@ -578,7 +587,7 @@ export function createCarsRegressionScatterplotValues(
     },
     legends: {
       origin: {
-        title: { x: originLegendX, y: bounds.y + 18, text: groupField },
+        title: { x: originLegendX, y: bounds.y + 20, text: groupField },
         items: originLegendItems
       },
       size: {

@@ -156,7 +156,6 @@ createLegend
 │  ├─ createLegendSymbols
 │  ├─ createLegendLabels
 │  └─ createLegendTitle
-├─ createPointSeriesLegend
 └─ createSizeLegend
 ~~~
 
@@ -167,7 +166,8 @@ Pass `createGuides({ legend: false })` to opt out.
 ## Errors and limitations
 
 General continuous color legends and interactive legends are unsupported.
-Point composite/size legends currently use right-side layout.
+Combined point-series and quantitative-size legends currently require right
+position so both blocks remain in one vertical stack.
 Right-side layout requires sufficient right margin; bottom layout requires
 sufficient bottom margin; top layout requires enough top margin for its title,
 item grid, offset, and optional border.

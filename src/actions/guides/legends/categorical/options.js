@@ -9,7 +9,7 @@ import {
   validateObject
 } from "./validation.js";
 
-export const CHANNELS = Object.freeze(["color", "strokeDash"]);
+export const CHANNELS = Object.freeze(["color", "strokeDash", "shape"]);
 const OPTIONS = Object.freeze([
   "target",
   "channels",

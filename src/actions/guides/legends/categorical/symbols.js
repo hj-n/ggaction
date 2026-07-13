@@ -19,17 +19,23 @@ function makeEditSymbol(type) {
       const { config } = activeConfig(this);
       const layer = layerFor(config, type);
       const id = symbolGraphic(config, type);
-      const expected = { line: "line", point: "circle", swatch: "rect" }[type];
+      const dynamicPoint = type === "point" && config.channels.includes("shape");
+      const expected = dynamicPoint
+        ? "collection"
+        : { line: "line", point: "circle", swatch: "rect" }[type];
       if (this.graphicSpec.objects[id]?.type !== expected) {
         throw new Error(`${op} requires existing ${type} symbols.`);
       }
       const layout = resolveLayout(this, config);
       const appearance = resolveAppearance(this, config);
-      let next = this.editGraphics({
-        target: id,
-        property: "length",
-        value: config.domain.length
-      });
+      let next = this;
+      if (!dynamicPoint) {
+        next = next.editGraphics({
+          target: id,
+          property: "length",
+          value: config.domain.length
+        });
+      }
       if (type === "line") {
         const x1 = layout.symbolX.map(
           value => value + (symbolWidth(config) - layer.length) / 2
@@ -49,6 +55,47 @@ function makeEditSymbol(type) {
       }
       if (type === "point") {
         const x = layout.symbolX.map(value => value + symbolWidth(config) / 2);
+        if (dynamicPoint) {
+          const children = config.domain.map((_, index) => {
+            const fill = layer.fill ?? appearance.colors[index];
+            if (appearance.shapes[index] === "circle") {
+              return {
+                type: "circle",
+                properties: {
+                  x: x[index],
+                  y: layout.itemY[index],
+                  radius: layer.size,
+                  fill,
+                  stroke: layer.stroke,
+                  strokeWidth: layer.strokeWidth
+                }
+              };
+            }
+            if (appearance.shapes[index] !== "square") {
+              throw new Error(
+                `Unsupported resolved legend point shape "${appearance.shapes[index]}".`
+              );
+            }
+            const side = layer.size * Math.sqrt(Math.PI);
+            return {
+              type: "rect",
+              properties: {
+                x: x[index] - side / 2,
+                y: layout.itemY[index] - side / 2,
+                width: side,
+                height: side,
+                fill,
+                stroke: layer.stroke,
+                strokeWidth: layer.strokeWidth
+              }
+            };
+          });
+          return next.editGraphics({
+            target: id,
+            property: "children",
+            value: children
+          });
+        }
         return next
           .editGraphics({ target: id, property: "x", value: x })
           .editGraphics({ target: id, property: "y", value: layout.itemY })
@@ -93,9 +140,17 @@ function makeCreateSymbol(type, edit) {
       if (this.graphicSpec.objects[id] !== undefined) {
         throw new Error(`${op} requires missing ${type} symbols.`);
       }
-      const graphicType = { line: "line", point: "circle", swatch: "rect" }[type];
+      const graphicType = type === "point" && config.channels.includes("shape")
+        ? "collection"
+        : { line: "line", point: "circle", swatch: "rect" }[type];
       return this
-        .createGraphics({ id, type: graphicType, length: config.domain.length })
+        .createGraphics({
+          id,
+          type: graphicType,
+          ...(graphicType === "collection"
+            ? {}
+            : { length: config.domain.length })
+        })
         [edit]();
     }
   );

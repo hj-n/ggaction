@@ -461,82 +461,87 @@ export function createCarsRegressionScatterplotPrimitives(cars) {
     .editGraphics({ target: "yAxisTitle", property: "textBaseline", value: "middle" })
     .editGraphics({ target: "yAxisTitle", property: "rotation", value: yAxis.title.rotation })
     .createGraphics({
-      id: "originLegendLines",
+      id: "seriesLegendSymbolLines",
       type: "line",
       length: originLegend.items.length
     })
     .editGraphics({
-      target: "originLegendLines",
+      target: "seriesLegendSymbolLines",
       property: "x1",
       value: originLegend.items.map(item => item.line.x1)
     })
     .editGraphics({
-      target: "originLegendLines",
+      target: "seriesLegendSymbolLines",
       property: "y1",
       value: originLegend.items.map(item => item.line.y1)
     })
     .editGraphics({
-      target: "originLegendLines",
+      target: "seriesLegendSymbolLines",
       property: "x2",
       value: originLegend.items.map(item => item.line.x2)
     })
     .editGraphics({
-      target: "originLegendLines",
+      target: "seriesLegendSymbolLines",
       property: "y2",
       value: originLegend.items.map(item => item.line.y2)
     })
     .editGraphics({
-      target: "originLegendLines",
+      target: "seriesLegendSymbolLines",
       property: "stroke",
       value: originLegend.items.map(item => item.color)
     })
     .editGraphics({
-      target: "originLegendLines",
+      target: "seriesLegendSymbolLines",
       property: "strokeWidth",
       value: 3
     })
-    .createGraphics({ id: "originLegendPoints", type: "collection" })
     .editGraphics({
-      target: "originLegendPoints",
+      target: "seriesLegendSymbolLines",
+      property: "strokeDash",
+      value: originLegend.items.map(item => item.line.strokeDash)
+    })
+    .createGraphics({ id: "seriesLegendSymbolPoints", type: "collection" })
+    .editGraphics({
+      target: "seriesLegendSymbolPoints",
       property: "children",
       value: originLegend.items.map(item => item.symbol)
     })
     .createGraphics({
-      id: "originLegendLabels",
+      id: "seriesLegendLabels",
       type: "text",
       length: originLegend.items.length
     })
     .editGraphics({
-      target: "originLegendLabels",
+      target: "seriesLegendLabels",
       property: "x",
       value: originLegend.items.map(item => item.label.x)
     })
     .editGraphics({
-      target: "originLegendLabels",
+      target: "seriesLegendLabels",
       property: "y",
       value: originLegend.items.map(item => item.label.y)
     })
     .editGraphics({
-      target: "originLegendLabels",
+      target: "seriesLegendLabels",
       property: "text",
       value: originLegend.items.map(item => item.label.text)
     })
-    .editGraphics({ target: "originLegendLabels", property: "fill", value: "#334155" })
-    .editGraphics({ target: "originLegendLabels", property: "fontSize", value: 12 })
-    .editGraphics({ target: "originLegendLabels", property: "fontFamily", value: "sans-serif" })
-    .editGraphics({ target: "originLegendLabels", property: "fontWeight", value: "normal" })
-    .editGraphics({ target: "originLegendLabels", property: "textAlign", value: "left" })
-    .editGraphics({ target: "originLegendLabels", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "originLegendTitle", type: "text" })
-    .editGraphics({ target: "originLegendTitle", property: "x", value: originLegend.title.x })
-    .editGraphics({ target: "originLegendTitle", property: "y", value: originLegend.title.y })
-    .editGraphics({ target: "originLegendTitle", property: "text", value: originLegend.title.text })
-    .editGraphics({ target: "originLegendTitle", property: "fill", value: "#0f172a" })
-    .editGraphics({ target: "originLegendTitle", property: "fontSize", value: 13 })
-    .editGraphics({ target: "originLegendTitle", property: "fontFamily", value: "sans-serif" })
-    .editGraphics({ target: "originLegendTitle", property: "fontWeight", value: 600 })
-    .editGraphics({ target: "originLegendTitle", property: "textAlign", value: "left" })
-    .editGraphics({ target: "originLegendTitle", property: "textBaseline", value: "middle" })
+    .editGraphics({ target: "seriesLegendLabels", property: "fill", value: "#334155" })
+    .editGraphics({ target: "seriesLegendLabels", property: "fontSize", value: 12 })
+    .editGraphics({ target: "seriesLegendLabels", property: "fontFamily", value: "sans-serif" })
+    .editGraphics({ target: "seriesLegendLabels", property: "fontWeight", value: "normal" })
+    .editGraphics({ target: "seriesLegendLabels", property: "textAlign", value: "left" })
+    .editGraphics({ target: "seriesLegendLabels", property: "textBaseline", value: "middle" })
+    .createGraphics({ id: "seriesLegendTitle", type: "text" })
+    .editGraphics({ target: "seriesLegendTitle", property: "x", value: originLegend.title.x })
+    .editGraphics({ target: "seriesLegendTitle", property: "y", value: originLegend.title.y })
+    .editGraphics({ target: "seriesLegendTitle", property: "text", value: originLegend.title.text })
+    .editGraphics({ target: "seriesLegendTitle", property: "fill", value: "#334155" })
+    .editGraphics({ target: "seriesLegendTitle", property: "fontSize", value: 13 })
+    .editGraphics({ target: "seriesLegendTitle", property: "fontFamily", value: "sans-serif" })
+    .editGraphics({ target: "seriesLegendTitle", property: "fontWeight", value: 600 })
+    .editGraphics({ target: "seriesLegendTitle", property: "textAlign", value: "left" })
+    .editGraphics({ target: "seriesLegendTitle", property: "textBaseline", value: "middle" })
     .createGraphics({
       id: "sizeLegendSymbols",
       type: "circle",

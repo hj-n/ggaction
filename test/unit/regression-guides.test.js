@@ -52,7 +52,7 @@ test("creates shared axes, horizontal grid, and two right-side legends", () => {
   );
   assert.equal(program.graphicSpec.order.indexOf("horizontalGridLines") <
     program.graphicSpec.order.indexOf("points"), true);
-  assert.equal(program.graphicSpec.order.indexOf("originLegendLines") >
+  assert.equal(program.graphicSpec.order.indexOf("seriesLegendSymbolLines") >
     program.graphicSpec.order.indexOf("yAxisTitle"), true);
 });
 
@@ -63,13 +63,15 @@ test("matches primitive composite and five-symbol size legends", () => {
   const size = expected.legends.size;
 
   assert.deepEqual(
-    program.graphicSpec.objects.originLegendLines.children.map(child => child.properties),
+    program.graphicSpec.objects.seriesLegendSymbolLines.children.map(
+      child => child.properties
+    ),
     origin.items.map(item => ({ ...item.line, stroke: item.color, strokeWidth: 3 }))
   );
   assert.deepEqual(
-    program.graphicSpec.objects.originLegendPoints.children,
+    program.graphicSpec.objects.seriesLegendSymbolPoints.children,
     origin.items.map((item, index) => ({
-      id: `originLegendPoints:${index}`,
+      id: `seriesLegendSymbolPoints:${index}`,
       type: item.symbol.type,
       properties: item.symbol.properties
     }))
@@ -93,7 +95,7 @@ test("rematerializes both legend blocks after Canvas edits", () => {
   const before = regressionProgram().createGuides();
   const after = before.editCanvas({ width: 860 });
   assert.equal(
-    after.graphicSpec.objects.originLegendLines.children[0].properties.x1,
+    after.graphicSpec.objects.seriesLegendSymbolLines.children[0].properties.x1,
     700
   );
   assert.equal(
@@ -104,7 +106,9 @@ test("rematerializes both legend blocks after Canvas edits", () => {
     child => child.op === "rematerializeLegend"
   );
   assert.deepEqual(legendNode.children.map(child => child.op), [
-    "rematerializePointSeriesLegend",
+    "editLegendSymbols",
+    "editLegendLabels",
+    "editLegendTitle",
     "rematerializeSizeLegend"
   ]);
 });
@@ -118,6 +122,6 @@ test("supports an explicit quantitative symbol count and validates point legends
   );
   assert.throws(
     () => regressionProgram().createLegend({ position: "bottom" }),
-    /Unknown point legend option/
+    /require right position/
   );
 });

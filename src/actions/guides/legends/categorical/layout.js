@@ -242,13 +242,15 @@ export function resolveLayout(program, config) {
 export function resolveAppearance(program, config) {
   let colors = config.domain.map(() => "#4c78a8");
   let dashes = config.domain.map(() => []);
+  let shapes = config.domain.map(() => "circle");
   for (let index = 0; index < config.channels.length; index += 1) {
     const scale = program.resolvedScales[config.scales[index]];
     const values = mapOrdinalValues(config.domain, scale.domain, scale.range);
     if (config.channels[index] === "color") colors = values;
     if (config.channels[index] === "strokeDash") dashes = values;
+    if (config.channels[index] === "shape") shapes = values;
   }
-  return { colors, dashes };
+  return { colors, dashes, shapes };
 }
 
 export { noOptions };
