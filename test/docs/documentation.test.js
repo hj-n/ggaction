@@ -94,6 +94,14 @@ test("keeps navigation and page order complete", async () => {
   assert.deepEqual(new Set(order), pageUrls);
   for (const url of navigation) assert.equal(pageUrls.has(url), true, url);
   assert.equal(navigation.includes("/api/grids/"), true);
+
+  const navigationSource = read("docs/_data/navigation.yml");
+  assert.doesNotMatch(navigationSource, /title: (Regression|Density) Tutorial/);
+
+  const layout = read("docs/_layouts/default.html");
+  assert.equal((layout.match(/class="docs-topnav"[\s\S]*?<\/nav>/)?.[0]
+    .match(/<a /g) ?? []).length, 4);
+  assert.match(layout, /'\/recipes\/' \| relative_url/);
 });
 
 test("keeps tutorial action flows aligned with public examples", () => {

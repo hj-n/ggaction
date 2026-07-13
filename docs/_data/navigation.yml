@@ -8,14 +8,10 @@
       url: /tutorials/
     - title: Chart Recipes
       url: /recipes/
-    - title: Regression Tutorial
-      url: /tutorials/regression-scatterplot/
-    - title: Density Tutorial
-      url: /tutorials/density-area/
     - title: Troubleshooting
       url: /troubleshooting/
 
-- title: Chart Building
+- title: Chart API
   items:
     - title: Canvas
       url: /api/canvas/
@@ -25,6 +21,8 @@
       url: /api/marks/
     - title: Encodings
       url: /api/encodings/
+    - title: Scale Options
+      url: /api/scales/
     - title: Regression
       url: /api/regression/
     - title: Guides
@@ -42,8 +40,6 @@
       url: /api/series-encodings/
     - title: Appearance Encodings
       url: /api/appearance/
-    - title: Scale Options
-      url: /api/scales/
     - title: Coordinates
       url: /api/coordinates/
     - title: Axes
