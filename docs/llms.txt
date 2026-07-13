@@ -73,6 +73,7 @@ and language models.
 - createLegend materializes a categorical right-side line-series or bottom histogram color legend; layered symbol recipes support line, point, swatch, and line-plus-point compositions.
 - createTitle stores semantic title text and materializes a plot-aligned top title with an optional subtitle.
 - createGuides calls applicable createAxes, createGrid, and createLegend wrapped actions in that order; it never creates chart titles.
+- For grouped bars, createGuides infers an ordinal x axis, quantitative y axis, horizontal grid, and right-side color legend while forwarding explicit child options and false opt-outs.
 
 ## Current scope
 
@@ -98,8 +99,9 @@ color legend from the stored color encoding and resolved ordinal scale.
 The equivalent `encodeHistogram` action composes those x/y actions without
 duplicating their validation, inference, or materialization behavior.
 The grouped-bar progression now covers ordinal x, mean y, group-aware color,
-band-local xOffset, and concrete bar width/materialization. Its axes, legend,
-guide integration, and final public tutorial remain later Phase 4 work.
+band-local xOffset, concrete bar width/materialization, ordinal axes, a
+right-side color legend, and createGuides integration. Its final public
+tutorial remains later Phase 4 work.
 Temporal line `encodeX` resolves a time scale; aggregate line `encodeY`
 materializes sorted series paths. Line `encodeColor` and `encodeStrokeDash`
 group and style series through ordinal scales. `createGuides` composes time or

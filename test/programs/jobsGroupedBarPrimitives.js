@@ -156,6 +156,11 @@ export function createJobsGroupedBarPrimitives(jobs) {
       property: "strokeWidth",
       value: 1
     })
+    .editGraphics({
+      target: "horizontalGridLines",
+      property: "strokeDash",
+      value: horizontalGrid.map(() => [])
+    })
     .createGraphics({ id: "xAxisLine", type: "line" })
     .editGraphics({ target: "xAxisLine", property: "x1", value: xAxis.line.x1 })
     .editGraphics({ target: "xAxisLine", property: "y1", value: xAxis.line.y1 })
@@ -197,9 +202,9 @@ export function createJobsGroupedBarPrimitives(jobs) {
     .editGraphics({ target: "xAxisTitle", property: "rotation", value: xAxis.title.rotation })
     .createGraphics({ id: "yAxisLine", type: "line" })
     .editGraphics({ target: "yAxisLine", property: "x1", value: yAxis.line.x1 })
-    .editGraphics({ target: "yAxisLine", property: "y1", value: yAxis.line.y1 })
+    .editGraphics({ target: "yAxisLine", property: "y1", value: yAxis.line.y2 })
     .editGraphics({ target: "yAxisLine", property: "x2", value: yAxis.line.x2 })
-    .editGraphics({ target: "yAxisLine", property: "y2", value: yAxis.line.y2 })
+    .editGraphics({ target: "yAxisLine", property: "y2", value: yAxis.line.y1 })
     .editGraphics({ target: "yAxisLine", property: "stroke", value: "#334155" })
     .editGraphics({ target: "yAxisLine", property: "strokeWidth", value: 1 })
     .createGraphics({ id: "yAxisTicks", type: "line", length: yAxis.ticks.length })

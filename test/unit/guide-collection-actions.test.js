@@ -25,6 +25,29 @@ function createSeriesLine() {
     .encodeStrokeDash({ field: "origin" });
 }
 
+function createGroupedBars() {
+  return chart()
+    .createCanvas({
+      width: 720,
+      height: 460,
+      margin: { top: 40, right: 140, bottom: 70, left: 80 }
+    })
+    .createData({
+      id: "jobs",
+      values: [
+        { year: 1850, perc: 1, sex: "men" },
+        { year: 1850, perc: 9, sex: "women" },
+        { year: 1860, perc: 2, sex: "men" },
+        { year: 1860, perc: 8, sex: "women" }
+      ]
+    })
+    .createBarMark({ id: "bars" })
+    .encodeX({ field: "year", fieldType: "ordinal" })
+    .encodeY({ field: "perc", aggregate: "mean" })
+    .encodeColor({ field: "sex", layout: "group" })
+    .encodeBarWidth({ band: 0.72 });
+}
+
 test("automatically creates axes, grid, and a line-series legend", () => {
   const program = createSeriesLine().createGuides();
   const node = program.trace.children.at(-1);
@@ -152,6 +175,73 @@ test("automatically selects a histogram color legend", () => {
   );
   assert.equal(program.semanticSpec.guides.legend.color.scale, "color");
   assert.equal(program.graphicSpec.objects.colorLegendSymbols.type, "rect");
+});
+
+test("collects grouped bar axes, grid, and right legend", () => {
+  const program = createGroupedBars().createGuides();
+  const node = program.trace.children.at(-1);
+
+  assert.deepEqual(node.children.map(child => child.op), [
+    "createAxes",
+    "createGrid",
+    "createLegend"
+  ]);
+  assert.deepEqual(node.children[0].children.map(child => child.op), [
+    "createXAxis",
+    "createYAxis"
+  ]);
+  assert.deepEqual(
+    program.graphicSpec.objects.xAxisLabels.children.map(
+      child => child.properties.text
+    ),
+    ["1850", "1860"]
+  );
+  assert.equal(
+    program.graphicSpec.objects.colorLegendSymbols.children[0].properties.x,
+    610
+  );
+  assert.equal(
+    program.graphicSpec.order.indexOf("horizontalGridLines") <
+      program.graphicSpec.order.indexOf("bars"),
+    true
+  );
+});
+
+test("forwards grouped guide options, supports opt-out, and rematerializes", () => {
+  const configured = createGroupedBars().createGuides({
+    axes: {
+      x: { ticksAndLabels: { labels: { fontSize: 11 } } },
+      y: false
+    },
+    grid: false,
+    legend: { title: "Sex" }
+  });
+  const before = createGroupedBars().createGuides();
+  const after = before.editCanvas({ width: 820 });
+
+  assert.equal(configured.semanticSpec.guides.axis.y, undefined);
+  assert.equal(configured.semanticSpec.guides.grid, undefined);
+  assert.equal(configured.semanticSpec.guides.legend.color.title, "Sex");
+  assert.equal(
+    configured.graphicSpec.objects.xAxisLabels.children[0].properties.fontSize,
+    11
+  );
+  assert.equal(
+    before.graphicSpec.objects.colorLegendSymbols.children[0].properties.x,
+    610
+  );
+  assert.equal(
+    after.graphicSpec.objects.colorLegendSymbols.children[0].properties.x,
+    710
+  );
+  assert.notEqual(
+    before.graphicSpec.objects.xAxisLabels.children[0].properties.x,
+    after.graphicSpec.objects.xAxisLabels.children[0].properties.x
+  );
+  assert.notEqual(
+    before.graphicSpec.objects.bars.children[0].properties.width,
+    after.graphicSpec.objects.bars.children[0].properties.width
+  );
 });
 
 test("validates options and requires a selected guide", () => {

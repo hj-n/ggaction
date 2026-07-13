@@ -47,6 +47,24 @@ when a y encoding exists; vertical grid remains off unless requested. A legend
 is selected for line color/stroke-dash encodings or a bar color encoding.
 Unsupported point legends are not selected.
 
+For grouped bars, the shortest call creates an ordinal x axis at band centers,
+a quantitative y axis, a horizontal grid, and a right-side color legend:
+
+```javascript
+groupedBars.createGuides();
+```
+
+The same child options remain available. For example, this changes the ordinal
+labels while retaining inference for every other guide:
+
+```javascript
+groupedBars.createGuides({
+  axes: {
+    x: { ticksAndLabels: { labels: { fontSize: 11 } } }
+  }
+});
+```
+
 `createGuides` only selects and calls existing wrapped actions. Coordinate,
 scale, target, field, and domain validation remains the responsibility of
 `createAxes`, `createGrid`, and `createLegend`, so ambiguous charts still

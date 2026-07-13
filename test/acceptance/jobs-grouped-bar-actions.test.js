@@ -41,8 +41,20 @@ test("authors grouped bar encoding semantics through chart actions", () => {
   assert.equal(actionOps.includes("encodeX"), true);
   assert.equal(actionOps.includes("encodeY"), true);
   assert.equal(actionOps.includes("encodeBarWidth"), true);
-  assert.equal(actionOps.includes("createXAxis"), true);
-  assert.equal(actionOps.includes("createLegend"), true);
+  assert.equal(actionOps.includes("createXAxis"), false);
+  assert.equal(actionOps.includes("createLegend"), false);
+  const guidesNode = program.trace.children.find(
+    child => child.op === "createGuides"
+  );
+  assert.deepEqual(guidesNode.children.map(child => child.op), [
+    "createAxes",
+    "createGrid",
+    "createLegend"
+  ]);
+  assert.deepEqual(guidesNode.children[0].children.map(child => child.op), [
+    "createXAxis",
+    "createYAxis"
+  ]);
   const colorNode = program.trace.children.find(child => child.op === "encodeColor");
   assert.equal(
     colorNode.children.some(child => child.op === "encodeXOffset"),
