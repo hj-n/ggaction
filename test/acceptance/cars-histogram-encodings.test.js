@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import {
@@ -13,10 +12,9 @@ import {
 import {
   createCarsHistogramPrimitives
 } from "../programs/carsHistogramPrimitives.js";
+import { loadCars } from "../fixtures/data.js";
 
-const cars = JSON.parse(
-  readFileSync(new URL("../../data/cars.json", import.meta.url), "utf8")
-);
+const cars = loadCars();
 
 test("replaces raw bar and position blocks with chart actions", () => {
   const primitive = createCarsHistogramPrimitives(cars);

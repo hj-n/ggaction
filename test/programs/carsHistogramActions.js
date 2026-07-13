@@ -1,6 +1,6 @@
 import { chart, render } from "../../src/index.js";
 
-import { createCarsHistogramValues } from "./carsHistogramValues.js";
+import { createCarsHistogramValues } from "../fixtures/carsHistogramValues.js";
 
 export function createCarsHistogramActions(cars) {
   const width = 432;

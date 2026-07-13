@@ -1,12 +1,10 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import { createJobsGroupedBar } from "../../examples/jobs-grouped-bar/program.js";
+import { loadJobs } from "../fixtures/data.js";
 
-const jobs = JSON.parse(
-  readFileSync(new URL("../../data/jobs.json", import.meta.url), "utf8")
-);
+const jobs = loadJobs();
 
 test("builds the public jobs grouped bar chart with chart actions", () => {
   const program = createJobsGroupedBar(jobs);

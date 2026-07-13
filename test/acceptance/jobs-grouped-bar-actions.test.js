@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import { createMockCanvasContext } from "../helpers/mockCanvasContext.js";
@@ -8,10 +7,9 @@ import {
   renderJobsGroupedBarActions
 } from "../programs/jobsGroupedBarActions.js";
 import { createJobsGroupedBarPrimitives } from "../programs/jobsGroupedBarPrimitives.js";
+import { loadJobs } from "../fixtures/data.js";
 
-const jobs = JSON.parse(
-  readFileSync(new URL("../../data/jobs.json", import.meta.url), "utf8")
-);
+const jobs = loadJobs();
 
 function semanticByScaleId(spec) {
   return {

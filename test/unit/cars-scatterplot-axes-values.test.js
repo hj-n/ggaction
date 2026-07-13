@@ -1,15 +1,13 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import {
   createCarsScatterplotAxes,
   createCarsScatterplotAxesValues
 } from "../programs/carsScatterplotAxes.js";
+import { loadCars } from "../fixtures/data.js";
 
-const cars = JSON.parse(
-  readFileSync(new URL("../../data/cars.json", import.meta.url), "utf8")
-);
+const cars = loadCars();
 
 test("precomputes point, tick, and label values for the axes program", () => {
   const values = createCarsScatterplotAxesValues(cars);

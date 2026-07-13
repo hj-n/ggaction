@@ -1,12 +1,10 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import { chart } from "../../src/index.js";
+import { loadCars } from "../fixtures/data.js";
 
-const cars = JSON.parse(
-  readFileSync(new URL("../../data/cars.json", import.meta.url), "utf8")
-).filter(
+const cars = loadCars().filter(
   row =>
     Number.isFinite(row.Displacement) &&
     typeof row.Origin === "string" &&

@@ -1,6 +1,6 @@
 import { chart, render } from "../../src/index.js";
 
-import { createCarsLineChartValues } from "./carsLineChartValues.js";
+import { createCarsLineChartValues } from "../fixtures/carsLineChartValues.js";
 
 export function createCarsLineChartPrimitives(cars) {
   const width = 720;

@@ -1,6 +1,6 @@
 import { chart, render } from "../../src/index.js";
 
-import { createJobsGroupedBarValues } from "./jobsGroupedBarValues.js";
+import { createJobsGroupedBarValues } from "../fixtures/jobsGroupedBarValues.js";
 
 export function createJobsGroupedBarActions(jobs) {
   const width = 720;

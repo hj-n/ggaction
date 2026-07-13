@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import {
@@ -10,10 +9,9 @@ import {
   createCarsLineChartPrimitives,
   renderCarsLineChartPrimitives
 } from "../programs/carsLineChartPrimitives.js";
+import { loadCars } from "../fixtures/data.js";
 
-const cars = JSON.parse(
-  readFileSync(new URL("../../data/cars.json", import.meta.url), "utf8")
-);
+const cars = loadCars();
 
 test("authors and renders the complete primitive cars line chart", () => {
   const program = createCarsLineChartPrimitives(cars);

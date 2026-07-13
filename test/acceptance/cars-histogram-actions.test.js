@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import { createMockCanvasContext } from "../helpers/mockCanvasContext.js";
@@ -11,10 +10,9 @@ import {
   createCarsHistogramEncodings,
   renderCarsHistogramEncodings
 } from "../programs/carsHistogramEncodings.js";
+import { loadCars } from "../fixtures/data.js";
 
-const cars = JSON.parse(
-  readFileSync(new URL("../../data/cars.json", import.meta.url), "utf8")
-);
+const cars = loadCars();
 
 test("authors histogram mark and encodings through chart actions", () => {
   const explicit = createCarsHistogramEncodings(cars);

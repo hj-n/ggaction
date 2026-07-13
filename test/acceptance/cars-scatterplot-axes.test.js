@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import {
@@ -10,10 +9,9 @@ import {
   createCarsScatterplotAxes,
   renderCarsScatterplotAxes
 } from "../programs/carsScatterplotAxes.js";
+import { loadCars } from "../fixtures/data.js";
 
-const cars = JSON.parse(
-  readFileSync(new URL("../../data/cars.json", import.meta.url), "utf8")
-);
+const cars = loadCars();
 
 test("renders the cars scatterplot with manually authored axes", () => {
   const program = createCarsScatterplotAxes(cars);
