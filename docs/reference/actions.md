@@ -5,14 +5,17 @@ title: Action Reference
 
 # Action Reference
 
-Every action accepts one plain option object and returns a new immutable
-`ChartProgram`. Unknown options are rejected.
+Every supported direct action accepts one plain option object and returns a new
+immutable `ChartProgram`. This page covers the methods declared on the public
+`ChartProgram` type. Additional wrapped operations may appear inside a trace;
+those are implementation steps, not supported direct-call APIs.
 
 ## Quick navigation
 
 - [Chart authoring](#chart-authoring-api)
 - [Advanced chart actions](#advanced-chart-api)
 - [Extension actions](#extension-api)
+- [Internal trace operations](#internal-trace-operations)
 - [Rendering functions](#rendering-functions)
 
 ## Chart Authoring API
@@ -329,7 +332,8 @@ Use these actions for explicit semantic resources or focused axis control.
 | Group | Actions |
 | --- | --- |
 | Coordinate | `createCoordinate({ id?, type?, layers? })` |
-| Derived data | `createDerivedData({ id, source, transform })`, `materializeFilteredData({ id })`, `materializeRegressionData({ id })` |
+| Derived data | `createDerivedData({ id, source, transform })`, `materializeFilteredData({ id })`, `materializeRegressionData({ id })`, `materializeDensityData({ id })` |
+| Regression layers | `createRegressionBand({ id, ... })`, `createRegressionLine({ id, ... })` |
 | Complete channel axis | `createXAxis(options?)`, `createYAxis(options?)` |
 | Axis lines | `createXAxisLine`, `createYAxisLine`, `editXAxisLine`, `editYAxisLine` |
 | Axis ticks | `createXAxisTicks`, `createYAxisTicks`, `editXAxisTicks`, `editYAxisTicks` |
@@ -358,6 +362,20 @@ are available on programs used by extension actions.
 
 See [Action authoring](../extension/action-authoring.md) and
 [Primitive API](../extension/primitives.md).
+
+## Internal trace operations
+
+High-level actions call additional wrapped operations for mark, guide, title,
+and layout materialization. Names such as `rematerializePointMark`,
+`createLegendSymbols`, and `createTitleText` may therefore appear in
+`program.trace`. They are deliberately absent from the public TypeScript
+declaration and this direct-call reference. Their arguments and decomposition
+may change as implementation details while the parent public action remains
+stable.
+
+Use the [Actions and trace trees](../concepts/actions-and-trace.md) page to
+inspect these nodes. Extension actions should compose the declared extension
+and advanced actions instead of calling an undeclared runtime method.
 
 ## Rendering functions
 

@@ -137,8 +137,34 @@ export class ChartProgram {
 
   createRegression(options?: RegressionOptions): ChartProgram;
   createAxes(options?: ActionOptions): ChartProgram;
+  createXAxis(options?: ActionOptions): ChartProgram;
+  createYAxis(options?: ActionOptions): ChartProgram;
+  createXAxisLine(options?: ActionOptions): ChartProgram;
+  createYAxisLine(options?: ActionOptions): ChartProgram;
+  editXAxisLine(options: ActionOptions): ChartProgram;
+  editYAxisLine(options: ActionOptions): ChartProgram;
+  createXAxisTicks(options?: ActionOptions): ChartProgram;
+  createYAxisTicks(options?: ActionOptions): ChartProgram;
+  editXAxisTicks(options: ActionOptions): ChartProgram;
+  editYAxisTicks(options: ActionOptions): ChartProgram;
+  createXAxisLabels(options?: ActionOptions): ChartProgram;
+  createYAxisLabels(options?: ActionOptions): ChartProgram;
+  editXAxisLabels(options: ActionOptions): ChartProgram;
+  editYAxisLabels(options: ActionOptions): ChartProgram;
+  createXAxisTicksAndLabels(options?: ActionOptions): ChartProgram;
+  createYAxisTicksAndLabels(options?: ActionOptions): ChartProgram;
+  editXAxisTicksAndLabels(options: ActionOptions): ChartProgram;
+  editYAxisTicksAndLabels(options: ActionOptions): ChartProgram;
+  createXAxisTitle(options?: ActionOptions): ChartProgram;
+  createYAxisTitle(options?: ActionOptions): ChartProgram;
+  editXAxisTitle(options: ActionOptions): ChartProgram;
+  editYAxisTitle(options: ActionOptions): ChartProgram;
   createGrid(options?: ActionOptions): ChartProgram;
+  createHorizontalGrid(options?: ActionOptions): ChartProgram;
+  createVerticalGrid(options?: ActionOptions): ChartProgram;
   createLegend(options?: LegendOptions): ChartProgram;
+  createSizeLegend(options?: ActionOptions): ChartProgram;
+  rematerializeSizeLegend(options?: ActionOptions): ChartProgram;
   createGuides(options?: ActionOptions): ChartProgram;
   createTitle(options: ActionOptions & { text: string; subtitle?: string }): ChartProgram;
 

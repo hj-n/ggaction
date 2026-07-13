@@ -36,30 +36,15 @@ program.createRegression({
 | `band.opacity` | number from `0` to `1` | `0.18` |
 | `line.strokeWidth` | non-negative finite number | `3` |
 
-The action namespaces every generated resource with the target point mark ID.
-For a point mark named `points`, it creates immutable `pointsRegressionData`,
-a `pointsRegressionBands` area layer, and a `pointsRegressionLines` line layer.
-This allows multiple point layers to add independent regressions in one
-program. The action delegates to wrapped statistical, encoding, and
-materialization actions instead of compiling semantic state.
+The action keeps each fitted dataset, band, and line associated with its target
+point mark, so multiple point layers can add independent regressions in one
+program. The exact generated IDs are internal and are not required in ordinary
+chart-authoring code.
 
-```text
-createRegression
-├─ createRegressionData
-├─ createRegressionBand
-│  ├─ createAreaMark
-│  ├─ encodeX
-│  ├─ encodeYRange
-│  ├─ encodeGroup?
-│  └─ rematerializeAreaMark
-└─ createRegressionLine
-   ├─ createLineMark
-   ├─ encodeX
-   ├─ encodeY
-   ├─ encodeColor?
-   ├─ encodeGroup?
-   └─ rematerializeLineMark
-```
+Its trace records `createRegressionData`, `createRegressionBand`, and
+`createRegressionLine` as meaningful children. See
+[Actions and trace trees](../concepts/actions-and-trace.md) when that
+decomposition matters.
 
 ## Related
 

@@ -58,6 +58,14 @@ function actionFlow(source, start) {
     .map(match => match[1]);
 }
 
+function declaredProgramMethods() {
+  const declaration = read("types/program.d.ts");
+  const classBody = declaration.slice(declaration.indexOf("export class ChartProgram"));
+  return [...classBody.matchAll(/^\s{2}([A-Za-z][A-Za-z0-9]*)\(/gm)]
+    .map(match => match[1])
+    .filter(name => name !== "constructor");
+}
+
 test("keeps every local Markdown link and anchor valid", async () => {
   const markdownFiles = [
     path.join(root, "README.md"),
@@ -229,4 +237,20 @@ test("keeps one generated gallery image for every public chart", () => {
   ]) {
     assert.match(tutorials, new RegExp(`\\./${tutorial}\\.md`));
   }
+});
+
+test("classifies every declared ChartProgram action in the reference", () => {
+  const reference = read("docs/reference/actions.md");
+  const methods = declaredProgramMethods();
+
+  assert.equal(new Set(methods).size, methods.length);
+  for (const method of methods) {
+    assert.match(reference, new RegExp(`\\b${method}\\b`), method);
+  }
+
+  assert.match(reference, /^## Chart Authoring API$/m);
+  assert.match(reference, /^## Advanced Chart API$/m);
+  assert.match(reference, /^## Extension API$/m);
+  assert.match(reference, /^## Internal trace operations$/m);
+  assert.match(reference, /absent from the public TypeScript\s+declaration/);
 });
