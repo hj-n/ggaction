@@ -162,8 +162,11 @@ function encodePosition(program, channel, args, operation) {
       throw new Error("Area position encoding does not support aggregate, bin, or stack.");
     }
   } else if (layer.mark.type === "line" && channel === "x") {
-    if (fieldType !== "temporal") {
-      throw new Error("Line x encoding currently requires a temporal field.");
+    const isRegression = dataset.transform?.some(item => item.type === "regression");
+    if (fieldType !== "temporal" && !(isRegression && fieldType === "quantitative")) {
+      throw new Error(
+        "Line x encoding requires a temporal field or regression quantitative field."
+      );
     }
     if (args.aggregate !== undefined) {
       throw new Error("Line x encoding does not support aggregate.");
@@ -178,9 +181,22 @@ function encodePosition(program, channel, args, operation) {
     if (args.bin !== undefined) {
       throw new Error("Line y encoding does not support bin.");
     }
-    if (fieldType !== "quantitative" || args.aggregate !== "mean") {
+    const isRegression = dataset.transform?.some(item => item.type === "regression");
+    if (fieldType !== "quantitative") {
       throw new Error(
-        'Line y encoding currently requires a quantitative field and aggregate "mean".'
+        isRegression
+          ? "Regression line y encoding requires a quantitative field."
+          : 'Line y encoding currently requires a quantitative field and aggregate "mean".'
+      );
+    }
+    if (
+      (!isRegression && args.aggregate !== "mean") ||
+      (isRegression && args.aggregate !== undefined)
+    ) {
+      throw new Error(
+        isRegression
+          ? "Regression line y encoding does not support aggregate."
+          : 'Line y encoding currently requires a quantitative field and aggregate "mean".'
       );
     }
     if (args.stack !== undefined) {
@@ -289,7 +305,7 @@ function encodePosition(program, channel, args, operation) {
       value: fieldType
     });
 
-  if (layer.mark.type === "line" && channel === "y") {
+  if (layer.mark.type === "line" && channel === "y" && args.aggregate !== undefined) {
     next = next.editSemantic({
       property: `layer[${target}].encoding.y.aggregate`,
       value: args.aggregate

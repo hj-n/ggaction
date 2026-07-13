@@ -23,7 +23,9 @@ function isCompleteLine(layer) {
     layer.mark?.type === "line" &&
     layer.encoding?.x?.scale !== undefined &&
     layer.encoding?.y?.scale !== undefined &&
-    layer.encoding.y.aggregate === "mean"
+    (layer.encoding.y.aggregate === "mean" ||
+      (layer.encoding.x.fieldType === "quantitative" &&
+        layer.encoding.y.fieldType === "quantitative"))
   );
 }
 

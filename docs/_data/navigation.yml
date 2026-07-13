@@ -21,6 +21,8 @@
       url: /api/marks/
     - title: Encodings
       url: /api/encodings/
+    - title: Regression
+      url: /api/regression/
     - title: Guides
       url: /api/guides/
     - title: Titles
@@ -34,7 +36,7 @@
       url: /api/position-encodings/
     - title: Series Encodings
       url: /api/series-encodings/
-    - title: Constant Appearance
+    - title: Appearance Encodings
       url: /api/appearance/
     - title: Scale Options
       url: /api/scales/

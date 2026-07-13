@@ -47,12 +47,13 @@ An area becomes renderable after quantitative x and atomic `encodeYRange`
 encodings exist. Optional `encodeGroup` creates one closed filled path per
 nominal group without creating a scale or legend.
 
-## `createLineMark({ id, data? })`
+## `createLineMark({ id, data?, strokeWidth? })`
 
 | Option | Type | Default |
 | --- | --- | --- |
 | `id` | valid user-defined ID | required |
 | `data` | existing dataset ID | current dataset |
+| `strokeWidth` | non-negative finite number | materializer default `2` |
 
 ```javascript
 const program = chart()
@@ -74,7 +75,8 @@ or path points. Temporal `encodeX` resolves the horizontal scale while leaving
 the collection empty. Aggregate line `encodeY` then derives the currently known
 series, resizes the collection, and materializes sorted concrete point arrays.
 `encodeColor` and `encodeStrokeDash` can further regroup those paths and apply
-semantic series styles.
+semantic series styles. Regression-derived quantitative x/y values may be
+materialized directly without temporal aggregation.
 
 ## `createBarMark({ id, data? })`
 
@@ -111,8 +113,7 @@ based on total bin counts.
 ## Errors and limitations
 
 Mark IDs must be unique and the selected dataset must exist. Current semantic
-marks are point, line, and bar; additional shapes and mark types are not
-implemented.
+marks are point, line, bar, and area; additional mark types are not implemented.
 
 ## Related
 

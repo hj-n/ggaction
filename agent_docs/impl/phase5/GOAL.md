@@ -16,10 +16,10 @@ band를 겹친 regression scatterplot을 구현한다.
 - [x] Heterogeneous point와 filled path graphical foundation
 - [x] Primitive regression scatterplot baseline
 - [x] Immutable derived-data filtering
-- [ ] Point size, shape, opacity encoding
-- [ ] Regression grammar와 derived values
-- [ ] Area mark와 ranged y encoding
-- [ ] `createRegression` aggregate action
+- [x] Point size, shape, opacity encoding
+- [x] Regression grammar와 derived values
+- [x] Area mark와 ranged y encoding
+- [x] `createRegression` aggregate action
 - [ ] Composite Origin legend와 size legend
 - [ ] Public vertical slice, documentation, regression cleanup
 

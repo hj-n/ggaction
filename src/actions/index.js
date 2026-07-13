@@ -5,6 +5,7 @@ import { registerEncodingActions } from "./encodings/index.js";
 import { registerGuideActions } from "./guides/index.js";
 import { registerMarkActions } from "./marks/index.js";
 import { registerPrimitiveActions } from "./primitives/index.js";
+import { registerRegressionActions } from "./regression/index.js";
 import { registerScaleActions } from "./scales/index.js";
 import { registerTitleActions } from "./titles/index.js";
 
@@ -18,4 +19,5 @@ export function registerActions(ProgramClass) {
   registerCoordinateActions(ProgramClass);
   registerGuideActions(ProgramClass);
   registerTitleActions(ProgramClass);
+  registerRegressionActions(ProgramClass);
 }

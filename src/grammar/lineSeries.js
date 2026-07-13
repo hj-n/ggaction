@@ -5,7 +5,7 @@ import {
   readTemporalField
 } from "./scales.js";
 
-const SERIES_CHANNELS = Object.freeze(["color", "strokeDash"]);
+const SERIES_CHANNELS = Object.freeze(["group", "color", "strokeDash"]);
 
 function requireLineEncoding(layer) {
   if (layer?.mark?.type !== "line") {
@@ -15,17 +15,26 @@ function requireLineEncoding(layer) {
   const x = layer.encoding?.x;
   const y = layer.encoding?.y;
 
-  if (x?.fieldType !== "temporal") {
+  if (x === undefined) {
     throw new Error(`Line mark "${layer.id}" requires a temporal x encoding.`);
   }
 
-  if (y?.fieldType !== "quantitative" || y.aggregate !== "mean") {
+  const isAggregate = x?.fieldType === "temporal" && y?.aggregate === "mean";
+  const isDirect =
+    x?.fieldType === "quantitative" &&
+    y?.fieldType === "quantitative" &&
+    y.aggregate === undefined;
+  if (!isAggregate && !isDirect) {
+    if (x?.fieldType === "temporal") {
+      throw new Error(
+        `Line mark "${layer.id}" requires a quantitative mean y encoding.`
+      );
+    }
     throw new Error(
-      `Line mark "${layer.id}" requires a quantitative mean y encoding.`
+      `Line mark "${layer.id}" requires temporal/mean or direct quantitative x/y encodings.`
     );
   }
-
-  return { x, y };
+  return { x, y, isAggregate };
 }
 
 function readSeriesFields(rows, layer) {
@@ -37,9 +46,7 @@ function readSeriesFields(rows, layer) {
 
     if (encoding === undefined) continue;
     if (encoding.fieldType !== "nominal") {
-      throw new Error(
-        `Line ${channel} encoding on mark "${layer.id}" must be nominal.`
-      );
+      throw new Error(`Line ${channel} encoding on mark "${layer.id}" must be nominal.`);
     }
 
     if (!values.has(encoding.field)) {
@@ -56,8 +63,10 @@ function groupKey(values) {
 }
 
 export function deriveLineSeries(rows, layer) {
-  const { x, y } = requireLineEncoding(layer);
-  const xValues = readTemporalField(rows, x.field);
+  const { x, y, isAggregate } = requireLineEncoding(layer);
+  const xValues = isAggregate
+    ? readTemporalField(rows, x.field)
+    : readQuantitativeField(rows, x.field);
   const yValues = readQuantitativeField(rows, y.field);
   const seriesFields = readSeriesFields(rows, layer);
   const aggregateGroups = new Map();
@@ -94,7 +103,10 @@ export function deriveLineSeries(rows, layer) {
       values: []
     };
 
-    series.values.push({ x: group.x, y: group.sum / group.count });
+    series.values.push({
+      x: group.x,
+      y: isAggregate ? group.sum / group.count : group.sum
+    });
     seriesGroups.set(key, series);
   }
 

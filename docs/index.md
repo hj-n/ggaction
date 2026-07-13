@@ -63,6 +63,7 @@ If an inferred resource or layout fails, use
 - [Data](./api/data.md)
 - [Marks](./api/marks.md)
 - [Encodings](./api/encodings.md)
+- [Regression](./api/regression.md)
 - [Coordinates](./api/coordinates.md)
 - [Guides](./api/guides.md)
 - [Axes](./api/axes.md)

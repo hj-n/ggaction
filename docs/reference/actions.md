@@ -75,10 +75,11 @@ Create a semantic point mark with a circle or square realization. [Marks](../api
 ### `createLineMark`
 
 ```javascript
-createLineMark({ id, data? })
+createLineMark({ id, data?, strokeWidth? })
 ```
 
-Create a semantic line mark and empty path collection. [Marks](../api/marks.md)
+Create a semantic line mark and empty path collection. An explicit
+`strokeWidth` is retained during rematerialization. [Marks](../api/marks.md)
 
 ### `createBarMark`
 
@@ -231,6 +232,17 @@ encodeBarWidth({ band?, target? })
 Set grouped-bar slot occupancy and materialize concrete rectangles. `band`
 defaults to `0.72` and must be greater than `0` and at most `1`.
 [Constant appearance](../api/appearance.md)
+
+### `createRegression`
+
+```javascript
+createRegression({ target?, x?, y?, groupBy?, confidence?, band?, line? })
+```
+
+Infer an eligible point layer and create immutable linear-regression data,
+grouped confidence-band paths, and grouped line paths. Confidence defaults to
+`0.95`, band to `{ color: "#111111", opacity: 0.18 }`, and line width to `3`.
+[Regression](../api/regression.md)
 
 ### `createGuides`
 

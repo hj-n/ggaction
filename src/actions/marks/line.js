@@ -10,7 +10,7 @@ import {
 
 const DEFAULT_LINE_STROKE = "#4c78a8";
 const DEFAULT_LINE_WIDTH = 2;
-const CREATE_OPTIONS = Object.freeze(["id", "data"]);
+const CREATE_OPTIONS = Object.freeze(["id", "data", "strokeWidth"]);
 const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);
 
 const createLineMark = action(
@@ -22,6 +22,10 @@ const createLineMark = action(
     validateMarkOptions(args, CREATE_OPTIONS, "createLineMark");
     const id = validateUserId(args.id, "Line mark id");
     const { data } = resolveMarkData(this, args);
+    const strokeWidth = args.strokeWidth ?? DEFAULT_LINE_WIDTH;
+    if (!Number.isFinite(strokeWidth) || strokeWidth < 0) {
+      throw new RangeError("Line strokeWidth must be a non-negative finite number.");
+    }
     assertMarkAvailable(this, id);
 
     return this
@@ -37,7 +41,11 @@ const createLineMark = action(
         id,
         type: "path",
         length: 0
-      });
+      })
+      ._withMarkConfig(
+        id,
+        Object.hasOwn(args, "strokeWidth") ? { strokeWidth } : {}
+      );
   }
 );
 
@@ -124,7 +132,9 @@ const rematerializeLineMark = action(
         );
     const strokeWidths = points.map(
       (_, index) =>
-        existingChildren[index]?.properties.strokeWidth ?? DEFAULT_LINE_WIDTH
+        this.markConfigs[id]?.strokeWidth ??
+        existingChildren[index]?.properties.strokeWidth ??
+        DEFAULT_LINE_WIDTH
     );
     const strokeDashes = dashEncoding?.scale === undefined
       ? points.map(
