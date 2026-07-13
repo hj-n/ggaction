@@ -1,14 +1,12 @@
 import { action } from "../../core/action.js";
-import { validateUserId } from "../../core/identifiers.js";
-import { isPlainObject } from "../../core/immutable.js";
 import {
   readNominalField,
-  validateColorRange,
-  validateNominalFieldType,
-  validateOrdinalDomain,
-  validateOrdinalScaleType,
-  validateStrokeDashRange
+  validateNominalFieldType
 } from "../../grammar/scales.js";
+import {
+  resolveColorScaleDefinition,
+  resolveStrokeDashScaleDefinition
+} from "../scales/definitions.js";
 import {
   rematerializeExistingLegend,
   resolveTarget,
@@ -19,59 +17,6 @@ const COLOR_ENCODING_OPTIONS = Object.freeze([
   "field", "target", "fieldType", "scale", "layout"
 ]);
 const STROKE_DASH_ENCODING_OPTIONS = COLOR_ENCODING_OPTIONS;
-const ORDINAL_SCALE_OPTIONS = Object.freeze(["id", "type", "domain", "range"]);
-const COLOR_SCALE_OPTIONS = Object.freeze([...ORDINAL_SCALE_OPTIONS, "palette"]);
-
-function resolveColorScaleDefinition(program, options) {
-  if (!isPlainObject(options)) {
-    throw new TypeError("Encoding scale must be a plain object.");
-  }
-
-  validateOptions(options, COLOR_SCALE_OPTIONS, "scale");
-  if (options.palette !== undefined && options.range !== undefined) {
-    throw new Error("Color scale cannot specify both palette and range.");
-  }
-  const id = validateUserId(options.id ?? "color", "Scale id");
-  const existing = program.semanticSpec.scales.find(item => item.id === id);
-  const requestedRange = options.palette === undefined
-    ? options.range
-    : { palette: options.palette };
-
-  return {
-    id,
-    type: validateOrdinalScaleType(
-      options.type ?? existing?.type ?? "ordinal"
-    ),
-    domain: validateOrdinalDomain(
-      options.domain ?? existing?.domain ?? "auto"
-    ),
-    range: validateColorRange(requestedRange ?? existing?.range ?? "auto")
-  };
-}
-
-function resolveStrokeDashScaleDefinition(program, options) {
-  if (!isPlainObject(options)) {
-    throw new TypeError("Encoding scale must be a plain object.");
-  }
-
-  validateOptions(options, ORDINAL_SCALE_OPTIONS, "scale");
-  const id = validateUserId(options.id ?? "strokeDash", "Scale id");
-  const existing = program.semanticSpec.scales.find(item => item.id === id);
-
-  return {
-    id,
-    type: validateOrdinalScaleType(
-      options.type ?? existing?.type ?? "ordinal"
-    ),
-    domain: validateOrdinalDomain(
-      options.domain ?? existing?.domain ?? "auto"
-    ),
-    range: validateStrokeDashRange(
-      options.range ?? existing?.range ?? "auto"
-    )
-  };
-}
-
 const encodeColor = action(
   {
     op: "encodeColor",

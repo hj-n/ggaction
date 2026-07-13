@@ -6,22 +6,16 @@ import {
   readQuantitativeField,
   readNominalField,
   readTemporalField,
-  validateOrdinalDomain,
-  validateOrdinalScaleType,
   validateFieldType,
-  validateLinearScaleType,
   validatePositionChannel,
-  validateScaleDomain,
-  validateScaleRange,
-  validateTimeScaleType
 } from "../../grammar/scales.js";
+import { resolvePositionScaleDefinition } from "../scales/definitions.js";
 import { resolveTarget, validateOptions } from "./shared.js";
 
 const POSITION_ENCODING_OPTIONS = Object.freeze([
   "field", "target", "fieldType", "scale", "coordinate", "aggregate", "bin", "stack"
 ]);
 const BIN_OPTIONS = Object.freeze(["maxBins"]);
-const SCALE_OPTIONS = Object.freeze(["id", "type", "domain", "range", "nice", "zero"]);
 
 function resolvePositionCoordinate(program, channel, layer, requestedId) {
   const defaults = getPositionCoordinateDefaults(channel);
@@ -47,64 +41,6 @@ function resolvePositionCoordinate(program, channel, layer, requestedId) {
   }
 
   return { id, type: defaults.type };
-}
-
-function resolveScaleDefinition(
-  program,
-  channel,
-  fieldType,
-  options,
-  defaults = {}
-) {
-  if (!isPlainObject(options)) {
-    throw new TypeError("Encoding scale must be a plain object.");
-  }
-
-  validateOptions(options, SCALE_OPTIONS, "scale");
-  const id = validateUserId(options.id ?? channel, "Scale id");
-  const existing = program.semanticSpec.scales.find(item => item.id === id);
-  const expectedType = fieldType === "temporal"
-    ? "time"
-    : fieldType === "ordinal"
-      ? "ordinal"
-      : "linear";
-  const type = options.type ?? existing?.type ?? expectedType;
-
-  if (fieldType === "temporal") validateTimeScaleType(type);
-  else if (fieldType === "ordinal") validateOrdinalScaleType(type);
-  else validateLinearScaleType(type);
-
-  if (options.nice !== undefined && typeof options.nice !== "boolean") {
-    throw new TypeError("Scale nice must be a boolean.");
-  }
-
-  if (options.zero !== undefined && typeof options.zero !== "boolean") {
-    throw new TypeError("Scale zero must be a boolean.");
-  }
-
-  if (type !== "linear" && options.zero !== undefined) {
-    throw new Error(`Scale type "${type}" does not support zero.`);
-  }
-  if (type === "ordinal" && options.nice !== undefined) {
-    throw new Error('Scale type "ordinal" does not support nice.');
-  }
-
-  const scale = {
-    id,
-    type,
-    domain: fieldType === "ordinal"
-      ? validateOrdinalDomain(options.domain ?? existing?.domain ?? "auto")
-      : validateScaleDomain(options.domain ?? existing?.domain ?? "auto"),
-    range: validateScaleRange(options.range ?? existing?.range ?? "auto")
-  };
-
-  const nice = options.nice ?? existing?.nice ?? defaults.nice;
-  const zero = options.zero ?? existing?.zero ?? defaults.zero;
-
-  if (nice !== undefined) scale.nice = nice;
-  if (zero !== undefined) scale.zero = zero;
-
-  return scale;
 }
 
 function resolveBinDefinition(bin) {
@@ -272,7 +208,7 @@ function encodePosition(program, channel, args, operation) {
     readQuantitativeField(dataset.values, field);
   }
 
-  const scale = resolveScaleDefinition(
+  const scale = resolvePositionScaleDefinition(
     program,
     channel,
     fieldType,

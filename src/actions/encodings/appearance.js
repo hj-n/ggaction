@@ -1,16 +1,9 @@
 import { action } from "../../core/action.js";
-import { validateUserId } from "../../core/identifiers.js";
-import { isPlainObject } from "../../core/immutable.js";
 import {
   readNominalField,
-  readQuantitativeField,
-  validateLinearScaleType,
-  validateOrdinalDomain,
-  validateOrdinalScaleType,
-  validateScaleDomain,
-  validateShapeRange,
-  validateSizeRange
+  readQuantitativeField
 } from "../../grammar/scales.js";
+import { resolveAppearanceScaleDefinition } from "../scales/definitions.js";
 import {
   rematerializeExistingLegend,
   resolveTarget,
@@ -20,31 +13,6 @@ import {
 const RADIUS_OPTIONS = Object.freeze(["value", "target"]);
 const OPACITY_OPTIONS = Object.freeze(["value", "target"]);
 const FIELD_OPTIONS = Object.freeze(["field", "target", "fieldType", "scale"]);
-const SCALE_OPTIONS = Object.freeze(["id", "type", "domain", "range"]);
-
-function resolveAppearanceScale(program, channel, options) {
-  if (!isPlainObject(options)) {
-    throw new TypeError("Encoding scale must be a plain object.");
-  }
-  validateOptions(options, SCALE_OPTIONS, "scale");
-  const id = validateUserId(options.id ?? channel, "Scale id");
-  const existing = program.semanticSpec.scales.find(item => item.id === id);
-  const isShape = channel === "shape";
-  const type = isShape
-    ? validateOrdinalScaleType(options.type ?? existing?.type ?? "ordinal")
-    : validateLinearScaleType(options.type ?? existing?.type ?? "linear");
-  return {
-    id,
-    type,
-    domain: isShape
-      ? validateOrdinalDomain(options.domain ?? existing?.domain ?? "auto")
-      : validateScaleDomain(options.domain ?? existing?.domain ?? "auto"),
-    range: isShape
-      ? validateShapeRange(options.range ?? existing?.range ?? "auto")
-      : validateSizeRange(options.range ?? existing?.range ?? "auto")
-  };
-}
-
 function encodeAppearanceField(program, channel, args, operation) {
   validateOptions(args, FIELD_OPTIONS, operation);
   const { id: target, dataset, layer } = resolveTarget(
@@ -63,7 +31,11 @@ function encodeAppearanceField(program, channel, args, operation) {
   }
   if (channel === "shape") readNominalField(dataset.values, args.field);
   else readQuantitativeField(dataset.values, args.field);
-  const scale = resolveAppearanceScale(program, channel, args.scale ?? {});
+  const scale = resolveAppearanceScaleDefinition(
+    program,
+    channel,
+    args.scale ?? {}
+  );
 
   const next = program
     .editSemantic({

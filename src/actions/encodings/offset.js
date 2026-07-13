@@ -1,41 +1,12 @@
 import { action } from "../../core/action.js";
-import { validateUserId } from "../../core/identifiers.js";
-import { isPlainObject } from "../../core/immutable.js";
 import {
   readNominalField,
-  validateNominalFieldType,
-  validateOrdinalDomain,
-  validateOrdinalScaleType,
-  validateScaleRange
+  validateNominalFieldType
 } from "../../grammar/scales.js";
+import { resolveOffsetScaleDefinition } from "../scales/definitions.js";
 import { resolveTarget, validateOptions } from "./shared.js";
 
 const ENCODING_OPTIONS = Object.freeze(["field", "target", "fieldType", "scale"]);
-const SCALE_OPTIONS = Object.freeze(["id", "type", "domain", "range"]);
-
-function resolveOffsetScale(program, options) {
-  if (!isPlainObject(options)) {
-    throw new TypeError("Encoding scale must be a plain object.");
-  }
-
-  validateOptions(options, SCALE_OPTIONS, "scale");
-  const id = validateUserId(options.id ?? "xOffset", "Scale id");
-  const existing = program.semanticSpec.scales.find(item => item.id === id);
-
-  return {
-    id,
-    type: validateOrdinalScaleType(
-      options.type ?? existing?.type ?? "ordinal"
-    ),
-    domain: validateOrdinalDomain(
-      options.domain ?? existing?.domain ?? "auto"
-    ),
-    range: validateScaleRange(
-      options.range ?? existing?.range ?? "auto"
-    )
-  };
-}
-
 const encodeXOffset = action(
   {
     op: "encodeXOffset",
@@ -63,7 +34,7 @@ const encodeXOffset = action(
     }
 
     readNominalField(dataset.values, args.field);
-    const scale = resolveOffsetScale(this, args.scale ?? {});
+    const scale = resolveOffsetScaleDefinition(this, args.scale ?? {});
 
     return this
       .editSemantic({
