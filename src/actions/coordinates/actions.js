@@ -2,7 +2,7 @@ import { action } from "../../core/action.js";
 import { validateCoordinateType } from "../../grammar/coordinates.js";
 import { validateUserId } from "../../core/identifiers.js";
 import { findCoordinate } from "../../selectors/coordinates.js";
-import { findLayer } from "../../selectors/layers.js";
+import { findLayer, hasLayer } from "../../selectors/layers.js";
 
 const COORDINATE_OPTIONS = Object.freeze(["id", "type", "layers"]);
 
@@ -26,7 +26,7 @@ function validateLayers(program, layers) {
   }
 
   for (const id of ids) {
-    if (!program.semanticSpec.layers.some(layer => layer.id === id)) {
+    if (!hasLayer(program, id)) {
       throw new Error(`Unknown layer "${id}".`);
     }
   }

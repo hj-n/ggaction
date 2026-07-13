@@ -1,6 +1,7 @@
 import { action } from "../../core/action.js";
 import { validateUserId } from "../../core/identifiers.js";
 import { isPlainObject } from "../../core/immutable.js";
+import { hasDataset } from "../../selectors/index.js";
 import { validateOptions } from "./shared.js";
 
 const OPTIONS = Object.freeze([
@@ -55,7 +56,7 @@ const encodeDensity = action(
       args.source ?? layer.data,
       "Density source dataset id"
     );
-    if (!this.semanticSpec.datasets.some(dataset => dataset.id === source)) {
+    if (!hasDataset(this, source)) {
       throw new Error(`Unknown density source dataset "${source}".`);
     }
     if (["x", "y", "y2", "group"].some(channel =>
@@ -74,7 +75,7 @@ const encodeDensity = action(
       throw new TypeError("Density as must contain value and density field names.");
     }
     const derivedId = `${layer.id}DensityData`;
-    if (this.semanticSpec.datasets.some(dataset => dataset.id === derivedId)) {
+    if (hasDataset(this, derivedId)) {
       throw new Error(`Dataset "${derivedId}" already exists.`);
     }
     const valueScale = scaleOptions(

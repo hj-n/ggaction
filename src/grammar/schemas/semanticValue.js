@@ -1,5 +1,6 @@
 import { validateUserId } from "../../core/identifiers.js";
 import { isPlainObject } from "../../core/immutable.js";
+import { findSemanticScale, hasDataset } from "../../selectors/index.js";
 import { validateCoordinateType } from "../coordinates.js";
 import {
   validateSemanticFieldType,
@@ -154,7 +155,7 @@ export function validateSemanticValue(program, parsed, value) {
   }
   if (parsed.kind === "dataset" && parsed.path[0] === "source") {
     validateUserId(value, "Dataset source id");
-    if (!program.semanticSpec.datasets.some(dataset => dataset.id === value)) {
+    if (!hasDataset(program, value)) {
       throw new Error(`Unknown source dataset "${value}".`);
     }
   }
@@ -186,7 +187,7 @@ export function validateSemanticValue(program, parsed, value) {
   }
   if (parsed.kind === "scale") {
     const property = parsed.path.join(".");
-    const existing = program.semanticSpec.scales.find(scale => scale.id === parsed.id);
+    const existing = findSemanticScale(program, parsed.id);
     if (property === "type") {
       validateSemanticScaleType(value);
       if (value !== "linear" && existing?.zero !== undefined) {

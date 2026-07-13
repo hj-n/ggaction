@@ -6,6 +6,7 @@ import {
   findDataset,
   findLayer,
   findSemanticScale,
+  hasCoordinate,
   hasDataset,
   hasLayer,
   requireCoordinate,
@@ -43,6 +44,7 @@ test("finds, checks, and requires named semantic resources", () => {
   assert.equal(hasLayer(value, "points"), true);
   assert.equal(requireLayer(value, "points").id, "points");
   assert.equal(findCoordinate(value, "main").type, "cartesian");
+  assert.equal(hasCoordinate(value, "main"), true);
   assert.equal(requireCoordinate(value, "main").id, "main");
   assert.equal(findSemanticScale(value, "x").type, "linear");
   assert.equal(requireSemanticScale(value, "x").id, "x");

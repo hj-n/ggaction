@@ -2,6 +2,7 @@ import { action } from "../../../core/action.js";
 import { isPlainObject } from "../../../core/immutable.js";
 import { validateUserId } from "../../../core/identifiers.js";
 import { validateKeys } from "../../../core/validation.js";
+import { hasCoordinate } from "../../../selectors/index.js";
 
 const TOP_OPTIONS = Object.freeze([
   "scale",
@@ -85,9 +86,7 @@ function makeCreateAxis(channel) {
       if (Object.hasOwn(args, "coordinate")) {
         const coordinate = validateUserId(args.coordinate, "Coordinate id");
         const scale = args.scale ?? channel;
-        const exists = next.semanticSpec.coordinates.some(
-          item => item.id === coordinate
-        );
+        const exists = hasCoordinate(next, coordinate);
         const hasConsumer = next.semanticSpec.layers.some(
           layer =>
             layer.coordinate === coordinate &&

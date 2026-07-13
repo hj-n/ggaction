@@ -2,6 +2,7 @@ import { action } from "../../core/action.js";
 import { validateUserId } from "../../core/identifiers.js";
 import { isPlainObject } from "../../core/immutable.js";
 import { validateKeys } from "../../core/validation.js";
+import { hasDataset } from "../../selectors/index.js";
 
 const OPTIONS = Object.freeze(["id", "values"]);
 
@@ -16,7 +17,7 @@ export const createData = action(
     if (!args.values.every(isPlainObject)) {
       throw new TypeError("createData requires every row to be a plain object.");
     }
-    if (this.semanticSpec.datasets.some(dataset => dataset.id === id)) {
+    if (hasDataset(this, id)) {
       throw new Error(`Dataset "${id}" already exists.`);
     }
     return this.editSemantic({
