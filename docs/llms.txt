@@ -80,6 +80,7 @@ and language models.
 - Temporal line encodeX resolves a time scale but does not yet materialize path points.
 - Aggregate line encodeY computes mean groups and explicitly materializes sorted paths.
 - Line encodeColor and encodeStrokeDash regroup and style concrete series paths.
+- Area encodeColor requires an existing matching group field and applies the resolved ordinal range to path fills without inventing groups.
 - createBarMark stores a semantic bar and creates an empty rect collection.
 - filterData creates a named immutable derived dataset, defaults its source to
   current data, stores filter provenance, and materializes source-order rows.

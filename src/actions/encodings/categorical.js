@@ -83,7 +83,7 @@ const encodeColor = action(
     const { id: target, dataset, layer } = resolveTarget(
       this,
       args.target,
-      ["point", "line", "bar"],
+      ["point", "line", "bar", "area"],
       "color mark"
     );
     if (
@@ -95,6 +95,15 @@ const encodeColor = action(
     }
     if (layer.mark.type !== "bar" && args.layout !== undefined) {
       throw new Error("Color layout is supported only for bar marks.");
+    }
+    if (
+      layer.mark.type === "area" &&
+      (layer.encoding?.group?.field === undefined ||
+        layer.encoding.group.field !== args.field)
+    ) {
+      throw new Error(
+        "Area color encoding must match an existing group encoding."
+      );
     }
 
     const isHistogram =
@@ -167,6 +176,18 @@ const encodeColor = action(
       return rematerializeExistingLegend(
         next.rematerializeBarMark({ id: target })
       );
+    }
+
+    if (layer.mark.type === "area") {
+      const areaIds = next.semanticSpec.layers
+        .filter(item =>
+          item.mark?.type === "area" && item.encoding?.color?.scale === scale.id
+        )
+        .map(item => item.id);
+      for (const id of areaIds) {
+        next = next.rematerializeAreaMark({ id });
+      }
+      return rematerializeExistingLegend(next);
     }
 
     return next

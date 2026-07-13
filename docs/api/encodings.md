@@ -123,6 +123,8 @@ On ordinal mean bars, `encodeColor({ layout: "group" })` records non-stacked
 color meaning and invokes `encodeXOffset` for the same field. Rectangles remain
 empty until `encodeBarWidth({ band? })` authors slot occupancy and materializes
 concrete grouped rectangles.
+On area marks, color fills an already grouped path collection and must use the
+same nominal field as `encodeGroup` or `encodeDensity({ groupBy })`.
 
 ```javascript
 program

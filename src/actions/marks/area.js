@@ -4,7 +4,7 @@ import {
   deriveAreaSeries,
   deriveDensityAreaSeries
 } from "../../grammar/areaSeries.js";
-import { mapLinearValues } from "../../grammar/scales.js";
+import { mapLinearValues, mapOrdinalValues } from "../../grammar/scales.js";
 import {
   assertMarkAvailable,
   resolveMarkData,
@@ -76,9 +76,13 @@ const rematerializeAreaMark = action(
     const derived = densityTransform === undefined
       ? deriveAreaSeries(dataset.values, layer)
       : deriveDensityAreaSeries(dataset.values, layer, densityTransform);
-    const resolved = this
+    let resolved = this
       .rematerializeScale({ id: xScaleId })
       .rematerializeScale({ id: yScaleId });
+    const colorEncoding = layer.encoding?.color;
+    if (colorEncoding?.scale !== undefined) {
+      resolved = resolved.rematerializeScale({ id: colorEncoding.scale });
+    }
     const xScale = resolved.resolvedScales[xScaleId];
     const yScale = resolved.resolvedScales[yScaleId];
     const paths = derived.series.map(series => {
@@ -128,11 +132,18 @@ const rematerializeAreaMark = action(
       ];
     });
     const config = this.markConfigs[id];
+    const fills = colorEncoding?.scale === undefined
+      ? paths.map(() => config.fill)
+      : mapOrdinalValues(
+          derived.series.map(series => series.key[colorEncoding.field]),
+          resolved.resolvedScales[colorEncoding.scale].domain,
+          resolved.resolvedScales[colorEncoding.scale].range
+        );
     return resolved
       .editGraphics({ target: id, property: "length", value: paths.length })
       .editGraphics({ target: id, property: "points", value: paths })
       .editGraphics({ target: id, property: "closed", value: true })
-      .editGraphics({ target: id, property: "fill", value: config.fill })
+      .editGraphics({ target: id, property: "fill", value: fills })
       .editGraphics({ target: id, property: "opacity", value: config.opacity });
   }
 );

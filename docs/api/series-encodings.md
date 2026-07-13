@@ -14,13 +14,14 @@ title: Series Encodings
 
 ## `encodeColor(options)`
 
-Map a nominal field to point fills, line-series strokes, or stacked histogram
-fills. On line and bar marks the field also participates in grouping.
+Map a nominal field to point fills, line-series strokes, area fills, or bar
+fills. Line and bar materializers may use the field for their own grouping
+policy. Area color must match an existing `encodeGroup` field.
 
 | Option | Type | Default |
 | --- | --- | --- |
 | `field` | non-empty string | required |
-| `target` | point, line, or bar mark ID | current mark |
+| `target` | point, line, area, or bar mark ID | current mark |
 | `fieldType` | `"nominal"` | `"nominal"` |
 | `layout` | `"group"` or `"stack"`; bar only | mark policy |
 | `scale.id` | scale ID | `"color"` |
@@ -73,6 +74,20 @@ Histogram color keeps its existing stack behavior when `layout` is omitted;
 `layout: "stack"` makes that policy explicit. Grouped histograms and stacked
 ordinal-mean bars are not supported in the current scope.
 
+On an area mark, color never creates grouping implicitly. Author grouping
+directly or through `encodeDensity({ groupBy })`, then encode that same field:
+
+```javascript
+densityArea.encodeColor({
+  field: "Origin",
+  scale: { palette: "tableau10" }
+});
+```
+
+Each existing path receives the resolved color for its group. Path order,
+color domain order, and later legend order share the same ordered categories;
+Canvas and shared-scale changes rematerialize every affected area fill.
+
 ## `encodeStrokeDash(options)`
 
 Map a nominal field to line-series dash patterns.
@@ -103,8 +118,9 @@ See [Scale options](./scales.md) and [Legends](./legends.md).
 
 ## Errors and limitations
 
-Series fields must be nominal. Combined line legends require color and
-strokeDash to use the same field and ordered domain.
+Series fields must be nominal. Area color must match its group encoding.
+Combined line legends require color and strokeDash to use the same field and
+ordered domain.
 
 ## Related
 

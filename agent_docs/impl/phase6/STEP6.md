@@ -7,16 +7,16 @@ scale 또는 Canvas 변경 뒤에도 모든 fill을 다시 materialize하도록 
 
 ## 진행 상태
 
-- [ ] Area applicability와 target validation
-- [ ] Nominal color scale creation/reuse
-- [ ] Density group field compatibility
-- [ ] Area path fill materialization
-- [ ] Explicit domain/range/palette support
-- [ ] First-appearance domain order
-- [ ] Shared scale consumer rematerialization
-- [ ] Canvas edit rematerialization
-- [ ] Regression area fixed-fill 회귀 보호
-- [ ] Series/area docs, tests, full regression, commit, push
+- [x] Area applicability와 target validation
+- [x] Nominal color scale creation/reuse
+- [x] Density group field compatibility
+- [x] Area path fill materialization
+- [x] Explicit domain/range/palette support
+- [x] First-appearance domain order
+- [x] Shared scale consumer rematerialization
+- [x] Canvas edit rematerialization
+- [x] Regression area fixed-fill 회귀 보호
+- [x] Series/area docs, tests, full regression, commit, push
 
 ## 의미 규칙
 
@@ -36,3 +36,11 @@ scale 또는 Canvas 변경 뒤에도 모든 fill을 다시 materialize하도록 
   기록한다.
 - Shared color scale에 consumer가 추가되면 모든 existing consumer와 guide를 명시적으로
   rematerialize한다.
+
+## 구현 결과
+
+- Existing `encodeColor` ordinal scale contract를 area까지 확장했다.
+- Area는 stored group field와 동일한 color field만 허용하며 color가 grouping을 만들지 않는다.
+- First-appearance, explicit domain, palette/range 모두 path fill과 같은 ordered domain을 쓴다.
+- 같은 color scale을 공유하는 모든 area consumer와 Canvas edit 결과가 다시 materialize된다.
+- 전체 390개 테스트와 coverage gate를 통과했다 (`lines 94.37%`, `branches 89.50%`, `functions 98.53%`).

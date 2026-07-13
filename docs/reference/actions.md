@@ -198,8 +198,9 @@ the y channel; pass `densityChannel: "x"` for a horizontal orientation.
 encodeColor({ field, target?, fieldType?, layout?, scale? })
 ```
 
-Create nominal point fill, line-series color, stacked histogram color, or
-grouped ordinal-bar color. Grouped bars require `layout: "group"` and record
+Create nominal point fill, line-series color, grouped area fill, stacked
+histogram color, or grouped ordinal-bar color. Area color must match an
+existing group field. Grouped bars require `layout: "group"` and record
 `encodeXOffset` as a child action.
 [Series encodings](../api/series-encodings.md)
 
