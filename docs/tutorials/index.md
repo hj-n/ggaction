@@ -7,6 +7,17 @@ title: Tutorials
 
 Build complete charts before exploring individual API options.
 
+| Chart | Semantic mark | Core actions | Example result |
+| --- | --- | --- | --- |
+| Scatterplot | point | `encodeX`, `encodeY`, `encodeColor` | Quantitative points |
+| Line chart | line | temporal `encodeX`, aggregate `encodeY` | Mean series over time |
+| Histogram | bar | `encodeHistogram`, stacked `encodeColor` | Binned counts |
+| Bar chart | bar | ordinal `encodeX`, aggregate `encodeY`, grouped `encodeColor` | Side-by-side aggregate bars |
+
+Choose the chart whose semantic relationship matches the question you want to
+answer. The bar tutorial uses grouped bars as its current example; grouping is
+a layout choice, not a separate top-level chart type.
+
 ## Scatterplot
 
 Create quantitative x/y positions, nominal color, constant point radius, and

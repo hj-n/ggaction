@@ -8,7 +8,24 @@ title: ggaction Documentation
 Build charts as immutable, traceable action programs. Start with a complete
 example, then use the API pages when you need to customize one part.
 
-![A temporal aggregate line chart with axes, legend, title, and subtitle](./assets/images/cars-line-chart.png)
+<div class="docs-chart-gallery">
+  <a href="{{ '/tutorials/scatterplot/' | relative_url }}">
+    <img src="{{ '/assets/images/cars-scatterplot.png' | relative_url }}" alt="Cars scatterplot">
+    <span>Scatterplot</span>
+  </a>
+  <a href="{{ '/tutorials/line-chart/' | relative_url }}">
+    <img src="{{ '/assets/images/cars-line-chart.png' | relative_url }}" alt="Cars aggregate line chart">
+    <span>Line chart</span>
+  </a>
+  <a href="{{ '/tutorials/histogram/' | relative_url }}">
+    <img src="{{ '/assets/images/cars-histogram.png' | relative_url }}" alt="Cars stacked histogram">
+    <span>Histogram</span>
+  </a>
+  <a href="{{ '/tutorials/grouped-bar/' | relative_url }}">
+    <img src="{{ '/assets/images/jobs-grouped-bar.png' | relative_url }}" alt="Jobs grouped bar example">
+    <span>Bar chart</span>
+  </a>
+</div>
 
 > **Development status:** `ggaction` is currently used directly from this
 > repository and is not published to npm yet. The documented API version is

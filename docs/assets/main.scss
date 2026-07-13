@@ -280,6 +280,37 @@ body {
   background: transparent;
 }
 
+.docs-chart-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0 2rem;
+}
+
+.docs-chart-gallery a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.7rem;
+  color: #0f172a;
+  border: 1px solid var(--docs-border);
+  border-radius: 0.65rem;
+  font-weight: 600;
+}
+
+.docs-chart-gallery a:hover {
+  border-color: #93c5fd;
+  background: var(--docs-accent-soft);
+  text-decoration: none;
+}
+
+.docs-chart-gallery img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: contain;
+  background: #fff;
+}
+
 .docs-page-toc {
   margin: 1.5rem 0 2rem;
   padding: 1rem 1.1rem;
@@ -407,6 +438,10 @@ body {
   }
 
   .docs-page-navigation {
+    grid-template-columns: 1fr;
+  }
+
+  .docs-chart-gallery {
     grid-template-columns: 1fr;
   }
 

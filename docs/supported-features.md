@@ -5,27 +5,43 @@ title: Supported Features
 
 # Supported Features
 
-This page describes implemented behavior only.
+This page describes implemented behavior only. A dash means that the current
+chart-authoring API does not support that combination.
+
+## Complete chart support
+
+| Capability | Scatterplot | Line chart | Histogram | Bar chart (grouped example) |
+| --- | --- | --- | --- | --- |
+| Semantic mark | point | line | bar | bar |
+| Position | quantitative x/y | temporal x, mean y | binned x, count y | ordinal x, mean y |
+| Nominal color | point fill | series stroke | zero-stacked fill | grouped fill and xOffset |
+| Stroke dash | — | nominal series | — | — |
+| Constant appearance | radius | — | — | band width |
+| Automatic axes | linear | UTC time and linear | bin-aligned and linear | ordinal and linear |
+| Automatic grid | horizontal | horizontal | horizontal | horizontal |
+| Categorical legend | — | right | right; explicit bottom available | right; explicit bottom available |
+| Chart title | optional | optional | optional | optional |
+| Browser Canvas | ✓ | ✓ | ✓ | ✓ |
+| Node PNG | ✓ | ✓ | ✓ | ✓ |
+
+## Shared foundations
 
 | Area | Supported now |
 | --- | --- |
 | Program model | Immutable `ChartProgram`, hierarchical action trace |
 | Canvas | Create/edit width, height, background, margin |
 | Data | Immutable arrays of plain row objects |
-| Marks | Semantic point/circle mark; semantic line with aggregate path materialization; semantic bar with histogram or grouped-mean rect materialization |
-| Position | Quantitative point x/y; temporal line x and aggregate quantitative line y; explicit or atomic binned/count bar encodings; ordinal bar x and band-local xOffset scale resolution |
-| Aggregation | Immutable line mean aggregation; ordinal bar mean scale resolution; derived histogram bin totals and concrete zero-stacked rects |
-| Color | Nominal point fill, line stroke, stacked histogram fill, or grouped ordinal-bar color/xOffset semantics with ordinal scale and `tableau10` palette |
-| Stroke dash | Nominal line series with explicit or automatic ten-pattern range |
-| Constant appearance | Circle radius; grouped bar band width |
 | Coordinates | Named Cartesian and Polar semantic resources; x/y use Cartesian |
-| Guides | Automatic axes/grid/categorical-legend collection; bottom/left linear, UTC time, bin-aligned histogram, or ordinal-x axes; horizontal/vertical Cartesian grids; right-side categorical legend by default or explicit bottom placement |
-| Titles | One plot-aligned top title with an optional single-line subtitle |
+| Scales | Linear, UTC time, ordinal position, color, stroke dash, and band-local xOffset |
+| Guides | Automatic axes, horizontal/vertical Cartesian grids, and categorical legends |
+| Titles | One plot-aligned top title with one optional single-line subtitle |
 | Rendering | Browser Canvas and Node PNG |
 | Graphics | Concrete canvas, circle, line, rect, text, and point-array path nodes |
 
-Polar guide graphics, additional mark types, public
-transforms, facets, additional legend types or positions, and program
-composition are also not implemented in the current release. Additional title
-positions, automatic text wrapping, and text measurement are unsupported.
-These features are not part of the current API reference.
+## Current limitations
+
+Polar guide graphics, additional mark types, public transforms, facets,
+additional legend types or positions, and program composition are not
+implemented. Point legends, additional title positions, automatic text
+wrapping, and text measurement are also unsupported. These features are not
+part of the current API reference.
