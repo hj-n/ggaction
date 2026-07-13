@@ -12,7 +12,7 @@ Cars dataset의 `Acceleration` 분포를 Origin별 Gaussian kernel density estim
 - Bandwidth: `0.6`
 - Mark: semantic `area`, graphical closed `path`
 - Color: Origin nominal scale, `tableau10`
-- Guides: x/y axes, 기본 horizontal grid, top categorical legend
+- Guides: x/y axes, horizontal/vertical grids, top categorical legend
 - Title: `Distribution of Acceleration`
 - Subtitle: `By Origin (cars dataset)`
 
@@ -40,6 +40,10 @@ const program = chart()
     scale: { palette: "tableau10" }
   })
   .createGuides({
+    grid: {
+      horizontal: {},
+      vertical: {}
+    },
     legend: {
       position: "top",
       direction: "vertical",
@@ -236,6 +240,7 @@ Concrete order는 다음과 같다.
 ```text
 canvas
 → horizontal grid
+→ vertical grid
 → density areas
 → x/y axes
 → top legend

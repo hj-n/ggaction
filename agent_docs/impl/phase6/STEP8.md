@@ -2,14 +2,14 @@
 
 ## 목표
 
-Density area의 axes, horizontal grid, top color legend를 `createGuides()` shortest call에
+Density area의 axes, horizontal/vertical grids, top color legend를 `createGuides()` shortest call에
 통합하고 title/subtitle과 plot이 top margin 안에서 겹치지 않도록 검증한다.
 
 ## 진행 상태
 
 - [ ] Area quantitative x/y axis applicability
 - [ ] Density axis zero/tick behavior
-- [ ] Existing horizontal grid reuse
+- [ ] Existing horizontal/vertical grid reuse
 - [ ] Area color legend automatic applicability
 - [ ] Top legend options forwarding
 - [ ] `legend: false`와 guide opt-out

@@ -12,7 +12,7 @@ public action program의 executable graphical oracle로 사용한다.
 - [ ] Area x/y/group/color semantic contract
 - [ ] Origin별 baseline-closed path
 - [ ] Shared x/y/color scales
-- [ ] Raw axes와 horizontal grid
+- [ ] Raw axes와 horizontal/vertical grids
 - [ ] Top three-column swatch legend
 - [ ] Title/subtitle와 explicit graphical order
 - [ ] Acceptance, graphicSpec-only rendering, immutability
@@ -32,6 +32,7 @@ public action program의 executable graphical oracle로 사용한다.
 ```text
 canvas
 → horizontalGridLines
+→ verticalGridLines
 → densities
 → x/y axes
 → color legend swatches/labels/title

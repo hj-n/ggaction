@@ -34,7 +34,7 @@ createCanvas
 → createAreaMark
 → encodeDensity
 → encodeColor
-→ createGuides(top legend)
+→ createGuides(horizontal/vertical grids, top legend)
 → createTitle
 ```
 
@@ -63,6 +63,7 @@ STEP10 browser, PNG, docs, cleanup, Phase closure
 - `encodeDensity({ field, groupBy, bandwidth })` shortest target call이 작동한다.
 - y-density default와 explicit x-density가 모두 valid semantic/graphic 결과를 만든다.
 - Grouped Gaussian KDE가 shared extent와 deterministic uniform samples를 사용한다.
+- Horizontal/vertical grids가 모두 기본 density chart guide로 materialize된다.
 - Source dataset, derived values와 이전 `ChartProgram`이 immutable하다.
 - Origin마다 하나의 baseline-closed path가 만들어지고 color domain order를 따른다.
 - Top legend의 position/direction/columns/offset이 일반 categorical layout으로 동작한다.
