@@ -160,8 +160,8 @@ createLegend
 └─ createSizeLegend
 ~~~
 
-`createGuides()` selects line-series, histogram color, grouped-bar color, and
-compatible point color/shape/size legends automatically.
+`createGuides()` selects line-series, histogram color, grouped-bar color,
+grouped-area color, and compatible point color/shape/size legends automatically.
 Pass `createGuides({ legend: false })` to opt out.
 
 ## Errors and limitations

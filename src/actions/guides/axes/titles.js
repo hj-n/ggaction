@@ -47,9 +47,23 @@ function inferText(program, channel, scaleId) {
       typeof encoding.field === "string" &&
       encoding.field.length
     ) {
-      const title = encoding.aggregate === undefined
+      const dataset = program.semanticSpec.datasets.find(
+        item => item.id === layer.data
+      );
+      const density = dataset?.transform?.length === 1 &&
+        dataset.transform[0].type === "density"
+        ? dataset.transform[0]
+        : undefined;
+      const densityTitle = density === undefined
+        ? undefined
+        : encoding.field === density.as?.[0]
+          ? density.field
+          : encoding.field === density.as?.[1]
+            ? "Density"
+            : undefined;
+      const title = densityTitle ?? (encoding.aggregate === undefined
         ? encoding.field
-        : `${encoding.aggregate}(${encoding.field})`;
+        : `${encoding.aggregate}(${encoding.field})`);
       titles.add(title);
       if (layer.mark?.type === "point") primaryTitles.add(title);
     }

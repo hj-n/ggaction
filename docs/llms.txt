@@ -116,10 +116,12 @@ and language models.
 - encodeDensity is an atomic area aggregate: it creates immutable KDE data, rebinds the layer, authors both positions, optionally groups paths, and rematerializes the area.
 - Bar encodeColor resolves an ordinal scale and rematerializes each bin as zero-stacked category rects in color-domain order; the y domain remains based on total bin counts.
 - createAxes supports linear and UTC time scales, histogram bin-boundary x ticks, and aggregate-aware title inference.
+- Density axes infer the original source field for the value channel and `Density` for the density channel from stored transform provenance.
 - createGrid defaults to horizontal lines, supports optional vertical lines, reuses compatible axis ticks, and inserts concrete lines before related marks.
 - createLegend materializes a categorical right-side legend by default; explicit bottom and top placements are available. Top legends support direction, columns, offset, alignment, and top/left title placement. Layered recipes support line, point, swatch, and line-plus-point compositions.
 - Grouped area color legends use the generic color-guide state and default swatch recipe.
 - createTitle stores semantic title text and materializes a plot-aligned top title with an optional subtitle.
+- Top title and categorical legend blocks validate their actual occupied bounds and require more top margin instead of overlapping.
 - createGuides calls applicable createAxes, createGrid, and createLegend wrapped actions in that order; it never creates chart titles.
 - For grouped bars, createGuides infers an ordinal x axis, quantitative y axis, horizontal grid, and right-side color legend while forwarding explicit child options and false opt-outs.
 

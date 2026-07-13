@@ -23,7 +23,7 @@ architecture에 통합한다.
 - [x] Atomic `encodeDensity`
 - [x] Area color grouping과 rematerialization
 - [x] Top legend layout와 area swatch applicability
-- [ ] `createGuides`와 title/top-margin integration
+- [x] `createGuides`와 title/top-margin integration
 - [ ] Public vertical slice, documentation, cleanup
 
 ## 최종 public flow

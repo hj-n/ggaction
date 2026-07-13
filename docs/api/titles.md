@@ -59,6 +59,9 @@ Alignment uses the plot bounds rather than the full Canvas: left aligns with
 the plot's left edge, center with its midpoint, and right with its right edge.
 The title block is placed in the top margin. If that margin cannot contain the
 configured fonts and gap, creation fails instead of overlapping the plot.
+When a top categorical legend exists, the title block must also end above the
+legend block. The same overlap rule applies regardless of whether the title or
+legend was authored first.
 
 The title and subtitle strings are stored in `semanticSpec`. Alignment,
 spacing, and text appearance are materialized as concrete text graphics.

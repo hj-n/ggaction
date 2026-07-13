@@ -1,6 +1,8 @@
 import { action } from "../../core/action.js";
 import { isPlainObject } from "../../core/immutable.js";
 import { noOptions, validateKeys } from "../../core/validation.js";
+import { resolveLayout as resolveLegendLayout } from
+  "../guides/legends/categorical/layout.js";
 
 const OPTIONS = Object.freeze([
   "text",
@@ -148,6 +150,17 @@ function resolveLayout(program, config) {
 
   if (blockTop < 0 || blockBottom >= bounds.y) {
     throw new Error("Chart title requires more top-margin space.");
+  }
+  const topLegend = ["series", "color"]
+    .map(kind => program.guideConfigs.legend?.[kind])
+    .find(config => config?.position === "top");
+  if (topLegend !== undefined) {
+    const legendLayout = resolveLegendLayout(program, topLegend);
+    if (blockBottom >= legendLayout.blockTop) {
+      throw new Error(
+        "Chart title and top legend require more top-margin space."
+      );
+    }
   }
 
   const x = config.align === "left"

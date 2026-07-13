@@ -50,8 +50,28 @@ program.createGuides({ legend: false });
 
 Axes are selected when an x or y encoding exists. A horizontal grid is selected
 when a y encoding exists; vertical grid remains off unless requested. A legend
-is selected for line color/stroke-dash, bar color, or compatible point
+is selected for line color/stroke-dash, bar color, area color, or compatible point
 color+shape encodings. A point size encoding adds a second quantitative block.
+
+Density areas can request both grids and forward the complete top-legend
+layout through the aggregate:
+
+```javascript
+densityArea.createGuides({
+  grid: { horizontal: {}, vertical: {} },
+  legend: {
+    position: "top",
+    direction: "vertical",
+    columns: 3,
+    titlePosition: "left",
+    offset: 8
+  }
+});
+```
+
+Axis titles use density provenance rather than generated output names. A
+vertical density therefore infers the original field on x and `Density` on y;
+horizontal density reverses those titles.
 
 Layered regression scatterplots still create only one shared x axis, y axis,
 and horizontal grid. Their point color/shape and matching regression line share
@@ -91,7 +111,8 @@ createGuides
 ```
 
 Chart titles are not guides. Create them separately with
-[`createTitle`](./titles.md).
+[`createTitle`](./titles.md). A top title and top legend must both fit without
+overlap; neither action silently expands the Canvas margin.
 
 Call [`createGrid`](./grids.md), [`createAxes`](./axes.md), or
 [`createLegend`](./legends.md) directly when only one focused guide action is

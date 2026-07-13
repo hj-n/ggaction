@@ -46,6 +46,8 @@ function hasCategoricalLegendEncoding(program) {
           channel => layer.encoding?.[channel]?.scale !== undefined
         )) ||
       (layer.mark?.type === "bar" &&
+        layer.encoding?.color?.scale !== undefined) ||
+      (layer.mark?.type === "area" &&
         layer.encoding?.color?.scale !== undefined)
   );
 }

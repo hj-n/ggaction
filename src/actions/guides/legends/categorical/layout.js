@@ -45,7 +45,7 @@ function symbolHeight(config) {
   }));
 }
 
-function resolveTopLayout(bounds, canvas, config, width, count) {
+function resolveTopLayout(program, bounds, canvas, config, width, count) {
   const labels = config.domain.map(String);
   const itemWidths = labels.map(
     label => width + config.labels.offset + label.length * 7
@@ -95,6 +95,14 @@ function resolveTopLayout(bounds, canvas, config, width, count) {
   if (blockTop < 0) {
     throw new Error("Legend layout requires more top-margin space.");
   }
+  const titleGraphic = program.graphicSpec.objects.chartSubtitle ??
+    program.graphicSpec.objects.chartTitle;
+  if (
+    titleGraphic?.type === "text" &&
+    titleGraphic.properties.y + titleGraphic.properties.fontSize / 2 >= blockTop
+  ) {
+    throw new Error("Top legend and chart title require more top-margin space.");
+  }
   const columnX = [];
   let cursor = gridStart;
   for (const columnWidth of columnWidths) {
@@ -123,7 +131,16 @@ function resolveTopLayout(bounds, canvas, config, width, count) {
     }
     background = { x, y, width: backgroundWidth, height };
   }
-  return { symbolX, itemY, labelX, titleX, titleY, background };
+  return {
+    symbolX,
+    itemY,
+    labelX,
+    titleX,
+    titleY,
+    background,
+    blockTop,
+    blockBottom
+  };
 }
 
 export function resolveLayout(program, config) {
@@ -169,7 +186,7 @@ export function resolveLayout(program, config) {
   }
 
   if (config.position === "top") {
-    return resolveTopLayout(bounds, canvas, config, width, count);
+    return resolveTopLayout(program, bounds, canvas, config, width, count);
   }
 
   const labels = config.domain.map(String);
