@@ -4,7 +4,10 @@ import { validateUserId } from "../../core/identifiers.js";
 import { isPlainObject } from "../../core/immutable.js";
 import {
   readQuantitativeField,
+  readNominalField,
   readTemporalField,
+  validateOrdinalDomain,
+  validateOrdinalScaleType,
   validateFieldType,
   validateLinearScaleType,
   validatePositionChannel,
@@ -60,10 +63,15 @@ function resolveScaleDefinition(
   validateOptions(options, SCALE_OPTIONS, "scale");
   const id = validateUserId(options.id ?? channel, "Scale id");
   const existing = program.semanticSpec.scales.find(item => item.id === id);
-  const expectedType = fieldType === "temporal" ? "time" : "linear";
+  const expectedType = fieldType === "temporal"
+    ? "time"
+    : fieldType === "ordinal"
+      ? "ordinal"
+      : "linear";
   const type = options.type ?? existing?.type ?? expectedType;
 
   if (fieldType === "temporal") validateTimeScaleType(type);
+  else if (fieldType === "ordinal") validateOrdinalScaleType(type);
   else validateLinearScaleType(type);
 
   if (options.nice !== undefined && typeof options.nice !== "boolean") {
@@ -74,14 +82,19 @@ function resolveScaleDefinition(
     throw new TypeError("Scale zero must be a boolean.");
   }
 
-  if (fieldType === "temporal" && options.zero !== undefined) {
-    throw new Error('Scale type "time" does not support zero.');
+  if (type !== "linear" && options.zero !== undefined) {
+    throw new Error(`Scale type "${type}" does not support zero.`);
+  }
+  if (type === "ordinal" && options.nice !== undefined) {
+    throw new Error('Scale type "ordinal" does not support nice.');
   }
 
   const scale = {
     id,
     type,
-    domain: validateScaleDomain(options.domain ?? existing?.domain ?? "auto"),
+    domain: fieldType === "ordinal"
+      ? validateOrdinalDomain(options.domain ?? existing?.domain ?? "auto")
+      : validateScaleDomain(options.domain ?? existing?.domain ?? "auto"),
     range: validateScaleRange(options.range ?? existing?.range ?? "auto")
   };
 
@@ -163,19 +176,26 @@ function encodePosition(program, channel, args, operation) {
       throw new Error("Line y encoding does not support stack.");
     }
   } else if (channel === "x") {
-    if (fieldType !== "quantitative") {
-      throw new Error("Bar x encoding currently requires a quantitative field.");
-    }
     if (args.aggregate !== undefined) {
       throw new Error("Bar x encoding does not support aggregate.");
-    }
-    if (args.bin === undefined) {
-      throw new Error("Bar x encoding requires bin.");
     }
     if (args.stack !== undefined) {
       throw new Error("Bar x encoding does not support stack.");
     }
-    bin = resolveBinDefinition(args.bin);
+    if (fieldType === "ordinal") {
+      if (args.bin !== undefined) {
+        throw new Error("Ordinal bar x encoding does not support bin.");
+      }
+    } else if (fieldType === "quantitative") {
+      if (args.bin === undefined) {
+        throw new Error("Quantitative bar x encoding requires bin.");
+      }
+      bin = resolveBinDefinition(args.bin);
+    } else {
+      throw new Error(
+        "Bar x encoding requires a quantitative field with bin or an ordinal field."
+      );
+    }
   } else {
     const xEncoding = layer.encoding?.x;
 
@@ -203,6 +223,8 @@ function encodePosition(program, channel, args, operation) {
 
   if (fieldType === "temporal") {
     readTemporalField(dataset.values, field);
+  } else if (fieldType === "ordinal") {
+    readNominalField(dataset.values, field);
   } else {
     readQuantitativeField(dataset.values, field);
   }
@@ -212,7 +234,7 @@ function encodePosition(program, channel, args, operation) {
     channel,
     fieldType,
     Object.hasOwn(args, "scale") ? args.scale : {},
-    layer.mark.type === "bar"
+    layer.mark.type === "bar" && fieldType !== "ordinal"
       ? channel === "x"
         ? { nice: true, zero: false }
         : { nice: true, zero: true }
@@ -247,7 +269,7 @@ function encodePosition(program, channel, args, operation) {
     });
   }
 
-  if (layer.mark.type === "bar" && channel === "x") {
+  if (layer.mark.type === "bar" && channel === "x" && bin !== undefined) {
     next = next.editSemantic({
       property: `layer[${target}].encoding.x.bin.maxBins`,
       value: bin.maxBins

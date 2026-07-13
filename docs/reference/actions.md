@@ -74,8 +74,9 @@ Create a semantic bar mark and empty rect collection. [Marks](../api/marks.md)
 encodeX({ field, target?, fieldType?, coordinate?, bin?, scale? })
 ```
 
-Create a quantitative point, temporal line, or binned quantitative bar x
-encoding.
+Create a quantitative point, temporal line, binned quantitative bar, or
+ordinal bar x encoding. Ordinal bars require `fieldType: "ordinal"` and do not
+materialize rects until their remaining layout semantics exist.
 [Position encodings](../api/position-encodings.md)
 
 ### `encodeY`

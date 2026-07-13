@@ -48,9 +48,17 @@ materializes concrete histogram rectangles.
 
 ## Ordinal scales
 
-Color and stroke-dash encodings use ordinal scales. Automatic domains preserve
-first-appearance order. Color ranges accept explicit colors or
-`{ palette: "tableau10" }`; stroke-dash ranges accept arrays of dash patterns.
+Ordinal bar x, color, and stroke-dash encodings use ordinal scales. Automatic
+domains preserve first-appearance order.
+
+An ordinal bar x scale uses `"auto"` or a numeric pair as its range. Automatic
+ranges use the horizontal plot bounds. The resolved scale records one equal
+`step` per domain value and an absolute `bandwidth`; category positions lie at
+band centers. Reversed explicit ranges are valid. Ordinal scales reject
+`nice` and `zero`.
+
+Color ranges accept explicit colors or `{ palette: "tableau10" }`;
+stroke-dash ranges accept arrays of dash patterns.
 
 ```javascript
 program.encodeColor({

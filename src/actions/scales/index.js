@@ -14,6 +14,7 @@ import {
   resolveColorRange,
   resolveContinuousDomain,
   resolveOrdinalDomain,
+  resolveOrdinalPositionScale,
   resolveScaleRange,
   resolveStrokeDashRange,
   validateScaleDomain,
@@ -138,6 +139,10 @@ function resolveConsumerValues(program, consumer) {
 
   if (consumer.encoding.fieldType === "temporal") {
     return readTemporalField(dataset.values, consumer.encoding.field);
+  }
+
+  if (consumer.encoding.fieldType === "ordinal") {
+    return readNominalField(dataset.values, consumer.encoding.field);
   }
 
   if (consumer.encoding.fieldType !== "quantitative") {
@@ -281,7 +286,9 @@ const rematerializeScale = action(
       values: resolveConsumerValues(this, consumer)
     }));
     const allValues = valuesByConsumer.flatMap(item => item.values);
-    const isOrdinal = channel === "color" || channel === "strokeDash";
+    const isOrdinalAppearance = channel === "color" || channel === "strokeDash";
+    const isOrdinalPosition =
+      !isOrdinalAppearance && scale.type === "ordinal";
     const binnedBars = valuesByConsumer.filter(
       ({ consumer }) =>
         consumer.layer.mark?.type === "bar" &&
@@ -334,7 +341,7 @@ const rematerializeScale = action(
         zero: scale.zero
       });
     } else {
-      domain = isOrdinal
+      domain = isOrdinalAppearance || isOrdinalPosition
         ? resolveOrdinalDomain(scale.domain, allValues)
         : resolveContinuousDomain({
             domain: scale.domain,
@@ -357,15 +364,24 @@ const rematerializeScale = action(
         this.context.currentGraphicBounds
       );
     }
-    let next = this._withResolvedScale(id, {
-      type: isOrdinal
-        ? validateOrdinalScaleType(scale.type)
-        : scale.type === "time"
-          ? validateTimeScaleType(scale.type)
-          : validateLinearScaleType(scale.type),
-      domain,
-      range
-    });
+    const resolvedScale = isOrdinalPosition
+      ? resolveOrdinalPositionScale({
+          domain: scale.domain,
+          values: allValues,
+          range: scale.range,
+          channel,
+          bounds: this.context.currentGraphicBounds
+        })
+      : {
+          type: isOrdinalAppearance
+            ? validateOrdinalScaleType(scale.type)
+            : scale.type === "time"
+              ? validateTimeScaleType(scale.type)
+              : validateLinearScaleType(scale.type),
+          domain,
+          range
+        };
+    let next = this._withResolvedScale(id, resolvedScale);
 
     for (const { consumer, values } of valuesByConsumer) {
       if (
@@ -378,7 +394,7 @@ const rematerializeScale = action(
       next = next.editGraphics({
         target: consumer.layer.id,
         property: channel === "color" ? "fill" : channel,
-        value: isOrdinal
+        value: isOrdinalAppearance
           ? mapOrdinalValues(values, domain, range)
           : mapLinearValues(values, domain, range)
       });

@@ -49,7 +49,11 @@ export function validatePositionChannel(channel) {
 }
 
 export function validateFieldType(fieldType) {
-  if (fieldType !== "quantitative" && fieldType !== "temporal") {
+  if (
+    fieldType !== "quantitative" &&
+    fieldType !== "ordinal" &&
+    fieldType !== "temporal"
+  ) {
     throw new Error(`Unsupported field type "${fieldType}".`);
   }
 
@@ -203,6 +207,14 @@ export function validateStrokeDashRange(range) {
 export function validateOrdinalRange(range) {
   if (range === "auto") return range;
 
+  if (
+    Array.isArray(range) &&
+    range.length === 2 &&
+    range.every(Number.isFinite)
+  ) {
+    return cloneAndFreeze(range);
+  }
+
   if (Array.isArray(range) && range.every(item => typeof item === "string")) {
     return validateColorRange(range);
   }
@@ -320,6 +332,48 @@ export function resolveOrdinalDomain(domain, values) {
   }
 
   return cloneAndFreeze([...new Set(values)]);
+}
+
+export function resolveOrdinalPositionScale({
+  domain,
+  values,
+  range,
+  channel,
+  bounds
+}) {
+  const resolvedDomain = resolveOrdinalDomain(domain, values);
+  const resolvedRange = resolveScaleRange(range, channel, bounds);
+  const domainValues = new Set(resolvedDomain);
+
+  for (const value of values) {
+    if (!domainValues.has(value)) {
+      throw new Error(`Value "${value}" is outside the ordinal domain.`);
+    }
+  }
+
+  const step = (resolvedRange[1] - resolvedRange[0]) / resolvedDomain.length;
+
+  return cloneAndFreeze({
+    type: "ordinal",
+    domain: resolvedDomain,
+    range: resolvedRange,
+    step,
+    bandwidth: Math.abs(step)
+  });
+}
+
+export function mapOrdinalPositionValues(values, scale) {
+  const indices = new Map(
+    scale.domain.map((value, index) => [value, index])
+  );
+
+  return cloneAndFreeze(values.map(value => {
+    const index = indices.get(value);
+    if (index === undefined) {
+      throw new Error(`Value "${value}" is outside the ordinal domain.`);
+    }
+    return scale.range[0] + (index + 0.5) * scale.step;
+  }));
 }
 
 export function resolveColorRange(range) {

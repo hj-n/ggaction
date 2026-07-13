@@ -4,12 +4,14 @@ import test from "node:test";
 import {
   DASH10,
   mapLinearValues,
+  mapOrdinalPositionValues,
   mapOrdinalValues,
   readQuantitativeField,
   readNominalField,
   readTemporalField,
   resolveColorRange,
   resolveOrdinalDomain,
+  resolveOrdinalPositionScale,
   resolveScaleDomain,
   resolveScaleRange,
   resolveStrokeDashRange,
@@ -75,6 +77,7 @@ test("maps linear values and centers a constant domain", () => {
 test("validates the continuous scale vocabulary and bounds", () => {
   assert.equal(validatePositionChannel("x"), "x");
   assert.equal(validateFieldType("quantitative"), "quantitative");
+  assert.equal(validateFieldType("ordinal"), "ordinal");
   assert.equal(validateFieldType("temporal"), "temporal");
   assert.equal(validateScaleType("linear"), "linear");
   assert.equal(validateScaleType("time"), "time");
@@ -93,6 +96,57 @@ test("validates the continuous scale vocabulary and bounds", () => {
   assert.throws(
     () => resolveScaleRange("auto", "x", undefined),
     /requires graphical bounds/
+  );
+});
+
+test("resolves ordinal position domains, ranges, and band geometry", () => {
+  const scale = resolveOrdinalPositionScale({
+    domain: "auto",
+    values: [1850, 1860, 1850, 1870],
+    range: "auto",
+    channel: "x",
+    bounds: { x: 80, y: 40, width: 300, height: 200 }
+  });
+
+  assert.deepEqual(scale, {
+    type: "ordinal",
+    domain: [1850, 1860, 1870],
+    range: [80, 380],
+    step: 100,
+    bandwidth: 100
+  });
+  assert.deepEqual(mapOrdinalPositionValues([1850, 1870], scale), [130, 330]);
+  assert.equal(Object.isFrozen(scale), true);
+});
+
+test("preserves explicit ordinal order and reversed position ranges", () => {
+  const scale = resolveOrdinalPositionScale({
+    domain: [1870, 1860, 1850],
+    values: [1850, 1860, 1870],
+    range: [300, 0],
+    channel: "x"
+  });
+
+  assert.deepEqual(scale, {
+    type: "ordinal",
+    domain: [1870, 1860, 1850],
+    range: [300, 0],
+    step: -100,
+    bandwidth: 100
+  });
+  assert.deepEqual(mapOrdinalPositionValues([1870, 1850], scale), [250, 50]);
+  assert.throws(
+    () => resolveOrdinalPositionScale({
+      domain: [1850],
+      values: [1850, 1860],
+      range: [0, 100],
+      channel: "x"
+    }),
+    /outside the ordinal domain/
+  );
+  assert.throws(
+    () => mapOrdinalPositionValues([1900], scale),
+    /outside the ordinal domain/
   );
 });
 

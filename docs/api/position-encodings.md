@@ -32,6 +32,37 @@ x/y encodings ensure a Cartesian coordinate exists and attach it to the layer.
 An explicitly selected coordinate is created if missing. A conflicting layer
 coordinate or non-Cartesian coordinate produces an error.
 
+## Ordinal bar `encodeX(options)`
+
+Create a categorical horizontal position encoding for a bar mark.
+
+```javascript
+program.encodeX({
+  field: "year",
+  fieldType: "ordinal"
+});
+```
+
+| Option | Type | Default |
+| --- | --- | --- |
+| `field` | non-empty string | required |
+| `fieldType` | `"ordinal"` | required for ordinal bars |
+| `target` | bar mark ID | current mark |
+| `coordinate` | coordinate ID | layer coordinate, then `"main"` |
+| `scale.id` | scale ID | `"x"` |
+| `scale.type` | `"ordinal"` | `"ordinal"` |
+| `scale.domain` | `"auto"` or unique nominal values | `"auto"` |
+| `scale.range` | `"auto"` or two finite numbers | `"auto"` |
+
+An automatic domain preserves first-appearance order. An automatic range uses
+the current horizontal plot bounds. The resolved scale stores `step` and
+`bandwidth`; category centers are `rangeStart + (index + 0.5) * step`.
+Explicit domains preserve their supplied order, and reversed numeric ranges
+are supported. Ordinal position scales do not accept `nice` or `zero`.
+
+This action deliberately leaves the rect collection empty. Aggregate y and
+group layout are still required to materialize grouped bars.
+
 ## Binned bar `encodeX(options)`
 
 Create a quantitative histogram bin encoding and resolve its horizontal scale.

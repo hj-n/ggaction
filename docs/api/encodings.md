@@ -14,8 +14,8 @@ defaults.
 
 [`encodeX` and `encodeY`](./position-encodings.md) create quantitative point
 positions, temporal/aggregate line positions, or a binned quantitative bar x
-encoding. They also establish the Cartesian coordinate and continuous scales
-used by axes.
+encoding. `encodeX` also supports ordinal bar categories. Position actions
+establish the Cartesian coordinate and the scale used by later marks and axes.
 
 ```javascript
 program
@@ -29,6 +29,13 @@ barProgram.encodeX({
   bin: { maxBins: 10 }
 }).encodeY();
 ```
+
+```javascript
+groupedBarProgram.encodeX({ field: "year", fieldType: "ordinal" });
+```
+
+Ordinal bar x resolves its domain and band geometry but leaves concrete rects
+empty until aggregate y and group layout are authored.
 
 ## Atomic histogram
 
