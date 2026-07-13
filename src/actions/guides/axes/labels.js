@@ -1,6 +1,7 @@
 import { action } from "../../../core/action.js";
 import { validateUserId } from "../../../core/identifiers.js";
 import { sameOrderedValues } from "../../../core/validation.js";
+import { resolveGraphicBounds } from "../../../layout/canvas.js";
 import {
   mapLinearValues,
   mapOrdinalPositionValues
@@ -60,7 +61,7 @@ function assertTickCompatibility(ticks, config, operation) {
 
 function resolve(program, channel, config) {
   const scale = program.resolvedScales[config.scale];
-  const bounds = program.context.currentGraphicBounds;
+  const bounds = resolveGraphicBounds(program);
   if (!["linear", "time", "ordinal"].includes(scale?.type) || !bounds) throw new Error("Axis labels require a supported resolved scale and Canvas bounds.");
   if (scale.type === "ordinal" && channel !== "x") throw new Error("Ordinal axis labels currently require the x channel.");
   if (scale.type === "ordinal" && config.mode !== "values") throw new Error("Ordinal axis labels require explicit or inferred values, not count.");

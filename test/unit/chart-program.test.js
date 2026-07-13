@@ -27,7 +27,7 @@ test("creates an immutable program with canonical empty state", () => {
   assert.deepEqual(program.markConfigs, {});
   assert.deepEqual(program.guideConfigs, {});
   assert.equal(program.titleConfig, undefined);
-  assert.deepEqual(program.children, {});
+  assert.equal("children" in program, false);
   assert.deepEqual(program.context, {});
   assert.deepEqual(program.trace, {
     id: "program",
@@ -116,21 +116,32 @@ test("takes ownership of shallow-frozen constructor input", () => {
 });
 
 test("updates private context immutably without changing the trace", () => {
-  const margin = { top: 10, right: 20, bottom: 30, left: 40 };
   const original = chart()._withContext({ currentData: "cars" });
-  const next = original._withContext({ currentMargin: margin });
-
-  margin.left = 99;
+  const next = original._withContext({ currentMark: "points" });
 
   assert.deepEqual(original.context, { currentData: "cars" });
   assert.deepEqual(next.context, {
     currentData: "cars",
-    currentMargin: { top: 10, right: 20, bottom: 30, left: 40 }
+    currentMark: "points"
   });
   assert.equal(next.semanticSpec, original.semanticSpec);
   assert.equal(next.graphicSpec, original.graphicSpec);
   assert.equal(next.trace, original.trace);
-  assert.equal(Object.isFrozen(next.context.currentMargin), true);
+  assert.equal(Object.isFrozen(next.context), true);
+});
+
+test("stores Canvas materialization config immutably", () => {
+  const config = { margin: { top: 10, right: 20, bottom: 30, left: 40 } };
+  const original = chart();
+  const next = original._withCanvasConfig(config);
+  config.margin.left = 99;
+
+  assert.equal(original.materializationConfigs.canvas, undefined);
+  assert.deepEqual(next.materializationConfigs.canvas, {
+    margin: { top: 10, right: 20, bottom: 30, left: 40 }
+  });
+  assert.equal(Object.isFrozen(next.materializationConfigs.canvas.margin), true);
+  assert.throws(() => chart()._withCanvasConfig([]), /plain object/);
 });
 
 test("rejects non-object private context patches", () => {

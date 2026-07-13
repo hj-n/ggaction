@@ -3,6 +3,7 @@ import { validateUserId } from "../../../core/identifiers.js";
 import { isPlainObject } from "../../../core/immutable.js";
 import { validateKeys } from "../../../core/validation.js";
 import { mapLinearValues } from "../../../grammar/scales.js";
+import { resolveGraphicBounds } from "../../../layout/canvas.js";
 import {
   inferGridTickConfig,
   valuesFromTickConfig
@@ -182,7 +183,7 @@ function resolveConfig(program, direction, args, resources) {
 
 function resolveGeometry(program, config) {
   const scale = program.resolvedScales[config.scale];
-  const bounds = program.context.currentGraphicBounds;
+  const bounds = resolveGraphicBounds(program);
   if (!["linear", "time"].includes(scale?.type) || bounds === undefined) {
     throw new Error("Grid materialization requires a continuous scale and Canvas bounds.");
   }

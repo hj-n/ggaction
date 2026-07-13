@@ -2,6 +2,7 @@ import { action } from "../../core/action.js";
 import { validateUserId } from "../../core/identifiers.js";
 import { validateKeys } from "../../core/validation.js";
 import { resolveHistogramBins } from "../../grammar/histogram.js";
+import { resolveGraphicBounds } from "../../layout/canvas.js";
 import {
   mapLinearValues,
   mapOrdinalValues,
@@ -139,7 +140,7 @@ export const rematerializeScale = action(
       range = resolveScaleRange(
         scale.range,
         channel,
-        this.context.currentGraphicBounds
+        resolveGraphicBounds(this)
       );
     }
 
@@ -170,7 +171,7 @@ export const rematerializeScale = action(
             values: allValues,
             range: scale.range,
             channel,
-            bounds: this.context.currentGraphicBounds
+            bounds: resolveGraphicBounds(this)
           })
         : {
             type: isOrdinalAppearance

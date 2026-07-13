@@ -1,6 +1,7 @@
 import { action } from "../../../core/action.js";
 import { validateUserId } from "../../../core/identifiers.js";
 import { validateKeys } from "../../../core/validation.js";
+import { resolveGraphicBounds } from "../../../layout/canvas.js";
 import {
   mapLinearValues,
   mapOrdinalPositionValues
@@ -75,7 +76,7 @@ function inferText(program, channel, scaleId) {
 
 function resolveGeometry(program, channel, config) {
   const scale = program.resolvedScales[config.scale];
-  const bounds = program.context.currentGraphicBounds;
+  const bounds = resolveGraphicBounds(program);
   if (!["linear", "time", "ordinal"].includes(scale?.type) || !bounds) throw new Error("Axis title requires a supported resolved scale and Canvas bounds.");
   if (scale.type === "ordinal" && channel !== "x") throw new Error("Ordinal axis title currently requires the x channel.");
   let along;

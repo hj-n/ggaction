@@ -94,3 +94,21 @@ export function createGraphicBounds({ width, height, margin }) {
     height: height - margin.top - margin.bottom
   });
 }
+
+export function resolveGraphicBounds(program) {
+  const canvas = program.graphicSpec.objects.canvas;
+  const margin = program.materializationConfigs.canvas?.margin;
+  if (
+    canvas?.type !== "canvas" ||
+    !Number.isFinite(canvas.properties.width) ||
+    !Number.isFinite(canvas.properties.height) ||
+    margin === undefined
+  ) {
+    throw new Error("Graphical layout requires Canvas dimensions and margin.");
+  }
+  return createGraphicBounds({
+    width: canvas.properties.width,
+    height: canvas.properties.height,
+    margin
+  });
+}

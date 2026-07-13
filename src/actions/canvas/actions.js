@@ -1,6 +1,5 @@
 import { action } from "../../core/action.js";
 import {
-  createGraphicBounds,
   DEFAULT_CANVAS,
   DEFAULT_MARGIN,
   normalizeMargin,
@@ -45,7 +44,8 @@ function requireCanvas(program) {
 
 function resolveCanvasState(program, args) {
   const canvas = requireCanvas(program);
-  const baseMargin = program.context.currentMargin ?? DEFAULT_MARGIN;
+  const baseMargin =
+    program.materializationConfigs.canvas?.margin ?? DEFAULT_MARGIN;
   const state = {
     width: Object.hasOwn(args, "width")
       ? args.width
@@ -85,10 +85,7 @@ export const editCanvas = action(
       }
     }
 
-    next = next._withContext({
-      currentMargin: state.margin,
-      currentGraphicBounds: createGraphicBounds(state)
-    });
+    next = next._withCanvasConfig({ margin: state.margin });
 
     if (
       Object.hasOwn(args, "width") ||

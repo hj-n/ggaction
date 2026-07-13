@@ -1,6 +1,7 @@
 import { isPlainObject } from "../../../../core/immutable.js";
 import { noOptions } from "../../../../core/validation.js";
 import { mapOrdinalValues } from "../../../../grammar/scales.js";
+import { resolveGraphicBounds } from "../../../../layout/canvas.js";
 
 export function activeConfig(program) {
   const entries = ["series", "color"]
@@ -144,7 +145,7 @@ function resolveTopLayout(program, bounds, canvas, config, width, count) {
 }
 
 export function resolveLayout(program, config) {
-  const bounds = program.context.currentGraphicBounds;
+  const bounds = resolveGraphicBounds(program);
   const canvas = program.graphicSpec.objects.canvas;
   if (
     bounds === undefined ||

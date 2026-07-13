@@ -66,6 +66,7 @@ and language models.
 - There is no automatic semantic-to-graphic compiler.
 - Domain actions explicitly invoke every required graphical materialization.
 - Renderers read graphicSpec only; they do not infer from semanticSpec.
+- Canvas margin is canonical materialization configuration; plot bounds are derived from it and the concrete Canvas dimensions rather than stored only in transient context.
 - Primitive graphics support heterogeneous drawable collections whose children
   each carry a concrete circle, rect, line, text, or path type.
 - Backend-neutral paths may be open/stroked or `closed: true` and filled; a

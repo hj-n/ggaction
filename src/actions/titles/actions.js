@@ -1,6 +1,7 @@
 import { action } from "../../core/action.js";
 import { isPlainObject } from "../../core/immutable.js";
 import { noOptions, validateKeys } from "../../core/validation.js";
+import { resolveGraphicBounds } from "../../layout/canvas.js";
 import { resolveLayout as resolveLegendLayout } from
   "../guides/legends/categorical/layout.js";
 
@@ -123,7 +124,7 @@ function requireConfig(program) {
 }
 
 function resolveLayout(program, config) {
-  const bounds = program.context.currentGraphicBounds;
+  const bounds = resolveGraphicBounds(program);
   const canvas = program.graphicSpec.objects.canvas;
   if (
     bounds === undefined ||

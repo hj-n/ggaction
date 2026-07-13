@@ -1,6 +1,7 @@
 import { action } from "../../../core/action.js";
 import { validateUserId } from "../../../core/identifiers.js";
 import { validateKeys } from "../../../core/validation.js";
+import { resolveGraphicBounds } from "../../../layout/canvas.js";
 
 const DEFAULT_STYLE = Object.freeze({ color: "#334155", lineWidth: 1 });
 const CREATE_OPTIONS = Object.freeze(["scale", "position", "color", "lineWidth"]);
@@ -38,7 +39,7 @@ function resolveGeometry(program, channel, scaleId) {
   }
 
   const range = program.resolvedScales[scaleId]?.range;
-  const bounds = program.context.currentGraphicBounds;
+  const bounds = resolveGraphicBounds(program);
 
   if (!Array.isArray(range) || range.length !== 2 || !range.every(Number.isFinite)) {
     throw new Error(`Axis line requires a resolved numeric scale "${scaleId}".`);

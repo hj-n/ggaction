@@ -1,6 +1,7 @@
 import { action } from "../../../core/action.js";
 import { validateKeys } from "../../../core/validation.js";
 import { mapLinearValues, mapOrdinalValues } from "../../../grammar/scales.js";
+import { resolveGraphicBounds } from "../../../layout/canvas.js";
 
 const SERIES_OPTIONS = Object.freeze(["target"]);
 const SIZE_OPTIONS = Object.freeze(["target", "count"]);
@@ -36,7 +37,7 @@ function requireScale(program, id, type) {
 }
 
 function bounds(program) {
-  const value = program.context.currentGraphicBounds;
+  const value = resolveGraphicBounds(program);
   const canvas = program.graphicSpec.objects.canvas;
   if (
     value === undefined ||

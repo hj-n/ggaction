@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { chart } from "../../src/core/ChartProgram.js";
+import { resolveGraphicBounds } from "../../src/layout/canvas.js";
 
 test("creates a canvas with defaults through nested actions", () => {
   const empty = chart();
@@ -16,10 +17,13 @@ test("creates a canvas with defaults through nested actions", () => {
       background: "white"
     }
   });
-  assert.deepEqual(program.context, {
-    currentMargin: { top: 30, right: 30, bottom: 60, left: 70 },
-    currentGraphicBounds: { x: 70, y: 30, width: 540, height: 310 }
+  assert.deepEqual(program.materializationConfigs.canvas, {
+    margin: { top: 30, right: 30, bottom: 60, left: 70 }
   });
+  assert.deepEqual(resolveGraphicBounds(program), {
+    x: 70, y: 30, width: 540, height: 310
+  });
+  assert.deepEqual(program.context, {});
 
   const createNode = program.trace.children[0];
   assert.equal(createNode.op, "createCanvas");
@@ -46,13 +50,13 @@ test("creates a canvas with explicit and partially specified options", () => {
     margin: { left: 80, bottom: 70 }
   });
 
-  assert.deepEqual(program.context.currentMargin, {
+  assert.deepEqual(program.materializationConfigs.canvas.margin, {
     top: 30,
     right: 30,
     bottom: 70,
     left: 80
   });
-  assert.deepEqual(program.context.currentGraphicBounds, {
+  assert.deepEqual(resolveGraphicBounds(program), {
     x: 80,
     y: 30,
     width: 690,

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { chart } from "../../src/core/ChartProgram.js";
+import { resolveGraphicBounds } from "../../src/layout/canvas.js";
 
 function createConcreteCanvas() {
   return chart()
@@ -28,9 +29,11 @@ test("partially edits a canvas and updates authoring bounds", () => {
     height: 400,
     background: "white"
   });
-  assert.deepEqual(next.context, {
-    currentMargin: { top: 30, right: 30, bottom: 60, left: 80 },
-    currentGraphicBounds: { x: 80, y: 30, width: 690, height: 310 }
+  assert.deepEqual(next.materializationConfigs.canvas, {
+    margin: { top: 30, right: 30, bottom: 60, left: 80 }
+  });
+  assert.deepEqual(resolveGraphicBounds(next), {
+    x: 80, y: 30, width: 690, height: 310
   });
 
   const actionNode = next.trace.children.at(-1);
@@ -39,18 +42,18 @@ test("partially edits a canvas and updates authoring bounds", () => {
   assert.equal(actionNode.children[0].args.property, "width");
 });
 
-test("updates margin-only context without changing graphicSpec", () => {
+test("updates margin-only materialization state without changing graphicSpec", () => {
   const original = createConcreteCanvas();
   const next = original.editCanvas({ margin: 20 });
 
   assert.equal(next.graphicSpec, original.graphicSpec);
-  assert.deepEqual(next.context.currentMargin, {
+  assert.deepEqual(next.materializationConfigs.canvas.margin, {
     top: 20,
     right: 20,
     bottom: 20,
     left: 20
   });
-  assert.deepEqual(next.context.currentGraphicBounds, {
+  assert.deepEqual(resolveGraphicBounds(next), {
     x: 20,
     y: 20,
     width: 600,

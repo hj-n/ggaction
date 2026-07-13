@@ -20,10 +20,16 @@ function ownState(value) {
   return isOwned(value) ? value : cloneAndFreeze(value);
 }
 
-function createMaterializationConfigs(markConfigs, guideConfigs, titleConfig) {
+function createMaterializationConfigs(
+  markConfigs,
+  guideConfigs,
+  titleConfig,
+  canvasConfig
+) {
   return cloneAndFreeze({
     marks: markConfigs,
     guides: guideConfigs,
+    ...(canvasConfig === undefined ? {} : { canvas: canvasConfig }),
     ...(titleConfig === undefined ? {} : { title: titleConfig })
   });
 }
@@ -46,7 +52,7 @@ export class ChartProgram {
     markConfigs = {},
     guideConfigs = {},
     titleConfig,
-    children = {},
+    canvasConfig,
     context = {},
     trace = createTraceRoot(),
     actionStack = []
@@ -55,12 +61,16 @@ export class ChartProgram {
     this.graphicSpec = ownState(graphicSpec);
     this.resolvedScales = ownState(resolvedScales);
     this.materializationConfigs = materializationConfigs === undefined
-      ? createMaterializationConfigs(markConfigs, guideConfigs, titleConfig)
+      ? createMaterializationConfigs(
+          markConfigs,
+          guideConfigs,
+          titleConfig,
+          canvasConfig
+        )
       : ownState(materializationConfigs);
     this.markConfigs = this.materializationConfigs.marks;
     this.guideConfigs = this.materializationConfigs.guides;
     this.titleConfig = this.materializationConfigs.title;
-    this.children = ownState(children);
     this.context = ownState(context);
     this.trace = ownState(trace);
     this.actionStack = ownState(actionStack);
@@ -73,7 +83,6 @@ export class ChartProgram {
     graphicSpec = this.graphicSpec,
     resolvedScales = this.resolvedScales,
     materializationConfigs = this.materializationConfigs,
-    children = this.children,
     context = this.context,
     trace = this.trace,
     actionStack = this.actionStack
@@ -83,7 +92,6 @@ export class ChartProgram {
       graphicSpec,
       resolvedScales,
       materializationConfigs,
-      children,
       context,
       trace,
       actionStack
@@ -133,6 +141,13 @@ export class ChartProgram {
     }
 
     return this._withMaterializationConfig(["marks", id], config);
+  }
+
+  _withCanvasConfig(config) {
+    if (!isPlainObject(config)) {
+      throw new TypeError("Canvas config must be a plain object.");
+    }
+    return this._withMaterializationConfig(["canvas"], config);
   }
 
   _withMaterializationConfig(path, config) {
