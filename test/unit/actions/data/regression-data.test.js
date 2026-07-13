@@ -7,7 +7,7 @@ import {
   studentTCritical
 } from "../../../../src/grammar/regression.js";
 import { createCarsRegressionScatterplotValues } from
-  "../../../fixtures/carsRegressionScatterplotValues.js";
+  "../../../charts/regression-scatterplot/reference-values.js";
 import { loadCars } from "../../../support/data.js";
 
 test("derives grouped OLS rows at observed unique x values", () => {

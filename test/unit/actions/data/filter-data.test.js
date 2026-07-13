@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { chart } from "../../../../src/index.js";
 import { createCarsRegressionScatterplotValues } from
-  "../../../fixtures/carsRegressionScatterplotValues.js";
+  "../../../charts/regression-scatterplot/reference-values.js";
 import { loadCars } from "../../../support/data.js";
 
 const rows = [
