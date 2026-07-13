@@ -30,15 +30,50 @@ scale `nice`/`zero` policies, combined series legends, and chart title text.
 
 ## `createGraphics({ id, type, length?, before?, after? })`
 
-Creates one concrete object or a homogeneous drawable collection.
+Creates one concrete object, a homogeneous drawable collection, or an empty
+heterogeneous drawable `collection`.
 
 ```javascript
 program.createGraphics({ id: "points", type: "circle", length: 2 });
 ```
 
-Supported types are `canvas`, `container`, `circle`, `rect`, `line`, `text`,
-and `path`. `length` is a non-negative integer accepted only for drawable types.
-Equivalent repeated creation is idempotent.
+Supported types are `canvas`, `container`, `collection`, `circle`, `rect`,
+`line`, `text`, and `path`. `length` is a non-negative integer accepted by
+homogeneous drawable types. A heterogeneous `collection` is populated through
+one `editGraphics({ property: "children" })` call instead. Equivalent repeated
+creation is idempotent.
+
+```javascript
+program
+  .createGraphics({ id: "symbols", type: "collection" })
+  .editGraphics({
+    target: "symbols",
+    property: "children",
+    value: [
+      {
+        type: "circle",
+        properties: { x: 20, y: 30, radius: 4, fill: "red" }
+      },
+      {
+        type: "rect",
+        properties: {
+          x: 36,
+          y: 46,
+          width: 8,
+          height: 8,
+          fill: "blue",
+          stroke: "blue",
+          strokeWidth: 0
+        }
+      }
+    ]
+  });
+```
+
+Collection child IDs are generated as `symbols:0`, `symbols:1`, and so on.
+Each child stores its own concrete primitive type. Shared properties such as
+`opacity` can then be broadcast to every compatible child. Layout/composition
+`container` nodes retain their separate string-reference child contract.
 
 `before` or `after` can place a new top-level graphic relative to an existing
 top-level graphic. They are mutually exclusive, the referenced graphic must
@@ -59,6 +94,19 @@ strings. Each point is a finite `{ x, y }` object. `path.strokeDash` and
 `line.strokeDash` accept non-negative finite number arrays; an empty array is a
 solid stroke.
 
+A path can be open and stroked or closed and filled. Filled paths require
+`closed: true`; their stroke is optional. When both fill and stroke are present,
+the Canvas renderer fills first and strokes second.
+
+```javascript
+program
+  .createGraphics({ id: "band", type: "path" })
+  .editGraphics({ target: "band", property: "points", value: polygon })
+  .editGraphics({ target: "band", property: "closed", value: true })
+  .editGraphics({ target: "band", property: "fill", value: "#111111" })
+  .editGraphics({ target: "band", property: "opacity", value: 0.18 });
+```
+
 The complete low-level line-chart example is available in
 [`carsLineChartPrimitives.js`](https://github.com/hj-n/ggaction/blob/main/test/programs/carsLineChartPrimitives.js).
 It explicitly authors semantic line state, paths, axes, a combined legend, and
@@ -76,8 +124,9 @@ program.editGraphics({
 });
 ```
 
-For a collection, an outer array distributes values by index and must match its
-length. A non-array value is broadcast. Nested arrays and objects remain one
+For a homogeneous or heterogeneous collection, an outer array distributes
+values by index and must match its length. A non-array value is broadcast to
+every child that supports the property. Nested arrays and objects remain one
 value per child. Generated child IDs such as `points:1` can be targeted.
 
 ## Scale materialization

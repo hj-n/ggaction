@@ -20,20 +20,32 @@ function drawPath(context, child, collectionId) {
     );
   }
 
-  const strokeWidth = requireFiniteProperty(
-    properties,
-    "strokeWidth",
-    graphicId
-  );
+  const closed = properties.closed ?? false;
+  if (typeof closed !== "boolean") {
+    throw new Error(`Graphic "${graphicId}" requires a boolean closed property.`);
+  }
+  const hasFill = properties.fill !== undefined;
+  const hasStroke = properties.stroke !== undefined;
+  if (!hasFill && !hasStroke) {
+    throw new Error(`Graphic "${graphicId}" requires a fill or stroke property.`);
+  }
+  if (hasFill && typeof properties.fill !== "string") {
+    throw new Error(`Graphic "${graphicId}" requires a string fill property.`);
+  }
+  if (hasFill && !closed) {
+    throw new Error(`Graphic "${graphicId}" requires closed: true when filled.`);
+  }
+  if (hasStroke && typeof properties.stroke !== "string") {
+    throw new Error(`Graphic "${graphicId}" requires a string stroke property.`);
+  }
 
-  if (strokeWidth < 0) {
+  const strokeWidth = hasStroke
+    ? requireFiniteProperty(properties, "strokeWidth", graphicId)
+    : undefined;
+  if (hasStroke && strokeWidth < 0) {
     throw new Error(
       `Graphic "${graphicId}" requires a non-negative strokeWidth.`
     );
-  }
-
-  if (typeof properties.stroke !== "string") {
-    throw new Error(`Graphic "${graphicId}" requires a string stroke property.`);
   }
 
   const strokeDash = properties.strokeDash ?? [];
@@ -51,10 +63,7 @@ function drawPath(context, child, collectionId) {
     throw new Error(`Graphic "${graphicId}" requires opacity from 0 to 1.`);
   }
 
-  context.strokeStyle = properties.stroke;
-  context.lineWidth = strokeWidth;
   context.globalAlpha = opacity;
-  context.setLineDash(strokeDash);
   context.beginPath();
   context.moveTo(points[0].x, points[0].y);
 
@@ -62,7 +71,17 @@ function drawPath(context, child, collectionId) {
     context.lineTo(point.x, point.y);
   }
 
-  context.stroke();
+  if (closed) context.closePath();
+  if (hasFill) {
+    context.fillStyle = properties.fill;
+    context.fill();
+  }
+  if (hasStroke) {
+    context.strokeStyle = properties.stroke;
+    context.lineWidth = strokeWidth;
+    context.setLineDash(strokeDash);
+    context.stroke();
+  }
 }
 
 export function drawPathGraphic(context, id, graphic) {

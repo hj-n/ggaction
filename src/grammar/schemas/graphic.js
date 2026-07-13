@@ -1,4 +1,14 @@
-const DRAWABLE_TYPES = new Set(["circle", "rect", "line", "text", "path"]);
+const PRIMITIVE_DRAWABLE_TYPES = new Set([
+  "circle",
+  "rect",
+  "line",
+  "text",
+  "path"
+]);
+const DRAWABLE_TYPES = new Set([
+  ...PRIMITIVE_DRAWABLE_TYPES,
+  "collection"
+]);
 const STRUCTURAL_TYPES = new Set(["canvas", "container"]);
 const GRAPHIC_PROPERTIES = Object.freeze({
   canvas: new Set(["width", "height", "background", "children"]),
@@ -11,6 +21,33 @@ const GRAPHIC_PROPERTIES = Object.freeze({
     "direction",
     "gap",
     "align"
+  ]),
+  collection: new Set([
+    "children",
+    "x",
+    "y",
+    "x1",
+    "y1",
+    "x2",
+    "y2",
+    "width",
+    "height",
+    "radius",
+    "fill",
+    "stroke",
+    "strokeWidth",
+    "strokeDash",
+    "fontSize",
+    "fontFamily",
+    "fontWeight",
+    "text",
+    "textAlign",
+    "textBaseline",
+    "rotation",
+    "points",
+    "closed",
+    "opacity",
+    "style"
   ]),
   circle: new Set([
     "x",
@@ -69,6 +106,7 @@ const GRAPHIC_PROPERTIES = Object.freeze({
     "stroke",
     "strokeWidth",
     "strokeDash",
+    "closed",
     "opacity",
     "style",
     "length"
@@ -85,6 +123,10 @@ export function validateGraphicType(type) {
 
 export function isDrawableGraphicType(type) {
   return DRAWABLE_TYPES.has(type);
+}
+
+export function isPrimitiveDrawableGraphicType(type) {
+  return PRIMITIVE_DRAWABLE_TYPES.has(type);
 }
 
 export function isStructuralGraphicType(type) {

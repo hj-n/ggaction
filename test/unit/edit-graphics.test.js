@@ -70,6 +70,118 @@ test("stores each outer array item intact and can target one child", () => {
   );
 });
 
+test("replaces heterogeneous children and broadcasts shared properties", () => {
+  const children = [
+    {
+      type: "circle",
+      properties: { x: 20, y: 30, radius: 4, fill: "red" }
+    },
+    {
+      type: "rect",
+      properties: {
+        x: 36,
+        y: 46,
+        width: 8,
+        height: 8,
+        fill: "blue",
+        stroke: "blue",
+        strokeWidth: 0
+      }
+    }
+  ];
+  const empty = chart().createGraphics({ id: "symbols", type: "collection" });
+  const populated = empty.editGraphics({
+    target: "symbols",
+    property: "children",
+    value: children
+  });
+  const faded = populated.editGraphics({
+    target: "symbols",
+    property: "opacity",
+    value: 0.4
+  });
+  const resized = faded.editGraphics({
+    target: "symbols:0",
+    property: "radius",
+    value: 6
+  });
+
+  children[0].properties.fill = "black";
+
+  assert.deepEqual(empty.graphicSpec.objects.symbols.children, []);
+  assert.deepEqual(
+    resized.graphicSpec.objects.symbols.children,
+    [
+      {
+        id: "symbols:0",
+        type: "circle",
+        properties: {
+          x: 20,
+          y: 30,
+          radius: 6,
+          fill: "red",
+          opacity: 0.4
+        }
+      },
+      {
+        id: "symbols:1",
+        type: "rect",
+        properties: {
+          x: 36,
+          y: 46,
+          width: 8,
+          height: 8,
+          fill: "blue",
+          stroke: "blue",
+          strokeWidth: 0,
+          opacity: 0.4
+        }
+      }
+    ]
+  );
+  assert.equal(populated.graphicSpec.objects.symbols.children[0].properties.radius, 4);
+});
+
+test("validates heterogeneous child types and type-specific properties", () => {
+  const collection = chart().createGraphics({
+    id: "symbols",
+    type: "collection"
+  });
+
+  for (const [children, message] of [
+    [[{ type: "container", properties: {} }], /primitive drawable type/],
+    [[{ type: "circle", properties: { width: 4 } }], /Unknown circle graphic property/],
+    [[{ type: "circle", properties: null }], /requires plain properties/],
+    [[{ type: "circle", properties: {}, id: "custom" }], /Unknown collection child property/]
+  ]) {
+    assert.throws(
+      () => collection.editGraphics({
+        target: "symbols",
+        property: "children",
+        value: children
+      }),
+      message
+    );
+  }
+
+  const populated = collection.editGraphics({
+    target: "symbols",
+    property: "children",
+    value: [
+      { type: "circle", properties: {} },
+      { type: "rect", properties: {} }
+    ]
+  });
+  assert.throws(
+    () => populated.editGraphics({
+      target: "symbols",
+      property: "radius",
+      value: 4
+    }),
+    /Unknown rect graphic property/
+  );
+});
+
 test("resizes a drawable collection while preserving existing children", () => {
   const onePoint = chart()
     .createGraphics({ id: "points", type: "circle", length: 1 })

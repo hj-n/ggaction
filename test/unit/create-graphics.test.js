@@ -34,6 +34,26 @@ test("creates a homogeneous drawable collection with generated child IDs", () =>
   });
 });
 
+test("creates an empty heterogeneous drawable collection", () => {
+  const program = chart().createGraphics({
+    id: "symbols",
+    type: "collection"
+  });
+
+  assert.deepEqual(program.graphicSpec.objects.symbols, {
+    type: "collection",
+    children: []
+  });
+  assert.throws(
+    () => chart().createGraphics({
+      id: "symbols",
+      type: "collection",
+      length: 2
+    }),
+    /use editGraphics children/
+  );
+});
+
 test("treats an equivalent repeated creation as idempotent", () => {
   const first = chart().createGraphics({
     id: "points",

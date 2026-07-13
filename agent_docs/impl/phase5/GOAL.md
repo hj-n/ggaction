@@ -13,7 +13,7 @@ band를 겹친 regression scatterplot을 구현한다.
 
 - [x] Chart contract와 Phase 실행 계획
 - [x] Regression 통계와 primitive expected values
-- [ ] Heterogeneous point와 filled path graphical foundation
+- [x] Heterogeneous point와 filled path graphical foundation
 - [ ] Primitive regression scatterplot baseline
 - [ ] Immutable derived-data filtering
 - [ ] Point size, shape, opacity encoding

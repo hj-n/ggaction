@@ -9,6 +9,13 @@ import { freezeOwned } from "../../core/immutable.js";
 const GRAPHIC_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
 
 function createGraphicDefinition({ id, type, length }) {
+  if (type === "collection" && length === undefined) {
+    return freezeOwned({
+      type,
+      children: freezeOwned([])
+    });
+  }
+
   if (length === undefined) {
     return freezeOwned({
       type,
@@ -35,7 +42,9 @@ function hasEquivalentGraphicDefinition(existing, { type, length }) {
   }
 
   if (length === undefined) {
-    return !Object.hasOwn(existing, "children");
+    return type === "collection"
+      ? existing.children?.length === 0
+      : !Object.hasOwn(existing, "children");
   }
 
   return existing.children?.length === length;
@@ -80,6 +89,12 @@ const createGraphics = action(
       (!Number.isInteger(length) || length < 0)
     ) {
       throw new TypeError("createGraphics length must be a non-negative integer.");
+    }
+
+    if (validatedType === "collection" && length !== undefined) {
+      throw new Error(
+        "Heterogeneous collections use editGraphics children instead of length."
+      );
     }
 
     if (length !== undefined && !isDrawableGraphicType(validatedType)) {

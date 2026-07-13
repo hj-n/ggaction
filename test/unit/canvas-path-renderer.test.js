@@ -89,6 +89,54 @@ test("applies and resets strokeDash on independent lines", () => {
   );
 });
 
+test("fills a closed path without requiring a stroke", () => {
+  const program = canvasProgram()
+    .createGraphics({ id: "band", type: "path" })
+    .editGraphics({
+      target: "band",
+      property: "points",
+      value: [
+        { x: 10, y: 80 },
+        { x: 70, y: 40 },
+        { x: 70, y: 60 },
+        { x: 10, y: 100 }
+      ]
+    })
+    .editGraphics({ target: "band", property: "closed", value: true })
+    .editGraphics({ target: "band", property: "fill", value: "#111111" })
+    .editGraphics({ target: "band", property: "opacity", value: 0.18 });
+  const context = createMockCanvasContext();
+
+  render(program, context);
+
+  assert.equal(findCanvasCalls(context, "closePath").length, 1);
+  assert.equal(findCanvasCalls(context, "fill").at(-1).fillStyle, "#111111");
+  assert.equal(findCanvasCalls(context, "fill").at(-1).globalAlpha, 0.18);
+  assert.equal(findCanvasCalls(context, "stroke").length, 0);
+});
+
+test("fills then strokes a closed path", () => {
+  const program = canvasProgram()
+    .createGraphics({ id: "area", type: "path" })
+    .editGraphics({
+      target: "area",
+      property: "points",
+      value: [{ x: 10, y: 80 }, { x: 80, y: 30 }, { x: 80, y: 90 }]
+    })
+    .editGraphics({ target: "area", property: "closed", value: true })
+    .editGraphics({ target: "area", property: "fill", value: "pink" })
+    .editGraphics({ target: "area", property: "stroke", value: "red" })
+    .editGraphics({ target: "area", property: "strokeWidth", value: 2 });
+  const context = createMockCanvasContext();
+
+  render(program, context);
+
+  const appearanceCalls = context.calls
+    .map(call => call.op)
+    .filter(op => op === "fill" || op === "stroke");
+  assert.deepEqual(appearanceCalls, ["fill", "stroke"]);
+});
+
 test("rejects invalid primitive and incomplete rendered paths", () => {
   const paths = canvasProgram().createGraphics({
     id: "trends",
@@ -115,5 +163,32 @@ test("rejects invalid primitive and incomplete rendered paths", () => {
   assert.throws(
     () => render(paths, createMockCanvasContext()),
     /requires at least two finite path points/
+  );
+
+  const noAppearance = paths
+    .editGraphics({
+      target: "trends",
+      property: "points",
+      value: [[{ x: 1, y: 2 }, { x: 3, y: 4 }]]
+    });
+  assert.throws(
+    () => render(noAppearance, createMockCanvasContext()),
+    /requires a fill or stroke/
+  );
+
+  const openFill = noAppearance
+    .editGraphics({ target: "trends", property: "fill", value: "red" });
+  assert.throws(
+    () => render(openFill, createMockCanvasContext()),
+    /requires closed: true when filled/
+  );
+
+  assert.throws(
+    () => noAppearance.editGraphics({
+      target: "trends",
+      property: "closed",
+      value: "yes"
+    }),
+    /closed must be a boolean/
   );
 });

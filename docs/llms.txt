@@ -62,6 +62,10 @@ and language models.
 - There is no automatic semantic-to-graphic compiler.
 - Domain actions explicitly invoke every required graphical materialization.
 - Renderers read graphicSpec only; they do not infer from semanticSpec.
+- Primitive graphics support heterogeneous drawable collections whose children
+  each carry a concrete circle, rect, line, text, or path type.
+- Backend-neutral paths may be open/stroked or `closed: true` and filled; a
+  closed path may combine fill and stroke.
 - Nested wrapped actions form the hierarchical trace.
 - Positional encodings create and attach coordinates; guide actions only read them.
 - encodeRadius is fixed circle appearance, not a Polar radial encoding.

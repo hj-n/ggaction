@@ -107,6 +107,10 @@ export function createMockCanvasContext() {
       calls.push({ op: "beginPath" });
     },
 
+    closePath() {
+      calls.push({ op: "closePath" });
+    },
+
     arc(...args) {
       calls.push({ op: "arc", args });
     },

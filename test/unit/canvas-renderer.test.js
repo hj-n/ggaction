@@ -63,6 +63,51 @@ test("renders a concrete canvas and circle collection", () => {
   );
 });
 
+test("renders concrete children from a heterogeneous drawable collection", () => {
+  const graphicSpec = createGraphicSpec();
+  graphicSpec.objects.symbols = {
+    type: "collection",
+    children: [
+      {
+        id: "symbols:0",
+        type: "circle",
+        properties: { x: 15, y: 25, radius: 5, fill: "purple" }
+      },
+      {
+        id: "symbols:1",
+        type: "rect",
+        properties: {
+          x: 40,
+          y: 30,
+          width: 10,
+          height: 12,
+          fill: "orange",
+          stroke: "orange",
+          strokeWidth: 0
+        }
+      }
+    ]
+  };
+  graphicSpec.order.push("symbols");
+  const context = createMockCanvasContext();
+
+  render({ graphicSpec }, context);
+
+  assert.deepEqual(findCanvasCalls(context, "arc").at(-1).args, [
+    15,
+    25,
+    5,
+    0,
+    Math.PI * 2
+  ]);
+  assert.deepEqual(findCanvasCalls(context, "fillRect").at(-1).args, [
+    40,
+    30,
+    10,
+    12
+  ]);
+});
+
 test("reads only graphicSpec from the supplied program", () => {
   const program = {
     graphicSpec: createGraphicSpec(),

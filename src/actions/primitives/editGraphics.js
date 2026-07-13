@@ -1,6 +1,8 @@
 import { action } from "../../core/action.js";
 import {
   isStructuralGraphicType,
+  isPrimitiveDrawableGraphicType,
+  validateGraphicType,
   validateGraphicProperty
 } from "../../grammar/schemas/graphic.js";
 import { cloneAndFreeze, freezeOwned, isPlainObject } from "../../core/immutable.js";
@@ -65,6 +67,10 @@ function validateConcreteGraphicValue(type, property, value) {
     throw new RangeError(`${type}.opacity must be between 0 and 1.`);
   }
 
+  if (property === "closed" && typeof value !== "boolean") {
+    throw new TypeError(`${type}.closed must be a boolean.`);
+  }
+
   if (property === "strokeDash") {
     if (
       !Array.isArray(value) ||
@@ -94,10 +100,62 @@ function validateConcreteGraphicValue(type, property, value) {
   }
 }
 
+function validateCollectionChild(child, collectionId, index) {
+  if (!isPlainObject(child)) {
+    throw new TypeError(
+      `collection.children[${index}] must be a plain object.`
+    );
+  }
+
+  const unknown = Object.keys(child).find(
+    key => !["type", "properties"].includes(key)
+  );
+  if (unknown !== undefined) {
+    throw new Error(
+      `Unknown collection child property "${unknown}".`
+    );
+  }
+
+  const type = validateGraphicType(child.type);
+  if (!isPrimitiveDrawableGraphicType(type)) {
+    throw new Error(
+      `Collection child "${collectionId}:${index}" requires a primitive drawable type.`
+    );
+  }
+  if (!isPlainObject(child.properties)) {
+    throw new TypeError(
+      `Collection child "${collectionId}:${index}" requires plain properties.`
+    );
+  }
+
+  for (const [property, value] of Object.entries(child.properties)) {
+    validateGraphicProperty(type, property);
+    validateConcreteGraphicValue(type, property, value);
+  }
+
+  return freezeOwned({
+    id: `${collectionId}:${index}`,
+    type,
+    properties: cloneAndFreeze(child.properties)
+  });
+}
+
+function replaceCollectionChildren(value, id) {
+  if (!Array.isArray(value)) {
+    throw new TypeError("collection.children must be an array.");
+  }
+
+  return freezeOwned(value.map(
+    (child, index) => validateCollectionChild(child, id, index)
+  ));
+}
+
 function editDirectChild(object, childIndex, property, value) {
-  validateConcreteGraphicValue(object.type, property, value);
   const children = [...object.children];
   const child = children[childIndex];
+  const type = child.type ?? object.type;
+  validateGraphicProperty(type, property);
+  validateConcreteGraphicValue(type, property, value);
   children[childIndex] = freezeOwned({
     ...child,
     properties: setGraphicProperty(child.properties, property, value)
@@ -107,6 +165,13 @@ function editDirectChild(object, childIndex, property, value) {
 }
 
 function editGraphicCollection(object, property, value, id) {
+  if (object.type === "collection" && property === "children") {
+    return freezeOwned({
+      ...object,
+      children: replaceCollectionChildren(value, id)
+    });
+  }
+
   if (property === "length") {
     if (!Number.isInteger(value) || value < 0) {
       throw new TypeError("Graphic collection length must be a non-negative integer.");
@@ -115,6 +180,11 @@ function editGraphicCollection(object, property, value, id) {
     const children = object.children.slice(0, value);
 
     for (let index = children.length; index < value; index += 1) {
+      if (object.type === "collection") {
+        throw new Error(
+          "A heterogeneous collection can only grow by replacing its children."
+        );
+      }
       children.push(
         freezeOwned({
           id: `${id}:${index}`,
@@ -134,7 +204,9 @@ function editGraphicCollection(object, property, value, id) {
 
   const children = object.children.map((child, index) => {
     const childValue = Array.isArray(value) ? value[index] : value;
-    validateConcreteGraphicValue(object.type, property, childValue);
+    const type = child.type ?? object.type;
+    validateGraphicProperty(type, property);
+    validateConcreteGraphicValue(type, property, childValue);
 
     return freezeOwned({
       ...child,

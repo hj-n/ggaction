@@ -36,7 +36,7 @@ chart-authoring API does not support that combination.
 | Guides | Automatic axes, horizontal/vertical Cartesian grids, and categorical legends |
 | Titles | One plot-aligned top title with one optional single-line subtitle |
 | Rendering | Browser Canvas and Node PNG |
-| Graphics | Concrete canvas, circle, line, rect, text, and point-array path nodes |
+| Graphics | Concrete canvas, circle, line, rect, text, open/closed point-array paths, and heterogeneous drawable collections |
 
 ## Current limitations
 

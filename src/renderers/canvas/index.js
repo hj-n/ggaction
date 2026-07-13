@@ -12,6 +12,7 @@ function requireCanvasContext(context) {
     "clearRect",
     "fillRect",
     "beginPath",
+    "closePath",
     "arc",
     "fill",
     "moveTo",
@@ -109,21 +110,29 @@ export function render(program, context, { pixelRatio = 1 } = {}) {
         throw new Error(`Unknown ordered graphic "${id}".`);
       }
 
-      if (graphic.type === "circle") {
-        drawCircleGraphic(context, id, graphic);
-      } else if (graphic.type === "rect") {
-        drawRectGraphic(context, id, graphic);
-      } else if (graphic.type === "line") {
-        drawLineGraphic(context, id, graphic);
-      } else if (graphic.type === "text") {
-        drawTextGraphic(context, id, graphic);
-      } else if (graphic.type === "path") {
-        drawPathGraphic(context, id, graphic);
-      } else {
-        throw new Error(`Canvas renderer does not support "${graphic.type}" yet.`);
-      }
+      drawConcreteGraphic(context, id, graphic);
     }
   } finally {
     context.restore();
+  }
+}
+
+function drawConcreteGraphic(context, id, graphic) {
+  if (graphic.type === "collection") {
+    for (const child of graphic.children ?? []) {
+      drawConcreteGraphic(context, child.id ?? id, child);
+    }
+  } else if (graphic.type === "circle") {
+    drawCircleGraphic(context, id, graphic);
+  } else if (graphic.type === "rect") {
+    drawRectGraphic(context, id, graphic);
+  } else if (graphic.type === "line") {
+    drawLineGraphic(context, id, graphic);
+  } else if (graphic.type === "text") {
+    drawTextGraphic(context, id, graphic);
+  } else if (graphic.type === "path") {
+    drawPathGraphic(context, id, graphic);
+  } else {
+    throw new Error(`Canvas renderer does not support "${graphic.type}" yet.`);
   }
 }
