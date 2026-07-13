@@ -194,6 +194,7 @@ export function createJobsGroupedBarPrimitives(jobs) {
     .editGraphics({ target: "xAxisTitle", property: "fontWeight", value: 600 })
     .editGraphics({ target: "xAxisTitle", property: "textAlign", value: "center" })
     .editGraphics({ target: "xAxisTitle", property: "textBaseline", value: "middle" })
+    .editGraphics({ target: "xAxisTitle", property: "rotation", value: xAxis.title.rotation })
     .createGraphics({ id: "yAxisLine", type: "line" })
     .editGraphics({ target: "yAxisLine", property: "x1", value: yAxis.line.x1 })
     .editGraphics({ target: "yAxisLine", property: "y1", value: yAxis.line.y1 })

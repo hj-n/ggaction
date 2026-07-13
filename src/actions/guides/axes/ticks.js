@@ -1,6 +1,9 @@
 import { action } from "../../../core/action.js";
 import { validateUserId } from "../../../core/identifiers.js";
-import { mapLinearValues } from "../../../grammar/scales.js";
+import {
+  mapLinearValues,
+  mapOrdinalPositionValues
+} from "../../../grammar/scales.js";
 import {
   DEFAULT_TICK_COUNT,
   inferHistogramBoundaries,
@@ -19,7 +22,14 @@ function validateConfig(channel, config) {
   const position = channel === "x" ? "bottom" : "left";
   if (config.position !== position) throw new Error(`Unsupported ${channel}-axis position "${config.position}".`);
   if (config.mode === "count" && (!Number.isInteger(config.count) || config.count <= 0)) throw new RangeError("Tick count must be a positive integer.");
-  if (config.mode === "values" && (!Array.isArray(config.values) || !config.values.every(Number.isFinite))) throw new TypeError("Tick values must be finite numbers.");
+  if (
+    config.mode === "values" &&
+    (!Array.isArray(config.values) || !config.values.every(value =>
+      typeof value === "string" ||
+      typeof value === "boolean" ||
+      (typeof value === "number" && Number.isFinite(value))
+    ))
+  ) throw new TypeError("Tick values must be nominal values or finite numbers.");
   if (!Number.isFinite(config.length) || config.length < 0) throw new RangeError("Tick length must be non-negative.");
   if (!Number.isFinite(config.lineWidth) || config.lineWidth < 0) throw new RangeError("Tick lineWidth must be non-negative.");
   if (typeof config.color !== "string" || !config.color.length) throw new TypeError("Tick color must be non-empty.");
@@ -28,12 +38,21 @@ function validateConfig(channel, config) {
 function geometry(program, channel, config) {
   const scale = program.resolvedScales[config.scale];
   const bounds = program.context.currentGraphicBounds;
-  if (!["linear", "time"].includes(scale?.type) || !bounds) throw new Error("Axis ticks require a resolved continuous scale and Canvas bounds.");
+  if (!["linear", "time", "ordinal"].includes(scale?.type) || !bounds) throw new Error("Axis ticks require a supported resolved scale and Canvas bounds.");
+  if (scale.type === "ordinal" && channel !== "x") throw new Error("Ordinal axis ticks currently require the x channel.");
+  if (scale.type === "ordinal" && config.mode !== "values") throw new Error("Ordinal axis ticks require explicit or inferred values, not count.");
   const domain = scale.domain;
   const values = valuesFromTickConfig(program, config);
-  const low = Math.min(...domain), high = Math.max(...domain);
-  if (!values.every(value => value >= low && value <= high)) throw new RangeError("Tick values must be inside the scale domain.");
-  const positions = mapLinearValues(values, domain, scale.range);
+  if (scale.type === "ordinal") {
+    const domainValues = new Set(domain);
+    if (!values.every(value => domainValues.has(value))) throw new RangeError("Tick values must be inside the scale domain.");
+  } else {
+    const low = Math.min(...domain), high = Math.max(...domain);
+    if (!values.every(value => value >= low && value <= high)) throw new RangeError("Tick values must be inside the scale domain.");
+  }
+  const positions = scale.type === "ordinal"
+    ? mapOrdinalPositionValues(values, scale)
+    : mapLinearValues(values, domain, scale.range);
   const baseline = channel === "x" ? bounds.y + bounds.height : bounds.x;
   return channel === "x"
     ? { values, x1: positions, y1: baseline, x2: positions, y2: baseline + config.length }
@@ -71,10 +90,13 @@ function makeCreate(channel) {
     if (existingGuide && existingGuide !== scale) throw new Error(`${op} conflicts with the existing axis scale.`);
     const id = `${channel}AxisTicks`;
     if (this.graphicSpec.objects[id]) throw new Error(`${op} requires missing axis ticks.`);
+    const resolvedScale = this.resolvedScales[scale];
     const inferredValues =
       Object.hasOwn(args, "count") || Object.hasOwn(args, "values")
         ? undefined
-        : inferHistogramBoundaries(this, channel, scale);
+        : resolvedScale?.type === "ordinal"
+          ? resolvedScale.domain
+          : inferHistogramBoundaries(this, channel, scale);
     const options =
       inferredValues === undefined ? args : { ...args, values: inferredValues };
     const config = { scale, position: channel === "x" ? "bottom" : "left", length: DEFAULTS.length, color: DEFAULTS.color, lineWidth: DEFAULTS.lineWidth, ...options, mode: Object.hasOwn(options, "values") ? "values" : "count" };

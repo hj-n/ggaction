@@ -48,7 +48,7 @@ chart()
 - [x] Internal `encodeXOffset`
 - [x] Band-based `encodeBarWidth`
 - [x] Grouped/stacked bar materialization
-- [ ] Ordinal x axis
+- [x] Ordinal x axis
 - [ ] Grouped bar legend
 - [ ] `createGuides` integration
 - [ ] Browser example, tutorial, PNG regression

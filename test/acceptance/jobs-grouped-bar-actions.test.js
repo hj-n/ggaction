@@ -41,6 +41,7 @@ test("authors grouped bar encoding semantics through chart actions", () => {
   assert.equal(actionOps.includes("encodeX"), true);
   assert.equal(actionOps.includes("encodeY"), true);
   assert.equal(actionOps.includes("encodeBarWidth"), true);
+  assert.equal(actionOps.includes("createXAxis"), true);
   const colorNode = program.trace.children.find(child => child.op === "encodeColor");
   assert.equal(
     colorNode.children.some(child => child.op === "encodeXOffset"),
@@ -66,6 +67,11 @@ test("authors grouped bar encoding semantics through chart actions", () => {
   ), false);
   assert.equal(program.trace.children.some(child =>
     child.op === "editGraphics" && child.args.target === "bars"
+  ), false);
+  assert.equal(program.trace.children.some(child =>
+    child.op === "createGraphics" && [
+      "xAxisLine", "xAxisTicks", "xAxisLabels", "xAxisTitle"
+    ].includes(child.args.id)
   ), false);
   assert.deepEqual(program.markConfigs.bars, { barWidth: { band: 0.72 } });
   assert.equal(program.graphicSpec.objects.bars.children.length, 30);

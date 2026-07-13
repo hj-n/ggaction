@@ -12,8 +12,7 @@ export function createJobsGroupedBarActions(jobs) {
     margin,
     band: 0.72
   });
-  const { x: xAxis, y: yAxis } = values.axes;
-  const xTickPositions = xAxis.ticks.map(tick => tick.position);
+  const { y: yAxis } = values.axes;
   const yTickPositions = yAxis.ticks.map(tick => tick.position);
   const horizontalGrid = values.grid.horizontal;
   const legendItems = values.legend.items;
@@ -34,9 +33,11 @@ export function createJobsGroupedBarActions(jobs) {
       scale: { palette: "tableau10" }
     })
     .encodeBarWidth({ band: 0.72 })
-    .editSemantic({ property: "guide.axis.x.scale", value: "x" })
-    .editSemantic({ property: "guide.axis.x.coordinate", value: "main" })
-    .editSemantic({ property: "guide.axis.x.title", value: "year" })
+    .createXAxis({
+      coordinate: "main",
+      ticksAndLabels: { labels: { fontSize: 11 } },
+      title: { offset: 50 }
+    })
     .editSemantic({ property: "guide.axis.y.scale", value: "y" })
     .editSemantic({ property: "guide.axis.y.coordinate", value: "main" })
     .editSemantic({ property: "guide.axis.y.title", value: "mean(perc)" })
@@ -83,44 +84,6 @@ export function createJobsGroupedBarActions(jobs) {
       property: "strokeWidth",
       value: 1
     })
-    .createGraphics({ id: "xAxisLine", type: "line" })
-    .editGraphics({ target: "xAxisLine", property: "x1", value: xAxis.line.x1 })
-    .editGraphics({ target: "xAxisLine", property: "y1", value: xAxis.line.y1 })
-    .editGraphics({ target: "xAxisLine", property: "x2", value: xAxis.line.x2 })
-    .editGraphics({ target: "xAxisLine", property: "y2", value: xAxis.line.y2 })
-    .editGraphics({ target: "xAxisLine", property: "stroke", value: "#334155" })
-    .editGraphics({ target: "xAxisLine", property: "strokeWidth", value: 1 })
-    .createGraphics({ id: "xAxisTicks", type: "line", length: xAxis.ticks.length })
-    .editGraphics({ target: "xAxisTicks", property: "x1", value: xTickPositions })
-    .editGraphics({ target: "xAxisTicks", property: "y1", value: xAxis.line.y1 })
-    .editGraphics({ target: "xAxisTicks", property: "x2", value: xTickPositions })
-    .editGraphics({ target: "xAxisTicks", property: "y2", value: xAxis.line.y1 + 6 })
-    .editGraphics({ target: "xAxisTicks", property: "stroke", value: "#64748b" })
-    .editGraphics({ target: "xAxisTicks", property: "strokeWidth", value: 1 })
-    .createGraphics({ id: "xAxisLabels", type: "text", length: xAxis.ticks.length })
-    .editGraphics({ target: "xAxisLabels", property: "x", value: xTickPositions })
-    .editGraphics({ target: "xAxisLabels", property: "y", value: xAxis.line.y1 + 18 })
-    .editGraphics({
-      target: "xAxisLabels",
-      property: "text",
-      value: xAxis.ticks.map(tick => tick.label)
-    })
-    .editGraphics({ target: "xAxisLabels", property: "fill", value: "#334155" })
-    .editGraphics({ target: "xAxisLabels", property: "fontSize", value: 11 })
-    .editGraphics({ target: "xAxisLabels", property: "fontFamily", value: "sans-serif" })
-    .editGraphics({ target: "xAxisLabels", property: "fontWeight", value: "normal" })
-    .editGraphics({ target: "xAxisLabels", property: "textAlign", value: "center" })
-    .editGraphics({ target: "xAxisLabels", property: "textBaseline", value: "top" })
-    .createGraphics({ id: "xAxisTitle", type: "text" })
-    .editGraphics({ target: "xAxisTitle", property: "x", value: xAxis.title.x })
-    .editGraphics({ target: "xAxisTitle", property: "y", value: xAxis.title.y })
-    .editGraphics({ target: "xAxisTitle", property: "text", value: xAxis.title.text })
-    .editGraphics({ target: "xAxisTitle", property: "fill", value: "#334155" })
-    .editGraphics({ target: "xAxisTitle", property: "fontSize", value: 13 })
-    .editGraphics({ target: "xAxisTitle", property: "fontFamily", value: "sans-serif" })
-    .editGraphics({ target: "xAxisTitle", property: "fontWeight", value: 600 })
-    .editGraphics({ target: "xAxisTitle", property: "textAlign", value: "center" })
-    .editGraphics({ target: "xAxisTitle", property: "textBaseline", value: "middle" })
     .createGraphics({ id: "yAxisLine", type: "line" })
     .editGraphics({ target: "yAxisLine", property: "x1", value: yAxis.line.x1 })
     .editGraphics({ target: "yAxisLine", property: "y1", value: yAxis.line.y1 })

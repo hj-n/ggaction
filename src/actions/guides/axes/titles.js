@@ -1,6 +1,9 @@
 import { action } from "../../../core/action.js";
 import { validateUserId } from "../../../core/identifiers.js";
-import { mapLinearValues } from "../../../grammar/scales.js";
+import {
+  mapLinearValues,
+  mapOrdinalPositionValues
+} from "../../../grammar/scales.js";
 
 const CREATE_OPTIONS = Object.freeze([
   "text", "scale", "position", "at", "offset", "rotation", "color",
@@ -64,15 +67,21 @@ function inferText(program, channel, scaleId) {
 function resolveGeometry(program, channel, config) {
   const scale = program.resolvedScales[config.scale];
   const bounds = program.context.currentGraphicBounds;
-  if (!["linear", "time"].includes(scale?.type) || !bounds) throw new Error("Axis title requires a resolved continuous scale and Canvas bounds.");
+  if (!["linear", "time", "ordinal"].includes(scale?.type) || !bounds) throw new Error("Axis title requires a supported resolved scale and Canvas bounds.");
+  if (scale.type === "ordinal" && channel !== "x") throw new Error("Ordinal axis title currently requires the x channel.");
   let along;
   if (config.at === "start") along = scale.range[0];
   else if (config.at === "center") along = (scale.range[0] + scale.range[1]) / 2;
   else if (config.at === "end") along = scale.range[1];
   else {
-    const low = Math.min(...scale.domain), high = Math.max(...scale.domain);
-    if (config.at < low || config.at > high) throw new RangeError("Axis title at value must be inside the scale domain.");
-    along = mapLinearValues([config.at], scale.domain, scale.range)[0];
+    if (scale.type === "ordinal") {
+      if (!scale.domain.includes(config.at)) throw new RangeError("Axis title at value must be inside the scale domain.");
+      along = mapOrdinalPositionValues([config.at], scale)[0];
+    } else {
+      const low = Math.min(...scale.domain), high = Math.max(...scale.domain);
+      if (config.at < low || config.at > high) throw new RangeError("Axis title at value must be inside the scale domain.");
+      along = mapLinearValues([config.at], scale.domain, scale.range)[0];
+    }
   }
   return channel === "x"
     ? { x: along, y: bounds.y + bounds.height + config.offset }

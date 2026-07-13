@@ -1,6 +1,9 @@
 import { action } from "../../../core/action.js";
 import { validateUserId } from "../../../core/identifiers.js";
-import { mapLinearValues } from "../../../grammar/scales.js";
+import {
+  mapLinearValues,
+  mapOrdinalPositionValues
+} from "../../../grammar/scales.js";
 import { formatTimeTick, niceTicks, timeTicks } from "../../../grammar/ticks.js";
 
 const OPTIONS = Object.freeze([
@@ -31,7 +34,14 @@ function validateConfig(channel, config) {
   const supported = channel === "x" ? "bottom" : "left";
   if (config.position !== supported) throw new Error(`Unsupported ${channel}-axis position "${config.position}".`);
   if (config.mode === "count" && (!Number.isInteger(config.count) || config.count <= 0)) throw new RangeError("Label count must be a positive integer.");
-  if (config.mode === "values" && (!Array.isArray(config.values) || !config.values.every(Number.isFinite))) throw new TypeError("Label values must be finite numbers.");
+  if (
+    config.mode === "values" &&
+    (!Array.isArray(config.values) || !config.values.every(value =>
+      typeof value === "string" ||
+      typeof value === "boolean" ||
+      (typeof value === "number" && Number.isFinite(value))
+    ))
+  ) throw new TypeError("Label values must be nominal values or finite numbers.");
   if (!Number.isFinite(config.offset) || config.offset < 0) throw new RangeError("Label offset must be non-negative.");
   if (!Number.isFinite(config.fontSize) || config.fontSize <= 0) throw new RangeError("Label fontSize must be positive.");
   if (typeof config.color !== "string" || !config.color.length) throw new TypeError("Label color must be non-empty.");
@@ -54,20 +64,30 @@ function assertTickCompatibility(ticks, config, operation) {
 function resolve(program, channel, config) {
   const scale = program.resolvedScales[config.scale];
   const bounds = program.context.currentGraphicBounds;
-  if (!["linear", "time"].includes(scale?.type) || !bounds) throw new Error("Axis labels require a resolved continuous scale and Canvas bounds.");
+  if (!["linear", "time", "ordinal"].includes(scale?.type) || !bounds) throw new Error("Axis labels require a supported resolved scale and Canvas bounds.");
+  if (scale.type === "ordinal" && channel !== "x") throw new Error("Ordinal axis labels currently require the x channel.");
+  if (scale.type === "ordinal" && config.mode !== "values") throw new Error("Ordinal axis labels require explicit or inferred values, not count.");
   if (scale.type === "time" && config.format !== "auto") throw new Error('Time axis labels currently require format "auto".');
+  if (scale.type === "ordinal" && config.format !== "auto") throw new Error('Ordinal axis labels currently require format "auto".');
   const values = config.mode === "values"
     ? config.values
     : scale.type === "time"
       ? timeTicks(scale.domain, config.count)
       : niceTicks(scale.domain, config.count);
-  const low = Math.min(...scale.domain), high = Math.max(...scale.domain);
-  if (!values.every(value => value >= low && value <= high)) throw new RangeError("Label values must be inside the scale domain.");
-  const positions = mapLinearValues(values, scale.domain, scale.range);
+  if (scale.type === "ordinal") {
+    const domainValues = new Set(scale.domain);
+    if (!values.every(value => domainValues.has(value))) throw new RangeError("Label values must be inside the scale domain.");
+  } else {
+    const low = Math.min(...scale.domain), high = Math.max(...scale.domain);
+    if (!values.every(value => value >= low && value <= high)) throw new RangeError("Label values must be inside the scale domain.");
+  }
+  const positions = scale.type === "ordinal"
+    ? mapOrdinalPositionValues(values, scale)
+    : mapLinearValues(values, scale.domain, scale.range);
   const text = values.map(value =>
     scale.type === "time"
       ? formatTimeTick(value, scale.domain)
-      : config.format === "auto"
+      : scale.type === "ordinal" || config.format === "auto"
         ? String(value)
         : value.toFixed(config.format.decimals)
   );
