@@ -6,7 +6,9 @@ import { fileURLToPath } from "node:url";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 import { renderToPNG } from "ggaction/png";
 
-const outputDirectory = fileURLToPath(new URL("../output/", import.meta.url));
+const outputDirectory = fileURLToPath(
+  new URL("../../.artifacts/test/png/", import.meta.url)
+);
 const signature = [137, 80, 78, 71, 13, 10, 26, 10];
 
 function parseHex(color) {
