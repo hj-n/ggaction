@@ -25,7 +25,7 @@ export function createCarsHistogram(cars) {
       field: "Origin",
       scale: { palette: "tableau10" }
     })
-    .createGuides()
+    .createGuides({ legend: { position: "bottom" } })
     .createTitle({
       text: "Displacement distribution",
       subtitle: "by country",

@@ -155,7 +155,7 @@ test("automatically selects a histogram color legend", () => {
     .createCanvas({
       width: 432,
       height: 460,
-      margin: { top: 80, right: 60, bottom: 130, left: 80 }
+      margin: { top: 80, right: 140, bottom: 130, left: 80 }
     })
     .createData({
       id: "cars",

@@ -14,29 +14,30 @@ color-grouped histogram, and grouped ordinal-bar legends.
 program.createLegend();
 ~~~
 
-Defaults depend on the selected mark:
+Every categorical legend uses the same right-side default:
 
 | Mark | Channels | Position | Symbol |
 | --- | --- | --- | --- |
 | line | encoded `color` and/or `strokeDash` | `right` | line |
-| bar histogram | `color` | `bottom`, centered | swatch |
+| bar histogram | `color` | `right` | swatch |
 | grouped ordinal bar | `color` | `right` | swatch |
 
 | Option | Type | Default |
 | --- | --- | --- |
 | `target` | compatible mark ID | current or unique compatible mark |
 | `channels` | unique categorical channel array | compatible encoded channels |
-| `position` | `"right"` or `"bottom"` | inferred from mark |
+| `position` | `"right"` or `"bottom"` | `"right"` |
 | `align` | `"left"`, `"center"`, or `"right"` | `"center"` |
 | `title` | non-empty string | encoded field name |
 | `symbol` | `"auto"`, shorthand object, or layered recipe | inferred from mark |
 | `labels` | label style object | default sans-serif label style |
 | `titleStyle` | title style object | default sans-serif title style |
-| `itemGap` | positive number | `28` for right legends, `20` for histogram |
+| `itemGap` | positive number | `28` at right, `20` at bottom |
 | `border` | boolean or border style object | `false` |
 
-Current line and grouped-bar legends support right position. Histogram legends
-support bottom position and can use left, center, or right alignment.
+Pass `position: "bottom"` explicitly for a horizontal legend. Bottom legends
+can use left, center, or right alignment; right legends require center
+alignment.
 
 ## Layered symbols
 

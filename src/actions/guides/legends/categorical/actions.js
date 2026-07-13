@@ -31,17 +31,7 @@ export const createCategoricalLegend = action(
   function (args = {}) {
     const layer = resolveTarget(this, args.target);
     const kind = layer.mark.type === "bar" ? "color" : "series";
-    const groupedBar =
-      layer.mark.type === "bar" &&
-      layer.encoding?.x?.fieldType === "ordinal" &&
-      layer.encoding?.y?.aggregate === "mean" &&
-      layer.encoding.y.stack === null &&
-      layer.encoding?.xOffset?.field === layer.encoding?.color?.field;
-    const options = normalizeOptions(
-      args,
-      kind,
-      groupedBar ? "right" : undefined
-    );
+    const options = normalizeOptions(args, kind);
     if (
       this.semanticSpec.guides.legend?.series !== undefined ||
       this.semanticSpec.guides.legend?.color !== undefined

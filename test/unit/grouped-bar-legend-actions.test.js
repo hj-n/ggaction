@@ -77,7 +77,7 @@ test("rematerializes grouped legend layout after Canvas edits", () => {
   );
 });
 
-test("supports grouped legend appearance and validates its placement", () => {
+test("supports grouped legend appearance and explicit bottom placement", () => {
   const bordered = groupedBars().createLegend({
     symbol: { width: 16, height: 10 },
     border: { background: "white", padding: 8 }
@@ -92,8 +92,9 @@ test("supports grouped legend appearance and validates its placement", () => {
       bordered.graphicSpec.order.indexOf("colorLegendSymbols"),
     true
   );
-  assert.throws(
-    () => groupedBars().createLegend({ position: "bottom" }),
-    /Unsupported legend position/
+  const bottom = groupedBars().createLegend({ position: "bottom" });
+  assert.equal(
+    bottom.graphicSpec.objects.colorLegendTitle.properties.y,
+    408
   );
 });

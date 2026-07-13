@@ -15,7 +15,7 @@ function histogram() {
     .createCanvas({
       width: 432,
       height: 460,
-      margin: { top: 80, right: 60, bottom: 130, left: 80 }
+      margin: { top: 80, right: 140, bottom: 60, left: 80 }
     })
     .createData({ id: "cars", values: rows })
     .createBarMark({ id: "bars" })
@@ -23,7 +23,7 @@ function histogram() {
     .encodeColor({ field: "origin", scale: { palette: "tableau10" } });
 }
 
-test("creates an inferred bottom-centered histogram color legend", () => {
+test("creates an inferred right-side histogram color legend", () => {
   const before = histogram();
   const program = before.createLegend();
   const symbols = program.graphicSpec.objects.colorLegendSymbols.children;
@@ -41,10 +41,14 @@ test("creates an inferred bottom-centered histogram color legend", () => {
     labels.map(child => child.properties.text),
     ["USA", "Europe", "Japan"]
   );
-  assert.equal(program.graphicSpec.objects.colorLegendTitle.properties.x, 216);
-  assert.equal(program.graphicSpec.objects.colorLegendTitle.properties.y, 408);
-  assert.equal(symbols.every(child => child.properties.y === 426), true);
-  assert.equal(labels.every(child => child.properties.y === 432), true);
+  assert.equal(program.graphicSpec.objects.colorLegendTitle.properties.x, 322);
+  assert.equal(program.graphicSpec.objects.colorLegendTitle.properties.y, 100);
+  assert.equal(symbols.every((child, index) =>
+    child.properties.y === 126 + index * 28
+  ), true);
+  assert.equal(labels.every((child, index) =>
+    child.properties.y === 132 + index * 28
+  ), true);
   assert.equal(program.graphicSpec.objects.colorLegendBackground, undefined);
   assert.equal(before.semanticSpec.guides.legend, undefined);
 
@@ -66,6 +70,7 @@ test("creates an inferred bottom-centered histogram color legend", () => {
 
 test("supports explicit bottom layout, swatch style, and border", () => {
   const program = histogram().createLegend({
+    position: "bottom",
     align: "left",
     symbol: {
       width: 16,
@@ -88,7 +93,7 @@ test("supports explicit bottom layout, swatch style, and border", () => {
   );
 });
 
-test("rematerializes histogram legend after Canvas and domain changes", () => {
+test("rematerializes a right histogram legend after Canvas and domain changes", () => {
   const before = histogram().createLegend();
   const resized = before.editCanvas({ width: 500, height: 500 });
   const color = resized.resolvedScales.color;
@@ -100,10 +105,7 @@ test("rematerializes histogram legend after Canvas and domain changes", () => {
     resized.graphicSpec.objects.colorLegendSymbols.children[0].properties.x,
     before.graphicSpec.objects.colorLegendSymbols.children[0].properties.x
   );
-  assert.equal(
-    resized.graphicSpec.objects.colorLegendTitle.properties.y,
-    448
-  );
+  assert.equal(resized.graphicSpec.objects.colorLegendTitle.properties.y, 100);
   assert.deepEqual(
     reordered.graphicSpec.objects.colorLegendLabels.children.map(
       child => child.properties.text
@@ -129,7 +131,7 @@ test("validates histogram targets, channels, layout, and recipes", () => {
     /only the color channel/
   );
   assert.throws(
-    () => program.createLegend({ position: "right" }),
+    () => program.createLegend({ position: "top" }),
     /Unsupported legend position/
   );
   assert.throws(

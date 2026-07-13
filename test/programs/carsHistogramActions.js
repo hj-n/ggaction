@@ -25,7 +25,7 @@ export function createCarsHistogramActions(cars) {
       field: "Origin",
       scale: { palette: "tableau10" }
     })
-    .createGuides()
+    .createGuides({ legend: { position: "bottom" } })
     .createTitle({
       text: values.title.text,
       subtitle: values.title.subtitle,

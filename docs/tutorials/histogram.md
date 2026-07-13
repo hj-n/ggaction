@@ -40,7 +40,7 @@ const program = chart()
     field: "Origin",
     scale: { palette: "tableau10" }
   })
-  .createGuides()
+  .createGuides({ legend: { position: "bottom" } })
   .createTitle({
     text: "Displacement distribution",
     subtitle: "by country",
@@ -57,13 +57,16 @@ render(program, document.querySelector("#chart").getContext("2d"));
 | `createBarMark` | A bar layer bound to `cars` | An initially empty rect collection |
 | `encodeHistogram` | Binned x plus count/zero-stack y encodings | Resolved scales and concrete bin rects |
 | `encodeColor` | Nominal stack identity and color scale | Category-colored rects in each bin |
-| `createGuides` | Axis, horizontal-grid, and legend definitions | Bin-aligned axes, grid lines, and a bottom-centered legend |
+| `createGuides` | Axis, horizontal-grid, and legend definitions | Bin-aligned axes, grid lines, and an explicitly bottom-centered legend |
 | `createTitle` | Chart title and subtitle text | Plot-centered title graphics |
 
 `encodeHistogram` is atomic because its x binning and y count/stack meaning are
 interdependent. Its trace still exposes the wrapped `encodeX` and `encodeY`
 actions. The source dataset remains unchanged; bin counts and stacked geometry
 are derived and materialized separately.
+
+Legends default to the right for every supported chart. This example passes
+`position: "bottom"` because its horizontal layout is intentional.
 
 ## Run and continue
 

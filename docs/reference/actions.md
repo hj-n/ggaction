@@ -185,8 +185,8 @@ createLegend({
 })
 ```
 
-Create one categorical line-series or histogram color legend with layered
-symbols. [Legends](../api/legends.md)
+Create one categorical legend with a right-side default, explicit bottom
+placement, and layered symbols. [Legends](../api/legends.md)
 
 ### `createTitle`
 
