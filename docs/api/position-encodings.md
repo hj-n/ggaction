@@ -17,6 +17,7 @@ resolve a channel scale, and explicitly materialize the affected graphics.
 | Draw an aggregate time series | line mark, temporal x and quantitative y | `encodeX`, `encodeY` | [Temporal lines](./position/temporal.md) |
 | Build aggregate bars | bar mark, ordinal x and quantitative y | `encodeX`, `encodeY` | [Ordinal bars](./position/ordinal-bars.md) |
 | Bin and count values | bar mark, quantitative field | `encodeHistogram` or `encodeX` + `encodeY` | [Histograms](./position/histogram.md) |
+| Estimate a distribution | area mark, quantitative field | `encodeDensity` | [Encodings](./encodings.md#atomic-density) |
 | Control within-band grouping | complete ordinal-bar positions | `encodeXOffset` | [Offsets](./position/offsets.md) |
 
 For ordinary grouped bar charts, prefer

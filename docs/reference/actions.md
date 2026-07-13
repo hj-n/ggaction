@@ -178,6 +178,20 @@ Compose binned bar `encodeX` and count/zero-stack `encodeY` as one atomic
 histogram action. `maxBins` defaults to `10`; `stack` defaults to `"zero"`.
 [Encodings](../api/encodings.md)
 
+### `encodeDensity`
+
+```javascript
+encodeDensity({
+  field, target?, source?, groupBy?, bandwidth?, extent?, steps?, as?,
+  densityChannel?, coordinate?, valueScale?, densityScale?
+})
+```
+
+Create immutable Gaussian KDE data, bind it to an area mark, encode its value
+and density fields, and materialize baseline-closed paths. Density defaults to
+the y channel; pass `densityChannel: "x"` for a horizontal orientation.
+[Encodings](../api/encodings.md#atomic-density)
+
 ### `encodeColor`
 
 ```javascript

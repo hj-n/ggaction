@@ -7,16 +7,16 @@ Density data derivation, target layer data binding, positional encodings와 base
 
 ## 진행 상태
 
-- [ ] Target/source inference와 ambiguity errors
-- [ ] Derived dataset/output field deterministic naming
-- [ ] `densityChannel: "y"` default
-- [ ] Explicit `densityChannel: "x"`
-- [ ] `createDensityData` wrapped delegation
-- [ ] Target layer data binding
-- [ ] Direction-aware `encodeX`/`encodeY`
-- [ ] Optional `encodeGroup` delegation
-- [ ] Final `rematerializeAreaMark`
-- [ ] Shortest call, trace, order, docs, full regression, commit, push
+- [x] Target/source inference와 ambiguity errors
+- [x] Derived dataset/output field deterministic naming
+- [x] `densityChannel: "y"` default
+- [x] Explicit `densityChannel: "x"`
+- [x] `createDensityData` wrapped delegation
+- [x] Target layer data binding
+- [x] Direction-aware `encodeX`/`encodeY`
+- [x] Optional `encodeGroup` delegation
+- [x] Final `rematerializeAreaMark`
+- [x] Shortest call, trace, order, docs, full regression, commit, push
 
 ## Action hierarchy
 
@@ -53,3 +53,11 @@ Inference 후보가 여러 개이면 첫 번째를 고르지 않고 explicit tar
 - Trace direct children은 계약 순서와 같다.
 - Encoding 중간 상태를 외부에 반환하지 않는다.
 - Target에 기존 conflicting positional/group encoding이 있으면 변경 전에 오류다.
+
+## 구현 결과
+
+- Shortest call은 current area와 그 source dataset을 추론하며 `${target}DensityData`를 만든다.
+- Default y-density와 explicit x-density가 동일한 primitive materializer를 사용한다.
+- Value/density scale policy는 channel 방향과 함께 이동하며 explicit option이 default를 덮어쓴다.
+- Direct child trace는 계약의 순서를 그대로 보존한다.
+- 전체 385개 테스트와 coverage gate를 통과했다 (`lines 94.39%`, `branches 89.49%`, `functions 98.52%`).

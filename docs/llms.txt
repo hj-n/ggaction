@@ -112,6 +112,7 @@ and language models.
 - Every categorical legend defaults to the right regardless of mark or chart type; pass position: "bottom" explicitly for a horizontal legend.
 - Bar encodeY infers the binned x field, stores count/zero-stack, resolves both scales, and materializes concrete rects for non-empty bins.
 - encodeHistogram is a thin aggregate whose direct children are binned bar encodeX and count/zero-stack encodeY.
+- encodeDensity is an atomic area aggregate: it creates immutable KDE data, rebinds the layer, authors both positions, optionally groups paths, and rematerializes the area.
 - Bar encodeColor resolves an ordinal scale and rematerializes each bin as zero-stacked category rects in color-domain order; the y domain remains based on total bin counts.
 - createAxes supports linear and UTC time scales, histogram bin-boundary x ticks, and aggregate-aware title inference.
 - createGrid defaults to horizontal lines, supports optional vertical lines, reuses compatible axis ticks, and inserts concrete lines before related marks.
@@ -141,6 +142,8 @@ Every public example supports browser Canvas and PNG output.
 - Regression scatterplots use named filtering, point size/shape/opacity,
   grouped OLS mean-response confidence bands and lines, shared guides, and
   composite point/line plus quantitative size legends.
+- Density area charts use atomic `encodeDensity`, shared grouped samples,
+  baseline-closed area paths, and chart-independent value/density scale rules.
 
 `createGuides` composes compatible axes, grid, and categorical legend actions.
 `createTitle` remains separate. Cartesian grids are also available directly

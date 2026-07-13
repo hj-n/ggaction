@@ -16,6 +16,7 @@ defaults.
 | --- | --- | --- |
 | Position | `encodeX`, `encodeY`, `encodeYRange`, `encodeXOffset` | Quantitative, temporal, binned, ordinal, or ranged placement |
 | Atomic histogram | `encodeHistogram` | Interdependent bin/count semantics |
+| Atomic density | `encodeDensity` | Derived KDE data and baseline area geometry |
 | Appearance | `encodeColor`, `encodeSize`, `encodeShape`, `encodeOpacity` | Field-driven or fixed point appearance |
 | Series | `encodeColor`, `encodeStrokeDash` | Nominal grouping and appearance |
 | Constant appearance | `encodeRadius`, `encodeOpacity`, `encodeBarWidth` | Fixed graphical values |
@@ -86,6 +87,31 @@ it does not duplicate binning, scale, count, or rect materialization logic.
 
 Use the explicit channel actions when x and y need to be authored as separate
 steps. Both forms produce the same semantic and graphical result.
+
+## Atomic density
+
+`encodeDensity` derives Gaussian kernel-density values, rebinds the selected
+area mark to that immutable dataset, and authors both positional channels as
+one action.
+
+```javascript
+area.encodeDensity({
+  field: "Acceleration",
+  groupBy: "Origin",
+  bandwidth: 0.6
+});
+```
+
+`target` defaults to the current or only area mark, while `source` defaults to
+that mark's current dataset. Output fields, shared extent, 100 sample steps,
+and a vertical density axis are inferred. Set `densityChannel: "x"` to orient
+the density horizontally. Advanced options include `extent`, `steps`, `as`,
+`coordinate`, `valueScale`, and `densityScale`.
+
+The value scale defaults to `{ nice: false, zero: false }`; the density scale
+defaults to `{ nice: true, zero: true }`. Explicit scale options override those
+defaults. Grouped density delegates to `encodeGroup`, so every observed group
+becomes one baseline-closed path.
 
 ## Series
 
