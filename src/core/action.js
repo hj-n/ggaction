@@ -1,18 +1,23 @@
 import { cloneAndFreeze, freezeOwned, isPlainObject } from "./immutable.js";
 
-function summarizeObject(value) {
+function summarizeObject(value, ancestors = new WeakSet()) {
+  if (ancestors.has(value)) {
+    throw new TypeError("Action arguments must not contain circular references.");
+  }
+  ancestors.add(value);
   const summary = {};
 
   for (const [key, item] of Object.entries(value)) {
     if (Array.isArray(item)) {
       summary[`${key}Count`] = item.length;
     } else if (isPlainObject(item)) {
-      summary[key] = summarizeObject(item);
+      summary[key] = summarizeObject(item, ancestors);
     } else {
       summary[key] = item;
     }
   }
 
+  ancestors.delete(value);
   return summary;
 }
 
@@ -41,45 +46,38 @@ export function createActionNode({ id, op, description, args }) {
   });
 }
 
-export function appendActionNode(root, parentId, actionNode) {
-  function append(node) {
-    if (node.id === parentId) {
-      return {
-        found: true,
-        node: freezeOwned({
-          ...node,
-          children: freezeOwned([...node.children, actionNode])
-        })
-      };
+function nodeAtPath(root, path) {
+  let node = root;
+  for (const index of path) {
+    if (!Number.isInteger(index) || index < 0 || index >= node.children.length) {
+      throw new Error(`Unknown parent action path "${path.join(".")}".`);
     }
+    node = node.children[index];
+  }
+  return node;
+}
 
-    for (let index = 0; index < node.children.length; index += 1) {
-      const result = append(node.children[index]);
+export function appendActionNodeAtPath(root, parentPath, actionNode) {
+  if (!Array.isArray(parentPath)) {
+    throw new TypeError("Parent action path must be an array.");
+  }
+  const parent = nodeAtPath(root, parentPath);
+  const path = [...parentPath, parent.children.length];
 
-      if (result.found) {
-        const children = [...node.children];
-        children[index] = result.node;
-
-        return {
-          found: true,
-          node: freezeOwned({
-            ...node,
-            children: freezeOwned(children)
-          })
-        };
-      }
+  function append(node, depth) {
+    if (depth === parentPath.length) {
+      return freezeOwned({
+        ...node,
+        children: freezeOwned([...node.children, actionNode])
+      });
     }
-
-    return { found: false, node };
+    const index = parentPath[depth];
+    const children = [...node.children];
+    children[index] = append(children[index], depth + 1);
+    return freezeOwned({ ...node, children: freezeOwned(children) });
   }
 
-  const result = append(root);
-
-  if (!result.found) {
-    throw new Error(`Unknown parent action "${parentId}".`);
-  }
-
-  return result.node;
+  return { root: append(root, 0), path };
 }
 
 export function action(metadata, implementation) {

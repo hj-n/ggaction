@@ -91,6 +91,16 @@ test("summarizes large action values without retaining the array", () => {
   assert.equal(summary.valueCount, 2);
 });
 
+test("rejects circular objects in action summaries", () => {
+  const circular = {};
+  circular.self = circular;
+
+  assert.throws(
+    () => summarizeArgs({ value: circular }),
+    /must not contain circular references/
+  );
+});
+
 test("requires action implementations to return a ChartProgram", () => {
   const invalidAction = action(
     {

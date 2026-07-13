@@ -28,6 +28,11 @@ test("creates an immutable program with canonical empty state", () => {
   assert.deepEqual(program.guideConfigs, {});
   assert.equal(program.titleConfig, undefined);
   assert.equal("children" in program, false);
+  assert.equal(Object.hasOwn(program, "markConfigs"), false);
+  assert.equal(Object.hasOwn(program, "guideConfigs"), false);
+  assert.equal(Object.hasOwn(program, "titleConfig"), false);
+  assert.equal(Object.hasOwn(program, "_actionSequence"), true);
+  assert.equal(Object.keys(program).includes("_actionSequence"), false);
   assert.deepEqual(program.context, {});
   assert.deepEqual(program.trace, {
     id: "program",
@@ -45,6 +50,9 @@ test("creates an immutable program with canonical empty state", () => {
   assert.equal(Object.isFrozen(program.markConfigs), true);
   assert.equal(Object.isFrozen(program.guideConfigs), true);
   assert.equal(Object.isFrozen(program.trace.children), true);
+  assert.equal(JSON.stringify(program).includes('"markConfigs"'), false);
+  assert.equal(JSON.stringify(program).includes('"guideConfigs"'), false);
+  assert.equal(JSON.stringify(program).includes('"titleConfig"'), false);
 });
 
 test("creates independent empty programs", () => {

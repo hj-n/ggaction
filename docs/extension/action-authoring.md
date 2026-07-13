@@ -42,7 +42,8 @@ MyProgram.prototype.setPointOpacity = action(
 - Successful completion leaves the returned program's action stack empty.
 
 Arguments are summarized before storage in the trace. Arrays become counts, so
-large values are not retained twice.
+large values are not retained twice. Circular plain-object arguments are
+rejected because a finite immutable trace summary cannot represent them.
 
 Use the [primitive extension API](./primitives.md) to express semantic and
 graphical changes. A semantic edit never materializes graphics automatically;

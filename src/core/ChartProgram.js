@@ -1,5 +1,5 @@
 import {
-  appendActionNode,
+  appendActionNodeAtPath,
   countActionNodes,
   createActionNode
 } from "./action.js";
@@ -55,7 +55,8 @@ export class ChartProgram {
     canvasConfig,
     context = {},
     trace = createTraceRoot(),
-    actionStack = []
+    actionStack = [],
+    actionSequence
   } = {}) {
     this.semanticSpec = ownState(semanticSpec);
     this.graphicSpec = ownState(graphicSpec);
@@ -68,14 +69,27 @@ export class ChartProgram {
           canvasConfig
         )
       : ownState(materializationConfigs);
-    this.markConfigs = this.materializationConfigs.marks;
-    this.guideConfigs = this.materializationConfigs.guides;
-    this.titleConfig = this.materializationConfigs.title;
     this.context = ownState(context);
     this.trace = ownState(trace);
     this.actionStack = ownState(actionStack);
+    Object.defineProperty(this, "_actionSequence", {
+      value: actionSequence ?? countActionNodes(this.trace),
+      enumerable: false
+    });
 
     Object.freeze(this);
+  }
+
+  get markConfigs() {
+    return this.materializationConfigs.marks;
+  }
+
+  get guideConfigs() {
+    return this.materializationConfigs.guides;
+  }
+
+  get titleConfig() {
+    return this.materializationConfigs.title;
   }
 
   _clone({
@@ -85,7 +99,8 @@ export class ChartProgram {
     materializationConfigs = this.materializationConfigs,
     context = this.context,
     trace = this.trace,
-    actionStack = this.actionStack
+    actionStack = this.actionStack,
+    actionSequence = this._actionSequence
   } = {}) {
     return new this.constructor({
       semanticSpec,
@@ -94,7 +109,8 @@ export class ChartProgram {
       materializationConfigs,
       context,
       trace,
-      actionStack
+      actionStack,
+      actionSequence
     });
   }
 
@@ -223,13 +239,25 @@ export class ChartProgram {
   }
 
   _enterAction({ op, description, args }) {
-    const id = `a${countActionNodes(this.trace) + 1}`;
-    const parentId = this.actionStack.at(-1) ?? this.trace.id;
+    const actionSequence = this._actionSequence + 1;
+    const id = `a${actionSequence}`;
+    const parentPath = this.actionStack.at(-1)?.path ?? [];
     const actionNode = createActionNode({ id, op, description, args });
-    const trace = appendActionNode(this.trace, parentId, actionNode);
-    const actionStack = cloneAndFreeze([...this.actionStack, id]);
+    const appended = appendActionNodeAtPath(
+      this.trace,
+      parentPath,
+      actionNode
+    );
+    const actionStack = cloneAndFreeze([
+      ...this.actionStack,
+      { id, path: appended.path }
+    ]);
 
-    return this._clone({ trace, actionStack });
+    return this._clone({
+      trace: appended.root,
+      actionStack,
+      actionSequence
+    });
   }
 
   _exitAction() {
