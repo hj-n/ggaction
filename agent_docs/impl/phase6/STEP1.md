@@ -8,16 +8,16 @@ rows와 scale inputs를 만들어야 한다.
 
 ## 진행 상태
 
-- [ ] 유효 Acceleration/Origin row selection
-- [ ] Origin first-appearance domain
-- [ ] Gaussian kernel 함수와 normalization
-- [ ] Explicit bandwidth `0.6`
-- [ ] Shared observed extent
-- [ ] Inclusive 100-step uniform sample grid
-- [ ] Origin별 density rows와 deterministic order
-- [ ] Representative density values와 numerical tolerance
-- [ ] Invalid, empty, degenerate, immutable input tests
-- [ ] 전체 regression, conceptual commit, push
+- [x] 유효 Acceleration/Origin row selection
+- [x] Origin first-appearance domain
+- [x] Gaussian kernel 함수와 normalization
+- [x] Explicit bandwidth `0.6`
+- [x] Shared observed extent
+- [x] Inclusive 100-step uniform sample grid
+- [x] Origin별 density rows와 deterministic order
+- [x] Representative density values와 numerical tolerance
+- [x] Invalid, empty, degenerate, immutable input tests
+- [x] 전체 regression, conceptual commit, push
 
 ## 계산 규칙
 
@@ -50,3 +50,11 @@ non-negative density, group별 peak 위치와 row cardinality를 고정한다.
 - Semantic/graphic schema 수정
 - Area path와 renderer 수정
 - Public action 및 docs
+
+## 검증 결과
+
+- Cars 406 valid rows, Origin domain `USA → Europe → Japan`
+- Shared extent `[8, 24.8]`, 100 samples per group, 300 derived rows
+- Explicit `0.6`과 deterministic automatic bandwidth unit coverage
+- `npm test`: 367 passing
+- `npm run test:coverage`: lines 94.48%, branches 89.23%, functions 98.41%

@@ -16,7 +16,7 @@ architecture에 통합한다.
 - [x] 목표 chart 분석과 user-facing API 방향 확정
 - [x] `densityChannel: "x" | "y"`와 y default 확정
 - [x] Phase 6 chart contract와 STEP 계획
-- [ ] Deterministic grouped KDE fixture
+- [x] Deterministic grouped KDE fixture
 - [ ] Primitive density-area baseline
 - [ ] Density grammar와 immutable derived-data actions
 - [ ] Baseline-oriented area materialization
