@@ -6,6 +6,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { chartImages } from "../../scripts/generate-doc-images.js";
+import { buildFullLlmDocumentation } from "../../scripts/generate-llm-docs.js";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const docsRoot = path.join(root, "docs");
@@ -266,4 +267,17 @@ test("classifies every declared ChartProgram action in the reference", () => {
   assert.match(reference, /^## Extension API$/m);
   assert.match(reference, /^## Internal trace operations$/m);
   assert.match(reference, /absent from the public TypeScript\s+declaration/);
+});
+
+test("keeps concise and full LLM documentation synchronized", async () => {
+  const index = read("docs/llms.txt");
+  const lines = index.trim().split("\n");
+
+  assert.equal(lines.length < 100, true);
+  assert.match(index, /\.\/llms-full\.txt/);
+  assert.match(index, /\.\/reference\/actions\.md/);
+  assert.equal(
+    read("docs/llms-full.txt"),
+    await buildFullLlmDocumentation()
+  );
 });

@@ -67,7 +67,9 @@ Understand [immutable ChartProgram state](./concepts/chart-program.md),
 continue with [action authoring](./extension/action-authoring.md) and the
 [primitive API](./extension/primitives.md). For boundaries and failures, see
 [supported features](./supported-features.md) and
-[troubleshooting](./troubleshooting.md).
+[troubleshooting](./troubleshooting.md). Language models can use the concise
+[documentation index](./llms.txt) or the generated
+[full-text bundle](./llms-full.txt).
 
 Source, issues, and development history are available on
 [GitHub](https://github.com/hj-n/ggaction).

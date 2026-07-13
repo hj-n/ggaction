@@ -1,160 +1,64 @@
 # ggaction
 
 ggaction is a JavaScript chart-authoring library built around immutable,
-hierarchical actions. This file points to canonical documentation for humans
-and language models.
+hierarchical actions. Use this file as a routing index. The linked Markdown
+pages are canonical; the generated full-text bundle is available at
+./llms-full.txt.
 
 ## Start
 
-- Documentation index: ./index.md
-- Getting started: ./getting-started.md
-- Complete scatterplot tutorial: ./tutorials/scatterplot.md
-- Complete line chart tutorial: ./tutorials/line-chart.md
-- Complete histogram tutorial: ./tutorials/histogram.md
-- Complete bar chart tutorial (grouped example): ./tutorials/grouped-bar.md
-- Complete regression scatterplot tutorial: ./tutorials/regression-scatterplot.md
-- Complete density area tutorial: ./tutorials/density-area.md
-- Chart recipe index: ./recipes/index.md
-- Scatterplot recipe: ./recipes/scatterplot.md
-- Line chart recipe: ./recipes/line-chart.md
-- Histogram recipe: ./recipes/histogram.md
-- Bar chart recipe (grouped example): ./recipes/bar-chart.md
-- Regression scatterplot recipe: ./recipes/regression-scatterplot.md
-- Density area recipe: ./recipes/density-area.md
-- Troubleshooting inference, layout, and scale errors: ./troubleshooting.md
-- Complete action reference: ./reference/actions.md
-- Supported features: ./supported-features.md
+- Documentation overview: ./index.md
+- Runnable repository setup: ./getting-started.md
+- Chart recipes: ./recipes/index.md
+- Complete public action reference: ./reference/actions.md
+- Supported features and limitations: ./supported-features.md
+- Inference and layout troubleshooting: ./troubleshooting.md
+
+## Public API layers
+
+- Chart authoring: ./reference/actions.md#chart-authoring-api
+- Advanced chart actions: ./reference/actions.md#advanced-chart-api
+- Extension action authoring: ./extension/action-authoring.md
+- Primitive extension API: ./extension/primitives.md
+- Browser and PNG rendering: ./api/rendering.md
+
+Only methods declared on the public ChartProgram TypeScript type are supported
+direct-call actions. Additional wrapped names may appear in action traces but
+are internal operations.
+
+## Chart recipes and tutorials
+
+- Scatterplot: ./recipes/scatterplot.md | ./tutorials/scatterplot.md
+- Line chart: ./recipes/line-chart.md | ./tutorials/line-chart.md
+- Histogram: ./recipes/histogram.md | ./tutorials/histogram.md
+- Bar chart: ./recipes/bar-chart.md | ./tutorials/grouped-bar.md
+- Regression scatterplot: ./recipes/regression-scatterplot.md | ./tutorials/regression-scatterplot.md
+- Density area: ./recipes/density-area.md | ./tutorials/density-area.md
 
 ## Core concepts
 
-- ChartProgram and immutability: ./concepts/chart-program.md
+- Immutable ChartProgram: ./concepts/chart-program.md
 - Semantic and graphical state: ./concepts/semantic-and-graphics.md
-- Actions and trace trees: ./concepts/actions-and-trace.md
+- Hierarchical action traces: ./concepts/actions-and-trace.md
 
-## API
+## Essential invariants
 
-- Canvas: ./api/canvas.md
-- Data: ./api/data.md
-- Marks: ./api/marks.md
-- Encodings: ./api/encodings.md
-- Position encodings: ./api/position-encodings.md
-- Quantitative point positions: ./api/position/quantitative.md
-- Temporal line positions: ./api/position/temporal.md
-- Ordinal bar positions: ./api/position/ordinal-bars.md
-- Histogram positions: ./api/position/histogram.md
-- Advanced ordinal offsets: ./api/position/offsets.md
-- Series encodings: ./api/series-encodings.md
-- Constant appearance: ./api/appearance.md
-- Scale options: ./api/scales.md
-- Coordinates: ./api/coordinates.md
-- Guides: ./api/guides.md
-- Axes: ./api/axes.md
-- Grids: ./api/grids.md
-- Legends: ./api/legends.md
-- Titles: ./api/titles.md
-- Rendering: ./api/rendering.md
-- Advanced axis components: ./advanced/axis-components.md
-- Action authoring: ./extension/action-authoring.md
-- Primitive extension API: ./extension/primitives.md
-
-## Architectural invariants
-
-- Every action accepts one plain option object and returns a new ChartProgram.
+- Every action accepts one option object and returns a new ChartProgram.
 - Existing programs and caller-owned inputs are never mutated.
 - semanticSpec records chart meaning.
 - graphicSpec stores fully materialized backend-neutral graphics.
 - There is no automatic semantic-to-graphic compiler.
-- Domain actions explicitly invoke every required graphical materialization.
-- Renderers read graphicSpec only; they do not infer from semanticSpec.
-- Canvas margin is canonical materialization configuration; plot bounds are derived from it and the concrete Canvas dimensions rather than stored only in transient context.
-- Primitive graphics support heterogeneous drawable collections whose children
-  each carry a concrete circle, rect, line, text, or path type.
-- The current graphic contract has no structural container nodes or opaque style bags; every accepted concrete property has renderer semantics.
-- Backend-neutral paths may be open/stroked or `closed: true` and filled; a
-  closed path may combine fill and stroke.
-- Nested wrapped actions form the hierarchical trace.
-- Positional encodings create and attach coordinates; guide actions only read them.
-- encodeRadius is fixed circle appearance, not a Polar radial encoding.
-- encodeSize stores a quantitative semantic encoding and maps its automatic
-  domain to point areas `[24, 196]`; circles and squares use equal areas.
-- encodeShape stores a nominal semantic encoding and materializes circle/square
-  typed children. encodeOpacity is a fixed graphical constant.
-- One rematerializePointMark action combines x, y, color, size, shape, and
-  opacity independently of authoring call order and after Canvas changes.
-- Temporal line encodeX resolves a time scale but does not yet materialize path points.
-- Aggregate line encodeY computes mean groups and explicitly materializes sorted paths.
-- Line encodeColor and encodeStrokeDash regroup and style concrete series paths.
-- Area encodeColor requires an existing matching group field and applies the resolved ordinal range to path fills without inventing groups.
-- createBarMark stores a semantic bar and creates an empty rect collection.
-- filterData creates a named immutable derived dataset, defaults its source to
-  current data, stores filter provenance, and materializes source-order rows.
-- createRegressionData creates immutable grouped linear OLS predictions at
-  observed unique x values and Student-t mean-response confidence bounds; it
-  defaults source to current data and confidence to 0.95.
-- createDensityData creates immutable grouped Gaussian KDE rows on a shared
-  observed extent and inclusive 100-step grid; it stores resolved bandwidth,
-  output fields, and transform provenance without changing the source dataset.
-- createAreaMark creates an empty path collection with fixed fill/opacity.
-  encodeYRange calls encodeY then encodeY2, shares one y scale across both
-  bounds, and materializes grouped closed paths after optional encodeGroup.
-- encodeGroup splits line or area geometry by a nominal field but creates no
-  scale or guide.
-- createRegression infers target/x/y/groupBy from an eligible point layer and
-  delegates to createRegressionData, createRegressionBand, and
-  createRegressionLine. It shares the point coordinate and x/y scales and
-  defaults to a 95% mean-response band and line width 3.
-- Point legends combine one nominal color/shape field with a matching line as
-  typed composite symbols. A separate quantitative size block defaults to five
-  equal-area symbols. Both stack at the chart-independent right position and
-  rematerialize after Canvas changes.
-- Binned bar encodeX stores maxBins, resolves a nice linear x domain/range, and deliberately leaves rect materialization for later y encoding.
-- Ordinal bar encodeX requires fieldType "ordinal", preserves first-appearance domain order, resolves equal band geometry, and deliberately leaves rect materialization for later aggregate/group actions.
-- Ordinal bar encodeY requires a quantitative field, defaults to mean with stack null, resolves y from x-category means, and keeps rects empty until grouping semantics exist.
-- encodeXOffset is an advanced action that resolves nominal slots inside one ordinal x bandwidth; grouped color layout is expected to call it for ordinary chart authors.
-- Ordinal mean bars require encodeColor layout "group"; it stores stack null, calls encodeXOffset as a wrapped child, and recomputes y from x/color means while rects remain empty until width is authored.
-- encodeBarWidth defaults band to 0.72, stores immutable graphical materialization config outside semanticSpec, and materializes concrete grouped rects in x-domain then color-domain order; Canvas changes explicitly rebuild them.
-- Ordinal x axes default to every domain value at band centers, reject count-based sampling, support explicit domain subsets, and rematerialize after Canvas changes.
-- Every categorical legend defaults to the right regardless of mark or chart type; pass position: "bottom" or "top" explicitly for another layout.
-- Bar encodeY infers the binned x field, stores count/zero-stack, resolves both scales, and materializes concrete rects for non-empty bins.
-- encodeHistogram is a thin aggregate whose direct children are binned bar encodeX and count/zero-stack encodeY.
-- encodeDensity is an atomic area aggregate: it creates immutable KDE data, rebinds the layer, authors both positions, optionally groups paths, and rematerializes the area.
-- Bar encodeColor resolves an ordinal scale and rematerializes each bin as zero-stacked category rects in color-domain order; the y domain remains based on total bin counts.
-- createAxes supports linear and UTC time scales, histogram bin-boundary x ticks, and aggregate-aware title inference.
-- Density axes infer the original source field for the value channel and `Density` for the density channel from stored transform provenance.
-- createGrid defaults to horizontal lines, supports optional vertical lines, reuses compatible axis ticks, and inserts concrete lines before related marks.
-- createLegend materializes a categorical right-side legend by default; explicit bottom and top placements are available. Top legends support direction, columns, offset, alignment, and top/left title placement. Layered recipes support line, point, swatch, and line-plus-point compositions.
-- Grouped area color legends use the generic color-guide state and default swatch recipe.
-- createTitle stores semantic title text and materializes a plot-aligned top title with an optional subtitle.
-- Top title and categorical legend blocks validate their actual occupied bounds and require more top margin instead of overlapping.
-- createGuides calls applicable createAxes, createGrid, and createLegend wrapped actions in that order; it never creates chart titles.
-- For grouped bars, createGuides infers an ordinal x axis, quantitative y axis, horizontal grid, and right-side color legend while forwarding explicit child options and false opt-outs.
+- Domain actions explicitly invoke graphical materialization.
+- Renderers read graphicSpec only.
+- Omitted values are resolved as explicit option, unique inference, documented
+  default, then an error when no safe choice exists.
 
 ## Current scope
 
-The documented build is version 0.0.0-dev and is not published to npm. Use the
-repository source directly.
+The development build supports Cartesian scatterplots, temporal mean line
+charts, stacked histograms, ordinal grouped bars, grouped linear-regression
+scatterplots with mean-response confidence bands, and grouped density areas.
+It renders through browser Canvas and Node PNG. It is not published to npm yet.
 
-The implemented end-to-end Chart API covers Cartesian point scatterplots,
-temporal mean-aggregate line charts, stacked histograms, and ordinal bar charts
-with a grouped layout, layered grouped linear-regression scatterplots, and
-grouped density area charts.
-Every public example supports browser Canvas and PNG output.
-
-- Scatterplots use quantitative x/y, nominal color/shape, quantitative size,
-  and fixed radius or opacity.
-- Line charts use temporal x, mean-aggregate y, color/strokeDash series, guides,
-  and an optional chart title.
-- Histograms use atomic `encodeHistogram`, optional color stacking, inferred
-  guides, and explicit bottom legend placement in the public example.
-- Bar charts use ordinal x, mean-aggregate y, grouped color/xOffset layout,
-  band-based width, inferred guides, and a right-side legend.
-- Regression scatterplots use named filtering, point size/shape/opacity,
-  grouped OLS mean-response confidence bands and lines, shared guides, and
-  composite point/line plus quantitative size legends.
-- Density area charts use atomic `encodeDensity`, shared grouped samples,
-  baseline-closed area paths, and chart-independent value/density scale rules.
-
-`createGuides` composes compatible axes, grid, and categorical legend actions.
-`createTitle` remains separate. Cartesian grids are also available directly
-through `createGrid`.
-Do not assume roadmap features are implemented.
+Do not assume facets, program composition, SVG rendering, animation, automatic
+semantic compilation, or complete Polar chart rendering are implemented.
