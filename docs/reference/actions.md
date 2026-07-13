@@ -44,6 +44,15 @@ createData({ id, values })
 
 Create one immutable named dataset. [Data](../api/data.md)
 
+### `filterData`
+
+```javascript
+filterData({ id, source?, field, oneOf })
+```
+
+Create an immutable named derived dataset using a scalar `oneOf` filter. The
+source defaults to current data. [Data](../api/data.md)
+
 ### `createPointMark`
 
 ```javascript
@@ -206,6 +215,7 @@ Use these actions for explicit semantic resources or focused axis control.
 | Group | Actions |
 | --- | --- |
 | Coordinate | `createCoordinate({ id?, type?, layers? })` |
+| Derived data | `createDerivedData({ id, source, transform })`, `materializeFilteredData({ id })` |
 | Complete channel axis | `createXAxis(options?)`, `createYAxis(options?)` |
 | Axis lines | `createXAxisLine`, `createYAxisLine`, `editXAxisLine`, `editYAxisLine` |
 | Axis ticks | `createXAxisTicks`, `createYAxisTicks`, `editXAxisTicks`, `editYAxisTicks` |

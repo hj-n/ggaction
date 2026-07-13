@@ -73,6 +73,8 @@ and language models.
 - Aggregate line encodeY computes mean groups and explicitly materializes sorted paths.
 - Line encodeColor and encodeStrokeDash regroup and style concrete series paths.
 - createBarMark stores a semantic bar and creates an empty rect collection.
+- filterData creates a named immutable derived dataset, defaults its source to
+  current data, stores filter provenance, and materializes source-order rows.
 - Binned bar encodeX stores maxBins, resolves a nice linear x domain/range, and deliberately leaves rect materialization for later y encoding.
 - Ordinal bar encodeX requires fieldType "ordinal", preserves first-appearance domain order, resolves equal band geometry, and deliberately leaves rect materialization for later aggregate/group actions.
 - Ordinal bar encodeY requires a quantitative field, defaults to mean with stack null, resolves y from x-category means, and keeps rects empty until grouping semantics exist.

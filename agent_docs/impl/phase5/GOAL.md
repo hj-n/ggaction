@@ -15,7 +15,7 @@ band를 겹친 regression scatterplot을 구현한다.
 - [x] Regression 통계와 primitive expected values
 - [x] Heterogeneous point와 filled path graphical foundation
 - [x] Primitive regression scatterplot baseline
-- [ ] Immutable derived-data filtering
+- [x] Immutable derived-data filtering
 - [ ] Point size, shape, opacity encoding
 - [ ] Regression grammar와 derived values
 - [ ] Area mark와 ranged y encoding

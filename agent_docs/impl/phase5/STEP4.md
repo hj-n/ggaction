@@ -6,16 +6,16 @@ Source dataset을 수정하지 않고 named derived dataset을 만드는 `filter
 
 ## 진행 상태
 
-- [ ] Derived dataset semantic paths와 validation
-- [ ] `createDerivedData` wrapped action
-- [ ] `materializeFilteredData` wrapped action
-- [ ] `filterData({ id, source?, field, oneOf })`
-- [ ] Current dataset inference와 ambiguity errors
-- [ ] Source/derived values immutability
-- [ ] Shortest valid call, trace, invalid-state tests
-- [ ] Data action public documentation
-- [ ] Primitive/action progression regression
-- [ ] Commit과 push
+- [x] Derived dataset semantic paths와 validation
+- [x] `createDerivedData` wrapped action
+- [x] `materializeFilteredData` wrapped action
+- [x] `filterData({ id, source?, field, oneOf })`
+- [x] Current dataset inference와 ambiguity errors
+- [x] Source/derived values immutability
+- [x] Shortest valid call, trace, invalid-state tests
+- [x] Data action public documentation
+- [x] Primitive/action progression regression
+- [x] Commit과 push
 
 ## Action hierarchy
 
