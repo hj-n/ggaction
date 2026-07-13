@@ -4,6 +4,7 @@ import {
   resolveHistogramBins
 } from "../../grammar/histogram.js";
 import { validateUserId } from "../../core/identifiers.js";
+import { deriveBarMeans } from "../../grammar/barAggregate.js";
 import { deriveLineSeries } from "../../grammar/lineSeries.js";
 import {
   mapLinearValues,
@@ -134,6 +135,16 @@ function resolveConsumerValues(program, consumer) {
     consumer.layer.encoding?.y?.aggregate === "mean"
   ) {
     const derived = deriveLineSeries(dataset.values, consumer.layer);
+    return consumer.channel === "x" ? derived.xValues : derived.yValues;
+  }
+
+  if (
+    consumer.layer.mark?.type === "bar" &&
+    consumer.layer.encoding?.x?.fieldType === "ordinal" &&
+    consumer.layer.encoding?.y?.aggregate === "mean" &&
+    consumer.layer.encoding.y.stack === null
+  ) {
+    const derived = deriveBarMeans(dataset.values, consumer.layer);
     return consumer.channel === "x" ? derived.xValues : derived.yValues;
   }
 

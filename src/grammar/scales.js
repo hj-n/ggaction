@@ -447,9 +447,15 @@ function niceLinearStep(span, count = 5) {
 
 function niceLinearDomain(domain) {
   const [minimum, maximum] = domain;
+  const tolerance = Number.EPSILON * 16 * Math.max(
+    1,
+    Math.abs(minimum),
+    Math.abs(maximum)
+  );
 
-  if (minimum === maximum) {
-    return domain;
+  if (maximum - minimum <= tolerance) {
+    const midpoint = (minimum + maximum) / 2;
+    return cloneAndFreeze([midpoint, midpoint]);
   }
 
   const step = niceLinearStep(maximum - minimum);

@@ -10,6 +10,7 @@ import {
   readNominalField,
   readTemporalField,
   resolveColorRange,
+  resolveContinuousDomain,
   resolveOrdinalDomain,
   resolveOrdinalPositionScale,
   resolveScaleDomain,
@@ -72,6 +73,19 @@ test("maps linear values and centers a constant domain", () => {
     () => mapLinearValues([NaN], [2, 2], [10, 20]),
     /finite numbers/
   );
+});
+
+test("stabilizes a near-constant nice domain", () => {
+  const resolved = resolveContinuousDomain({
+    domain: "auto",
+    values: [0.1, 0.1 + Number.EPSILON],
+    type: "linear",
+    nice: true,
+    zero: false
+  });
+
+  assert.equal(resolved[0], resolved[1]);
+  assert.equal(resolved[0] > 0.1, true);
 });
 
 test("validates the continuous scale vocabulary and bounds", () => {

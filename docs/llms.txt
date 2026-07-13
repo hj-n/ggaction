@@ -59,6 +59,7 @@ and language models.
 - createBarMark stores a semantic bar and creates an empty rect collection.
 - Binned bar encodeX stores maxBins, resolves a nice linear x domain/range, and deliberately leaves rect materialization for later y encoding.
 - Ordinal bar encodeX requires fieldType "ordinal", preserves first-appearance domain order, resolves equal band geometry, and deliberately leaves rect materialization for later aggregate/group actions.
+- Ordinal bar encodeY requires a quantitative field, defaults to mean with stack null, resolves y from x-category means, and keeps rects empty until grouping semantics exist.
 - Bar encodeY infers the binned x field, stores count/zero-stack, resolves both scales, and materializes concrete rects for non-empty bins.
 - encodeHistogram is a thin aggregate whose direct children are binned bar encodeX and count/zero-stack encodeY.
 - Bar encodeColor resolves an ordinal scale and rematerializes each bin as zero-stacked category rects in color-domain order; the y domain remains based on total bin counts.
@@ -80,6 +81,9 @@ Ordinal bar `encodeX({ field, fieldType: "ordinal" })` is also available as the
 first grouped-bar progression action. It resolves an ordinal x domain, range,
 step, and bandwidth while leaving the rect collection empty until aggregate y
 and grouping semantics are authored.
+Ordinal bar `encodeY({ field, aggregate: "mean" })` is the next progression
+action. It stores mean/non-stacked semantics and resolves the linear y scale
+from x-category aggregate means; concrete rects still wait for grouping.
 `createBarMark` creates an empty rect collection, and binned bar `encodeX`
 stores the horizontal histogram meaning plus a resolved x scale. Bar
 `encodeY()` infers count/zero-stack and resolves the y scale from total bin

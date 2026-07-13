@@ -63,6 +63,45 @@ are supported. Ordinal position scales do not accept `nice` or `zero`.
 This action deliberately leaves the rect collection empty. Aggregate y and
 group layout are still required to materialize grouped bars.
 
+## Aggregate ordinal bar `encodeY(options)`
+
+After ordinal bar x is encoded, aggregate a quantitative field by x category
+and resolve its vertical scale.
+
+```javascript
+program
+  .encodeX({ field: "year", fieldType: "ordinal" })
+  .encodeY({
+    field: "perc",
+    aggregate: "mean",
+    scale: { nice: true, zero: false }
+  });
+```
+
+| Option | Type | Default |
+| --- | --- | --- |
+| `field` | non-empty string | required |
+| `fieldType` | `"quantitative"` | `"quantitative"` |
+| `aggregate` | `"mean"` | `"mean"` |
+| `stack` | `null` | `null` |
+| `target` | bar mark ID | current mark |
+| `coordinate` | coordinate ID | layer coordinate, then `"main"` |
+| `scale.id` | scale ID | `"y"` |
+| `scale.type` | `"linear"` | `"linear"` |
+| `scale.domain` | `"auto"` or two finite numbers | `"auto"` |
+| `scale.range` | `"auto"` or two finite numbers | `"auto"` |
+| `scale.nice` | boolean | `true` |
+| `scale.zero` | boolean | `false` |
+
+The automatic domain is computed from `mean(field)` per ordinal x category,
+not from raw rows. Explicit domains remain unchanged and take precedence over
+`nice` and `zero`. A near-constant automatic nice domain is stabilized as a
+constant rather than magnifying floating-point summation noise.
+
+This action resolves both position scales but keeps the rect collection empty.
+The later grouping action supplies color/xOffset semantics and rematerializes
+the concrete grouped rectangles.
+
 ## Binned bar `encodeX(options)`
 
 Create a quantitative histogram bin encoding and resolve its horizontal scale.

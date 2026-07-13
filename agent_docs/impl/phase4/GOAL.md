@@ -43,7 +43,7 @@ chart()
 
 - [x] Primitive grouped bar contract
 - [x] Ordinal bar `encodeX`
-- [ ] Aggregate bar `encodeY`
+- [x] Aggregate bar `encodeY`
 - [ ] Bar color `layout: "stack" | "group"`
 - [ ] Internal `encodeXOffset`
 - [ ] Band-based `encodeBarWidth`

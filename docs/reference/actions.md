@@ -86,7 +86,9 @@ encodeY({ field?, target?, fieldType?, aggregate?, stack?, coordinate?, scale? }
 ```
 
 Create a quantitative point, aggregate line, or inferred count/zero-stack bar
-y encoding. A complete bar x/y pair materializes concrete histogram rects.
+y encoding. With ordinal bar x, it also creates a mean/non-stacked y encoding
+and resolves its scale while waiting for grouping semantics before rect
+materialization. A complete histogram x/y pair materializes concrete rects.
 [Position encodings](../api/position-encodings.md)
 
 ### `encodeHistogram`

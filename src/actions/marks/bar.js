@@ -70,15 +70,23 @@ function requireCompleteBar(program, id) {
 
   const xEncoding = layer.encoding?.x;
   const yEncoding = layer.encoding?.y;
+  const isHistogram =
+    xEncoding?.bin !== undefined &&
+    yEncoding?.aggregate === "count" &&
+    yEncoding.stack === "zero";
+  const isOrdinalMean =
+    xEncoding?.fieldType === "ordinal" &&
+    yEncoding?.fieldType === "quantitative" &&
+    yEncoding.aggregate === "mean" &&
+    yEncoding.stack === null;
+
   if (
-    xEncoding?.bin === undefined ||
-    xEncoding.scale === undefined ||
-    yEncoding?.aggregate !== "count" ||
-    yEncoding.stack !== "zero" ||
-    yEncoding.scale === undefined
+    xEncoding?.scale === undefined ||
+    yEncoding?.scale === undefined ||
+    (!isHistogram && !isOrdinalMean)
   ) {
     throw new Error(
-      `Bar mark "${id}" requires binned x and count/zero-stack y encodings.`
+      `Bar mark "${id}" requires binned x/count y or ordinal x/mean y encodings.`
     );
   }
   const xScale = program.semanticSpec.scales.find(
@@ -91,7 +99,15 @@ function requireCompleteBar(program, id) {
     throw new Error(`Bar mark "${id}" requires x and y scales.`);
   }
 
-  return { dataset, layer, xEncoding, yEncoding, xScale, yScale };
+  return {
+    dataset,
+    layer,
+    xEncoding,
+    yEncoding,
+    xScale,
+    yScale,
+    materialization: isHistogram ? "histogram" : "ordinalMean"
+  };
 }
 
 function deriveSegments({
@@ -172,7 +188,7 @@ function deriveSegments({
 const rematerializeBarMark = action(
   {
     op: "rematerializeBarMark",
-    description: "Recompute concrete histogram rectangles."
+    description: "Recompute concrete bar graphics from complete semantics."
   },
   function (args = {}) {
     validateMarkOptions(
@@ -185,6 +201,15 @@ const rematerializeBarMark = action(
     let resolved = this
       .rematerializeScale({ id: required.xEncoding.scale })
       .rematerializeScale({ id: required.yEncoding.scale });
+
+    if (required.materialization === "ordinalMean") {
+      return resolved.editGraphics({
+        target: id,
+        property: "length",
+        value: 0
+      });
+    }
+
     const colorScaleId = required.layer.encoding?.color?.scale;
     if (colorScaleId !== undefined) {
       resolved = resolved.rematerializeScale({ id: colorScaleId });

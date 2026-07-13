@@ -132,9 +132,13 @@ function encodePosition(program, channel, args, operation) {
   let bin;
   let aggregate;
   let stack;
+  const xEncoding = layer.encoding?.x;
   const field =
-    layer.mark.type === "bar" && channel === "y" && args.field === undefined
-      ? layer.encoding?.x?.field
+    layer.mark.type === "bar" &&
+    channel === "y" &&
+    xEncoding?.bin !== undefined &&
+    args.field === undefined
+      ? xEncoding.field
       : args.field;
 
   if (layer.mark.type === "point") {
@@ -197,27 +201,43 @@ function encodePosition(program, channel, args, operation) {
       );
     }
   } else {
-    const xEncoding = layer.encoding?.x;
-
-    if (xEncoding?.bin === undefined || xEncoding.field === undefined) {
-      throw new Error("Bar y encoding requires a binned x encoding.");
+    if (xEncoding?.field === undefined || xEncoding.scale === undefined) {
+      throw new Error(
+        "Bar y encoding requires a binned x encoding or ordinal x encoding."
+      );
     }
     if (fieldType !== "quantitative") {
       throw new Error("Bar y encoding currently requires a quantitative field.");
     }
-    if (field !== xEncoding.field) {
-      throw new Error("Bar y field must match the binned x field.");
-    }
     if (args.bin !== undefined) {
       throw new Error("Bar y encoding does not support bin.");
     }
-    aggregate = args.aggregate ?? "count";
-    stack = args.stack ?? "zero";
-    if (aggregate !== "count") {
-      throw new Error('Bar y aggregate must be "count".');
-    }
-    if (stack !== "zero") {
-      throw new Error('Bar y stack must be "zero".');
+
+    if (xEncoding.bin !== undefined) {
+      if (field !== xEncoding.field) {
+        throw new Error("Bar y field must match the binned x field.");
+      }
+      aggregate = args.aggregate ?? "count";
+      stack = args.stack ?? "zero";
+      if (aggregate !== "count") {
+        throw new Error('Histogram bar y aggregate must be "count".');
+      }
+      if (stack !== "zero") {
+        throw new Error('Histogram bar y stack must be "zero".');
+      }
+    } else if (xEncoding.fieldType === "ordinal") {
+      aggregate = args.aggregate ?? "mean";
+      stack = Object.hasOwn(args, "stack") ? args.stack : null;
+      if (aggregate !== "mean") {
+        throw new Error('Ordinal bar y aggregate must be "mean".');
+      }
+      if (stack !== null) {
+        throw new Error("Ordinal bar y stack must be null.");
+      }
+    } else {
+      throw new Error(
+        "Bar y encoding requires a binned quantitative or ordinal x encoding."
+      );
     }
   }
 
@@ -235,7 +255,7 @@ function encodePosition(program, channel, args, operation) {
     fieldType,
     Object.hasOwn(args, "scale") ? args.scale : {},
     layer.mark.type === "bar" && fieldType !== "ordinal"
-      ? channel === "x"
+      ? channel === "x" || stack === null
         ? { nice: true, zero: false }
         : { nice: true, zero: true }
       : {}

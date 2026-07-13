@@ -46,6 +46,14 @@ automatic domain uses total counts per x bin rather than raw source values.
 The x action leaves the collection empty; the y action resolves both scales and
 materializes concrete histogram rectangles.
 
+### Aggregate ordinal bar y scales
+
+An ordinal bar mean y scale defaults to `nice: true` and `zero: false`.
+Its automatic domain uses one `mean(field)` value per ordinal x category rather
+than raw source values. Explicit domain and range values remain authoritative.
+The y action resolves the scale but leaves rectangles empty until grouping
+semantics are available.
+
 ## Ordinal scales
 
 Ordinal bar x, color, and stroke-dash encodings use ordinal scales. Automatic
