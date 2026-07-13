@@ -1,3 +1,5 @@
+import { getMarkMaterializationStep } from "../actions/marks/materialization.js";
+
 function usesPositionalScale(program, id) {
   return program.semanticSpec.layers.some(layer =>
     ["x", "y", "xOffset"].some(
@@ -15,54 +17,6 @@ function needsCanvasScaleRematerialization(program, scale) {
       program.semanticSpec.guides.grid?.vertical?.scale === scale.id) &&
     program.resolvedScales[scale.id] !== undefined &&
     usesPositionalScale(program, scale.id)
-  );
-}
-
-function isCompleteLine(layer) {
-  return (
-    layer.mark?.type === "line" &&
-    layer.encoding?.x?.scale !== undefined &&
-    layer.encoding?.y?.scale !== undefined &&
-    (layer.encoding.y.aggregate === "mean" ||
-      (layer.encoding.x.fieldType === "quantitative" &&
-        layer.encoding.y.fieldType === "quantitative"))
-  );
-}
-
-function isCompletePoint(layer) {
-  return (
-    layer.mark?.type === "point" &&
-    layer.encoding?.x?.scale !== undefined &&
-    layer.encoding?.y?.scale !== undefined
-  );
-}
-
-function isCompleteArea(program, layer) {
-  const dataset = program.semanticSpec.datasets.find(item => item.id === layer.data);
-  const isDensity = dataset?.transform?.length === 1 &&
-    dataset.transform[0].type === "density";
-  const densityGroup = dataset?.transform?.[0]?.groupBy;
-  const isCompleteDensity = isDensity && (
-    densityGroup === undefined || layer.encoding?.group?.field === densityGroup
-  );
-  return (
-    layer.mark?.type === "area" &&
-    layer.encoding?.x?.scale !== undefined &&
-    layer.encoding?.y?.scale !== undefined &&
-    (isCompleteDensity || layer.encoding?.y2?.scale === layer.encoding.y.scale)
-  );
-}
-
-function isCompleteBar(program, layer) {
-  return (
-    layer.mark?.type === "bar" &&
-    ((layer.encoding?.x?.bin !== undefined &&
-      layer.encoding?.y?.aggregate === "count" &&
-      layer.encoding.y.stack === "zero") ||
-      (layer.encoding?.x?.fieldType === "ordinal" &&
-        layer.encoding?.y?.aggregate === "mean" &&
-        layer.encoding.y.stack === null &&
-        program.markConfigs[layer.id]?.barWidth !== undefined))
   );
 }
 
@@ -92,24 +46,8 @@ export function planCanvasRematerialization(program) {
     }
   }
   for (const layer of program.semanticSpec.layers) {
-    if (isCompletePoint(layer)) {
-      plan.push({ op: "rematerializePointMark", args: { id: layer.id } });
-    }
-  }
-  for (const layer of program.semanticSpec.layers) {
-    if (isCompleteArea(program, layer)) {
-      plan.push({ op: "rematerializeAreaMark", args: { id: layer.id } });
-    }
-  }
-  for (const layer of program.semanticSpec.layers) {
-    if (isCompleteLine(layer)) {
-      plan.push({ op: "rematerializeLineMark", args: { id: layer.id } });
-    }
-  }
-  for (const layer of program.semanticSpec.layers) {
-    if (isCompleteBar(program, layer)) {
-      plan.push({ op: "rematerializeBarMark", args: { id: layer.id } });
-    }
+    const step = getMarkMaterializationStep(program, layer);
+    if (step !== undefined) plan.push(step);
   }
   if (hasLegend(program)) plan.push({ op: "rematerializeLegend" });
   if (hasTitle(program)) plan.push({ op: "rematerializeTitle" });
@@ -149,7 +87,11 @@ export function planScaleGuideRematerialization(program, id) {
 
 export function applyMaterializationPlan(program, plan) {
   let next = program;
+  const seen = new Set();
   for (const step of plan) {
+    const key = JSON.stringify([step.op, step.args ?? null]);
+    if (seen.has(key)) continue;
+    seen.add(key);
     next = step.args === undefined
       ? next[step.op]()
       : next[step.op](step.args);

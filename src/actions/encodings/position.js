@@ -10,6 +10,7 @@ import {
   validatePositionChannel,
 } from "../../grammar/scales.js";
 import { resolvePositionScaleDefinition } from "../scales/definitions.js";
+import { canMaterializeArea } from "../marks/materialization.js";
 import { resolveTarget, validateOptions } from "./shared.js";
 
 const POSITION_ENCODING_OPTIONS = Object.freeze([
@@ -285,20 +286,7 @@ function encodePosition(program, channel, args, operation) {
   next = next.rematerializeScale({ id: scale.id });
   if (layer.mark.type === "area") {
     const updated = next.semanticSpec.layers.find(item => item.id === target);
-    const updatedDataset = next.semanticSpec.datasets.find(
-      item => item.id === updated.data
-    );
-    const isDensity = updatedDataset?.transform?.length === 1 &&
-      updatedDataset.transform[0].type === "density";
-    const densityGroup = updatedDataset?.transform?.[0]?.groupBy;
-    const isCompleteDensity = isDensity && (
-      densityGroup === undefined || updated.encoding?.group?.field === densityGroup
-    );
-    return (
-      updated.encoding?.x?.scale !== undefined &&
-      updated.encoding?.y?.scale !== undefined &&
-      (isCompleteDensity || updated.encoding?.y2?.scale === updated.encoding.y.scale)
-    )
+    return canMaterializeArea(next, updated)
       ? next.rematerializeAreaMark({ id: target })
       : next;
   }

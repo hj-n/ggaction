@@ -1,6 +1,10 @@
 import { action } from "../../core/action.js";
 import { isPlainObject } from "../../core/immutable.js";
 import { readNominalField, readQuantitativeField } from "../../grammar/scales.js";
+import {
+  canMaterializeArea,
+  canMaterializeLine
+} from "../marks/materialization.js";
 import { resolveTarget, validateOptions } from "./shared.js";
 
 const Y2_OPTIONS = Object.freeze(["field", "target", "fieldType", "scale"]);
@@ -119,24 +123,12 @@ const encodeGroup = action(
       });
     if (layer.mark.type === "area") {
       const updated = next.semanticSpec.layers.find(item => item.id === target);
-      const updatedDataset = next.semanticSpec.datasets.find(
-        item => item.id === updated.data
-      );
-      const isDensity = updatedDataset?.transform?.length === 1 &&
-        updatedDataset.transform[0].type === "density";
-      const densityGroup = updatedDataset?.transform?.[0]?.groupBy;
-      const isCompleteDensity = isDensity && (
-        densityGroup === undefined || updated.encoding?.group?.field === densityGroup
-      );
-      return (
-        updated.encoding?.x?.scale !== undefined &&
-        updated.encoding?.y?.scale !== undefined &&
-        (isCompleteDensity || updated.encoding?.y2?.scale === updated.encoding.y.scale)
-      )
+      return canMaterializeArea(next, updated)
         ? next.rematerializeAreaMark({ id: target })
         : next;
     }
-    return layer.encoding?.x !== undefined && layer.encoding?.y !== undefined
+    const updated = next.semanticSpec.layers.find(item => item.id === target);
+    return canMaterializeLine(next, updated)
       ? next.rematerializeLineMark({ id: target })
       : next;
   }
