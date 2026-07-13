@@ -74,7 +74,8 @@ const program = chart()
 the most recently created mark. Pass `data` or `target` explicitly when a
 program contains more than one candidate. `createGuides` infers the applicable
 axes and horizontal grid from these point encodings. A nominal point color
-encoding also produces a compatible categorical legend.
+encoding can produce a composite categorical legend when a matching shape
+encoding is also present.
 
 ## 3. Render it
 

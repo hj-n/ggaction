@@ -119,6 +119,34 @@ test("rematerializes every regression layer after Canvas edits", () => {
   );
 });
 
+test("supports explicit ungrouped regression without series encodings", () => {
+  const program = pointProgram().createRegression({
+    target: "points",
+    x: "Displacement",
+    y: "Acceleration",
+    groupBy: undefined,
+    band: { color: "#222222", opacity: 0.25 },
+    line: { strokeWidth: 2 }
+  });
+  const band = program.semanticSpec.layers[1];
+  const line = program.semanticSpec.layers[2];
+
+  assert.equal(program.semanticSpec.datasets[2].transform[0].groupBy, undefined);
+  assert.equal(band.encoding.group, undefined);
+  assert.equal(line.encoding.group, undefined);
+  assert.equal(line.encoding.color, undefined);
+  assert.equal(program.graphicSpec.objects.regressionBands.children.length, 1);
+  assert.equal(program.graphicSpec.objects.regressionLines.children.length, 1);
+  assert.equal(
+    program.graphicSpec.objects.regressionBands.children[0].properties.fill,
+    "#222222"
+  );
+  assert.equal(
+    program.graphicSpec.objects.regressionLines.children[0].properties.strokeWidth,
+    2
+  );
+});
+
 test("requires explicit choices for ambiguous targets and groups", () => {
   const twoPoints = pointProgram()
     .createPointMark({ id: "other", data: "selectedCars" })
@@ -144,5 +172,21 @@ test("requires explicit choices for ambiguous targets and groups", () => {
   assert.throws(
     () => pointProgram().createRegression({ band: { extra: true } }),
     /Unknown regression band option/
+  );
+  assert.throws(
+    () => chart().createRegression(),
+    /eligible quantitative point mark/
+  );
+  assert.throws(
+    () => pointProgram().createRegression({ target: "missing" }),
+    /Unknown regression point target/
+  );
+  assert.throws(
+    () => pointProgram().createRegression({ x: "" }),
+    /Regression x must be a non-empty string/
+  );
+  assert.throws(
+    () => pointProgram().createRegression({ line: [] }),
+    /Regression line must be a plain object/
   );
 });

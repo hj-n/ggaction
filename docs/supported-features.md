@@ -19,7 +19,7 @@ chart-authoring API does not support that combination.
 | Constant appearance | radius | — | — | band width | opacity, band fill, line width |
 | Automatic axes | linear | UTC time and linear | bin-aligned and linear | ordinal and linear | shared linear |
 | Automatic grid | horizontal | horizontal | horizontal | horizontal | shared horizontal |
-| Legend | point color | categorical | categorical | categorical | composite color/shape/line + size |
+| Legend | point color + shape | categorical | categorical | categorical | composite color/shape/line + size |
 | Chart title | optional | optional | optional | optional | optional |
 | Browser Canvas | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Node PNG | ✓ | ✓ | ✓ | ✓ | ✓ |

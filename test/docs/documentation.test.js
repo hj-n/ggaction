@@ -153,7 +153,7 @@ test("links every public chart example from entry documentation", () => {
   ]) {
     assert.match(recipes, new RegExp(`\\./${name}\\.md`));
   }
-  assert.match(gettingStarted, /point color\s+encoding also produces/);
+  assert.match(gettingStarted, /point color\s+encoding can produce/);
 });
 
 test("indexes documentation headings for section search", () => {
