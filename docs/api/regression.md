@@ -36,9 +36,12 @@ program.createRegression({
 | `band.opacity` | number from `0` to `1` | `0.18` |
 | `line.strokeWidth` | non-negative finite number | `3` |
 
-The action creates immutable `regressionData`, a `regressionBands` area layer,
-and a `regressionLines` line layer. It delegates to wrapped statistical,
-encoding, and materialization actions instead of compiling semantic state.
+The action namespaces every generated resource with the target point mark ID.
+For a point mark named `points`, it creates immutable `pointsRegressionData`,
+a `pointsRegressionBands` area layer, and a `pointsRegressionLines` line layer.
+This allows multiple point layers to add independent regressions in one
+program. The action delegates to wrapped statistical, encoding, and
+materialization actions instead of compiling semantic state.
 
 ```text
 createRegression

@@ -42,7 +42,7 @@ test("authors and renders the complete primitive regression scatterplot", () => 
         valueCount: 333
       },
       {
-        id: "regressionData",
+        id: "pointsRegressionData",
         source: "selectedCars",
         transform: [{
           type: "regression",
@@ -74,7 +74,7 @@ test("authors and renders the complete primitive regression scatterplot", () => 
     {
       id: "regressionBand",
       mark: { type: "area" },
-      data: "regressionData",
+      data: "pointsRegressionData",
       coordinate: "main",
       encoding: {
         x: { field: "Displacement", fieldType: "quantitative", scale: "x" },
@@ -94,7 +94,7 @@ test("authors and renders the complete primitive regression scatterplot", () => 
     {
       id: "regressionLine",
       mark: { type: "line" },
-      data: "regressionData",
+      data: "pointsRegressionData",
       coordinate: "main",
       encoding: {
         x: { field: "Displacement", fieldType: "quantitative", scale: "x" },
@@ -142,7 +142,7 @@ test("authors and renders the complete primitive regression scatterplot", () => 
     values.pointChildren.map(({ type, properties }) => ({ type, properties }))
   );
   assert.deepEqual(
-    program.graphicSpec.objects.regressionBands.children.map(
+    program.graphicSpec.objects.pointsRegressionBands.children.map(
       child => child.properties
     ),
     values.regressionBands.map(band => ({
@@ -153,7 +153,7 @@ test("authors and renders the complete primitive regression scatterplot", () => 
     }))
   );
   assert.deepEqual(
-    program.graphicSpec.objects.regressionLines.children.map(
+    program.graphicSpec.objects.pointsRegressionLines.children.map(
       child => child.properties
     ),
     values.regressionLines.map(line => ({
@@ -167,8 +167,8 @@ test("authors and renders the complete primitive regression scatterplot", () => 
     "canvas",
     "horizontalGridLines",
     "points",
-    "regressionBands",
-    "regressionLines",
+    "pointsRegressionBands",
+    "pointsRegressionLines",
     "xAxisLine",
     "xAxisTicks",
     "xAxisLabels",

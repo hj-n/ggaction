@@ -71,6 +71,11 @@ const program = chart()
 `target`, `x`, `y`, `groupBy`는 inference보다 우선한다. Group field가 전혀 없으면
 single regression을 만들 수 있다.
 
+생성되는 dataset, band, line, 전용 color scale ID는 target point mark ID를 namespace로
+사용한다. 예를 들어 `points`는 `pointsRegressionData`, `pointsRegressionBands`,
+`pointsRegressionLines`, `pointsRegressionColor`를 사용한다. 따라서 한 program 안에서
+여러 point layer가 서로 충돌하지 않고 regression을 만들 수 있다.
+
 ## 통계 의미
 
 각 group은 ordinary least squares linear regression을 독립적으로 계산한다.

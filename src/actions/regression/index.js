@@ -1,4 +1,5 @@
 import { action } from "../../core/action.js";
+import { validateUserId } from "../../core/identifiers.js";
 import { isPlainObject } from "../../core/immutable.js";
 import { validateKeys } from "../../core/validation.js";
 
@@ -6,11 +7,11 @@ const REGRESSION_OPTIONS = Object.freeze([
   "target", "x", "y", "groupBy", "confidence", "band", "line"
 ]);
 const BAND_OPTIONS = Object.freeze([
-  "data", "x", "lower", "upper", "groupBy", "coordinate", "xScale", "yScale",
+  "id", "data", "x", "lower", "upper", "groupBy", "coordinate", "xScale", "yScale",
   "color", "opacity"
 ]);
 const LINE_OPTIONS = Object.freeze([
-  "data", "x", "y", "groupBy", "coordinate", "xScale", "yScale", "colorScale",
+  "id", "data", "x", "y", "groupBy", "coordinate", "xScale", "yScale", "colorScale",
   "strokeWidth"
 ]);
 
@@ -72,22 +73,23 @@ export const createRegressionBand = action(
   },
   function (args = {}) {
     validateKeys(args, BAND_OPTIONS, "createRegressionBand");
+    const id = validateUserId(args.id, "Regression band id");
     let next = this
       .createAreaMark({
-        id: "regressionBands",
+        id,
         data: args.data,
         fill: args.color ?? "#111111",
         opacity: args.opacity ?? 0.18
       })
       .encodeX({
-        target: "regressionBands",
+        target: id,
         field: args.x,
         fieldType: "quantitative",
         coordinate: args.coordinate,
         scale: { id: args.xScale }
       })
       .encodeYRange({
-        target: "regressionBands",
+        target: id,
         lower: args.lower,
         upper: args.upper,
         fieldType: "quantitative",
@@ -96,11 +98,11 @@ export const createRegressionBand = action(
       });
     if (args.groupBy !== undefined) {
       next = next.encodeGroup({
-        target: "regressionBands",
+        target: id,
         field: args.groupBy
       });
     }
-    return next.rematerializeAreaMark({ id: "regressionBands" });
+    return next.rematerializeAreaMark({ id });
   }
 );
 
@@ -111,21 +113,22 @@ export const createRegressionLine = action(
   },
   function (args = {}) {
     validateKeys(args, LINE_OPTIONS, "createRegressionLine");
+    const id = validateUserId(args.id, "Regression line id");
     let next = this
       .createLineMark({
-        id: "regressionLines",
+        id,
         data: args.data,
         strokeWidth: args.strokeWidth ?? 3
       })
       .encodeX({
-        target: "regressionLines",
+        target: id,
         field: args.x,
         fieldType: "quantitative",
         coordinate: args.coordinate,
         scale: { id: args.xScale }
       })
       .encodeY({
-        target: "regressionLines",
+        target: id,
         field: args.y,
         fieldType: "quantitative",
         coordinate: args.coordinate,
@@ -134,16 +137,16 @@ export const createRegressionLine = action(
     if (args.groupBy !== undefined) {
       next = next
         .encodeColor({
-          target: "regressionLines",
+          target: id,
           field: args.groupBy,
           scale: { id: args.colorScale }
         })
         .encodeGroup({
-          target: "regressionLines",
+          target: id,
           field: args.groupBy
         });
     }
-    return next.rematerializeLineMark({ id: "regressionLines" });
+    return next.rematerializeLineMark({ id });
   }
 );
 
@@ -173,14 +176,18 @@ export const createRegression = action(
     validateKeys(band, ["color", "opacity"], "regression band");
     validateKeys(line, ["strokeWidth"], "regression line");
     const colorEncoding = point.encoding?.color;
+    const namespace = point.id;
+    const dataId = `${namespace}RegressionData`;
+    const bandId = `${namespace}RegressionBands`;
+    const lineId = `${namespace}RegressionLines`;
     const colorScale =
       groupBy !== undefined && colorEncoding?.field === groupBy
         ? colorEncoding.scale
-        : "regressionColor";
+        : `${namespace}RegressionColor`;
 
     return this
       .createRegressionData({
-        id: "regressionData",
+        id: dataId,
         source: point.data,
         x,
         y,
@@ -188,7 +195,8 @@ export const createRegression = action(
         confidence: args.confidence ?? 0.95
       })
       .createRegressionBand({
-        data: "regressionData",
+        id: bandId,
+        data: dataId,
         x,
         lower: "__regression_ci_lower",
         upper: "__regression_ci_upper",
@@ -199,7 +207,8 @@ export const createRegression = action(
         ...band
       })
       .createRegressionLine({
-        data: "regressionData",
+        id: lineId,
+        data: dataId,
         x,
         y,
         ...(groupBy === undefined ? {} : { groupBy, colorScale }),

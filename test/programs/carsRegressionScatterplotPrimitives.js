@@ -31,11 +31,11 @@ export function createCarsRegressionScatterplotPrimitives(cars) {
       value: values.filteredRows
     })
     .editSemantic({
-      property: "dataset[regressionData].source",
+      property: "dataset[pointsRegressionData].source",
       value: "selectedCars"
     })
     .editSemantic({
-      property: "dataset[regressionData].transform",
+      property: "dataset[pointsRegressionData].transform",
       value: [{
         type: "regression",
         method: "linear",
@@ -47,7 +47,7 @@ export function createCarsRegressionScatterplotPrimitives(cars) {
       }]
     })
     .editSemantic({
-      property: "dataset[regressionData].values",
+      property: "dataset[pointsRegressionData].values",
       value: values.regressionRows
     })
     .editSemantic({ property: "layer[points].mark.type", value: "point" })
@@ -113,7 +113,7 @@ export function createCarsRegressionScatterplotPrimitives(cars) {
     })
     .editSemantic({
       property: "layer[regressionBand].data",
-      value: "regressionData"
+      value: "pointsRegressionData"
     })
     .editSemantic({
       property: "layer[regressionBand].coordinate",
@@ -169,7 +169,7 @@ export function createCarsRegressionScatterplotPrimitives(cars) {
     })
     .editSemantic({
       property: "layer[regressionLine].data",
-      value: "regressionData"
+      value: "pointsRegressionData"
     })
     .editSemantic({
       property: "layer[regressionLine].coordinate",
@@ -317,52 +317,52 @@ export function createCarsRegressionScatterplotPrimitives(cars) {
       }))
     })
     .createGraphics({
-      id: "regressionBands",
+      id: "pointsRegressionBands",
       type: "path",
       length: values.regressionBands.length
     })
     .editGraphics({
-      target: "regressionBands",
+      target: "pointsRegressionBands",
       property: "points",
       value: values.regressionBands.map(band => band.points)
     })
     .editGraphics({
-      target: "regressionBands",
+      target: "pointsRegressionBands",
       property: "closed",
       value: true
     })
     .editGraphics({
-      target: "regressionBands",
+      target: "pointsRegressionBands",
       property: "fill",
       value: "#111111"
     })
     .editGraphics({
-      target: "regressionBands",
+      target: "pointsRegressionBands",
       property: "opacity",
       value: 0.18
     })
     .createGraphics({
-      id: "regressionLines",
+      id: "pointsRegressionLines",
       type: "path",
       length: values.regressionLines.length
     })
     .editGraphics({
-      target: "regressionLines",
+      target: "pointsRegressionLines",
       property: "points",
       value: values.regressionLines.map(line => line.points)
     })
     .editGraphics({
-      target: "regressionLines",
+      target: "pointsRegressionLines",
       property: "stroke",
       value: values.regressionLines.map(line => line.stroke)
     })
     .editGraphics({
-      target: "regressionLines",
+      target: "pointsRegressionLines",
       property: "strokeWidth",
       value: 3
     })
     .editGraphics({
-      target: "regressionLines",
+      target: "pointsRegressionLines",
       property: "strokeDash",
       value: values.regressionLines.map(line => line.strokeDash)
     })

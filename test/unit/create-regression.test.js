@@ -37,19 +37,19 @@ test("infers a complete grouped regression from the current point mark", () => {
     program.semanticSpec.layers.map(layer => [layer.id, layer.mark.type]),
     [
       ["points", "point"],
-      ["regressionBands", "area"],
-      ["regressionLines", "line"]
+      ["pointsRegressionBands", "area"],
+      ["pointsRegressionLines", "line"]
     ]
   );
   assert.deepEqual(program.graphicSpec.order, [
-    "canvas", "points", "regressionBands", "regressionLines"
+    "canvas", "points", "pointsRegressionBands", "pointsRegressionLines"
   ]);
   assert.equal(program.semanticSpec.datasets[2].source, "selectedCars");
   assert.equal(program.semanticSpec.datasets[2].transform[0].x, "Displacement");
   assert.equal(program.semanticSpec.datasets[2].transform[0].y, "Acceleration");
   assert.equal(program.semanticSpec.datasets[2].transform[0].groupBy, "Origin");
   assert.equal(before.semanticSpec.datasets.length, 2);
-  assert.equal(before.graphicSpec.objects.regressionBands, undefined);
+  assert.equal(before.graphicSpec.objects.pointsRegressionBands, undefined);
 });
 
 test("matches primitive band and line graphics exactly", () => {
@@ -61,7 +61,9 @@ test("matches primitive band and line graphics exactly", () => {
   });
 
   assert.deepEqual(
-    program.graphicSpec.objects.regressionBands.children.map(child => child.properties),
+    program.graphicSpec.objects.pointsRegressionBands.children.map(
+      child => child.properties
+    ),
     expected.regressionBands.map(band => ({
       points: band.points,
       closed: true,
@@ -70,7 +72,9 @@ test("matches primitive band and line graphics exactly", () => {
     }))
   );
   assert.deepEqual(
-    program.graphicSpec.objects.regressionLines.children.map(child => child.properties),
+    program.graphicSpec.objects.pointsRegressionLines.children.map(
+      child => child.properties
+    ),
     expected.regressionLines.map(line => ({
       points: line.points,
       stroke: line.stroke,
@@ -110,12 +114,12 @@ test("rematerializes every regression layer after Canvas edits", () => {
   const after = before.editCanvas({ width: 860 });
   assert.notDeepEqual(after.graphicSpec.objects.points, before.graphicSpec.objects.points);
   assert.notDeepEqual(
-    after.graphicSpec.objects.regressionBands,
-    before.graphicSpec.objects.regressionBands
+    after.graphicSpec.objects.pointsRegressionBands,
+    before.graphicSpec.objects.pointsRegressionBands
   );
   assert.notDeepEqual(
-    after.graphicSpec.objects.regressionLines,
-    before.graphicSpec.objects.regressionLines
+    after.graphicSpec.objects.pointsRegressionLines,
+    before.graphicSpec.objects.pointsRegressionLines
   );
 });
 
@@ -135,15 +139,44 @@ test("supports explicit ungrouped regression without series encodings", () => {
   assert.equal(band.encoding.group, undefined);
   assert.equal(line.encoding.group, undefined);
   assert.equal(line.encoding.color, undefined);
-  assert.equal(program.graphicSpec.objects.regressionBands.children.length, 1);
-  assert.equal(program.graphicSpec.objects.regressionLines.children.length, 1);
   assert.equal(
-    program.graphicSpec.objects.regressionBands.children[0].properties.fill,
+    program.graphicSpec.objects.pointsRegressionBands.children.length,
+    1
+  );
+  assert.equal(
+    program.graphicSpec.objects.pointsRegressionLines.children.length,
+    1
+  );
+  assert.equal(
+    program.graphicSpec.objects.pointsRegressionBands.children[0].properties.fill,
     "#222222"
   );
   assert.equal(
-    program.graphicSpec.objects.regressionLines.children[0].properties.strokeWidth,
+    program.graphicSpec.objects.pointsRegressionLines.children[0].properties.strokeWidth,
     2
+  );
+});
+
+test("namespaces regression resources by point mark", () => {
+  const program = pointProgram()
+    .createPointMark({ id: "other", data: "selectedCars" })
+    .encodeX({ target: "other", field: "Displacement" })
+    .encodeY({ target: "other", field: "Acceleration" })
+    .createRegression({ target: "points" })
+    .createRegression({ target: "other", groupBy: undefined });
+
+  assert.deepEqual(
+    program.semanticSpec.datasets.slice(2).map(dataset => dataset.id),
+    ["pointsRegressionData", "otherRegressionData"]
+  );
+  assert.deepEqual(
+    program.semanticSpec.layers.slice(2).map(layer => layer.id),
+    [
+      "pointsRegressionBands",
+      "pointsRegressionLines",
+      "otherRegressionBands",
+      "otherRegressionLines"
+    ]
   );
 });
 

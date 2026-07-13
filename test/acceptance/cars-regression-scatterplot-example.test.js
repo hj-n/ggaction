@@ -37,15 +37,15 @@ test("builds the final public regression scatterplot contract", () => {
     [
       { id: "points", mark: "point", data: "selectedCars", coordinate: "main" },
       {
-        id: "regressionBands",
+        id: "pointsRegressionBands",
         mark: "area",
-        data: "regressionData",
+        data: "pointsRegressionData",
         coordinate: "main"
       },
       {
-        id: "regressionLines",
+        id: "pointsRegressionLines",
         mark: "line",
-        data: "regressionData",
+        data: "pointsRegressionData",
         coordinate: "main"
       }
     ]
@@ -59,7 +59,7 @@ test("builds the final public regression scatterplot contract", () => {
     [
       ["cars", undefined, 406],
       ["selectedCars", "cars", 333],
-      ["regressionData", "selectedCars", 73]
+      ["pointsRegressionData", "selectedCars", 73]
     ]
   );
   assert.deepEqual(program.trace.children.map(node => node.op), expectedTopLevelActions);
@@ -102,7 +102,9 @@ test("owns caller data without mutating the input", () => {
   assert.deepEqual(program.semanticSpec.datasets[0].values, before);
   assert.equal(Object.isFrozen(program.semanticSpec.datasets[2].values), true);
   assert.equal(
-    Object.isFrozen(program.graphicSpec.objects.regressionBands.children[0].properties),
+    Object.isFrozen(
+      program.graphicSpec.objects.pointsRegressionBands.children[0].properties
+    ),
     true
   );
 });
