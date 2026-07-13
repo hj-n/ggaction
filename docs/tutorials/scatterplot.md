@@ -7,13 +7,13 @@ title: Cars Scatterplot Tutorial
 
 ![Horsepower versus miles per gallon](../assets/images/cars-scatterplot.png)
 
-The repository includes a runnable example in
-[`examples/cars-scatterplot`](https://github.com/hj-n/ggaction/tree/main/examples/cars-scatterplot).
-It loads `data/cars.json`, removes rows missing either positional field, and
-authors the chart entirely through chart actions.
+This tutorial uses the intended package API. The repository contains a
+[runnable browser example](https://github.com/hj-n/ggaction/tree/main/examples/cars-scatterplot)
+and its [complete source](https://github.com/hj-n/ggaction/blob/main/examples/cars-scatterplot/main.js),
+which import the local source build instead.
 
 ```javascript
-import { chart, render } from "../../src/index.js";
+import { chart, render } from "ggaction";
 
 const response = await fetch("../../data/cars.json");
 const cars = await response.json();
@@ -56,11 +56,16 @@ render(program, context);
 | `encodeX`, `encodeY` | Fields, scales, Cartesian coordinate | Concrete x/y values |
 | `encodeColor` | Nominal color field and scale | Concrete fill colors |
 | `encodeRadius` | — | Constant circle radius |
-| `createGuides` | Axis, horizontal-grid, and title guides | Concrete grid/axis lines, ticks, labels, titles |
+| `createGuides` | Axis and horizontal-grid definitions | Concrete grid/axis lines, ticks, labels, and axis titles |
 
 Position encodings create the default `main` Cartesian coordinate before guides
 are requested. `createGuides` calls the axis and grid actions, which read that
 stored relationship and create guide graphics; they do not create or repair
 coordinates.
 
-See [Encodings](../api/encodings.md) and [Guides](../api/guides.md) for customization.
+## Run and continue
+
+- Serve the repository root and open `examples/cars-scatterplot/`.
+- View the [complete browser source](https://github.com/hj-n/ggaction/blob/main/examples/cars-scatterplot/main.js).
+- Continue with [Encodings](../api/encodings.md) and
+  [Guides](../api/guides.md).

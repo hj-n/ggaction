@@ -8,7 +8,10 @@ title: Cars Histogram Tutorial
 ![Displacement distribution grouped by origin](../assets/images/cars-histogram.png)
 
 This chart bins car displacement, counts the rows in each bin, and stacks those
-counts by origin. The complete program uses only the chart-authoring API.
+counts by origin. The complete program uses only the chart-authoring API. The
+repository contains a
+[runnable browser example](https://github.com/hj-n/ggaction/tree/main/examples/cars-histogram)
+and its [complete program](https://github.com/hj-n/ggaction/blob/main/examples/cars-histogram/program.js).
 
 ```javascript
 import { chart, render } from "ggaction";
@@ -62,6 +65,9 @@ interdependent. Its trace still exposes the wrapped `encodeX` and `encodeY`
 actions. The source dataset remains unchanged; bin counts and stacked geometry
 are derived and materialized separately.
 
-Run the repository example at `examples/cars-histogram/` after serving the
-repository root, or continue with [Encodings](../api/encodings.md),
-[Guides](../api/guides.md), and [Titles](../api/titles.md).
+## Run and continue
+
+- Serve the repository root and open `examples/cars-histogram/`.
+- View the [complete chart program](https://github.com/hj-n/ggaction/blob/main/examples/cars-histogram/program.js).
+- Continue with [Encodings](../api/encodings.md),
+  [Guides](../api/guides.md), and [Titles](../api/titles.md).

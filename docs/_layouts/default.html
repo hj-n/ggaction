@@ -31,11 +31,13 @@
 
       <main class="docs-content" id="main-content" aria-label="Content">
         {{ content }}
+        {%- include page-navigation.html -%}
       </main>
     </div>
 
     {%- include docs-footer.html -%}
     {%- include search-index.html -%}
+    <script src="{{ '/assets/js/docs-toc.js' | relative_url }}"></script>
     <script src="{{ '/assets/js/docs-search.js' | relative_url }}"></script>
   </body>
 </html>

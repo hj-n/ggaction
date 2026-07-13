@@ -8,7 +8,9 @@ title: Cars Line Chart Tutorial
 ![Mean acceleration by year, grouped by origin](../assets/images/cars-line-chart.png)
 
 This chart shows mean acceleration over time for each origin. The complete
-program uses only the chart-authoring API.
+program uses only the chart-authoring API. The repository contains a
+[runnable browser example](https://github.com/hj-n/ggaction/tree/main/examples/cars-line-chart)
+and its [complete program](https://github.com/hj-n/ggaction/blob/main/examples/cars-line-chart/program.js).
 
 ```javascript
 import { chart, render } from "ggaction";
@@ -72,6 +74,9 @@ The source rows remain immutable. Aggregation creates derived series values;
 it does not replace the dataset. Because color and stroke dash encode the same
 field and ordered domain, `createGuides` combines them into one legend.
 
-Run the repository example at `examples/cars-line-chart/` after serving the
-repository root, or continue with [Encodings](../api/encodings.md),
-[Guides](../api/guides.md), and [Titles](../api/titles.md).
+## Run and continue
+
+- Serve the repository root and open `examples/cars-line-chart/`.
+- View the [complete chart program](https://github.com/hj-n/ggaction/blob/main/examples/cars-line-chart/program.js).
+- Continue with [Encodings](../api/encodings.md),
+  [Guides](../api/guides.md), and [Titles](../api/titles.md).

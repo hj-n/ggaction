@@ -1,0 +1,58 @@
+- title: Overview
+  url: /
+- title: Getting Started
+  url: /getting-started/
+- title: Tutorials
+  url: /tutorials/
+- title: Scatterplot Tutorial
+  url: /tutorials/scatterplot/
+- title: Line Chart Tutorial
+  url: /tutorials/line-chart/
+- title: Histogram Tutorial
+  url: /tutorials/histogram/
+- title: Canvas
+  url: /api/canvas/
+- title: Data
+  url: /api/data/
+- title: Marks
+  url: /api/marks/
+- title: Encodings
+  url: /api/encodings/
+- title: Guides
+  url: /api/guides/
+- title: Titles
+  url: /api/titles/
+- title: Rendering
+  url: /api/rendering/
+- title: Position Encodings
+  url: /api/position-encodings/
+- title: Series Encodings
+  url: /api/series-encodings/
+- title: Constant Appearance
+  url: /api/appearance/
+- title: Scale Options
+  url: /api/scales/
+- title: Coordinates
+  url: /api/coordinates/
+- title: Axes
+  url: /api/axes/
+- title: Grids
+  url: /api/grids/
+- title: Legends
+  url: /api/legends/
+- title: ChartProgram and Immutability
+  url: /concepts/chart-program/
+- title: Semantic and Graphical State
+  url: /concepts/semantic-and-graphics/
+- title: Actions and Trace Trees
+  url: /concepts/actions-and-trace/
+- title: Advanced Axis Components
+  url: /advanced/axis-components/
+- title: Supported Features
+  url: /supported-features/
+- title: Complete Action Reference
+  url: /reference/actions/
+- title: Action Authoring
+  url: /extension/action-authoring/
+- title: Primitive API
+  url: /extension/primitives/

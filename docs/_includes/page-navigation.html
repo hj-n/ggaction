@@ -1,0 +1,34 @@
+{% assign previous_page = nil %}
+{% assign next_page = nil %}
+{% assign previous_candidate = nil %}
+{% assign found_current = false %}
+{% for item in site.data.page_order %}
+  {% if found_current and next_page == nil %}
+    {% assign next_page = item %}
+  {% endif %}
+  {% if item.url == page.url %}
+    {% assign previous_page = previous_candidate %}
+    {% assign found_current = true %}
+  {% elsif found_current == false %}
+    {% assign previous_candidate = item %}
+  {% endif %}
+{% endfor %}
+
+{% if previous_page or next_page %}
+  <nav class="docs-page-navigation" aria-label="Previous and next documentation pages">
+    {% if previous_page %}
+      <a class="docs-page-navigation__previous" href="{{ previous_page.url | relative_url }}">
+        <span>Previous</span>
+        <strong>{{ previous_page.title }}</strong>
+      </a>
+    {% else %}
+      <span></span>
+    {% endif %}
+    {% if next_page %}
+      <a class="docs-page-navigation__next" href="{{ next_page.url | relative_url }}">
+        <span>Next</span>
+        <strong>{{ next_page.title }}</strong>
+      </a>
+    {% endif %}
+  </nav>
+{% endif %}
