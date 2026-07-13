@@ -38,6 +38,9 @@ function hasGridEncoding(program) {
 function hasCategoricalLegendEncoding(program) {
   return program.semanticSpec.layers.some(
     layer =>
+      (layer.mark?.type === "point" &&
+        layer.encoding?.color?.scale !== undefined &&
+        layer.encoding?.shape?.scale !== undefined) ||
       (layer.mark?.type === "line" &&
         ["color", "strokeDash"].some(
           channel => layer.encoding?.[channel]?.scale !== undefined

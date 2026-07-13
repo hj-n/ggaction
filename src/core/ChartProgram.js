@@ -172,7 +172,7 @@ export class ChartProgram {
       config = kind;
       kind = "series";
     }
-    if (!["series", "color"].includes(kind)) {
+    if (!["series", "color", "point", "size"].includes(kind)) {
       throw new Error(`Unknown legend kind "${kind}".`);
     }
     if (!isPlainObject(config)) {

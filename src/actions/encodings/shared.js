@@ -10,7 +10,9 @@ export function rematerializeExistingLegend(program) {
     (program.semanticSpec.guides.legend?.series === undefined ||
       program.guideConfigs.legend?.series === undefined) &&
     (program.semanticSpec.guides.legend?.color === undefined ||
-      program.guideConfigs.legend?.color === undefined)
+      program.guideConfigs.legend?.color === undefined) &&
+    program.guideConfigs.legend?.point === undefined &&
+    program.guideConfigs.legend?.size === undefined
   ) {
     return program;
   }

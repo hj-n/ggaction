@@ -9,7 +9,7 @@ title: Guides
 
 | Action | Shortest call | Inference/defaults | Result |
 | --- | --- | --- | --- |
-| `createGuides` | `createGuides()` | Applicable axes, horizontal grid, categorical legend | Wrapped guide child actions in deterministic order |
+| `createGuides` | `createGuides()` | Applicable axes, horizontal grid, and legends | Wrapped guide child actions in deterministic order |
 
 ## `createGuides(options?)`
 
@@ -50,8 +50,12 @@ program.createGuides({ legend: false });
 
 Axes are selected when an x or y encoding exists. A horizontal grid is selected
 when a y encoding exists; vertical grid remains off unless requested. A legend
-is selected for line color/stroke-dash encodings or a bar color encoding.
-Unsupported point legends are not selected.
+is selected for line color/stroke-dash, bar color, or compatible point
+color+shape encodings. A point size encoding adds a second quantitative block.
+
+Layered regression scatterplots still create only one shared x axis, y axis,
+and horizontal grid. Their point color/shape and matching regression line share
+one composite Origin legend, followed by the five-symbol size legend.
 
 For grouped bars, the shortest call creates an ordinal x axis at band centers,
 a quantitative y axis, a horizontal grid, and a right-side color legend:

@@ -197,6 +197,19 @@ export const rematerializeScale = action(
       });
     }
 
+    const mixedPointIds = [...new Set(
+      consumers
+        .filter(consumer =>
+          consumer.layer.mark?.type === "point" &&
+          ["x", "y"].includes(channel) &&
+          next.graphicSpec.objects[consumer.layer.id]?.type === "collection"
+        )
+        .map(consumer => consumer.layer.id)
+    )];
+    for (const pointId of mixedPointIds) {
+      next = next.rematerializePointMark({ id: pointId });
+    }
+
     return applyMaterializationPlan(
       next,
       planScaleGuideRematerialization(next, id)

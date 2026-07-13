@@ -276,12 +276,14 @@ marks. [Grids](../api/grids.md)
 ```javascript
 createLegend({
   target?, channels?, position?, align?, title?, symbol?, labels?,
-  titleStyle?, itemGap?, border?
+  titleStyle?, itemGap?, border?, count?
 })
 ```
 
-Create one categorical legend with a right-side default, explicit bottom
-placement, and layered symbols. [Legends](../api/legends.md)
+Create applicable categorical or point size legend blocks. Categorical legends
+use a right-side default and support explicit bottom placement; point
+color/shape/size composites currently use stacked right-side blocks.
+[Legends](../api/legends.md)
 
 ### `createTitle`
 
@@ -309,6 +311,7 @@ Use these actions for explicit semantic resources or focused axis control.
 | Tick/label groups | `createXAxisTicksAndLabels`, `createYAxisTicksAndLabels`, `editXAxisTicksAndLabels`, `editYAxisTicksAndLabels` |
 | Axis titles | `createXAxisTitle`, `createYAxisTitle`, `editXAxisTitle`, `editYAxisTitle` |
 | Grid directions | `createHorizontalGrid`, `createVerticalGrid` |
+| Point legends | `createPointSeriesLegend`, `createSizeLegend`, `rematerializePointSeriesLegend`, `rematerializeSizeLegend` |
 
 See [Coordinates](../api/coordinates.md) and
 [Advanced axis components](../advanced/axis-components.md).

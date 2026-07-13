@@ -39,6 +39,7 @@ function validateConfig(channel, config) {
 
 function inferText(program, channel, scaleId) {
   const titles = new Set();
+  const primaryTitles = new Set();
   for (const layer of program.semanticSpec.layers) {
     const encoding = layer.encoding?.[channel];
     if (
@@ -46,13 +47,14 @@ function inferText(program, channel, scaleId) {
       typeof encoding.field === "string" &&
       encoding.field.length
     ) {
-      titles.add(
-        encoding.aggregate === undefined
-          ? encoding.field
-          : `${encoding.aggregate}(${encoding.field})`
-      );
+      const title = encoding.aggregate === undefined
+        ? encoding.field
+        : `${encoding.aggregate}(${encoding.field})`;
+      titles.add(title);
+      if (layer.mark?.type === "point") primaryTitles.add(title);
     }
   }
+  if (primaryTitles.size === 1) return [...primaryTitles][0];
   if (titles.size !== 1) throw new Error(`Axis title text cannot be inferred for scale "${scaleId}".`);
   return [...titles][0];
 }

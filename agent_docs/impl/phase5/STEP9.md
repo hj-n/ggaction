@@ -7,16 +7,16 @@ Shared axes/grid, composite Origin legend, quantitative size legend를 `createGu
 
 ## 진행 상태
 
-- [ ] Shared x/y axes deduplication
-- [ ] Existing horizontal grid compatibility
-- [ ] Point color+shape+line composite legend recipe
-- [ ] Quantitative size legend values와 symbols
-- [ ] Right-side multi-legend vertical layout
-- [ ] Legend rematerialization after Canvas/scale edits
-- [ ] `createLegend`/`createGuides` applicability
-- [ ] Trace, shortest call, layout tests
-- [ ] Legend/guide documentation
-- [ ] Primitive equivalence, commit, push
+- [x] Shared x/y axes deduplication
+- [x] Existing horizontal grid compatibility
+- [x] Point color+shape+line composite legend recipe
+- [x] Quantitative size legend values와 symbols
+- [x] Right-side multi-legend vertical layout
+- [x] Legend rematerialization after Canvas/scale edits
+- [x] `createLegend`/`createGuides` applicability
+- [x] Trace, shortest call, layout tests
+- [x] Legend/guide documentation
+- [x] Primitive equivalence, commit, push
 
 ## Legend 규칙
 

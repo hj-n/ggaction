@@ -11,7 +11,11 @@ import {
   validateShapeRange,
   validateSizeRange
 } from "../../grammar/scales.js";
-import { resolveTarget, validateOptions } from "./shared.js";
+import {
+  rematerializeExistingLegend,
+  resolveTarget,
+  validateOptions
+} from "./shared.js";
 
 const RADIUS_OPTIONS = Object.freeze(["value", "target"]);
 const OPACITY_OPTIONS = Object.freeze(["value", "target"]);
@@ -61,7 +65,7 @@ function encodeAppearanceField(program, channel, args, operation) {
   else readQuantitativeField(dataset.values, args.field);
   const scale = resolveAppearanceScale(program, channel, args.scale ?? {});
 
-  return program
+  const next = program
     .editSemantic({
       property: `layer[${target}].encoding.${channel}.field`,
       value: args.field
@@ -77,6 +81,7 @@ function encodeAppearanceField(program, channel, args, operation) {
     .createScale(scale)
     .rematerializeScale({ id: scale.id })
     .rematerializePointMark({ id: target });
+  return rematerializeExistingLegend(next);
 }
 
 const encodeRadius = action(

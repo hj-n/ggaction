@@ -9,12 +9,13 @@ title: Legends
 
 | Action | Shortest call | Inference/defaults | Result |
 | --- | --- | --- | --- |
-| `createLegend` | `createLegend()` | Current/unique compatible mark; right position | Categorical symbols, labels, and title |
+| `createLegend` | `createLegend()` | Current/unique compatible mark; right position | Categorical or quantitative symbols, labels, and title |
 
 ## `createLegend(options?)`
 
-Creates one inferred categorical legend. It supports combined line-series,
-color-stacked histogram, and grouped ordinal-bar legends.
+Creates inferred legend blocks. It supports combined line-series,
+color-stacked histogram, grouped ordinal-bar, composite point-series, and
+quantitative point-size legends.
 
 ~~~javascript
 program.createLegend();
@@ -27,6 +28,8 @@ Every categorical legend uses the same right-side default:
 | line | encoded `color` and/or `strokeDash` | `right` | line |
 | bar histogram | `color` | `right` | swatch |
 | grouped ordinal bar | `color` | `right` | swatch |
+| point + matching line | `color` + `shape` | `right` | line over typed point |
+| quantitative point size | `size` | `right`, below point series | five equal-area circles |
 
 | Option | Type | Default |
 | --- | --- | --- |
@@ -40,6 +43,7 @@ Every categorical legend uses the same right-side default:
 | `titleStyle` | title style object | default sans-serif title style |
 | `itemGap` | positive number | `28` at right, `20` at bottom |
 | `border` | boolean or border style object | `false` |
+| `count` | size-legend symbol count of at least `2` | `5` for point legends |
 
 Pass `position: "bottom"` explicitly for a horizontal legend. Bottom legends
 can use left, center, or right alignment; right legends require center
@@ -94,6 +98,12 @@ A bar color legend stores `guide.legend.color` with its scale and title. A
 combined line legend stores `guide.legend.series` with its channels, scales, and
 title. Positions, fonts, symbols, and border appearance are graphical state.
 
+A point legend combines color and shape only when they encode the same nominal
+field and share an ordered domain. If a matching line layer uses that field and
+color scale, its line is layered behind each typed circle/square symbol. A
+separate `guide.legend.size` block samples five evenly spaced domain values by
+default and maps their areas through the resolved quantitative size scale.
+
 ## Optional border
 
 The default creates no background. Pass true for default border settings or an
@@ -120,26 +130,23 @@ only concrete `graphicSpec` values.
 
 ~~~text
 createLegend
-└─ createCategoricalLegend
-   ├─ createLegendBackground?
-   ├─ createLegendSymbols
-   │  ├─ createLegendSymbolLines?
-   │  ├─ createLegendSymbolPoints?
-   │  └─ createLegendSymbolSwatches?
-   ├─ createLegendLabels
-   └─ createLegendTitle
+├─ createCategoricalLegend
+│  ├─ createLegendBackground?
+│  ├─ createLegendSymbols
+│  ├─ createLegendLabels
+│  └─ createLegendTitle
+├─ createPointSeriesLegend
+└─ createSizeLegend
 ~~~
 
-Continuous legends, point-mark legends, multiple legend blocks, and
-interactive legends are not currently supported.
-
-`createGuides()` selects line-series, histogram color, and grouped-bar color
-legends automatically.
+`createGuides()` selects line-series, histogram color, grouped-bar color, and
+compatible point color/shape/size legends automatically.
 Pass `createGuides({ legend: false })` to opt out.
 
 ## Errors and limitations
 
-Continuous, point-mark, multiple, and interactive legends are unsupported.
+General continuous color legends and interactive legends are unsupported.
+Point composite/size legends currently use right-side layout.
 Right-side layout requires sufficient right margin; bottom layout must be
 requested explicitly and requires sufficient bottom margin.
 

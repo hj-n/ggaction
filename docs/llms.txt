@@ -93,6 +93,10 @@ and language models.
   delegates to createRegressionData, createRegressionBand, and
   createRegressionLine. It shares the point coordinate and x/y scales and
   defaults to a 95% mean-response band and line width 3.
+- Point legends combine one nominal color/shape field with a matching line as
+  typed composite symbols. A separate quantitative size block defaults to five
+  equal-area symbols. Both stack at the chart-independent right position and
+  rematerialize after Canvas changes.
 - Binned bar encodeX stores maxBins, resolves a nice linear x domain/range, and deliberately leaves rect materialization for later y encoding.
 - Ordinal bar encodeX requires fieldType "ordinal", preserves first-appearance domain order, resolves equal band geometry, and deliberately leaves rect materialization for later aggregate/group actions.
 - Ordinal bar encodeY requires a quantitative field, defaults to mean with stack null, resolves y from x-category means, and keeps rects empty until grouping semantics exist.

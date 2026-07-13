@@ -13,6 +13,19 @@ export const rematerializeLegend = action(
   { op: "rematerializeLegend", description: "Rematerialize every categorical legend component." },
   function (args = {}) {
     noOptions(args, "rematerializeLegend");
+    if (
+      this.guideConfigs.legend?.point !== undefined ||
+      this.guideConfigs.legend?.size !== undefined
+    ) {
+      let next = this;
+      if (this.guideConfigs.legend?.point !== undefined) {
+        next = next.rematerializePointSeriesLegend();
+      }
+      if (this.guideConfigs.legend?.size !== undefined) {
+        next = next.rematerializeSizeLegend();
+      }
+      return next;
+    }
     const { kind, config } = activeConfig(this);
     const definition = resolveCurrentDefinition(this, config);
     let next = sameValues(config.domain, definition.domain)
@@ -96,6 +109,30 @@ export const createLegend = action(
   function (args = {}) {
     if (!isPlainObject(args)) {
       throw new TypeError("createLegend options must be a plain object.");
+    }
+    const pointCandidates = this.semanticSpec.layers.filter(layer =>
+      layer.mark?.type === "point" &&
+      layer.encoding?.color?.scale !== undefined &&
+      layer.encoding?.shape?.scale !== undefined
+    );
+    const requestedPoint = args.target === undefined
+      ? pointCandidates.length === 1 ? pointCandidates[0] : undefined
+      : pointCandidates.find(layer => layer.id === args.target);
+    if (requestedPoint !== undefined) {
+      const unknown = Object.keys(args).find(
+        key => !["target", "count"].includes(key)
+      );
+      if (unknown !== undefined) {
+        throw new Error(`Unknown point legend option "${unknown}".`);
+      }
+      let next = this.createPointSeriesLegend({ target: requestedPoint.id });
+      if (requestedPoint.encoding?.size?.scale !== undefined) {
+        next = next.createSizeLegend({
+          target: requestedPoint.id,
+          ...(args.count === undefined ? {} : { count: args.count })
+        });
+      }
+      return next;
     }
     return this.createCategoricalLegend(args);
   }
