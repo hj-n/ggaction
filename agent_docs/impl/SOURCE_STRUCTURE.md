@@ -1,5 +1,9 @@
 # Source Structure Refactor
 
+> 이 문서는 당시 source-structure refactor의 실행 기록이다. 이후 Phase와 리팩토링을
+> 포함한 현재 구현 아키텍처는 [`../SECOND_ARCHITECTURE.md`](../SECOND_ARCHITECTURE.md)를
+> 기준으로 한다.
+
 ## 목표
 
 기존 동작, public API, semantic/graphic schema를 변경하지 않고 `src/`의 파일

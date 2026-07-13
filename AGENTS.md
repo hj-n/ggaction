@@ -3,7 +3,9 @@
 ## Architecture Reference
 
 - Read `agent_docs/INITIAL_ARCHITECTURE.md` before making architectural or implementation decisions.
-- Treat it as the starting point and a design reference, not as an infallible or permanently fixed specification.
+- Also read `agent_docs/SECOND_ARCHITECTURE.md`, which records the current implemented architecture after the initial chart phases and takes precedence when it differs from the initial design reference.
+- Treat `INITIAL_ARCHITECTURE.md` as the starting point and a design reference, not as an infallible or permanently fixed specification.
+- Treat `SECOND_ARCHITECTURE.md` as the current architectural baseline. Update it when a deliberate architectural change alters module ownership, state boundaries, materialization flow, rendering boundaries, or public package boundaries.
 - Prefer a simpler or more internally consistent design when implementation evidence supports it.
 - Discuss material changes to the public API, stored schemas, or core architecture with the user before committing to them.
 
@@ -21,6 +23,17 @@
 - Every domain action must explicitly define and invoke the graphical materialization required by its semantic changes.
 - `editSemantic`, `createGraphics`, and `editGraphics` are low-level authoring primitives exposed through the public extension layer, not the ordinary chart-authoring API.
 - Users interact through domain-specific actions.
+
+## Source Ownership and Module Boundaries
+
+- Give each cross-cutting contract one canonical owner. Shared defaults, closed vocabularies, resource lookup rules, validation rules, and dispatch tables must be defined once and consumed by actions rather than re-declared in multiple feature modules.
+- Route ID-based lookup, existence checks, and required-resource errors for named semantic datasets, layers, scales, and coordinates through shared selectors. Keep capability queries local only when they select by semantic behavior rather than by resource identity.
+- Use one shared concrete-graphic schema for graphical editing and rendering. Renderers may add completeness checks required to draw a node, but they must not redefine a conflicting property or value contract.
+- Namespace every repeatable generated internal dataset, layer, scale, guide, and graphic ID from its owning user-defined resource ID and semantic role. Stable system IDs are reserved for structurally singular slots such as the canvas or one supported guide per channel; do not use global generated IDs where the same aggregate action can create more than one resource.
+- Store each piece of program state in one canonical representation. Convenience aliases must be derived read-only accessors, and internal counters or bookkeeping must remain non-enumerable or private rather than becoming duplicate serialized state.
+- Organize source code by reusable semantic capability and separate wrapped action orchestration from pure grammar, resolution, layout, and materialization calculations. Pure modules must not mutate a program or create trace nodes; meaningful authoring steps must remain wrapped actions.
+- Express cross-cutting rematerialization as deterministic plans of wrapped action calls, deduplicate equivalent plan steps while preserving order, and register new consumers with the responsible materialization policy instead of scattering ad hoc rematerialization calls across unrelated actions.
+- Keep every public JavaScript entry point synchronized with its TypeScript declaration, package export-map entry, and package-boundary tests. Keep Node-only adapters out of browser-safe entry points.
 
 ## User-Facing API Design
 
