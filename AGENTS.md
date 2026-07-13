@@ -108,8 +108,9 @@
 - Whenever a public action is added, removed, renamed, or changes signature, update `docs/reference/actions.md`, its relevant API page, and the current scope in `docs/llms.txt` in the same conceptual commit.
 - Keep unimplemented roadmap ideas out of current API documentation except where a concise limitation is required to explain an accepted value or error.
 - Do not exhaustively document internal modules, helper functions, data structures, or implementation mechanics in public docs unless users must understand them to use the library correctly.
-- Write each new chart implementation contract in Korean at `agent_docs/impl/chart/<chart-name>.md`. One phase may contain multiple chart development cycles, so track goals, the final user-facing API, important action hierarchy, implementation order, and status by chart rather than in a phase-level `GOAL.md`.
-- Every chart implementation document must place a `진행 상태` checklist near the beginning and keep it updated as each implementation unit is completed. Historical phase and STEP documents may remain as design records, but they are not the required structure for new chart work.
+- Write each new chart implementation contract in Korean at `agent_docs/impl/chart/<chart-name>.md`. Keep the complete chart description, final user-facing API, important action hierarchy, and stored-result contract readable in that one chart document.
+- A phase may contain any number of chart development cycles. Use `agent_docs/impl/phaseN/GOAL.md` and `STEPn.md` flexibly to manage that phase's chart set, shared prerequisites, execution order, integration work, and cleanup; do not impose a fixed mapping between chart cycles and STEP documents.
+- Every Phase STEP document must place a `진행 상태` checklist near the beginning and keep it updated. Phase documents should link the chart contracts they coordinate, but must not split one chart's complete specification across STEP files.
 - Preserve `agent_docs/INITIAL_ARCHITECTURE.md` as an initial design record unless the user explicitly asks to revise it; it does not need to mirror every later implementation decision.
 - Keep historical design references distinct from documentation of the current behavior.
 

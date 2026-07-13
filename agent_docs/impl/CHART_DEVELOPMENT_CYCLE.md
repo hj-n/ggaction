@@ -13,8 +13,9 @@
 - 원하는 최종 user-facing API의 방향
 
 이 정보를 바탕으로 차트 문서가 확정되면 agent는 아래 사이클을 순서대로 진행할 수
-있다. 하나의 Phase는 하나 이상의 차트 개발 사이클을 포함할 수 있으며, 구현과 진행
-상태는 Phase가 아니라 개별 차트를 기준으로 관리한다.
+있다. 하나의 Phase는 1개부터 수십 또는 수백 개까지 여러 차트 개발 사이클을 포함할
+수 있다. 차트의 specification은 개별 차트 문서에서 관리하고, Phase의 범위와 실행
+순서는 Phase별 `GOAL.md`와 `STEPn.md`에서 상황에 맞게 관리한다.
 
 ## 차트 문서와 산출물
 
@@ -27,7 +28,21 @@ agent_docs/impl/chart/<chart-name>.md
 차트 이름은 기능을 식별할 수 있는 kebab-case를 사용한다. 예를 들어 histogram은
 `agent_docs/impl/chart/histogram.md`, grouped bar chart는
 `agent_docs/impl/chart/grouped-bar.md`에 기록한다. Phase가 여러 차트를 포함하더라도
-각 차트의 목표, API, hierarchy, 진행 상태는 서로 독립된 문서에 유지한다.
+각 차트의 설명, 최종 API, hierarchy는 서로 독립된 문서에 유지한다.
+
+Phase 운영 문서는 기존 구조를 계속 사용할 수 있다.
+
+```text
+agent_docs/impl/phaseN/GOAL.md
+agent_docs/impl/phaseN/STEP1.md
+agent_docs/impl/phaseN/STEP2.md
+...
+```
+
+다만 Phase마다 차트 수와 공통 기반 작업이 다르므로 `GOAL.md`의 형식, STEP의 수,
+각 STEP의 범위는 고정하지 않는다. Phase 문서는 포함할 차트 문서를 링크하고 전체
+방향과 실행 순서를 관리한다. 차트 문서는 Phase 문서와 별개로 해당 차트의 완전한
+specification을 유지한다.
 
 완료된 차트 개발 사이클은 다음 실행 가능한 결과를 남긴다.
 
@@ -154,36 +169,35 @@ Action별로 다음을 결정한다.
 경우 atomic aggregate action을 제공한다. 예를 들어 histogram은 `encodeX(bin)`과
 `encodeY(count, stack)`을 `encodeHistogram` 아래에서 함께 호출한다.
 
-## 4. 구현 계획과 진행 상태 작성
+## 4. Phase 계획에 사이클 배치
 
-차트 문서 안에 의존성 순서대로 구현 계획을 작성하고, 문서 앞부분에 `진행 상태`
-체크리스트를 둔다. 별도의 `GOAL.md`나 Phase별 STEP 문서를 필수로 만들지 않는다.
+차트 문서에는 차트 설명, 최종 user-facing API, 중요한 action hierarchy와 저장 결과
+계약을 기록한다. Phase의 구현 계획과 진행 상태는 `phaseN/GOAL.md`와 `STEPn.md`에서
+관리한다.
 
 ```markdown
-# Chart — 기능 이름
+# Phase N — Step M
 
 ## 목표
 
-최종 차트와 user-facing API.
+이번 STEP에서 완료할 Phase-level 결과.
 
 ## 진행 상태
 
-- [ ] Primitive baseline
-- [ ] Atomic actions
-- [ ] Aggregate action hierarchy
-- [ ] Public vertical slice
+- [ ] 작업 단위 1
+- [ ] 작업 단위 2
 - [ ] Test와 documentation
 
-## 구현 순서
+## 관련 차트
 
-1. 독립적으로 검증 가능한 의미 단위
-2. 다음 의존 기능
-3. 최종 public API 조립
+- `../chart/example-a.md`
+- `../chart/example-b.md`
 ```
 
-구현 순서의 각 항목은 독립적으로 검증 가능한 의미 단위여야 한다. 파일 하나나 작은
-helper 하나를 별도 단계로 만들지 않는다. Phase가 여러 차트를 포함하더라도 한 차트
-문서에는 해당 차트에 필요한 작업만 기록한다.
+Phase 문서와 차트 사이클 사이에 고정된 1:1 관계를 만들지 않는다. STEP은 공통 기반
+기능, 하나 또는 여러 차트, 통합 검증이나 정리 작업을 다룰 수 있다. 반대로 차트의
+완전한 specification을 STEP별로 잘라 분산시키지 않는다. STEP이 어떤 범위를 가지든
+관련 차트의 최종 계약은 항상 `chart/<chart-name>.md`에서 한 번에 읽을 수 있어야 한다.
 
 ## 5. Bottom-up 구현
 
@@ -197,7 +211,7 @@ helper 하나를 별도 단계로 만들지 않는다. Phase가 여러 차트를
 6. Action trace의 parent-child 구조와 순서를 검증한다.
 7. 관련 public documentation을 같은 변경에서 갱신한다.
 8. 전체 test와 필요한 PNG/browser 결과를 확인한다.
-9. 차트 문서의 진행 상태를 갱신하고 하나의 conceptual commit으로 push한다.
+9. 관련 Phase STEP의 진행 상태를 갱신하고 하나의 conceptual commit으로 push한다.
 
 High-level action은 얇게 유지한다. Child applicability와 호출 순서는 결정할 수 있지만,
 child가 소유한 validation, inference, materialization을 복제하지 않는다.
@@ -229,9 +243,11 @@ pixel, 대표 색상을 검사한다. Browser 검증은 logical Canvas size와 c
 ## 7. 차트 사이클 완료 정리
 
 개별 차트 사이클 완료 전에 다음을 수행한다. 같은 Phase의 다른 차트가 진행 중이어도
-완료된 차트는 독립적으로 정리하고 검증한다.
+완료된 차트는 독립적으로 정리하고 검증하며, 관련 Phase STEP의 진행 상태를 함께
+갱신한다.
 
-- 해당 `agent_docs/impl/chart/<chart-name>.md`의 진행 상태를 완료로 갱신한다.
+- 해당 `agent_docs/impl/chart/<chart-name>.md`가 최종 구현 계약과 일치하는지 확인한다.
+- 관련 `agent_docs/impl/phaseN/STEPn.md`의 진행 상태를 갱신한다.
 - Public action reference, 관련 API page, tutorial, `docs/llms.txt`를 갱신한다.
 - 해당 차트 개발 중 사용한 intermediate program과 snapshot test를 제거한다.
 - 차트별 public example과 primitive baseline만 대표 프로그램으로 남긴다.
