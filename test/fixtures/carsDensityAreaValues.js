@@ -132,17 +132,33 @@ function mapLinear(value, domain, range) {
   return range[0] + ratio * (range[1] - range[0]);
 }
 
-function buildLegend(groupDomain, colors, { width, bounds, offset = 8 }) {
+function buildLegend(
+  groupDomain,
+  colors,
+  { bounds, offset = 8, titlePosition = "left" }
+) {
+  if (!["top", "left"].includes(titlePosition)) {
+    throw new Error(`Unsupported legend titlePosition "${titlePosition}".`);
+  }
   const symbolWidth = 14;
   const symbolHeight = 12;
   const labelOffset = 8;
   const itemGap = 24;
+  const titleGap = 20;
+  const titleText = "Origin";
+  const titleWidth = titleText.length * 7;
   const itemWidths = groupDomain.map(
     group => symbolWidth + labelOffset + String(group).length * 7
   );
-  const totalWidth = itemWidths.reduce((sum, value) => sum + value, 0) +
+  const itemsWidth = itemWidths.reduce((sum, value) => sum + value, 0) +
     itemGap * Math.max(0, groupDomain.length - 1);
-  let cursor = bounds.x + (bounds.width - totalWidth) / 2;
+  const totalWidth = titlePosition === "left"
+    ? titleWidth + titleGap + itemsWidth
+    : itemsWidth;
+  const start = bounds.x + (bounds.width - totalWidth) / 2;
+  let cursor = titlePosition === "left"
+    ? start + titleWidth + titleGap
+    : start;
   const itemY = bounds.y - offset - symbolHeight / 2;
   const items = groupDomain.map((group, index) => {
     const item = {
@@ -162,8 +178,14 @@ function buildLegend(groupDomain, colors, { width, bounds, offset = 8 }) {
     position: "top",
     direction: "vertical",
     columns: 3,
+    titlePosition,
     offset,
-    title: { x: width / 2, y: itemY - 26, text: "Origin" },
+    title: {
+      x: titlePosition === "left" ? start : bounds.x + bounds.width / 2,
+      y: titlePosition === "left" ? itemY : itemY - 26,
+      text: titleText,
+      textAlign: titlePosition === "left" ? "left" : "center"
+    },
     items,
     width: totalWidth
   };
@@ -180,7 +202,8 @@ export function createCarsDensityAreaValues(
     as = ["Acceleration_value", "Acceleration_density"],
     width = 720,
     height = 500,
-    margin = { top: 130, right: 40, bottom: 70, left: 80 }
+    margin = { top: 130, right: 40, bottom: 70, left: 80 },
+    legendTitlePosition = "left"
   } = {}
 ) {
   if (!Array.isArray(cars)) {
@@ -345,7 +368,10 @@ export function createCarsDensityAreaValues(
         }
       }
     },
-    legend: buildLegend(groupDomain, COLORS, { width, bounds }),
+    legend: buildLegend(groupDomain, COLORS, {
+      bounds,
+      titlePosition: legendTitlePosition
+    }),
     title: {
       text: "Distribution of Acceleration",
       subtitle: "By Origin (cars dataset)"

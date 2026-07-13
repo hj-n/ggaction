@@ -54,8 +54,9 @@ canvas
 - 3개의 Origin path가 각각 100 sample과 2 baseline points를 가진다.
 - 겹친 분포가 함께 보이도록 각 path는 `opacity: 0.5`를 가진다.
 - Horizontal 6개, vertical 3개 grid line이 area보다 먼저 render된다.
-- Top legend, title/subtitle, axes를 포함한 1440×1000 PNG를 직접 확인했다.
+- `titlePosition: "left"`인 top legend, title/subtitle, axes를 포함한 1440×1000 PNG를
+  직접 확인했다.
 - `graphicSpec` only rendering과 caller-owned cars immutability가 통과했다.
-- `npm test`: 370 passing
+- `npm test`: 371 passing
 - `npm run test:render`: 6 passing
-- `npm run test:coverage`: lines 94.41%, branches 89.14%, functions 98.41%
+- `npm run test:coverage`: lines 94.40%, branches 89.17%, functions 98.41%

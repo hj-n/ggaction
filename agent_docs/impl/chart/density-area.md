@@ -48,6 +48,7 @@ const program = chart()
       position: "top",
       direction: "vertical",
       columns: 3,
+      titlePosition: "left",
       offset: 8
     }
   })
@@ -263,6 +264,8 @@ canvas
 - `offset`은 legend block과 plot top 사이의 non-negative gap이다.
 - `columns`는 positive integer이며 생략 시 item count다.
 - `direction: "horizontal"`은 row-major, `"vertical"`은 column-major로 item을 채운다.
+- `titlePosition: "top" | "left"`는 title을 item grid 위 또는 같은 행의 왼쪽에 둔다.
+  일반 legend 기본값은 기존 geometry를 보존하는 `"top"`이고 이 차트만 `"left"`를 쓴다.
 - 이 차트는 3 items와 3 columns이므로 두 direction의 최종 한 줄 배치는 같지만 stored
   layout option과 trace argument는 명시적으로 보존한다.
 - Title은 Canvas top에서 독립적으로 배치되고 legend는 plot 바로 위에 배치된다.

@@ -393,7 +393,11 @@ export function createCarsDensityAreaPrimitives(cars) {
       value: "sans-serif"
     })
     .editGraphics({ target: "colorLegendTitle", property: "fontWeight", value: 600 })
-    .editGraphics({ target: "colorLegendTitle", property: "textAlign", value: "center" })
+    .editGraphics({
+      target: "colorLegendTitle",
+      property: "textAlign",
+      value: values.legend.title.textAlign
+    })
     .editGraphics({ target: "colorLegendTitle", property: "textBaseline", value: "middle" })
     .createTitle({
       text: values.title.text,

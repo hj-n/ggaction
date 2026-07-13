@@ -66,7 +66,8 @@ STEP10 browser, PNG, docs, cleanup, Phase closure
 - Horizontal/vertical grids가 모두 기본 density chart guide로 materialize된다.
 - Source dataset, derived values와 이전 `ChartProgram`이 immutable하다.
 - Origin마다 하나의 baseline-closed path가 만들어지고 color domain order를 따른다.
-- Top legend의 position/direction/columns/offset이 일반 categorical layout으로 동작한다.
+- Top legend의 position/direction/columns/offset/titlePosition이 일반 categorical layout으로
+  동작한다.
 - Title, legend와 plot이 충분한 top margin에서 겹치지 않고 부족하면 오류를 낸다.
 - Primitive/public `graphicSpec`, order와 renderer calls가 정확히 같다.
 - Browser Canvas, 2× PNG, unit, acceptance, docs, coverage와 full regression이 통과한다.
