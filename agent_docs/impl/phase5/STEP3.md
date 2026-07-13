@@ -42,7 +42,7 @@ canvas
 → regression lines 2
 → x/y axes
 → Origin composite legend
-→ Acceleration size legend
+→ Acceleration size legend (5 symbols)
 ```
 
 2× PNG는 `1520×960`이며, USA/Japan point와 line, 두 confidence band, 두 right-side

@@ -186,10 +186,10 @@ test("authors and renders the complete primitive regression scatterplot", () => 
     "sizeLegendTitle"
   ]);
 
-  assert.equal(findCanvasCalls(context, "arc").length, 258);
+  assert.equal(findCanvasCalls(context, "arc").length, 260);
   assert.equal(findCanvasCalls(context, "fillRect").length, 81);
   assert.equal(findCanvasCalls(context, "closePath").length, 2);
-  assert.equal(findCanvasCalls(context, "fillText").length, 18);
+  assert.equal(findCanvasCalls(context, "fillText").length, 20);
   assert.equal(findCanvasCalls(context, "stroke").length, 98);
 
   const topLevelOps = new Set(program.trace.children.map(node => node.op));
@@ -228,6 +228,6 @@ test("owns primitive input and renders from graphicSpec alone", () => {
     { graphicSpec: program.graphicSpec },
     context
   );
-  assert.equal(findCanvasCalls(context, "arc").length, 258);
+  assert.equal(findCanvasCalls(context, "arc").length, 260);
   assert.equal(findCanvasCalls(context, "closePath").length, 2);
 });

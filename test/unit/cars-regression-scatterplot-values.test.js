@@ -130,7 +130,7 @@ test("maps points, confidence bands, lines, axes, and legends concretely", () =>
   );
   assert.deepEqual(
     result.legends.size.items.map(item => item.value),
-    [8, 15.1, 22.2]
+    [8, 11.55, 15.1, 18.65, 22.2]
   );
 });
 

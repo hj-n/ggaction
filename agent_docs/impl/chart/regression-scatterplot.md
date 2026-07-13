@@ -205,7 +205,8 @@ Renderer는 `semanticSpec`, context, trace를 읽지 않는다.
 
 - Origin legend: point color + point shape + regression line을 하나의 categorical
   composite symbol로 설명한다.
-- Acceleration legend: quantitative size scale을 별도로 설명한다.
+- Acceleration legend: quantitative size scale을 별도로 설명하며 기본 symbol count는
+  5개다.
 - 두 legend는 chart-independent 기본값인 right placement를 사용하고 vertical stack으로
   배치한다.
 - Confidence band의 고정 검은색은 field encoding이 아니므로 legend를 만들지 않는다.

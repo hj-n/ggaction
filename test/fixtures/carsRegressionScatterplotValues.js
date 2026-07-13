@@ -3,6 +3,7 @@ const UPPER_FIELD = "__regression_ci_upper";
 const COLORS = ["#4c78a8", "#f58518"];
 const SHAPES = ["circle", "square"];
 const DEFAULT_SIZE_RANGE = [24, 196];
+const DEFAULT_SIZE_LEGEND_COUNT = 5;
 
 function requireOptions({ groups, confidence }) {
   if (
@@ -486,14 +487,15 @@ export function createCarsRegressionScatterplotValues(
       label: { x: originLegendX + 44, y, text: group }
     };
   });
-  const sizeLegendValues = [
-    sizeDomain[0],
-    (sizeDomain[0] + sizeDomain[1]) / 2,
-    sizeDomain[1]
-  ];
+  const sizeLegendValues = Array.from(
+    { length: DEFAULT_SIZE_LEGEND_COUNT },
+    (_, index) => sizeDomain[0] +
+      index / (DEFAULT_SIZE_LEGEND_COUNT - 1) *
+      (sizeDomain[1] - sizeDomain[0])
+  );
   const sizeLegendItems = sizeLegendValues.map((value, index) => {
     const area = mapValue(value, sizeDomain, sizeRange);
-    const y = bounds.y + 180 + index * 48;
+    const y = bounds.y + 180 + index * 40;
     return {
       value,
       symbol: {
