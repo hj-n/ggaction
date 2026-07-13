@@ -202,17 +202,21 @@ const rematerializeBarMark = action(
       .rematerializeScale({ id: required.xEncoding.scale })
       .rematerializeScale({ id: required.yEncoding.scale });
 
+    const colorScaleId = required.layer.encoding?.color?.scale;
+    if (colorScaleId !== undefined) {
+      resolved = resolved.rematerializeScale({ id: colorScaleId });
+    }
+
     if (required.materialization === "ordinalMean") {
+      const offsetScaleId = required.layer.encoding?.xOffset?.scale;
+      if (offsetScaleId !== undefined) {
+        resolved = resolved.rematerializeScale({ id: offsetScaleId });
+      }
       return resolved.editGraphics({
         target: id,
         property: "length",
         value: 0
       });
-    }
-
-    const colorScaleId = required.layer.encoding?.color?.scale;
-    if (colorScaleId !== undefined) {
-      resolved = resolved.rematerializeScale({ id: colorScaleId });
     }
 
     const xScale = resolved.resolvedScales[required.xEncoding.scale];

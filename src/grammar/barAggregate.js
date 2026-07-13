@@ -29,14 +29,30 @@ export function deriveBarMeans(rows, layer) {
   const { x, y } = requireMeanBarEncoding(layer);
   const xValues = readNominalField(rows, x.field);
   const yValues = readQuantitativeField(rows, y.field);
+  const color = layer.encoding?.color;
+  let colorValues;
+
+  if (color !== undefined) {
+    if (color.fieldType !== "nominal") {
+      throw new Error(`Bar color encoding on mark "${layer.id}" must be nominal.`);
+    }
+    colorValues = readNominalField(rows, color.field);
+  }
   const groups = new Map();
 
   for (let index = 0; index < rows.length; index += 1) {
     const xValue = xValues[index];
-    const group = groups.get(xValue) ?? { x: xValue, sum: 0, count: 0 };
+    const colorValue = colorValues?.[index];
+    const key = JSON.stringify([xValue, colorValue]);
+    const group = groups.get(key) ?? {
+      x: xValue,
+      ...(colorValues === undefined ? {} : { color: colorValue }),
+      sum: 0,
+      count: 0
+    };
     group.sum += yValues[index];
     group.count += 1;
-    groups.set(xValue, group);
+    groups.set(key, group);
   }
 
   if (groups.size === 0) {
@@ -45,6 +61,7 @@ export function deriveBarMeans(rows, layer) {
 
   const values = [...groups.values()].map(group => ({
     x: group.x,
+    ...(Object.hasOwn(group, "color") ? { color: group.color } : {}),
     y: group.sum / group.count,
     count: group.count
   }));

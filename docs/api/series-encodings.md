@@ -15,6 +15,7 @@ fills. On line and bar marks the field also participates in grouping.
 | `field` | non-empty string | required |
 | `target` | point, line, or bar mark ID | current mark |
 | `fieldType` | `"nominal"` | `"nominal"` |
+| `layout` | `"group"` or `"stack"`; bar only | mark policy |
 | `scale.id` | scale ID | `"color"` |
 | `scale.type` | `"ordinal"` | `"ordinal"` |
 | `scale.domain` | `"auto"` or category array | `"auto"` |
@@ -32,6 +33,19 @@ program.encodeColor({
 `scale.range: { palette: "tableau10" }`. Do not provide both. Automatic domains
 preserve first-appearance order.
 
+For an ordinal-x mean bar, `layout: "group"` is required. It keeps
+`y.stack = null`, invokes `encodeXOffset` with the same field, and recomputes
+the y domain from one mean per x/color cell. Color and xOffset scales are fully
+resolved, while concrete rects wait for bar width.
+
+```javascript
+groupedBars.encodeColor({
+  field: "sex",
+  layout: "group",
+  scale: { palette: "tableau10" }
+});
+```
+
 On a complete histogram, `encodeColor` rematerializes each non-empty bin as
 zero-stacked category rects. Stack and fill order follow the resolved color
 domain. The y scale continues to use each bin's total count, and an explicit
@@ -40,12 +54,17 @@ domain must contain every observed category.
 ```javascript
 histogram.encodeColor({
   field: "Origin",
+  layout: "stack",
   scale: {
     domain: ["USA", "Europe", "Japan"],
     palette: "tableau10"
   }
 });
 ```
+
+Histogram color keeps its existing stack behavior when `layout` is omitted;
+`layout: "stack"` makes that policy explicit. Grouped histograms and stacked
+ordinal-mean bars are not supported in the current scope.
 
 ## `encodeStrokeDash(options)`
 

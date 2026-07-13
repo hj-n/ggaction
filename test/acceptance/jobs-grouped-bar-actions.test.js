@@ -20,7 +20,7 @@ function semanticByScaleId(spec) {
   };
 }
 
-test("authors x, y, and xOffset through grouped bar actions", () => {
+test("authors grouped bar encoding semantics through chart actions", () => {
   const primitive = createJobsGroupedBarPrimitives(jobs);
   const program = createJobsGroupedBarActions(jobs);
 
@@ -40,7 +40,11 @@ test("authors x, y, and xOffset through grouped bar actions", () => {
   const actionOps = program.trace.children.map(child => child.op);
   assert.equal(actionOps.includes("encodeX"), true);
   assert.equal(actionOps.includes("encodeY"), true);
-  assert.equal(actionOps.includes("encodeXOffset"), true);
+  const colorNode = program.trace.children.find(child => child.op === "encodeColor");
+  assert.equal(
+    colorNode.children.some(child => child.op === "encodeXOffset"),
+    true
+  );
 
   const replacedPaths = new Set([
     "layer[bars].encoding.xOffset.field",
@@ -48,7 +52,13 @@ test("authors x, y, and xOffset through grouped bar actions", () => {
     "layer[bars].encoding.xOffset.scale",
     "scale[xOffset].type",
     "scale[xOffset].domain",
-    "scale[xOffset].range"
+    "scale[xOffset].range",
+    "layer[bars].encoding.color.field",
+    "layer[bars].encoding.color.fieldType",
+    "layer[bars].encoding.color.scale",
+    "scale[color].type",
+    "scale[color].domain",
+    "scale[color].range"
   ]);
   assert.equal(program.trace.children.some(child =>
     child.op === "editSemantic" && replacedPaths.has(child.args.property)

@@ -15,7 +15,7 @@ This page describes implemented behavior only.
 | Marks | Semantic point/circle mark; semantic line with aggregate path materialization; semantic bar with histogram rect materialization |
 | Position | Quantitative point x/y; temporal line x and aggregate quantitative line y; explicit or atomic binned/count bar encodings; ordinal bar x and band-local xOffset scale resolution |
 | Aggregation | Immutable line mean aggregation; ordinal bar mean scale resolution; derived histogram bin totals and concrete zero-stacked rects |
-| Color | Nominal point fill, line stroke, or stacked histogram fill with ordinal scale and `tableau10` palette |
+| Color | Nominal point fill, line stroke, stacked histogram fill, or grouped ordinal-bar color/xOffset semantics with ordinal scale and `tableau10` palette |
 | Stroke dash | Nominal line series with explicit or automatic ten-pattern range |
 | Constant appearance | Circle radius |
 | Coordinates | Named Cartesian and Polar semantic resources; x/y use Cartesian |

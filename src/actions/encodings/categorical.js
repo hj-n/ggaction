@@ -15,7 +15,9 @@ import {
   validateOptions
 } from "./shared.js";
 
-const COLOR_ENCODING_OPTIONS = Object.freeze(["field", "target", "fieldType", "scale"]);
+const COLOR_ENCODING_OPTIONS = Object.freeze([
+  "field", "target", "fieldType", "scale", "layout"
+]);
 const STROKE_DASH_ENCODING_OPTIONS = COLOR_ENCODING_OPTIONS;
 const ORDINAL_SCALE_OPTIONS = Object.freeze(["id", "type", "domain", "range"]);
 const COLOR_SCALE_OPTIONS = Object.freeze([...ORDINAL_SCALE_OPTIONS, "palette"]);
@@ -85,19 +87,44 @@ const encodeColor = action(
       "color mark"
     );
     if (
-      layer.mark.type === "bar" &&
-      (layer.encoding?.x?.bin === undefined ||
-        layer.encoding?.y?.aggregate !== "count" ||
-        layer.encoding.y.stack !== "zero")
+      args.layout !== undefined &&
+      args.layout !== "group" &&
+      args.layout !== "stack"
     ) {
-      throw new Error(
-        "Bar color encoding requires a complete histogram encoding."
-      );
+      throw new Error(`Unsupported color layout "${args.layout}".`);
+    }
+    if (layer.mark.type !== "bar" && args.layout !== undefined) {
+      throw new Error("Color layout is supported only for bar marks.");
+    }
+
+    const isHistogram =
+      layer.mark.type === "bar" &&
+      layer.encoding?.x?.bin !== undefined &&
+      layer.encoding?.y?.aggregate === "count" &&
+      layer.encoding.y.stack === "zero";
+    const isOrdinalMean =
+      layer.mark.type === "bar" &&
+      layer.encoding?.x?.fieldType === "ordinal" &&
+      layer.encoding?.y?.aggregate === "mean" &&
+      layer.encoding.y.stack === null;
+
+    if (layer.mark.type === "bar") {
+      if (isHistogram && args.layout !== undefined && args.layout !== "stack") {
+        throw new Error('Histogram color layout must be "stack".');
+      }
+      if (isOrdinalMean && args.layout !== "group") {
+        throw new Error('Ordinal mean bar color layout must be "group".');
+      }
+      if (!isHistogram && !isOrdinalMean) {
+        throw new Error(
+          "Bar color encoding requires a complete histogram encoding or a complete ordinal mean encoding."
+        );
+      }
     }
     readNominalField(dataset.values, args.field);
     const scale = resolveColorScaleDefinition(this, args.scale ?? {});
 
-    const next = this
+    let next = this
       .editSemantic({
         property: `layer[${target}].encoding.color.field`,
         value: args.field
@@ -111,6 +138,21 @@ const encodeColor = action(
         value: scale.id
       })
       .createScale(scale);
+
+    if (isOrdinalMean) {
+      next = next
+        .editSemantic({
+          property: `layer[${target}].encoding.y.stack`,
+          value: null
+        })
+        .encodeXOffset({
+          field: args.field,
+          target,
+          ...(layer.encoding?.xOffset?.scale === undefined
+            ? {}
+            : { scale: { id: layer.encoding.xOffset.scale } })
+        });
+    }
 
     if (layer.mark.type === "line") {
       return rematerializeExistingLegend(

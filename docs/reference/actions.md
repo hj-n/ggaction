@@ -114,10 +114,12 @@ histogram action. `maxBins` defaults to `10`; `stack` defaults to `"zero"`.
 ### `encodeColor`
 
 ```javascript
-encodeColor({ field, target?, fieldType?, scale? })
+encodeColor({ field, target?, fieldType?, layout?, scale? })
 ```
 
-Create nominal point fill, line-series color, or stacked histogram color.
+Create nominal point fill, line-series color, stacked histogram color, or
+grouped ordinal-bar color. Grouped bars require `layout: "group"` and record
+`encodeXOffset` as a child action.
 [Series encodings](../api/series-encodings.md)
 
 ### `encodeStrokeDash`

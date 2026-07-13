@@ -28,21 +28,10 @@ export function createJobsGroupedBarActions(jobs) {
       aggregate: "mean",
       scale: { nice: true, zero: false }
     })
-    .encodeXOffset({ field: "sex" })
-    .editSemantic({ property: "layer[bars].encoding.color.field", value: "sex" })
-    .editSemantic({
-      property: "layer[bars].encoding.color.fieldType",
-      value: "nominal"
-    })
-    .editSemantic({
-      property: "layer[bars].encoding.color.scale",
-      value: "color"
-    })
-    .editSemantic({ property: "scale[color].type", value: "ordinal" })
-    .editSemantic({ property: "scale[color].domain", value: "auto" })
-    .editSemantic({
-      property: "scale[color].range",
-      value: { palette: "tableau10" }
+    .encodeColor({
+      field: "sex",
+      layout: "group",
+      scale: { palette: "tableau10" }
     })
     .editSemantic({ property: "guide.axis.x.scale", value: "x" })
     .editSemantic({ property: "guide.axis.x.coordinate", value: "main" })
@@ -263,5 +252,4 @@ export function createJobsGroupedBarActions(jobs) {
 export function renderJobsGroupedBarActions(program, canvasContext) {
   render(program, canvasContext);
 }
-
 
