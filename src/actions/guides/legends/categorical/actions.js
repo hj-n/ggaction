@@ -43,7 +43,7 @@ export const createCategoricalLegend = action(
   { op: "createCategoricalLegend", description: "Create one categorical legend block." },
   function (args = {}) {
     const layer = resolveTarget(this, args.target);
-    const kind = layer.mark.type === "bar" ? "color" : "series";
+    const kind = ["bar", "area"].includes(layer.mark.type) ? "color" : "series";
     const options = normalizeOptions(args, kind);
     if (
       this.semanticSpec.guides.legend?.series !== undefined ||
@@ -62,6 +62,10 @@ export const createCategoricalLegend = action(
       ...definition,
       position: options.position,
       align: options.align,
+      direction: options.direction,
+      columns: options.columns,
+      offset: options.offset,
+      titlePosition: options.titlePosition,
       symbol: options.symbol,
       labels: options.labels,
       titleStyle: options.titleStyle,

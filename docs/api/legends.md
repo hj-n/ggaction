@@ -14,7 +14,7 @@ title: Legends
 ## `createLegend(options?)`
 
 Creates inferred legend blocks. It supports combined line-series,
-color-stacked histogram, grouped ordinal-bar, composite point-series, and
+color-stacked histogram, grouped ordinal-bar, grouped area, composite point-series, and
 quantitative point-size legends.
 
 ~~~javascript
@@ -28,6 +28,7 @@ Every categorical legend uses the same right-side default:
 | line | encoded `color` and/or `strokeDash` | `right` | line |
 | bar histogram | `color` | `right` | swatch |
 | grouped ordinal bar | `color` | `right` | swatch |
+| grouped area | `color` | `right` | swatch |
 | point + matching line | `color` + `shape` | `right` | line over typed point |
 | quantitative point size | `size` | `right`, below point series | five equal-area circles |
 
@@ -35,8 +36,12 @@ Every categorical legend uses the same right-side default:
 | --- | --- | --- |
 | `target` | compatible mark ID | current or unique compatible mark |
 | `channels` | unique categorical channel array | compatible encoded channels |
-| `position` | `"right"` or `"bottom"` | `"right"` |
+| `position` | `"right"`, `"bottom"`, or `"top"` | `"right"` |
 | `align` | `"left"`, `"center"`, or `"right"` | `"center"` |
+| `direction` | `"horizontal"` or `"vertical"` | `"horizontal"` |
+| `columns` | positive integer | all items in one row at top |
+| `offset` | non-negative number | `8` |
+| `titlePosition` | `"top"` or `"left"` | `"top"` |
 | `title` | non-empty string | encoded field name |
 | `symbol` | `"auto"`, shorthand object, or layered recipe | inferred from mark |
 | `labels` | label style object | default sans-serif label style |
@@ -49,6 +54,22 @@ Pass `position: "bottom"` explicitly for a horizontal legend. Bottom legends
 can use left, center, or right alignment; right legends require center
 alignment.
 
+Top legends use a general item grid. `columns` caps the column count;
+`direction: "horizontal"` fills rows first and `"vertical"` fills columns
+first. `align` positions the complete title-plus-items block within plot
+bounds. The title appears above the grid by default, or beside it with
+`titlePosition: "left"`.
+
+~~~javascript
+densityArea.createLegend({
+  position: "top",
+  direction: "vertical",
+  columns: 3,
+  titlePosition: "left",
+  offset: 8
+});
+~~~
+
 ## Layered symbols
 
 Legend symbols are graphical recipes composed from line, point, and swatch
@@ -60,8 +81,8 @@ lineProgram.createLegend({
 });
 ~~~
 
-Histogram and grouped-bar swatch shorthand supports `width`, `height`,
-`stroke`, and `strokeWidth`.
+Histogram, grouped-bar, and grouped-area swatch shorthand supports `width`,
+`height`, `stroke`, and `strokeWidth`.
 
 Use layers for a composite symbol:
 
@@ -147,8 +168,9 @@ Pass `createGuides({ legend: false })` to opt out.
 
 General continuous color legends and interactive legends are unsupported.
 Point composite/size legends currently use right-side layout.
-Right-side layout requires sufficient right margin; bottom layout must be
-requested explicitly and requires sufficient bottom margin.
+Right-side layout requires sufficient right margin; bottom layout requires
+sufficient bottom margin; top layout requires enough top margin for its title,
+item grid, offset, and optional border.
 
 ## Related
 

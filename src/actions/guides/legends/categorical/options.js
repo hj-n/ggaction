@@ -15,6 +15,10 @@ const OPTIONS = Object.freeze([
   "channels",
   "position",
   "align",
+  "direction",
+  "columns",
+  "offset",
+  "titlePosition",
   "title",
   "symbol",
   "labels",
@@ -110,9 +114,13 @@ export function normalizeOptions(args, kind) {
   };
   const position = args.position ?? defaults.position;
   const align = args.align ?? defaults.align;
-  const itemGap = args.itemGap ?? (position === "right" ? 28 : 20);
+  const direction = args.direction ?? "horizontal";
+  const columns = args.columns;
+  const offset = args.offset ?? 8;
+  const titlePosition = args.titlePosition ?? "top";
+  const itemGap = args.itemGap ?? (position === "right" ? 28 : position === "top" ? 24 : 20);
 
-  if (!["right", "bottom"].includes(position)) {
+  if (!["right", "bottom", "top"].includes(position)) {
     throw new Error(`Unsupported legend position "${position}".`);
   }
   if (!["left", "center", "right"].includes(align)) {
@@ -120,6 +128,16 @@ export function normalizeOptions(args, kind) {
   }
   if (position === "right" && align !== "center") {
     throw new Error("Right legends currently require center alignment.");
+  }
+  if (!["horizontal", "vertical"].includes(direction)) {
+    throw new Error(`Unsupported legend direction "${direction}".`);
+  }
+  if (columns !== undefined && (!Number.isInteger(columns) || columns <= 0)) {
+    throw new RangeError("Legend columns must be a positive integer.");
+  }
+  nonNegative(offset, "Legend offset");
+  if (!["top", "left"].includes(titlePosition)) {
+    throw new Error(`Unsupported legend titlePosition "${titlePosition}".`);
   }
   nonNegative(labels.offset, "Legend label offset");
   nonEmptyString(labels.color, "Legend label color");
@@ -137,6 +155,10 @@ export function normalizeOptions(args, kind) {
     channels: args.channels,
     position,
     align,
+    direction,
+    columns,
+    offset,
+    titlePosition,
     title: args.title,
     symbol: normalizeRecipe(args.symbol, kind),
     labels,

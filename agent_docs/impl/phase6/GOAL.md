@@ -22,7 +22,7 @@ architecture에 통합한다.
 - [x] Baseline-oriented area materialization
 - [x] Atomic `encodeDensity`
 - [x] Area color grouping과 rematerialization
-- [ ] Top legend layout와 area swatch applicability
+- [x] Top legend layout와 area swatch applicability
 - [ ] `createGuides`와 title/top-margin integration
 - [ ] Public vertical slice, documentation, cleanup
 

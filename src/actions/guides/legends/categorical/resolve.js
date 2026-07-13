@@ -9,7 +9,7 @@ function isCategoricalTarget(layer) {
       channel => layer.encoding?.[channel]?.scale !== undefined
     );
   }
-  return layer?.mark?.type === "bar" &&
+  return ["bar", "area"].includes(layer?.mark?.type) &&
     layer.encoding?.color?.scale !== undefined;
 }
 
@@ -57,7 +57,7 @@ function resolveOrdinalScales(program, scaleIds) {
 }
 
 export function resolveDefinition(program, layer, requestedChannels, requestedTitle) {
-  const kind = layer.mark.type === "bar" ? "color" : "series";
+  const kind = ["bar", "area"].includes(layer.mark.type) ? "color" : "series";
   const channels = requestedChannels ?? (kind === "color"
     ? ["color"]
     : CHANNELS.filter(
@@ -74,7 +74,7 @@ export function resolveDefinition(program, layer, requestedChannels, requestedTi
     );
   }
   if (kind === "color" && !sameValues(channels, ["color"])) {
-    throw new Error("Bar legends currently support only the color channel.");
+    throw new Error("Color legends currently support only the color channel.");
   }
 
   const encodings = channels.map(channel => {

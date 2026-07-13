@@ -61,7 +61,10 @@ export const editLegendTitle = action(
       .editGraphics({
         target: id,
         property: "textAlign",
-        value: config.position === "bottom" ? "center" : "left"
+        value: config.position === "bottom" ||
+          (config.position === "top" && config.titlePosition === "top")
+          ? "center"
+          : "left"
       })
       .editGraphics({ target: id, property: "textBaseline", value: "middle" });
   }

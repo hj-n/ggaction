@@ -37,6 +37,95 @@ export function symbolWidth(config) {
   }));
 }
 
+function symbolHeight(config) {
+  return Math.max(...config.symbol.layers.map(layer => {
+    if (layer.type === "swatch") return layer.height;
+    if (layer.type === "point") return layer.size * 2;
+    return layer.lineWidth;
+  }));
+}
+
+function resolveTopLayout(bounds, canvas, config, width, count) {
+  const labels = config.domain.map(String);
+  const itemWidths = labels.map(
+    label => width + config.labels.offset + label.length * 7
+  );
+  const columnCount = Math.min(config.columns ?? count, count);
+  const rowCount = Math.ceil(count / columnCount);
+  const cells = Array.from({ length: count }, (_, index) => {
+    if (config.direction === "horizontal") {
+      return { column: index % columnCount, row: Math.floor(index / columnCount) };
+    }
+    return {
+      column: Math.floor(index / rowCount),
+      row: index % rowCount
+    };
+  });
+  const actualColumns = Math.max(...cells.map(cell => cell.column)) + 1;
+  const actualRows = Math.max(...cells.map(cell => cell.row)) + 1;
+  const columnWidths = Array.from({ length: actualColumns }, (_, column) =>
+    Math.max(...cells
+      .map((cell, index) => cell.column === column ? itemWidths[index] : 0))
+  );
+  const gridWidth = columnWidths.reduce((sum, value) => sum + value, 0) +
+    config.itemGap * Math.max(0, actualColumns - 1);
+  const rowHeight = Math.max(config.labels.fontSize, symbolHeight(config));
+  const gridHeight = rowHeight * actualRows +
+    config.itemGap * Math.max(0, actualRows - 1);
+  const titleWidth = config.title.length * 7;
+  const titleGap = config.titlePosition === "left" ? 20 : 12;
+  const totalWidth = config.titlePosition === "left"
+    ? titleWidth + titleGap + gridWidth
+    : Math.max(titleWidth, gridWidth);
+  let start;
+  if (config.align === "left") start = bounds.x;
+  else if (config.align === "right") start = bounds.x + bounds.width - totalWidth;
+  else start = bounds.x + (bounds.width - totalWidth) / 2;
+  if (start < 0 || start + totalWidth > canvas.properties.width) {
+    throw new Error("Legend layout requires more horizontal Canvas space.");
+  }
+  const blockBottom = bounds.y - config.offset;
+  const gridStart = config.titlePosition === "left"
+    ? start + titleWidth + titleGap
+    : start + (totalWidth - gridWidth) / 2;
+  const gridTop = blockBottom - gridHeight;
+  const blockTop = config.titlePosition === "left"
+    ? Math.min(gridTop, blockBottom / 2 + gridTop / 2 - config.titleStyle.fontSize / 2)
+    : gridTop - titleGap - config.titleStyle.fontSize;
+  if (blockTop < 0) {
+    throw new Error("Legend layout requires more top-margin space.");
+  }
+  const columnX = [];
+  let cursor = gridStart;
+  for (const columnWidth of columnWidths) {
+    columnX.push(cursor);
+    cursor += columnWidth + config.itemGap;
+  }
+  const symbolX = cells.map(cell => columnX[cell.column]);
+  const labelX = symbolX.map(value => value + width + config.labels.offset);
+  const itemY = cells.map(cell =>
+    gridTop + rowHeight / 2 + cell.row * (rowHeight + config.itemGap)
+  );
+  const titleX = config.titlePosition === "left"
+    ? start
+    : start + totalWidth / 2;
+  const titleY = config.titlePosition === "left"
+    ? gridTop + gridHeight / 2
+    : gridTop - titleGap - config.titleStyle.fontSize / 2;
+  let background;
+  if (config.border !== false) {
+    const x = start - config.border.padding;
+    const y = blockTop - config.border.padding;
+    const backgroundWidth = totalWidth + config.border.padding * 2;
+    const height = blockBottom - blockTop + config.border.padding * 2;
+    if (x < 0 || y < 0 || x + backgroundWidth > canvas.properties.width) {
+      throw new Error("Legend background requires more top or horizontal space.");
+    }
+    background = { x, y, width: backgroundWidth, height };
+  }
+  return { symbolX, itemY, labelX, titleX, titleY, background };
+}
+
 export function resolveLayout(program, config) {
   const bounds = program.context.currentGraphicBounds;
   const canvas = program.graphicSpec.objects.canvas;
@@ -77,6 +166,10 @@ export function resolveLayout(program, config) {
       background = { x, y, width: backgroundWidth, height };
     }
     return { symbolX, itemY, labelX, titleX, titleY, background };
+  }
+
+  if (config.position === "top") {
+    return resolveTopLayout(bounds, canvas, config, width, count);
   }
 
   const labels = config.domain.map(String);

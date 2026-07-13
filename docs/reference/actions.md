@@ -300,13 +300,14 @@ marks. [Grids](../api/grids.md)
 
 ```javascript
 createLegend({
-  target?, channels?, position?, align?, title?, symbol?, labels?,
-  titleStyle?, itemGap?, border?, count?
+  target?, channels?, position?, align?, direction?, columns?, offset?,
+  titlePosition?, title?, symbol?, labels?, titleStyle?, itemGap?, border?, count?
 })
 ```
 
 Create applicable categorical or point size legend blocks. Categorical legends
-use a right-side default and support explicit bottom placement; point
+use a right-side default and support explicit bottom or top placement. Top
+layouts support row/column fill and a title above or left of the items; point
 color/shape/size composites currently use stacked right-side blocks.
 [Legends](../api/legends.md)
 

@@ -7,17 +7,17 @@
 
 ## 진행 상태
 
-- [ ] `position: "top"` validation과 layout
-- [ ] `direction: "horizontal" | "vertical"`
-- [ ] Positive integer `columns`
-- [ ] Non-negative finite `offset`
-- [ ] `titlePosition: "top" | "left"`와 `"top"` default
-- [ ] Row-major/column-major item placement
-- [ ] Area default swatch symbol recipe
-- [ ] Align, itemGap, styles, optional border compatibility
-- [ ] Top-margin insufficiency errors
-- [ ] Canvas/domain rematerialization
-- [ ] Legend API/reference/docs, tests, full regression, commit, push
+- [x] `position: "top"` validation과 layout
+- [x] `direction: "horizontal" | "vertical"`
+- [x] Positive integer `columns`
+- [x] Non-negative finite `offset`
+- [x] `titlePosition: "top" | "left"`와 `"top"` default
+- [x] Row-major/column-major item placement
+- [x] Area default swatch symbol recipe
+- [x] Align, itemGap, styles, optional border compatibility
+- [x] Top-margin insufficiency errors
+- [x] Canvas/domain rematerialization
+- [x] Legend API/reference/docs, tests, full regression, commit, push
 
 ## Layout 계약
 
@@ -49,3 +49,12 @@ vertical:   rows = ceil(n / c), column = floor(i / rows), row = i % rows
 - Density chart의 Origin title은 `titlePosition: "left"`로 같은 행 왼쪽에 놓인다.
 - 5개 synthetic items로 horizontal과 vertical fill order 차이를 고정한다.
 - Top/bottom/right layout, border on/off와 Canvas resize를 함께 회귀 검증한다.
+
+## 구현 결과
+
+- Existing right/bottom branch를 유지하고 top 전용 grid resolver를 추가했다.
+- Horizontal은 row-major, vertical은 column-major로 배치하며 complete block 단위로 align한다.
+- Area는 `guide.legend.color`와 generic swatch recipe를 사용한다.
+- Density chart의 3개 item, left title 좌표가 primitive fixture와 정확히 일치한다.
+- Top margin, vocabulary, border와 Canvas rematerialization 오류/회귀 검증을 추가했다.
+- 전체 395개 테스트와 coverage gate를 통과했다 (`lines 94.40%`, `branches 89.54%`, `functions 98.55%`).
