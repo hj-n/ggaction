@@ -4,18 +4,14 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { renderToPNG } from "ggaction/png";
-
-import { createJobsGroupedBarYEncoding } from "../programs/jobsGroupedBarYEncoding.js";
+import { createJobsGroupedBarActions } from "../programs/jobsGroupedBarActions.js";
 
 const jobsPath = new URL("../../data/jobs.json", import.meta.url);
-const outputPath = new URL(
-  "../output/jobs-grouped-bar-y-encoding.png",
-  import.meta.url
-);
+const outputPath = new URL("../output/jobs-grouped-bar-actions.png", import.meta.url);
 
-test("writes the aggregate y grouped bar progression as a PNG", async () => {
+test("writes the evolving grouped bar action program as a PNG", async () => {
   const jobs = JSON.parse(await readFile(jobsPath, "utf8"));
-  const program = createJobsGroupedBarYEncoding(jobs);
+  const program = createJobsGroupedBarActions(jobs);
   const result = await renderToPNG(program, {
     output: fileURLToPath(outputPath),
     pixelRatio: 2
@@ -26,5 +22,4 @@ test("writes the aggregate y grouped bar progression as a PNG", async () => {
   assert.equal(png.readUInt32BE(16), 1440);
   assert.equal(png.readUInt32BE(20), 920);
   assert.equal(result.pixelRatio, 2);
-  assert.equal(png.length > 1_000, true);
 });

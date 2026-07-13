@@ -45,7 +45,7 @@ chart()
 - [x] Ordinal bar `encodeX`
 - [x] Aggregate bar `encodeY`
 - [ ] Bar color `layout: "stack" | "group"`
-- [ ] Internal `encodeXOffset`
+- [x] Internal `encodeXOffset`
 - [ ] Band-based `encodeBarWidth`
 - [ ] Grouped/stacked bar materialization
 - [ ] Ordinal x axis

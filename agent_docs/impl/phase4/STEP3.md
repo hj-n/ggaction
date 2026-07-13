@@ -84,6 +84,9 @@ encodeY
 `encoding.y`와 `scale[y]` block만 `encodeY()`로 교체한다. Raw color, xOffset,
 rect, axes, grid, legend는 유지한다.
 
+후속 사용자 지시에 따라 STEP별 progression snapshot은 제거되었고, 현재 high-level
+flow는 `jobsGroupedBarActions.js` 한 파일에서 이어서 갱신한다.
+
 ## 제외 범위
 
 - `encodeColor({ layout: "group" })`

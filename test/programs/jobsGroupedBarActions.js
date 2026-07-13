@@ -2,7 +2,7 @@ import { chart, render } from "../../src/index.js";
 
 import { createJobsGroupedBarValues } from "./jobsGroupedBarValues.js";
 
-export function createJobsGroupedBarXEncoding(jobs) {
+export function createJobsGroupedBarActions(jobs) {
   const width = 720;
   const height = 460;
   const margin = { top: 40, right: 140, bottom: 70, left: 80 };
@@ -23,17 +23,12 @@ export function createJobsGroupedBarXEncoding(jobs) {
     .createData({ id: "jobs", values: values.validJobs })
     .createBarMark({ id: "bars" })
     .encodeX({ field: "year", fieldType: "ordinal" })
-    .editSemantic({ property: "layer[bars].encoding.y.field", value: "perc" })
-    .editSemantic({
-      property: "layer[bars].encoding.y.fieldType",
-      value: "quantitative"
+    .encodeY({
+      field: "perc",
+      aggregate: "mean",
+      scale: { nice: true, zero: false }
     })
-    .editSemantic({
-      property: "layer[bars].encoding.y.aggregate",
-      value: "mean"
-    })
-    .editSemantic({ property: "layer[bars].encoding.y.stack", value: null })
-    .editSemantic({ property: "layer[bars].encoding.y.scale", value: "y" })
+    .encodeXOffset({ field: "sex" })
     .editSemantic({ property: "layer[bars].encoding.color.field", value: "sex" })
     .editSemantic({
       property: "layer[bars].encoding.color.fieldType",
@@ -43,32 +38,12 @@ export function createJobsGroupedBarXEncoding(jobs) {
       property: "layer[bars].encoding.color.scale",
       value: "color"
     })
-    .editSemantic({
-      property: "layer[bars].encoding.xOffset.field",
-      value: "sex"
-    })
-    .editSemantic({
-      property: "layer[bars].encoding.xOffset.fieldType",
-      value: "nominal"
-    })
-    .editSemantic({
-      property: "layer[bars].encoding.xOffset.scale",
-      value: "xOffset"
-    })
-    .editSemantic({ property: "scale[y].type", value: "linear" })
-    .editSemantic({ property: "scale[y].domain", value: "auto" })
-    .editSemantic({ property: "scale[y].range", value: "auto" })
-    .editSemantic({ property: "scale[y].nice", value: true })
-    .editSemantic({ property: "scale[y].zero", value: false })
     .editSemantic({ property: "scale[color].type", value: "ordinal" })
     .editSemantic({ property: "scale[color].domain", value: "auto" })
     .editSemantic({
       property: "scale[color].range",
       value: { palette: "tableau10" }
     })
-    .editSemantic({ property: "scale[xOffset].type", value: "ordinal" })
-    .editSemantic({ property: "scale[xOffset].domain", value: "auto" })
-    .editSemantic({ property: "scale[xOffset].range", value: "auto" })
     .editSemantic({ property: "guide.axis.x.scale", value: "x" })
     .editSemantic({ property: "guide.axis.x.coordinate", value: "main" })
     .editSemantic({ property: "guide.axis.x.title", value: "year" })
@@ -285,7 +260,8 @@ export function createJobsGroupedBarXEncoding(jobs) {
     .editGraphics({ target: "colorLegendTitle", property: "textBaseline", value: "middle" });
 }
 
-export function renderJobsGroupedBarXEncoding(program, canvasContext) {
+export function renderJobsGroupedBarActions(program, canvasContext) {
   render(program, canvasContext);
 }
+
 

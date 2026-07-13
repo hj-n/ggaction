@@ -15,6 +15,7 @@ import {
   resolveColorRange,
   resolveContinuousDomain,
   resolveOrdinalDomain,
+  resolveOrdinalOffsetScale,
   resolveOrdinalPositionScale,
   resolveScaleRange,
   resolveStrokeDashRange,
@@ -90,7 +91,7 @@ function findScaleConsumers(program, id) {
   const consumers = [];
 
   for (const layer of program.semanticSpec.layers) {
-    for (const channel of ["x", "y", "color", "strokeDash"]) {
+    for (const channel of ["x", "y", "xOffset", "color", "strokeDash"]) {
       const encoding = layer.encoding?.[channel];
 
       if (encoding?.scale === id) {
@@ -113,7 +114,11 @@ function resolveConsumerValues(program, consumer) {
     );
   }
 
-  if (consumer.channel === "color" || consumer.channel === "strokeDash") {
+  if (
+    consumer.channel === "color" ||
+    consumer.channel === "strokeDash" ||
+    consumer.channel === "xOffset"
+  ) {
     if (
       consumer.channel === "strokeDash" &&
       consumer.layer.mark?.type !== "line"
@@ -298,8 +303,9 @@ const rematerializeScale = action(
     }));
     const allValues = valuesByConsumer.flatMap(item => item.values);
     const isOrdinalAppearance = channel === "color" || channel === "strokeDash";
+    const isOrdinalOffset = channel === "xOffset";
     const isOrdinalPosition =
-      !isOrdinalAppearance && scale.type === "ordinal";
+      !isOrdinalAppearance && !isOrdinalOffset && scale.type === "ordinal";
     const binnedBars = valuesByConsumer.filter(
       ({ consumer }) =>
         consumer.layer.mark?.type === "bar" &&
@@ -352,7 +358,7 @@ const rematerializeScale = action(
         zero: scale.zero
       });
     } else {
-      domain = isOrdinalAppearance || isOrdinalPosition
+      domain = isOrdinalAppearance || isOrdinalOffset || isOrdinalPosition
         ? resolveOrdinalDomain(scale.domain, allValues)
         : resolveContinuousDomain({
             domain: scale.domain,
@@ -368,6 +374,8 @@ const rematerializeScale = action(
       range = resolveColorRange(scale.range);
     } else if (channel === "strokeDash") {
       range = resolveStrokeDashRange(scale.range);
+    } else if (isOrdinalOffset) {
+      range = undefined;
     } else {
       range = resolveScaleRange(
         scale.range,
@@ -375,7 +383,28 @@ const rematerializeScale = action(
         this.context.currentGraphicBounds
       );
     }
-    const resolvedScale = isOrdinalPosition
+    const resolvedScale = isOrdinalOffset
+      ? resolveOrdinalOffsetScale({
+          domain: scale.domain,
+          values: allValues,
+          range: scale.range,
+          parentBandwidth: (() => {
+            const bandwidths = consumers.map(consumer => {
+              const xScaleId = consumer.layer.encoding?.x?.scale;
+              return this.resolvedScales[xScaleId]?.bandwidth;
+            });
+            if (
+              bandwidths.some(value => !Number.isFinite(value)) ||
+              new Set(bandwidths).size !== 1
+            ) {
+              throw new Error(
+                `xOffset scale "${id}" requires one shared resolved x bandwidth.`
+              );
+            }
+            return bandwidths[0];
+          })()
+        })
+      : isOrdinalPosition
       ? resolveOrdinalPositionScale({
           domain: scale.domain,
           values: allValues,

@@ -91,6 +91,16 @@ and resolves its scale while waiting for grouping semantics before rect
 materialization. A complete histogram x/y pair materializes concrete rects.
 [Position encodings](../api/position-encodings.md)
 
+### `encodeXOffset`
+
+```javascript
+encodeXOffset({ field, target?, fieldType?, scale? })
+```
+
+Create an advanced nominal offset scale within an ordinal bar x band. Grouped
+color layout normally invokes this action automatically.
+[Position encodings](../api/position-encodings.md)
+
 ### `encodeHistogram`
 
 ```javascript

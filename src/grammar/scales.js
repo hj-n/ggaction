@@ -362,6 +362,37 @@ export function resolveOrdinalPositionScale({
   });
 }
 
+export function resolveOrdinalOffsetScale({
+  domain,
+  values,
+  range,
+  parentBandwidth
+}) {
+  const resolvedDomain = resolveOrdinalDomain(domain, values);
+
+  if (!Number.isFinite(parentBandwidth) || parentBandwidth <= 0) {
+    throw new Error("Automatic xOffset range requires a positive x bandwidth.");
+  }
+  const resolvedRange = range === "auto"
+    ? validatePair([0, parentBandwidth], "Offset scale range")
+    : validateScaleRange(range);
+  const domainValues = new Set(resolvedDomain);
+  for (const value of values) {
+    if (!domainValues.has(value)) {
+      throw new Error(`Value "${value}" is outside the ordinal domain.`);
+    }
+  }
+
+  const step = (resolvedRange[1] - resolvedRange[0]) / resolvedDomain.length;
+  return cloneAndFreeze({
+    type: "ordinal",
+    domain: resolvedDomain,
+    range: resolvedRange,
+    step,
+    bandwidth: Math.abs(step)
+  });
+}
+
 export function mapOrdinalPositionValues(values, scale) {
   const indices = new Map(
     scale.domain.map((value, index) => [value, index])

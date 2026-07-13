@@ -63,7 +63,9 @@ function resolveCanvasState(program, args) {
 
 function usesPositionalScale(program, id) {
   return program.semanticSpec.layers.some(layer =>
-    ["x", "y"].some(channel => layer.encoding?.[channel]?.scale === id)
+    ["x", "y", "xOffset"].some(
+      channel => layer.encoding?.[channel]?.scale === id
+    )
   );
 }
 

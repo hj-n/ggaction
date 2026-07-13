@@ -102,6 +102,30 @@ This action resolves both position scales but keeps the rect collection empty.
 The later grouping action supplies color/xOffset semantics and rematerializes
 the concrete grouped rectangles.
 
+## Advanced `encodeXOffset(options)`
+
+Create a nominal grouping slot inside each ordinal x band. Most chart authors
+do not need to call this directly because grouped color layout invokes it.
+
+```javascript
+program.encodeXOffset({ field: "sex" });
+```
+
+| Option | Type | Default |
+| --- | --- | --- |
+| `field` | non-empty string | required |
+| `fieldType` | `"nominal"` | `"nominal"` |
+| `target` | aggregate bar mark ID | current mark |
+| `scale.id` | scale ID | `"xOffset"` |
+| `scale.type` | `"ordinal"` | `"ordinal"` |
+| `scale.domain` | `"auto"` or unique nominal values | `"auto"` |
+| `scale.range` | `"auto"` or two finite numbers | `"auto"` |
+
+The automatic range is `[0, x.bandwidth]`, not the full plot range. Its step
+divides one x category band into equal nominal slots. Explicit domain order and
+reversed numeric ranges are supported. This action resolves slot geometry but
+does not create rectangles by itself.
+
 ## Binned bar `encodeX(options)`
 
 Create a quantitative histogram bin encoding and resolve its horizontal scale.

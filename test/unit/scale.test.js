@@ -12,6 +12,7 @@ import {
   resolveColorRange,
   resolveContinuousDomain,
   resolveOrdinalDomain,
+  resolveOrdinalOffsetScale,
   resolveOrdinalPositionScale,
   resolveScaleDomain,
   resolveScaleRange,
@@ -161,6 +162,29 @@ test("preserves explicit ordinal order and reversed position ranges", () => {
   assert.throws(
     () => mapOrdinalPositionValues([1900], scale),
     /outside the ordinal domain/
+  );
+});
+
+test("resolves ordinal offsets within a parent band", () => {
+  assert.deepEqual(resolveOrdinalOffsetScale({
+    domain: "auto",
+    values: ["men", "women", "men"],
+    range: "auto",
+    parentBandwidth: 40
+  }), {
+    type: "ordinal",
+    domain: ["men", "women"],
+    range: [0, 40],
+    step: 20,
+    bandwidth: 20
+  });
+  assert.throws(
+    () => resolveOrdinalOffsetScale({
+      domain: "auto",
+      values: ["men"],
+      range: "auto"
+    }),
+    /positive x bandwidth/
   );
 });
 

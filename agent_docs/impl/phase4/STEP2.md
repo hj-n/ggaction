@@ -80,6 +80,9 @@ encodeX
 `layer.coordinate`, `encoding.x`, `scale[x]`, `coordinate[main]` block만
 `encodeX()`로 교체한다. Raw y, color, xOffset, rect, axes, grid, legend는 유지한다.
 
+후속 사용자 지시에 따라 STEP별 progression snapshot은 제거되었고, 현재 high-level
+flow는 `jobsGroupedBarActions.js` 한 파일에서 이어서 갱신한다.
+
 ## Materialization 경계
 
 STEP2에서는 grouped rect를 계산하지 않는다. Aggregate y와 grouping action이 아직
