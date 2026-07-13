@@ -24,6 +24,19 @@ export function createCarsDensityAreaPrimitives(cars) {
       value: "cars"
     })
     .editSemantic({
+      property: "dataset[densitiesDensityData].transform",
+      value: [{
+        type: "density",
+        field: "Acceleration",
+        groupBy: "Origin",
+        bandwidth: 0.6,
+        extent: "auto",
+        steps: 100,
+        as: ["Acceleration_value", "Acceleration_density"],
+        resolve: "shared"
+      }]
+    })
+    .editSemantic({
       property: "dataset[densitiesDensityData].values",
       value: values.densityRows
     })

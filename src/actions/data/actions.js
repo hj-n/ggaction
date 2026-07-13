@@ -3,6 +3,7 @@ import { validateUserId } from "../../core/identifiers.js";
 import { isPlainObject } from "../../core/immutable.js";
 import { validateKeys } from "../../core/validation.js";
 import { deriveLinearRegression } from "../../grammar/regression.js";
+import { deriveKernelDensity } from "../../grammar/density.js";
 
 const DATA_OPTIONS = Object.freeze(["id", "values"]);
 
@@ -49,6 +50,9 @@ const DERIVED_DATA_OPTIONS = Object.freeze(["id", "source", "transform"]);
 const FILTER_DATA_OPTIONS = Object.freeze(["id", "source", "field", "oneOf"]);
 const REGRESSION_DATA_OPTIONS = Object.freeze([
   "id", "source", "x", "y", "groupBy", "method", "confidence", "interval"
+]);
+const DENSITY_DATA_OPTIONS = Object.freeze([
+  "id", "source", "field", "groupBy", "bandwidth", "extent", "steps", "as"
 ]);
 const MATERIALIZE_OPTIONS = Object.freeze(["id"]);
 
@@ -206,5 +210,80 @@ export const createRegressionData = action(
     return this
       .createDerivedData({ id, source, transform: [transform] })
       .materializeRegressionData({ id });
+  }
+);
+
+export const materializeDensityData = action(
+  {
+    op: "materializeDensityData",
+    description: "Materialize one grouped kernel-density dataset."
+  },
+  function (args = {}) {
+    validateKeys(args, MATERIALIZE_OPTIONS, "materializeDensityData");
+    const id = validateUserId(args.id, "Derived dataset id");
+    const dataset = this.semanticSpec.datasets.find(item => item.id === id);
+    if (dataset === undefined || dataset.source === undefined) {
+      throw new Error(`Unknown derived dataset "${id}".`);
+    }
+    if (dataset.values !== undefined) {
+      throw new Error(`Derived dataset "${id}" is already materialized.`);
+    }
+    const source = this.semanticSpec.datasets.find(item => item.id === dataset.source);
+    if (source?.values === undefined) {
+      throw new Error(`Source dataset "${dataset.source}" has no values.`);
+    }
+    if (
+      dataset.transform?.length !== 1 ||
+      dataset.transform[0].type !== "density"
+    ) {
+      throw new Error(`Derived dataset "${id}" requires one density transform.`);
+    }
+    const transform = dataset.transform[0];
+    const result = deriveKernelDensity(source.values, transform);
+    const resolvedTransform = {
+      ...transform,
+      bandwidth: result.bandwidth
+    };
+    return this
+      .editSemantic({
+        property: `dataset[${id}].transform`,
+        value: [resolvedTransform]
+      })
+      .editSemantic({
+        property: `dataset[${id}].values`,
+        value: result.values
+      });
+  }
+);
+
+export const createDensityData = action(
+  {
+    op: "createDensityData",
+    description: "Create grouped Gaussian kernel-density values."
+  },
+  function (args = {}) {
+    validateKeys(args, DENSITY_DATA_OPTIONS, "createDensityData");
+    const id = validateUserId(args.id, "Density dataset id");
+    const source = validateUserId(
+      args.source ?? this.context.currentData,
+      "Source dataset id"
+    );
+    if (typeof args.field !== "string" || args.field.length === 0) {
+      throw new TypeError("createDensityData requires a non-empty field string.");
+    }
+    const as = args.as ?? [`${args.field}_value`, `${args.field}_density`];
+    const transform = {
+      type: "density",
+      field: args.field,
+      ...(args.groupBy === undefined ? {} : { groupBy: args.groupBy }),
+      bandwidth: args.bandwidth ?? "auto",
+      extent: args.extent ?? "auto",
+      steps: args.steps ?? 100,
+      as,
+      resolve: "shared"
+    };
+    return this
+      .createDerivedData({ id, source, transform: [transform] })
+      .materializeDensityData({ id });
   }
 );

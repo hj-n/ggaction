@@ -12,6 +12,7 @@ title: Data
 | `createData` | `createData({ id: "rows", values })` | No ID or value inference | Immutable semantic dataset and current-data context |
 | `filterData` | `filterData({ id: "selected", field, oneOf })` | Source: current dataset | Immutable derived dataset with filter provenance and materialized rows |
 | `createRegressionData` | `createRegressionData({ id: "fit", x, y })` | Source: current dataset; linear OLS; confidence `0.95` | Immutable derived predictions and mean-response interval |
+| `createDensityData` | `createDensityData({ id: "density", field })` | Source: current dataset; shared extent; 100 steps; automatic bandwidth | Immutable Gaussian KDE rows and density provenance |
 
 ## `createData({ id, values })`
 
@@ -92,12 +93,43 @@ uses each observed unique x value in ascending order, the predicted y field,
 and fixed `__regression_ci_lower` / `__regression_ci_upper` fields. Confidence
 bounds use a Student-t mean-response interval. Source values remain unchanged.
 
+## `createDensityData({ id, source?, field, groupBy?, bandwidth?, extent?, steps?, as? })`
+
+Create an immutable Gaussian kernel-density dataset. This is an advanced data
+action used by higher-level density-chart encodings.
+
+```javascript
+program.createDensityData({
+  id: "accelerationDensity",
+  field: "Acceleration",
+  groupBy: "Origin",
+  bandwidth: 0.6
+});
+```
+
+| Option | Type | Default |
+| --- | --- | --- |
+| `id` | new dataset ID | required |
+| `source` | existing dataset ID | current dataset |
+| `field` | quantitative field name | required |
+| `groupBy` | nominal field name | one ungrouped density |
+| `bandwidth` | positive number or `"auto"` | automatic Scott-rule estimate |
+| `extent` | ascending finite pair or `"auto"` | observed valid extent |
+| `steps` | integer at least `2` | `100` |
+| `as` | two distinct output field names | `<field>_value`, `<field>_density` |
+
+Grouped densities use one shared extent and inclusive sample grid. Group order
+follows first appearance. The resolved automatic bandwidth is stored as a
+number in transform provenance, and source values remain unchanged.
+
 ## Errors and limitations
 
 Values must be an array. Dataset IDs are unique, and an existing source dataset
 cannot be replaced or mutated. Filtering requires a current or explicit source
 and does not permit an empty `oneOf` list. Regression rejects missing or
 non-finite fields, groups with fewer than three rows, and constant-x groups.
+Density rejects empty valid input, non-positive bandwidth, degenerate automatic
+extent or bandwidth, invalid output fields, and fewer than two sample steps.
 
 ## Related
 

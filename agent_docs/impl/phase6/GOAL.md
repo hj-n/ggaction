@@ -18,7 +18,7 @@ architecture에 통합한다.
 - [x] Phase 6 chart contract와 STEP 계획
 - [x] Deterministic grouped KDE fixture
 - [x] Primitive density-area baseline
-- [ ] Density grammar와 immutable derived-data actions
+- [x] Density grammar와 immutable derived-data actions
 - [ ] Baseline-oriented area materialization
 - [ ] Atomic `encodeDensity`
 - [ ] Area color grouping과 rematerialization

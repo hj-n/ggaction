@@ -86,6 +86,9 @@ and language models.
 - createRegressionData creates immutable grouped linear OLS predictions at
   observed unique x values and Student-t mean-response confidence bounds; it
   defaults source to current data and confidence to 0.95.
+- createDensityData creates immutable grouped Gaussian KDE rows on a shared
+  observed extent and inclusive 100-step grid; it stores resolved bandwidth,
+  output fields, and transform provenance without changing the source dataset.
 - createAreaMark creates an empty path collection with fixed fill/opacity.
   encodeYRange calls encodeY then encodeY2, shares one y scale across both
   bounds, and materializes grouped closed paths after optional encodeGroup.

@@ -26,8 +26,8 @@ public action program의 executable graphical oracle로 사용한다.
 - Fixture는 expected values를 제공하지만 primitive program 내부에서 raw action 호출을
   batching helper로 숨기지 않는다.
 - Renderer가 `semanticSpec`, context, trace 없이 `graphicSpec`만으로 그릴 수 있어야 한다.
-- STEP2의 derived dataset은 source 관계와 concrete values를 먼저 저장한다. Exact density
-  transform object와 validation은 STEP3에서 추가하고 primitive oracle도 함께 갱신한다.
+- Derived dataset은 source 관계, exact density transform provenance와 concrete values를
+  함께 저장한다.
 
 ## 목표 graphical order
 

@@ -64,6 +64,16 @@ with Student-t mean-response confidence bounds. Source defaults to current
 data; method is `"linear"`, confidence is `0.95`, and interval is `"mean"`.
 [Data](../api/data.md)
 
+### `createDensityData`
+
+```javascript
+createDensityData({ id, source?, field, groupBy?, bandwidth?, extent?, steps?, as? })
+```
+
+Create immutable Gaussian KDE rows on one shared inclusive sample grid.
+Source defaults to current data, steps to `100`, and bandwidth to an automatic
+Scott-rule estimate. [Data](../api/data.md)
+
 ### `createPointMark`
 
 ```javascript

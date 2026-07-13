@@ -34,7 +34,16 @@ test("authors and renders the complete primitive density area chart", () => {
       {
         id: "densitiesDensityData",
         source: "cars",
-        transform: undefined,
+        transform: [{
+          type: "density",
+          field: "Acceleration",
+          groupBy: "Origin",
+          bandwidth: 0.6,
+          extent: "auto",
+          steps: 100,
+          as: ["Acceleration_value", "Acceleration_density"],
+          resolve: "shared"
+        }],
         valueCount: 300
       }
     ]

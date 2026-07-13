@@ -141,6 +141,57 @@ function validateRegressionTransform(transform) {
   }
 }
 
+function validateDensityTransform(transform) {
+  const supported = [
+    "type", "field", "groupBy", "bandwidth", "extent", "steps", "as", "resolve"
+  ];
+  const unknown = Object.keys(transform).find(key => !supported.includes(key));
+  if (unknown !== undefined) {
+    throw new Error(`Unknown density transform property "${unknown}".`);
+  }
+  validateNonEmptyString(transform.field, "Density field");
+  if (transform.groupBy !== undefined) {
+    validateNonEmptyString(transform.groupBy, "Density groupBy");
+  }
+  if (
+    transform.bandwidth !== "auto" &&
+    (!Number.isFinite(transform.bandwidth) || transform.bandwidth <= 0)
+  ) {
+    throw new RangeError(
+      "Density bandwidth must be a positive finite number or auto."
+    );
+  }
+  if (
+    transform.extent !== "auto" &&
+    (!Array.isArray(transform.extent) ||
+      transform.extent.length !== 2 ||
+      !transform.extent.every(Number.isFinite) ||
+      transform.extent[0] >= transform.extent[1])
+  ) {
+    throw new RangeError(
+      "Density extent must be an ascending pair of finite numbers or auto."
+    );
+  }
+  if (!Number.isInteger(transform.steps) || transform.steps < 2) {
+    throw new RangeError("Density steps must be an integer of at least 2.");
+  }
+  if (
+    !Array.isArray(transform.as) ||
+    transform.as.length !== 2 ||
+    !transform.as.every(value => typeof value === "string" && value.length > 0) ||
+    transform.as[0] === transform.as[1]
+  ) {
+    throw new TypeError("Density as must contain two distinct non-empty fields.");
+  }
+  const collisions = new Set([transform.field, transform.groupBy].filter(Boolean));
+  if (transform.as.some(value => collisions.has(value))) {
+    throw new Error("Density output fields must not collide with source or group fields.");
+  }
+  if (transform.resolve !== "shared") {
+    throw new Error(`Unsupported density resolve "${transform.resolve}".`);
+  }
+}
+
 function validateDatasetTransforms(value) {
   if (!Array.isArray(value) || value.length === 0 || !value.every(isPlainObject)) {
     throw new TypeError(
@@ -153,6 +204,8 @@ function validateDatasetTransforms(value) {
       validateFilterTransform(transform);
     } else if (transform.type === "regression") {
       validateRegressionTransform(transform);
+    } else if (transform.type === "density") {
+      validateDensityTransform(transform);
     } else {
       throw new Error(`Unsupported dataset transform "${transform.type}".`);
     }
