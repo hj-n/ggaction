@@ -1107,11 +1107,17 @@ materialization policy, renderer primitive를 각각 검증한다.
 - explicit/inferred/default precedence와 ambiguity error
 - action trace parent-child hierarchy
 - semantic path와 concrete graphic schema
+- graphical editor와 renderer가 공유하는 concrete value validation
 - shared scale consumer와 rematerialization
+- materialization plan의 deterministic order와 equivalent-step deduplication
 - generated resource namespace
 - selector find/has/require/eligible behavior
 - package export와 declaration boundary
 - deterministic statistical numeric fixture
+
+Selector, package boundary, shared validation, materialization plan처럼 기계적으로 검증할
+수 있는 아키텍처 규칙은 prose 문서만으로 유지하지 않는다. 각각 focused contract test로
+고정하고 구조 리팩토링에서도 계속 실행한다.
 
 ### Primitive baseline과 acceptance
 

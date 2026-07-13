@@ -77,6 +77,7 @@
 
 ## Tests and Example Programs
 
+- Encode mechanically verifiable architectural rules in focused contract tests rather than relying on prose documentation alone. At minimum, keep selector behavior, public package boundaries, shared concrete-graphic validation, and materialization-plan ordering and deduplication executable.
 - Write source code, test descriptions, fixtures, and example-program code in English. Implementation step documents remain in Korean.
 - Keep representative user-authored programs in separate files under `test/programs/` and execute those files from acceptance tests.
 - When progressively replacing a primitive contract with higher-level actions, preserve the primitive baseline and maintain one evolving high-level action program per chart development cycle. Do not create separate representative program files for every implementation unit unless the user explicitly requests snapshots.
