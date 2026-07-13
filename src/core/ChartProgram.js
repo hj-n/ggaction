@@ -20,11 +20,29 @@ function ownState(value) {
   return isOwned(value) ? value : cloneAndFreeze(value);
 }
 
+function createMaterializationConfigs(markConfigs, guideConfigs, titleConfig) {
+  return cloneAndFreeze({
+    marks: markConfigs,
+    guides: guideConfigs,
+    ...(titleConfig === undefined ? {} : { title: titleConfig })
+  });
+}
+
+function updateConfigPath(value, path, config) {
+  if (path.length === 0) return cloneAndFreeze(config);
+  const [key, ...rest] = path;
+  return freezeOwned({
+    ...value,
+    [key]: updateConfigPath(value?.[key] ?? {}, rest, config)
+  });
+}
+
 export class ChartProgram {
   constructor({
     semanticSpec = createEmptySemanticSpec(),
     graphicSpec = createEmptyGraphicSpec(),
     resolvedScales = {},
+    materializationConfigs,
     markConfigs = {},
     guideConfigs = {},
     titleConfig,
@@ -36,11 +54,12 @@ export class ChartProgram {
     this.semanticSpec = ownState(semanticSpec);
     this.graphicSpec = ownState(graphicSpec);
     this.resolvedScales = ownState(resolvedScales);
-    this.markConfigs = ownState(markConfigs);
-    this.guideConfigs = ownState(guideConfigs);
-    this.titleConfig = titleConfig === undefined
-      ? undefined
-      : ownState(titleConfig);
+    this.materializationConfigs = materializationConfigs === undefined
+      ? createMaterializationConfigs(markConfigs, guideConfigs, titleConfig)
+      : ownState(materializationConfigs);
+    this.markConfigs = this.materializationConfigs.marks;
+    this.guideConfigs = this.materializationConfigs.guides;
+    this.titleConfig = this.materializationConfigs.title;
     this.children = ownState(children);
     this.context = ownState(context);
     this.trace = ownState(trace);
@@ -53,9 +72,7 @@ export class ChartProgram {
     semanticSpec = this.semanticSpec,
     graphicSpec = this.graphicSpec,
     resolvedScales = this.resolvedScales,
-    markConfigs = this.markConfigs,
-    guideConfigs = this.guideConfigs,
-    titleConfig = this.titleConfig,
+    materializationConfigs = this.materializationConfigs,
     children = this.children,
     context = this.context,
     trace = this.trace,
@@ -65,9 +82,7 @@ export class ChartProgram {
       semanticSpec,
       graphicSpec,
       resolvedScales,
-      markConfigs,
-      guideConfigs,
-      titleConfig,
+      materializationConfigs,
       children,
       context,
       trace,
@@ -117,11 +132,26 @@ export class ChartProgram {
       throw new TypeError("Mark config must be a plain object.");
     }
 
+    return this._withMaterializationConfig(["marks", id], config);
+  }
+
+  _withMaterializationConfig(path, config) {
+    if (
+      !Array.isArray(path) ||
+      path.length === 0 ||
+      !path.every(key => typeof key === "string" && key.length > 0)
+    ) {
+      throw new TypeError("Materialization config path must contain names.");
+    }
+    if (!isPlainObject(config)) {
+      throw new TypeError("Materialization config must be a plain object.");
+    }
     return this._clone({
-      markConfigs: freezeOwned({
-        ...this.markConfigs,
-        [id]: cloneAndFreeze(config)
-      })
+      materializationConfigs: updateConfigPath(
+        this.materializationConfigs,
+        path,
+        config
+      )
     });
   }
 
@@ -131,19 +161,10 @@ export class ChartProgram {
       component = "ticks";
     }
 
-    const owned = cloneAndFreeze(config);
-    return this._clone({
-      guideConfigs: freezeOwned({
-        ...this.guideConfigs,
-        axis: freezeOwned({
-          ...this.guideConfigs.axis,
-          [channel]: freezeOwned({
-            ...this.guideConfigs.axis?.[channel],
-            [component]: owned
-          })
-        })
-      })
-    });
+    return this._withMaterializationConfig(
+      ["guides", "axis", channel, component],
+      config
+    );
   }
 
   _withLegendConfig(kind, config) {
@@ -158,16 +179,10 @@ export class ChartProgram {
       throw new TypeError("Legend config must be a plain object.");
     }
 
-    const owned = cloneAndFreeze(config);
-    return this._clone({
-      guideConfigs: freezeOwned({
-        ...this.guideConfigs,
-        legend: freezeOwned({
-          ...this.guideConfigs.legend,
-          [kind]: owned
-        })
-      })
-    });
+    return this._withMaterializationConfig(
+      ["guides", "legend", kind],
+      config
+    );
   }
 
   _withGridConfig(direction, config) {
@@ -178,16 +193,10 @@ export class ChartProgram {
       throw new TypeError("Grid config must be a plain object.");
     }
 
-    const owned = cloneAndFreeze(config);
-    return this._clone({
-      guideConfigs: freezeOwned({
-        ...this.guideConfigs,
-        grid: freezeOwned({
-          ...this.guideConfigs.grid,
-          [direction]: owned
-        })
-      })
-    });
+    return this._withMaterializationConfig(
+      ["guides", "grid", direction],
+      config
+    );
   }
 
   _withTitleConfig(config) {
@@ -195,7 +204,7 @@ export class ChartProgram {
       throw new TypeError("Title config must be a plain object.");
     }
 
-    return this._clone({ titleConfig: cloneAndFreeze(config) });
+    return this._withMaterializationConfig(["title"], config);
   }
 
   _enterAction({ op, description, args }) {
