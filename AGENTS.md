@@ -48,6 +48,7 @@
 
 - Define every authoring action through the shared `action()` wrapper.
 - Provide an atomic domain action when multiple semantic operations are interdependent and separately authoring them would leave an incomplete or misleading chart state.
+- When one public encoding choice requires a companion encoding, let the representative domain action create that companion through a wrapped child action. Keep the companion action available only as an advanced API when ordinary chart authors should not need to coordinate the pair manually.
 - Implement an atomic action by orchestrating the existing wrapped child actions that own the relevant validation, inference, and materialization; do not duplicate their behavior inside the aggregate.
 - Component actions invoked by higher-level actions must also be wrapped actions when they represent meaningful authoring steps.
 - Aggregate actions must orchestrate wrapped child actions instead of duplicating their behavior or hiding meaningful authoring steps inside untraced helpers.
@@ -65,6 +66,7 @@
 - Write source code, test descriptions, fixtures, and example-program code in English. Implementation step documents remain in Korean.
 - Keep representative user-authored programs in separate files under `test/programs/` and execute those files from acceptance tests.
 - When progressively replacing a primitive contract with higher-level actions, preserve the primitive baseline and maintain one evolving high-level action program per chart phase. Do not create separate representative program files for every implementation step unless the user explicitly requests snapshots.
+- Require a representative high-level program and its primitive baseline to converge on the same concrete `graphicSpec`, explicit rendering order, and renderer calls when they describe the same chart. Visual similarity alone is not sufficient regression evidence.
 - Pair each representative program with a PNG export test under `test/render/`; write generated images to the gitignored `test/output/` directory.
 - When a representative program is intended to demonstrate primitive usage, write one explicit method chain and do not hide primitive calls behind batching helpers or other syntactic sugar.
 - Keep the user program focused on realistic library usage. Assertions, mocks, and test-only inspection belong in the importing test file rather than in the user program.
@@ -78,16 +80,21 @@
 - The action that first introduces a semantic concept owns its inference, validation, and storage. Downstream actions must read the stored decision rather than silently creating, repairing, or re-inferring missing semantic state.
 - Persist every inferred semantic decision, including resolved resource IDs and types, in `semanticSpec`; do not leave a resolved decision only in context or an implementation-local value.
 - A semantic point mark may be realized by a graphical `circle` primitive.
+- Compute aggregate scale domains at the final visual grouping grain. For example, grouped bars use one aggregate per x/category cell rather than an earlier aggregate that ignores the grouping field.
 - A constant point shape is graphical appearance, while a field-driven shape is semantic encoding that must be explicitly materialized.
 - User-specified scale domains and ranges are semantic. Resolved primitive values such as x, y, radius, and color are graphical.
 - Dataset values are immutable after creation; filtering, aggregation, and other data changes must create transforms or derived datasets rather than replace source values.
 - Canvas properties, themes, fonts, strokes, and other appearance-only values are graphical.
+- Keep appearance-only materialization settings such as a grouped-bar band fraction outside `semanticSpec`; store them in immutable graphical configuration and materialize their concrete results into `graphicSpec`.
 - Output density such as PNG `pixelRatio` is a renderer option and must not rewrite logical values in `graphicSpec`.
 - When a semantic change affects existing concrete output, the responsible domain action must explicitly rematerialize every affected graphical consumer.
 - Positional encoding actions own coordinate inference and layer attachment. Guide actions read stored coordinates and must not create or repair them.
 - Once scale consumers exist, canvas width, height, or margin edits must explicitly invoke wrapped rematerialization actions for every affected scale, mark, and guide; never leave stale concrete coordinates or rely on automatic compilation.
 - Treat concrete rendering order as explicit graphical state rather than an accidental consequence of action call order. Use graphic placement to preserve relationships such as grids behind marks and axes or legends above them.
+- Do not synthesize missing categorical combinations as zero values or placeholder graphics unless an explicit semantic completion policy requests them. Materialize only observed groups by default.
+- Use one resolved ordinal domain order and its band geometry as the shared source of truth for marks, offsets, ticks, labels, and other positional consumers.
 - Design shared guides around their semantic role, such as a categorical legend, and express mark-specific symbols through graphical recipes instead of forking the complete guide implementation by mark type.
+- Give each guide type one chart-independent documented default, such as a right-side legend. Alternate placement must come from an explicit public option rather than a different hidden default for each chart type.
 - Generic aggregate actions must select only semantic combinations that their child actions currently support. Determine applicability from persisted mark, encoding, scale, and coordinate state rather than from resource presence alone.
 
 ## Documentation and Implementation Consistency
