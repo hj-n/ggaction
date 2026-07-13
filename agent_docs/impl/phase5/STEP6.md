@@ -7,16 +7,16 @@ regression grammar 및 derived-data action을 구현한다.
 
 ## 진행 상태
 
-- [ ] Regression option/field validation
-- [ ] Grouped OLS calculation
-- [ ] Student-t critical value calculation
-- [ ] Mean-response confidence interval
-- [ ] Observed unique x sampling
-- [ ] Deterministic regression row schema
-- [ ] `createRegressionData` wrapped action
-- [ ] Degenerate group and ambiguity errors
-- [ ] Statistical fixture equivalence tests
-- [ ] Advanced data API documentation, commit, push
+- [x] Regression option/field validation
+- [x] Grouped OLS calculation
+- [x] Student-t critical value calculation
+- [x] Mean-response confidence interval
+- [x] Observed unique x sampling
+- [x] Deterministic regression row schema
+- [x] `createRegressionData` wrapped action
+- [x] Degenerate group and ambiguity errors
+- [x] Statistical fixture equivalence tests
+- [x] Advanced data API documentation, commit, push
 
 ## 저장 결과
 

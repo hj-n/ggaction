@@ -53,6 +53,17 @@ filterData({ id, source?, field, oneOf })
 Create an immutable named derived dataset using a scalar `oneOf` filter. The
 source defaults to current data. [Data](../api/data.md)
 
+### `createRegressionData`
+
+```javascript
+createRegressionData({ id, source?, x, y, groupBy?, method?, confidence?, interval? })
+```
+
+Create an immutable linear OLS derived dataset at observed unique x values,
+with Student-t mean-response confidence bounds. Source defaults to current
+data; method is `"linear"`, confidence is `0.95`, and interval is `"mean"`.
+[Data](../api/data.md)
+
 ### `createPointMark`
 
 ```javascript
@@ -242,7 +253,7 @@ Use these actions for explicit semantic resources or focused axis control.
 | Group | Actions |
 | --- | --- |
 | Coordinate | `createCoordinate({ id?, type?, layers? })` |
-| Derived data | `createDerivedData({ id, source, transform })`, `materializeFilteredData({ id })` |
+| Derived data | `createDerivedData({ id, source, transform })`, `materializeFilteredData({ id })`, `materializeRegressionData({ id })` |
 | Complete channel axis | `createXAxis(options?)`, `createYAxis(options?)` |
 | Axis lines | `createXAxisLine`, `createYAxisLine`, `editXAxisLine`, `editYAxisLine` |
 | Axis ticks | `createXAxisTicks`, `createYAxisTicks`, `editXAxisTicks`, `editYAxisTicks` |

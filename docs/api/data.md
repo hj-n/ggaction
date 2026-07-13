@@ -11,6 +11,7 @@ title: Data
 | --- | --- | --- | --- |
 | `createData` | `createData({ id: "rows", values })` | No ID or value inference | Immutable semantic dataset and current-data context |
 | `filterData` | `filterData({ id: "selected", field, oneOf })` | Source: current dataset | Immutable derived dataset with filter provenance and materialized rows |
+| `createRegressionData` | `createRegressionData({ id: "fit", x, y })` | Source: current dataset; linear OLS; confidence `0.95` | Immutable derived predictions and mean-response interval |
 
 ## `createData({ id, values })`
 
@@ -62,11 +63,41 @@ The derived dataset stores its source ID, filter transform, and immutable
 materialized values. Rows retain source order. Missing fields and values not in
 `oneOf` are omitted. The new dataset becomes current data for the next mark.
 
+## `createRegressionData({ id, source?, x, y, groupBy?, confidence? })`
+
+Create deterministic linear OLS predictions from an existing dataset. This is
+an advanced data action used by higher-level regression chart actions.
+
+```javascript
+program.createRegressionData({
+  id: "regressionData",
+  x: "Displacement",
+  y: "Acceleration",
+  groupBy: "Origin"
+});
+```
+
+| Option | Type | Default |
+| --- | --- | --- |
+| `id` | new dataset ID | required |
+| `source` | existing dataset ID | current dataset |
+| `x`, `y` | finite quantitative field names | required |
+| `groupBy` | nominal field name | one ungrouped model |
+| `confidence` | number strictly between `0` and `1` | `0.95` |
+| `method` | `"linear"` | `"linear"` |
+| `interval` | `"mean"` | `"mean"` |
+
+Each group uses at least three rows and must contain varying x values. Output
+uses each observed unique x value in ascending order, the predicted y field,
+and fixed `__regression_ci_lower` / `__regression_ci_upper` fields. Confidence
+bounds use a Student-t mean-response interval. Source values remain unchanged.
+
 ## Errors and limitations
 
 Values must be an array. Dataset IDs are unique, and an existing source dataset
 cannot be replaced or mutated. Filtering requires a current or explicit source
-and does not permit an empty `oneOf` list.
+and does not permit an empty `oneOf` list. Regression rejects missing or
+non-finite fields, groups with fewer than three rows, and constant-x groups.
 
 ## Related
 

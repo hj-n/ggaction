@@ -2,6 +2,7 @@ import { action } from "../../core/action.js";
 import { validateUserId } from "../../core/identifiers.js";
 import { isPlainObject } from "../../core/immutable.js";
 import { validateKeys } from "../../core/validation.js";
+import { deriveLinearRegression } from "../../grammar/regression.js";
 
 const DATA_OPTIONS = Object.freeze(["id", "values"]);
 
@@ -46,6 +47,10 @@ export const createData = action(
 
 const DERIVED_DATA_OPTIONS = Object.freeze(["id", "source", "transform"]);
 const FILTER_DATA_OPTIONS = Object.freeze(["id", "source", "field", "oneOf"]);
+const REGRESSION_DATA_OPTIONS = Object.freeze([
+  "id", "source", "x", "y", "groupBy", "method", "confidence", "interval"
+]);
+const MATERIALIZE_OPTIONS = Object.freeze(["id"]);
 
 export const createDerivedData = action(
   {
@@ -131,5 +136,75 @@ export const filterData = action(
         transform: [{ type: "filter", field: args.field, oneOf: args.oneOf }]
       })
       .materializeFilteredData({ id });
+  }
+);
+
+export const materializeRegressionData = action(
+  {
+    op: "materializeRegressionData",
+    description: "Materialize one linear-regression derived dataset."
+  },
+  function (args = {}) {
+    validateKeys(args, MATERIALIZE_OPTIONS, "materializeRegressionData");
+    const id = validateUserId(args.id, "Derived dataset id");
+    const dataset = this.semanticSpec.datasets.find(item => item.id === id);
+    if (dataset === undefined || dataset.source === undefined) {
+      throw new Error(`Unknown derived dataset "${id}".`);
+    }
+    if (dataset.values !== undefined) {
+      throw new Error(`Derived dataset "${id}" is already materialized.`);
+    }
+    const source = this.semanticSpec.datasets.find(item => item.id === dataset.source);
+    if (source?.values === undefined) {
+      throw new Error(`Source dataset "${dataset.source}" has no values.`);
+    }
+    if (
+      dataset.transform?.length !== 1 ||
+      dataset.transform[0].type !== "regression"
+    ) {
+      throw new Error(`Derived dataset "${id}" requires one regression transform.`);
+    }
+    const transform = dataset.transform[0];
+    const result = deriveLinearRegression(source.values, {
+      x: transform.x,
+      y: transform.y,
+      groupBy: transform.groupBy,
+      confidence: transform.confidence
+    });
+    return this.editSemantic({
+      property: `dataset[${id}].values`,
+      value: result.values
+    });
+  }
+);
+
+export const createRegressionData = action(
+  {
+    op: "createRegressionData",
+    description: "Create grouped linear-regression values and confidence bounds."
+  },
+  function (args = {}) {
+    validateKeys(args, REGRESSION_DATA_OPTIONS, "createRegressionData");
+    const id = validateUserId(args.id, "Regression dataset id");
+    const source = validateUserId(
+      args.source ?? this.context.currentData,
+      "Source dataset id"
+    );
+    const method = args.method ?? "linear";
+    const confidence = args.confidence ?? 0.95;
+    const interval = args.interval ?? "mean";
+    const transform = {
+      type: "regression",
+      method,
+      x: args.x,
+      y: args.y,
+      ...(args.groupBy === undefined ? {} : { groupBy: args.groupBy }),
+      confidence,
+      interval
+    };
+
+    return this
+      .createDerivedData({ id, source, transform: [transform] })
+      .materializeRegressionData({ id });
   }
 );
