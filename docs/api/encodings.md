@@ -14,7 +14,7 @@ defaults.
 
 | Family | Core actions | Use it for |
 | --- | --- | --- |
-| Position | `encodeX`, `encodeY`, `encodeXOffset` | Quantitative, temporal, binned, or ordinal placement |
+| Position | `encodeX`, `encodeY`, `encodeYRange`, `encodeXOffset` | Quantitative, temporal, binned, ordinal, or ranged placement |
 | Atomic histogram | `encodeHistogram` | Interdependent bin/count semantics |
 | Appearance | `encodeColor`, `encodeSize`, `encodeShape`, `encodeOpacity` | Field-driven or fixed point appearance |
 | Series | `encodeColor`, `encodeStrokeDash` | Nominal grouping and appearance |
@@ -50,6 +50,23 @@ empty until aggregate y and group layout are authored. On an ordinal bar,
 from x-category means. It still leaves rects empty until grouping is authored.
 The advanced `encodeXOffset({ field })` action resolves nominal slots within
 each x band; grouped color layout normally calls it on the author's behalf.
+
+Area marks use quantitative x and the atomic ranged action:
+
+```javascript
+area
+  .encodeX({ field: "Displacement" })
+  .encodeYRange({
+    lower: "__regression_ci_lower",
+    upper: "__regression_ci_upper"
+  })
+  .encodeGroup({ field: "Origin" });
+```
+
+`encodeYRange` records `encodeY` then advanced `encodeY2` as wrapped children.
+Both edges share one y scale, whose domain includes lower and upper values.
+`encodeGroup` splits area or line paths by a nominal field without creating a
+scale or guide.
 
 ## Atomic histogram
 

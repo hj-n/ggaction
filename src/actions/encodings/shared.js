@@ -40,7 +40,8 @@ export function resolveTarget(
   const expectedGraphic = {
     point: ["circle", "rect", "collection"],
     line: "path",
-    bar: "rect"
+    bar: "rect",
+    area: "path"
   }[layer.mark.type];
 
   const graphicType = program.graphicSpec.objects[id]?.type;

@@ -84,6 +84,11 @@ and language models.
 - createRegressionData creates immutable grouped linear OLS predictions at
   observed unique x values and Student-t mean-response confidence bounds; it
   defaults source to current data and confidence to 0.95.
+- createAreaMark creates an empty path collection with fixed fill/opacity.
+  encodeYRange calls encodeY then encodeY2, shares one y scale across both
+  bounds, and materializes grouped closed paths after optional encodeGroup.
+- encodeGroup splits line or area geometry by a nominal field but creates no
+  scale or guide.
 - Binned bar encodeX stores maxBins, resolves a nice linear x domain/range, and deliberately leaves rect materialization for later y encoding.
 - Ordinal bar encodeX requires fieldType "ordinal", preserves first-appearance domain order, resolves equal band geometry, and deliberately leaves rect materialization for later aggregate/group actions.
 - Ordinal bar encodeY requires a quantitative field, defaults to mean with stack null, resolves y from x-category means, and keeps rects empty until grouping semantics exist.

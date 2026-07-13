@@ -88,13 +88,22 @@ createBarMark({ id, data? })
 
 Create a semantic bar mark and empty rect collection. [Marks](../api/marks.md)
 
+### `createAreaMark`
+
+```javascript
+createAreaMark({ id, data?, fill?, opacity? })
+```
+
+Create a semantic area mark and empty path collection. Fixed fill defaults to
+`"#4c78a8"`; opacity defaults to `0.2`. [Marks](../api/marks.md)
+
 ### `encodeX`
 
 ```javascript
 encodeX({ field, target?, fieldType?, coordinate?, bin?, scale? })
 ```
 
-Create a quantitative point, temporal line, binned quantitative bar, or
+Create a quantitative point/area, temporal line, binned quantitative bar, or
 ordinal bar x encoding. Ordinal bars require `fieldType: "ordinal"` and do not
 materialize rects until their remaining layout semantics exist.
 [Position encodings](../api/position-encodings.md)
@@ -110,6 +119,33 @@ y encoding. With ordinal bar x, it also creates a mean/non-stacked y encoding
 and resolves its scale while waiting for grouping semantics before rect
 materialization. A complete histogram x/y pair materializes concrete rects.
 [Position encodings](../api/position-encodings.md)
+
+### `encodeY2`
+
+```javascript
+encodeY2({ field, target?, fieldType?, scale? })
+```
+
+Advanced upper-edge area encoding. It requires an existing quantitative y and
+shares that exact scale. [Encodings](../api/encodings.md)
+
+### `encodeYRange`
+
+```javascript
+encodeYRange({ lower, upper, target?, fieldType?, coordinate?, scale? })
+```
+
+Atomically compose area `encodeY` and `encodeY2`.
+[Encodings](../api/encodings.md)
+
+### `encodeGroup`
+
+```javascript
+encodeGroup({ field, target?, fieldType? })
+```
+
+Split line or area paths by a nominal field without creating a scale or guide.
+[Encodings](../api/encodings.md)
 
 ### `encodeXOffset`
 

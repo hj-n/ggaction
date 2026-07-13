@@ -12,6 +12,7 @@ title: Marks
 | `createPointMark` | `createPointMark({ id: "points" })` | Current dataset; circle shape | Empty/concrete point collection |
 | `createLineMark` | `createLineMark({ id: "lines" })` | Current dataset | Empty path collection |
 | `createBarMark` | `createBarMark({ id: "bars" })` | Current dataset | Empty rect collection |
+| `createAreaMark` | `createAreaMark({ id: "band" })` | Current dataset; blue fill; opacity `0.2` | Empty path collection |
 
 ## `createPointMark({ id, data?, shape? })`
 
@@ -35,6 +36,16 @@ size, and fill properties.
 
 Point creation does not assign a coordinate or scale. Position encodings create
 and attach the appropriate semantic coordinate when needed.
+
+## `createAreaMark({ id, data?, fill?, opacity? })`
+
+Create a semantic area mark backed by an initially empty path collection.
+`data` defaults to current data, `fill` defaults to `"#4c78a8"`, and opacity
+defaults to `0.2`. The fixed fill and opacity are graphical appearance.
+
+An area becomes renderable after quantitative x and atomic `encodeYRange`
+encodings exist. Optional `encodeGroup` creates one closed filled path per
+nominal group without creating a scale or legend.
 
 ## `createLineMark({ id, data? })`
 

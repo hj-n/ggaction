@@ -49,12 +49,14 @@ export const rematerializeScale = action(
     if (consumers.length === 0) {
       throw new Error(`Scale "${id}" has no supported consumers.`);
     }
-    const channels = new Set(consumers.map(consumer => consumer.channel));
+    const channels = new Set(
+      consumers.map(consumer => consumer.channel === "y2" ? "y" : consumer.channel)
+    );
     if (channels.size !== 1) {
       throw new Error(`Scale "${id}" cannot be shared across channels.`);
     }
 
-    const channel = consumers[0].channel;
+    const channel = consumers[0].channel === "y2" ? "y" : consumers[0].channel;
     const valuesByConsumer = consumers.map(consumer => ({
       consumer,
       values: resolveConsumerValues(this, consumer)
@@ -183,7 +185,7 @@ export const rematerializeScale = action(
 
     for (const { consumer, values } of valuesByConsumer) {
       if (
-        ["line", "bar"].includes(consumer.layer.mark?.type) ||
+        ["line", "bar", "area"].includes(consumer.layer.mark?.type) ||
         (consumer.layer.mark?.type === "point" && ["size", "shape"].includes(channel))
       ) continue;
       next = next.editGraphics({

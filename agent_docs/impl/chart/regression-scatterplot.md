@@ -107,7 +107,7 @@ encodeShape
 └─ rematerializePointMark
 
 encodeOpacity
-└─ editGraphics
+└─ rematerializePointMark
 ```
 
 ```text

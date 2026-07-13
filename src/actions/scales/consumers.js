@@ -17,7 +17,7 @@ export function findScaleConsumers(program, id) {
   const consumers = [];
   for (const layer of program.semanticSpec.layers) {
     for (const channel of [
-      "x", "y", "xOffset", "color", "strokeDash", "size", "shape"
+      "x", "y", "y2", "xOffset", "color", "strokeDash", "size", "shape"
     ]) {
       const encoding = layer.encoding?.[channel];
       if (encoding?.scale === id) consumers.push({ layer, channel, encoding });

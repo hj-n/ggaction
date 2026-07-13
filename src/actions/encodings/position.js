@@ -127,7 +127,7 @@ function encodePosition(program, channel, args, operation) {
   const { id: target, dataset, layer } = resolveTarget(
     program,
     args.target,
-    ["point", "line", "bar"]
+    ["point", "line", "bar", "area"]
   );
   let bin;
   let aggregate;
@@ -153,6 +153,13 @@ function encodePosition(program, channel, args, operation) {
     }
     if (args.stack !== undefined) {
       throw new Error("Point position encoding does not support stack.");
+    }
+  } else if (layer.mark.type === "area") {
+    if (fieldType !== "quantitative") {
+      throw new Error("Area position encoding requires quantitative fields.");
+    }
+    if (args.aggregate !== undefined || args.bin !== undefined || args.stack !== undefined) {
+      throw new Error("Area position encoding does not support aggregate, bin, or stack.");
     }
   } else if (layer.mark.type === "line" && channel === "x") {
     if (fieldType !== "temporal") {
@@ -324,6 +331,16 @@ function encodePosition(program, channel, args, operation) {
   }
 
   next = next.rematerializeScale({ id: scale.id });
+  if (layer.mark.type === "area") {
+    const updated = next.semanticSpec.layers.find(item => item.id === target);
+    return (
+      updated.encoding?.x?.scale !== undefined &&
+      updated.encoding?.y?.scale !== undefined &&
+      updated.encoding?.y2?.scale === updated.encoding.y.scale
+    )
+      ? next.rematerializeAreaMark({ id: target })
+      : next;
+  }
   return layer.mark.type === "point"
     ? next.rematerializePointMark({ id: target })
     : next;
