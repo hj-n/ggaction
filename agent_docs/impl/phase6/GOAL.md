@@ -24,7 +24,8 @@ architecture에 통합한다.
 - [x] Area color grouping과 rematerialization
 - [x] Top legend layout와 area swatch applicability
 - [x] `createGuides`와 title/top-margin integration
-- [ ] Public vertical slice, documentation, cleanup
+- [x] Public vertical slice
+- [ ] Documentation, browser verification, cleanup
 
 ## 최종 public flow
 
