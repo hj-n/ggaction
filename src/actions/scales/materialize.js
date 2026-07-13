@@ -21,6 +21,10 @@ import {
   resolveConsumerValues,
   resolveHistogramCountValues
 } from "./consumers.js";
+import {
+  applyMaterializationPlan,
+  planScaleGuideRematerialization
+} from "../../materialization/dependencies.js";
 
 const OPTIONS = Object.freeze(["id"]);
 
@@ -187,25 +191,9 @@ export const rematerializeScale = action(
       });
     }
 
-    if (next.graphicSpec.objects.xAxisLine && next.semanticSpec.guides.axis?.x?.scale === id) {
-      next = next.editXAxisLine();
-    }
-    if (next.graphicSpec.objects.yAxisLine && next.semanticSpec.guides.axis?.y?.scale === id) {
-      next = next.editYAxisLine();
-    }
-    if (next.guideConfigs.axis?.x?.ticks?.scale === id) next = next.editXAxisTicks();
-    if (next.guideConfigs.axis?.y?.ticks?.scale === id) next = next.editYAxisTicks();
-    if (next.guideConfigs.axis?.x?.labels?.scale === id) next = next.editXAxisLabels();
-    if (next.guideConfigs.axis?.y?.labels?.scale === id) next = next.editYAxisLabels();
-    if (next.guideConfigs.axis?.x?.title?.scale === id) next = next.editXAxisTitle();
-    if (next.guideConfigs.axis?.y?.title?.scale === id) next = next.editYAxisTitle();
-    if (next.guideConfigs.grid?.horizontal?.scale === id) {
-      next = next.rematerializeHorizontalGrid();
-    }
-    if (next.guideConfigs.grid?.vertical?.scale === id) {
-      next = next.rematerializeVerticalGrid();
-    }
-
-    return next;
+    return applyMaterializationPlan(
+      next,
+      planScaleGuideRematerialization(next, id)
+    );
   }
 );

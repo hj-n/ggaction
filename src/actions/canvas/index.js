@@ -7,6 +7,10 @@ import {
   validateCanvasState
 } from "../../layout/canvas.js";
 import { cloneAndFreeze } from "../../core/immutable.js";
+import {
+  applyMaterializationPlan,
+  planCanvasRematerialization
+} from "../../materialization/dependencies.js";
 
 const CANVAS_OPTIONS = Object.freeze([
   "width",
@@ -61,96 +65,6 @@ function resolveCanvasState(program, args) {
   return cloneAndFreeze(state);
 }
 
-function usesPositionalScale(program, id) {
-  return program.semanticSpec.layers.some(layer =>
-    ["x", "y", "xOffset"].some(
-      channel => layer.encoding?.[channel]?.scale === id
-    )
-  );
-}
-
-function rematerializePositionScales(program) {
-  let next = program;
-
-  for (const scale of program.semanticSpec.scales) {
-    if (
-      (scale.range === "auto" ||
-        program.semanticSpec.guides.axis?.x?.scale === scale.id ||
-        program.semanticSpec.guides.axis?.y?.scale === scale.id ||
-        program.semanticSpec.guides.grid?.horizontal?.scale === scale.id ||
-        program.semanticSpec.guides.grid?.vertical?.scale === scale.id) &&
-      program.resolvedScales[scale.id] !== undefined &&
-      usesPositionalScale(program, scale.id)
-    ) {
-      next = next.rematerializeScale({ id: scale.id });
-    }
-  }
-
-  return next;
-}
-
-function rematerializeCompleteLineMarks(program) {
-  let next = program;
-
-  for (const layer of program.semanticSpec.layers) {
-    if (
-      layer.mark?.type === "line" &&
-      layer.encoding?.x?.scale !== undefined &&
-      layer.encoding?.y?.scale !== undefined &&
-      layer.encoding.y.aggregate === "mean"
-    ) {
-      next = next.rematerializeLineMark({ id: layer.id });
-    }
-  }
-
-  return next;
-}
-
-function rematerializeCompleteBarMarks(program) {
-  let next = program;
-
-  for (const layer of program.semanticSpec.layers) {
-    if (
-      layer.mark?.type === "bar" &&
-      ((layer.encoding?.x?.bin !== undefined &&
-        layer.encoding?.y?.aggregate === "count" &&
-        layer.encoding.y.stack === "zero") ||
-        (layer.encoding?.x?.fieldType === "ordinal" &&
-          layer.encoding?.y?.aggregate === "mean" &&
-          layer.encoding.y.stack === null &&
-          program.markConfigs[layer.id]?.barWidth !== undefined))
-    ) {
-      next = next.rematerializeBarMark({ id: layer.id });
-    }
-  }
-
-  return next;
-}
-
-function rematerializeLegend(program) {
-  if (
-    (program.semanticSpec.guides.legend?.series === undefined ||
-      program.guideConfigs.legend?.series === undefined) &&
-    (program.semanticSpec.guides.legend?.color === undefined ||
-      program.guideConfigs.legend?.color === undefined)
-  ) {
-    return program;
-  }
-
-  return program.rematerializeLegend();
-}
-
-function rematerializeTitle(program) {
-  if (
-    program.semanticSpec.title.text === undefined ||
-    program.titleConfig === undefined
-  ) {
-    return program;
-  }
-
-  return program.rematerializeTitle();
-}
-
 const editCanvas = action(
   {
     op: "editCanvas",
@@ -181,11 +95,10 @@ const editCanvas = action(
       Object.hasOwn(args, "height") ||
       Object.hasOwn(args, "margin")
     ) {
-      next = rematerializePositionScales(next);
-      next = rematerializeCompleteLineMarks(next);
-      next = rematerializeCompleteBarMarks(next);
-      next = rematerializeLegend(next);
-      next = rematerializeTitle(next);
+      next = applyMaterializationPlan(
+        next,
+        planCanvasRematerialization(next)
+      );
     }
 
     return next;
