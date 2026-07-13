@@ -1,6 +1,7 @@
 import { action } from "../../core/action.js";
 import { canMaterializeArea } from "../marks/materialization.js";
 import { resolvePositionEncoding } from "./position/resolve.js";
+import { findLayer } from "../../selectors/layers.js";
 
 function encodePosition(program, channel, args, operation) {
   const {
@@ -73,7 +74,7 @@ function encodePosition(program, channel, args, operation) {
 
   next = next.rematerializeScale({ id: scale.id });
   if (layer.mark.type === "area") {
-    const updated = next.semanticSpec.layers.find(item => item.id === target);
+    const updated = findLayer(next, target);
     return canMaterializeArea(next, updated)
       ? next.rematerializeAreaMark({ id: target })
       : next;

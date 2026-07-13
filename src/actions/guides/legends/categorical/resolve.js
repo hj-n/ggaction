@@ -2,6 +2,8 @@ import { validateUserId } from "../../../../core/identifiers.js";
 import { sameOrderedValues } from "../../../../core/validation.js";
 import { CHANNELS } from "./options.js";
 import { nonEmptyString } from "./validation.js";
+import { findLayer } from "../../../../selectors/layers.js";
+import { findSemanticScale } from "../../../../selectors/scales.js";
 
 function isCategoricalTarget(layer) {
   if (["line", "point"].includes(layer?.mark?.type)) {
@@ -16,16 +18,14 @@ function isCategoricalTarget(layer) {
 export function resolveTarget(program, requested) {
   if (requested !== undefined) {
     const id = validateUserId(requested, "Legend target id");
-    const layer = program.semanticSpec.layers.find(item => item.id === id);
+    const layer = findLayer(program, id);
     if (!isCategoricalTarget(layer)) {
       throw new Error(`Unknown categorical legend target "${id}".`);
     }
     return layer;
   }
 
-  const current = program.semanticSpec.layers.find(
-    layer => layer.id === program.context.currentMark
-  );
+  const current = findLayer(program, program.context.currentMark);
   if (isCategoricalTarget(current)) return current;
   const candidates = program.semanticSpec.layers.filter(isCategoricalTarget);
   if (candidates.length !== 1) {
@@ -40,7 +40,7 @@ export const sameValues = sameOrderedValues;
 
 function resolveOrdinalScales(program, scaleIds) {
   const scales = scaleIds.map(id => {
-    const semantic = program.semanticSpec.scales.find(item => item.id === id);
+    const semantic = findSemanticScale(program, id);
     const concrete = program.resolvedScales[id];
     if (semantic?.type !== "ordinal" || concrete?.type !== "ordinal") {
       throw new Error(`Legend requires resolved ordinal scale "${id}".`);
@@ -102,9 +102,7 @@ export function resolveDefinition(program, layer, requestedChannels, requestedTi
 }
 
 export function resolveCurrentDefinition(program, config) {
-  const layer = program.semanticSpec.layers.find(
-    item => item.id === config.target
-  );
+  const layer = findLayer(program, config.target);
   if (layer === undefined) {
     throw new Error(`Unknown categorical legend target "${config.target}".`);
   }

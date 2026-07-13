@@ -1,6 +1,8 @@
 import { resolveHistogramBins } from "../../grammar/histogram.js";
 import { readQuantitativeField } from "../../grammar/scales.js";
 import { niceTicks, timeTicks } from "../../grammar/ticks.js";
+import { findDataset } from "../../selectors/datasets.js";
+import { findSemanticScale } from "../../selectors/scales.js";
 
 export const DEFAULT_TICK_COUNT = 5;
 
@@ -21,10 +23,8 @@ export function inferHistogramBoundaries(program, channel, scaleId) {
 
   const [layer] = consumers;
   const encoding = layer.encoding.x;
-  const dataset = program.semanticSpec.datasets.find(
-    item => item.id === layer.data
-  );
-  const scale = program.semanticSpec.scales.find(item => item.id === scaleId);
+  const dataset = findDataset(program, layer.data);
+  const scale = findSemanticScale(program, scaleId);
   if (dataset === undefined || scale === undefined) {
     throw new Error(
       `Guide values require histogram data and scale "${scaleId}".`

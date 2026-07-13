@@ -1,3 +1,5 @@
+import { findDataset } from "../../selectors/datasets.js";
+
 function hasPositionScales(layer) {
   return (
     layer.encoding?.x?.scale !== undefined &&
@@ -24,9 +26,7 @@ export function canMaterializeArea(program, layer) {
     return false;
   }
 
-  const dataset = program.semanticSpec.datasets.find(
-    item => item.id === layer.data
-  );
+  const dataset = findDataset(program, layer.data);
   const densityTransform =
     dataset?.transform?.length === 1 &&
     dataset.transform[0].type === "density"

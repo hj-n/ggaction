@@ -8,6 +8,7 @@ import {
 } from "../../../grammar/scales.js";
 import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from
   "../../../theme/defaults.js";
+import { findDataset } from "../../../selectors/datasets.js";
 
 const CREATE_OPTIONS = Object.freeze([
   "text", "scale", "position", "at", "offset", "rotation", "color",
@@ -50,9 +51,7 @@ function inferText(program, channel, scaleId) {
       typeof encoding.field === "string" &&
       encoding.field.length
     ) {
-      const dataset = program.semanticSpec.datasets.find(
-        item => item.id === layer.data
-      );
+      const dataset = findDataset(program, layer.data);
       const density = dataset?.transform?.length === 1 &&
         dataset.transform[0].type === "density"
         ? dataset.transform[0]

@@ -5,6 +5,7 @@ import {
   canMaterializeArea,
   canMaterializeLine
 } from "../marks/materialization.js";
+import { findLayer } from "../../selectors/layers.js";
 import { resolveTarget, validateOptions } from "./shared.js";
 
 const Y2_OPTIONS = Object.freeze(["field", "target", "fieldType", "scale"]);
@@ -122,12 +123,12 @@ const encodeGroup = action(
         value: "nominal"
       });
     if (layer.mark.type === "area") {
-      const updated = next.semanticSpec.layers.find(item => item.id === target);
+      const updated = findLayer(next, target);
       return canMaterializeArea(next, updated)
         ? next.rematerializeAreaMark({ id: target })
         : next;
     }
-    const updated = next.semanticSpec.layers.find(item => item.id === target);
+    const updated = findLayer(next, target);
     return canMaterializeLine(next, updated)
       ? next.rematerializeLineMark({ id: target })
       : next;

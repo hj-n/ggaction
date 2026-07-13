@@ -8,6 +8,7 @@ import {
   validateScaleRange,
   validateScaleType
 } from "../../grammar/scales.js";
+import { findSemanticScale } from "../../selectors/scales.js";
 
 const CREATE_SCALE_OPTIONS = Object.freeze([
   "id",
@@ -87,7 +88,7 @@ export const createScale = action(
       }
       definition.zero = args.zero;
     }
-    const existing = this.semanticSpec.scales.find(item => item.id === id);
+    const existing = findSemanticScale(this, id);
 
     if (existing !== undefined) {
       assertEquivalentScale(existing, definition);

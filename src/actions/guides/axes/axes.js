@@ -2,6 +2,7 @@ import { action } from "../../../core/action.js";
 import { isPlainObject } from "../../../core/immutable.js";
 import { validateUserId } from "../../../core/identifiers.js";
 import { validateKeys } from "../../../core/validation.js";
+import { findCoordinate } from "../../../selectors/coordinates.js";
 
 const TOP_OPTIONS = Object.freeze(["coordinate", "x", "y"]);
 const COORDINATE_OPTIONS = Object.freeze(["id", "type"]);
@@ -92,7 +93,7 @@ function resolveCoordinate(program, descriptor, cartesianLayers, hasPolar) {
   }
 
   const id = validateUserId(descriptor.id ?? referencedIds[0], "Coordinate id");
-  const existing = program.semanticSpec.coordinates.find(item => item.id === id);
+  const existing = findCoordinate(program, id);
 
   if (existing === undefined) {
     throw new Error(`Unknown coordinate "${id}".`);

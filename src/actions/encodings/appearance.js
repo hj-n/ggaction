@@ -4,6 +4,7 @@ import {
   readQuantitativeField
 } from "../../grammar/scales.js";
 import { resolveAppearanceScaleDefinition } from "../scales/definitions.js";
+import { findLayer } from "../../selectors/layers.js";
 import {
   rematerializeExistingLegend,
   resolveTarget,
@@ -76,7 +77,7 @@ const encodeRadius = action(
       );
     }
 
-    const layer = this.semanticSpec.layers.find(item => item.id === target);
+    const layer = findLayer(this, target);
     if (layer.encoding?.size !== undefined) {
       throw new Error("encodeRadius cannot be combined with a size encoding.");
     }

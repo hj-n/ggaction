@@ -13,6 +13,8 @@ import {
   validateMarkOptions
 } from "./shared.js";
 import { DEFAULT_COLORS } from "../../theme/defaults.js";
+import { findDataset } from "../../selectors/datasets.js";
+import { findLayer } from "../../selectors/layers.js";
 
 const POINT_MARK_OPTIONS = Object.freeze(["id", "data", "shape"]);
 const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);
@@ -81,7 +83,7 @@ const rematerializePointMark = action(
   function (args = {}) {
     validateMarkOptions(args, REMATERIALIZE_OPTIONS, "rematerializePointMark");
     const id = validateUserId(args.id, "Point mark id");
-    const layer = this.semanticSpec.layers.find(item => item.id === id);
+    const layer = findLayer(this, id);
     const graphic = this.graphicSpec.objects[id];
 
     if (layer?.mark?.type !== "point") {
@@ -90,7 +92,7 @@ const rematerializePointMark = action(
     if (!["circle", "rect", "collection"].includes(graphic?.type)) {
       throw new Error(`Point mark "${id}" requires point graphics.`);
     }
-    const dataset = this.semanticSpec.datasets.find(item => item.id === layer.data);
+    const dataset = findDataset(this, layer.data);
     if (dataset === undefined) {
       throw new Error(`Point mark "${id}" requires an existing dataset.`);
     }

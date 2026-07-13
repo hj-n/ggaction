@@ -9,6 +9,7 @@ import {
   validatePositionChannel
 } from "../../../grammar/scales.js";
 import { resolvePositionScaleDefinition } from "../../scales/definitions.js";
+import { findCoordinate } from "../../../selectors/coordinates.js";
 import { resolveTarget, validateOptions } from "../shared.js";
 
 const POSITION_ENCODING_OPTIONS = Object.freeze([
@@ -24,7 +25,7 @@ function resolveCoordinate(program, channel, layer, requestedId) {
     throw new Error(`Layer "${layer.id}" already uses coordinate "${existingId}".`);
   }
   const id = existingId ?? requestedId ?? defaults.id;
-  const coordinate = program.semanticSpec.coordinates.find(item => item.id === id);
+  const coordinate = findCoordinate(program, id);
   if (coordinate !== undefined && coordinate.type !== defaults.type) {
     throw new Error(
       `${channel} encoding requires a ${defaults.type} coordinate, but "${id}" is ${coordinate.type}.`

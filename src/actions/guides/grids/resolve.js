@@ -4,6 +4,7 @@ import { validateKeys } from "../../../core/validation.js";
 import { mapLinearValues } from "../../../grammar/scales.js";
 import { resolveGraphicBounds } from "../../../layout/canvas.js";
 import { DEFAULT_COLORS } from "../../../theme/defaults.js";
+import { findCoordinate } from "../../../selectors/coordinates.js";
 import {
   inferGridTickConfig,
   valuesFromTickConfig
@@ -100,7 +101,7 @@ export function resolveGridResources(program, direction, args) {
     throw new Error(`${direction} grid found multiple coordinates; provide coordinate explicitly.`);
   }
   const coordinate = requestedCoordinate ?? coordinateIds[0];
-  const definition = program.semanticSpec.coordinates.find(item => item.id === coordinate);
+  const definition = findCoordinate(program, coordinate);
   if (definition?.type !== "cartesian") {
     throw new Error(`${direction} grid requires a Cartesian coordinate.`);
   }

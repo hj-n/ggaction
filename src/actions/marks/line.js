@@ -8,6 +8,8 @@ import {
   validateMarkOptions
 } from "./shared.js";
 import { DEFAULT_COLORS } from "../../theme/defaults.js";
+import { findDataset } from "../../selectors/datasets.js";
+import { findLayer } from "../../selectors/layers.js";
 
 const DEFAULT_LINE_STROKE = DEFAULT_COLORS.mark;
 const DEFAULT_LINE_WIDTH = 2;
@@ -51,13 +53,13 @@ const createLineMark = action(
 );
 
 function requireLine(program, id) {
-  const layer = program.semanticSpec.layers.find(item => item.id === id);
+  const layer = findLayer(program, id);
 
   if (layer?.mark?.type !== "line") {
     throw new Error(`Unknown line mark "${id}".`);
   }
 
-  const dataset = program.semanticSpec.datasets.find(item => item.id === layer.data);
+  const dataset = findDataset(program, layer.data);
 
   if (dataset === undefined) {
     throw new Error(`Line mark "${id}" requires an existing dataset.`);

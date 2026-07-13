@@ -11,6 +11,8 @@ import {
   validateMarkOptions
 } from "./shared.js";
 import { DEFAULT_COLORS } from "../../theme/defaults.js";
+import { findDataset } from "../../selectors/datasets.js";
+import { findLayer } from "../../selectors/layers.js";
 
 const CREATE_OPTIONS = Object.freeze(["id", "data", "fill", "opacity"]);
 const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);
@@ -49,8 +51,8 @@ const rematerializeAreaMark = action(
   function (args = {}) {
     validateMarkOptions(args, REMATERIALIZE_OPTIONS, "rematerializeAreaMark");
     const id = validateUserId(args.id, "Area mark id");
-    const layer = this.semanticSpec.layers.find(item => item.id === id);
-    const dataset = this.semanticSpec.datasets.find(item => item.id === layer?.data);
+    const layer = findLayer(this, id);
+    const dataset = findDataset(this, layer?.data);
     if (layer?.mark?.type !== "area" || this.graphicSpec.objects[id]?.type !== "path") {
       throw new Error(`Unknown area mark "${id}".`);
     }

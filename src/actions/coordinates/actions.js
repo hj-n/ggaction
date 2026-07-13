@@ -1,6 +1,8 @@
 import { action } from "../../core/action.js";
 import { validateCoordinateType } from "../../grammar/coordinates.js";
 import { validateUserId } from "../../core/identifiers.js";
+import { findCoordinate } from "../../selectors/coordinates.js";
+import { findLayer } from "../../selectors/layers.js";
 
 const COORDINATE_OPTIONS = Object.freeze(["id", "type", "layers"]);
 
@@ -42,7 +44,7 @@ export const createCoordinate = action(
     const id = validateUserId(args.id ?? "main", "Coordinate id");
     const type = validateCoordinateType(args.type ?? "cartesian");
     const layers = validateLayers(this, args.layers ?? []);
-    const existing = this.semanticSpec.coordinates.find(item => item.id === id);
+    const existing = findCoordinate(this, id);
 
     if (existing !== undefined && existing.type !== type) {
       throw new Error(
@@ -51,7 +53,7 @@ export const createCoordinate = action(
     }
 
     for (const layerId of layers) {
-      const layer = this.semanticSpec.layers.find(item => item.id === layerId);
+      const layer = findLayer(this, layerId);
 
       if (layer.coordinate !== undefined && layer.coordinate !== id) {
         throw new Error(
@@ -68,7 +70,7 @@ export const createCoordinate = action(
       : this;
 
     for (const layerId of layers) {
-      const layer = program.semanticSpec.layers.find(item => item.id === layerId);
+      const layer = findLayer(program, layerId);
 
       if (layer.coordinate === undefined) {
         program = program.editSemantic({
