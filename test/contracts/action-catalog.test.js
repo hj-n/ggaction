@@ -293,7 +293,10 @@ test("keeps accepted planned capabilities linked and non-public", () => {
     "Right y axis position",
     "Axis label format strings",
     "Left legend position",
-    "Chart title positions"
+    "Point-composite top and bottom legends",
+    "Chart title positions",
+    "Title wrapping and measurement",
+    "Graphic parent attachment"
   ]);
 
   for (const capability of index.plannedCapabilities) {
@@ -386,7 +389,17 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   assert.match(plannedCorpus, /type AxisFormatString =/);
   assert.match(plannedCorpus, /"\.0f" \| "\.1f" \| "\.2f"/);
   assert.match(plannedCorpus, /point composite와 quantitative size block을 지원/);
+  assert.match(plannedCorpus, /## point-composite top and bottom legends/);
+  assert.match(plannedCorpus, /Composite layers share one item-local origin/);
   assert.match(plannedCorpus, /"top" \| "bottom" \| "left" \| "right"/);
+  assert.match(plannedCorpus, /type PlannedTitleWrapping =/);
+  assert.match(plannedCorpus, /maxWidth\?: PositiveFinite/);
+  assert.match(plannedCorpus, /wrap\?: "word" \| "character"/);
+  assert.match(plannedCorpus, /## graphic parent attachment/);
+  assert.match(plannedCorpus, /parent\?: UserId/);
+  assert.match(plannedCorpus, /같은 parent의 direct sibling/);
+  assert.doesNotMatch(currentCorpus + plannedCorpus, /placement\?: "center" \| "boundary"/);
+  assert.doesNotMatch(currentCorpus + plannedCorpus, /interactive\??:/i);
 });
 
 test("keeps implemented and planned formal values distinct", () => {

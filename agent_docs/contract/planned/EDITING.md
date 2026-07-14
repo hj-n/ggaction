@@ -148,8 +148,8 @@ editLegend({
 - title 생략은 기존 값을 유지하고, string은 custom title, `"auto"`는 encoding provenance 기반
   inference 복원, `false`는 title graphic을 숨긴다.
 - position과 layout 값은 기존 legend kind가 지원해야 한다. Planned left position은 categorical,
-  point composite와 size legend를 지원하고 right-side layout을 mirror한다. point composite의
-  top/bottom position은 계속 지원하지 않는다.
+  point composite와 size legend를 지원하고 right-side layout을 mirror한다. Accepted top/bottom
+  point-composite contract는 existing top/bottom item grid 안에서 같은 symbol recipe를 유지한다.
 - action은 내부 wrapped `rematerializeLegend`를 호출한다. compatible point size block에서
   `count`가 바뀌면 stored count를 갱신하고 `rematerializeSizeLegend`도 호출한다.
 - overlap, margin 부족, incompatible option과 없는/ambiguous target은 명확한 오류다.
@@ -165,6 +165,9 @@ editTitle({
   align?: "left" | "center" | "right";
   offset?: Finite;
   gap?: NonNegativeFinite;
+  maxWidth?: PositiveFinite;
+  wrap?: "word" | "character";
+  lineHeight?: PositiveFinite;
   titleStyle?: TextStyle;
   subtitleStyle?: TextStyle;
 }): ChartProgram;
@@ -178,6 +181,9 @@ editTitle({
   생략한 style leaf는 유지한다.
 - `position`, `align`, `offset`, `gap`과 style은 graphical materialization config를 갱신한다.
   position 변경은 같은 title resource를 새 edge에서 rematerialize하며 semantic text는 유지한다.
+- `maxWidth`는 wrapping을 활성화하고 `wrap`과 `lineHeight`는 accepted title-wrapping contract를
+  따른다. 세 값 중 일부만 수정해도 기존 stored wrapping config와 합친 뒤 complete combination을
+  검증하며, line break는 renderer가 아니라 shared text measurement가 다시 계산한다.
 - action은 내부 wrapped `rematerializeTitle`을 호출해 최신 Canvas, margin, title config로
   concrete text를 다시 만든다. title/legend overlap이나 margin 부족은 layout error다.
 - 기존 `ChartProgram`은 변경하지 않고 새로운 program을 반환하며 `editTitle` 아래에 semantic,

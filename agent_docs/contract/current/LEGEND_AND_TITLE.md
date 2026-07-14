@@ -47,14 +47,14 @@ type LegendBorder = false | true | {
   graphical config와 concrete collection으로 만든다. resolved domain order를 item order로 사용한다.
 - Coverage: series/histogram/grouped-bar/top/regression legend tests가 주요 layouts, recipes,
   borders, rematerialization과 invalid values를 검증한다. 모든 symbol-layer parameter pair는 부분적이다.
-- Planned: left categorical/point-composite/size side layout. Proposed: point composite top/bottom,
-  continuous color와 interactive legend.
+- Planned: left categorical/point-composite/size side layout and point-composite top/bottom layout.
+  Proposed: continuous color legend.
 
 ### Formal values — `createLegend`
 
 - Implemented: `createLegend({ target?: UserId; channels?: readonly ("color" | "strokeDash" | "shape")[]; position?: LegendPosition; align?: LegendAlign; direction?: LegendDirection; columns?: PositiveInteger; offset?: NonNegativeFinite; titlePosition?: "top" | "left"; title?: NonEmptyString; symbol?: "auto" | LegendSymbolLayer | { layers: readonly LegendSymbolLayer[] }; labels?: TextStyle; titleStyle?: TextStyle; itemGap?: PositiveFinite; border?: LegendBorder; count?: IntegerAtLeast2 } = {})`
-- Planned (NOT IMPLEMENTED): `{ position?: PlannedLegendPosition }`; left supports categorical, point-composite and size side layouts.
-- Proposed (NOT IMPLEMENTED): point-composite top/bottom, `interactive?: boolean` and continuous-color symbol contract.
+- Planned (NOT IMPLEMENTED): `{ position?: PlannedLegendPosition }`; left supports categorical, point-composite and size side layouts, while top/bottom support layered point-composite symbols.
+- Proposed (NOT IMPLEMENTED): continuous-color symbol contract.
 
 ### Value coverage — `createLegend`
 
@@ -81,6 +81,7 @@ type LegendBorder = false | true | {
   - ✅ Covered: `"auto"`, line shorthand, swatch shorthand, layered line+point recipes.
   - ⚠️ Partial: every layer type's zero/max dimensions, fill/stroke combinations and invalid nested keys.
   - 🟡 Planned: shared 12-shape point layers through the point-shape vocabulary.
+  - 🟡 Planned: point-composite symbols in top/bottom item grids.
   - 🟣 Proposed: area-gradient/continuous symbols.
 - `labels`, `titleStyle`
   - ✅ Covered: representative color/font overrides and invalid styles.
@@ -91,8 +92,8 @@ type LegendBorder = false | true | {
   - ✅ Covered: omission/`false`, `true`, explicit color/lineWidth/padding/background and invalid objects.
 - `count`
   - ✅ Covered: omission→5, integer `>=2`, `<2`/non-integer rejection for size block.
-- 🟡 Planned: left point-composite/size side layout.
-- 🟣 Proposed: point-composite top/bottom, continuous color and interactive legends.
+- 🟡 Planned: left point-composite/size side layout and point-composite top/bottom layout.
+- 🟣 Proposed: continuous color legends.
 - Evidence: series, histogram, grouped-bar, top categorical and regression legend tests.
 
 ## `createGuides`
@@ -136,13 +137,13 @@ type LegendBorder = false | true | {
   top legend와 실제 occupied bounds가 겹치거나 margin에 맞지 않으면 오류다.
 - Coverage: `test/unit/actions/guides/title-actions.test.js`가 optional subtitle, alignment, style,
   insufficient layout, duplicates와 Canvas rematerialization을 검증한다.
-- Planned: bottom/left/right positions. Proposed: wrapping, maxWidth, lineHeight와 text measurement.
+- Planned: bottom/left/right positions plus wrapping, maxWidth, lineHeight and deterministic text measurement.
 
 ### Formal values — `createTitle`
 
 - Implemented: `createTitle({ text: NonEmptyString; subtitle?: NonEmptyString; position?: "top"; align?: "left" | "center" | "right"; offset?: Finite; gap?: NonNegativeFinite; titleStyle?: TextStyle; subtitleStyle?: TextStyle })`
-- Planned (NOT IMPLEMENTED): `{ position?: "top" | "bottom" | "left" | "right" }`
-- Proposed (NOT IMPLEMENTED): `{ maxWidth?: PositiveFinite; lineHeight?: PositiveFinite; wrap?: "word" | "character" }`
+- Planned (NOT IMPLEMENTED): `{ position?: "top" | "bottom" | "left" | "right"; maxWidth?: PositiveFinite; lineHeight?: PositiveFinite; wrap?: "word" | "character" }`
+- Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createTitle`
 
@@ -159,6 +160,5 @@ type LegendBorder = false | true | {
   - ✅ Covered: default `8`, zero/positive, negative/non-finite rejection.
 - `titleStyle`, `subtitleStyle`
   - ✅ Covered: default and explicit color/fontSize/fontFamily/fontWeight, invalid values.
-- 🟣 Proposed: wrapping, maxWidth, lineHeight and text measurement; browser/Node deterministic metrics가 필요하다.
+- 🟡 Planned: word/character wrapping, maxWidth, explicit/inferred lineHeight and deterministic text measurement.
 - Evidence: `test/unit/actions/guides/title-actions.test.js`.
-

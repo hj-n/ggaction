@@ -51,7 +51,8 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 ### Formal values — `createGraphics`
 
 - Implemented: `createGraphics({ id: UserId; type: "canvas" | "collection" | "circle" | "rect" | "line" | "text" | "path"; length?: NonNegativeInteger; before?: UserId; after?: UserId })`; `before | after` 중 최대 하나.
-- Proposed (NOT IMPLEMENTED): `{ parent?: UserId }` for approved container/program composition; renderer-specific `svg | g` types는 제안하지 않는다.
+- Planned (NOT IMPLEMENTED): `{ parent?: UserId }` for backend-neutral graphic-tree attachment.
+- Proposed (NOT IMPLEMENTED): renderer-specific `svg | g` types는 추가하지 않는다.
 
 ### Value coverage — `createGraphics`
 
@@ -64,7 +65,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   - ✅ Covered: omitted single, zero empty, positive collection, invalid negative/non-integer and resize transition.
 - `before`, `after`
   - ✅ Covered: each placement, mutual exclusion, unknown anchor, Canvas-before restriction, idempotent/conflicting placement.
-- 🟣 Proposed: parent attachment/container composition after program composition contract is approved.
+- 🟡 Planned: collection/Canvas parent attachment, sibling ordering, global target lookup and depth-first rendering.
 - Evidence: `test/unit/actions/primitives/create-graphics.test.js`.
 
 ## `editGraphics`
@@ -107,4 +108,3 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 - 🟣 Proposed: no multi-property dict edit; one action continues to represent one property change.
 - Evidence: `test/unit/actions/primitives/edit-graphics.test.js`,
   `test/contracts/shared-graphic-validation.test.js`.
-

@@ -62,7 +62,7 @@ type GridDirectionOptions = {
 ### Formal values — `createHorizontalGrid`
 
 - Implemented: `createHorizontalGrid(options?: GridDirectionOptions)`
-- Proposed (NOT IMPLEMENTED): ordinal grid positioning `{ placement?: "center" | "boundary" }`.
+- Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createHorizontalGrid`
 
@@ -72,7 +72,7 @@ type GridDirectionOptions = {
 - `color`: ✅ Covered default/explicit/invalid.
 - `lineWidth`: ✅ Covered default, zero/positive/invalid.
 - `strokeDash`: ✅ Covered `[]`, even-length pattern, odd/negative/non-finite rejection.
-- 🟣 Proposed: ordinal grid support; category boundary vs center policy를 정해야 한다.
+- No proposal: the current contract remains continuous/time and histogram-bin grid positioning.
 - Evidence: `test/unit/actions/guides/grid-actions.test.js`.
 
 ## `createVerticalGrid`
@@ -83,13 +83,12 @@ type GridDirectionOptions = {
 ### Formal values — `createVerticalGrid`
 
 - Implemented: `createVerticalGrid(options?: GridDirectionOptions)`
-- Proposed (NOT IMPLEMENTED): ordinal grid positioning `{ placement?: "center" | "boundary" }`.
+- Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createVerticalGrid`
 
 - direction parameters
   - ✅ Covered: x-scale inference, histogram bin alignment, explicit values/styles and invalid resources.
   - ⚠️ Partial: temporal vertical grid with calendar ticks.
-- 🟣 Proposed: ordinal boundary/center grid contract.
+- No proposal: the current contract remains continuous/time and histogram-bin grid positioning.
 - Evidence: grid and density-guide tests.
-

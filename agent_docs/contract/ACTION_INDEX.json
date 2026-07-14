@@ -1639,6 +1639,17 @@
       }
     },
     {
+      "id": "point-composite-top-and-bottom-legends",
+      "kind": "parameter",
+      "name": "Point-composite top and bottom legends",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/GUIDES_AND_LAYOUT.md",
+        "anchor": "point-composite-top-and-bottom-legends"
+      }
+    },
+    {
       "id": "chart-title-positions",
       "kind": "parameter",
       "name": "Chart title positions",
@@ -1647,6 +1658,28 @@
       "contract": {
         "file": "agent_docs/contract/planned/GUIDES_AND_LAYOUT.md",
         "anchor": "chart-title-positions"
+      }
+    },
+    {
+      "id": "title-wrapping-and-measurement",
+      "kind": "parameter",
+      "name": "Title wrapping and measurement",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/GUIDES_AND_LAYOUT.md",
+        "anchor": "title-wrapping-and-measurement"
+      }
+    },
+    {
+      "id": "graphic-parent-attachment",
+      "kind": "parameter",
+      "name": "Graphic parent attachment",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/PRIMITIVES.md",
+        "anchor": "graphic-parent-attachment"
       }
     }
   ],
