@@ -232,7 +232,8 @@ type VegaPalette =
 - Resolved palette는 concrete CSS color array로 graphical scale state에 저장한다. Mark와 categorical
   legend는 semantic scheme name을 해석하지 않고 해당 array만 사용한다.
 - Quantitative/temporal color encoding, continuous interpolation and gradient legend는 아래 accepted
-  vertical contract가 소유한다. Custom scheme registration만 Proposed로 유지한다.
+  vertical contract가 소유한다. Arbitrary user colors는 explicit `range`가 담당하며 별도 palette
+  registration API는 두지 않는다.
 - Status: Planned, NOT IMPLEMENTED. 68-name validation, family-specific sampling, count/extent boundaries,
   range conflict, cycling, reverse, mark/legend parity와 deterministic registry snapshot coverage가 필요하다.
 

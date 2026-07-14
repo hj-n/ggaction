@@ -413,6 +413,7 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   assert.doesNotMatch(currentCorpus + plannedCorpus, /placement\?: "center" \| "boundary"/);
   assert.doesNotMatch(currentCorpus + plannedCorpus, /interactive\??:/i);
   assert.doesNotMatch(currentCorpus + plannedCorpus, /coordinate-level `clip`\/transform options/);
+  assert.doesNotMatch(currentCorpus + plannedCorpus, /custom (palette|scheme)|scheme registration/i);
 });
 
 test("keeps implemented and planned formal values distinct", () => {

@@ -23,7 +23,7 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
   clamp/reverse/unknown mapping policies는 `planned/SCALES.md`, Vega named palette vocabulary는
   이 domain의 planned palette contract가 소유한다. Quantitative/temporal color, sequential scale,
   interpolation과 continuous gradient legend도 하나의 accepted vertical contract다.
-- Proposed: custom palette registration.
+- Proposed: —
 
 ## `encodeX`
 
@@ -320,7 +320,7 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 
 - Implemented: `encodeColor({ field: FieldName; target?: UserId; fieldType?: "nominal"; layout?: "stack" | "group"; scale?: ColorScale })`
 - Planned (NOT IMPLEMENTED): `{ layout?: "fill" | "overlay" | "diverging"; fieldType?: "quantitative" | "temporal"; scale?: { type?: "sequential"; palette?: VegaPalette; interpolate?: ContinuousColorInterpolation } }`; full accepted `ColorLayout`은 existing `"stack" | "group"`을 포함하고 continuous field에서는 layout을 허용하지 않는다.
-- Proposed (NOT IMPLEMENTED): `{ layout?: "center" }` 및 custom palette registration.
+- Proposed (NOT IMPLEMENTED): `{ layout?: "center" }`.
 
 ### Value coverage — `encodeColor`
 
@@ -340,7 +340,6 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
   - 🟡 Planned: all 68 Vega named schemes plus `{ name, count?, extent? }`, resolved as discrete
     categorical colors without a Vega runtime dependency.
   - 🟡 Planned: quantitative/temporal continuous color, sequential mapping, interpolation and gradient legend.
-  - 🟣 Proposed: custom schemes.
 - Evidence: color, line-series, bar-color, area-color and grouped-bar tests.
 
 ## `encodeStrokeDash`
