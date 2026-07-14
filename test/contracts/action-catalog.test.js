@@ -169,6 +169,20 @@ function plannedBehaviorRows() {
   }));
 }
 
+function plannedParameterRows() {
+  const heading = "## Planned parameter extensions";
+  const start = catalog.indexOf(heading);
+  const end = catalog.indexOf("\n## ", start + heading.length);
+  const section = catalog.slice(start, end === -1 ? catalog.length : end);
+
+  return [...section.matchAll(
+    /^\| ([A-Za-z][A-Za-z0-9 ]+) \| [^|]+ \| Planned \| ([^|]+) \|$/gm
+  )].map(match => ({
+    capability: match[1],
+    readiness: match[2].trim()
+  }));
+}
+
 test("keeps the action catalog aligned with every declared direct action", () => {
   const declared = declaredProgramMethods();
   const rows = summaryRows();
@@ -381,7 +395,7 @@ test("keeps one value coverage and proposal ledger for every direct action", () 
     );
     assert.match(
       section.source,
-      /(🟣 Proposed|Proposed:|Proposed values|No proposal|Planned capability|future)/i,
+      /(🟣 Proposed|🟡 Planned|Proposed:|Proposed values|No proposal|Planned capability|future)/i,
       `${section.action} has no future value state`
     );
     assert.equal(
@@ -423,7 +437,23 @@ test("separates implemented and proposed values for every direct action", () => 
     section => section.action === "createPointMark"
   ).source;
   assert.match(point, /shape\?: "circle" \| "square"/);
-  assert.match(point, /shape\?: "triangle" \| "diamond"/);
+  assert.match(point, /shape\?: PointShape/);
+});
+
+test("keeps accepted parameter extensions explicit and non-public", () => {
+  const rows = plannedParameterRows();
+
+  assert.deepEqual(rows, [
+    { capability: "Point shape vocabulary", readiness: "Accepted" },
+    { capability: "Area outline", readiness: "Accepted" },
+    { capability: "Bar width modes", readiness: "Accepted" }
+  ]);
+  assert.match(catalog, /type PointShape =/);
+  assert.match(catalog, /"plus" \| "cross" \| "star" \| "hexagon" \| "wye"/);
+  assert.match(catalog, /stroke\?: NonEmptyString \| false/);
+  assert.match(catalog, /band\?: UnitIntervalExclusiveZero/);
+  assert.match(catalog, /pixels\?: PositiveFinite/);
+  assert.match(catalog, /paddingInner\?: UnitIntervalLessThan1/);
 });
 
 test("keeps catalog coverage evidence paths executable", () => {
