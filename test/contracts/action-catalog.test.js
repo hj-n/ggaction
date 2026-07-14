@@ -264,6 +264,8 @@ test("classifies every direct action lifecycle and keeps edit gaps explicit", ()
     "editLegend",
     "editLineMark",
     "editPointMark",
+    "editRegressionBand",
+    "editRegressionLine",
     "editTitle",
     "editVerticalGrid"
   ]) {
@@ -277,6 +279,9 @@ test("classifies every direct action lifecycle and keeps edit gaps explicit", ()
   assert.match(catalog, /shape: "circle" \| "square"/);
   assert.match(catalog, /strokeWidth: NonNegativeFinite/);
   assert.match(catalog, /opacity\?: UnitInterval/);
+  assert.match(catalog, /### Planned contract: regression component edits/);
+  assert.match(catalog, /editRegressionBand\(\{/);
+  assert.match(catalog, /editRegressionLine\(\{/);
   assert.match(catalog, /### Planned contract: directional grid edits/);
   assert.match(catalog, /values\?: readonly Finite\[\] \| "auto"/);
   assert.match(catalog, /### Planned contract: editLegend/);
@@ -304,13 +309,6 @@ test("classifies every direct action lifecycle and keeps edit gaps explicit", ()
     rows.find(row => row.action === "createRegressionLine")?.audit,
     "`editRegressionLine` — Planned"
   );
-  for (const action of ["editRegressionBand", "editRegressionLine"]) {
-    assert.equal(
-      planned.find(row => row.action === action)?.readiness,
-      "Pending parameter review",
-      action
-    );
-  }
 });
 
 test("keeps one value coverage and proposal ledger for every direct action", () => {

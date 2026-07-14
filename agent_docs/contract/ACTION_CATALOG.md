@@ -210,8 +210,8 @@ action이다. Contract readiness가 `Accepted`인 action만 구현을 시작할 
 | `editLegend` | Planned | Accepted |
 | `editLineMark` | Planned | Accepted |
 | `editPointMark` | Planned | Accepted |
-| `editRegressionBand` | Planned | Pending parameter review |
-| `editRegressionLine` | Planned | Pending parameter review |
+| `editRegressionBand` | Planned | Accepted |
+| `editRegressionLine` | Planned | Accepted |
 | `editScale` | Planned | Pending parameter review |
 | `editTitle` | Planned | Accepted |
 | `editVerticalGrid` | Planned | Accepted |
@@ -249,6 +249,34 @@ editAreaMark({
   materialization plan이 `rematerializeLegend`도 호출한다.
 - `createBarMark`는 현재 직접 소유한 editable parameter가 없으므로 `editBarMark`를 계획하지
   않는다. width, color, grouping, stack과 position은 기존 encoding action이 소유한다.
+- Status: Planned, NOT IMPLEMENTED. 실행 가능한 coverage는 구현 단계에서 추가한다.
+
+### Planned contract: regression component edits
+
+```typescript
+editRegressionBand({
+  target?: UserId;
+  color?: NonEmptyString;
+  opacity?: UnitInterval;
+}): ChartProgram;
+
+editRegressionLine({
+  target?: UserId;
+  strokeWidth: NonNegativeFinite;
+}): ChartProgram;
+```
+
+- `target`은 existing regression band/line layer ID다. compatible component가 유일하면 생략할
+  수 있고 여러 개면 explicit target이 필요하다. target 외 최소 한 변경값을 요구한다.
+- 이 action들은 regression component의 visual design만 수정한다. data, result fields,
+  grouping, coordinate와 scale binding은 변경하지 않는다. 통계적 의미를 바꾸려면 새로운
+  regression derivation과 component를 만든다.
+- `editRegressionBand`는 regression-specific validation 뒤 Planned `editAreaMark`를 wrapped
+  child로 호출해 color/fill과 opacity를 갱신한다.
+- `editRegressionLine`은 Planned `editLineMark`를 wrapped child로 호출해 stroke width를
+  갱신한다. generic child가 mark와 dependent legend rematerialization을 소유한다.
+- band border, line color/dash/opacity는 corresponding create contract와 함께 확장하기 전까지
+  accepted parameter가 아니다.
 - Status: Planned, NOT IMPLEMENTED. 실행 가능한 coverage는 구현 단계에서 추가한다.
 
 ### Planned contract: directional grid edits
