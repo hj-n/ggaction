@@ -323,10 +323,15 @@ test("classifies every direct action lifecycle and keeps edit gaps explicit", ()
   for (const action of [
     "encodeColor",
     "encodeGroup",
+    "encodeHistogram",
     "encodeShape",
     "encodeSize",
     "encodeStrokeDash",
-    "encodeXOffset"
+    "encodeX",
+    "encodeXOffset",
+    "encodeY",
+    "encodeY2",
+    "encodeYRange"
   ]) {
     assert.equal(
       plannedBehaviors.find(row => row.action === action)?.readiness,
@@ -338,6 +343,9 @@ test("classifies every direct action lifecycle and keeps edit gaps explicit", ()
   assert.match(catalog, /accepted `editScale` contract/);
   assert.match(catalog, /### Planned contract: grouping reassignment/);
   assert.match(catalog, /stack\/group 전환을 지원하지 않으며/);
+  assert.match(catalog, /### Planned contract: positional reassignment/);
+  assert.match(catalog, /기존 fieldType,/);
+  assert.match(catalog, /binned x와 count y를 함께 교체/);
   assert.equal(
     rows.find(row => row.action === "createCoordinate")?.lifecycle,
     "Structural create-only"

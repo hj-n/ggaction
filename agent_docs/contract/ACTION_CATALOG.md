@@ -144,8 +144,8 @@ properties, rematerialization ownership과 conflict behavior를 정해야 한다
 | `createLineMark` | Stable resource, edit gap | Encoding actions only; no base-mark edit | `editLineMark` — Planned |
 | `createBarMark` | Stable create-only | Encoding actions own its current appearance and geometry | Intentional |
 | `createAreaMark` | Stable resource, edit gap | Encoding actions only; no base-mark edit | `editAreaMark` — Planned |
-| `encodeX` | Assignment | No replacement contract | Reassignment — Proposed |
-| `encodeY` | Assignment | No replacement contract | Reassignment — Proposed |
+| `encodeX` | Assignment | Same action will replace a compatible x field and scale | Reassignment — Planned |
+| `encodeY` | Assignment | Same action will replace a compatible y field and scale | Reassignment — Planned |
 | `encodeColor` | Assignment | Same action will replace compatible color grouping | Reassignment — Planned |
 | `encodeStrokeDash` | Assignment | Same action will replace field and scale binding | Reassignment — Planned |
 | `encodeSize` | Assignment | Same action will replace field and scale binding | Reassignment — Planned |
@@ -153,10 +153,10 @@ properties, rematerialization ownership과 conflict behavior를 정해야 한다
 | `encodeOpacity` | Assignment | Same action replaces the constant value | Reassignment — Implemented |
 | `encodeRadius` | Assignment | Same action replaces the constant value | Reassignment — Implemented |
 | `encodeXOffset` | Assignment | Same action will replace compatible grouped-bar slots | Reassignment — Planned |
-| `encodeY2` | Assignment | No replacement contract | Reassignment — Proposed |
-| `encodeYRange` | Assignment | No replacement contract | Reassignment — Proposed |
+| `encodeY2` | Assignment | Same action will replace a compatible upper field | Reassignment — Planned |
+| `encodeYRange` | Assignment | Same action will atomically replace lower/upper fields | Reassignment — Planned |
 | `encodeGroup` | Assignment | Same action will replace compatible path grouping | Reassignment — Planned |
-| `encodeHistogram` | Assignment | Atomic child encodings; no replacement contract | Reassignment — Proposed |
+| `encodeHistogram` | Assignment | Same action will replace atomic bin/count encodings | Reassignment — Planned |
 | `encodeDensity` | Assignment | Atomic child encodings; no replacement contract | Reassignment — Proposed |
 | `encodeBarWidth` | Assignment | Same action replaces the band fraction | Reassignment — Implemented |
 | `createRegression` | Aggregate create-only | Owned data/layer/encoding children | Intentional |
@@ -378,6 +378,11 @@ editTitle({
 | `encodeSize` reassignment | Planned | Accepted |
 | `encodeStrokeDash` reassignment | Planned | Accepted |
 | `encodeXOffset` reassignment | Planned | Accepted |
+| `encodeX` reassignment | Planned | Accepted |
+| `encodeY` reassignment | Planned | Accepted |
+| `encodeY2` reassignment | Planned | Accepted |
+| `encodeYRange` reassignment | Planned | Accepted |
+| `encodeHistogram` reassignment | Planned | Accepted |
 
 ### Planned contract: scale-backed appearance reassignment
 
@@ -415,6 +420,27 @@ editTitle({
   child로 사용한다. 이전 named scale은 자동 삭제하지 않는다.
 - semantic companion actions, scales, mark와 existing legend를 deterministic plan으로
   rematerialize하며 validation 실패 시 기존 program을 그대로 유지한다.
+- Status: Planned, NOT IMPLEMENTED. 구현은 `editScale` parameter contract가 Accepted된 뒤 진행한다.
+
+### Planned contract: positional reassignment
+
+- `encodeX`와 `encodeY` 재호출은 같은 target의 field와 compatible scale binding을 교체한다.
+  coordinate는 유지하며 explicit 다른 coordinate는 오류다. 첫 계약은 기존 fieldType,
+  aggregate, bin과 stack mode를 유지하고 incompatible mode 전환을 지원하지 않는다.
+- quantitative/temporal/ordinal position과 mean/count aggregate는 새 field에서 domain과
+  aggregate values를 다시 계산한다. 같은 scale ID의 policy는 `editScale`, explicit new ID는
+  `createScale`을 wrapped child로 사용한다.
+- x reassignment는 mark, x axis와 vertical grid, y reassignment는 mark, y axis와 horizontal
+  grid를 rematerialize한다. inferred guide title은 새 field로 갱신하고 custom title/appearance는
+  유지한다.
+- `encodeY2` 재호출은 ranged area의 upper field만 교체하며 existing lower y와 같은 scale,
+  coordinate를 요구한다. `encodeYRange`는 lower/upper를 함께 요구하고 wrapped `encodeY`와
+  `encodeY2`를 한 atomic hierarchy에서 호출한다.
+- `encodeHistogram` 재호출은 binned x와 count y를 함께 교체한다. 새 field와 maxBins에서 bin
+  boundaries, count domain, stack geometry, axes와 grids를 다시 계산하고 기존 color grouping과
+  stack mode를 유지한다.
+- validation 또는 downstream materialization이 실패하면 어느 semantic/graphic branch도
+  바뀌지 않는다. 별도 positional edit action은 만들지 않는다.
 - Status: Planned, NOT IMPLEMENTED. 구현은 `editScale` parameter contract가 Accepted된 뒤 진행한다.
 
 ## Internal materialization inventory
