@@ -14,8 +14,8 @@ Curve public implementation 전에 representative step과 monotone target을 raw
 - [x] Thick stroke와 axes/legend/title layout 확인
 - [x] Primitive metadata와 expanded target chains
 - [x] Browser와 2× primitive PNG 생성
-- [ ] Gate A 사용자 visual confirmation
-- [ ] Feedback 반영과 primitive 재확인
+- [x] Gate A 사용자 visual confirmation
+- [x] Feedback 반영과 primitive 재확인
 - [x] STEP 상태, conceptual commit와 push
 
 ## 제한
@@ -36,7 +36,7 @@ reference 계산은 production curve helper를 import하지 않는다.
 두 primitive는 baseline과 같은 semantic state, axes, grid, legend, title과 drawing order를 유지한다.
 Gallery metadata는 helper가 아니라 future expanded public chain을 저장하며 user-facing slot은 Gate A 승인
 전까지 비워 둔다. Desktop/mobile browser에서 두 1440×920 primitive image, code block, awaiting status와
-horizontal overflow 부재를 확인했다.
+horizontal overflow 부재를 확인했다. 두 primitive는 추가 변경 없이 Gate A 승인을 받았다.
 
 ## 완료 조건
 
