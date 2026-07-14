@@ -431,8 +431,10 @@ test("separates implemented and proposed values for every direct action", () => 
   assert.match(encodeY, /aggregate\?: "mean" \| "count"/);
   assert.match(
     encodeY,
-    /aggregate\?: "sum" \| "min" \| "max" \| "median"/
+    /aggregate\?: "sum" \| "median" \| "min" \| "max" \| "distinct" \| "valid" \| "missing" \| "variance" \| "varianceP" \| "stdev" \| "stdevP" \| "stderr" \| "q1" \| "q3" \| "ciLower" \| "ciUpper"/
   );
+  assert.match(encodeY, /op: "quantile"; probability: UnitInterval/);
+  assert.match(encodeY, /op: "first" \| "last"; orderBy: FieldName/);
   const point = sections.find(
     section => section.action === "createPointMark"
   ).source;
@@ -446,7 +448,8 @@ test("keeps accepted parameter extensions explicit and non-public", () => {
   assert.deepEqual(rows, [
     { capability: "Point shape vocabulary", readiness: "Accepted" },
     { capability: "Area outline", readiness: "Accepted" },
-    { capability: "Bar width modes", readiness: "Accepted" }
+    { capability: "Bar width modes", readiness: "Accepted" },
+    { capability: "Aggregate vocabulary", readiness: "Accepted" }
   ]);
   assert.match(catalog, /type PointShape =/);
   assert.match(catalog, /"plus" \| "cross" \| "star" \| "hexagon" \| "wye"/);
@@ -454,6 +457,8 @@ test("keeps accepted parameter extensions explicit and non-public", () => {
   assert.match(catalog, /band\?: UnitIntervalExclusiveZero/);
   assert.match(catalog, /pixels\?: PositiveFinite/);
   assert.match(catalog, /paddingInner\?: UnitIntervalLessThan1/);
+  assert.match(catalog, /type AggregateOperation =/);
+  assert.match(catalog, /two-sided 95% normal interval endpoint/);
 });
 
 test("keeps catalog coverage evidence paths executable", () => {

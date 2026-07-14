@@ -480,6 +480,7 @@ editTitle({
 | Point shape vocabulary | `createPointMark`, `editPointMark`, `encodeShape`, `createLegend` | Planned | Accepted |
 | Area outline | `createAreaMark`, `editAreaMark`, `createRegression`, `createRegressionBand`, `editRegressionBand` | Planned | Accepted |
 | Bar width modes | `encodeBarWidth` | Planned | Accepted |
+| Aggregate vocabulary | `encodeY` | Planned | Accepted |
 
 ### Planned contract: point shape vocabulary
 
@@ -539,6 +540,38 @@ encodeBarWidth({
   centers와 legend domain order는 유지한다.
 - Status: Planned, NOT IMPLEMENTED. mode switching, padding boundaries, Canvas resize와 overlap
   coverage가 필요하다.
+
+### Planned contract: aggregate vocabulary
+
+```typescript
+type AggregateOperation =
+  | "count" | "sum" | "mean" | "median" | "min" | "max"
+  | "distinct" | "valid" | "missing"
+  | "variance" | "varianceP" | "stdev" | "stdevP" | "stderr"
+  | "q1" | "q3" | "ciLower" | "ciUpper";
+```
+
+- `mean`과 `count`는 Implemented이며 나머지 값이 이 Planned extension의 구현 대상이다.
+  모든 aggregate는 source row가 아니라 최종 x/category와 series grouping grain마다 계산한다.
+- `count`는 group row 수를 센다. `valid`는 null/undefined/NaN이 아닌 field value, `missing`은
+  그 반대, `distinct`는 valid value의 SameValueZero distinct count를 반환한다. 이 세 연산은
+  nominal field에도 사용할 수 있다.
+- `sum`, `mean`, `median`, `min`, `max`, `variance`, `varianceP`, `stdev`, `stdevP`, `stderr`,
+  `q1`, `q3`, `ciLower`, `ciUpper`는 finite quantitative value만 받는다. `variance`와 `stdev`는
+  sample denominator `n - 1`, `varianceP`와 `stdevP`는 population denominator `n`, `stderr`는
+  sample standard deviation divided by `sqrt(n)`이다.
+- `median`, `q1`, `q3`는 정렬된 finite values에 linear interpolation을 적용한 각각 0.5, 0.25,
+  0.75 quantile이다. `ciLower`와 `ciUpper`는 mean에서 `1.96 * stderr`를 빼고 더한 deterministic
+  two-sided 95% normal interval endpoint다.
+- 필요한 valid sample이 없는 연산은 aggregate value를 만들지 않는다. sample variance, sample
+  standard deviation, standard error와 confidence interval은 `n < 2`이면 value를 만들지 않는다.
+  이 정책이 missing category나 zero-valued graphic을 자동 합성하지는 않는다.
+- inferred guide title은 `${aggregate}(${field})`를 사용하고 explicit title은 보존한다. aggregate
+  교체는 scale domain, mark geometry, axes와 grids를 deterministic plan으로 rematerialize한다.
+- parameter가 필요한 `quantile`, 정렬 계약이 필요한 `first`/`last`, 원본 row를 선택하는
+  `argmin`/`argmax`는 이 closed string vocabulary에 포함하지 않는다.
+- Status: Planned, NOT IMPLEMENTED. 각 operation의 representative/empty/singleton/missing-value
+  fixtures와 line/bar grain, title/domain/rematerialization coverage가 필요하다.
 
 ## Internal materialization inventory
 
@@ -806,7 +839,9 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 - `target`, `fieldType`, `scale`, `coordinate`: x와 같은 selection/storage contract이며 auto range는
   bottom-to-top plot bounds다.
 - `aggregate`: Implemented values `"mean" | "count"`. line과 ordinal bar는 mean, histogram은 count를
-  사용한다. raw quantitative point/area는 생략한다.
+  사용한다. Planned values는 `"sum" | "median" | "min" | "max" | "distinct" | "valid" |
+  "missing" | "variance" | "varianceP" | "stdev" | "stdevP" | "stderr" | "q1" | "q3" |
+  "ciLower" | "ciUpper"`이며 raw quantitative point/area는 생략한다.
 - `stack`: Implemented values `"zero" | null`. histogram color series는 zero stack, grouped ordinal
   bar는 `null`이다.
 - `bin`: 현재 y에서는 지원되지 않는다.
@@ -1576,7 +1611,8 @@ type TextStyle = {
 ### Formal values — `encodeY`
 
 - Implemented: `encodeY({ field?: FieldName; target?: UserId; fieldType?: "quantitative"; scale?: PositionScale; coordinate?: UserId; aggregate?: "mean" | "count"; stack?: "zero" | null })`; mark/x policy가 가능한 조합을 제한한다.
-- Proposed (NOT IMPLEMENTED): `{ fieldType?: "temporal" | "ordinal"; aggregate?: "sum" | "min" | "max" | "median"; stack?: "normalize" | "center"; scale?: { type?: "log" | "sqrt" | "symlog" } }`
+- Planned (NOT IMPLEMENTED): `{ aggregate?: "sum" | "median" | "min" | "max" | "distinct" | "valid" | "missing" | "variance" | "varianceP" | "stdev" | "stdevP" | "stderr" | "q1" | "q3" | "ciLower" | "ciUpper" }`
+- Proposed (NOT IMPLEMENTED): `{ fieldType?: "temporal" | "ordinal"; aggregate?: { op: "quantile"; probability: UnitInterval } | { op: "first" | "last"; orderBy: FieldName; order?: "ascending" | "descending" }; stack?: "normalize" | "center"; scale?: { type?: "log" | "sqrt" | "symlog" } }`; `argmin`/`argmax`는 row-selecting transform 후보다.
 
 ### Formal values — `encodeXOffset`
 
@@ -2082,7 +2118,10 @@ type LegendBorder = false | true | {
   - 🟣 Proposed: temporal/ordinal y mark combinations.
 - `aggregate`
   - ✅ Covered: omission, `"mean"`, `"count"`, incompatible aggregate rejection.
-  - 🟣 Proposed: `"sum" | "min" | "max" | "median"`; aggregate grain과 title/domain inference가 필요하다.
+  - 🟡 Planned: `"sum" | "median" | "min" | "max" | "distinct" | "valid" | "missing" |
+    "variance" | "varianceP" | "stdev" | "stdevP" | "stderr" | "q1" | "q3" | "ciLower" |
+    "ciUpper"`; final visual grain, sample validity, title/domain inference가 필요하다.
+  - 🟣 Proposed: parameterized quantile과 ordered first/last; `argmin`/`argmax` row transform.
 - `stack`
   - ✅ Covered: `"zero"`, `null`, incompatible policy rejection.
   - 🟣 Proposed: `"normalize" | "center"`; y scale domain과 baseline semantics가 필요하다.
