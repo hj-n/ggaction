@@ -132,7 +132,7 @@ function lifecycleRows() {
   const section = catalog.slice(start, end === -1 ? catalog.length : end);
 
   return [...section.matchAll(
-    /^\| `([A-Za-z][A-Za-z0-9]*)` \| (Immutable create-only|Mutable resource|Assignment|Aggregate create-only|Stable resource, edit gap|Primitive) \| ([^|]+) \| ([^|]+) \|$/gm
+    /^\| `([A-Za-z][A-Za-z0-9]*)` \| (Immutable create-only|Mutable resource|Assignment|Aggregate create-only|Stable create-only|Stable resource, edit gap|Primitive) \| ([^|]+) \| ([^|]+) \|$/gm
   )].map(match => ({
     action: match[1],
     lifecycle: match[2],
@@ -254,8 +254,11 @@ test("classifies every direct action lifecycle and keeps edit gaps explicit", ()
     new Set(expectedPlanned)
   );
   for (const action of [
+    "editAreaMark",
     "editHorizontalGrid",
     "editLegend",
+    "editLineMark",
+    "editPointMark",
     "editTitle",
     "editVerticalGrid"
   ]) {
@@ -265,6 +268,10 @@ test("classifies every direct action lifecycle and keeps edit gaps explicit", ()
       action
     );
   }
+  assert.match(catalog, /### Planned contract: mark edits/);
+  assert.match(catalog, /shape: "circle" \| "square"/);
+  assert.match(catalog, /strokeWidth: NonNegativeFinite/);
+  assert.match(catalog, /opacity\?: UnitInterval/);
   assert.match(catalog, /### Planned contract: directional grid edits/);
   assert.match(catalog, /values\?: readonly Finite\[\] \| "auto"/);
   assert.match(catalog, /### Planned contract: editLegend/);

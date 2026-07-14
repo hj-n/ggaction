@@ -121,6 +121,8 @@ Coverage 퍼센트는 사용하지 않는다. 체크된 case는 반드시 아래
   `edit*` 이름을 기계적으로 만들지 않으며 replacement/reassignment 계약은 별도로 정한다.
 - **Aggregate create-only**: wrapped child action을 조합한다. aggregate 자체의 edit은 만들지
   않고 지원되는 child edit으로 수정한다.
+- **Stable create-only**: stable identity는 있지만 현재 action이 직접 소유하는 editable
+  property가 없다. encoding이나 다른 owning action으로 수정하며 빈 edit action을 만들지 않는다.
 - **Stable resource, edit gap**: independently addressable한 resource지만 아직 public edit 또는
   replacement 계약이 없다. 합의된 action만 Planned이고 나머지는 Proposed다.
 - **Primitive**: extension authoring의 low-level create/edit/assignment 연산이다.
@@ -136,10 +138,10 @@ properties, rematerialization ownership과 conflict behavior를 정해야 한다
 | `filterData` | Immutable create-only | Create a new derived dataset ID | Intentional |
 | `createDensityData` | Immutable create-only | Create a new derived dataset ID | Intentional |
 | `createRegressionData` | Immutable create-only | Create a new derived dataset ID | Intentional |
-| `createPointMark` | Stable resource, edit gap | Encoding actions only; no base-mark edit | Gap — Proposed |
-| `createLineMark` | Stable resource, edit gap | Encoding actions only; no base-mark edit | Gap — Proposed |
-| `createBarMark` | Stable resource, edit gap | Encoding actions only; no base-mark edit | Gap — Proposed |
-| `createAreaMark` | Stable resource, edit gap | Encoding actions only; no base-mark edit | Gap — Proposed |
+| `createPointMark` | Stable resource, edit gap | Encoding actions only; no base-mark edit | `editPointMark` — Planned |
+| `createLineMark` | Stable resource, edit gap | Encoding actions only; no base-mark edit | `editLineMark` — Planned |
+| `createBarMark` | Stable create-only | Encoding actions own its current appearance and geometry | Intentional |
+| `createAreaMark` | Stable resource, edit gap | Encoding actions only; no base-mark edit | `editAreaMark` — Planned |
 | `encodeX` | Assignment | No replacement contract | Reassignment — Proposed |
 | `encodeY` | Assignment | No replacement contract | Reassignment — Proposed |
 | `encodeColor` | Assignment | No replacement contract | Reassignment — Proposed |
@@ -201,11 +203,49 @@ action이다. Contract readiness가 `Accepted`인 action만 구현을 시작할 
 
 | Planned action | Status | Contract readiness |
 | --- | --- | --- |
+| `editAreaMark` | Planned | Accepted |
 | `editHorizontalGrid` | Planned | Accepted |
 | `editLegend` | Planned | Accepted |
+| `editLineMark` | Planned | Accepted |
+| `editPointMark` | Planned | Accepted |
 | `editScale` | Planned | Pending parameter review |
 | `editTitle` | Planned | Accepted |
 | `editVerticalGrid` | Planned | Accepted |
+
+### Planned contract: mark edits
+
+```typescript
+editPointMark({
+  target?: UserId;
+  shape: "circle" | "square";
+}): ChartProgram;
+
+editLineMark({
+  target?: UserId;
+  strokeWidth: NonNegativeFinite;
+}): ChartProgram;
+
+editAreaMark({
+  target?: UserId;
+  fill?: NonEmptyString;
+  opacity?: UnitInterval;
+}): ChartProgram;
+```
+
+- `target`은 existing compatible mark selector이며 수정 property가 아니다. compatible mark가
+  유일하면 생략할 수 있고 여러 개면 explicit target이 필요하다. target 외 최소 한 변경값을
+  요구하며 `editPointMark`와 `editLineMark`는 현재 하나의 editable property만 가진다.
+- 이 action들은 mark가 직접 소유한 graphical materialization config만 수정한다. dataset
+  binding, field encoding, scale과 coordinate는 변경하지 않는다.
+- `editPointMark.shape`는 field-driven `encodeShape`가 있으면 충돌하므로 오류다.
+  `editAreaMark.fill`도 field-driven `encodeColor`가 있으면 오류지만 opacity는 독립적으로
+  수정할 수 있다.
+- 각 action은 대응하는 내부 wrapped `rematerializePointMark`, `rematerializeLineMark`,
+  `rematerializeAreaMark`를 호출한다. 기존 legend recipe가 변경된 mark property에서 파생되면
+  materialization plan이 `rematerializeLegend`도 호출한다.
+- `createBarMark`는 현재 직접 소유한 editable parameter가 없으므로 `editBarMark`를 계획하지
+  않는다. width, color, grouping, stack과 position은 기존 encoding action이 소유한다.
+- Status: Planned, NOT IMPLEMENTED. 실행 가능한 coverage는 구현 단계에서 추가한다.
 
 ### Planned contract: directional grid edits
 
