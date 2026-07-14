@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { createCarsLineChart } from "../../../examples/cars-line-chart/program.js";
-import { render } from "../../../src/index.js";
-import { createMockCanvasContext } from "../../support/canvas.js";
+import { assertChartProgramsEquivalent } from
+  "../../support/chart-equivalence.js";
 import { loadCars } from "../../support/data.js";
 import { createCarsLineChartPrimitives } from "./primitive.program.js";
 
@@ -36,16 +36,8 @@ test("builds the public cars line-chart example with chart actions", () => {
 });
 
 test("exactly matches the canonical primitive baseline", () => {
-  const program = createCarsLineChart(cars);
-  const primitive = createCarsLineChartPrimitives(cars);
-  const context = createMockCanvasContext();
-  const primitiveContext = createMockCanvasContext();
-
-  render(program, context);
-  render(primitive, primitiveContext);
-
-  assert.deepEqual(program.semanticSpec, primitive.semanticSpec);
-  assert.deepEqual(program.graphicSpec, primitive.graphicSpec);
-  assert.deepEqual(program.graphicSpec.order, primitive.graphicSpec.order);
-  assert.deepEqual(context.calls, primitiveContext.calls);
+  assertChartProgramsEquivalent({
+    publicProgram: createCarsLineChart(cars),
+    primitiveProgram: createCarsLineChartPrimitives(cars)
+  });
 });

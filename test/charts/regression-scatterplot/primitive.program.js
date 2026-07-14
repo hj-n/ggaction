@@ -109,115 +109,115 @@ export function createCarsRegressionScatterplotPrimitives(cars) {
       value: "shape"
     })
     .editSemantic({
-      property: "layer[regressionBand].mark.type",
+      property: "layer[pointsRegressionBands].mark.type",
       value: "area"
     })
     .editSemantic({
-      property: "layer[regressionBand].data",
+      property: "layer[pointsRegressionBands].data",
       value: "pointsRegressionData"
     })
     .editSemantic({
-      property: "layer[regressionBand].coordinate",
+      property: "layer[pointsRegressionBands].coordinate",
       value: "main"
     })
     .editSemantic({
-      property: "layer[regressionBand].encoding.x.field",
+      property: "layer[pointsRegressionBands].encoding.x.field",
       value: "Displacement"
     })
     .editSemantic({
-      property: "layer[regressionBand].encoding.x.fieldType",
+      property: "layer[pointsRegressionBands].encoding.x.fieldType",
       value: "quantitative"
     })
     .editSemantic({
-      property: "layer[regressionBand].encoding.x.scale",
+      property: "layer[pointsRegressionBands].encoding.x.scale",
       value: "x"
     })
     .editSemantic({
-      property: "layer[regressionBand].encoding.y.field",
+      property: "layer[pointsRegressionBands].encoding.y.field",
       value: "__regression_ci_lower"
     })
     .editSemantic({
-      property: "layer[regressionBand].encoding.y.fieldType",
+      property: "layer[pointsRegressionBands].encoding.y.fieldType",
       value: "quantitative"
     })
     .editSemantic({
-      property: "layer[regressionBand].encoding.y.scale",
+      property: "layer[pointsRegressionBands].encoding.y.scale",
       value: "y"
     })
     .editSemantic({
-      property: "layer[regressionBand].encoding.y2.field",
+      property: "layer[pointsRegressionBands].encoding.y2.field",
       value: "__regression_ci_upper"
     })
     .editSemantic({
-      property: "layer[regressionBand].encoding.y2.fieldType",
+      property: "layer[pointsRegressionBands].encoding.y2.fieldType",
       value: "quantitative"
     })
     .editSemantic({
-      property: "layer[regressionBand].encoding.y2.scale",
+      property: "layer[pointsRegressionBands].encoding.y2.scale",
       value: "y"
     })
     .editSemantic({
-      property: "layer[regressionBand].encoding.group.field",
+      property: "layer[pointsRegressionBands].encoding.group.field",
       value: "Origin"
     })
     .editSemantic({
-      property: "layer[regressionBand].encoding.group.fieldType",
+      property: "layer[pointsRegressionBands].encoding.group.fieldType",
       value: "nominal"
     })
     .editSemantic({
-      property: "layer[regressionLine].mark.type",
+      property: "layer[pointsRegressionLines].mark.type",
       value: "line"
     })
     .editSemantic({
-      property: "layer[regressionLine].data",
+      property: "layer[pointsRegressionLines].data",
       value: "pointsRegressionData"
     })
     .editSemantic({
-      property: "layer[regressionLine].coordinate",
+      property: "layer[pointsRegressionLines].coordinate",
       value: "main"
     })
     .editSemantic({
-      property: "layer[regressionLine].encoding.x.field",
+      property: "layer[pointsRegressionLines].encoding.x.field",
       value: "Displacement"
     })
     .editSemantic({
-      property: "layer[regressionLine].encoding.x.fieldType",
+      property: "layer[pointsRegressionLines].encoding.x.fieldType",
       value: "quantitative"
     })
     .editSemantic({
-      property: "layer[regressionLine].encoding.x.scale",
+      property: "layer[pointsRegressionLines].encoding.x.scale",
       value: "x"
     })
     .editSemantic({
-      property: "layer[regressionLine].encoding.y.field",
+      property: "layer[pointsRegressionLines].encoding.y.field",
       value: "Acceleration"
     })
     .editSemantic({
-      property: "layer[regressionLine].encoding.y.fieldType",
+      property: "layer[pointsRegressionLines].encoding.y.fieldType",
       value: "quantitative"
     })
     .editSemantic({
-      property: "layer[regressionLine].encoding.y.scale",
+      property: "layer[pointsRegressionLines].encoding.y.scale",
       value: "y"
     })
     .editSemantic({
-      property: "layer[regressionLine].encoding.color.field",
+      property: "layer[pointsRegressionLines].encoding.color.field",
       value: "Origin"
     })
     .editSemantic({
-      property: "layer[regressionLine].encoding.color.fieldType",
+      property: "layer[pointsRegressionLines].encoding.color.fieldType",
       value: "nominal"
     })
     .editSemantic({
-      property: "layer[regressionLine].encoding.color.scale",
+      property: "layer[pointsRegressionLines].encoding.color.scale",
       value: "color"
     })
     .editSemantic({
-      property: "layer[regressionLine].encoding.group.field",
+      property: "layer[pointsRegressionLines].encoding.group.field",
       value: "Origin"
     })
     .editSemantic({
-      property: "layer[regressionLine].encoding.group.fieldType",
+      property: "layer[pointsRegressionLines].encoding.group.fieldType",
       value: "nominal"
     })
     .editSemantic({ property: "scale[x].type", value: "linear" })

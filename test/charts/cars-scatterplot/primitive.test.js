@@ -9,7 +9,6 @@ import {
   createCarsScatterplotPrimitives,
   renderCarsScatterplotPrimitives
 } from "./primitive.program.js";
-import { createCarsScatterplot } from "../../../examples/cars-scatterplot/program.js";
 import { loadCars } from "../../support/data.js";
 
 const cars = loadCars();
@@ -43,17 +42,4 @@ test("renders the cars scatterplot with manually authored axes", () => {
     new Set(["editSemantic", "createGraphics", "editGraphics"])
   );
   assert.deepEqual(program.actionStack, []);
-});
-
-test("matches the canonical public scatterplot concrete output", () => {
-  const primitive = createCarsScatterplotPrimitives(cars);
-  const publicProgram = createCarsScatterplot(cars);
-  const primitiveContext = createMockCanvasContext();
-  const publicContext = createMockCanvasContext();
-
-  renderCarsScatterplotPrimitives(primitive, primitiveContext);
-  renderCarsScatterplotPrimitives(publicProgram, publicContext);
-
-  assert.deepEqual(primitive.graphicSpec, publicProgram.graphicSpec);
-  assert.deepEqual(primitiveContext.calls, publicContext.calls);
 });

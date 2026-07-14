@@ -3,9 +3,9 @@ import test from "node:test";
 
 import { createCarsRegressionScatterplot } from
   "../../../examples/cars-regression-scatterplot/program.js";
-import { render } from "../../../src/index.js";
+import { assertChartProgramsEquivalent } from
+  "../../support/chart-equivalence.js";
 import { loadCars } from "../../support/data.js";
-import { createMockCanvasContext } from "../../support/canvas.js";
 import { createCarsRegressionScatterplotPrimitives } from
   "./primitive.program.js";
 
@@ -79,17 +79,12 @@ test("builds the final public regression scatterplot contract", () => {
   assert.deepEqual(program.actionStack, []);
 });
 
-test("matches the primitive graphicSpec and renderer calls exactly", () => {
+test("exactly matches the canonical primitive baseline", () => {
   const cars = loadCars();
-  const program = createCarsRegressionScatterplot(cars);
-  const primitive = createCarsRegressionScatterplotPrimitives(cars);
-  const publicContext = createMockCanvasContext();
-  const primitiveContext = createMockCanvasContext();
-
-  assert.deepEqual(program.graphicSpec, primitive.graphicSpec);
-  render(program, publicContext);
-  render(primitive, primitiveContext);
-  assert.deepEqual(publicContext.calls, primitiveContext.calls);
+  assertChartProgramsEquivalent({
+    publicProgram: createCarsRegressionScatterplot(cars),
+    primitiveProgram: createCarsRegressionScatterplotPrimitives(cars)
+  });
 });
 
 test("owns caller data without mutating the input", () => {

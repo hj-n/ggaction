@@ -574,6 +574,10 @@ export function createFieldOpacityPrimitives(cars) {
 
   let program = createCarsScatterplotPrimitives(cars)
     .editSemantic({
+      property: "layer[points].encoding.color",
+      remove: true
+    })
+    .editSemantic({
       property: "layer[points].encoding.opacity.field",
       value: "Acceleration"
     })

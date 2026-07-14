@@ -73,7 +73,7 @@ test("authors and renders the complete primitive regression scatterplot", () => 
       }
     },
     {
-      id: "regressionBand",
+      id: "pointsRegressionBands",
       mark: { type: "area" },
       data: "pointsRegressionData",
       coordinate: "main",
@@ -93,7 +93,7 @@ test("authors and renders the complete primitive regression scatterplot", () => 
       }
     },
     {
-      id: "regressionLine",
+      id: "pointsRegressionLines",
       mark: { type: "line" },
       data: "pointsRegressionData",
       coordinate: "main",

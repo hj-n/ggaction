@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { createJobsGroupedBar } from "../../../examples/jobs-grouped-bar/program.js";
+import { assertChartProgramsEquivalent } from
+  "../../support/chart-equivalence.js";
 import { loadJobs } from "../../support/data.js";
 import { createJobsGroupedBarPrimitives } from "./primitive.program.js";
 
@@ -42,13 +44,9 @@ test("builds the public jobs grouped bar chart with chart actions", () => {
   ]);
 });
 
-test("matches primitive grouped-bar semantics and concrete bars", () => {
-  const program = createJobsGroupedBar(jobs);
-  const primitive = createJobsGroupedBarPrimitives(jobs);
-
-  assert.deepEqual(program.semanticSpec, primitive.semanticSpec);
-  assert.deepEqual(
-    program.graphicSpec.objects.bars,
-    primitive.graphicSpec.objects.bars
-  );
+test("exactly matches the canonical primitive baseline", () => {
+  assertChartProgramsEquivalent({
+    publicProgram: createJobsGroupedBar(jobs),
+    primitiveProgram: createJobsGroupedBarPrimitives(jobs)
+  });
 });

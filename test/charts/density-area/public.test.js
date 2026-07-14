@@ -3,9 +3,9 @@ import test from "node:test";
 
 import { createCarsDensityArea } from
   "../../../examples/cars-density-area/program.js";
-import { render } from "../../../src/index.js";
+import { assertChartProgramsEquivalent } from
+  "../../support/chart-equivalence.js";
 import { loadCars } from "../../support/data.js";
-import { createMockCanvasContext } from "../../support/canvas.js";
 import { createCarsDensityAreaPrimitives } from
   "./primitive.program.js";
 
@@ -46,16 +46,10 @@ test("builds the final public density area chart contract", () => {
 });
 
 test("matches primitive semantics, graphics, and Canvas calls exactly", () => {
-  const publicProgram = createCarsDensityArea(cars);
-  const primitiveProgram = createCarsDensityAreaPrimitives(cars);
-  const publicContext = createMockCanvasContext();
-  const primitiveContext = createMockCanvasContext();
-
-  assert.deepEqual(publicProgram.semanticSpec, primitiveProgram.semanticSpec);
-  assert.deepEqual(publicProgram.graphicSpec, primitiveProgram.graphicSpec);
-  render(publicProgram, publicContext);
-  render(primitiveProgram, primitiveContext);
-  assert.deepEqual(publicContext.calls, primitiveContext.calls);
+  assertChartProgramsEquivalent({
+    publicProgram: createCarsDensityArea(cars),
+    primitiveProgram: createCarsDensityAreaPrimitives(cars)
+  });
 });
 
 test("owns caller data and leaves earlier programs unchanged", () => {

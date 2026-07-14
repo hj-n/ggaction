@@ -2,7 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { createCarsScatterplot } from "../../../examples/cars-scatterplot/program.js";
+import { assertChartProgramsEquivalent } from
+  "../../support/chart-equivalence.js";
 import { loadCars } from "../../support/data.js";
+import { createCarsScatterplotPrimitives } from "./primitive.program.js";
 
 const cars = loadCars();
 
@@ -36,4 +39,11 @@ test("owns public scatterplot input", () => {
   input[0].Horsepower = -999;
 
   assert.equal(program.semanticSpec.datasets[0].values[0].Horsepower, stored);
+});
+
+test("exactly matches the canonical primitive baseline", () => {
+  assertChartProgramsEquivalent({
+    publicProgram: createCarsScatterplot(cars),
+    primitiveProgram: createCarsScatterplotPrimitives(cars)
+  });
 });

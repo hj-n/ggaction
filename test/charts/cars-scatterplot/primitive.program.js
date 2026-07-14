@@ -104,6 +104,61 @@ export function createCarsScatterplotPrimitives(cars) {
     .editSemantic({ property: "dataset[cars].values", value: validCars })
     .editSemantic({ property: "layer[points].mark.type", value: "point" })
     .editSemantic({ property: "layer[points].data", value: "cars" })
+    .editSemantic({ property: "layer[points].coordinate", value: "main" })
+    .editSemantic({
+      property: "layer[points].encoding.x.field",
+      value: "Horsepower"
+    })
+    .editSemantic({
+      property: "layer[points].encoding.x.fieldType",
+      value: "quantitative"
+    })
+    .editSemantic({ property: "layer[points].encoding.x.scale", value: "x" })
+    .editSemantic({
+      property: "layer[points].encoding.y.field",
+      value: "Miles_per_Gallon"
+    })
+    .editSemantic({
+      property: "layer[points].encoding.y.fieldType",
+      value: "quantitative"
+    })
+    .editSemantic({ property: "layer[points].encoding.y.scale", value: "y" })
+    .editSemantic({
+      property: "layer[points].encoding.color.field",
+      value: "Origin"
+    })
+    .editSemantic({
+      property: "layer[points].encoding.color.fieldType",
+      value: "nominal"
+    })
+    .editSemantic({
+      property: "layer[points].encoding.color.scale",
+      value: "color"
+    })
+    .editSemantic({ property: "scale[x].type", value: "linear" })
+    .editSemantic({ property: "scale[x].domain", value: "auto" })
+    .editSemantic({ property: "scale[x].range", value: "auto" })
+    .editSemantic({ property: "scale[y].type", value: "linear" })
+    .editSemantic({ property: "scale[y].domain", value: "auto" })
+    .editSemantic({ property: "scale[y].range", value: "auto" })
+    .editSemantic({ property: "scale[color].type", value: "ordinal" })
+    .editSemantic({ property: "scale[color].domain", value: "auto" })
+    .editSemantic({ property: "scale[color].range", value: "auto" })
+    .editSemantic({ property: "coordinate[main].type", value: "cartesian" })
+    .editSemantic({ property: "guide.axis.x.coordinate", value: "main" })
+    .editSemantic({ property: "guide.axis.x.scale", value: "x" })
+    .editSemantic({ property: "guide.axis.x.title", value: "Horsepower" })
+    .editSemantic({ property: "guide.axis.y.coordinate", value: "main" })
+    .editSemantic({ property: "guide.axis.y.scale", value: "y" })
+    .editSemantic({
+      property: "guide.axis.y.title",
+      value: "Miles per Gallon"
+    })
+    .editSemantic({ property: "guide.grid.horizontal.scale", value: "y" })
+    .editSemantic({
+      property: "guide.grid.horizontal.coordinate",
+      value: "main"
+    })
     .createGraphics({ id: "canvas", type: "canvas" })
     .editGraphics({ target: "canvas", property: "width", value: 640 })
     .editGraphics({ target: "canvas", property: "height", value: 400 })

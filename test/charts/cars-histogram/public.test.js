@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { createCarsHistogram } from "../../../examples/cars-histogram/program.js";
+import { assertChartProgramsEquivalent } from
+  "../../support/chart-equivalence.js";
 import { loadCars } from "../../support/data.js";
 import { createCarsHistogramPrimitives } from "./primitive.program.js";
 
@@ -45,9 +47,8 @@ test("builds the public cars histogram with chart actions", () => {
 });
 
 test("matches the complete histogram primitive baseline", () => {
-  const program = createCarsHistogram(cars);
-  const primitive = createCarsHistogramPrimitives(cars);
-
-  assert.deepEqual(program.semanticSpec, primitive.semanticSpec);
-  assert.deepEqual(program.graphicSpec, primitive.graphicSpec);
+  assertChartProgramsEquivalent({
+    publicProgram: createCarsHistogram(cars),
+    primitiveProgram: createCarsHistogramPrimitives(cars)
+  });
 });

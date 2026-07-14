@@ -1257,6 +1257,9 @@ Selector, package boundary, shared validation, materialization plan처럼 기계
 - Canvas renderer call sequence
 
 단순히 눈으로 비슷한 PNG가 나오는 것만으로 동등성을 판단하지 않는다.
+모든 `public.test.js`는 공통 `assertChartProgramsEquivalent` assertion을 사용해 위 네
+계약과 양쪽 program의 완료된 action stack 및 immutable result를 같은 방식으로 검증한다.
+`test/contracts/chart-vertical-slices.test.js`는 새 chart가 이 검증을 생략하지 못하게 한다.
 
 ### Documentation test
 
