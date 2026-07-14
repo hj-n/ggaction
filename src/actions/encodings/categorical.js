@@ -1,10 +1,13 @@
 import { action } from "../../core/action.js";
 import {
   readNominalField,
+  readQuantitativeField,
+  readTemporalField,
   validateNominalFieldType
 } from "../../grammar/scales.js";
 import {
   resolveColorScaleDefinition,
+  resolveSequentialColorScaleDefinition,
   resolveStrokeDashScaleDefinition
 } from "../scales/definitions.js";
 import {
@@ -19,14 +22,70 @@ const COLOR_ENCODING_OPTIONS = Object.freeze([
   "field", "target", "fieldType", "scale", "layout"
 ]);
 const STROKE_DASH_ENCODING_OPTIONS = COLOR_ENCODING_OPTIONS;
+
+function encodeContinuousColor(program, args) {
+  if (![
+    "quantitative", "temporal"
+  ].includes(args.fieldType)) {
+    throw new Error(`Unsupported color field type "${args.fieldType}".`);
+  }
+  if (args.layout !== undefined) {
+    throw new Error("Continuous color does not support layout.");
+  }
+  const { id: target, dataset, layer } = resolveTarget(
+    program,
+    args.target,
+    ["point"],
+    "continuous color point mark"
+  );
+  if (args.fieldType === "temporal") {
+    readTemporalField(dataset.values, args.field);
+  } else {
+    readQuantitativeField(dataset.values, args.field);
+  }
+  const requestedScale = resolveReassignmentScaleOptions(
+    layer.encoding?.color,
+    args.scale ?? {}
+  );
+  const scale = resolveSequentialColorScaleDefinition(
+    program,
+    args.fieldType,
+    requestedScale
+  );
+  let next = program
+    .editSemantic({
+      property: `layer[${target}].encoding.color.field`,
+      value: args.field
+    })
+    .editSemantic({
+      property: `layer[${target}].encoding.color.fieldType`,
+      value: args.fieldType
+    })
+    .editSemantic({
+      property: `layer[${target}].encoding.color.scale`,
+      value: scale.id
+    })
+    .setSequentialScale(scale)
+    .rematerializeScale({ id: scale.id })
+    .rematerializePointMark({ id: target });
+  return rematerializeExistingLegend(next);
+}
+
 const encodeColor = action(
   {
     op: "encodeColor",
-    description: "Encode a nominal field as graphical color."
+    description: "Encode a field as graphical color."
   },
   function (args = {}) {
     validateOptions(args, COLOR_ENCODING_OPTIONS, "encodeColor");
-    const fieldType = validateNominalFieldType(args.fieldType ?? "nominal");
+    const requestedFieldType = args.fieldType ?? "nominal";
+    if (requestedFieldType !== "nominal") {
+      return encodeContinuousColor(this, {
+        ...args,
+        fieldType: requestedFieldType
+      });
+    }
+    const fieldType = validateNominalFieldType(requestedFieldType);
     const { id: target, dataset, layer } = resolveTarget(
       this,
       args.target,

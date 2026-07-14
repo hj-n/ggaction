@@ -88,6 +88,59 @@ test("replaces an existing constant opacity through the same assignment", () => 
   assert.equal(after.trace.children.at(-1).op, "encodeOpacity");
 });
 
+test("assigns and reassigns field-driven opacity atomically", () => {
+  const constant = base().encodeOpacity({ value: 0.4 });
+  const field = constant.encodeOpacity({
+    field: "amount",
+    scale: { range: [0.2, 1] }
+  });
+  const reassigned = field.encodeOpacity({ field: "x" });
+  const restored = reassigned.encodeOpacity({ value: 0.6 });
+
+  assert.equal(field.markConfigs.points.opacity, undefined);
+  assert.deepEqual(field.semanticSpec.layers[0].encoding.opacity, {
+    field: "amount",
+    fieldType: "quantitative",
+    scale: "opacity"
+  });
+  assert.deepEqual(
+    field.graphicSpec.objects.points.children.map(child => child.properties.opacity),
+    [0.2, 1]
+  );
+  assert.equal(reassigned.semanticSpec.layers[0].encoding.opacity.field, "x");
+  assert.deepEqual(reassigned.resolvedScales.opacity.domain, [0, 10]);
+  assert.equal(restored.semanticSpec.layers[0].encoding.opacity, undefined);
+  assert.deepEqual(
+    restored.graphicSpec.objects.points.children.map(child => child.properties.opacity),
+    [0.6, 0.6]
+  );
+  assert.deepEqual(
+    constant.graphicSpec.objects.points.children.map(child => child.properties.opacity),
+    [0.4, 0.4]
+  );
+});
+
+test("supports explicit descending opacity ranges and policies", () => {
+  const program = base().encodeOpacity({
+    field: "amount",
+    scale: { range: [1, 0.2], clamp: true, reverse: true }
+  });
+
+  assert.deepEqual(program.semanticSpec.scales[0], {
+    id: "opacity",
+    type: "linear",
+    domain: "auto",
+    range: [1, 0.2],
+    clamp: true,
+    reverse: true
+  });
+  assert.deepEqual(program.resolvedScales.opacity.range, [0.2, 1]);
+  assert.deepEqual(
+    program.graphicSpec.objects.points.children.map(child => child.properties.opacity),
+    [0.2, 1]
+  );
+});
+
 test("rematerializes centered mixed point geometry after Canvas edits", () => {
   const before = encoded(base());
   const after = before.editCanvas({ width: 300, height: 180, margin: 20 });
@@ -124,6 +177,25 @@ test("records field encodings and validates appearance contracts", () => {
   );
   assert.throws(
     () => base().encodeOpacity({ value: 2 }),
+    /from 0 to 1/
+  );
+  assert.throws(
+    () => base().encodeOpacity({}),
+    /exactly one/
+  );
+  assert.throws(
+    () => base().encodeOpacity({ value: 0.5, field: "amount" }),
+    /exactly one/
+  );
+  assert.throws(
+    () => base().encodeOpacity({ field: "group" }),
+    /finite number/
+  );
+  assert.throws(
+    () => base().encodeOpacity({
+      field: "amount",
+      scale: { range: [-0.1, 1] }
+    }),
     /from 0 to 1/
   );
   assert.throws(

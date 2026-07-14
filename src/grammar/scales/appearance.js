@@ -17,6 +17,7 @@ export const DASH10 = cloneAndFreeze([
 
 export { POINT_SHAPES } from "../pointShapes.js";
 export const DEFAULT_SIZE_RANGE = cloneAndFreeze([24, 196]);
+export const DEFAULT_OPACITY_RANGE = cloneAndFreeze([0.2, 1]);
 
 export function validateColorRange(range) {
   if (range === "auto") return range;
@@ -88,6 +89,20 @@ export function validateSizeRange(range) {
   return cloneAndFreeze(range);
 }
 
+export function validateOpacityRange(range) {
+  if (range === "auto") return range;
+  if (
+    !Array.isArray(range) ||
+    range.length !== 2 ||
+    !range.every(value => Number.isFinite(value) && value >= 0 && value <= 1)
+  ) {
+    throw new TypeError(
+      "Opacity range must contain two finite values from 0 to 1."
+    );
+  }
+  return cloneAndFreeze(range);
+}
+
 export function validateSemanticScaleRange(range) {
   if (range === "auto") return range;
   if (Array.isArray(range) && range.length > 0) return cloneAndFreeze(range);
@@ -118,6 +133,11 @@ export function resolveShapeRange(range) {
 export function resolveSizeRange(range) {
   const validated = validateSizeRange(range);
   return validated === "auto" ? DEFAULT_SIZE_RANGE : validated;
+}
+
+export function resolveOpacityRange(range) {
+  const validated = validateOpacityRange(range);
+  return validated === "auto" ? DEFAULT_OPACITY_RANGE : validated;
 }
 
 export function mapOrdinalValues(values, domain, range) {

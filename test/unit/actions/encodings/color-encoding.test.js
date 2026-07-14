@@ -182,6 +182,75 @@ test("combines every consumer of a shared color scale", () => {
   );
 });
 
+test("encodes quantitative and temporal point color through sequential scales", () => {
+  const quantitative = createPointProgram(
+    "points",
+    "cars",
+    [{ value: 8 }, { value: 24.8 }]
+  ).encodeColor({ field: "value", fieldType: "quantitative" });
+  const temporal = createPointProgram(
+    "points",
+    "events",
+    [{ date: "2020-01-01" }, { date: "2021-01-01" }]
+  ).encodeColor({
+    field: "date",
+    fieldType: "temporal",
+    scale: { range: ["#000000", "#ffffff"], interpolate: "lab" }
+  });
+
+  assert.deepEqual(quantitative.semanticSpec.layers[0].encoding.color, {
+    field: "value",
+    fieldType: "quantitative",
+    scale: "color"
+  });
+  assert.deepEqual(quantitative.semanticSpec.scales[0], {
+    id: "color",
+    type: "sequential",
+    domain: "auto",
+    range: { palette: { name: "viridis" } },
+    interpolate: "rgb"
+  });
+  assert.deepEqual(quantitative.resolvedScales.color.domain, [8, 24.8]);
+  assert.deepEqual(
+    quantitative.graphicSpec.objects.points.children.map(child => child.properties.fill),
+    ["#440154", "#fde725"]
+  );
+  assert.equal(temporal.resolvedScales.color.type, "sequential");
+  assert.deepEqual(
+    temporal.graphicSpec.objects.points.children.map(child => child.properties.fill),
+    ["#000000", "#ffffff"]
+  );
+});
+
+test("supports continuous palette extent, interpolation, and reversal", () => {
+  const program = createPointProgram(
+    "points",
+    "cars",
+    [{ value: 0 }, { value: 5 }, { value: 10 }]
+  ).encodeColor({
+    field: "value",
+    fieldType: "quantitative",
+    scale: {
+      palette: { name: "viridis", extent: [0.2, 0.8] },
+      interpolate: "hcl",
+      reverse: true,
+      clamp: true
+    }
+  });
+
+  assert.equal(program.resolvedScales.color.interpolate, "hcl");
+  assert.equal(program.resolvedScales.color.clamp, true);
+  assert.equal(program.semanticSpec.scales[0].reverse, true);
+  assert.equal(
+    program.graphicSpec.objects.points.children[0].properties.fill,
+    program.resolvedScales.color.range[0]
+  );
+  assert.equal(
+    program.graphicSpec.objects.points.children[2].properties.fill,
+    program.resolvedScales.color.range.at(-1)
+  );
+});
+
 test("validates color encoding inputs", () => {
   const program = createPointProgram();
 
@@ -192,6 +261,10 @@ test("validates color encoding inputs", () => {
   );
   assert.throws(
     () => program.encodeColor({ field: "origin", fieldType: "quantitative" }),
+    /finite number/
+  );
+  assert.throws(
+    () => program.encodeColor({ field: "origin", fieldType: "ordinal" }),
     /Unsupported color field type/
   );
   assert.throws(
@@ -204,5 +277,21 @@ test("validates color encoding inputs", () => {
       scale: { palette: "tableau10", range: ["red"] }
     }),
     /both palette and range/
+  );
+  assert.throws(
+    () => createPointProgram("points", "data", [{ value: 1 }]).encodeColor({
+      field: "value",
+      fieldType: "quantitative",
+      layout: "stack"
+    }),
+    /does not support layout/
+  );
+  assert.throws(
+    () => createPointProgram("points", "data", [{ value: 1 }]).encodeColor({
+      field: "value",
+      fieldType: "quantitative",
+      scale: { interpolate: "RGB" }
+    }),
+    /Unsupported continuous color interpolation/
   );
 });

@@ -1,9 +1,13 @@
 import { action } from "../../core/action.js";
+import { cloneAndFreeze } from "../../core/immutable.js";
 import {
   readNominalField,
   readQuantitativeField
 } from "../../grammar/scales.js";
-import { resolveAppearanceScaleDefinition } from "../scales/definitions.js";
+import {
+  resolveAppearanceScaleDefinition,
+  resolveOpacityScaleDefinition
+} from "../scales/definitions.js";
 import { findLayer } from "../../selectors/layers.js";
 import {
   applyEncodingScale,
@@ -14,7 +18,9 @@ import {
 } from "./shared.js";
 
 const RADIUS_OPTIONS = Object.freeze(["value", "target"]);
-const OPACITY_OPTIONS = Object.freeze(["value", "target"]);
+const OPACITY_OPTIONS = Object.freeze([
+  "value", "field", "target", "fieldType", "scale"
+]);
 const FIELD_OPTIONS = Object.freeze(["field", "target", "fieldType", "scale"]);
 function encodeAppearanceField(program, channel, args, operation) {
   validateOptions(args, FIELD_OPTIONS, operation);
@@ -119,6 +125,25 @@ const encodeShape = action(
   }
 );
 
+const clearOpacityEncoding = action(
+  {
+    op: "clearOpacityEncoding",
+    description: "Remove the semantic field-driven opacity assignment."
+  },
+  function ({ target } = {}) {
+    const layer = findLayer(this, target);
+    if (layer?.encoding?.opacity === undefined) return this;
+    const { opacity, ...encoding } = layer.encoding;
+    void opacity;
+    const layers = this.semanticSpec.layers.map(item =>
+      item.id === target ? { ...item, encoding } : item
+    );
+    return this._clone({
+      semanticSpec: cloneAndFreeze({ ...this.semanticSpec, layers })
+    });
+  }
+);
+
 const encodeOpacity = action(
   {
     op: "encodeOpacity",
@@ -126,21 +151,61 @@ const encodeOpacity = action(
   },
   function (args = {}) {
     validateOptions(args, OPACITY_OPTIONS, "encodeOpacity");
-    const { id: target } = resolveTarget(
+    const hasValue = Object.hasOwn(args, "value");
+    const hasField = Object.hasOwn(args, "field");
+    if (hasValue === hasField) {
+      throw new Error("encodeOpacity requires exactly one of value or field.");
+    }
+    const { id: target, dataset, layer } = resolveTarget(
       this,
       args.target,
       ["point"],
       "point mark"
     );
-    if (!Number.isFinite(args.value) || args.value < 0 || args.value > 1) {
-      throw new RangeError("encodeOpacity requires a finite value from 0 to 1.");
+    if (hasValue) {
+      if (!Number.isFinite(args.value) || args.value < 0 || args.value > 1) {
+        throw new RangeError("encodeOpacity requires a finite value from 0 to 1.");
+      }
+      const { opacity, ...config } = this.markConfigs[target] ?? {};
+      void opacity;
+      return this
+        .clearOpacityEncoding({ target })
+        ._withMarkConfig(target, { ...config, opacity: args.value })
+        .rematerializePointMark({ id: target });
     }
-    return this
-      ._withMarkConfig(target, {
-        ...this.markConfigs[target],
-        opacity: args.value
+    const fieldType = args.fieldType ?? "quantitative";
+    if (fieldType !== "quantitative") {
+      throw new Error("encodeOpacity requires a quantitative field.");
+    }
+    readQuantitativeField(dataset.values, args.field);
+    const previous = layer.encoding?.opacity;
+    const requestedScale = resolveReassignmentScaleOptions(
+      previous,
+      args.scale ?? {}
+    );
+    const scale = resolveOpacityScaleDefinition(this, requestedScale);
+    const { opacity, ...config } = this.markConfigs[target] ?? {};
+    void opacity;
+    let next = this
+      ._withMarkConfig(target, config)
+      .editSemantic({
+        property: `layer[${target}].encoding.opacity.field`,
+        value: args.field
       })
+      .editSemantic({
+        property: `layer[${target}].encoding.opacity.fieldType`,
+        value: fieldType
+      })
+      .editSemantic({
+        property: `layer[${target}].encoding.opacity.scale`,
+        value: scale.id
+      })
+    next = applyEncodingScale(next, scale, requestedScale, {
+      reassignment: previous?.scale === scale.id
+    })
+      .rematerializeScale({ id: scale.id })
       .rematerializePointMark({ id: target });
+    return rematerializeExistingLegend(next);
   }
 );
 
@@ -149,4 +214,5 @@ export function registerAppearanceEncodingAction(ProgramClass) {
   ProgramClass.prototype.encodeSize = encodeSize;
   ProgramClass.prototype.encodeShape = encodeShape;
   ProgramClass.prototype.encodeOpacity = encodeOpacity;
+  ProgramClass.prototype.clearOpacityEncoding = clearOpacityEncoding;
 }

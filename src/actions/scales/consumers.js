@@ -17,7 +17,8 @@ export function findScaleConsumers(program, id) {
   const consumers = [];
   for (const layer of program.semanticSpec.layers) {
     for (const channel of [
-      "x", "y", "y2", "xOffset", "color", "strokeDash", "size", "shape"
+      "x", "y", "y2", "xOffset", "color", "strokeDash", "size", "shape",
+      "opacity"
     ]) {
       const encoding = layer.encoding?.[channel];
       if (encoding?.scale === id) consumers.push({ layer, channel, encoding });
@@ -34,17 +35,15 @@ export function resolveConsumerValues(program, consumer) {
     );
   }
 
-  if (["color", "strokeDash", "xOffset", "shape"].includes(consumer.channel)) {
+  if (
+    ["color", "strokeDash", "xOffset", "shape"].includes(consumer.channel) &&
+    consumer.encoding.fieldType === "nominal"
+  ) {
     if (
       consumer.channel === "strokeDash" &&
       consumer.layer.mark?.type !== "line"
     ) {
       throw new Error("strokeDash scale materialization currently requires a line mark.");
-    }
-    if (consumer.encoding.fieldType !== "nominal") {
-      throw new Error(
-        `${consumer.channel} scale materialization requires a nominal encoding on mark "${consumer.layer.id}".`
-      );
     }
     return readNominalField(dataset.values, consumer.encoding.field);
   }

@@ -8,8 +8,10 @@ import {
 import {
   mapLinearValues,
   mapOrdinalValues,
+  mapSequentialColors,
   readNominalField,
-  readQuantitativeField
+  readQuantitativeField,
+  readTemporalField
 } from "../../grammar/scales.js";
 import {
   assertMarkAvailable,
@@ -69,10 +71,19 @@ function resolveMappedValues(program, layer, dataset, channel) {
       `Point mark "${layer.id}" requires resolved ${channel} scale "${encoding.scale}".`
     );
   }
-  const values = channel === "color" || channel === "shape"
+  const ordinal = encoding.fieldType === "nominal";
+  const values = ordinal
     ? readNominalField(dataset.values, encoding.field)
-    : readQuantitativeField(dataset.values, encoding.field);
-  return channel === "color" || channel === "shape"
+    : encoding.fieldType === "temporal"
+      ? readTemporalField(dataset.values, encoding.field)
+      : readQuantitativeField(dataset.values, encoding.field);
+  if (channel === "color" && scale.type === "sequential") {
+    return mapSequentialColors(values, scale.domain, scale.range, {
+      interpolation: scale.interpolate,
+      clamp: scale.clamp ?? false
+    });
+  }
+  return ordinal
     ? mapOrdinalValues(values, scale.domain, scale.range)
     : mapLinearValues(values, scale.domain, scale.range, {
         clamp: scale.clamp ?? false
@@ -132,6 +143,7 @@ const rematerializePointMark = action(
     const fill = resolveMappedValues(this, layer, dataset, "color");
     const area = resolveMappedValues(this, layer, dataset, "size");
     const encodedShape = resolveMappedValues(this, layer, dataset, "shape");
+    const encodedOpacity = resolveMappedValues(this, layer, dataset, "opacity");
     const config = this.markConfigs[id] ?? {};
     const shapes = encodedShape ?? dataset.values.map(() => config.shape ?? "circle");
     const existingChildren = graphic.children ?? [];
@@ -146,7 +158,7 @@ const rematerializePointMark = action(
         const shape = shapes[index];
         const existing = existingChildren[index]?.properties ?? {};
         const color = fill?.[index] ?? existing.fill ?? DEFAULT_POINT_FILL;
-        const opacity = config.opacity ?? existing.opacity;
+        const opacity = encodedOpacity?.[index] ?? config.opacity ?? existing.opacity;
         const resolvedArea = area?.[index] ??
           (config.radius === undefined
             ? existingArea(existingChildren[index], graphic.type)
@@ -219,6 +231,8 @@ const rematerializePointMark = action(
     }
     if (config.opacity !== undefined) {
       next = next.editGraphics({ target: id, property: "opacity", value: config.opacity });
+    } else if (encodedOpacity !== undefined) {
+      next = next.editGraphics({ target: id, property: "opacity", value: encodedOpacity });
     }
     return next;
   }

@@ -4,6 +4,7 @@ import { findSemanticScale, hasDataset } from "../../selectors/index.js";
 import { validateCoordinateType } from "../coordinates.js";
 import {
   validateSemanticFieldType,
+  validateContinuousColorInterpolation,
   validateSemanticScaleDomain,
   validateSemanticScaleRange,
   validateSemanticScaleType
@@ -213,6 +214,8 @@ export function validateSemanticValue(program, parsed, value) {
       }
     } else if (property === "reverse") {
       if (typeof value !== "boolean") throw new TypeError("Scale reverse must be a boolean.");
+    } else if (property === "interpolate") {
+      validateContinuousColorInterpolation(value);
     }
   }
   if (parsed.kind === "coordinate" && parsed.path[0] === "type") {

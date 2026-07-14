@@ -5,6 +5,7 @@ import { resolveHistogramBins } from "../../grammar/histogram.js";
 import { resolveGraphicBounds } from "../../layout/canvas.js";
 import {
   mapLinearValues,
+  mapSequentialColors,
   mapOrdinalValues,
   resolveColorRange,
   resolveContinuousDomain,
@@ -12,6 +13,8 @@ import {
   resolveOrdinalOffsetScale,
   resolveOrdinalPositionScale,
   resolveScaleRange,
+  resolveOpacityRange,
+  resolveSequentialColorStops,
   resolveShapeRange,
   resolveSizeRange,
   resolveStrokeDashRange,
@@ -63,7 +66,10 @@ export const rematerializeScale = action(
       values: resolveConsumerValues(this, consumer)
     }));
     const allValues = valuesByConsumer.flatMap(item => item.values);
-    const isOrdinalAppearance = ["color", "strokeDash", "shape"].includes(channel);
+    const isSequentialColor = channel === "color" && scale.type === "sequential";
+    const isOrdinalAppearance =
+      ["color", "strokeDash", "shape"].includes(channel) &&
+      scale.type === "ordinal";
     const isOrdinalOffset = channel === "xOffset";
     const isOrdinalPosition =
       !isOrdinalAppearance && !isOrdinalOffset && scale.type === "ordinal";
@@ -132,11 +138,14 @@ export const rematerializeScale = action(
 
     let range;
     if (channel === "color") {
-      range = resolveColorRange(scale.range, domain.length);
+      range = isSequentialColor
+        ? resolveSequentialColorStops(scale.range)
+        : resolveColorRange(scale.range, domain.length);
     }
     else if (channel === "strokeDash") range = resolveStrokeDashRange(scale.range);
     else if (channel === "shape") range = resolveShapeRange(scale.range);
     else if (channel === "size") range = resolveSizeRange(scale.range);
+    else if (channel === "opacity") range = resolveOpacityRange(scale.range);
     else if (isOrdinalOffset) range = undefined;
     else {
       range = resolveScaleRange(
@@ -181,14 +190,17 @@ export const rematerializeScale = action(
             bounds: resolveGraphicBounds(this)
           })
         : {
-            type: isOrdinalAppearance
-              ? validateOrdinalScaleType(scale.type)
-              : scale.type === "time"
-                ? validateTimeScaleType(scale.type)
-                : validateLinearScaleType(scale.type),
+            type: isSequentialColor
+              ? "sequential"
+              : isOrdinalAppearance
+                ? validateOrdinalScaleType(scale.type)
+                : scale.type === "time"
+                  ? validateTimeScaleType(scale.type)
+                  : validateLinearScaleType(scale.type),
             domain,
             range,
-            ...(scale.clamp === undefined ? {} : { clamp: scale.clamp })
+            ...(scale.clamp === undefined ? {} : { clamp: scale.clamp }),
+            ...(isSequentialColor ? { interpolate: scale.interpolate ?? "rgb" } : {})
           };
     if (scale.reverse === true) {
       resolvedScale = {
@@ -209,11 +221,16 @@ export const rematerializeScale = action(
       next = next.editGraphics({
         target: consumer.layer.id,
         property: channel === "color" ? "fill" : channel,
-        value: isOrdinalAppearance
-          ? mapOrdinalValues(values, domain, resolvedScale.range)
-          : mapLinearValues(values, resolvedScale.domain, resolvedScale.range, {
+        value: isSequentialColor
+          ? mapSequentialColors(values, resolvedScale.domain, resolvedScale.range, {
+              interpolation: resolvedScale.interpolate,
               clamp: resolvedScale.clamp ?? false
             })
+          : isOrdinalAppearance
+            ? mapOrdinalValues(values, domain, resolvedScale.range)
+            : mapLinearValues(values, resolvedScale.domain, resolvedScale.range, {
+                clamp: resolvedScale.clamp ?? false
+              })
       });
     }
 

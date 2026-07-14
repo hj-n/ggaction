@@ -3,7 +3,9 @@ import { isPlainObject } from "../../core/immutable.js";
 import { validateKeys } from "../../core/validation.js";
 import {
   validateColorRange,
+  validateContinuousColorInterpolation,
   validateLinearScaleType,
+  validateOpacityRange,
   validateOrdinalDomain,
   validateOrdinalScaleType,
   validateScaleDomain,
@@ -11,6 +13,7 @@ import {
   validateShapeRange,
   validateSizeRange,
   validateStrokeDashRange,
+  validateSequentialColorRange,
   validateTimeScaleType
 } from "../../grammar/scales.js";
 import { findSemanticScale } from "../../selectors/scales.js";
@@ -18,6 +21,17 @@ import { findSemanticScale } from "../../selectors/scales.js";
 const BASE_OPTIONS = Object.freeze(["id", "type", "domain", "range"]);
 const POSITION_OPTIONS = Object.freeze([...BASE_OPTIONS, "nice", "zero"]);
 const COLOR_OPTIONS = Object.freeze([...BASE_OPTIONS, "palette"]);
+const SEQUENTIAL_COLOR_OPTIONS = Object.freeze([
+  ...COLOR_OPTIONS,
+  "interpolate",
+  "clamp",
+  "reverse"
+]);
+const OPACITY_OPTIONS = Object.freeze([
+  ...POSITION_OPTIONS,
+  "clamp",
+  "reverse"
+]);
 
 function optionsObject(options) {
   if (!isPlainObject(options)) {
@@ -90,6 +104,63 @@ export function resolveColorScaleDefinition(program, options) {
   };
 }
 
+function continuousDomain(value, fieldType) {
+  if (value === "auto") return value;
+  if (!Array.isArray(value) || value.length !== 2) {
+    throw new TypeError("Continuous color domain must contain two values or auto.");
+  }
+  const normalized = value.map(item => {
+    if (fieldType === "quantitative") return item;
+    return typeof item === "string" ? Date.parse(item) : item;
+  });
+  if (!normalized.every(Number.isFinite) || normalized[0] === normalized[1]) {
+    throw new TypeError("Continuous color domain requires two distinct valid values.");
+  }
+  return normalized;
+}
+
+export function resolveSequentialColorScaleDefinition(
+  program,
+  fieldType,
+  options
+) {
+  optionsObject(options);
+  validateKeys(options, SEQUENTIAL_COLOR_OPTIONS, "scale");
+  if (options.palette !== undefined && options.range !== undefined) {
+    throw new Error("Color scale cannot specify both palette and range.");
+  }
+  const id = validateUserId(options.id ?? "color", "Scale id");
+  const existing = findSemanticScale(program, id);
+  const type = options.type ?? existing?.type ?? "sequential";
+  if (type !== "sequential") {
+    throw new Error(`Unsupported continuous color scale type "${type}".`);
+  }
+  for (const property of ["clamp", "reverse"]) {
+    if (options[property] !== undefined && typeof options[property] !== "boolean") {
+      throw new TypeError(`Scale ${property} must be a boolean.`);
+    }
+  }
+  const requestedRange = options.palette === undefined
+    ? options.range
+    : { palette: options.palette };
+  const scale = {
+    id,
+    type,
+    domain: continuousDomain(options.domain ?? existing?.domain ?? "auto", fieldType),
+    range: validateSequentialColorRange(
+      requestedRange ?? existing?.range ?? { palette: "viridis" }
+    ),
+    interpolate: validateContinuousColorInterpolation(
+      options.interpolate ?? existing?.interpolate ?? "rgb"
+    )
+  };
+  const clamp = options.clamp ?? existing?.clamp;
+  const reverse = options.reverse ?? existing?.reverse;
+  if (clamp !== undefined) scale.clamp = clamp;
+  if (reverse !== undefined) scale.reverse = reverse;
+  return scale;
+}
+
 export function resolveStrokeDashScaleDefinition(program, options) {
   optionsObject(options);
   validateKeys(options, BASE_OPTIONS, "scale");
@@ -121,6 +192,34 @@ export function resolveAppearanceScaleDefinition(program, channel, options) {
       ? validateShapeRange(options.range ?? existing?.range ?? "auto")
       : validateSizeRange(options.range ?? existing?.range ?? "auto")
   };
+}
+
+export function resolveOpacityScaleDefinition(program, options) {
+  optionsObject(options);
+  validateKeys(options, OPACITY_OPTIONS, "scale");
+  const id = validateUserId(options.id ?? "opacity", "Scale id");
+  const existing = findSemanticScale(program, id);
+  const type = validateLinearScaleType(options.type ?? existing?.type ?? "linear");
+  for (const property of ["nice", "zero", "clamp", "reverse"]) {
+    if (options[property] !== undefined && typeof options[property] !== "boolean") {
+      throw new TypeError(`Scale ${property} must be a boolean.`);
+    }
+  }
+  const scale = {
+    id,
+    type,
+    domain: validateScaleDomain(options.domain ?? existing?.domain ?? "auto"),
+    range: validateOpacityRange(options.range ?? existing?.range ?? "auto")
+  };
+  const nice = options.nice ?? existing?.nice;
+  const zero = options.zero ?? existing?.zero;
+  const clamp = options.clamp ?? existing?.clamp;
+  const reverse = options.reverse ?? existing?.reverse;
+  if (nice !== undefined) scale.nice = nice;
+  if (zero !== undefined) scale.zero = zero;
+  if (clamp !== undefined) scale.clamp = clamp;
+  if (reverse !== undefined) scale.reverse = reverse;
+  return scale;
 }
 
 export function resolveOffsetScaleDefinition(program, options) {
