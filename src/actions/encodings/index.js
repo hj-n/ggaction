@@ -1,11 +1,12 @@
 import { registerAppearanceEncodingAction } from "./appearance.js";
 import { registerBarWidthEncodingAction } from "./barWidth.js";
-import { registerCategoricalEncodingActions } from "./categorical.js";
+import { registerColorEncodingAction } from "./color.js";
 import { registerDensityEncodingAction } from "./density.js";
 import { registerHistogramEncodingAction } from "./histogram.js";
 import { registerOffsetEncodingAction } from "./offset.js";
 import { registerPositionEncodingActions } from "./position.js";
 import { registerRangedEncodingActions } from "./ranged.js";
+import { registerStrokeDashEncodingActions } from "./strokeDash.js";
 
 export function registerEncodingActions(ProgramClass) {
   registerPositionEncodingActions(ProgramClass);
@@ -14,6 +15,7 @@ export function registerEncodingActions(ProgramClass) {
   registerBarWidthEncodingAction(ProgramClass);
   registerHistogramEncodingAction(ProgramClass);
   registerDensityEncodingAction(ProgramClass);
-  registerCategoricalEncodingActions(ProgramClass);
+  registerColorEncodingAction(ProgramClass);
+  registerStrokeDashEncodingActions(ProgramClass);
   registerAppearanceEncodingAction(ProgramClass);
 }

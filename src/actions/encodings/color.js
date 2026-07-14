@@ -1,16 +1,18 @@
 import { action } from "../../core/action.js";
-import { cloneAndFreeze } from "../../core/immutable.js";
 import {
-  normalizeStrokeDashPattern,
   readNominalField,
   readQuantitativeField,
   readTemporalField,
   validateNominalFieldType
 } from "../../grammar/scales.js";
 import {
+  BAR_GRAINS,
+  inferBarColorLayout,
+  resolveBarGrain
+} from "../../grammar/bars/policy.js";
+import {
   resolveColorScaleDefinition,
-  resolveSequentialColorScaleDefinition,
-  resolveStrokeDashScaleDefinition
+  resolveSequentialColorScaleDefinition
 } from "../scales/definitions.js";
 import {
   applyEncodingScale,
@@ -20,23 +22,13 @@ import {
   validateLineSeriesCompatibility,
   validateOptions
 } from "./shared.js";
-import {
-  BAR_GRAINS,
-  inferBarColorLayout,
-  resolveBarGrain
-} from "../../grammar/bars/policy.js";
 
 const COLOR_ENCODING_OPTIONS = Object.freeze([
   "field", "target", "fieldType", "scale", "layout"
 ]);
-const STROKE_DASH_ENCODING_OPTIONS = Object.freeze([
-  "field", "value", "target", "fieldType", "scale"
-]);
 
 function encodeContinuousColor(program, args) {
-  if (![
-    "quantitative", "temporal"
-  ].includes(args.fieldType)) {
+  if (!["quantitative", "temporal"].includes(args.fieldType)) {
     throw new Error(`Unsupported color field type "${args.fieldType}".`);
   }
   if (args.layout !== undefined) {
@@ -62,7 +54,7 @@ function encodeContinuousColor(program, args) {
     args.fieldType,
     requestedScale
   );
-  let next = program
+  const next = program
     .editSemantic({
       property: `layer[${target}].encoding.color.field`,
       value: args.field
@@ -192,13 +184,11 @@ const encodeColor = action(
         next.rematerializeLineMark({ id: target })
       );
     }
-
     if (layer.mark.type === "bar") {
       return rematerializeExistingLegend(
         next.rematerializeBarMark({ id: target })
       );
     }
-
     if (layer.mark.type === "area") {
       const areaIds = next.semanticSpec.layers
         .filter(item =>
@@ -210,7 +200,6 @@ const encodeColor = action(
       }
       return rematerializeExistingLegend(next);
     }
-
     return rematerializeExistingLegend(
       next
         .rematerializeScale({ id: scale.id })
@@ -219,119 +208,6 @@ const encodeColor = action(
   }
 );
 
-const clearStrokeDashEncoding = action(
-  {
-    op: "clearStrokeDashEncoding",
-    description: "Remove the current semantic stroke-dash assignment."
-  },
-  function ({ target } = {}) {
-    const layer = this.semanticSpec.layers.find(item => item.id === target);
-    if (layer?.encoding?.strokeDash === undefined) return this;
-    const { strokeDash, ...encoding } = layer.encoding;
-    void strokeDash;
-    const layers = this.semanticSpec.layers.map(item =>
-      item.id === target ? { ...item, encoding } : item
-    );
-    return this._clone({
-      semanticSpec: cloneAndFreeze({ ...this.semanticSpec, layers })
-    });
-  }
-);
-
-function reconcileLegendAfterDashRemoval(program, target) {
-  const config = program.guideConfigs.legend?.series;
-  if (
-    config?.target !== target ||
-    !config.channels.includes("strokeDash")
-  ) {
-    return program;
-  }
-  const layer = program.semanticSpec.layers.find(item => item.id === target);
-  const channels = config.channels.filter(
-    channel => channel !== "strokeDash" && layer.encoding?.[channel]?.scale !== undefined
-  );
-  if (channels.length === 0) return program.removeCategoricalLegend();
-  return program
-    .editSemantic({
-      property: "guide.legend.series.channels",
-      value: channels
-    })
-    .rematerializeLegend();
-}
-
-const encodeStrokeDash = action(
-  {
-    op: "encodeStrokeDash",
-    description: "Encode a nominal field as line stroke dash."
-  },
-  function (args = {}) {
-    validateOptions(
-      args,
-      STROKE_DASH_ENCODING_OPTIONS,
-      "encodeStrokeDash"
-    );
-    const hasField = Object.hasOwn(args, "field");
-    const hasValue = Object.hasOwn(args, "value");
-    if (hasField === hasValue) {
-      throw new Error("encodeStrokeDash requires exactly one of field or value.");
-    }
-    if (hasValue && (args.fieldType !== undefined || args.scale !== undefined)) {
-      throw new Error("Constant stroke dash does not accept fieldType or scale.");
-    }
-    const { id: target, dataset, layer } = resolveTarget(
-      this,
-      args.target,
-      ["line"],
-      "line mark"
-    );
-    if (hasValue) {
-      normalizeStrokeDashPattern(args.value);
-      let next = layer.encoding?.strokeDash === undefined
-        ? this
-        : this.clearStrokeDashEncoding({ target });
-      next = next.editSemantic({
-        property: `layer[${target}].encoding.strokeDash.datum`,
-        value: args.value
-      });
-      next = reconcileLegendAfterDashRemoval(next, target);
-      return next.rematerializeLineMark({ id: target });
-    }
-
-    const fieldType = validateNominalFieldType(args.fieldType ?? "nominal");
-    readNominalField(dataset.values, args.field);
-    validateLineSeriesCompatibility(layer, "strokeDash", args.field);
-    const previous = layer.encoding?.strokeDash;
-    const requestedScale =
-      previous?.field === args.field
-        ? resolveReassignmentScaleOptions(previous, args.scale ?? {})
-        : args.scale ?? {};
-    const scale = resolveStrokeDashScaleDefinition(this, requestedScale);
-
-    let next = previous === undefined
-      ? this
-      : this.clearStrokeDashEncoding({ target });
-    next = next.editSemantic({
-        property: `layer[${target}].encoding.strokeDash.field`,
-        value: args.field
-      })
-      .editSemantic({
-        property: `layer[${target}].encoding.strokeDash.fieldType`,
-        value: fieldType
-      })
-      .editSemantic({
-        property: `layer[${target}].encoding.strokeDash.scale`,
-        value: scale.id
-      });
-    next = applyEncodingScale(next, scale, requestedScale, {
-      reassignment: previous?.scale === scale.id
-    }).rematerializeLineMark({ id: target });
-
-    return rematerializeExistingLegend(next);
-  }
-);
-
-export function registerCategoricalEncodingActions(ProgramClass) {
+export function registerColorEncodingAction(ProgramClass) {
   ProgramClass.prototype.encodeColor = encodeColor;
-  ProgramClass.prototype.encodeStrokeDash = encodeStrokeDash;
-  ProgramClass.prototype.clearStrokeDashEncoding = clearStrokeDashEncoding;
 }

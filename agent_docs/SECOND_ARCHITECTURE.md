@@ -1130,7 +1130,7 @@ src/
 │  ├─ canvas/          Canvas domain actions
 │  ├─ coordinates/     coordinate authoring
 │  ├─ data/            source/derived data actions
-│  ├─ encodings/       position, categorical, ranged, atomic encoding actions
+│  ├─ encodings/       position, color, stroke-dash, ranged, atomic encoding actions
 │  ├─ guides/          axes, grids, legends와 aggregate guides
 │  ├─ marks/           point, line, bar, area create/rematerialize
 │  ├─ primitives/      editSemantic/createGraphics/editGraphics와 stateful semantic validation
@@ -1158,6 +1158,10 @@ registrar를 한 번 조립하고 top-level `ChartProgram.js`가 이를 core pro
 따라서 `core/`는 `actions/`를 import하지 않는다. `grammar/`는 core utility와 다른 pure grammar만,
 `materialization/`은 core/grammar/layout/selectors/theme만 의존한다. 이 방향과 local import cycle
 부재는 source-boundary contract test가 검증한다.
+
+서로 다른 closed vocabulary와 reassignment lifecycle을 가진 encoding은 한 파일에 묶지 않는다.
+예를 들어 color와 stroke-dash는 같은 categorical scale 계열을 일부 공유하더라도 각각 독립된
+action module과 registrar를 가진다.
 
 ## Test architecture
 
