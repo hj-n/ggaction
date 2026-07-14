@@ -1138,6 +1138,7 @@ src/
 │  ├─ scales/          semantic scale create/resolve/materialize
 │  └─ titles/          chart title actions
 ├─ core/               action-free ChartProgram, action wrapper, immutable ownership, empty specs
+│  └─ vocabulary.js    implemented mark/channel/legend closed vocabulary
 ├─ grammar/            pure Grammar-of-Graphics/statistical/schema calculations
 │  └─ bars/            bar grain policy와 aggregate 계산
 ├─ layout/             Canvas state와 plot bounds
@@ -1170,6 +1171,16 @@ re-export만 담당한다.
 Guide module은 concrete recipe 기준으로 나눈다. Continuous legend의 공통 validation/layout
 utility, gradient strip recipe, opacity symbol recipe를 분리하며, quantitative size legend는 generic
 `point`가 아니라 `size`라는 실제 책임 이름을 사용한다.
+
+구현된 mark type, encoding channel, categorical legend channel, legend config kind는
+`core/vocabulary.js`가 canonical owner다. Schema parser, action validation, private config와
+materialization discovery는 이 목록을 import하며 별도의 문자열 목록을 만들지 않는다. 현재 legend
+kind는 `series`, `color`, `size`, `gradient`, `opacity`이고 사용되지 않는 `point` kind는 없다.
+
+Palette 이름과 concrete color table은 `grammar/palettes.js`가 한 번만 소유한다. 기본 categorical
+range인 `TABLEAU10`도 별도 literal이 아니라 palette registry에서 resolve한 immutable result다.
+Legend 존재와 scale dependency 검색은 `materialization/legends.js`가 같은 canonical kind 목록으로
+수행한다.
 
 ## Test architecture
 

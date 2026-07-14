@@ -1,4 +1,5 @@
 import { isPlainObject } from "../../../../core/immutable.js";
+import { CATEGORICAL_LEGEND_CHANNELS } from "../../../../core/vocabulary.js";
 import { normalizeRecipe } from "./recipes.js";
 import {
   nonEmptyString,
@@ -11,7 +12,7 @@ import {
 import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from
   "../../../../theme/defaults.js";
 
-export const CHANNELS = Object.freeze(["color", "strokeDash", "shape"]);
+export const CHANNELS = CATEGORICAL_LEGEND_CHANNELS;
 const OPTIONS = Object.freeze([
   "target",
   "channels",

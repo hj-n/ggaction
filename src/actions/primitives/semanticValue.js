@@ -1,5 +1,9 @@
 import { validateUserId } from "../../core/identifiers.js";
 import { isPlainObject } from "../../core/immutable.js";
+import {
+  CATEGORICAL_LEGEND_CHANNELS,
+  MARK_TYPES
+} from "../../core/vocabulary.js";
 import { validateAggregate } from "../../grammar/aggregate.js";
 import { findSemanticScale, hasDataset } from "../../selectors/index.js";
 import { validateCoordinateType } from "../../grammar/coordinates.js";
@@ -12,7 +16,6 @@ import {
   validateSemanticScaleType
 } from "../../grammar/scales.js";
 
-const MARK_TYPES = new Set(["point", "line", "bar", "area"]);
 function nonEmptyString(value, label) {
   if (typeof value !== "string" || value.length === 0) {
     throw new TypeError(`${label} must be a non-empty string.`);
@@ -140,8 +143,7 @@ function validateLegend(property, value) {
     throw new Error(`Legend ${property} must not contain duplicates.`);
   }
   if (property === "channels") {
-    const supported = new Set(["color", "strokeDash", "shape"]);
-    if (!value.every(channel => supported.has(channel))) {
+    if (!value.every(channel => CATEGORICAL_LEGEND_CHANNELS.includes(channel))) {
       throw new Error("Legend channels support only color, strokeDash, and shape.");
     }
     return;
@@ -167,7 +169,7 @@ export function validateSemanticValue(program, parsed, value) {
   if (
     parsed.kind === "layer" &&
     parsed.path.join(".") === "mark.type" &&
-    !MARK_TYPES.has(value)
+    !MARK_TYPES.includes(value)
   ) {
     throw new Error(`Unknown mark type "${value}".`);
   }

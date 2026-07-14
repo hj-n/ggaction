@@ -1,6 +1,5 @@
 import { cloneAndFreeze } from "../../core/immutable.js";
-
-const POSITION_CHANNELS = new Set(["x", "y"]);
+import { POSITION_CHANNELS } from "../../core/vocabulary.js";
 
 export function validatePair(value, label) {
   if (
@@ -14,7 +13,7 @@ export function validatePair(value, label) {
 }
 
 export function validatePositionChannel(channel) {
-  if (!POSITION_CHANNELS.has(channel)) {
+  if (!POSITION_CHANNELS.includes(channel)) {
     throw new Error(`Unknown position channel "${channel}".`);
   }
   return channel;

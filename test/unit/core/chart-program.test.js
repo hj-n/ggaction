@@ -207,3 +207,19 @@ test("stores private mark materialization config immutably", () => {
   assert.throws(() => chart()._withMarkConfig("", {}), /non-empty string/);
   assert.throws(() => chart()._withMarkConfig("bars", []), /plain object/);
 });
+
+test("stores only canonical legend config kinds", () => {
+  const next = chart()._withLegendConfig("size", {
+    target: "points",
+    count: 5
+  });
+
+  assert.deepEqual(next.guideConfigs.legend.size, {
+    target: "points",
+    count: 5
+  });
+  assert.throws(
+    () => chart()._withLegendConfig("point", {}),
+    /Unknown legend kind/
+  );
+});

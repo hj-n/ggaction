@@ -1,4 +1,8 @@
 import { getMarkMaterializationStep } from "./marks.js";
+import {
+  hasMaterializedLegend,
+  materializedLegendUsesScale
+} from "./legends.js";
 
 function usesPositionalScale(program, id) {
   return program.semanticSpec.layers.some(layer =>
@@ -20,18 +24,6 @@ function needsCanvasScaleRematerialization(program, scale) {
   );
 }
 
-function hasLegend(program) {
-  return !(
-    (program.semanticSpec.guides.legend?.series === undefined ||
-      program.guideConfigs.legend?.series === undefined) &&
-    (program.semanticSpec.guides.legend?.color === undefined ||
-      program.guideConfigs.legend?.color === undefined) &&
-    program.guideConfigs.legend?.size === undefined &&
-    program.guideConfigs.legend?.gradient === undefined &&
-    program.guideConfigs.legend?.opacity === undefined
-  );
-}
-
 function hasTitle(program) {
   return (
     program.semanticSpec.title.text !== undefined &&
@@ -50,7 +42,9 @@ export function planCanvasRematerialization(program) {
     const step = getMarkMaterializationStep(program, layer);
     if (step !== undefined) plan.push(step);
   }
-  if (hasLegend(program)) plan.push({ op: "rematerializeLegend" });
+  if (hasMaterializedLegend(program)) {
+    plan.push({ op: "rematerializeLegend" });
+  }
   if (hasTitle(program)) plan.push({ op: "rematerializeTitle" });
   return plan;
 }
@@ -83,14 +77,7 @@ export function planScaleGuideRematerialization(program, id) {
   if (program.guideConfigs.grid?.vertical?.scale === id) {
     plan.push({ op: "rematerializeVerticalGrid" });
   }
-  const categorical = ["series", "color"].some(kind => {
-    const config = program.guideConfigs.legend?.[kind];
-    return config?.scales?.includes(id) || config?.scales?.[0] === id;
-  });
-  const size = program.guideConfigs.legend?.size?.scale === id;
-  const gradient = program.guideConfigs.legend?.gradient?.scale === id;
-  const opacity = program.guideConfigs.legend?.opacity?.scale === id;
-  if (categorical || size || gradient || opacity) {
+  if (materializedLegendUsesScale(program, id)) {
     plan.push({ op: "rematerializeLegend" });
   }
   return plan;

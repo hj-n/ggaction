@@ -5,11 +5,6 @@ import {
   resolvePalette
 } from "../palettes.js";
 
-export const TABLEAU10 = cloneAndFreeze([
-  "#4c78a8", "#f58518", "#e45756", "#72b7b2", "#54a24b",
-  "#eeca3b", "#b279a2", "#ff9da6", "#9d755d", "#bab0ac"
-]);
-
 export const DASH10 = cloneAndFreeze([
   [], [8, 4], [3, 3], [12, 4], [8, 3, 2, 3],
   [12, 3, 3, 3], [2, 2], [10, 3, 2, 3, 2, 3], [14, 4, 4, 4], [6, 2, 2, 2]
@@ -176,3 +171,8 @@ export function mapOrdinalValues(values, domain, range) {
     return range[index % range.length];
   }));
 }
+
+export const TABLEAU10 = resolvePalette(
+  { name: "tableau10", count: 10 },
+  10
+);

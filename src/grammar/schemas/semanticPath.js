@@ -1,4 +1,22 @@
 import { USER_ID_SOURCE } from "../../core/identifiers.js";
+import {
+  ENCODING_CHANNELS,
+  SCALED_ENCODING_CHANNELS
+} from "../../core/vocabulary.js";
+
+const ENCODING_PATHS = Object.freeze([
+  ...ENCODING_CHANNELS.flatMap(channel => [
+    `encoding.${channel}.field`,
+    `encoding.${channel}.datum`,
+    `encoding.${channel}.fieldType`
+  ]),
+  ...SCALED_ENCODING_CHANNELS.map(channel =>
+    `encoding.${channel}.scale`
+  ),
+  "encoding.x.bin.maxBins",
+  "encoding.y.aggregate",
+  "encoding.y.stack"
+]);
 
 const ENTITY_PATHS = Object.freeze({
   dataset: {
@@ -12,56 +30,7 @@ const ENTITY_PATHS = Object.freeze({
       "coordinate",
       "transform",
       "mark.type",
-      "encoding.x.field",
-      "encoding.x.datum",
-      "encoding.x.fieldType",
-      "encoding.x.scale",
-      "encoding.x.bin.maxBins",
-      "encoding.y.field",
-      "encoding.y.datum",
-      "encoding.y.fieldType",
-      "encoding.y.scale",
-      "encoding.y.aggregate",
-      "encoding.y.stack",
-      "encoding.y2.field",
-      "encoding.y2.datum",
-      "encoding.y2.fieldType",
-      "encoding.y2.scale",
-      "encoding.xOffset.field",
-      "encoding.xOffset.datum",
-      "encoding.xOffset.fieldType",
-      "encoding.xOffset.scale",
-      "encoding.theta.field",
-      "encoding.theta.datum",
-      "encoding.theta.fieldType",
-      "encoding.theta.scale",
-      "encoding.radius.field",
-      "encoding.radius.datum",
-      "encoding.radius.fieldType",
-      "encoding.radius.scale",
-      "encoding.color.field",
-      "encoding.color.datum",
-      "encoding.color.fieldType",
-      "encoding.color.scale",
-      "encoding.strokeDash.field",
-      "encoding.strokeDash.datum",
-      "encoding.strokeDash.fieldType",
-      "encoding.strokeDash.scale",
-      "encoding.size.field",
-      "encoding.size.datum",
-      "encoding.size.fieldType",
-      "encoding.size.scale",
-      "encoding.shape.field",
-      "encoding.shape.datum",
-      "encoding.shape.fieldType",
-      "encoding.shape.scale",
-      "encoding.group.field",
-      "encoding.group.datum",
-      "encoding.group.fieldType",
-      "encoding.opacity.field",
-      "encoding.opacity.datum",
-      "encoding.opacity.fieldType",
-      "encoding.opacity.scale"
+      ...ENCODING_PATHS
     ])
   },
   scale: {

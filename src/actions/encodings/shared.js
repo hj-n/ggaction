@@ -1,6 +1,7 @@
 import { validateUserId } from "../../core/identifiers.js";
 import { findDataset } from "../../selectors/datasets.js";
 import { resolveEligibleLayer } from "../../selectors/layers.js";
+import { hasMaterializedLegend } from "../../materialization/legends.js";
 import { findSemanticScale } from "../../selectors/scales.js";
 import { validateKeys } from "../../core/validation.js";
 
@@ -120,20 +121,9 @@ export function rebindPositionGuides(
 }
 
 export function rematerializeExistingLegend(program) {
-  if (
-    (program.semanticSpec.guides.legend?.series === undefined ||
-      program.guideConfigs.legend?.series === undefined) &&
-    (program.semanticSpec.guides.legend?.color === undefined ||
-      program.guideConfigs.legend?.color === undefined) &&
-    program.guideConfigs.legend?.point === undefined &&
-    program.guideConfigs.legend?.size === undefined &&
-    program.guideConfigs.legend?.gradient === undefined &&
-    program.guideConfigs.legend?.opacity === undefined
-  ) {
-    return program;
-  }
-
-  return program.rematerializeLegend();
+  return hasMaterializedLegend(program)
+    ? program.rematerializeLegend()
+    : program;
 }
 
 export function resolveTarget(

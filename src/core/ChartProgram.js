@@ -14,6 +14,7 @@ import {
   createEmptySemanticSpec,
   createTraceRoot
 } from "./specs.js";
+import { LEGEND_CONFIG_KINDS } from "./vocabulary.js";
 
 function ownState(value) {
   return isOwned(value) ? value : cloneAndFreeze(value);
@@ -202,7 +203,7 @@ export class ChartProgram {
       config = kind;
       kind = "series";
     }
-    if (!["series", "color", "point", "size", "gradient", "opacity"].includes(kind)) {
+    if (!LEGEND_CONFIG_KINDS.includes(kind)) {
       throw new Error(`Unknown legend kind "${kind}".`);
     }
     if (!isPlainObject(config)) {
