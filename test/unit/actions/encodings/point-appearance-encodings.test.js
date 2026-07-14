@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
 
-import { chart } from "../../../../src/core/ChartProgram.js";
+import { chart } from "../../../../src/ChartProgram.js";
 import { createCarsRegressionScatterplotValues } from
   "../../../charts/regression-scatterplot/reference-values.js";
 

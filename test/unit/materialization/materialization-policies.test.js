@@ -7,7 +7,7 @@ import {
   canMaterializeLine,
   canMaterializePoint,
   getMarkMaterializationStep
-} from "../../../src/actions/marks/materialization.js";
+} from "../../../src/materialization/marks.js";
 
 function programWith({ datasets = [], marks = {} } = {}) {
   return {

@@ -64,6 +64,8 @@ Public package
    └─ renderToPNG()
 
 Program execution
+├─ ChartProgram assembly
+│  └─ core program class에 built-in action registrar 적용
 ├─ core
 │  ├─ immutable ChartProgram
 │  ├─ action wrapper와 trace tree
@@ -75,12 +77,13 @@ Program execution
 ├─ grammar
 │  ├─ scale와 tick 계산
 │  ├─ histogram, regression, density 계산
-│  └─ semantic/graphic schema validation
+│  └─ pure semantic/graphic grammar validation
 ├─ selectors
 │  └─ named semantic resource lookup
 ├─ layout
 │  └─ Canvas와 plot bounds
 ├─ materialization
+│  ├─ mark completeness policy
 │  └─ cross-cutting rematerialization plan
 ├─ theme
 │  └─ shared built-in visual defaults
@@ -1103,6 +1106,7 @@ Pixel ratio는 renderer option일 뿐 `graphicSpec`의 logical coordinate를 바
 
 ```text
 src/
+├─ ChartProgram.js      core class와 built-in action의 assembly boundary
 ├─ actions/
 │  ├─ canvas/          Canvas domain actions
 │  ├─ coordinates/     coordinate authoring
@@ -1110,14 +1114,14 @@ src/
 │  ├─ encodings/       position, categorical, ranged, atomic encoding actions
 │  ├─ guides/          axes, grids, legends와 aggregate guides
 │  ├─ marks/           point, line, bar, area create/rematerialize
-│  ├─ primitives/      editSemantic/createGraphics/editGraphics
+│  ├─ primitives/      editSemantic/createGraphics/editGraphics와 stateful semantic validation
 │  ├─ regression/      regression aggregate and component actions
 │  ├─ scales/          semantic scale create/resolve/materialize
 │  └─ titles/          chart title actions
-├─ core/               ChartProgram, action wrapper, immutable ownership, empty specs
+├─ core/               action-free ChartProgram, action wrapper, immutable ownership, empty specs
 ├─ grammar/            pure Grammar-of-Graphics/statistical/schema calculations
 ├─ layout/             Canvas state와 plot bounds
-├─ materialization/    cross-cutting dependency plan
+├─ materialization/    mark completeness policy와 cross-cutting dependency plan
 ├─ renderers/          Canvas primitive renderer와 PNG adapter
 ├─ selectors/          named semantic resource lookup
 └─ theme/              shared built-in visual token
@@ -1129,7 +1133,10 @@ transform, guide 책임으로 분해한다. Chart-specific 완성 flow는 exampl
 tutorial과 `agent_docs/impl/roadmapN/chart/` 계약에 둔다.
 
 각 action category의 `index.js`는 registrar boundary다. `actions/index.js`가 모든 built-in
-registrar를 한 번 조립하고 `ChartProgram`에 등록한다.
+registrar를 한 번 조립하고 top-level `ChartProgram.js`가 이를 core program subclass에 등록한다.
+따라서 `core/`는 `actions/`를 import하지 않는다. `grammar/`는 core utility와 다른 pure grammar만,
+`materialization/`은 core/grammar/layout/selectors/theme만 의존한다. 이 방향과 local import cycle
+부재는 source-boundary contract test가 검증한다.
 
 ## Test architecture
 

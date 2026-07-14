@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { chart } from "../../../../src/core/ChartProgram.js";
+import { chart } from "../../../../src/ChartProgram.js";
 import { createCarsDensityAreaValues } from
   "../../../charts/density-area/reference-values.js";
 import { loadCars } from "../../../support/data.js";

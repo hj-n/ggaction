@@ -14,7 +14,6 @@ import {
   createEmptySemanticSpec,
   createTraceRoot
 } from "./specs.js";
-import { registerActions } from "../actions/index.js";
 
 function ownState(value) {
   return isOwned(value) ? value : cloneAndFreeze(value);
@@ -270,8 +269,6 @@ export class ChartProgram {
     });
   }
 }
-
-registerActions(ChartProgram);
 
 export function chart() {
   return new ChartProgram();

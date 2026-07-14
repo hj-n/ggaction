@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { chart } from "../../../../src/core/ChartProgram.js";
+import { chart } from "../../../../src/ChartProgram.js";
 import { resolveGraphicBounds } from "../../../../src/layout/canvas.js";
 
 test("creates a canvas with defaults through nested actions", () => {

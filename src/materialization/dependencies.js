@@ -1,4 +1,4 @@
-import { getMarkMaterializationStep } from "../actions/marks/materialization.js";
+import { getMarkMaterializationStep } from "./marks.js";
 
 function usesPositionalScale(program, id) {
   return program.semanticSpec.layers.some(layer =>

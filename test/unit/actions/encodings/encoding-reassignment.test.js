@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { chart } from "../../../../src/core/ChartProgram.js";
+import { chart } from "../../../../src/ChartProgram.js";
 
 const values = [
   { x: 1, x2: 20, y: 4, y2: 40, color: "A", category: "K", size: 4, weight: 9 },

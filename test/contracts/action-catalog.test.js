@@ -4,7 +4,7 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { ChartProgram } from "../../src/core/ChartProgram.js";
+import { ChartProgram } from "../../src/ChartProgram.js";
 import { renderActionCatalog } from "../../scripts/generate-action-catalog.js";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));

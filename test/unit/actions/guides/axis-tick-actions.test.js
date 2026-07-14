@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { chart } from "../../../../src/core/ChartProgram.js";
+import { chart } from "../../../../src/ChartProgram.js";
 
 function program() {
   return chart().createCanvas({ width: 200, height: 120, margin: 10 })

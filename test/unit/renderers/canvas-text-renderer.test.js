@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { ChartProgram } from "../../../src/core/ChartProgram.js";
+import { ChartProgram } from "../../../src/ChartProgram.js";
 import { render } from "../../../src/renderers/canvas/index.js";
 import {
   createMockCanvasContext,

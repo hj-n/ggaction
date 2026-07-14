@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { chart } from "../../../../src/core/ChartProgram.js";
+import { chart } from "../../../../src/ChartProgram.js";
 import { DASH10, TABLEAU10 } from "../../../../src/grammar/scales.js";
 
 const rows = [

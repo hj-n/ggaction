@@ -1,5 +1,5 @@
 import { action } from "../../core/action.js";
-import { canMaterializeArea } from "../marks/materialization.js";
+import { canMaterializeArea } from "../../materialization/marks.js";
 import { resolvePositionEncoding } from "./position/resolve.js";
 import { findLayer } from "../../selectors/layers.js";
 import {

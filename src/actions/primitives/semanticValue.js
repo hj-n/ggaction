@@ -1,15 +1,15 @@
 import { validateUserId } from "../../core/identifiers.js";
 import { isPlainObject } from "../../core/immutable.js";
-import { validateAggregate } from "../aggregate.js";
+import { validateAggregate } from "../../grammar/aggregate.js";
 import { findSemanticScale, hasDataset } from "../../selectors/index.js";
-import { validateCoordinateType } from "../coordinates.js";
+import { validateCoordinateType } from "../../grammar/coordinates.js";
 import {
   validateSemanticFieldType,
   validateContinuousColorInterpolation,
   validateSemanticScaleDomain,
   validateSemanticScaleRange,
   validateSemanticScaleType
-} from "../scales.js";
+} from "../../grammar/scales.js";
 
 const MARK_TYPES = new Set(["point", "line", "bar", "area"]);
 function nonEmptyString(value, label) {

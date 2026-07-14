@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { chart } from "../../../../src/core/ChartProgram.js";
+import { chart } from "../../../../src/ChartProgram.js";
 
 test("edits a single graphic without mutating an earlier program", () => {
   const canvas = chart().createGraphics({ id: "canvas", type: "canvas" });

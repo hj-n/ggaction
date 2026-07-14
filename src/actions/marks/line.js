@@ -15,7 +15,7 @@ import {
   validateCurveInterpolation
 } from "../../grammar/curveCommands.js";
 import { normalizeStrokeDashPattern } from "../../grammar/scales.js";
-import { canMaterializeLine } from "./materialization.js";
+import { canMaterializeLine } from "../../materialization/marks.js";
 
 const DEFAULT_LINE_STROKE = DEFAULT_COLORS.mark;
 const DEFAULT_LINE_WIDTH = 2;

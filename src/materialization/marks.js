@@ -1,5 +1,5 @@
-import { findDataset } from "../../selectors/datasets.js";
-import { isAggregate } from "../../grammar/aggregate.js";
+import { findDataset } from "../selectors/datasets.js";
+import { isAggregate } from "../grammar/aggregate.js";
 
 function hasPositionScales(layer) {
   return (

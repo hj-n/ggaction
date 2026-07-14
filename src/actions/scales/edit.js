@@ -11,7 +11,7 @@ import {
   validateSizeRange,
   validateStrokeDashRange
 } from "../../grammar/scales.js";
-import { getMarkMaterializationStep } from "../marks/materialization.js";
+import { getMarkMaterializationStep } from "../../materialization/marks.js";
 import {
   applyMaterializationPlan
 } from "../../materialization/dependencies.js";

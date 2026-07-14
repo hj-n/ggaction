@@ -4,7 +4,7 @@ import { readNominalField, readQuantitativeField } from "../../grammar/scales.js
 import {
   canMaterializeArea,
   canMaterializeLine
-} from "../marks/materialization.js";
+} from "../../materialization/marks.js";
 import { findLayer } from "../../selectors/layers.js";
 import {
   resolveTarget,

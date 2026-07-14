@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { chart } from "../../../../src/core/ChartProgram.js";
+import { chart } from "../../../../src/ChartProgram.js";
 
 const rows = Array.from({ length: 13 }, (_, index) => ({
   year: `${1970 + index}-01-01`,

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { chart } from "../../../../src/core/ChartProgram.js";
+import { chart } from "../../../../src/ChartProgram.js";
 import { loadCars } from "../../../support/data.js";
 
 function densityArea({ densityChannel = "y", top = 130 } = {}) {

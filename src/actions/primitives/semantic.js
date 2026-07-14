@@ -1,7 +1,7 @@
 import { action } from "../../core/action.js";
 import { cloneAndFreeze, freezeOwned, isPlainObject } from "../../core/immutable.js";
 import { parseSemanticPath } from "../../grammar/schemas/semanticPath.js";
-import { validateSemanticValue } from "../../grammar/schemas/semanticValue.js";
+import { validateSemanticValue } from "./semanticValue.js";
 
 const CONTEXT_KEYS = Object.freeze({
   dataset: "currentData",
