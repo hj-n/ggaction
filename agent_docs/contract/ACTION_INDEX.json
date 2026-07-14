@@ -1463,6 +1463,17 @@
       }
     },
     {
+      "id": "vega-named-palette-vocabulary",
+      "kind": "parameter",
+      "name": "Vega named palette vocabulary",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "vega-named-palette-vocabulary"
+      }
+    },
+    {
       "id": "histogram-bin-controls",
       "kind": "parameter",
       "name": "Histogram bin controls",

@@ -277,6 +277,7 @@ test("keeps accepted planned capabilities linked and non-public", () => {
     "Aggregate vocabulary",
     "Parameterized aggregate operations",
     "Color layout vocabulary",
+    "Vega named palette vocabulary",
     "Histogram bin controls",
     "Scale type vocabulary",
     "Scale mapping policies",
@@ -314,6 +315,38 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   assert.match(plannedCorpus, /"stack" \| "fill" \| "group" \| "overlay" \| "diverging"/);
   assert.match(plannedCorpus, /`"center"` streamgraph layout은 Proposed/);
   assert.match(plannedCorpus, /별도 action `encodeGroup`과 다른 개념/);
+  const paletteType = plannedCorpus.match(
+    /type VegaPaletteName =([\s\S]*?);\n\ntype VegaPalette =/
+  )?.[1];
+  assert.ok(paletteType);
+  assert.deepEqual(
+    [...paletteType.matchAll(/"([^"]+)"/g)].map(match => match[1]),
+    [
+      "accent",
+      "category10", "category20", "category20b", "category20c",
+      "observable10",
+      "dark2", "paired", "pastel1", "pastel2",
+      "set1", "set2", "set3",
+      "tableau10", "tableau20",
+      "blues", "tealblues", "teals", "greens", "browns",
+      "oranges", "reds", "purples", "warmgreys", "greys",
+      "viridis", "magma", "inferno", "plasma", "cividis", "turbo",
+      "bluegreen", "bluepurple",
+      "goldgreen", "goldorange", "goldred",
+      "greenblue", "orangered",
+      "purplebluegreen", "purpleblue", "purplered", "redpurple",
+      "yellowgreenblue", "yellowgreen", "yelloworangebrown", "yelloworangered",
+      "darkblue", "darkgold", "darkgreen", "darkmulti", "darkred",
+      "lightgreyred", "lightgreyteal", "lightmulti", "lightorange", "lighttealblue",
+      "blueorange", "brownbluegreen", "purplegreen", "pinkyellowgreen",
+      "purpleorange", "redblue", "redgrey",
+      "redyellowblue", "redyellowgreen", "spectral",
+      "rainbow", "sinebow"
+    ]
+  );
+  assert.match(plannedCorpus, /count\?: PositiveInteger/);
+  assert.match(plannedCorpus, /extent\?: readonly \[UnitInterval, UnitInterval\]/);
+  assert.match(plannedCorpus, /Quantitative\/temporal color encoding[\s\S]*Proposed/);
   assert.match(plannedCorpus, /type PlannedPositionFieldType =/);
   assert.match(plannedCorpus, /type PlannedStackMode = "normalize"/);
   assert.match(plannedCorpus, /paddingOuter\?: NonNegativeFinite/);

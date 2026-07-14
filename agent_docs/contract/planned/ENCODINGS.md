@@ -181,6 +181,61 @@ type ColorLayout =
 - Status: Planned, NOT IMPLEMENTED. mark compatibility, positive/negative/zero partitions, deterministic
   overlap order, normalized/diverging domains와 rejected layout-transition coverage가 필요하다.
 
+## Vega named palette vocabulary
+
+```typescript
+type VegaPaletteName =
+  | "accent"
+  | "category10" | "category20" | "category20b" | "category20c"
+  | "observable10"
+  | "dark2" | "paired" | "pastel1" | "pastel2"
+  | "set1" | "set2" | "set3"
+  | "tableau10" | "tableau20"
+  | "blues" | "tealblues" | "teals" | "greens" | "browns"
+  | "oranges" | "reds" | "purples" | "warmgreys" | "greys"
+  | "viridis" | "magma" | "inferno" | "plasma" | "cividis" | "turbo"
+  | "bluegreen" | "bluepurple"
+  | "goldgreen" | "goldorange" | "goldred"
+  | "greenblue" | "orangered"
+  | "purplebluegreen" | "purpleblue" | "purplered" | "redpurple"
+  | "yellowgreenblue" | "yellowgreen" | "yelloworangebrown" | "yelloworangered"
+  | "darkblue" | "darkgold" | "darkgreen" | "darkmulti" | "darkred"
+  | "lightgreyred" | "lightgreyteal" | "lightmulti" | "lightorange" | "lighttealblue"
+  | "blueorange" | "brownbluegreen" | "purplegreen" | "pinkyellowgreen"
+  | "purpleorange" | "redblue" | "redgrey"
+  | "redyellowblue" | "redyellowgreen" | "spectral"
+  | "rainbow" | "sinebow";
+
+type VegaPalette =
+  | VegaPaletteName
+  | {
+      name: VegaPaletteName;
+      count?: PositiveInteger;
+      extent?: readonly [UnitInterval, UnitInterval];
+    };
+```
+
+- 이 68개 closed vocabulary는 contract 승인 시점의
+  [Vega color scheme reference](https://vega.github.io/vega/docs/schemes/) snapshot이다.
+  Vega가 이후 scheme을 추가해도 ggaction vocabulary는 contract와 tests를 갱신하기 전까지 자동으로
+  변하지 않는다.
+- Existing `"tableau10"` behavior를 유지하며 `palette`와 explicit `range`는 mutually exclusive다.
+  Palette resolution은 ggaction 내부 registry가 소유하고 Vega runtime을 호출하지 않는다.
+- Categorical scheme은 native discrete color order를 사용한다. Sequential, diverging, cyclical
+  scheme도 이 첫 contract에서는 nominal/ordinal domain용 discrete colors로만 샘플링한다.
+- `count`는 positive integer sample count다. 생략 시 categorical scheme은 native color count,
+  continuous scheme은 resolved domain cardinality를 사용한다. Domain cardinality가 resolved color
+  count보다 크면 existing ordinal range behavior처럼 deterministic하게 순환한다.
+- `extent`는 sequential, diverging, cyclical scheme에만 허용한다. 두 endpoint는 finite `[0, 1]`
+  값이고 서로 달라야 한다. descending extent는 palette order를 뒤집으며 scale `reverse`가 함께
+  있으면 final resolved range를 다시 뒤집는다.
+- Resolved palette는 concrete CSS color array로 graphical scale state에 저장한다. Mark와 categorical
+  legend는 semantic scheme name을 해석하지 않고 해당 array만 사용한다.
+- Quantitative/temporal color encoding, continuous interpolation options, gradient legend와 custom
+  scheme registration은 Proposed로 유지한다.
+- Status: Planned, NOT IMPLEMENTED. 68-name validation, family-specific sampling, count/extent boundaries,
+  range conflict, cycling, reverse, mark/legend parity와 deterministic registry snapshot coverage가 필요하다.
+
 ## histogram bin controls
 
 ```typescript

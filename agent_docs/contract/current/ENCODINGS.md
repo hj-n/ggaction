@@ -20,8 +20,9 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
   있으면 적용되지 않는다.
 - `palette`: Implemented for color scale. palette name이며 `range`와 동시에 사용할 수 없다.
 - Planned: transformed quantitative, UTC, explicit band/point, discretizing scale types와
-  clamp/reverse/unknown mapping policies는 `planned/SCALES.md`가 소유한다.
-- Proposed: 추가 palette vocabulary와 interpolated/sequential color scale은 아직 확정되지 않았다.
+  clamp/reverse/unknown mapping policies는 `planned/SCALES.md`, Vega named palette vocabulary는
+  이 domain의 planned palette contract가 소유한다.
+- Proposed: quantitative/temporal color, interpolation과 continuous gradient legend.
 
 ## `encodeX`
 
@@ -306,8 +307,8 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 - `target`: point, line, bar 또는 area ID; current/unique inference를 지원한다.
 - `fieldType`: 유일한 값 `"nominal"`, 기본값도 nominal이다.
 - `layout`: 현재 bar에서 `"stack" | "group"`; histogram default는 stack이고 ordinal grouped bar는
-  group이다. Planned vocabulary는 bar/area별 `"fill" | "overlay" | "center" | "diverging"`
-  compatibility를 추가한다. 다른 mark에서는 생략해야 한다.
+  group이다. Planned vocabulary는 bar/area별 `"fill" | "overlay" | "diverging"` compatibility를
+  추가한다. `"center"` streamgraph는 Proposed이며 다른 mark에서는 layout을 생략해야 한다.
 - `scale`: ordinal color scale. `palette` 또는 explicit `range` 중 하나를 사용할 수 있다.
 - Effect: color semantic과 scale을 저장한다. point fill, line stroke, bar fill, area fill로 materialize한다.
   group layout은 wrapped `encodeXOffset`, stack layout은 zero-stack bar geometry를 사용한다.
@@ -317,8 +318,8 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 ### Formal values — `encodeColor`
 
 - Implemented: `encodeColor({ field: FieldName; target?: UserId; fieldType?: "nominal"; layout?: "stack" | "group"; scale?: ColorScale })`
-- Planned (NOT IMPLEMENTED): `{ layout?: "fill" | "overlay" | "center" | "diverging" }`; full accepted `ColorLayout`은 existing `"stack" | "group"`을 포함한다.
-- Proposed (NOT IMPLEMENTED): `{ scale?: { palette?: "category10" | "set2" | "dark2"; interpolate?: "rgb" | "lab" | "hcl" } }`
+- Planned (NOT IMPLEMENTED): `{ layout?: "fill" | "overlay" | "diverging"; scale?: { palette?: VegaPalette } }`; full accepted `ColorLayout`은 existing `"stack" | "group"`을 포함한다.
+- Proposed (NOT IMPLEMENTED): `{ layout?: "center"; fieldType?: "quantitative" | "temporal"; scale?: { interpolate?: "rgb" | "hsl" | "hsl-long" | "lab" | "hcl" | "hcl-long" | "cubehelix" | "cubehelix-long" } }` 및 continuous gradient legend.
 
 ### Value coverage — `encodeColor`
 
@@ -328,13 +329,16 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
   - ✅ Covered: `"nominal"`와 invalid alternatives.
 - `layout`
   - ✅ Covered: omission, `"stack"`, `"group"`, incompatible mark/layout rejection.
-  - 🟡 Planned: `"fill" | "overlay" | "center" | "diverging"` with mark compatibility, normalized,
-    centered and signed baseline policies; `encodeGroup`과 distinct ownership을 유지한다.
+  - 🟡 Planned: `"fill" | "overlay" | "diverging"` with mark compatibility, normalized and signed
+    baseline policies; `encodeGroup`과 distinct ownership을 유지한다.
+  - 🟣 Proposed: `"center"` streamgraph layout.
 - `scale.id/type/domain`
   - ✅ Covered: ordinal default, explicit ID/order, incomplete explicit domain rejection.
 - `scale.range/palette`
   - ✅ Covered: explicit color array, `{ palette: "tableau10" }`, range+palette conflict, invalid colors.
-  - 🟣 Proposed: additional named categorical palettes and continuous color interpolation.
+  - 🟡 Planned: all 68 Vega named schemes plus `{ name, count?, extent? }`, resolved as discrete
+    categorical colors without a Vega runtime dependency.
+  - 🟣 Proposed: quantitative/temporal continuous color, interpolation, gradient legend and custom schemes.
 - Evidence: color, line-series, bar-color, area-color and grouped-bar tests.
 
 ## `encodeStrokeDash`

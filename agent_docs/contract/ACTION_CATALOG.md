@@ -112,6 +112,7 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | parameter | Aggregate vocabulary | accepted | [Open](planned/ENCODINGS.md#aggregate-vocabulary) |
 | parameter | Parameterized aggregate operations | accepted | [Open](planned/ENCODINGS.md#parameterized-aggregate-operations) |
 | parameter | Color layout vocabulary | accepted | [Open](planned/ENCODINGS.md#color-layout-vocabulary) |
+| parameter | Vega named palette vocabulary | accepted | [Open](planned/ENCODINGS.md#vega-named-palette-vocabulary) |
 | parameter | Histogram bin controls | accepted | [Open](planned/ENCODINGS.md#histogram-bin-controls) |
 | parameter | Scale type vocabulary | accepted | [Open](planned/SCALES.md#scale-type-vocabulary) |
 | parameter | Scale mapping policies | accepted | [Open](planned/SCALES.md#scale-mapping-policies) |
