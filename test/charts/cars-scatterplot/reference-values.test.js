@@ -46,13 +46,14 @@ test("authors axes in a separate concrete scatterplot program", () => {
   const program = createCarsScatterplotPrimitives(cars);
 
   assert.equal(program.graphicSpec.objects.points.children.length, 392);
-  assert.equal(program.graphicSpec.objects.xTicks.children.length, 4);
-  assert.equal(program.graphicSpec.objects.yTicks.children.length, 4);
-  assert.equal(program.graphicSpec.objects.xLabels.children.length, 4);
-  assert.equal(program.graphicSpec.objects.yLabels.children.length, 4);
-  assert.equal(program.graphicSpec.objects.xTitle.properties.text, "Horsepower");
+  assert.equal(program.graphicSpec.objects.horizontalGridLines.children.length, 4);
+  assert.equal(program.graphicSpec.objects.xAxisTicks.children.length, 4);
+  assert.equal(program.graphicSpec.objects.yAxisTicks.children.length, 4);
+  assert.equal(program.graphicSpec.objects.xAxisLabels.children.length, 4);
+  assert.equal(program.graphicSpec.objects.yAxisLabels.children.length, 4);
+  assert.equal(program.graphicSpec.objects.xAxisTitle.properties.text, "Horsepower");
   assert.equal(
-    program.graphicSpec.objects.yTitle.properties.rotation,
+    program.graphicSpec.objects.yAxisTitle.properties.rotation,
     -Math.PI / 2
   );
 });

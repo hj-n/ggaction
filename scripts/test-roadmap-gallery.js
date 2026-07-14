@@ -32,8 +32,10 @@ try {
   if (await desktop.locator("article.variant").count() === 0) {
     throw new Error("Roadmap 2 gallery has no chart variants.");
   }
-  if (await desktop.locator(".status.ready").count() === 0) {
-    throw new Error("Roadmap 2 gallery has no complete primitive/public pair.");
+  const variants = desktop.locator("article.variant");
+  const statuses = desktop.locator(".status.ready, .status.awaiting");
+  if (await statuses.count() !== await variants.count()) {
+    throw new Error("Every Roadmap 2 variant must show one review status.");
   }
   const callChains = desktop.locator(".call-chain pre code");
   if (await callChains.count() !== await desktop.locator("article.variant").count()) {

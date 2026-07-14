@@ -7,16 +7,36 @@
 
 ## 진행 상태
 
-- [ ] Existing primitive/public semantic, graphic, render-call diff 기록
-- [ ] Intended axes, grids, ticks, colors와 rendering order 결정
-- [ ] Raw primitive chain으로 canonical baseline 재작성
-- [ ] `baseline/primitive.png`와 target call chain metadata 갱신
-- [ ] Browser와 high-resolution PNG 확인
+- [x] Existing primitive/public semantic, graphic, render-call diff 기록
+- [x] Intended axes, grids, ticks, colors와 rendering order 결정
+- [x] Raw primitive chain으로 canonical baseline 재작성
+- [x] `baseline/primitive.png`와 target call chain metadata 갱신
+- [x] Browser와 high-resolution PNG 확인
 - [ ] Gate 0 사용자 visual confirmation
 - [ ] Canonical public program을 승인된 primitive와 일치시킴
-- [ ] Exact graphic/order/Canvas-call equivalence test
-- [ ] Immutability와 existing scatterplot regression
+- [x] Provisional exact graphic/order/Canvas-call equivalence test
+- [x] Immutability와 existing scatterplot regression
 - [ ] STEP 상태, conceptual commit와 push
+
+## Baseline audit
+
+변경 전 두 program은 392개 point의 x/y/radius는 같았지만 다음이 달랐다.
+
+| 항목 | 기존 primitive | Existing public |
+|---|---|---|
+| Horizontal grid | 없음 | y tick 위치의 4개 line |
+| Origin order/color | 이름별 수동 map, Japan green | first appearance `USA → Japan → Europe`, blue/orange/red |
+| Graphic IDs/order | legacy axis/tick names, points가 ticks 뒤 | guide materialization IDs, grid → points → axes |
+| Y axis endpoint order | top → bottom | bottom → top |
+| X title rotation | property 없음 | concrete `0` |
+
+Canonical primitive는 existing public의 완성된 visual contract를 목표로 선택했다. Production scale/guide
+resolver를 호출하지 않고 independent extent, tick, categorical first-appearance color와 concrete grid 값을
+raw `editSemantic`, `createGraphics`, `editGraphics` chain에 저장한다.
+
+현재 provisional test에서 두 program의 전체 `graphicSpec`, graphic order와 Canvas spy calls는 정확히
+같다. Gate 0 승인 전이므로 Roadmap 2 gallery에는 `primitive.png`만 생성하고 `user-facing.png`는
+의도적으로 보류한다. 기존 flat public/primitive PNG regression은 계속 실행한다.
 
 ## 작업 순서
 

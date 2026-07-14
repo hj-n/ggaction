@@ -43,7 +43,7 @@ test("renders the public and primitive scatterplots with visible points", async 
       "cars-scatterplot-primitives",
       "primitive",
       createCarsScatterplotPrimitives(cars),
-      ["#4c78a8", "#f58518", "#54a24b"]
+      ["#4c78a8", "#f58518", "#e45756"]
     ]
   ];
 
@@ -56,7 +56,9 @@ test("renders the public and primitive scatterplots with visible points", async 
     });
   }
 
-  for (const [, kind, program, colors] of programs) {
+  for (const [, kind, program, colors] of programs.filter(
+    ([, artifactKind]) => artifactKind === "primitive"
+  )) {
     await assertRenderedPNG(program, {
       artifact: {
         ...baselineArtifact,

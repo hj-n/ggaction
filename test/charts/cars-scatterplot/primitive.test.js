@@ -9,6 +9,7 @@ import {
   createCarsScatterplotPrimitives,
   renderCarsScatterplotPrimitives
 } from "./primitive.program.js";
+import { createCarsScatterplot } from "../../../examples/cars-scatterplot/program.js";
 import { loadCars } from "../../support/data.js";
 
 const cars = loadCars();
@@ -20,7 +21,7 @@ test("renders the cars scatterplot with manually authored axes", () => {
   renderCarsScatterplotPrimitives(program, context);
 
   assert.equal(findCanvasCalls(context, "arc").length, 392);
-  assert.equal(findCanvasCalls(context, "stroke").length, 10);
+  assert.equal(findCanvasCalls(context, "stroke").length, 14);
   assert.equal(findCanvasCalls(context, "fillText").length, 10);
   assert.deepEqual(
     findCanvasCalls(context, "fillText").map(call => call.args[0]),
@@ -29,11 +30,11 @@ test("renders the cars scatterplot with manually authored axes", () => {
       "100",
       "150",
       "200",
+      "Horsepower",
       "10",
       "20",
       "30",
       "40",
-      "Horsepower",
       "Miles per Gallon"
     ]
   );
@@ -42,4 +43,17 @@ test("renders the cars scatterplot with manually authored axes", () => {
     new Set(["editSemantic", "createGraphics", "editGraphics"])
   );
   assert.deepEqual(program.actionStack, []);
+});
+
+test("matches the canonical public scatterplot concrete output", () => {
+  const primitive = createCarsScatterplotPrimitives(cars);
+  const publicProgram = createCarsScatterplot(cars);
+  const primitiveContext = createMockCanvasContext();
+  const publicContext = createMockCanvasContext();
+
+  renderCarsScatterplotPrimitives(primitive, primitiveContext);
+  renderCarsScatterplotPrimitives(publicProgram, publicContext);
+
+  assert.deepEqual(primitive.graphicSpec, publicProgram.graphicSpec);
+  assert.deepEqual(primitiveContext.calls, publicContext.calls);
 });
