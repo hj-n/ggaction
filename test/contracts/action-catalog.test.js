@@ -235,6 +235,7 @@ test("classifies every direct action lifecycle and keeps edit gaps explicit", ()
     }
     if (row.lifecycle === "Assignment") {
       assert.match(row.action, /^encode/, row.action);
+      assert.match(row.audit, /Implemented|Planned|Proposed/, row.action);
     }
   }
 
@@ -279,6 +280,14 @@ test("classifies every direct action lifecycle and keeps edit gaps explicit", ()
   assert.match(catalog, /### Planned contract: editTitle/);
   assert.match(catalog, /subtitle\?: NonEmptyString \| false/);
   assert.match(catalog, /wrapped `rematerializeTitle`/);
+
+  for (const action of ["encodeOpacity", "encodeRadius", "encodeBarWidth"]) {
+    assert.equal(
+      rows.find(row => row.action === action)?.audit,
+      "Reassignment — Implemented",
+      action
+    );
+  }
 });
 
 test("keeps one value coverage and proposal ledger for every direct action", () => {

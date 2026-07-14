@@ -81,6 +81,17 @@ test("supports an explicit band and omits missing category cells", () => {
   assert.equal(program.markConfigs.bars.barWidth.band, 0.5);
 });
 
+test("replaces an existing bar width through the same assignment", () => {
+  const before = groupedBarProgram().encodeBarWidth({ band: 0.5 });
+  const after = before.encodeBarWidth({ band: 0.8 });
+
+  assert.equal(before.markConfigs.bars.barWidth.band, 0.5);
+  assert.equal(after.markConfigs.bars.barWidth.band, 0.8);
+  assert.equal(before.graphicSpec.objects.bars.children[0].properties.width, 40);
+  assert.equal(after.graphicSpec.objects.bars.children[0].properties.width, 64);
+  assert.equal(after.trace.children.at(-1).op, "encodeBarWidth");
+});
+
 test("uses one explicit domain order for color and group slots", () => {
   const program = chart()
     .createCanvas({

@@ -50,6 +50,25 @@ test("supports an explicit point target", () => {
   );
 });
 
+test("replaces an existing constant radius through the same assignment", () => {
+  const before = createPointProgram().encodeRadius({ value: 3 });
+  const after = before.encodeRadius({ value: 6 });
+
+  assert.deepEqual(
+    before.graphicSpec.objects.points.children.map(
+      child => child.properties.radius
+    ),
+    [3, 3]
+  );
+  assert.deepEqual(
+    after.graphicSpec.objects.points.children.map(
+      child => child.properties.radius
+    ),
+    [6, 6]
+  );
+  assert.equal(after.trace.children.at(-1).op, "encodeRadius");
+});
+
 test("validates radius values, options, and targets", () => {
   const program = createPointProgram();
 

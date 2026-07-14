@@ -69,6 +69,25 @@ test("is independent of appearance encoding call order", () => {
   assert.deepEqual(reordered.graphicSpec, expected.graphicSpec);
 });
 
+test("replaces an existing constant opacity through the same assignment", () => {
+  const before = base().encodeOpacity({ value: 0.4 });
+  const after = before.encodeOpacity({ value: 0.8 });
+
+  assert.deepEqual(
+    before.graphicSpec.objects.points.children.map(
+      child => child.properties.opacity
+    ),
+    [0.4, 0.4]
+  );
+  assert.deepEqual(
+    after.graphicSpec.objects.points.children.map(
+      child => child.properties.opacity
+    ),
+    [0.8, 0.8]
+  );
+  assert.equal(after.trace.children.at(-1).op, "encodeOpacity");
+});
+
 test("rematerializes centered mixed point geometry after Canvas edits", () => {
   const before = encoded(base());
   const after = before.editCanvas({ width: 300, height: 180, margin: 20 });

@@ -118,7 +118,7 @@ Coverage 퍼센트는 사용하지 않는다. 체크된 case는 반드시 아래
 - **Immutable create-only**: source/derived data처럼 새 ID로만 다시 만들 수 있다.
 - **Mutable resource**: stable identity가 있고 현재 대응 create/edit action이 모두 있다.
 - **Assignment**: encoding처럼 semantic 또는 appearance property를 할당한다. 별도의
-  `edit*` 이름을 기계적으로 만들지 않으며 replacement/reassignment 계약은 별도로 정한다.
+  `edit*` 이름을 기계적으로 만들지 않으며 replacement/reassignment 지원 상태를 audit에 기록한다.
 - **Aggregate create-only**: wrapped child action을 조합한다. aggregate 자체의 edit은 만들지
   않고 지원되는 child edit으로 수정한다.
 - **Stable create-only**: stable identity는 있지만 현재 action이 직접 소유하는 editable
@@ -148,15 +148,15 @@ properties, rematerialization ownership과 conflict behavior를 정해야 한다
 | `encodeStrokeDash` | Assignment | No replacement contract | Reassignment — Proposed |
 | `encodeSize` | Assignment | No replacement contract | Reassignment — Proposed |
 | `encodeShape` | Assignment | No replacement contract | Reassignment — Proposed |
-| `encodeOpacity` | Assignment | No replacement contract | Reassignment — Proposed |
-| `encodeRadius` | Assignment | No replacement contract | Reassignment — Proposed |
+| `encodeOpacity` | Assignment | Same action replaces the constant value | Reassignment — Implemented |
+| `encodeRadius` | Assignment | Same action replaces the constant value | Reassignment — Implemented |
 | `encodeXOffset` | Assignment | No replacement contract | Reassignment — Proposed |
 | `encodeY2` | Assignment | No replacement contract | Reassignment — Proposed |
 | `encodeYRange` | Assignment | No replacement contract | Reassignment — Proposed |
 | `encodeGroup` | Assignment | No replacement contract | Reassignment — Proposed |
 | `encodeHistogram` | Assignment | Atomic child encodings; no replacement contract | Reassignment — Proposed |
 | `encodeDensity` | Assignment | Atomic child encodings; no replacement contract | Reassignment — Proposed |
-| `encodeBarWidth` | Assignment | No replacement contract | Reassignment — Proposed |
+| `encodeBarWidth` | Assignment | Same action replaces the band fraction | Reassignment — Implemented |
 | `createRegression` | Aggregate create-only | Owned data/layer/encoding children | Intentional |
 | `createAxes` | Aggregate create-only | Channel axis or component edits | Intentional |
 | `createXAxis` | Aggregate create-only | X-axis component edits | Intentional |
@@ -726,7 +726,8 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 - `value`: 필수 finite `[0, 1]` number. 0은 완전 투명, 1은 완전 불투명이다.
 - `target`: optional point ID.
 - Effect: semantic encoding이 아니라 mark graphical config와 모든 point child opacity를 바꾼다.
-- Coverage: point/regression tests와 validation이 representative 및 invalid range를 검증한다.
+  같은 target에 다시 호출하면 기존 constant opacity를 교체하고 point를 rematerialize한다.
+- Coverage: point/regression tests와 validation이 representative, reassignment 및 invalid range를 검증한다.
 
 #### `encodeRadius`
 
@@ -735,8 +736,9 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
   half-side가 된다.
 - `target`: optional point ID.
 - Effect: graphical mark config와 concrete size만 바꾸며 semanticSpec에는 기록하지 않는다.
-  field-driven `encodeSize`와 동시에 사용할 수 없다.
-- Coverage: scatterplot/point tests가 constant radius, rematerialization과 invalid values를 검증한다.
+  field-driven `encodeSize`와 동시에 사용할 수 없다. 같은 target에 다시 호출하면 기존 radius를
+  교체하고 point를 rematerialize한다.
+- Coverage: scatterplot/point tests가 constant radius, reassignment, rematerialization과 invalid values를 검증한다.
 - Proposed: Polar position의 radial channel 이름은 이미 이 action이 차지한 `encodeRadius`와 충돌한다.
   Polar API를 설계할 때 별도 이름을 사용자와 결정해야 한다.
 
@@ -746,6 +748,7 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 - `band`: `(0, 1]` finite number, 기본값 `0.72`. 각 xOffset slot 중 rect가 차지하는 비율이다.
 - `target`: optional complete grouped bar ID.
 - Effect: graphical mark config에 band fraction을 저장하고 rect x/width를 rematerialize한다.
+  같은 target에 다시 호출하면 기존 band fraction을 교체한다.
 - 오류: ordinal x, mean/non-stacked y, matching color/xOffset가 완성되지 않으면 거부한다.
 - Coverage: grouped-bar semantic/reference tests가 default, explicit value, invalid range와 geometry를 검증한다.
 
@@ -2000,6 +2003,8 @@ type LegendBorder = false | true | {
   - ✅ Covered: representative value, 0, 1, below/above range와 non-finite rejection.
 - `target`
   - ✅ Covered: inferred/explicit point, unknown/incompatible target.
+- Reassignment
+  - ✅ Covered: same action replaces the stored constant and concrete child opacity immutably.
 - 🟣 Proposed: field-driven quantitative opacity with scale; constant action과 distinct API/semantic contract가 필요하다.
 - Evidence: point appearance and regression tests.
 
@@ -2010,7 +2015,7 @@ type LegendBorder = false | true | {
 - `target`
   - ✅ Covered: inferred/explicit point와 invalid target.
 - Interaction
-  - ✅ Covered: semanticSpec unchanged, child broadcast, encodeSize conflict.
+  - ✅ Covered: semanticSpec unchanged, child broadcast, same-action reassignment, encodeSize conflict.
 - Proposed: additional constant point size units(`area` vs `radius`)는 별도 naming/precedence 결정이 필요하다.
 - Evidence: `test/unit/actions/encodings/radius-encoding.test.js`.
 
@@ -2020,6 +2025,8 @@ type LegendBorder = false | true | {
   - ✅ Covered: omission→`0.72`, representative `(0,1)`, exact `1`, 0/negative/>1/non-finite rejection.
 - `target`
   - ✅ Covered: inferred/explicit grouped bar와 incomplete prerequisites.
+- Reassignment
+  - ✅ Covered: same action replaces the stored band and concrete rect widths immutably.
 - 🟣 Proposed: absolute pixel width와 inner padding. responsive band layout과 충돌하지 않는 precedence가 필요하다.
 - Evidence: grouped-bar width and chart reference tests.
 
