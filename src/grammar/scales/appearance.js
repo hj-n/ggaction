@@ -14,6 +14,12 @@ export const DASH10 = cloneAndFreeze([
   [], [8, 4], [3, 3], [12, 4], [8, 3, 2, 3],
   [12, 3, 3, 3], [2, 2], [10, 3, 2, 3, 2, 3], [14, 4, 4, 4], [6, 2, 2, 2]
 ]);
+export const NAMED_DASH_PATTERNS = cloneAndFreeze({
+  solid: [],
+  dashed: [6, 4],
+  dotted: [1, 3],
+  dashdot: [6, 3, 1, 3]
+});
 
 export { POINT_SHAPES } from "../pointShapes.js";
 export const DEFAULT_SIZE_RANGE = cloneAndFreeze([24, 196]);
@@ -49,13 +55,30 @@ function isDashPattern(pattern) {
   );
 }
 
-export function validateStrokeDashRange(range) {
-  if (range === "auto") return range;
-  if (!Array.isArray(range) || range.length === 0 || !range.every(isDashPattern)) {
+export function normalizeStrokeDashPattern(pattern) {
+  if (typeof pattern === "string") {
+    const resolved = NAMED_DASH_PATTERNS[pattern];
+    if (resolved === undefined) {
+      throw new Error(`Unknown stroke dash style "${pattern}".`);
+    }
+    return cloneAndFreeze(resolved);
+  }
+  if (!isDashPattern(pattern)) {
     throw new TypeError(
-      "StrokeDash range must contain one or more even-length non-negative finite patterns."
+      "Stroke dash pattern must be a named style or an even-length array of non-negative finite numbers."
     );
   }
+  return cloneAndFreeze(pattern);
+}
+
+export function validateStrokeDashRange(range) {
+  if (range === "auto") return range;
+  if (!Array.isArray(range) || range.length === 0) {
+    throw new TypeError(
+      "StrokeDash range must contain one or more named styles or direct patterns."
+    );
+  }
+  for (const pattern of range) normalizeStrokeDashPattern(pattern);
   return cloneAndFreeze(range);
 }
 
@@ -122,7 +145,9 @@ export function resolveColorRange(range, domainCount) {
 
 export function resolveStrokeDashRange(range) {
   const validated = validateStrokeDashRange(range);
-  return validated === "auto" ? DASH10 : validated;
+  return validated === "auto"
+    ? DASH10
+    : cloneAndFreeze(validated.map(normalizeStrokeDashPattern));
 }
 
 export function resolveShapeRange(range) {

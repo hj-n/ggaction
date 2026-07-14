@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   DASH10,
+  NAMED_DASH_PATTERNS,
   mapLinearValues,
   mapOrdinalPositionValues,
   mapOrdinalValues,
@@ -17,6 +18,7 @@ import {
   resolveScaleDomain,
   resolveScaleRange,
   resolveStrokeDashRange,
+  normalizeStrokeDashPattern,
   validateFieldType,
   validateColorRange,
   validateNominalFieldType,
@@ -273,8 +275,20 @@ test("validates nominal fields, ordinal domains, and color ranges", () => {
 test("resolves and validates ordinal stroke dash ranges", () => {
   assert.deepEqual(resolveStrokeDashRange("auto"), DASH10);
   assert.equal(DASH10.length, 10);
+  assert.deepEqual(NAMED_DASH_PATTERNS, {
+    solid: [],
+    dashed: [6, 4],
+    dotted: [1, 3],
+    dashdot: [6, 3, 1, 3]
+  });
+  assert.deepEqual(
+    resolveStrokeDashRange(["solid", "dashed", "dotted", "dashdot"]),
+    [[], [6, 4], [1, 3], [6, 3, 1, 3]]
+  );
+  assert.deepEqual(normalizeStrokeDashPattern([2, 5]), [2, 5]);
   assert.deepEqual(validateStrokeDashRange([[], [8, 4]]), [[], [8, 4]]);
   assert.throws(() => validateStrokeDashRange([]), /one or more/);
+  assert.throws(() => normalizeStrokeDashPattern("longdash"), /Unknown/);
   assert.throws(() => validateStrokeDashRange([[3]]), /even-length/);
   assert.throws(() => validateStrokeDashRange([[3, -1]]), /non-negative/);
   assert.throws(() => validateStrokeDashRange([[3, Infinity]]), /finite/);
