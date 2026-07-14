@@ -452,7 +452,10 @@ test("keeps accepted parameter extensions explicit and non-public", () => {
     { capability: "Aggregate vocabulary", readiness: "Accepted" },
     { capability: "Color layout vocabulary", readiness: "Accepted" },
     { capability: "Histogram bin controls", readiness: "Accepted" },
-    { capability: "Density kernel vocabulary", readiness: "Accepted" }
+    { capability: "Density kernel vocabulary", readiness: "Accepted" },
+    { capability: "Filter predicate modes", readiness: "Accepted" },
+    { capability: "Regression method vocabulary", readiness: "Accepted" },
+    { capability: "Regression prediction interval", readiness: "Accepted" }
   ]);
   assert.match(catalog, /type PointShape =/);
   assert.match(catalog, /"plus" \| "cross" \| "star" \| "hexagon" \| "wye"/);
@@ -471,6 +474,12 @@ test("keeps accepted parameter extensions explicit and non-public", () => {
   assert.match(catalog, /### Planned contract: density kernel vocabulary/);
   assert.match(catalog, /type DensityKernel =/);
   assert.match(catalog, /sum\(K\(u\)\) \/ \(n \* bandwidth\)/);
+  assert.match(catalog, /type FilterComparison =/);
+  assert.match(catalog, /oneOf.*predicate.*range.*정확히 하나/);
+  assert.match(catalog, /type RegressionMethod = "linear" \| "polynomial" \| "loess"/);
+  assert.match(catalog, /tricube-weighted local-linear fit/);
+  assert.match(catalog, /residualVariance \* \(1 \+ leverage\)/);
+  assert.doesNotMatch(catalog, /ordered multi-transform pipeline/);
 });
 
 test("keeps catalog coverage evidence paths executable", () => {
