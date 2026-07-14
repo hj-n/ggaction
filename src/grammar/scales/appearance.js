@@ -1,5 +1,9 @@
 import { cloneAndFreeze, isPlainObject } from "../../core/immutable.js";
 import { POINT_SHAPES } from "../pointShapes.js";
+import {
+  normalizePalette,
+  resolvePalette
+} from "../palettes.js";
 
 export const TABLEAU10 = cloneAndFreeze([
   "#4c78a8", "#f58518", "#e45756", "#72b7b2", "#54a24b",
@@ -28,10 +32,11 @@ export function validateColorRange(range) {
   if (
     !isPlainObject(range) ||
     Object.keys(range).length !== 1 ||
-    range.palette !== "tableau10"
+    !Object.hasOwn(range, "palette")
   ) {
-    throw new Error('Color range palette must be "tableau10".');
+    throw new Error("Color range must contain only a palette descriptor.");
   }
+  normalizePalette(range.palette);
   return cloneAndFreeze(range);
 }
 
@@ -86,17 +91,18 @@ export function validateSizeRange(range) {
 export function validateSemanticScaleRange(range) {
   if (range === "auto") return range;
   if (Array.isArray(range) && range.length > 0) return cloneAndFreeze(range);
-  if (isPlainObject(range) && range.palette === "tableau10") {
+  if (isPlainObject(range) && Object.hasOwn(range, "palette")) {
+    normalizePalette(range.palette);
     return cloneAndFreeze(range);
   }
   throw new TypeError("Scale range has an unsupported value.");
 }
 
-export function resolveColorRange(range) {
+export function resolveColorRange(range, domainCount) {
   const validated = validateColorRange(range);
-  return validated === "auto" || !Array.isArray(validated)
-    ? TABLEAU10
-    : validated;
+  if (validated === "auto") return TABLEAU10;
+  if (Array.isArray(validated)) return validated;
+  return resolvePalette(validated.palette, domainCount);
 }
 
 export function resolveStrokeDashRange(range) {

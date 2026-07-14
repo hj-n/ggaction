@@ -131,6 +131,9 @@
 ## Documentation and Implementation Consistency
 
 - Do not leave known contradictions between the implementation and its documentation.
+- Keep ggaction terminology source-neutral. Do not retain external chart-library brand names in API identifiers,
+  implementation code, tests, errors, links, contracts, or public documentation. Literal values inside reference
+  datasets are exempt.
 - Documentation updates must always accompany the implementation change they describe and must be included in the same conceptual commit.
 - When behavior, APIs, stored structures, or implementation contracts change, update the relevant README or current documentation before considering the change complete.
 - Write public-facing files such as `README.md` and pages under `docs/` in English.

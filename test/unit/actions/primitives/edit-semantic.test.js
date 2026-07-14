@@ -114,6 +114,6 @@ test("validates semantic scale values through the primitive API", () => {
         property: "scale[x].range",
         value: { palette: "unknown" }
       }),
-    /unsupported value/
+    /Unknown palette/
   );
 });

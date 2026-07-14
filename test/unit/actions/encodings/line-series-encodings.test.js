@@ -187,7 +187,7 @@ test("validates line series encoding options and ranges", () => {
       field: "origin",
       scale: { palette: "unknown" }
     }),
-    /tableau10/
+    /Unknown palette/
   );
   assert.throws(
     () => createMeanLine().encodeStrokeDash({

@@ -88,8 +88,8 @@ ranges use the horizontal plot bounds. The resolved scale records one equal
 band centers. Reversed explicit ranges are valid. Ordinal scales reject
 `nice` and `zero`.
 
-Color ranges accept explicit colors or `{ palette: "tableau10" }`;
-stroke-dash ranges accept arrays of dash patterns.
+Color ranges accept explicit colors or a named palette descriptor; stroke-dash
+ranges accept arrays of dash patterns.
 
 ```javascript
 program.encodeColor({
@@ -103,6 +103,37 @@ program.encodeColor({
 
 User-specified domains and ranges are semantic state. Resolved coordinates,
 colors, and dash patterns are stored as concrete graphical values.
+
+## Named palettes
+
+Use a name directly or an object with optional sampling controls:
+
+```javascript
+program.encodeColor({
+  field: "Origin",
+  scale: { palette: { name: "set2", count: 3 } }
+});
+```
+
+Accepted names are fixed by the ggaction contract:
+
+| Family | Names |
+| --- | --- |
+| Categorical | `accent`, `category10`, `category20`, `category20b`, `category20c`, `observable10`, `dark2`, `paired`, `pastel1`, `pastel2`, `set1`, `set2`, `set3`, `tableau10`, `tableau20` |
+| Sequential | `blues`, `tealblues`, `teals`, `greens`, `browns`, `oranges`, `reds`, `purples`, `warmgreys`, `greys`, `viridis`, `magma`, `inferno`, `plasma`, `cividis`, `turbo`, `bluegreen`, `bluepurple`, `goldgreen`, `goldorange`, `goldred`, `greenblue`, `orangered`, `purplebluegreen`, `purpleblue`, `purplered`, `redpurple`, `yellowgreenblue`, `yellowgreen`, `yelloworangebrown`, `yelloworangered`, `darkblue`, `darkgold`, `darkgreen`, `darkmulti`, `darkred`, `lightgreyred`, `lightgreyteal`, `lightmulti`, `lightorange`, `lighttealblue` |
+| Diverging | `blueorange`, `brownbluegreen`, `purplegreen`, `pinkyellowgreen`, `purpleorange`, `redblue`, `redgrey`, `redyellowblue`, `redyellowgreen`, `spectral` |
+| Cyclical | `rainbow`, `sinebow` |
+
+`count` must be a positive integer. Categorical palettes use a prefix when the
+count is shorter and cycle deterministically when it is longer. Other families
+are sampled to `count`, or to the resolved domain size when omitted. `extent`
+is accepted only for non-categorical palettes and contains two distinct values
+within `[0, 1]`; descending values reverse the sampling direction. Scale
+`reverse` is applied afterward.
+
+The semantic scale stores the palette descriptor. Materialized scales, marks,
+legends, and renderers receive only concrete CSS colors. Explicit `range` and
+`palette` cannot be supplied together.
 
 ## Errors and limitations
 

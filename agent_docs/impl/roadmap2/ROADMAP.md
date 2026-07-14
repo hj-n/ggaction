@@ -91,7 +91,7 @@ test로 exhaustive하게 검증하고, 실제 모양이 달라지는 대표 equi
 - Capability: `encodeX-reassignment`
 - Capability: `encodeY-reassignment`
 - Capability: `point-shape-vocabulary`
-- Capability: `vega-named-palette-vocabulary`
+- Capability: `named-palette-vocabulary`
 - Capability: `continuous-color-vertical-contract`
 - Capability: `field-driven-opacity`
 - Capability: `field-driven-opacity-legend`

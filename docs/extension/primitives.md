@@ -159,7 +159,7 @@ idempotent semantic scale. Domain actions that own scale consumers invoke the
 internal wrapped `rematerializeScale` operation to resolve all consumers and
 apply concrete graphic edits, including connected axis updates. Aggregate line
 consumers resolve their domains from derived means rather than raw rows. Ordinal
-ranges may contain color strings, the `tableau10` descriptor, or validated
+ranges may contain color strings, a validated named-palette descriptor, or validated
 even-length stroke-dash patterns for the matching channel.
 
 ```javascript

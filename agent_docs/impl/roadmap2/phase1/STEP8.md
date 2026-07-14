@@ -48,7 +48,7 @@ Phase 1의 모든 variant와 Planned contract evidence를 통합 검증하고 pu
 - `editScale`, `editPointMark`
 - X/Y/color/size/shape reassignment
 - Point shape vocabulary
-- Vega named palette vocabulary
+- named palette vocabulary
 - Continuous color vertical contract
 - Field-driven opacity와 opacity legend
 

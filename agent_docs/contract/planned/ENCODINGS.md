@@ -202,10 +202,10 @@ type ColorLayout =
 - Status: Planned, NOT IMPLEMENTED. mark compatibility, positive/negative/zero partitions, deterministic
   overlap order, normalized/diverging domains와 rejected layout-transition coverage가 필요하다.
 
-## Vega named palette vocabulary
+## Implemented named palette baseline
 
 ```typescript
-type VegaPaletteName =
+type ImplementedPaletteName =
   | "accent"
   | "category10" | "category20" | "category20b" | "category20c"
   | "observable10"
@@ -227,21 +227,19 @@ type VegaPaletteName =
   | "redyellowblue" | "redyellowgreen" | "spectral"
   | "rainbow" | "sinebow";
 
-type VegaPalette =
-  | VegaPaletteName
+type ImplementedPalette =
+  | ImplementedPaletteName
   | {
-      name: VegaPaletteName;
+      name: ImplementedPaletteName;
       count?: PositiveInteger;
       extent?: readonly [UnitInterval, UnitInterval];
     };
 ```
 
-- 이 68개 closed vocabulary는 contract 승인 시점의
-  [Vega color scheme reference](https://vega.github.io/vega/docs/schemes/) snapshot이다.
-  Vega가 이후 scheme을 추가해도 ggaction vocabulary는 contract와 tests를 갱신하기 전까지 자동으로
-  변하지 않는다.
+- 이 68개 closed vocabulary는 contract 승인 시점에 고정되었다. 외부 palette library가 scheme을
+  추가해도 ggaction vocabulary는 contract와 tests를 갱신하기 전까지 자동으로 변하지 않는다.
 - Existing `"tableau10"` behavior를 유지하며 `palette`와 explicit `range`는 mutually exclusive다.
-  Palette resolution은 ggaction 내부 registry가 소유하고 Vega runtime을 호출하지 않는다.
+  Palette resolution은 ggaction 내부 registry가 소유하고 외부 palette runtime을 호출하지 않는다.
 - Categorical scheme은 native discrete color order를 사용한다. Sequential, diverging, cyclical
   scheme도 이 첫 contract에서는 nominal/ordinal domain용 discrete colors로만 샘플링한다.
 - `count`는 positive integer sample count다. 생략 시 categorical scheme은 native color count,
@@ -255,8 +253,9 @@ type VegaPalette =
 - Quantitative/temporal color encoding, continuous interpolation and gradient legend는 아래 accepted
   vertical contract가 소유한다. Arbitrary user colors는 explicit `range`가 담당하며 별도 palette
   registration API는 두지 않는다.
-- Status: Planned, NOT IMPLEMENTED. 68-name validation, family-specific sampling, count/extent boundaries,
-  range conflict, cycling, reverse, mark/legend parity와 deterministic registry snapshot coverage가 필요하다.
+- Status: Implemented. The canonical current contract moved to
+  [`../current/PALETTES.md`](../current/PALETTES.md). This compatibility note remains only because the planned
+  continuous-color contract below references the implemented palette vocabulary.
 
 ## continuous color vertical contract
 
@@ -273,8 +272,8 @@ type ContinuousColorScale = {
   type?: "sequential";
   domain?: "auto" | OrderedQuantitativePair | OrderedTemporalPair;
   range?: readonly [NonEmptyString, NonEmptyString, ...NonEmptyString[]];
-  palette?: VegaPaletteName | {
-    name: VegaPaletteName;
+  palette?: PaletteName | {
+    name: PaletteName;
     extent?: readonly [UnitInterval, UnitInterval];
   };
   interpolate?: ContinuousColorInterpolation;
@@ -291,7 +290,7 @@ type ContinuousColorScale = {
   field extent; auto temporal domain is the normalized timestamp extent. The first contract rejects
   `nice`, `zero` and color layout because those choices do not define continuous color grouping.
 - `range` and `palette` are mutually exclusive. If both are omitted, palette defaults to `"viridis"`.
-  Explicit range has at least two valid CSS colors. Named palette resolution uses the accepted frozen Vega
+  Explicit range has at least two valid CSS colors. Named palette resolution uses the accepted frozen
   registry, but continuous palette objects reject discrete `count`; `extent` may crop or reverse the scheme.
 - `interpolate` defaults to `"rgb"` and resolves every mapped mark color into a concrete CSS string during
   materialization. Renderers never interpret the interpolation token. `reverse`, `clamp` and `unknown` follow

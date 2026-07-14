@@ -3,7 +3,7 @@
 ## 목표
 
 Gate A에서 승인된 네 primitive를 재현하도록 `editScale`, shared point-shape grammar,
-`editPointMark`와 Vega palette registry를 구현한다.
+`editPointMark`와 palette registry를 구현한다.
 
 ## 진행 상태
 
@@ -14,8 +14,8 @@ Gate A에서 승인된 네 primitive를 재현하도록 `editScale`, shared poin
 - [x] Shape target-area normalization과 Canvas path parity
 - [x] `createPointMark`, `editPointMark`, `encodeShape`, legend symbol 공유
 - [x] `editPointMark` inference/conflict/rematerialization
-- [ ] Frozen 68-name Vega palette registry와 sampling
-- [ ] Palette count/extent/range conflict/cycling/reverse coverage
+- [x] Frozen 68-name palette registry와 sampling
+- [x] Palette count/extent/range conflict/cycling/reverse coverage
 - [ ] 네 approved variant의 user-facing programs와 PNG pair
 - [ ] Primitive/public exact equivalence와 trace tests
 - [ ] Public declarations/docs와 conceptual commits/push

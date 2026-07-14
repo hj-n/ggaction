@@ -87,9 +87,6 @@ baseline-closed area path를 생성한다. Browser Canvas는 `720×500`, PNG는 
 
 ## 참고 의미
 
-Vega-Lite density transform은 Gaussian KDE, observed extent, grouped shared resolution,
+참조 density transform은 Gaussian KDE, observed extent, grouped shared resolution,
 `minsteps: 25`, `maxsteps: 200`을 제공한다. Phase 6의 초기 ggaction contract는 output을
 더 직접적으로 재현할 수 있도록 exact `steps`를 노출하고 default를 `100`으로 고정한다.
-
-- <https://vega.github.io/vega-lite/docs/density.html>
-- <https://vega.github.io/vega/docs/transforms/kde/>

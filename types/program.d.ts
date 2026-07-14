@@ -21,6 +21,35 @@ export type PointShape =
   | "star"
   | "hexagon"
   | "wye";
+export type PaletteName =
+  | "accent"
+  | "category10" | "category20" | "category20b" | "category20c"
+  | "observable10"
+  | "dark2" | "paired" | "pastel1" | "pastel2"
+  | "set1" | "set2" | "set3"
+  | "tableau10" | "tableau20"
+  | "blues" | "tealblues" | "teals" | "greens" | "browns"
+  | "oranges" | "reds" | "purples" | "warmgreys" | "greys"
+  | "viridis" | "magma" | "inferno" | "plasma" | "cividis" | "turbo"
+  | "bluegreen" | "bluepurple"
+  | "goldgreen" | "goldorange" | "goldred"
+  | "greenblue" | "orangered"
+  | "purplebluegreen" | "purpleblue" | "purplered" | "redpurple"
+  | "yellowgreenblue" | "yellowgreen" | "yelloworangebrown" | "yelloworangered"
+  | "darkblue" | "darkgold" | "darkgreen" | "darkmulti" | "darkred"
+  | "lightgreyred" | "lightgreyteal" | "lightmulti" | "lightorange" | "lighttealblue"
+  | "blueorange" | "brownbluegreen" | "purplegreen" | "pinkyellowgreen"
+  | "purpleorange" | "redblue" | "redgrey"
+  | "redyellowblue" | "redyellowgreen" | "spectral"
+  | "rainbow" | "sinebow";
+export type Palette = PaletteName | {
+  name: PaletteName;
+  count?: number;
+  extent?: readonly [number, number];
+};
+export type ScaleRange = "auto" | readonly unknown[] | {
+  readonly palette: Palette;
+};
 export type ActionOptions = Record<string, unknown>;
 
 export interface TraceNode {
@@ -62,16 +91,16 @@ export interface ScaleOptions {
   id?: string;
   type?: ScaleType;
   domain?: "auto" | readonly unknown[];
-  range?: "auto" | readonly unknown[];
+  range?: ScaleRange;
   nice?: boolean;
   zero?: boolean;
-  palette?: string;
+  palette?: Palette;
 }
 
 export interface EditScaleOptions {
   id?: string;
   domain?: "auto" | readonly unknown[];
-  range?: "auto" | readonly unknown[];
+  range?: ScaleRange;
   nice?: boolean;
   zero?: boolean;
   clamp?: boolean;

@@ -80,8 +80,8 @@ type ContinuousDomain = "auto" | readonly [unknown, unknown];
 type OrdinalDomain = "auto" | readonly unknown[];
 type NumericRange = "auto" | readonly [Finite, Finite];
 type OrderedFinitePair = readonly [Finite, Finite]; // first <= second
-type ColorRange = readonly NonEmptyString[] | { palette: "tableau10" };
-type ShapeRange = readonly ("circle" | "square")[];
+type ColorRange = readonly NonEmptyString[] | { palette: Palette };
+type ShapeRange = readonly PointShape[];
 type GeneratedChildId = `${UserId}:${NonNegativeInteger}`;
 type FilterTransform = {
   type: "filter";
@@ -119,7 +119,7 @@ type ColorScale = {
   type?: "ordinal";
   domain?: OrdinalDomain;
   range?: "auto" | readonly NonEmptyString[];
-  palette?: "tableau10";
+  palette?: Palette;
 };
 type DashPattern = readonly NonNegativeFinite[]; // even length
 type DashScale = {

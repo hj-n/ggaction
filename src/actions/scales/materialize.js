@@ -131,7 +131,9 @@ export const rematerializeScale = action(
     }
 
     let range;
-    if (channel === "color") range = resolveColorRange(scale.range);
+    if (channel === "color") {
+      range = resolveColorRange(scale.range, domain.length);
+    }
     else if (channel === "strokeDash") range = resolveStrokeDashRange(scale.range);
     else if (channel === "shape") range = resolveShapeRange(scale.range);
     else if (channel === "size") range = resolveSizeRange(scale.range);
@@ -208,7 +210,7 @@ export const rematerializeScale = action(
         target: consumer.layer.id,
         property: channel === "color" ? "fill" : channel,
         value: isOrdinalAppearance
-          ? mapOrdinalValues(values, domain, range)
+          ? mapOrdinalValues(values, domain, resolvedScale.range)
           : mapLinearValues(values, resolvedScale.domain, resolvedScale.range, {
               clamp: resolvedScale.clamp ?? false
             })

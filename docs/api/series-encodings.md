@@ -28,7 +28,7 @@ policy. Area color must match an existing `encodeGroup` field.
 | `scale.type` | `"ordinal"` | `"ordinal"` |
 | `scale.domain` | `"auto"` or category array | `"auto"` |
 | `scale.range` | `"auto"`, color array, or palette descriptor | `"auto"` |
-| `scale.palette` | `"tableau10"` | omitted |
+| `scale.palette` | palette name or `{ name, count?, extent? }` | omitted |
 
 ```javascript
 program.encodeColor({
@@ -40,6 +40,20 @@ program.encodeColor({
 `scale.palette` is the concise form of
 `scale.range: { palette: "tableau10" }`. Do not provide both. Automatic domains
 preserve first-appearance order.
+
+Named palettes use a frozen 68-name vocabulary. Categorical palettes keep their
+native order; `count` selects or deterministically cycles colors. Continuous,
+diverging, and cyclical palettes are sampled to the domain size unless `count`
+is supplied, and accept an optional two-value `extent` within `[0, 1]`.
+
+```javascript
+program.encodeColor({
+  field: "Origin",
+  scale: { palette: { name: "set2", count: 3 } }
+});
+```
+
+See [Scale options](./scales.md#named-palettes) for the complete vocabulary.
 
 For an ordinal-x mean bar, `layout: "group"` is required. It keeps
 `y.stack = null`, invokes `encodeXOffset` with the same field, and recomputes

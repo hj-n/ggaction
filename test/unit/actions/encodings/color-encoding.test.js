@@ -85,6 +85,80 @@ test("supports explicit color domains, ranges, and palette descriptors", () => {
   });
 });
 
+test("resolves named palettes for marks and connected legends", () => {
+  const program = chart()
+    .createCanvas({
+      width: 400,
+      height: 220,
+      margin: { top: 20, right: 120, bottom: 20, left: 20 }
+    })
+    .createData({
+      id: "cars",
+      values: [
+        { origin: "USA" },
+        { origin: "Japan" },
+        { origin: "Europe" }
+      ]
+    })
+    .createPointMark({ id: "points" })
+    .encodeColor({
+      field: "origin",
+      scale: { palette: { name: "set2", count: 3 } }
+    })
+    .createLegend({ channels: ["color"] });
+
+  assert.deepEqual(program.semanticSpec.scales[0].range, {
+    palette: { name: "set2", count: 3 }
+  });
+  assert.deepEqual(program.resolvedScales.color.range, [
+    "#66c2a5", "#fc8d62", "#8da0cb"
+  ]);
+  assert.deepEqual(
+    program.graphicSpec.objects.points.children.map(child => child.properties.fill),
+    ["#66c2a5", "#fc8d62", "#8da0cb"]
+  );
+  assert.deepEqual(
+    program.graphicSpec.objects.seriesLegendSymbols.children.map(
+      child => child.properties.stroke
+    ),
+    ["#66c2a5", "#fc8d62", "#8da0cb"]
+  );
+
+  const reversed = program.editScale({ id: "color", reverse: true });
+  assert.deepEqual(reversed.resolvedScales.color.range, [
+    "#8da0cb", "#fc8d62", "#66c2a5"
+  ]);
+  assert.deepEqual(
+    reversed.graphicSpec.objects.points.children.map(child => child.properties.fill),
+    ["#8da0cb", "#fc8d62", "#66c2a5"]
+  );
+  assert.deepEqual(
+    reversed.graphicSpec.objects.seriesLegendSymbols.children.map(
+      child => child.properties.stroke
+    ),
+    ["#8da0cb", "#fc8d62", "#66c2a5"]
+  );
+  assert.deepEqual(program.resolvedScales.color.range, [
+    "#66c2a5", "#fc8d62", "#8da0cb"
+  ]);
+});
+
+test("structurally owns palette sampling options", () => {
+  const extent = [0.15, 0.85];
+  const program = createPointProgram().encodeColor({
+    field: "origin",
+    scale: { palette: { name: "viridis", count: 2, extent } }
+  });
+  extent[0] = 0.75;
+
+  assert.deepEqual(program.semanticSpec.scales[0].range, {
+    palette: { name: "viridis", count: 2, extent: [0.15, 0.85] }
+  });
+  assert.equal(Object.isFrozen(
+    program.semanticSpec.scales[0].range.palette.extent
+  ), true);
+});
+
 test("combines every consumer of a shared color scale", () => {
   const first = createPointProgram("points", "cars", [{ origin: "USA" }])
     .encodeColor({ field: "origin" })

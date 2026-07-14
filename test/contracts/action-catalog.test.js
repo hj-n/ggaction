@@ -305,7 +305,6 @@ test("keeps accepted planned capabilities linked and non-public", () => {
     "Aggregate vocabulary",
     "Parameterized aggregate operations",
     "Color layout vocabulary",
-    "Vega named palette vocabulary",
     "Continuous color vertical contract",
     "Named and constant stroke dash vocabulary",
     "Field-driven opacity",
@@ -368,8 +367,8 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   assert.match(plannedCorpus, /"stack" \| "fill" \| "group" \| "overlay" \| "diverging"/);
   assert.match(plannedCorpus, /`"center"` streamgraph layout은 Proposed/);
   assert.match(plannedCorpus, /별도 action `encodeGroup`과 다른 개념/);
-  const paletteType = plannedCorpus.match(
-    /type VegaPaletteName =([\s\S]*?);\n\ntype VegaPalette =/
+  const paletteType = currentCorpus.match(
+    /type PaletteName =([\s\S]*?);\n\ntype Palette =/
   )?.[1];
   assert.ok(paletteType);
   assert.deepEqual(

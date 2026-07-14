@@ -121,7 +121,7 @@ f(x) = sum(K((x - x_i) / h)) / (n * h)
 - Group 순서와 각 group 내부의 value 오름차순을 보존한다.
 - Source values와 caller-owned rows는 수정하지 않는다.
 
-공식 Vega-Lite density transform의 Gaussian bandwidth, observed extent, shared grouped
+참조 density transform의 Gaussian bandwidth, observed extent, shared grouped
 resolution 방향을 참고하되, 초기 ggaction은 adaptive min/max steps 대신 명시적인
 chart-independent default `steps: 100`을 사용한다.
 

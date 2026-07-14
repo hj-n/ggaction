@@ -262,7 +262,7 @@ test("validates nominal fields, ordinal domains, and color ranges", () => {
   assert.throws(() => validateColorRange([]), /non-empty color strings/);
   assert.throws(
     () => validateColorRange({ palette: "unknown" }),
-    /tableau10/
+    /Unknown palette/
   );
   assert.throws(
     () => readNominalField([{ value: null }], "value"),

@@ -30,8 +30,19 @@ function sameScaleSetting(left, right) {
       (value, index) => sameScaleSetting(value, right[index])
     );
   }
-  if (!Array.isArray(left) && !Array.isArray(right)) {
-    return left?.palette !== undefined && left.palette === right?.palette;
+  if (
+    left !== null &&
+    right !== null &&
+    typeof left === "object" &&
+    typeof right === "object" &&
+    !Array.isArray(left) &&
+    !Array.isArray(right)
+  ) {
+    const leftKeys = Object.keys(left);
+    const rightKeys = Object.keys(right);
+    return leftKeys.length === rightKeys.length && leftKeys.every(
+      key => Object.hasOwn(right, key) && sameScaleSetting(left[key], right[key])
+    );
   }
   return false;
 }
