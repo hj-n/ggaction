@@ -4,6 +4,9 @@ import test from "node:test";
 import {
   applyMaterializationPlan
 } from "../../src/materialization/dependencies.js";
+import {
+  planEncodingRematerialization
+} from "../../src/materialization/encodings.js";
 
 test("executes materialization plans in order and deduplicates equivalent steps", () => {
   const calls = [];
@@ -28,4 +31,73 @@ test("executes materialization plans in order and deduplicates equivalent steps"
 
   assert.equal(result, program);
   assert.deepEqual(calls, ["x", "y", "finish"]);
+});
+
+test("plans point encoding scale, mark, and existing legend in order", () => {
+  const program = {
+    semanticSpec: {
+      layers: [{ id: "points", mark: { type: "point" }, encoding: {} }],
+      guides: { legend: { series: {} } }
+    },
+    guideConfigs: { legend: { series: {} } }
+  };
+
+  assert.deepEqual(
+    planEncodingRematerialization(program, {
+      target: "points",
+      channel: "shape",
+      scale: "shape"
+    }),
+    [
+      { op: "rematerializeScale", args: { id: "shape" } },
+      { op: "rematerializePointMark", args: { id: "points" } },
+      { op: "rematerializeLegend" }
+    ]
+  );
+});
+
+test("plans every area consumer of one shared color scale", () => {
+  const program = {
+    semanticSpec: {
+      layers: [
+        {
+          id: "first",
+          mark: { type: "area" },
+          encoding: { color: { scale: "color" } }
+        },
+        {
+          id: "second",
+          mark: { type: "area" },
+          encoding: { color: { scale: "color" } }
+        },
+        {
+          id: "other",
+          mark: { type: "area" },
+          encoding: { color: { scale: "otherColor" } }
+        }
+      ],
+      guides: {}
+    },
+    guideConfigs: {}
+  };
+
+  assert.deepEqual(
+    planEncodingRematerialization(program, {
+      target: "first",
+      channel: "color",
+      scale: "color"
+    }),
+    [
+      { op: "rematerializeAreaMark", args: { id: "first" } },
+      { op: "rematerializeAreaMark", args: { id: "second" } }
+    ]
+  );
+  assert.throws(
+    () => planEncodingRematerialization(program, {
+      target: "missing",
+      channel: "color",
+      scale: "color"
+    }),
+    /Unknown encoding materialization target/
+  );
 });

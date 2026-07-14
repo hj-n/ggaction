@@ -910,9 +910,13 @@ step을 deduplicate한 뒤 실제 wrapped action을 호출한다.
 - Canvas width/height/margin 변경 후 positional scale, complete mark, legend, title 갱신
 - Scale 변경 후 해당 axis component, grid, legend consumer 갱신
 - Mark type별 completeness policy에 따른 mark rematerialization
+- Field-driven color/size/shape/opacity/stroke-dash 변경 후 scale, affected mark, legend 갱신
+
+Encoding planner에서 point는 scale → mark, line/bar는 mark, shared-color area는 같은 scale의
+모든 area mark를 declaration order로 계획하고, 존재하는 legend를 마지막에 계획한다.
 
 이 plan은 자동 compiler가 아니다. `editCanvas`, `rematerializeScale` 같은 명시적 action
-implementation이 planner와 executor를 호출할 때만 실행된다.
+또는 responsible encoding action implementation이 planner와 executor를 호출할 때만 실행된다.
 
 ## Canvas와 layout
 

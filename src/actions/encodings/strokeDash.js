@@ -6,9 +6,10 @@ import {
   validateNominalFieldType
 } from "../../grammar/scales.js";
 import { resolveStrokeDashScaleDefinition } from "../scales/definitions.js";
+import { applyMaterializationPlan } from "../../materialization/dependencies.js";
+import { planEncodingRematerialization } from "../../materialization/encodings.js";
 import {
   applyEncodingScale,
-  rematerializeExistingLegend,
   resolveReassignmentScaleOptions,
   resolveTarget,
   validateLineSeriesCompatibility,
@@ -122,9 +123,16 @@ const encodeStrokeDash = action(
       });
     next = applyEncodingScale(next, scale, requestedScale, {
       reassignment: previous?.scale === scale.id
-    }).rematerializeLineMark({ id: target });
+    });
 
-    return rematerializeExistingLegend(next);
+    return applyMaterializationPlan(
+      next,
+      planEncodingRematerialization(next, {
+        target,
+        channel: "strokeDash",
+        scale: scale.id
+      })
+    );
   }
 );
 

@@ -9,9 +9,10 @@ import {
   resolveOpacityScaleDefinition
 } from "../scales/definitions.js";
 import { findLayer } from "../../selectors/layers.js";
+import { applyMaterializationPlan } from "../../materialization/dependencies.js";
+import { planEncodingRematerialization } from "../../materialization/encodings.js";
 import {
   applyEncodingScale,
-  rematerializeExistingLegend,
   resolveReassignmentScaleOptions,
   resolveTarget,
   validateOptions
@@ -66,10 +67,15 @@ function encodeAppearanceField(program, channel, args, operation) {
     });
   next = applyEncodingScale(next, scale, requestedScale, {
     reassignment: previous?.scale === scale.id
-  })
-    .rematerializeScale({ id: scale.id })
-    .rematerializePointMark({ id: target });
-  return rematerializeExistingLegend(next);
+  });
+  return applyMaterializationPlan(
+    next,
+    planEncodingRematerialization(next, {
+      target,
+      channel,
+      scale: scale.id
+    })
+  );
 }
 
 const encodeRadius = action(
@@ -205,10 +211,15 @@ const encodeOpacity = action(
       })
     next = applyEncodingScale(next, scale, requestedScale, {
       reassignment: previous?.scale === scale.id
-    })
-      .rematerializeScale({ id: scale.id })
-      .rematerializePointMark({ id: target });
-    return rematerializeExistingLegend(next);
+    });
+    return applyMaterializationPlan(
+      next,
+      planEncodingRematerialization(next, {
+        target,
+        channel: "opacity",
+        scale: scale.id
+      })
+    );
   }
 );
 

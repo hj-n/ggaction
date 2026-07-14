@@ -16,12 +16,13 @@ import {
 } from "../scales/definitions.js";
 import {
   applyEncodingScale,
-  rematerializeExistingLegend,
   resolveReassignmentScaleOptions,
   resolveTarget,
   validateLineSeriesCompatibility,
   validateOptions
 } from "./shared.js";
+import { applyMaterializationPlan } from "../../materialization/dependencies.js";
+import { planEncodingRematerialization } from "../../materialization/encodings.js";
 
 const COLOR_ENCODING_OPTIONS = Object.freeze([
   "field", "target", "fieldType", "scale", "layout"
@@ -67,10 +68,15 @@ function encodeContinuousColor(program, args) {
       property: `layer[${target}].encoding.color.scale`,
       value: scale.id
     })
-    .setSequentialScale(scale)
-    .rematerializeScale({ id: scale.id })
-    .rematerializePointMark({ id: target });
-  return rematerializeExistingLegend(next);
+    .setSequentialScale(scale);
+  return applyMaterializationPlan(
+    next,
+    planEncodingRematerialization(next, {
+      target,
+      channel: "color",
+      scale: scale.id
+    })
+  );
 }
 
 const encodeColor = action(
@@ -179,31 +185,13 @@ const encodeColor = action(
         });
     }
 
-    if (layer.mark.type === "line") {
-      return rematerializeExistingLegend(
-        next.rematerializeLineMark({ id: target })
-      );
-    }
-    if (layer.mark.type === "bar") {
-      return rematerializeExistingLegend(
-        next.rematerializeBarMark({ id: target })
-      );
-    }
-    if (layer.mark.type === "area") {
-      const areaIds = next.semanticSpec.layers
-        .filter(item =>
-          item.mark?.type === "area" && item.encoding?.color?.scale === scale.id
-        )
-        .map(item => item.id);
-      for (const id of areaIds) {
-        next = next.rematerializeAreaMark({ id });
-      }
-      return rematerializeExistingLegend(next);
-    }
-    return rematerializeExistingLegend(
-      next
-        .rematerializeScale({ id: scale.id })
-        .rematerializePointMark({ id: target })
+    return applyMaterializationPlan(
+      next,
+      planEncodingRematerialization(next, {
+        target,
+        channel: "color",
+        scale: scale.id
+      })
     );
   }
 );
