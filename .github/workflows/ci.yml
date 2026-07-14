@@ -27,6 +27,8 @@ jobs:
         run: npm ci
       - name: Run unit, acceptance, and documentation tests
         run: npm test
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
       - name: Render PNG regression charts
         run: npm run test:render
 
