@@ -104,14 +104,24 @@ function normalizePolygon(points, x, y, area) {
   }));
 }
 
-export function createShapeGraphic(shape, { x, y, area, fill }) {
+export function createShapeGraphic(
+  shape,
+  { x, y, area, fill, stroke, strokeWidth }
+) {
   if (!POINT_SHAPES.includes(shape)) {
     throw new Error(`Unknown reference point shape "${shape}".`);
   }
   if (shape === "circle") {
     return {
       type: "circle",
-      properties: { x, y, radius: Math.sqrt(area / Math.PI), fill }
+      properties: {
+        x,
+        y,
+        radius: Math.sqrt(area / Math.PI),
+        fill,
+        ...(stroke === undefined ? {} : { stroke }),
+        ...(strokeWidth === undefined ? {} : { strokeWidth })
+      }
     };
   }
   if (shape === "square") {
@@ -124,8 +134,8 @@ export function createShapeGraphic(shape, { x, y, area, fill }) {
         width: side,
         height: side,
         fill,
-        stroke: fill,
-        strokeWidth: 0
+        stroke: stroke ?? fill,
+        strokeWidth: strokeWidth ?? 0
       }
     };
   }
@@ -134,6 +144,8 @@ export function createShapeGraphic(shape, { x, y, area, fill }) {
     properties: {
       points: normalizePolygon(shapePolygon(shape), x, y, area),
       fill,
+      ...(stroke === undefined ? {} : { stroke }),
+      ...(strokeWidth === undefined ? {} : { strokeWidth }),
       closed: true
     }
   };
@@ -142,12 +154,16 @@ export function createShapeGraphic(shape, { x, y, area, fill }) {
 export function createScaleReversePrimitiveValues(cars) {
   const baseline = createCarsScatterplotPrimitiveValues(cars);
   const { left, right } = baseline.bounds;
+  const horsepower = baseline.validCars.map(row => row.Horsepower);
+  const domain = [Math.min(...horsepower), Math.max(...horsepower)];
+  const map = value => {
+    const ratio = (value - domain[0]) / (domain[1] - domain[0]);
+    return right + ratio * (left - right);
+  };
   return Object.freeze({
     baseline,
-    x: Object.freeze(baseline.x.map(value => left + right - value)),
-    xTicks: Object.freeze(
-      baseline.xTicks.positions.map(value => left + right - value)
-    )
+    x: Object.freeze(horsepower.map(map)),
+    xTicks: Object.freeze(baseline.xTicks.values.map(map))
   });
 }
 
@@ -192,8 +208,8 @@ export function createShapeVocabularyPrimitiveValues(cars) {
   const selected = selectShapeRows(baseline);
   const pointArea = Math.PI * 7 ** 2;
   const legendArea = Math.PI * 5 ** 2;
-  const legendX = 648;
-  const legendStartY = 70;
+  const legendX = 645;
+  const legendStartY = 82;
   const legendGap = 24;
   return Object.freeze({
     baseline,
@@ -208,17 +224,19 @@ export function createShapeVocabularyPrimitiveValues(cars) {
       })
     )),
     legend: Object.freeze({
-      title: Object.freeze({ x: 630, y: 40, text: "Shape" }),
+      title: Object.freeze({ x: 640, y: 50, text: "Shape" }),
       symbols: Object.freeze(POINT_SHAPES.map((shape, index) =>
         createShapeGraphic(shape, {
           x: legendX,
           y: legendStartY + index * legendGap,
           area: legendArea,
-          fill: "#4c78a8"
+          fill: "#4c78a8",
+          stroke: "white",
+          strokeWidth: 0
         })
       )),
       labels: Object.freeze(POINT_SHAPES.map((shape, index) => ({
-        x: 666,
+        x: 660,
         y: legendStartY + index * legendGap,
         text: shape
       })))
@@ -230,7 +248,7 @@ export function createCategoricalPalettePrimitiveValues(cars) {
   const baseline = createCarsScatterplotPrimitiveValues(cars);
   const domain = Object.freeze(["USA", "Japan", "Europe"]);
   const range = Object.freeze(SET2_COLORS.slice(0, domain.length));
-  const itemStartY = 126;
+  const itemStartY = 76;
   const itemGap = 28;
   return Object.freeze({
     baseline,
@@ -240,7 +258,7 @@ export function createCategoricalPalettePrimitiveValues(cars) {
       baseline.validCars.map(row => SET2_ORIGIN_COLORS[row.Origin])
     ),
     legend: Object.freeze({
-      title: Object.freeze({ x: 640, y: 100, text: "Origin" }),
+      title: Object.freeze({ x: 640, y: 50, text: "Origin" }),
       symbols: Object.freeze(domain.map((value, index) => ({
         x: 640,
         y: itemStartY + index * itemGap,
@@ -251,7 +269,7 @@ export function createCategoricalPalettePrimitiveValues(cars) {
         strokeWidth: 0.5
       }))),
       labels: Object.freeze(domain.map((value, index) => ({
-        x: 660,
+        x: 662,
         y: itemStartY + 6 + index * itemGap,
         text: value
       })))

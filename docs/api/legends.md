@@ -29,6 +29,7 @@ Every categorical legend uses the same right-side default:
 | bar histogram | `color` | `right` | swatch |
 | grouped ordinal bar | `color` | `right` | swatch |
 | grouped area | `color` | `right` | swatch |
+| point | explicitly selected `color` only | `right` | swatch |
 | point + matching line | `color` + `shape` | `right` | line over typed point |
 | quantitative point size | `size` | `right`, below point series | five equal-area circles |
 

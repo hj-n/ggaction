@@ -38,6 +38,17 @@ export function resolveTarget(program, requested) {
 
 export const sameValues = sameOrderedValues;
 
+export function resolveLegendKind(layer, requestedChannels) {
+  if (["bar", "area"].includes(layer.mark.type)) return "color";
+  if (
+    layer.mark.type === "point" &&
+    sameValues(requestedChannels, ["color"])
+  ) {
+    return "color";
+  }
+  return "series";
+}
+
 function resolveOrdinalScales(program, scaleIds) {
   const scales = scaleIds.map(id => {
     const semantic = findSemanticScale(program, id);
@@ -57,7 +68,7 @@ function resolveOrdinalScales(program, scaleIds) {
 }
 
 export function resolveDefinition(program, layer, requestedChannels, requestedTitle) {
-  const kind = ["bar", "area"].includes(layer.mark.type) ? "color" : "series";
+  const kind = resolveLegendKind(layer, requestedChannels);
   const channels = requestedChannels ?? (kind === "color"
     ? ["color"]
     : CHANNELS.filter(

@@ -113,13 +113,18 @@ test("resolves named palettes for marks and connected legends", () => {
   assert.deepEqual(program.resolvedScales.color.range, [
     "#66c2a5", "#fc8d62", "#8da0cb"
   ]);
+  assert.deepEqual(program.semanticSpec.guides.legend.color, {
+    scale: "color",
+    title: "origin"
+  });
+  assert.equal(program.semanticSpec.guides.legend.series, undefined);
   assert.deepEqual(
     program.graphicSpec.objects.points.children.map(child => child.properties.fill),
     ["#66c2a5", "#fc8d62", "#8da0cb"]
   );
   assert.deepEqual(
-    program.graphicSpec.objects.seriesLegendSymbols.children.map(
-      child => child.properties.stroke
+    program.graphicSpec.objects.colorLegendSymbols.children.map(
+      child => child.properties.fill
     ),
     ["#66c2a5", "#fc8d62", "#8da0cb"]
   );
@@ -133,8 +138,8 @@ test("resolves named palettes for marks and connected legends", () => {
     ["#8da0cb", "#fc8d62", "#66c2a5"]
   );
   assert.deepEqual(
-    reversed.graphicSpec.objects.seriesLegendSymbols.children.map(
-      child => child.properties.stroke
+    reversed.graphicSpec.objects.colorLegendSymbols.children.map(
+      child => child.properties.fill
     ),
     ["#8da0cb", "#fc8d62", "#66c2a5"]
   );

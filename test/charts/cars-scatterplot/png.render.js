@@ -1,6 +1,12 @@
 import test from "node:test";
 
-import { createCarsScatterplot } from "../../../examples/cars-scatterplot/program.js";
+import {
+  createCarsScatterplot,
+  createDiamondCarsScatterplot,
+  createPaletteCarsScatterplot,
+  createScaleReverseCarsScatterplot,
+  createShapeVocabularyCarsScatterplot
+} from "../../../examples/cars-scatterplot/program.js";
 import { loadCars } from "../../support/data.js";
 import { assertRenderedPNG } from "../../support/png.js";
 import { createCarsScatterplotPrimitives } from "./primitive.program.js";
@@ -10,8 +16,12 @@ import {
   createScaleReversePrimitives,
   createShapeVocabularyPrimitives
 } from "./phase1-primitives.program.js";
+import {
+  createShapeVocabularyPrimitiveValues
+} from "./phase1-reference-values.js";
 
 const cars = loadCars();
+const shapeRows = createShapeVocabularyPrimitiveValues(cars).rows;
 const baselineArtifact = Object.freeze({
   roadmap: "roadmap2",
   chart: "cars-scatterplot",
@@ -43,7 +53,6 @@ const phase1Artifacts = Object.freeze([
       roadmap: "roadmap2",
       chart: "cars-scatterplot",
       variant: "scale-reverse",
-      kind: "primitive",
       title: "Reversed X Scale",
       userFacingCallChain: `chart()
   .createCanvas({
@@ -65,7 +74,8 @@ const phase1Artifacts = Object.freeze([
   })
   .editScale({ id: "x", reverse: true });`
     }),
-    program: createScaleReversePrimitives(cars),
+    primitive: createScaleReversePrimitives(cars),
+    userFacing: createScaleReverseCarsScatterplot(cars),
     width: 640,
     height: 400,
     colors: ["#4c78a8", "#f58518", "#e45756"]
@@ -75,7 +85,6 @@ const phase1Artifacts = Object.freeze([
       roadmap: "roadmap2",
       chart: "cars-scatterplot",
       variant: "point-shape-diamond",
-      kind: "primitive",
       title: "Constant Diamond Points",
       userFacingCallChain: `chart()
   .createCanvas({
@@ -97,7 +106,8 @@ const phase1Artifacts = Object.freeze([
   })
   .editPointMark({ target: "points", shape: "diamond" });`
     }),
-    program: createPointShapeDiamondPrimitives(cars),
+    primitive: createPointShapeDiamondPrimitives(cars),
+    userFacing: createDiamondCarsScatterplot(cars),
     width: 640,
     height: 400,
     colors: ["#4c78a8", "#f58518", "#e45756"]
@@ -107,7 +117,6 @@ const phase1Artifacts = Object.freeze([
       roadmap: "roadmap2",
       chart: "cars-scatterplot",
       variant: "shape-vocabulary",
-      kind: "primitive",
       title: "Twelve Point Shapes",
       userFacingCallChain: `chart()
   .createCanvas({
@@ -129,10 +138,25 @@ const phase1Artifacts = Object.freeze([
       x: { title: { text: "Horsepower" } },
       y: { title: { text: "Miles per Gallon" } }
     },
-    legend: { channels: ["shape"] }
+    legend: {
+      channels: ["shape"],
+      title: "Shape",
+      itemGap: 24,
+      symbol: {
+        layers: [
+          {
+            type: "point",
+            size: 5,
+            stroke: "white",
+            strokeWidth: 0
+          }
+        ]
+      }
+    }
   });`
     }),
-    program: createShapeVocabularyPrimitives(cars),
+    primitive: createShapeVocabularyPrimitives(cars),
+    userFacing: createShapeVocabularyCarsScatterplot(shapeRows),
     width: 860,
     height: 400,
     colors: ["#4c78a8"]
@@ -142,7 +166,6 @@ const phase1Artifacts = Object.freeze([
       roadmap: "roadmap2",
       chart: "cars-scatterplot",
       variant: "categorical-palette",
-      kind: "primitive",
       title: "Set2 Categorical Palette",
       userFacingCallChain: `chart()
   .createCanvas({
@@ -164,7 +187,8 @@ const phase1Artifacts = Object.freeze([
     legend: { channels: ["color"] }
   });`
     }),
-    program: createCategoricalPalettePrimitives(cars),
+    primitive: createCategoricalPalettePrimitives(cars),
+    userFacing: createPaletteCarsScatterplot(cars),
     width: 760,
     height: 400,
     colors: ["#66c2a5", "#fc8d62", "#8da0cb"]
@@ -208,7 +232,15 @@ test("renders the public and primitive scatterplots with visible points", async 
     });
   }
 
-  for (const options of phase1Artifacts) {
-    await assertRenderedPNG(options.program, options);
+  for (const { primitive, userFacing, ...options } of phase1Artifacts) {
+    for (const [kind, program] of [
+      ["primitive", primitive],
+      ["user-facing", userFacing]
+    ]) {
+      await assertRenderedPNG(program, {
+        ...options,
+        artifact: { ...options.artifact, kind }
+      });
+    }
   }
 });

@@ -30,6 +30,16 @@ export function createScaleReversePrimitives(cars) {
     .editSemantic({ property: "guide.axis.x.scale", value: "x" })
     .editSemantic({ property: "guide.axis.x.coordinate", value: "main" })
     .editSemantic({ property: "guide.axis.x.title", value: "Horsepower" })
+    .editGraphics({
+      target: "xAxisLine",
+      property: "x1",
+      value: values.baseline.bounds.right
+    })
+    .editGraphics({
+      target: "xAxisLine",
+      property: "x2",
+      value: values.baseline.bounds.left
+    })
     .editGraphics({ target: "points", property: "x", value: values.x })
     .editGraphics({
       target: "xAxisTicks",
@@ -98,73 +108,73 @@ export function createShapeVocabularyPrimitives(cars) {
       property: "children",
       value: values.children
     })
-    .createGraphics({ id: "shapeLegendSymbols", type: "collection" })
+    .createGraphics({ id: "seriesLegendSymbolPoints", type: "collection" })
     .editGraphics({
-      target: "shapeLegendSymbols",
+      target: "seriesLegendSymbolPoints",
       property: "children",
       value: values.legend.symbols
     })
     .createGraphics({
-      id: "shapeLegendLabels",
+      id: "seriesLegendLabels",
       type: "text",
       length: values.legend.labels.length
     })
-    .editGraphics({ target: "shapeLegendLabels", property: "x", value: labelX })
-    .editGraphics({ target: "shapeLegendLabels", property: "y", value: labelY })
+    .editGraphics({ target: "seriesLegendLabels", property: "x", value: labelX })
+    .editGraphics({ target: "seriesLegendLabels", property: "y", value: labelY })
     .editGraphics({
-      target: "shapeLegendLabels",
+      target: "seriesLegendLabels",
       property: "text",
       value: labelText
     })
-    .editGraphics({ target: "shapeLegendLabels", property: "fill", value: "#334155" })
-    .editGraphics({ target: "shapeLegendLabels", property: "fontSize", value: 12 })
+    .editGraphics({ target: "seriesLegendLabels", property: "fill", value: "#334155" })
+    .editGraphics({ target: "seriesLegendLabels", property: "fontSize", value: 12 })
     .editGraphics({
-      target: "shapeLegendLabels",
+      target: "seriesLegendLabels",
       property: "fontFamily",
       value: "sans-serif"
     })
     .editGraphics({
-      target: "shapeLegendLabels",
+      target: "seriesLegendLabels",
       property: "fontWeight",
       value: "normal"
     })
     .editGraphics({
-      target: "shapeLegendLabels",
+      target: "seriesLegendLabels",
       property: "textAlign",
       value: "left"
     })
     .editGraphics({
-      target: "shapeLegendLabels",
+      target: "seriesLegendLabels",
       property: "textBaseline",
       value: "middle"
     })
-    .createGraphics({ id: "shapeLegendTitle", type: "text" })
+    .createGraphics({ id: "seriesLegendTitle", type: "text" })
     .editGraphics({
-      target: "shapeLegendTitle",
+      target: "seriesLegendTitle",
       property: "x",
       value: values.legend.title.x
     })
     .editGraphics({
-      target: "shapeLegendTitle",
+      target: "seriesLegendTitle",
       property: "y",
       value: values.legend.title.y
     })
     .editGraphics({
-      target: "shapeLegendTitle",
+      target: "seriesLegendTitle",
       property: "text",
       value: values.legend.title.text
     })
-    .editGraphics({ target: "shapeLegendTitle", property: "fill", value: "#334155" })
-    .editGraphics({ target: "shapeLegendTitle", property: "fontSize", value: 13 })
+    .editGraphics({ target: "seriesLegendTitle", property: "fill", value: "#334155" })
+    .editGraphics({ target: "seriesLegendTitle", property: "fontSize", value: 13 })
     .editGraphics({
-      target: "shapeLegendTitle",
+      target: "seriesLegendTitle",
       property: "fontFamily",
       value: "sans-serif"
     })
-    .editGraphics({ target: "shapeLegendTitle", property: "fontWeight", value: 600 })
-    .editGraphics({ target: "shapeLegendTitle", property: "textAlign", value: "left" })
+    .editGraphics({ target: "seriesLegendTitle", property: "fontWeight", value: 600 })
+    .editGraphics({ target: "seriesLegendTitle", property: "textAlign", value: "left" })
     .editGraphics({
-      target: "shapeLegendTitle",
+      target: "seriesLegendTitle",
       property: "textBaseline",
       value: "middle"
     });

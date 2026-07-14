@@ -5,6 +5,7 @@ import { normalizeOptions } from "./options.js";
 import {
   resolveCurrentDefinition,
   resolveDefinition,
+  resolveLegendKind,
   resolveTarget,
   sameValues
 } from "./resolve.js";
@@ -43,7 +44,7 @@ export const createCategoricalLegend = action(
   { op: "createCategoricalLegend", description: "Create one categorical legend block." },
   function (args = {}) {
     const layer = resolveTarget(this, args.target);
-    const kind = ["bar", "area"].includes(layer.mark.type) ? "color" : "series";
+    const kind = resolveLegendKind(layer, args.channels);
     const options = normalizeOptions(args, kind);
     if (
       this.semanticSpec.guides.legend?.series !== undefined ||

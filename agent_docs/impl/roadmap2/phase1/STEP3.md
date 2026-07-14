@@ -16,9 +16,9 @@ Gate A에서 승인된 네 primitive를 재현하도록 `editScale`, shared poin
 - [x] `editPointMark` inference/conflict/rematerialization
 - [x] Frozen 68-name palette registry와 sampling
 - [x] Palette count/extent/range conflict/cycling/reverse coverage
-- [ ] 네 approved variant의 user-facing programs와 PNG pair
-- [ ] Primitive/public exact equivalence와 trace tests
-- [ ] Public declarations/docs와 conceptual commits/push
+- [x] 네 approved variant의 user-facing programs와 PNG pair
+- [x] Primitive/public exact equivalence와 trace tests
+- [x] Public declarations/docs와 conceptual commits/push
 
 ## `editScale` 범위
 
@@ -49,3 +49,13 @@ Gate A에서 승인된 네 primitive를 재현하도록 `editScale`, shared poin
 ## 완료 조건
 
 STEP2의 네 variant가 primitive/public pair로 전환되고 gallery에서 `Ready for equivalence review`가 된다.
+
+## 완료 결과
+
+- `scale-reverse`는 `editScale`이 point, axis line, ticks와 labels를 같은 reversed range로 다시 materialize한다.
+- `point-shape-diamond`는 `editPointMark`가 392개 point를 equal-area diamond path로 바꾼다.
+- `shape-vocabulary`는 12개 shared recipe를 mark와 typed-point legend에서 동일하게 사용한다.
+- `categorical-palette`는 palette descriptor를 concrete Set2 colors로 해결하고 explicit point color-only
+  legend를 swatch로 만든다.
+- 네 pair 모두 전체 `graphicSpec`, order와 Canvas calls가 정확히 같고 gallery metadata의 target chain과
+  user-facing program이 일치한다.

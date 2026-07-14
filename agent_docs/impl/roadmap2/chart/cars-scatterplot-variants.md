@@ -44,7 +44,7 @@ Gate 0 승인을 받았으며, public program의 concrete `graphicSpec`, renderi
 | `baseline` | 없음 | canonical equivalence |
 | `scale-reverse` | `.editScale({ id: "x", reverse: true })` | 기존 x scale의 방향 편집 |
 | `point-shape-diamond` | `.editPointMark({ target: "points", shape: "diamond" })` | constant mark appearance 편집 |
-| `shape-vocabulary` | 최초 `.encodeShape({ field: "Name", scale: { range: pointShapes } })` | 12종 shape geometry와 legend recipe |
+| `shape-vocabulary` | 최초 `.encodeShape({ field: "ShapeCategory", scale: { range: pointShapes } })` | 12종 shape geometry와 legend recipe |
 | `categorical-palette` | 최초 `.encodeColor({ field: "Origin", scale: { palette: "set2" } })` | named categorical palette |
 | `encoding-reassignment` | X/Y/color/size/shape encoding 재호출 | 기존 channel binding의 atomic 교체 |
 | `continuous-color-gradient` | `.encodeColor({ field: "Acceleration", fieldType: "quantitative" })` | sequential color와 gradient legend |
@@ -72,7 +72,8 @@ plus, cross, star, hexagon, wye
 12개 shape가 모두 한 번씩 보여야 한다. Size가 동일하면 recipe 종류와 관계없이 동일한 logical target
 area를 나타낸다. 13번째 category는 자동 반복하지 않고 오류다.
 
-Shape legend는 explicit `channels: ["shape"]`를 사용한다. 긴 Name labels와 12개 symbol이 plot과
+Shape legend는 explicit `channels: ["shape"]`, title `"Shape"`, point size `5`, item gap `24`를 사용한다.
+12개 symbol과 labels가 plot과
 겹치지 않도록 variant Canvas는 충분한 right margin을 명시하며 library가 Canvas를 자동 확장하지 않는다.
 
 ### Categorical palette

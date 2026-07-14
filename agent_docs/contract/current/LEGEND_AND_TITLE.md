@@ -29,6 +29,8 @@ type LegendBorder = false | true | {
   `"opacity"`를 추가한다. 생략하면 target의 compatible
   channels를 추론한다. Current legends require categorical channels; Planned sequential color selects
   the gradient contract and field-driven opacity selects the sampled-opacity contract instead of categorical items.
+- Point의 explicit color-only selection은 color swatch legend를 만들고, shape 또는 composite channel
+  선택은 typed point series legend를 만든다.
 - `position`: Implemented `"right" | "bottom" | "top"`와 Planned `"left"`; chart-independent
   default는 `"right"`다.
 - `align`: `"left" | "center" | "right"`, 기본 center. right와 Planned left side position은
@@ -64,7 +66,8 @@ type LegendBorder = false | true | {
 - `target`
   - ✅ Covered: inferred/explicit line, bar, area and compatible point; ambiguity/invalid target.
 - `channels`
-  - ✅ Covered: color, strokeDash, color+strokeDash, point color+shape, duplicates/incompatible combinations.
+  - ✅ Covered: color, strokeDash, color+strokeDash, point color-only swatch, point color+shape,
+    duplicates/incompatible combinations.
   - 🟡 Planned: opacity as a single continuous guide channel; constant opacity and incompatible channel mixes rejected.
 - `position`
   - ✅ Covered: omission→`"right"`, `"right"`, `"bottom"`, `"top"`, invalid value.
@@ -84,7 +87,7 @@ type LegendBorder = false | true | {
 - `symbol`
   - ✅ Covered: `"auto"`, line shorthand, swatch shorthand, layered line+point recipes.
   - ⚠️ Partial: every layer type's zero/max dimensions, fill/stroke combinations and invalid nested keys.
-  - 🟡 Planned: shared 12-shape point layers through the point-shape vocabulary.
+  - ✅ Covered: shared 12-shape point layers through the point-shape vocabulary.
   - 🟡 Planned: point-composite symbols in top/bottom item grids.
   - 🟡 Planned: sequential-color gradient block; categorical symbol recipes remain unchanged.
   - 🟡 Planned: opacity sample points with auto or explicit single-point recipe.

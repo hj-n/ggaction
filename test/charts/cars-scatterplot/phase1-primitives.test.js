@@ -1,6 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+import {
+  createDiamondCarsScatterplot,
+  createPaletteCarsScatterplot,
+  createScaleReverseCarsScatterplot,
+  createShapeVocabularyCarsScatterplot
+} from "../../../examples/cars-scatterplot/program.js";
+import {
+  createMockCanvasContext
+} from "../../support/canvas.js";
 import { loadCars } from "../../support/data.js";
 import {
   createCategoricalPalettePrimitives,
@@ -8,6 +17,7 @@ import {
   createScaleReversePrimitives,
   createShapeVocabularyPrimitives
 } from "./phase1-primitives.program.js";
+import { renderCarsScatterplotPrimitives } from "./primitive.program.js";
 import {
   POINT_SHAPES,
   SET2_COLORS,
@@ -83,8 +93,8 @@ test("builds one normalized symbol for every planned point shape", () => {
   const values = createShapeVocabularyPrimitiveValues(cars);
   const program = createShapeVocabularyPrimitives(cars);
   const points = program.graphicSpec.objects.points.children;
-  const symbols = program.graphicSpec.objects.shapeLegendSymbols.children;
-  const labels = program.graphicSpec.objects.shapeLegendLabels.children;
+  const symbols = program.graphicSpec.objects.seriesLegendSymbolPoints.children;
+  const labels = program.graphicSpec.objects.seriesLegendLabels.children;
 
   assert.deepEqual(values.shapes, POINT_SHAPES);
   assert.equal(values.rows.length, 12);
@@ -126,4 +136,42 @@ test("applies set2 colors consistently to points and a color-only legend", () =>
   assert.deepEqual(symbolColors, SET2_COLORS.slice(0, 3));
   assert.deepEqual(labels, ["USA", "Japan", "Europe"]);
   assert.equal(program.graphicSpec.objects.canvas.properties.width, 760);
+});
+
+test("matches every approved primitive with a user-facing action flow", () => {
+  const shapeRows = createShapeVocabularyPrimitiveValues(cars).rows;
+  const pairs = [
+    [
+      createScaleReversePrimitives(cars),
+      createScaleReverseCarsScatterplot(cars),
+      "editScale"
+    ],
+    [
+      createPointShapeDiamondPrimitives(cars),
+      createDiamondCarsScatterplot(cars),
+      "editPointMark"
+    ],
+    [
+      createShapeVocabularyPrimitives(cars),
+      createShapeVocabularyCarsScatterplot(shapeRows),
+      "createGuides"
+    ],
+    [
+      createCategoricalPalettePrimitives(cars),
+      createPaletteCarsScatterplot(cars),
+      "createGuides"
+    ]
+  ];
+
+  for (const [primitive, publicProgram, finalAction] of pairs) {
+    const primitiveContext = createMockCanvasContext();
+    const publicContext = createMockCanvasContext();
+    renderCarsScatterplotPrimitives(primitive, primitiveContext);
+    renderCarsScatterplotPrimitives(publicProgram, publicContext);
+
+    assert.deepEqual(publicProgram.graphicSpec, primitive.graphicSpec);
+    assert.deepEqual(publicContext.calls, primitiveContext.calls);
+    assert.equal(publicProgram.trace.children.at(-1).op, finalAction);
+    assert.equal(publicProgram.actionStack.length, 0);
+  }
 });
