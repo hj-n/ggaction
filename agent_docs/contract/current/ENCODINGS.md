@@ -96,7 +96,7 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 
 - Implemented: `encodeY({ field?: FieldName; target?: UserId; fieldType?: "quantitative"; scale?: PositionScale; coordinate?: UserId; aggregate?: "mean" | "count"; stack?: "zero" | null })`; mark/x policy가 가능한 조합을 제한한다.
 - Planned (NOT IMPLEMENTED): `{ fieldType?: "temporal" | "ordinal"; aggregate?: "sum" | "median" | "min" | "max" | "distinct" | "valid" | "missing" | "variance" | "varianceP" | "stdev" | "stdevP" | "stderr" | "q1" | "q3" | "ciLower" | "ciUpper" | { op: "quantile"; probability: UnitInterval } | { op: "first" | "last"; orderBy: FieldName; order?: "ascending" | "descending" }; stack?: "normalize"; scale?: { type?: "log" | "pow" | "sqrt" | "symlog" | "utc" | "band" | "point"; base?: PositiveFiniteExceptOne; exponent?: PositiveFinite; constant?: PositiveFinite; clamp?: boolean; reverse?: boolean; unknown?: unknown } }`
-- Proposed (NOT IMPLEMENTED): `{ stack?: "center" }`; `argmin`/`argmax`는 row-selecting transform 후보다.
+- Proposed (NOT IMPLEMENTED): `{ stack?: "center" }`; extreme-row selection은 Planned `selectRows`가 소유한다.
 
 ### Value coverage — `encodeY`
 
@@ -111,7 +111,7 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
     "variance" | "varianceP" | "stdev" | "stdevP" | "stderr" | "q1" | "q3" | "ciLower" |
     "ciUpper"`; final visual grain, sample validity, title/domain inference가 필요하다.
   - 🟡 Planned: parameterized quantile과 ordered first/last.
-  - 🟣 Proposed: `argmin`/`argmax` row-selection transform.
+  - 🟡 Planned: full-row min/max selection은 scalar aggregate가 아닌 `selectRows` transform으로 제공한다.
 - `stack`
   - ✅ Covered: `"zero"`, `null`, incompatible policy rejection.
   - 🟡 Planned: `"normalize"`; non-negative partition과 auto `[0, 1]` domain을 사용한다.

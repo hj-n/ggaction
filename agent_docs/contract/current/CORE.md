@@ -254,6 +254,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 ### Formal values — `createDerivedData`
 
 - Implemented: `createDerivedData({ id: UserId; source: UserId; transform: readonly [FilterTransform | LinearRegressionTransform | GaussianDensityTransform] })`
+- Planned (NOT IMPLEMENTED): `SelectRowsTransform` as one additional single-transform provenance schema.
 - Proposed (NOT IMPLEMENTED): —; one-transform provenance resource라는 현재 역할을 유지한다.
 
 ### Value coverage — `createDerivedData`

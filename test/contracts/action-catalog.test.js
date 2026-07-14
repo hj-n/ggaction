@@ -234,7 +234,8 @@ test("keeps planned direct actions and reassignment gaps explicit", () => {
     "editTitle",
     "editVerticalGrid",
     "encodeX2",
-    "encodeXRange"
+    "encodeXRange",
+    "selectRows"
   ]));
 
   for (const action of index.plannedActions) {
@@ -392,6 +393,10 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   assert.match(plannedCorpus, /`"count"` estimate는 `sum\(K\(u\)\) \/ bandwidth`/);
   assert.match(plannedCorpus, /type FilterComparison =/);
   assert.match(plannedCorpus, /oneOf.*predicate.*range.*정확히 하나/);
+  assert.match(plannedCorpus, /type RowSelectionMode = "min" \| "max"/);
+  assert.match(plannedCorpus, /selectRows\(\{/);
+  assert.match(plannedCorpus, /Extreme value tie는 source order에서 먼저 등장한 row/);
+  assert.doesNotMatch(currentCorpus + plannedCorpus, /argmin.*Proposed|argmax.*Proposed/);
   assert.match(plannedCorpus, /type RegressionMethod = "linear" \| "polynomial" \| "loess"/);
   assert.match(plannedCorpus, /tricube-weighted local-linear fit/);
   assert.match(plannedCorpus, /residualVariance \* \(1 \+ leverage\)/);

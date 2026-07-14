@@ -146,8 +146,9 @@ type AggregateOperation =
   이 정책이 missing category나 zero-valued graphic을 자동 합성하지는 않는다.
 - inferred guide title은 `${aggregate}(${field})`를 사용하고 explicit title은 보존한다. aggregate
   교체는 scale domain, mark geometry, axes와 grids를 deterministic plan으로 rematerialize한다.
-- parameter가 필요한 `quantile`, 정렬 계약이 필요한 `first`/`last`, 원본 row를 선택하는
-  `argmin`/`argmax`는 이 closed string vocabulary에 포함하지 않는다.
+- parameter가 필요한 `quantile`과 정렬 계약이 필요한 `first`/`last`는 별도 accepted aggregate
+  object가 소유한다. Full-row min/max selection은 scalar vocabulary에 포함하지 않고 accepted
+  `selectRows` transform이 소유한다.
 - Status: Planned, NOT IMPLEMENTED. 각 operation의 representative/empty/singleton/missing-value
   fixtures와 line/bar grain, title/domain/rematerialization coverage가 필요하다.
 
@@ -355,8 +356,8 @@ type ParameterizedAggregate =
   않으며 library가 임의의 대체 row를 선택하지 않는다.
 - Guide title, scale domain, mark geometry와 downstream guides는 existing aggregate vocabulary와
   같은 ownership 및 rematerialization 규칙을 사용한다.
-- Row 전체를 선택하는 `argmin | argmax`는 aggregate가 아니라 row-selection transform 후보이므로
-  Proposed로 유지한다.
+- Row 전체를 선택하는 min/max operation은 aggregate가 아니라 accepted `selectRows` transform이
+  소유한다.
 - Status: Planned, NOT IMPLEMENTED. probability boundaries, ties, stable ordering, missing values,
   grouped grain과 rematerialization coverage가 필요하다.
 

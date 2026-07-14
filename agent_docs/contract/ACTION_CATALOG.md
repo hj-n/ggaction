@@ -89,6 +89,7 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | `editVerticalGrid` | accepted | [Open](planned/EDITING.md#directional-grid-edits) |
 | `encodeX2` | accepted | [Open](planned/ENCODINGS.md#horizontal-ranged-position) |
 | `encodeXRange` | accepted | [Open](planned/ENCODINGS.md#horizontal-ranged-position) |
+| `selectRows` | accepted | [Open](planned/DATA_AND_STATISTICS.md#selectrows) |
 
 ## Planned capabilities
 

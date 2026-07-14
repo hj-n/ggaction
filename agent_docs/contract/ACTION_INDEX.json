@@ -1250,6 +1250,15 @@
         "file": "agent_docs/contract/planned/ENCODINGS.md",
         "anchor": "horizontal-ranged-position"
       }
+    },
+    {
+      "name": "selectRows",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/DATA_AND_STATISTICS.md",
+        "anchor": "selectrows"
+      }
     }
   ],
   "plannedCapabilities": [
