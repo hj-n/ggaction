@@ -192,8 +192,8 @@ properties, rematerialization ownership과 conflict behavior를 정해야 한다
 | `createCoordinate` | Structural create-only | Create another coordinate and rebind encodings | Intentional |
 | `createScale` | Stable resource, edit gap | Equivalent recreation only | `editScale` — Planned |
 | `createDerivedData` | Immutable create-only | Create a new derived dataset ID | Intentional |
-| `createRegressionBand` | Stable create-only | Planned `editAreaMark` owns appearance updates | Intentional |
-| `createRegressionLine` | Stable create-only | Planned `editLineMark` owns appearance updates | Intentional |
+| `createRegressionBand` | Stable resource, edit gap | Generic area edit is insufficient for regression design | `editRegressionBand` — Planned |
+| `createRegressionLine` | Stable resource, edit gap | Generic line edit is insufficient for regression design | `editRegressionLine` — Planned |
 | `editSemantic` | Primitive | Assigns one semantic property | Complete |
 | `createGraphics` | Primitive | `editGraphics` | Complete |
 | `editGraphics` | Primitive | Edits one graphical property | Complete |
@@ -210,6 +210,8 @@ action이다. Contract readiness가 `Accepted`인 action만 구현을 시작할 
 | `editLegend` | Planned | Accepted |
 | `editLineMark` | Planned | Accepted |
 | `editPointMark` | Planned | Accepted |
+| `editRegressionBand` | Planned | Pending parameter review |
+| `editRegressionLine` | Planned | Pending parameter review |
 | `editScale` | Planned | Pending parameter review |
 | `editTitle` | Planned | Accepted |
 | `editVerticalGrid` | Planned | Accepted |

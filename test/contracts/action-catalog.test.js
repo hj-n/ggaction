@@ -297,13 +297,20 @@ test("classifies every direct action lifecycle and keeps edit gaps explicit", ()
     "Structural create-only"
   );
   assert.equal(
-    rows.find(row => row.action === "createRegressionBand")?.lifecycle,
-    "Stable create-only"
+    rows.find(row => row.action === "createRegressionBand")?.audit,
+    "`editRegressionBand` — Planned"
   );
   assert.equal(
-    rows.find(row => row.action === "createRegressionLine")?.lifecycle,
-    "Stable create-only"
+    rows.find(row => row.action === "createRegressionLine")?.audit,
+    "`editRegressionLine` — Planned"
   );
+  for (const action of ["editRegressionBand", "editRegressionLine"]) {
+    assert.equal(
+      planned.find(row => row.action === action)?.readiness,
+      "Pending parameter review",
+      action
+    );
+  }
 });
 
 test("keeps one value coverage and proposal ledger for every direct action", () => {
