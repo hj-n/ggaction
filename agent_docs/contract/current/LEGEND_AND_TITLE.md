@@ -25,9 +25,10 @@ type LegendBorder = false | true | {
 
 - Signature: `createLegend({ target?, channels?, position?, align?, direction?, columns?, offset?, titlePosition?, title?, symbol?, labels?, titleStyle?, itemGap?, border?, count? })`.
 - `target`: compatible mark ID; 생략하면 current 또는 유일한 eligible mark를 추론한다.
-- `channels`: unique subset of `"color" | "strokeDash" | "shape"`; 생략하면 target의 compatible
+- `channels`: Implemented unique subset of `"color" | "strokeDash" | "shape"`, Planned vocabulary는
+  `"opacity"`를 추가한다. 생략하면 target의 compatible
   channels를 추론한다. Current legends require categorical channels; Planned sequential color selects
-  the gradient contract instead of categorical items.
+  the gradient contract and field-driven opacity selects the sampled-opacity contract instead of categorical items.
 - `position`: Implemented `"right" | "bottom" | "top"`와 Planned `"left"`; chart-independent
   default는 `"right"`다.
 - `align`: `"left" | "center" | "right"`, 기본 center. right와 Planned left side position은
@@ -49,13 +50,13 @@ type LegendBorder = false | true | {
 - Coverage: series/histogram/grouped-bar/top/regression legend tests가 주요 layouts, recipes,
   borders, rematerialization과 invalid values를 검증한다. 모든 symbol-layer parameter pair는 부분적이다.
 - Planned: left categorical/point-composite/size side layout, point-composite top/bottom layout and
-  continuous-color gradient legend.
+  continuous-color gradient and field-driven opacity legends.
 - Proposed: —
 
 ### Formal values — `createLegend`
 
 - Implemented: `createLegend({ target?: UserId; channels?: readonly ("color" | "strokeDash" | "shape")[]; position?: LegendPosition; align?: LegendAlign; direction?: LegendDirection; columns?: PositiveInteger; offset?: NonNegativeFinite; titlePosition?: "top" | "left"; title?: NonEmptyString; symbol?: "auto" | LegendSymbolLayer | { layers: readonly LegendSymbolLayer[] }; labels?: TextStyle; titleStyle?: TextStyle; itemGap?: PositiveFinite; border?: LegendBorder; count?: IntegerAtLeast2 } = {})`
-- Planned (NOT IMPLEMENTED): `{ position?: PlannedLegendPosition; gradient?: { length?: PositiveFinite; thickness?: PositiveFinite } }`; left supports categorical, point-composite and size side layouts, top/bottom support layered point-composite symbols, and sequential color uses a continuous gradient block.
+- Planned (NOT IMPLEMENTED): `{ channels?: readonly ("color" | "strokeDash" | "shape" | "opacity")[]; position?: PlannedLegendPosition; gradient?: { length?: PositiveFinite; thickness?: PositiveFinite } }`; left supports categorical, point-composite and size side layouts, top/bottom support layered point-composite symbols, sequential color uses a continuous gradient block, and field-driven opacity uses sampled point symbols.
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createLegend`
@@ -64,6 +65,7 @@ type LegendBorder = false | true | {
   - ✅ Covered: inferred/explicit line, bar, area and compatible point; ambiguity/invalid target.
 - `channels`
   - ✅ Covered: color, strokeDash, color+strokeDash, point color+shape, duplicates/incompatible combinations.
+  - 🟡 Planned: opacity as a single continuous guide channel; constant opacity and incompatible channel mixes rejected.
 - `position`
   - ✅ Covered: omission→`"right"`, `"right"`, `"bottom"`, `"top"`, invalid value.
   - 🟡 Planned: `"left"`; categorical, point-composite/size parity and left-margin geometry.
@@ -85,6 +87,7 @@ type LegendBorder = false | true | {
   - 🟡 Planned: shared 12-shape point layers through the point-shape vocabulary.
   - 🟡 Planned: point-composite symbols in top/bottom item grids.
   - 🟡 Planned: sequential-color gradient block; categorical symbol recipes remain unchanged.
+  - 🟡 Planned: opacity sample points with auto or explicit single-point recipe.
 - `labels`, `titleStyle`
   - ✅ Covered: representative color/font overrides and invalid styles.
   - ⚠️ Partial: numeric/string fontWeight boundaries across every position.
@@ -94,10 +97,10 @@ type LegendBorder = false | true | {
   - ✅ Covered: omission/`false`, `true`, explicit color/lineWidth/padding/background and invalid objects.
 - `count`
   - ✅ Covered: omission→5, integer `>=2`, `<2`/non-integer rejection for size block.
-  - 🟡 Planned: gradient tick-label count with the same boundary contract.
+  - 🟡 Planned: gradient tick-label and opacity sample count with the same boundary contract.
 - `gradient`
   - 🟡 Planned: positive length/thickness, position-derived orientation and categorical-option conflicts.
-- 🟡 Planned: left point-composite/size side layout, point-composite top/bottom layout and continuous color legends.
+- 🟡 Planned: left point-composite/size side layout, point-composite top/bottom layout, continuous color and opacity legends.
 - Evidence: series, histogram, grouped-bar, top categorical and regression legend tests.
 
 ## `createGuides`
@@ -114,7 +117,8 @@ type LegendBorder = false | true | {
 ### Formal values — `createGuides`
 
 - Implemented: `createGuides({ axes?: false | Parameters<ChartProgram["createAxes"]>[0]; grid?: false | Parameters<ChartProgram["createGrid"]>[0]; legend?: false | Parameters<ChartProgram["createLegend"]>[0] } = {})`
-- Planned (NOT IMPLEMENTED): nested axes가 top/right positions, nested legend가 left position을 전달한다.
+- Planned (NOT IMPLEMENTED): nested axes가 top/right positions, nested legend가 left position과
+  continuous-color/opacity applicability를 전달한다.
 - Proposed (NOT IMPLEMENTED): —; new guide type requires an approved child action first.
 
 ### Value coverage — `createGuides`
@@ -123,7 +127,7 @@ type LegendBorder = false | true | {
   - ✅ Covered: omission/applicability inference, `{}` explicit selection, nested options, `false` opt-out.
   - ✅ Covered: unsupported/non-object values, no selected guide and ambiguous child errors.
   - ⚠️ Partial: explicit selection of all three with every nested option family simultaneously.
-- 🟡 Planned: nested top/right axes와 left legend forwarding.
+- 🟡 Planned: nested top/right axes, left legend forwarding and automatic continuous-color/opacity legend selection.
 - No proposal: title remains intentionally separate. New guide types should be added only with a concrete domain action.
 - Evidence: `test/unit/actions/guides/guide-collection-actions.test.js` and density/regression guide tests.
 

@@ -103,6 +103,28 @@ type GradientLegendOptions = {
   title/border styles, invalid categorical options, margin errors, rematerialization and browser/PNG parity
   coverage가 필요하다.
 
+## field-driven opacity legend
+
+- `createLegend({ channels: ["opacity"] })` requires one field-driven quantitative point opacity encoding.
+  Constant opacity has no scale and is ineligible. The first contract does not combine opacity with color,
+  shape, strokeDash or size in one legend block.
+- `count` is the requested representative sample count, default `5` and minimum `2`. Values come from the
+  opacity scale's shared continuous tick generator in ascending domain order, then map through the resolved
+  opacity range; reversed ranges change symbol appearance without changing label order.
+- Auto symbol uses the target point's unambiguous constant shape, radius/fill/stroke and applies only the
+  sampled opacity. If shape, size or color is field-driven, that property falls back to the documented neutral
+  recipe `{ shape: "circle", radius: 5, fill: "#4c78a8" }`. An explicit `symbol` must be one point layer;
+  line, swatch and layered recipes are rejected.
+- Right/left positions lay samples top-to-bottom and top/bottom positions left-to-right. `direction`, `columns`
+  and `gradient` are incompatible. Title, titlePosition, labels/titleStyle, offset, itemGap and border retain
+  their existing contracts. Symbols render over the resolved legend background, or Canvas background when none.
+- Semantic guide state stores opacity scale/channel/title. Concrete circles and labels are materialized with
+  explicit opacity values. Opacity domain/range/policy, point recipe, Canvas/background or legend edit invokes
+  wrapped `rematerializeLegend`; occupied bounds must fit without resizing the Canvas.
+- Status: Planned, NOT IMPLEMENTED. default/explicit count, transformed scales, reversed ranges, constant and
+  field-driven appearance fallback, four positions, title/border/background, conflicts, rematerialization and
+  browser/PNG parity coverage가 필요하다.
+
 ## chart title positions
 
 - `createTitle.position`과 Planned `editTitle.position`은 `"top" | "bottom" | "left" | "right"`를

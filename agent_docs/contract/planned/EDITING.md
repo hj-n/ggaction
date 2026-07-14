@@ -157,6 +157,8 @@ editLegend({
   point-composite contract는 existing top/bottom item grid 안에서 같은 symbol recipe를 유지한다.
 - Sequential color legend에서 `gradient`와 `count`는 concrete block geometry와 tick labels를 갱신한다.
   Categorical-only symbol/grid options과 gradient options를 섞으면 오류다.
+- Field-driven opacity legend에서 `count`는 sample values를 다시 만들고 `symbol`은 single-point recipe만
+  허용한다. Constant-opacity target 또는 incompatible channel mix는 오류다.
 - action은 내부 wrapped `rematerializeLegend`를 호출한다. compatible point size block에서
   `count`가 바뀌면 stored count를 갱신하고 `rematerializeSizeLegend`도 호출한다.
 - overlap, margin 부족, incompatible option과 없는/ambiguous target은 명확한 오류다.

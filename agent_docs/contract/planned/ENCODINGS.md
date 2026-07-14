@@ -509,8 +509,9 @@ type PlannedOpacityEncoding =
   materialization order에 독립적이어야 한다.
 - 같은 action의 reassignment는 constant↔constant, field↔field와 constant↔field를 atomic하게
   교체한다. Unreferenced named scale은 자동 삭제하지 않는다.
-- 첫 contract는 opacity legend를 자동 생성하거나 `createLegend` channel로 노출하지 않는다.
-  Opacity legend는 별도 Proposed guide contract다.
+- Constant mode는 legend channel을 만들지 않는다. Field mode는 explicit `createLegend({ channels:
+  ["opacity"] })`와 aggregate `createGuides` inference에 eligible하며 concrete guide behavior는
+  [field-driven opacity legend](GUIDES_AND_LAYOUT.md#field-driven-opacity-legend)가 소유한다.
 - Status: Planned, NOT IMPLEMENTED. default/explicit domains and ranges, boundary opacity, mode
-  exclusivity and switching, shared scale conflicts, appearance call order, Canvas rematerialization
-  and no-legend behavior coverage가 필요하다.
+  exclusivity and switching, shared scale conflicts, appearance call order, legend integration, Canvas
+  rematerialization and renderer parity coverage가 필요하다.

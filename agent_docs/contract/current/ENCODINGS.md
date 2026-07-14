@@ -438,7 +438,7 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 
 - Implemented: `encodeOpacity({ value: UnitInterval; target?: UserId })`
 - Planned (NOT IMPLEMENTED): `encodeOpacity({ field: FieldName; target?: UserId; fieldType?: "quantitative"; scale?: { id?: UserId; type?: "linear" | "log" | "pow" | "sqrt" | "symlog"; domain?: ContinuousDomain; range?: "auto" | readonly [UnitInterval, UnitInterval]; nice?: boolean; zero?: boolean; clamp?: boolean; reverse?: boolean } })`; field와 value는 mutually exclusive.
-- Proposed (NOT IMPLEMENTED): opacity legend.
+- Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `encodeOpacity`
 
@@ -449,7 +449,7 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 - Reassignment
   - ✅ Covered: same action replaces the stored constant and concrete child opacity immutably.
 - 🟡 Planned: field-driven quantitative opacity, auto range `[0.2, 1]` and atomic constant↔field reassignment.
-- 🟣 Proposed: opacity legend.
+- 🟡 Planned: field-driven opacity legend with target-derived point recipe and continuous scale samples.
 - Evidence: point appearance and regression tests.
 
 ## `encodeRadius`
