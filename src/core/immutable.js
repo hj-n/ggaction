@@ -51,3 +51,44 @@ export function cloneAndFreeze(value, ancestors = new WeakSet()) {
   ancestors.delete(value);
   return freezeOwned(clone);
 }
+
+export function removeOwnedPath(source, path) {
+  if (!isPlainObject(source)) {
+    throw new TypeError("Structural removal requires a plain object source.");
+  }
+  if (
+    !Array.isArray(path) ||
+    path.length === 0 ||
+    !path.every(key => typeof key === "string" && key.length > 0)
+  ) {
+    throw new TypeError("Structural removal path must contain names.");
+  }
+
+  const [key, ...rest] = path;
+  if (!Object.hasOwn(source, key)) {
+    return { value: source, removed: false };
+  }
+
+  if (rest.length === 0) {
+    const { [key]: removedValue, ...remaining } = source;
+    void removedValue;
+    return { value: freezeOwned(remaining), removed: true };
+  }
+
+  const child = source[key];
+  if (!isPlainObject(child)) {
+    return { value: source, removed: false };
+  }
+  const removed = removeOwnedPath(child, rest);
+  if (!removed.removed) return { value: source, removed: false };
+
+  if (Object.keys(removed.value).length === 0) {
+    const { [key]: emptyChild, ...remaining } = source;
+    void emptyChild;
+    return { value: freezeOwned(remaining), removed: true };
+  }
+  return {
+    value: freezeOwned({ ...source, [key]: removed.value }),
+    removed: true
+  };
+}

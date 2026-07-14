@@ -28,6 +28,87 @@ test("creates and replaces semantic properties without mutating earlier programs
   assert.equal(withData.trace.children.at(-1).op, "editSemantic");
 });
 
+test("removes semantic encoding and guide branches with structural pruning", () => {
+  const encoded = chart()
+    .editSemantic({
+      property: "layer[points].mark.type",
+      value: "point"
+    })
+    .editSemantic({
+      property: "layer[points].encoding.opacity.field",
+      value: "value"
+    })
+    .editSemantic({
+      property: "layer[points].encoding.opacity.fieldType",
+      value: "quantitative"
+    })
+    .editSemantic({
+      property: "guide.legend.opacity.scale",
+      value: "opacity"
+    });
+  const withoutEncoding = encoded.editSemantic({
+    property: "layer[points].encoding.opacity",
+    remove: true
+  });
+  const withoutGuide = withoutEncoding.editSemantic({
+    property: "guide.legend.opacity",
+    remove: true
+  });
+  const idempotent = withoutGuide.editSemantic({
+    property: "guide.legend.opacity",
+    remove: true
+  });
+
+  assert.equal(encoded.semanticSpec.layers[0].encoding.opacity.field, "value");
+  assert.deepEqual(withoutEncoding.semanticSpec.layers[0], {
+    id: "points",
+    mark: { type: "point" }
+  });
+  assert.deepEqual(withoutGuide.semanticSpec.guides, {});
+  assert.equal(idempotent.semanticSpec, withoutGuide.semanticSpec);
+  assert.deepEqual(idempotent.trace.children.at(-1).args, {
+    property: "guide.legend.opacity",
+    remove: true
+  });
+});
+
+test("validates semantic removal mode and preserves dataset immutability", () => {
+  const data = chart().editSemantic({
+    property: "dataset[cars].values",
+    value: []
+  });
+
+  assert.throws(
+    () => data.editSemantic({
+      property: "dataset[cars].values",
+      remove: true
+    }),
+    /immutable after creation/
+  );
+  assert.throws(
+    () => chart().editSemantic({
+      property: "layer[points].encoding.opacity",
+      value: 1,
+      remove: true
+    }),
+    /cannot combine value and remove/
+  );
+  assert.throws(
+    () => chart().editSemantic({
+      property: "layer[points].encoding.opacity",
+      remove: "yes"
+    }),
+    /remove must be a boolean/
+  );
+  assert.throws(
+    () => chart().editSemantic({
+      property: "layer[points].encoding.unknown",
+      remove: true
+    }),
+    /Unknown semantic property/
+  );
+});
+
 test("takes ownership of dataset rows and keeps datasets immutable", () => {
   const rows = Object.freeze([{ nested: { value: 1 } }]);
   const program = chart().editSemantic({

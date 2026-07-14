@@ -245,6 +245,18 @@ test("atomically replaces field dash with a constant and removes its legend", ()
       "rematerializeLineMark"
     ]
   );
+  const clearNode = constant.trace.children.at(-1).children[0];
+  assert.deepEqual(clearNode.children.map(child => child.op), ["editSemantic"]);
+  assert.deepEqual(clearNode.children[0].args, {
+    property: "layer[trends].encoding.strokeDash",
+    remove: true
+  });
+  const removeNode = constant.trace.children.at(-1).children[2];
+  assert.equal(removeNode.children[0].op, "editSemantic");
+  assert.equal(
+    removeNode.children.filter(child => child.op === "editGraphics").length > 0,
+    true
+  );
   assert.deepEqual(field.semanticSpec.guides.legend.series.channels, ["strokeDash"]);
 });
 

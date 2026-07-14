@@ -1141,7 +1141,7 @@
       "domain": "primitives",
       "status": "implemented",
       "lifecycle": "Primitive",
-      "update": "Assigns one semantic property",
+      "update": "Assigns or removes one semantic property",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
@@ -1177,7 +1177,7 @@
       "domain": "primitives",
       "status": "implemented",
       "lifecycle": "Primitive",
-      "update": "Edits one graphical property",
+      "update": "Edits one graphical property or removes one top-level graphic",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",

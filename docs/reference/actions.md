@@ -381,9 +381,9 @@ are available on programs used by extension actions.
 | API | Signature |
 | --- | --- |
 | Wrapper | `action({ op, description }, implementation)` |
-| Semantic primitive | `editSemantic({ property, value })` |
+| Semantic primitive | `editSemantic({ property, value })` or `editSemantic({ property, remove: true })` |
 | Graphic primitive | `createGraphics({ id, type, length?, before?, after? })` |
-| Graphic primitive | `editGraphics({ target, property, value })` |
+| Graphic primitive | `editGraphics({ target, property, value })` or `editGraphics({ target, remove: true })` |
 | Scale actions | `createScale({ id, type?, domain?, range?, nice?, zero? })`, `editScale({ id?, domain?, range?, nice?, zero?, clamp?, reverse? })` |
 
 See [Action authoring](../extension/action-authoring.md) and

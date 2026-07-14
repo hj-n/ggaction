@@ -111,9 +111,22 @@ test("creates ascending opacity samples and removes them in constant mode", () =
 
   const constantProgram = fieldProgram.encodeOpacity({ value: 0.5 });
   assert.equal(constantProgram.semanticSpec.layers[0].encoding.opacity, undefined);
-  assert.equal(constantProgram.semanticSpec.guides.legend.opacity, undefined);
-  assert.equal(constantProgram.guideConfigs.legend.opacity, undefined);
+  assert.equal(constantProgram.semanticSpec.guides.legend?.opacity, undefined);
+  assert.equal(constantProgram.guideConfigs.legend?.opacity, undefined);
   assert.equal(constantProgram.graphicSpec.objects.opacityLegendSymbols, undefined);
+  const encodeNode = constantProgram.trace.children.at(-1);
+  const removeNode = encodeNode.children.find(
+    child => child.op === "removeOpacityLegend"
+  );
+  assert.equal(removeNode.children[0].op, "editSemantic");
+  assert.deepEqual(removeNode.children[0].args, {
+    property: "guide.legend.opacity",
+    remove: true
+  });
+  assert.equal(
+    removeNode.children.filter(child => child.op === "editGraphics").length,
+    3
+  );
 });
 
 test("infers the only field-opacity legend through createGuides", () => {

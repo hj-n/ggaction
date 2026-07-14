@@ -1,5 +1,10 @@
 import { action } from "../../core/action.js";
-import { cloneAndFreeze, freezeOwned, isPlainObject } from "../../core/immutable.js";
+import {
+  cloneAndFreeze,
+  freezeOwned,
+  isPlainObject,
+  removeOwnedPath
+} from "../../core/immutable.js";
 import { parseSemanticPath } from "../../grammar/schemas/semanticPath.js";
 import { validateSemanticValue } from "./semanticValue.js";
 
@@ -67,17 +72,57 @@ function updateTitle(spec, parsed, value) {
   });
 }
 
+function removeEntity(spec, parsed) {
+  const collection = spec[parsed.collection];
+  const index = collection.findIndex(item => item.id === parsed.id);
+  if (index === -1) return spec;
+  if (parsed.kind === "dataset") {
+    throw new Error(`Dataset "${parsed.id}" is immutable after creation.`);
+  }
+  const removed = removeOwnedPath(collection[index], parsed.path);
+  if (!removed.removed) return spec;
+  const nextCollection = [...collection];
+  nextCollection[index] = removed.value;
+  return freezeOwned({
+    ...spec,
+    [parsed.collection]: freezeOwned(nextCollection)
+  });
+}
+
+function removeRootProperty(spec, root, path) {
+  const removed = removeOwnedPath(spec[root], path);
+  return removed.removed
+    ? freezeOwned({ ...spec, [root]: removed.value })
+    : spec;
+}
+
 const editSemantic = action(
   {
     op: "editSemantic",
-    description: "Create or replace one semantic property."
+    description: "Create, replace, or remove one semantic property."
   },
-  function ({ property, value } = {}) {
-    if (value === undefined) {
+  function ({ property, value, remove = false } = {}) {
+    if (typeof remove !== "boolean") {
+      throw new TypeError("editSemantic remove must be a boolean.");
+    }
+    if (remove && value !== undefined) {
+      throw new Error("editSemantic cannot combine value and remove.");
+    }
+    if (!remove && value === undefined) {
       throw new TypeError("editSemantic requires a value.");
     }
 
-    const parsed = parseSemanticPath(property);
+    const parsed = parseSemanticPath(property, { allowContainer: remove });
+    if (remove) {
+      const semanticSpec = parsed.kind === "guide"
+        ? removeRootProperty(this.semanticSpec, "guides", parsed.path)
+        : parsed.kind === "title"
+          ? removeRootProperty(this.semanticSpec, "title", parsed.path)
+          : removeEntity(this.semanticSpec, parsed);
+      return semanticSpec === this.semanticSpec
+        ? this
+        : this._clone({ semanticSpec });
+    }
     validateSemanticValue(this, parsed, value);
 
     const semanticSpec = parsed.kind === "guide"

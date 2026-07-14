@@ -17,6 +17,52 @@ test("edits a single graphic without mutating an earlier program", () => {
   assert.equal(resized.trace.children.at(-1).op, "editGraphics");
 });
 
+test("removes one top-level graphic and its render-order entry", () => {
+  const program = chart()
+    .createGraphics({ id: "canvas", type: "canvas" })
+    .createGraphics({ id: "legend", type: "rect" });
+  const removed = program.editGraphics({ target: "legend", remove: true });
+
+  assert.equal(program.graphicSpec.objects.legend.type, "rect");
+  assert.deepEqual(removed.graphicSpec, {
+    objects: { canvas: program.graphicSpec.objects.canvas },
+    order: ["canvas"]
+  });
+  assert.deepEqual(removed.trace.children.at(-1).args, {
+    target: "legend",
+    remove: true
+  });
+});
+
+test("validates whole-graphic removal mode", () => {
+  const program = chart().createGraphics({
+    id: "points",
+    type: "circle",
+    length: 2
+  });
+
+  assert.throws(
+    () => program.editGraphics({
+      target: "points",
+      property: "x",
+      remove: true
+    }),
+    /cannot include property or value/
+  );
+  assert.throws(
+    () => program.editGraphics({ target: "points", remove: "yes" }),
+    /remove must be a boolean/
+  );
+  assert.throws(
+    () => program.editGraphics({ target: "points:0", remove: true }),
+    /cannot remove a generated child/
+  );
+  assert.throws(
+    () => program.editGraphics({ target: "missing", remove: true }),
+    /Unknown graphic target/
+  );
+});
+
 test("distributes arrays and broadcasts scalar values to collection children", () => {
   const points = chart().createGraphics({
     id: "points",

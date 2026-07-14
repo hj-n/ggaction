@@ -99,6 +99,12 @@ export type ScaleRange = "auto" | readonly unknown[] | {
   readonly palette: Palette;
 };
 export type ActionOptions = Record<string, unknown>;
+export type EditSemanticOptions =
+  | { property: string; value: unknown; remove?: false }
+  | { property: string; remove: true; value?: never };
+export type EditGraphicsOptions =
+  | { target: string; property: string; value: unknown; remove?: false }
+  | { target: string; remove: true; property?: never; value?: never };
 
 export interface TraceNode {
   readonly id: string;
@@ -402,7 +408,7 @@ export class ChartProgram {
   createRegressionBand(options: ActionOptions & { id: string }): ChartProgram;
   createRegressionLine(options: ActionOptions & { id: string }): ChartProgram;
 
-  editSemantic(options: { property: string; value: unknown }): ChartProgram;
+  editSemantic(options: EditSemanticOptions): ChartProgram;
   createGraphics(options: {
     id: string;
     type: GraphicType;
@@ -410,5 +416,5 @@ export class ChartProgram {
     before?: string;
     after?: string;
   }): ChartProgram;
-  editGraphics(options: { target: string; property: string; value: unknown }): ChartProgram;
+  editGraphics(options: EditGraphicsOptions): ChartProgram;
 }

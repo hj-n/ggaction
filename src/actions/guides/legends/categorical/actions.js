@@ -1,5 +1,5 @@
 import { action } from "../../../../core/action.js";
-import { cloneAndFreeze, isPlainObject } from "../../../../core/immutable.js";
+import { isPlainObject } from "../../../../core/immutable.js";
 import { noOptions, resolveLayout, activeConfig } from "./layout.js";
 import { normalizeOptions } from "./options.js";
 import {
@@ -274,43 +274,15 @@ export const removeCategoricalLegend = action(
     }
     const kind = entries[0];
     const prefix = kind === "series" ? "seriesLegend" : "colorLegend";
-    const { [kind]: semanticRemoved, ...semanticLegend } =
-      this.semanticSpec.guides.legend ?? {};
-    const { [kind]: configRemoved, ...legendConfigs } =
-      this.guideConfigs.legend ?? {};
-    void semanticRemoved;
-    void configRemoved;
-    const { legend: semanticLegendRoot, ...guidesWithoutLegend } =
-      this.semanticSpec.guides;
-    const guides = Object.keys(semanticLegend).length === 0
-      ? guidesWithoutLegend
-      : { ...guidesWithoutLegend, legend: semanticLegend };
-    void semanticLegendRoot;
-    const { legend: configLegendRoot, ...configsWithoutLegend } =
-      this.materializationConfigs.guides;
-    const guideConfigs = Object.keys(legendConfigs).length === 0
-      ? configsWithoutLegend
-      : { ...configsWithoutLegend, legend: legendConfigs };
-    void configLegendRoot;
-    const removed = new Set(
-      Object.keys(this.graphicSpec.objects).filter(id => id.startsWith(prefix))
-    );
-
-    return this._clone({
-      semanticSpec: cloneAndFreeze({
-        ...this.semanticSpec,
-        guides
-      }),
-      graphicSpec: cloneAndFreeze({
-        objects: Object.fromEntries(
-          Object.entries(this.graphicSpec.objects).filter(([id]) => !removed.has(id))
-        ),
-        order: this.graphicSpec.order.filter(id => !removed.has(id))
-      }),
-      materializationConfigs: cloneAndFreeze({
-        ...this.materializationConfigs,
-        guides: guideConfigs
-      })
+    const targets = Object.keys(this.graphicSpec.objects)
+      .filter(id => id.startsWith(prefix));
+    let next = this.editSemantic({
+      property: `guide.legend.${kind}`,
+      remove: true
     });
+    for (const target of targets) {
+      next = next.editGraphics({ target, remove: true });
+    }
+    return next._withoutMaterializationConfig(["guides", "legend", kind]);
   }
 );

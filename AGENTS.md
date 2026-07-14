@@ -22,6 +22,7 @@
 - There is no automatic compiler from `semanticSpec` to `graphicSpec`.
 - Every domain action must explicitly define and invoke the graphical materialization required by its semantic changes.
 - `editSemantic`, `createGraphics`, and `editGraphics` are low-level authoring primitives exposed through the public extension layer, not the ordinary chart-authoring API.
+- Express semantic branch removal through `editSemantic({ property, remove: true })` and top-level graphic removal through `editGraphics({ target, remove: true })`. Domain and internal wrapped actions must compose these primitives instead of directly cloning semantic or graphic state; private materialization-config cleanup must use the canonical structural removal helper.
 - Users interact through domain-specific actions.
 
 ## Source Ownership and Module Boundaries

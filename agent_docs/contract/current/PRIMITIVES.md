@@ -4,13 +4,15 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 
 ## `editSemantic`
 
-- Signature: `editSemantic({ property, value })`.
+- Signature: `editSemantic({ property, value }) | editSemantic({ property, remove: true })`.
 - `property`: 필수 supported semantic path string. user ID selector는 `dataset[id]`, `layer[id]`,
   `scale[id]`, `coordinate[id]`; system guide keys는 `guide.axis.x` 같은 closed path를 사용한다.
 - `value`: selected path schema에 맞는 scalar, object 또는 array. caller-owned nested value를 복사/freeze한다.
   `encoding.y.aggregate`는 accepted scalar aggregate token과 parameterized quantile/ordered object를
   primitive authoring state로 저장할 수 있다. 이 primitive validation은 aggregate 계산이나 graphical
   materialization을 수행하지 않는다.
+- `remove`: `true`일 때 value 대신 supported encoding channel 또는 legend branch를 삭제하고 empty
+  parent object를 prune한다. Dataset state는 삭제할 수 없다.
 - Effect: 해당 path만 structural copy하고 기존 program을 보존한다. path가 dataset/layer/scale/coordinate를
   가리키면 current context를 내부적으로 갱신할 수 있다. graphic rematerialization은 자동으로 하지 않는다.
 - 오류: unknown path, closed vocabulary 위반, invalid transform/scale/guide value, existing source dataset
@@ -20,7 +22,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 
 ### Formal values — `editSemantic`
 
-- Implemented: `editSemantic({ property: SemanticPropertyPath; value: ValueForSemanticPath<typeof property> })`; path/value pair는 semantic grammar의 closed schema다.
+- Implemented: `editSemantic({ property: SemanticPropertyPath; value: ValueForSemanticPath<typeof property> }) | editSemantic({ property: RemovableSemanticPath; remove: true })`; assignment와 removal은 mutually exclusive다.
 - Proposed (NOT IMPLEMENTED): —
 - Maybe Future (NOT IMPLEMENTED): wildcard path, multi-property object 또는 batch edit.
 
@@ -37,6 +39,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   - ⚠️ Partial: every transform schema leaf and every guide semantic leaf direct coverage.
 - Effect
   - ✅ Covered: structural copy and context inference without automatic graphic compilation.
+  - ✅ Covered: encoding/legend branch removal, empty-parent pruning, idempotence와 dataset immutability.
 - Evidence: `test/unit/actions/primitives/edit-semantic.test.js`.
 
 ## `createGraphics`
@@ -76,7 +79,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 
 ## `editGraphics`
 
-- Signature: `editGraphics({ target, property, value })`.
+- Signature: `editGraphics({ target, property, value }) | editGraphics({ target, remove: true })`.
 - `target`: existing top-level graphic ID 또는 generated child ID(`points:1`).
 - `property`: selected graphic type가 지원하는 concrete property. 공통 opaque style bag은 허용하지 않는다.
 - `value`
@@ -85,6 +88,8 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   - collection + outer array: child count와 길이가 같으면 index별 distribute. path `points`처럼 property
     자체가 nested array인 경우 한 child value 단위를 보존한다.
   - `children`: heterogeneous collection의 typed child object array를 원자적으로 교체한다.
+- `remove`: `true`일 때 property/value 없이 top-level graphic 전체와 render order entry를 삭제한다.
+  Generated child의 독립 삭제는 허용하지 않는다.
 - Effect: concrete graphic path만 structural copy한다. semantic state나 automatic compiler는 관여하지 않는다.
 - 오류: unknown target/property, incompatible child type, mismatched distributed length, non-finite geometry,
   negative dimensions/strokes, opacity 밖의 값과 invalid Canvas text vocabulary를 거부한다.
@@ -94,7 +99,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 
 ### Formal values — `editGraphics`
 
-- Implemented: `editGraphics({ target: UserId | GeneratedChildId; property: GraphicPropertyForTarget; value: GraphicValueForProperty })`; one property per action, collection scalar broadcast 또는 exact-length distribution.
+- Implemented: assignment `editGraphics({ target: UserId | GeneratedChildId; property: GraphicPropertyForTarget; value: GraphicValueForProperty })` 또는 top-level removal `editGraphics({ target: UserId; remove: true })`; 두 mode는 mutually exclusive다.
 - Planned (NOT IMPLEMENTED): path `{ property: "commands"; value: readonly ConcretePathCommand[] }` after the atomic points-to-commands migration.
 - Proposed (NOT IMPLEMENTED): —
 - Maybe Future (NOT IMPLEMENTED): multi-property dictionary/batch edit.
@@ -103,6 +108,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 
 - `target`
   - ✅ Covered: top-level ID, generated child ID, unknown target.
+  - ✅ Covered: top-level removal과 order cleanup, generated child removal rejection.
 - `property`
   - ✅ Covered: type-specific canvas/circle/rect/line/text/path properties, `length`, heterogeneous `children`.
   - ⚠️ Partial: every valid property does not yet have all boundary classes in direct primitive tests.

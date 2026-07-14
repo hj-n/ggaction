@@ -1,5 +1,4 @@
 import { action } from "../../core/action.js";
-import { cloneAndFreeze } from "../../core/immutable.js";
 import {
   readNominalField,
   readQuantitativeField
@@ -139,13 +138,9 @@ const clearOpacityEncoding = action(
   function ({ target } = {}) {
     const layer = findLayer(this, target);
     if (layer?.encoding?.opacity === undefined) return this;
-    const { opacity, ...encoding } = layer.encoding;
-    void opacity;
-    const layers = this.semanticSpec.layers.map(item =>
-      item.id === target ? { ...item, encoding } : item
-    );
-    return this._clone({
-      semanticSpec: cloneAndFreeze({ ...this.semanticSpec, layers })
+    return this.editSemantic({
+      property: `layer[${target}].encoding.opacity`,
+      remove: true
     });
   }
 );
@@ -179,6 +174,7 @@ const encodeOpacity = action(
         : this.removeOpacityLegend();
       return withoutLegend
         .clearOpacityEncoding({ target })
+        ._withoutMaterializationConfig(["marks", target, "opacity"])
         ._withMarkConfig(target, { ...config, opacity: args.value })
         .rematerializePointMark({ id: target });
     }
@@ -196,7 +192,7 @@ const encodeOpacity = action(
     const { opacity, ...config } = this.markConfigs[target] ?? {};
     void opacity;
     let next = this
-      ._withMarkConfig(target, config)
+      ._withoutMaterializationConfig(["marks", target, "opacity"])
       .editSemantic({
         property: `layer[${target}].encoding.opacity.field`,
         value: args.field

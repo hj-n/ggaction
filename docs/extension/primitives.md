@@ -8,10 +8,10 @@ title: Primitive Extension API
 These methods are the low-level public extension layer, not the recommended
 chart-authoring API.
 
-## `editSemantic({ property, value })`
+## `editSemantic({ property, value | remove })`
 
-Creates or replaces one supported semantic property and structurally copies the
-changed path.
+Creates, replaces, or removes one supported semantic branch and structurally
+copies the changed path.
 
 ```javascript
 program.editSemantic({
@@ -23,6 +23,19 @@ program.editSemantic({
 Property paths use singular user-ID selectors such as `layer[points]` and
 library-defined keys such as `encoding.x.field`. Unknown paths are rejected.
 Dataset values cannot be replaced after creation.
+
+Use `remove: true` instead of `value` to remove one supported semantic branch.
+Empty parent objects are pruned, the earlier program remains unchanged, and the
+removal is recorded as an `editSemantic` trace node. Current removable container
+paths are encoding channels such as `layer[points].encoding.opacity` and legend
+branches such as `guide.legend.opacity`. Dataset state remains immutable.
+
+```javascript
+program.editSemantic({
+  property: "layer[points].encoding.opacity",
+  remove: true
+});
+```
 
 The primitive semantic grammar also supports the current line-chart contract,
 including temporal field types, `mean` aggregation, `strokeDash` encodings,
@@ -147,9 +160,9 @@ The regression scatterplot baseline in
 uses a heterogeneous point collection, grouped filled confidence-band paths,
 grouped line paths, and two concrete legends.
 
-## `editGraphics({ target, property, value })`
+## `editGraphics({ target, property, value | remove })`
 
-Sets one validated concrete property.
+Sets one validated concrete property or removes one top-level graphic.
 
 ```javascript
 program.editGraphics({
@@ -163,6 +176,17 @@ For a homogeneous or heterogeneous collection, an outer array distributes
 values by index and must match its length. A non-array value is broadcast to
 every child that supports the property. Nested arrays and objects remain one
 value per child. Generated child IDs such as `points:1` can be targeted.
+
+Use `remove: true` without `property` or `value` to remove an entire top-level
+graphic and its render-order entry. A generated collection child cannot be
+removed independently; resize or replace its owning collection instead.
+
+```javascript
+program.editGraphics({
+  target: "opacityLegendSymbols",
+  remove: true
+});
+```
 
 Authoring and rendering share the same concrete value contract. Numeric
 geometry must be finite, dimensions and stroke widths cannot be negative,

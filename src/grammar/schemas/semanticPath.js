@@ -25,6 +25,9 @@ const ENTITY_PATHS = Object.freeze({
   },
   layer: {
     collection: "layers",
+    removableContainers: new Set(
+      ENCODING_CHANNELS.map(channel => `encoding.${channel}`)
+    ),
     properties: new Set([
       "data",
       "coordinate",
@@ -68,13 +71,20 @@ const GUIDE_PATHS = new Set([
   "grid.vertical.coordinate"
 ]);
 
+const GUIDE_REMOVABLE_CONTAINERS = new Set([
+  "legend.color",
+  "legend.size",
+  "legend.opacity",
+  "legend.series"
+]);
+
 const TITLE_PATHS = new Set(["text", "subtitle"]);
 
 function splitPropertyPath(property) {
   return property.split(".");
 }
 
-export function parseSemanticPath(property) {
+export function parseSemanticPath(property, { allowContainer = false } = {}) {
   if (typeof property !== "string" || property.length === 0) {
     throw new TypeError("editSemantic requires a non-empty property string.");
   }
@@ -89,7 +99,10 @@ export function parseSemanticPath(property) {
     const [, kind, id, propertyPath] = entityMatch;
     const definition = ENTITY_PATHS[kind];
 
-    if (!definition.properties.has(propertyPath)) {
+    if (
+      !definition.properties.has(propertyPath) &&
+      !(allowContainer && definition.removableContainers?.has(propertyPath))
+    ) {
       throw new Error(`Unknown semantic property "${property}".`);
     }
 
@@ -104,7 +117,10 @@ export function parseSemanticPath(property) {
   if (property.startsWith("guide.")) {
     const propertyPath = property.slice("guide.".length);
 
-    if (!GUIDE_PATHS.has(propertyPath)) {
+    if (
+      !GUIDE_PATHS.has(propertyPath) &&
+      !(allowContainer && GUIDE_REMOVABLE_CONTAINERS.has(propertyPath))
+    ) {
       throw new Error(`Unknown semantic property "${property}".`);
     }
 

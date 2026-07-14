@@ -97,7 +97,7 @@ test("assigns and reassigns field-driven opacity atomically", () => {
   const reassigned = field.encodeOpacity({ field: "x" });
   const restored = reassigned.encodeOpacity({ value: 0.6 });
 
-  assert.equal(field.markConfigs.points.opacity, undefined);
+  assert.equal(field.markConfigs.points?.opacity, undefined);
   assert.deepEqual(field.semanticSpec.layers[0].encoding.opacity, {
     field: "amount",
     fieldType: "quantitative",
@@ -109,7 +109,7 @@ test("assigns and reassigns field-driven opacity atomically", () => {
   );
   assert.equal(reassigned.semanticSpec.layers[0].encoding.opacity.field, "x");
   assert.deepEqual(reassigned.resolvedScales.opacity.domain, [0, 10]);
-  assert.equal(restored.semanticSpec.layers[0].encoding.opacity, undefined);
+  assert.equal(restored.semanticSpec.layers[0].encoding?.opacity, undefined);
   assert.deepEqual(
     restored.graphicSpec.objects.points.children.map(child => child.properties.opacity),
     [0.6, 0.6]

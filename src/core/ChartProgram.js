@@ -7,7 +7,8 @@ import {
   cloneAndFreeze,
   freezeOwned,
   isOwned,
-  isPlainObject
+  isPlainObject,
+  removeOwnedPath
 } from "./immutable.js";
 import {
   createEmptyGraphicSpec,
@@ -183,6 +184,25 @@ export class ChartProgram {
         path,
         config
       )
+    });
+  }
+
+  _withoutMaterializationConfig(path) {
+    if (
+      !Array.isArray(path) ||
+      path.length === 0 ||
+      !path.every(key => typeof key === "string" && key.length > 0)
+    ) {
+      throw new TypeError("Materialization config path must contain names.");
+    }
+    const removed = removeOwnedPath(this.materializationConfigs, path);
+    if (!removed.removed) return this;
+    return this._clone({
+      materializationConfigs: freezeOwned({
+        ...removed.value,
+        marks: removed.value.marks ?? freezeOwned({}),
+        guides: removed.value.guides ?? freezeOwned({})
+      })
     });
   }
 

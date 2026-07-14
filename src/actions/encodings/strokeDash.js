@@ -1,5 +1,4 @@
 import { action } from "../../core/action.js";
-import { cloneAndFreeze } from "../../core/immutable.js";
 import {
   normalizeStrokeDashPattern,
   readNominalField,
@@ -28,13 +27,9 @@ const clearStrokeDashEncoding = action(
   function ({ target } = {}) {
     const layer = this.semanticSpec.layers.find(item => item.id === target);
     if (layer?.encoding?.strokeDash === undefined) return this;
-    const { strokeDash, ...encoding } = layer.encoding;
-    void strokeDash;
-    const layers = this.semanticSpec.layers.map(item =>
-      item.id === target ? { ...item, encoding } : item
-    );
-    return this._clone({
-      semanticSpec: cloneAndFreeze({ ...this.semanticSpec, layers })
+    return this.editSemantic({
+      property: `layer[${target}].encoding.strokeDash`,
+      remove: true
     });
   }
 );

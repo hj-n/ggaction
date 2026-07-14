@@ -85,3 +85,16 @@ test("keeps the local source import graph acyclic", () => {
 
   for (const file of files) visit(file);
 });
+
+test("keeps semantic and graphic cloning inside primitive actions", () => {
+  const actionRoot = path.join(root, "actions");
+  for (const file of sourceFiles(actionRoot)) {
+    const source = readFileSync(file, "utf8");
+    if (!source.includes("._clone(")) continue;
+    assert.equal(
+      path.relative(actionRoot, file).split(path.sep)[0],
+      "primitives",
+      `${path.relative(root, file)} must compose primitive removal actions`
+    );
+  }
+});

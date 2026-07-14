@@ -162,18 +162,43 @@ function editStructuralGraphic(object, property, value) {
 const editGraphics = action(
   {
     op: "editGraphics",
-    description: "Create or replace one concrete graphic property."
+    description: "Create, replace, or remove concrete graphic state."
   },
-  function ({ target, property, value } = {}) {
+  function ({ target, property, value, remove = false } = {}) {
     if (typeof target !== "string" || target.length === 0) {
       throw new TypeError("editGraphics requires a non-empty target string.");
     }
 
-    if (value === undefined) {
+    if (typeof remove !== "boolean") {
+      throw new TypeError("editGraphics remove must be a boolean.");
+    }
+    if (remove && (property !== undefined || value !== undefined)) {
+      throw new Error("editGraphics target removal cannot include property or value.");
+    }
+
+    if (!remove && value === undefined) {
       throw new TypeError("editGraphics requires a value.");
     }
 
     const found = findGraphicTarget(this.graphicSpec, target);
+    if (remove) {
+      if (found.childIndex !== undefined) {
+        throw new Error(
+          "editGraphics cannot remove a generated child independently."
+        );
+      }
+      const { [found.id]: removedObject, ...objects } =
+        this.graphicSpec.objects;
+      void removedObject;
+      return this._clone({
+        graphicSpec: freezeOwned({
+          objects: freezeOwned(objects),
+          order: freezeOwned(
+            this.graphicSpec.order.filter(id => id !== found.id)
+          )
+        })
+      });
+    }
     const convertsToCollection =
       found.childIndex === undefined &&
       property === "children" &&

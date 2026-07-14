@@ -223,3 +223,26 @@ test("stores only canonical legend config kinds", () => {
     /Unknown legend kind/
   );
 });
+
+test("removes private materialization config paths with structural pruning", () => {
+  const configured = chart()
+    ._withMarkConfig("points", { opacity: 0.5 })
+    ._withLegendConfig("opacity", { target: "points" });
+  const withoutOpacity = configured
+    ._withoutMaterializationConfig(["marks", "points", "opacity"])
+    ._withoutMaterializationConfig(["guides", "legend", "opacity"]);
+
+  assert.deepEqual(configured.markConfigs, {
+    points: { opacity: 0.5 }
+  });
+  assert.deepEqual(withoutOpacity.materializationConfigs, {
+    marks: {},
+    guides: {}
+  });
+  assert.equal(
+    withoutOpacity._withoutMaterializationConfig([
+      "guides", "legend", "opacity"
+    ]),
+    withoutOpacity
+  );
+});

@@ -1,5 +1,5 @@
 import { action } from "../../../../core/action.js";
-import { cloneAndFreeze, isPlainObject } from "../../../../core/immutable.js";
+import { isPlainObject } from "../../../../core/immutable.js";
 import { validateKeys } from "../../../../core/validation.js";
 import { mapLinearValues } from "../../../../grammar/scales.js";
 import { DEFAULT_COLORS } from "../../../../theme/defaults.js";
@@ -345,40 +345,23 @@ export const removeOpacityLegend = action(
   function (args = {}) {
     validateKeys(args, [], "removeOpacityLegend");
     if (this.guideConfigs.legend?.opacity === undefined) return this;
-    const { opacity: semanticOpacity, ...semanticLegend } =
-      this.semanticSpec.guides.legend ?? {};
-    const { opacity: configOpacity, ...legendConfigs } =
-      this.guideConfigs.legend ?? {};
-    void semanticOpacity;
-    void configOpacity;
-    const removed = new Set([
+    const targets = [
       "opacityLegendBackground",
       "opacityLegendSymbols",
       "opacityLegendLabels",
       "opacityLegendTitle"
-    ]);
-    return this._clone({
-      semanticSpec: cloneAndFreeze({
-        ...this.semanticSpec,
-        guides: {
-          ...this.semanticSpec.guides,
-          legend: semanticLegend
-        }
-      }),
-      graphicSpec: cloneAndFreeze({
-        objects: Object.fromEntries(
-          Object.entries(this.graphicSpec.objects)
-            .filter(([id]) => !removed.has(id))
-        ),
-        order: this.graphicSpec.order.filter(id => !removed.has(id))
-      }),
-      materializationConfigs: cloneAndFreeze({
-        ...this.materializationConfigs,
-        guides: {
-          ...this.materializationConfigs.guides,
-          legend: legendConfigs
-        }
-      })
+    ];
+    let next = this.editSemantic({
+      property: "guide.legend.opacity",
+      remove: true
     });
+    for (const target of targets) {
+      if (next.graphicSpec.objects[target] !== undefined) {
+        next = next.editGraphics({ target, remove: true });
+      }
+    }
+    return next._withoutMaterializationConfig([
+      "guides", "legend", "opacity"
+    ]);
   }
 );
