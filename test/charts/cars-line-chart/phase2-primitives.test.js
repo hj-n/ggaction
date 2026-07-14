@@ -11,11 +11,21 @@ import {
 } from "../../support/canvas.js";
 import { loadCars } from "../../support/data.js";
 import {
+  createConstantDashPrimitives,
   createCurveMonotoneEditPrimitives,
-  createCurveStepPrimitives
+  createCurveStepPrimitives,
+  createDashReassignmentPrimitives,
+  createGroupReassignmentPrimitives,
+  createNamedDashVocabularyPrimitives
 } from "./phase2-primitives.program.js";
 import {
+  DEFAULT_DASH_PATTERNS,
+  NAMED_DASH_PATTERNS,
   createCarsLineCurvePrimitiveValues,
+  createConstantDashPrimitiveValues,
+  createDashReassignmentPrimitiveValues,
+  createGroupReassignmentPrimitiveValues,
+  createNamedDashPrimitiveValues,
   createMonotoneReferenceCommands,
   createStepReferenceCommands
 } from "./phase2-reference-values.js";
@@ -183,5 +193,135 @@ test("matches approved curve primitives with user-facing action flows", () => {
     assert.deepEqual(publicContext.calls, primitiveContext.calls);
     assert.equal(publicProgram.trace.children.at(-1).op, finalAction);
     assert.deepEqual(publicProgram.actionStack, []);
+  }
+});
+
+test("locks named and default dash recipes independently", () => {
+  assert.deepEqual(NAMED_DASH_PATTERNS, {
+    solid: [],
+    dashed: [6, 4],
+    dotted: [1, 3],
+    dashdot: [6, 3, 1, 3]
+  });
+  assert.deepEqual(DEFAULT_DASH_PATTERNS, [
+    [], [8, 4], [3, 3], [12, 4], [8, 3, 2, 3]
+  ]);
+});
+
+test("authors four named dash styles and a matching dash legend", () => {
+  const values = createNamedDashPrimitiveValues(cars);
+  const program = createNamedDashVocabularyPrimitives(cars);
+  const context = createMockCanvasContext();
+
+  renderCarsLineChartPrimitives(program, context);
+
+  assert.deepEqual(values.keys, [8, 4, 6, 3]);
+  assert.equal(values.validCars.some(row => row.Cylinders === 5), false);
+  assert.deepEqual(
+    program.semanticSpec.scales.find(scale => scale.id === "strokeDash").range,
+    ["solid", "dashed", "dotted", "dashdot"]
+  );
+  assert.deepEqual(
+    program.graphicSpec.objects.trends.children.map(child => child.properties.strokeDash),
+    Object.values(NAMED_DASH_PATTERNS)
+  );
+  assert.deepEqual(
+    program.graphicSpec.objects.seriesLegendSymbols.children.map(
+      child => child.properties.strokeDash
+    ),
+    Object.values(NAMED_DASH_PATTERNS)
+  );
+  assert.deepEqual(
+    program.graphicSpec.objects.seriesLegendLabels.children.map(
+      child => child.properties.text
+    ),
+    ["8", "4", "6", "3"]
+  );
+  assert.equal(findCanvasCalls(context, "setLineDash").length > 0, true);
+});
+
+test("authors a scale-free constant dotted line after legend cleanup", () => {
+  const values = createConstantDashPrimitiveValues(cars);
+  const program = createConstantDashPrimitives(cars);
+
+  assert.equal(values.series.length, 1);
+  assert.deepEqual(program.semanticSpec.layers[0].encoding.strokeDash, {
+    datum: "dotted"
+  });
+  assert.deepEqual(
+    program.semanticSpec.scales.map(scale => scale.id),
+    ["x", "y", "originDash"]
+  );
+  assert.equal(program.semanticSpec.guides.legend, undefined);
+  assert.deepEqual(program.graphicSpec.order, ["canvas", "trends"]);
+  assert.deepEqual(
+    program.graphicSpec.objects.trends.children[0].properties.strokeDash,
+    [1, 3]
+  );
+});
+
+test("authors group-only Cylinder series with no scale or legend", () => {
+  const values = createGroupReassignmentPrimitiveValues(cars);
+  const program = createGroupReassignmentPrimitives(cars);
+
+  assert.deepEqual(values.keys, [8, 4, 6, 3, 5]);
+  assert.deepEqual(program.semanticSpec.layers[0].encoding.group, {
+    field: "Cylinders",
+    fieldType: "nominal"
+  });
+  assert.equal(program.semanticSpec.layers[0].encoding.strokeDash, undefined);
+  assert.equal(program.semanticSpec.guides.legend, undefined);
+  assert.equal(program.graphicSpec.objects.trends.children.length, 5);
+  assert.deepEqual(
+    program.graphicSpec.objects.trends.children.map(child => child.properties.strokeDash),
+    [[], [], [], [], []]
+  );
+});
+
+test("authors dash reassignment with retained old scale and refreshed legend", () => {
+  const values = createDashReassignmentPrimitiveValues(cars);
+  const program = createDashReassignmentPrimitives(cars);
+
+  assert.deepEqual(values.keys, [8, 4, 6, 3, 5]);
+  assert.deepEqual(program.semanticSpec.layers[0].encoding.strokeDash, {
+    field: "Cylinders",
+    fieldType: "nominal",
+    scale: "strokeDash"
+  });
+  assert.deepEqual(
+    program.semanticSpec.scales.map(scale => scale.id),
+    ["x", "y", "originDash", "strokeDash"]
+  );
+  assert.deepEqual(program.semanticSpec.guides.legend.series, {
+    channels: ["strokeDash"],
+    scales: ["strokeDash"],
+    title: "Cylinders"
+  });
+  assert.deepEqual(
+    program.graphicSpec.objects.trends.children.map(child => child.properties.strokeDash),
+    DEFAULT_DASH_PATTERNS
+  );
+  assert.deepEqual(
+    program.graphicSpec.objects.seriesLegendLabels.children.map(
+      child => child.properties.text
+    ),
+    ["8", "4", "6", "3", "5"]
+  );
+});
+
+test("keeps dash and reassignment targets primitive-only", () => {
+  for (const program of [
+    createNamedDashVocabularyPrimitives(cars),
+    createConstantDashPrimitives(cars),
+    createGroupReassignmentPrimitives(cars),
+    createDashReassignmentPrimitives(cars)
+  ]) {
+    const operations = program.trace.children.map(node => node.op);
+    for (const futureAction of [
+      "createLineMark", "encodeGroup", "encodeStrokeDash", "createLegend"
+    ]) {
+      assert.equal(operations.includes(futureAction), false, futureAction);
+    }
+    assert.deepEqual(program.actionStack, []);
   }
 });

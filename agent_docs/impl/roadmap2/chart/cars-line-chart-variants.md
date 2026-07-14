@@ -106,8 +106,9 @@ legend component는 제거한다.
 series partition에 참여하면 같은 field여야 한다. 두 coupled fields를 서로 다른 값으로 만드는 중간 상태를
 허용하지 않으며 library가 unrelated companion을 임의로 고치지 않는다.
 
-`named-dash-vocabulary`는 first-appearance order에서 유효한 네 Cylinder category를 사용해 네 style을 한 번씩
-보여준다. `group-reassignment`는 group-only line, `dash-reassignment`는 dash-owned line에서 실행해 다른
+`named-dash-vocabulary`는 first-appearance Cylinder order의 첫 네 값 `[8, 4, 6, 3]`을 사용하고 5-cylinder
+row를 제외해 네 style을 한 번씩 보여준다. `group-reassignment`는 group-only line,
+`dash-reassignment`는 dash-owned line에서 실행해 다른
 companion channel과의 의도적 conflict를 우회하지 않는다. Companion conflict 자체는 failure test로 남긴다.
 
 ## Aggregate 계약

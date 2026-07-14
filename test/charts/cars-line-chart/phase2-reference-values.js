@@ -1,5 +1,20 @@
 import { createCarsLineChartValues } from "./reference-values.js";
 
+const LINE_COLOR = "#4c78a8";
+const NAMED_DASH_PATTERNS = Object.freeze({
+  solid: Object.freeze([]),
+  dashed: Object.freeze([6, 4]),
+  dotted: Object.freeze([1, 3]),
+  dashdot: Object.freeze([6, 3, 1, 3])
+});
+const DEFAULT_DASH_PATTERNS = Object.freeze([
+  Object.freeze([]),
+  Object.freeze([8, 4]),
+  Object.freeze([3, 3]),
+  Object.freeze([12, 4]),
+  Object.freeze([8, 3, 2, 3])
+]);
+
 function freezeCommands(commands) {
   return Object.freeze(commands.map(command => Object.freeze(command)));
 }
@@ -114,3 +129,173 @@ export function createCarsLineCurvePrimitiveValues(
     )
   });
 }
+
+function mapValue(value, domain, range) {
+  if (domain[0] === domain[1]) return (range[0] + range[1]) / 2;
+  return range[0] +
+    ((value - domain[0]) / (domain[1] - domain[0])) *
+    (range[1] - range[0]);
+}
+
+function niceStep(span, count = 5) {
+  const rough = span / Math.max(1, count);
+  const power = 10 ** Math.floor(Math.log10(rough));
+  const fraction = rough / power;
+  const factor = fraction <= 1 ? 1 : fraction <= 2 ? 2
+    : fraction <= 3 ? 3 : fraction <= 5 ? 5 : 10;
+  return factor * power;
+}
+
+function niceDomain(values) {
+  const minimum = Math.min(...values);
+  const maximum = Math.max(...values);
+  const step = niceStep(maximum - minimum);
+  return Object.freeze([
+    Math.floor(minimum / step) * step,
+    Math.ceil(maximum / step) * step
+  ]);
+}
+
+function linearCommands(points) {
+  return freezeCommands(points.map((point, index) => ({
+    op: index === 0 ? "M" : "L",
+    x: point.x,
+    y: point.y
+  })));
+}
+
+function normalizeSeriesRows(cars, seriesField) {
+  if (!Array.isArray(cars)) {
+    throw new TypeError("Cars must be an array.");
+  }
+  return cars.flatMap(row => {
+    const time = typeof row.Year === "string" ? Date.parse(row.Year) : NaN;
+    const key = seriesField === undefined ? "all" : row[seriesField];
+    const nominal = typeof key === "string" || typeof key === "boolean" ||
+      (typeof key === "number" && Number.isFinite(key));
+    return Number.isFinite(time) && Number.isFinite(row.Acceleration) && nominal
+      ? [{ row, time, key }]
+      : [];
+  });
+}
+
+function createSeriesValues(
+  cars,
+  {
+    seriesField,
+    includeKeys,
+    dashPatterns,
+    constantDash,
+    width = 720,
+    height = 460,
+    margin = { top: 80, right: 170, bottom: 60, left: 80 }
+  } = {}
+) {
+  let rows = normalizeSeriesRows(cars, seriesField);
+  if (includeKeys !== undefined) {
+    const allowed = new Set(includeKeys);
+    rows = rows.filter(item => allowed.has(item.key));
+  }
+  if (rows.length === 0) {
+    throw new Error("Line-series primitive requires valid rows.");
+  }
+
+  const groups = new Map();
+  for (const item of rows) {
+    const id = JSON.stringify([item.key, item.time]);
+    const group = groups.get(id) ?? {
+      key: item.key,
+      time: item.time,
+      sum: 0,
+      count: 0
+    };
+    group.sum += item.row.Acceleration;
+    group.count += 1;
+    groups.set(id, group);
+  }
+
+  const aggregates = [...groups.values()].map(group => ({
+    key: group.key,
+    time: group.time,
+    value: group.sum / group.count
+  }));
+  const keys = [...new Set(rows.map(item => item.key))];
+  const xDomain = Object.freeze([
+    Math.min(...aggregates.map(item => item.time)),
+    Math.max(...aggregates.map(item => item.time))
+  ]);
+  const yDomain = niceDomain(aggregates.map(item => item.value));
+  const xRange = Object.freeze([margin.left, width - margin.right]);
+  const yRange = Object.freeze([height - margin.bottom, margin.top]);
+  const series = keys.map((key, index) => {
+    const values = aggregates
+      .filter(item => item.key === key)
+      .sort((left, right) => left.time - right.time);
+    const points = values.map(item => Object.freeze({
+      x: mapValue(item.time, xDomain, xRange),
+      y: mapValue(item.value, yDomain, yRange)
+    }));
+    const strokeDash = constantDash ?? dashPatterns?.[index % dashPatterns.length] ?? [];
+    return Object.freeze({
+      key,
+      values: Object.freeze(values),
+      points: Object.freeze(points),
+      commands: linearCommands(points),
+      stroke: LINE_COLOR,
+      strokeWidth: 2,
+      strokeDash: Object.freeze([...strokeDash])
+    });
+  });
+  if (series.some(item => item.points.length < 2)) {
+    throw new Error("Every line-series primitive requires at least two points.");
+  }
+
+  const legendY = Object.freeze(keys.map((_, index) => 132 + index * 28));
+  return Object.freeze({
+    validCars: Object.freeze(rows.map(item => item.row)),
+    keys: Object.freeze(keys),
+    series: Object.freeze(series),
+    scales: Object.freeze({
+      x: Object.freeze({ domain: xDomain, range: xRange }),
+      y: Object.freeze({ domain: yDomain, range: yRange })
+    }),
+    legend: Object.freeze({
+      x1: 580,
+      x2: 612,
+      labelX: 622,
+      titleX: 580,
+      titleY: 100,
+      itemY: legendY
+    })
+  });
+}
+
+export function createNamedDashPrimitiveValues(cars) {
+  const cylinderOrder = [
+    ...new Set(normalizeSeriesRows(cars, "Cylinders").map(item => item.key))
+  ].slice(0, 4);
+  return createSeriesValues(cars, {
+    seriesField: "Cylinders",
+    includeKeys: cylinderOrder,
+    dashPatterns: Object.values(NAMED_DASH_PATTERNS)
+  });
+}
+
+export function createConstantDashPrimitiveValues(cars) {
+  return createSeriesValues(cars, {
+    constantDash: NAMED_DASH_PATTERNS.dotted
+  });
+}
+
+export function createGroupReassignmentPrimitiveValues(cars) {
+  return createSeriesValues(cars, { seriesField: "Cylinders" });
+}
+
+export function createDashReassignmentPrimitiveValues(cars) {
+  return createSeriesValues(cars, {
+    seriesField: "Cylinders",
+    dashPatterns: DEFAULT_DASH_PATTERNS
+  });
+}
+
+export { DEFAULT_DASH_PATTERNS, NAMED_DASH_PATTERNS };

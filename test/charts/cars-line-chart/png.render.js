@@ -9,8 +9,12 @@ import { loadCars } from "../../support/data.js";
 import { assertRenderedPNG } from "../../support/png.js";
 import { createCarsLineChartPrimitives } from "./primitive.program.js";
 import {
+  createConstantDashPrimitives,
   createCurveMonotoneEditPrimitives,
-  createCurveStepPrimitives
+  createCurveStepPrimitives,
+  createDashReassignmentPrimitives,
+  createGroupReassignmentPrimitives,
+  createNamedDashVocabularyPrimitives
 } from "./phase2-primitives.program.js";
 
 const cars = loadCars();
@@ -125,6 +129,114 @@ const curveArtifacts = Object.freeze([
   })
 ]);
 
+const dashPrimitiveArtifacts = Object.freeze([
+  Object.freeze({
+    artifact: Object.freeze({
+      roadmap: "roadmap2",
+      chart: "cars-line-chart",
+      variant: "named-dash-vocabulary",
+      title: "Named Dash Vocabulary",
+      userFacingCallChain: `chart()
+  .createCanvas({
+    width: 720,
+    height: 460,
+    margin: { top: 80, right: 170, bottom: 60, left: 80 }
+  })
+  .createData({ id: "cars", values: namedDashRows })
+  .createLineMark({ id: "trends" })
+  .encodeX({ field: "Year", fieldType: "temporal", scale: { nice: true } })
+  .encodeY({
+    field: "Acceleration",
+    aggregate: "mean",
+    scale: { nice: true, zero: false }
+  })
+  .encodeStrokeDash({
+    field: "Cylinders",
+    scale: { range: ["solid", "dashed", "dotted", "dashdot"] }
+  })
+  .createLegend();`
+    }),
+    primitive: createNamedDashVocabularyPrimitives(cars)
+  }),
+  Object.freeze({
+    artifact: Object.freeze({
+      roadmap: "roadmap2",
+      chart: "cars-line-chart",
+      variant: "constant-dash",
+      title: "Constant Dotted Line",
+      userFacingCallChain: `chart()
+  .createCanvas({
+    width: 720,
+    height: 460,
+    margin: { top: 80, right: 170, bottom: 60, left: 80 }
+  })
+  .createData({ id: "cars", values: rows })
+  .createLineMark({ id: "trends" })
+  .encodeX({ field: "Year", fieldType: "temporal", scale: { nice: true } })
+  .encodeY({
+    field: "Acceleration",
+    aggregate: "mean",
+    scale: { nice: true, zero: false }
+  })
+  .encodeStrokeDash({ field: "Origin", scale: { id: "originDash" } })
+  .createLegend()
+  .encodeStrokeDash({ value: "dotted" });`
+    }),
+    primitive: createConstantDashPrimitives(cars)
+  }),
+  Object.freeze({
+    artifact: Object.freeze({
+      roadmap: "roadmap2",
+      chart: "cars-line-chart",
+      variant: "group-reassignment",
+      title: "Group Reassignment",
+      userFacingCallChain: `chart()
+  .createCanvas({
+    width: 720,
+    height: 460,
+    margin: { top: 80, right: 170, bottom: 60, left: 80 }
+  })
+  .createData({ id: "cars", values: rows })
+  .createLineMark({ id: "trends" })
+  .encodeX({ field: "Year", fieldType: "temporal", scale: { nice: true } })
+  .encodeY({
+    field: "Acceleration",
+    aggregate: "mean",
+    scale: { nice: true, zero: false }
+  })
+  .encodeGroup({ field: "Origin" })
+  .encodeGroup({ field: "Cylinders" });`
+    }),
+    primitive: createGroupReassignmentPrimitives(cars)
+  }),
+  Object.freeze({
+    artifact: Object.freeze({
+      roadmap: "roadmap2",
+      chart: "cars-line-chart",
+      variant: "dash-reassignment",
+      title: "Dash Reassignment",
+      userFacingCallChain: `chart()
+  .createCanvas({
+    width: 720,
+    height: 460,
+    margin: { top: 80, right: 170, bottom: 60, left: 80 }
+  })
+  .createData({ id: "cars", values: rows })
+  .createLineMark({ id: "trends" })
+  .encodeX({ field: "Year", fieldType: "temporal", scale: { nice: true } })
+  .encodeY({
+    field: "Acceleration",
+    aggregate: "mean",
+    scale: { nice: true, zero: false }
+  })
+  .encodeStrokeDash({ field: "Origin", scale: { id: "originDash" } })
+  .createLegend()
+  .encodeStrokeDash({ field: "Cylinders" });`
+    }),
+    primitive: createDashReassignmentPrimitives(cars)
+  })
+]);
+
 test("renders the public and primitive line charts with visible series", async () => {
   const programs = [
     ["cars-line-chart", "user-facing", createCarsLineChart(cars)],
@@ -161,5 +273,14 @@ test("renders the public and primitive line charts with visible series", async (
         colors: ["#4c78a8", "#f58518", "#e45756"]
       });
     }
+  }
+
+  for (const { artifact, primitive } of dashPrimitiveArtifacts) {
+    await assertRenderedPNG(primitive, {
+      artifact: { ...artifact, kind: "primitive" },
+      width: 720,
+      height: 460,
+      colors: ["#4c78a8"]
+    });
   }
 });
