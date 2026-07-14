@@ -140,10 +140,13 @@ const rematerializePointMark = action(
 
     const x = resolveMappedValues(this, layer, dataset, "x");
     const y = resolveMappedValues(this, layer, dataset, "y");
-    const fill = resolveMappedValues(this, layer, dataset, "color");
+    const mappedFill = resolveMappedValues(this, layer, dataset, "color");
     const area = resolveMappedValues(this, layer, dataset, "size");
     const encodedShape = resolveMappedValues(this, layer, dataset, "shape");
     const encodedOpacity = resolveMappedValues(this, layer, dataset, "opacity");
+    const fill = mappedFill ?? (
+      encodedOpacity === undefined ? undefined : DEFAULT_POINT_FILL
+    );
     const config = this.markConfigs[id] ?? {};
     const shapes = encodedShape ?? dataset.values.map(() => config.shape ?? "circle");
     const existingChildren = graphic.children ?? [];
@@ -157,7 +160,7 @@ const rematerializePointMark = action(
       const children = dataset.values.map((_, index) => {
         const shape = shapes[index];
         const existing = existingChildren[index]?.properties ?? {};
-        const color = fill?.[index] ?? existing.fill ?? DEFAULT_POINT_FILL;
+        const color = mappedFill?.[index] ?? existing.fill ?? DEFAULT_POINT_FILL;
         const opacity = encodedOpacity?.[index] ?? config.opacity ?? existing.opacity;
         const resolvedArea = area?.[index] ??
           (config.radius === undefined

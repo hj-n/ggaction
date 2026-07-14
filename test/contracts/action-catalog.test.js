@@ -204,6 +204,9 @@ test("keeps primitives and internal wrapped actions in separate layers", () => {
   assert.deepEqual([...index.internal.materialization].sort(), materialization);
   assert.deepEqual(index.internal.guideComponents, [
     "createCategoricalLegend",
+    "createGradientLegend",
+    "createOpacityLegend",
+    "removeOpacityLegend",
     "createSizeLegend"
   ]);
   assert.equal(runtime.includes("createLegendSymbols"), true);

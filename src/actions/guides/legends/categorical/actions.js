@@ -11,7 +11,7 @@ import {
 } from "./resolve.js";
 
 export const rematerializeLegend = action(
-  { op: "rematerializeLegend", description: "Rematerialize every categorical legend component." },
+  { op: "rematerializeLegend", description: "Rematerialize every existing legend component." },
   function (args = {}) {
     noOptions(args, "rematerializeLegend");
     let next = this;
@@ -71,6 +71,12 @@ export const rematerializeLegend = action(
     }
     if (this.guideConfigs.legend?.size !== undefined) {
       next = next.rematerializeSizeLegend();
+    }
+    if (this.guideConfigs.legend?.gradient !== undefined) {
+      next = next.rematerializeGradientLegend();
+    }
+    if (this.guideConfigs.legend?.opacity !== undefined) {
+      next = next.rematerializeOpacityLegend();
     }
     return next;
   }
@@ -147,12 +153,37 @@ export const createCategoricalLegend = action(
 );
 
 export const createLegend = action(
-  { op: "createLegend", description: "Create an inferred categorical legend." },
+  { op: "createLegend", description: "Create an inferred legend for selected channels." },
   function (args = {}) {
     if (!isPlainObject(args)) {
       throw new TypeError("createLegend options must be a plain object.");
     }
-    const wantsShape = args.channels?.includes("shape") === true;
+    const channels = args.channels;
+    if (channels !== undefined && !Array.isArray(channels)) {
+      throw new TypeError("createLegend channels must be an array.");
+    }
+    if (channels?.length === 1 && channels[0] === "opacity") {
+      return this.createOpacityLegend(args);
+    }
+    const continuousColorCandidates = this.semanticSpec.layers.filter(layer => {
+      const encoding = layer.mark?.type === "point" ? layer.encoding?.color : undefined;
+      const scale = this.semanticSpec.scales.find(candidate =>
+        candidate.id === encoding?.scale
+      );
+      return scale?.type === "sequential";
+    });
+    const continuousColor = args.target === undefined
+      ? continuousColorCandidates.length === 1
+        ? continuousColorCandidates[0]
+        : undefined
+      : continuousColorCandidates.find(layer => layer.id === args.target);
+    if (
+      (channels?.length === 1 && channels[0] === "color" && continuousColor) ||
+      (channels === undefined && continuousColor)
+    ) {
+      return this.createGradientLegend(args);
+    }
+    const wantsShape = channels?.includes("shape") === true;
     const pointCandidates = this.semanticSpec.layers.filter(layer =>
       layer.mark?.type === "point" &&
       layer.encoding?.shape?.scale !== undefined &&

@@ -113,7 +113,9 @@ export function rematerializeExistingLegend(program) {
     (program.semanticSpec.guides.legend?.color === undefined ||
       program.guideConfigs.legend?.color === undefined) &&
     program.guideConfigs.legend?.point === undefined &&
-    program.guideConfigs.legend?.size === undefined
+    program.guideConfigs.legend?.size === undefined &&
+    program.guideConfigs.legend?.gradient === undefined &&
+    program.guideConfigs.legend?.opacity === undefined
   ) {
     return program;
   }

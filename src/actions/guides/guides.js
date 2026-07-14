@@ -35,12 +35,17 @@ function hasGridEncoding(program) {
   );
 }
 
-function hasCategoricalLegendEncoding(program) {
+function hasLegendEncoding(program) {
   return program.semanticSpec.layers.some(
     layer =>
       (layer.mark?.type === "point" &&
+        layer.encoding?.opacity?.scale !== undefined) ||
+      (layer.mark?.type === "point" &&
         layer.encoding?.color?.scale !== undefined &&
-        layer.encoding?.shape?.scale !== undefined) ||
+        (layer.encoding?.shape?.scale !== undefined ||
+          program.semanticSpec.scales.some(scale =>
+            scale.id === layer.encoding.color.scale && scale.type === "sequential"
+          ))) ||
       (layer.mark?.type === "line" &&
         ["color", "strokeDash"].some(
           channel => layer.encoding?.[channel]?.scale !== undefined
@@ -69,7 +74,7 @@ const createGuides = action(
     const grid = selectOption(args.grid, hasGridEncoding(this));
     const legend = selectOption(
       args.legend,
-      hasCategoricalLegendEncoding(this)
+      hasLegendEncoding(this)
     );
 
     if (axes === undefined && grid === undefined && legend === undefined) {

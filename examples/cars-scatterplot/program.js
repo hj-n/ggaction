@@ -142,3 +142,51 @@ export function createEncodingReassignmentCarsScatterplot(cars) {
     .encodeSize({ field: "Weight_in_lbs" })
     .encodeShape({ field: "Origin" });
 }
+
+export function createContinuousColorCarsScatterplot(cars) {
+  const rows = validCars(cars);
+
+  return chart()
+    .createCanvas({
+      width: 760,
+      height: 400,
+      margin: { top: 30, right: 150, bottom: 60, left: 70 }
+    })
+    .createData({ id: "cars", values: rows })
+    .createPointMark({ id: "points" })
+    .encodeX({ field: "Horsepower" })
+    .encodeY({ field: "Miles_per_Gallon" })
+    .encodeColor({ field: "Acceleration", fieldType: "quantitative" })
+    .encodeRadius({ value: 3 })
+    .createGuides({
+      axes: {
+        x: { title: { text: "Horsepower" } },
+        y: { title: { text: "Miles per Gallon" } }
+      },
+      legend: { channels: ["color"] }
+    });
+}
+
+export function createFieldOpacityCarsScatterplot(cars) {
+  const rows = validCars(cars);
+
+  return chart()
+    .createCanvas({
+      width: 760,
+      height: 400,
+      margin: { top: 30, right: 150, bottom: 60, left: 70 }
+    })
+    .createData({ id: "cars", values: rows })
+    .createPointMark({ id: "points" })
+    .encodeX({ field: "Horsepower" })
+    .encodeY({ field: "Miles_per_Gallon" })
+    .encodeRadius({ value: 4 })
+    .encodeOpacity({ field: "Acceleration" })
+    .createGuides({
+      axes: {
+        x: { title: { text: "Horsepower" } },
+        y: { title: { text: "Miles per Gallon" } }
+      },
+      legend: { channels: ["opacity"] }
+    });
+}

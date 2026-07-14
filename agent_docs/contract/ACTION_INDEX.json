@@ -1767,10 +1767,12 @@
       "materializeRegressionData",
       "rematerializeAreaMark",
       "rematerializeBarMark",
+      "rematerializeGradientLegend",
       "rematerializeGrid",
       "rematerializeHorizontalGrid",
       "rematerializeLegend",
       "rematerializeLineMark",
+      "rematerializeOpacityLegend",
       "rematerializePointMark",
       "rematerializeScale",
       "rematerializeSizeLegend",
@@ -1779,6 +1781,9 @@
     ],
     "guideComponents": [
       "createCategoricalLegend",
+      "createGradientLegend",
+      "createOpacityLegend",
+      "removeOpacityLegend",
       "createSizeLegend"
     ],
     "contract": "agent_docs/contract/internal/ACTIONS.md"

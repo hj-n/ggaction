@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  createContinuousColorCarsScatterplot,
   createDiamondCarsScatterplot,
   createEncodingReassignmentCarsScatterplot,
+  createFieldOpacityCarsScatterplot,
   createPaletteCarsScatterplot,
   createScaleReverseCarsScatterplot,
   createShapeVocabularyCarsScatterplot
@@ -172,6 +174,16 @@ test("matches every approved primitive with a user-facing action flow", () => {
       createEncodingReassignmentPrimitives(cars),
       createEncodingReassignmentCarsScatterplot(cars),
       "encodeShape"
+    ],
+    [
+      createContinuousColorPrimitives(cars),
+      createContinuousColorCarsScatterplot(cars),
+      "createGuides"
+    ],
+    [
+      createFieldOpacityPrimitives(cars),
+      createFieldOpacityCarsScatterplot(cars),
+      "createGuides"
     ]
   ];
 

@@ -26,7 +26,9 @@ function hasLegend(program) {
       program.guideConfigs.legend?.series === undefined) &&
     (program.semanticSpec.guides.legend?.color === undefined ||
       program.guideConfigs.legend?.color === undefined) &&
-    program.guideConfigs.legend?.size === undefined
+    program.guideConfigs.legend?.size === undefined &&
+    program.guideConfigs.legend?.gradient === undefined &&
+    program.guideConfigs.legend?.opacity === undefined
   );
 }
 
@@ -86,7 +88,11 @@ export function planScaleGuideRematerialization(program, id) {
     return config?.scales?.includes(id) || config?.scales?.[0] === id;
   });
   const size = program.guideConfigs.legend?.size?.scale === id;
-  if (categorical || size) plan.push({ op: "rematerializeLegend" });
+  const gradient = program.guideConfigs.legend?.gradient?.scale === id;
+  const opacity = program.guideConfigs.legend?.opacity?.scale === id;
+  if (categorical || size || gradient || opacity) {
+    plan.push({ op: "rematerializeLegend" });
+  }
   return plan;
 }
 

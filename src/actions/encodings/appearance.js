@@ -168,7 +168,10 @@ const encodeOpacity = action(
       }
       const { opacity, ...config } = this.markConfigs[target] ?? {};
       void opacity;
-      return this
+      const withoutLegend = this.guideConfigs.legend?.opacity === undefined
+        ? this
+        : this.removeOpacityLegend();
+      return withoutLegend
         .clearOpacityEncoding({ target })
         ._withMarkConfig(target, { ...config, opacity: args.value })
         .rematerializePointMark({ id: target });

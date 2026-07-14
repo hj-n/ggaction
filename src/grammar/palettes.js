@@ -189,7 +189,7 @@ export function resolvePalette(value, domainCount) {
   }));
 }
 
-export function resolveContinuousPalette(value, count = 256) {
+export function resolveContinuousPalette(value, count = 31) {
   if (!Number.isInteger(count) || count < 2) {
     throw new RangeError("Continuous palette count must be an integer of at least 2.");
   }

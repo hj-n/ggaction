@@ -2,8 +2,10 @@ import test from "node:test";
 
 import {
   createCarsScatterplot,
+  createContinuousColorCarsScatterplot,
   createDiamondCarsScatterplot,
   createEncodingReassignmentCarsScatterplot,
+  createFieldOpacityCarsScatterplot,
   createPaletteCarsScatterplot,
   createScaleReverseCarsScatterplot,
   createShapeVocabularyCarsScatterplot
@@ -254,6 +256,7 @@ const phase1Artifacts = Object.freeze([
   });`
     }),
     primitive: createContinuousColorPrimitives(cars),
+    userFacing: createContinuousColorCarsScatterplot(cars),
     width: 760,
     height: 400,
     colors: ["#440154", "#fde725"]
@@ -285,6 +288,7 @@ const phase1Artifacts = Object.freeze([
   });`
     }),
     primitive: createFieldOpacityPrimitives(cars),
+    userFacing: createFieldOpacityCarsScatterplot(cars),
     width: 760,
     height: 400,
     colors: ["#4c78a8"]

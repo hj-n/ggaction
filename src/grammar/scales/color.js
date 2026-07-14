@@ -301,6 +301,18 @@ export function interpolateColorStops(stops, position, interpolation = "rgb") {
   const scaled = bounded * (colors.length - 1);
   const left = Math.floor(scaled);
   const right = Math.min(colors.length - 1, left + 1);
+  if (method === "rgb") {
+    const leftHex = rgbToHex(colors[left]);
+    const rightHex = rgbToHex(colors[right]);
+    const amount = scaled - left;
+    return `#${[1, 3, 5].map(offset =>
+      Math.round(
+        Number.parseInt(leftHex.slice(offset, offset + 2), 16) +
+        (Number.parseInt(rightHex.slice(offset, offset + 2), 16) -
+          Number.parseInt(leftHex.slice(offset, offset + 2), 16)) * amount
+      ).toString(16).padStart(2, "0")
+    ).join("")}`;
+  }
   return rgbToHex(mix(colors[left], colors[right], scaled - left, method));
 }
 
