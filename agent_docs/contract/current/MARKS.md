@@ -33,7 +33,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 
 ## `createLineMark`
 
-- Signature: `createLineMark({ id, data?, strokeWidth? })`
+- Signature: `createLineMark({ id, data?, strokeWidth?, curve? })`
 - `id`, `data`: `createPointMark`와 같은 ID/data 계약이다.
 - `strokeWidth`: Implemented, non-negative finite number이며 concrete default는 `2`다. 명시한 값은
   mark materialization config에 저장되어 path 재생성 후에도 유지된다.
@@ -45,7 +45,8 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 ### Formal values — `createLineMark`
 
 - Implemented: `createLineMark({ id: UserId; data?: UserId; strokeWidth?: NonNegativeFinite })`
-- Proposed (NOT IMPLEMENTED): `{ curve?: "linear" | "step" | "basis" }`; 현재 path는 implicit linear다.
+- Planned (NOT IMPLEMENTED): `{ curve?: CurveInterpolation }`; default는 `"linear"`이며 accepted 8-value vocabulary를 사용한다.
+- Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createLineMark`
 
@@ -53,7 +54,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   - ✅ Covered: current/explicit/empty dataset, invalid IDs와 conflicts.
 - `strokeWidth`
   - ✅ Covered: omission→`2`, zero, positive representative, negative/non-finite rejection.
-- 🟣 Proposed: `curve: "linear" | "step" | "basis"`; path interpolation을 semantic인지 graphical인지 먼저 결정해야 한다.
+- 🟡 Planned: 8-value curve grammar, graphical config persistence, concrete commands와 rematerialization parity.
 - Evidence: `test/unit/actions/marks/create-line-mark.test.js`.
 
 ## `createBarMark`
@@ -79,7 +80,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 
 ## `createAreaMark`
 
-- Signature: `createAreaMark({ id, data?, fill?, opacity? })`
+- Signature: `createAreaMark({ id, data?, fill?, opacity?, stroke?, strokeWidth?, curve? })`
 - `id`, `data`: 필수 새 ID와 optional existing/current dataset이다.
 - `fill`: Implemented, non-empty color string. 기본값은 theme mark color `"#4c78a8"`다.
 - `opacity`: Implemented, `[0, 1]` finite number. 기본값은 `0.2`다.
@@ -93,7 +94,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 ### Formal values — `createAreaMark`
 
 - Implemented: `createAreaMark({ id: UserId; data?: UserId; fill?: NonEmptyString; opacity?: UnitInterval })`
-- Planned (NOT IMPLEMENTED): `{ stroke?: NonEmptyString; strokeWidth?: NonNegativeFinite }`
+- Planned (NOT IMPLEMENTED): `{ stroke?: NonEmptyString; strokeWidth?: NonNegativeFinite; curve?: CurveInterpolation }`; curve default는 `"linear"`다.
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createAreaMark`
@@ -105,6 +106,5 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
     validation에 있으나 dedicated boundary test가 부족하다.
 - `opacity`
   - ⚠️ Partial: default `0.2`, representative `0.18`/`0.5`, invalid range; exact 0/1 endpoints direct test가 부족하다.
-- 🟡 Planned: `stroke`, `strokeWidth`, no-outline default, edit removal와 rematerialization persistence.
+- 🟡 Planned: `stroke`, `strokeWidth`, no-outline default, 8-value curve grammar, edit removal와 rematerialization persistence.
 - Evidence: area materialization, density and regression chart tests.
-

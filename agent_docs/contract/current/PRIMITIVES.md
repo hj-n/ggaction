@@ -89,6 +89,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 ### Formal values — `editGraphics`
 
 - Implemented: `editGraphics({ target: UserId | GeneratedChildId; property: GraphicPropertyForTarget; value: GraphicValueForProperty })`; one property per action, collection scalar broadcast 또는 exact-length distribution.
+- Planned (NOT IMPLEMENTED): path `{ property: "commands"; value: readonly ConcretePathCommand[] }` after the atomic points-to-commands migration.
 - Proposed (NOT IMPLEMENTED): multi-property dictionary/batch edit는 현재 one-change trace invariant와 충돌하므로 제안하지 않는다.
 
 ### Value coverage — `editGraphics`
@@ -98,6 +99,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 - `property`
   - ✅ Covered: type-specific canvas/circle/rect/line/text/path properties, `length`, heterogeneous `children`.
   - ⚠️ Partial: every valid property does not yet have all boundary classes in direct primitive tests.
+  - 🟡 Planned: finite `M | L | C | Z` path command arrays and command-order validation.
 - `value` distribution
   - ✅ Covered: scalar broadcast, outer array distribution, mismatched length, nested points arrays preserved,
     heterogeneous child replacement and shared compatible-property broadcast.

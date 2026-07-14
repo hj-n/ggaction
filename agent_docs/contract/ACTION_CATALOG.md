@@ -107,6 +107,7 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | behavior | encodeYRange reassignment | accepted | [Open](planned/ENCODINGS.md#positional-reassignment) |
 | behavior | encodeHistogram reassignment | accepted | [Open](planned/ENCODINGS.md#positional-reassignment) |
 | parameter | Point shape vocabulary | accepted | [Open](planned/ENCODINGS.md#point-shape-vocabulary) |
+| parameter | Curve interpolation and concrete path commands | accepted | [Open](planned/MARKS_AND_PATHS.md#curve-interpolation-and-concrete-path-commands) |
 | parameter | Area outline | accepted | [Open](planned/ENCODINGS.md#area-outline) |
 | parameter | Bar width modes | accepted | [Open](planned/ENCODINGS.md#bar-width-modes) |
 | parameter | Offset padding controls | accepted | [Open](planned/ENCODINGS.md#offset-padding-controls) |

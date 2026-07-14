@@ -272,6 +272,7 @@ test("keeps accepted planned capabilities linked and non-public", () => {
 
   assert.deepEqual(parameterNames, [
     "Point shape vocabulary",
+    "Curve interpolation and concrete path commands",
     "Area outline",
     "Bar width modes",
     "Offset padding controls",
@@ -311,6 +312,13 @@ test("keeps accepted planned capabilities linked and non-public", () => {
 
   assert.match(plannedCorpus, /type PointShape =/);
   assert.match(plannedCorpus, /"plus" \| "cross" \| "star" \| "hexagon" \| "wye"/);
+  assert.match(plannedCorpus, /type CurveInterpolation =/);
+  assert.match(plannedCorpus, /"step-before"[\s\S]*"step-after"/);
+  assert.match(plannedCorpus, /"basis"[\s\S]*"cardinal"[\s\S]*"monotone"[\s\S]*"natural"/);
+  assert.match(plannedCorpus, /type ConcretePathCommand =/);
+  assert.match(plannedCorpus, /uniform cubic B-spline/);
+  assert.match(plannedCorpus, /Renderers execute commands only/);
+  assert.doesNotMatch(currentCorpus + plannedCorpus, /curve.*Proposed|Proposed.*curve/i);
   assert.match(plannedCorpus, /stroke\?: NonEmptyString \| false/);
   assert.match(plannedCorpus, /band\?: UnitIntervalExclusiveZero/);
   assert.match(plannedCorpus, /pixels\?: PositiveFinite/);

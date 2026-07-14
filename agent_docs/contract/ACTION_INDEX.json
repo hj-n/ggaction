@@ -1406,6 +1406,17 @@
       }
     },
     {
+      "id": "curve-interpolation-and-concrete-path-commands",
+      "kind": "parameter",
+      "name": "Curve interpolation and concrete path commands",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/MARKS_AND_PATHS.md",
+        "anchor": "curve-interpolation-and-concrete-path-commands"
+      }
+    },
+    {
       "id": "area-outline",
       "kind": "parameter",
       "name": "Area outline",

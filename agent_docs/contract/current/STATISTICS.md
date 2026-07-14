@@ -17,6 +17,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 - `band.color`: non-empty color string, 기본 theme regression-band color `"#111111"`.
 - `band.opacity`: `[0, 1]` finite number, 기본값 `0.18`.
 - `line.strokeWidth`: non-negative finite number, 기본값 `3`.
+- `band.curve`, `line.curve`: Planned shared `CurveInterpolation`; 각각 corresponding area/line child로 전달된다.
 - Effect: target ID로 namespace한 derived data, area band와 line layer를 만들고 point layer의 coordinate와
   x/y scales를 공유한다. group field가 point color와 같으면 color scale도 공유한다.
 - Coverage: `test/unit/actions/regression/create-regression.test.js`와 regression chart tests가 inference,
@@ -26,8 +27,8 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 ### Formal values — `createRegression`
 
 - Implemented: `createRegression({ target?: UserId; x?: FieldName; y?: FieldName; groupBy?: FieldName; confidence?: UnitIntervalExclusive; band?: { color?: NonEmptyString; opacity?: UnitInterval }; line?: { strokeWidth?: NonNegativeFinite } })`
-- Planned (NOT IMPLEMENTED): `{ method?: "linear" | "polynomial" | "loess"; degree?: PositiveInteger; span?: UnitIntervalExclusiveZero; interval?: "mean" | "prediction"; band?: false | { color?: NonEmptyString; opacity?: UnitInterval; stroke?: NonEmptyString; strokeWidth?: NonNegativeFinite } }`; method별 허용 조합은 accepted regression contracts가 제한한다.
-- Proposed (NOT IMPLEMENTED): `{ line?: { curve?: "step" | "basis" } }`
+- Planned (NOT IMPLEMENTED): `{ method?: "linear" | "polynomial" | "loess"; degree?: PositiveInteger; span?: UnitIntervalExclusiveZero; interval?: "mean" | "prediction"; band?: false | { color?: NonEmptyString; opacity?: UnitInterval; stroke?: NonEmptyString; strokeWidth?: NonNegativeFinite; curve?: CurveInterpolation }; line?: { strokeWidth?: NonNegativeFinite; curve?: CurveInterpolation } }`; method별 허용 조합은 accepted regression contracts가 제한한다.
+- Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createRegression`
 
@@ -46,7 +47,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 
 ## `createRegressionBand`
 
-- Signature: `createRegressionBand({ id, data, x, lower, upper, groupBy?, coordinate, xScale, yScale, color?, opacity? })`
+- Signature: `createRegressionBand({ id, data, x, lower, upper, groupBy?, coordinate, xScale, yScale, color?, opacity?, stroke?, strokeWidth?, curve? })`
 - `id`, `data`: 필수 새 area layer ID와 regression derived dataset ID.
 - `x`, `lower`, `upper`: 필수 quantitative result fields.
 - `groupBy`: optional nominal series field.
@@ -59,7 +60,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 ### Formal values — `createRegressionBand`
 
 - Implemented: `createRegressionBand({ id: UserId; data: UserId; x: FieldName; lower: FieldName; upper: FieldName; groupBy?: FieldName; coordinate: UserId; xScale: UserId; yScale: UserId; color?: NonEmptyString; opacity?: UnitInterval })`
-- Planned (NOT IMPLEMENTED): `{ stroke?: NonEmptyString; strokeWidth?: NonNegativeFinite }`
+- Planned (NOT IMPLEMENTED): `{ stroke?: NonEmptyString; strokeWidth?: NonNegativeFinite; curve?: CurveInterpolation }`
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createRegressionBand`
@@ -76,11 +77,12 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 
 ## `createRegressionLine`
 
-- Signature: `createRegressionLine({ id, data, x, y, groupBy?, coordinate, xScale, yScale, colorScale?, strokeWidth? })`
+- Signature: `createRegressionLine({ id, data, x, y, groupBy?, coordinate, xScale, yScale, colorScale?, strokeWidth?, curve? })`
 - `id`, `data`, `x`, `y`: 새 line ID, regression data와 fitted field names다.
 - `groupBy`: optional nominal series field. 있으면 `colorScale`도 existing/shared ID여야 한다.
 - `coordinate`, `xScale`, `yScale`: 필수 shared resource IDs.
 - `strokeWidth`: non-negative finite number, 기본값 `3`.
+- `curve`: Planned shared curve interpolation이며 기본값 `"linear"`다.
 - Effect: line mark와 x/y, optional color/group encoding을 만들고 fitted paths를 materialize한다.
 - Coverage: regression unit/chart tests가 grouped/ungrouped와 shared resource 결과를 검증하며
   direct invalid combination matrix는 부분적이다.
@@ -88,7 +90,8 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 ### Formal values — `createRegressionLine`
 
 - Implemented: `createRegressionLine({ id: UserId; data: UserId; x: FieldName; y: FieldName; groupBy?: FieldName; coordinate: UserId; xScale: UserId; yScale: UserId; colorScale?: UserId; strokeWidth?: NonNegativeFinite })`
-- Proposed (NOT IMPLEMENTED): `{ curve?: "step" | "basis" }`
+- Planned (NOT IMPLEMENTED): `{ curve?: CurveInterpolation }`
+- Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createRegressionLine`
 
@@ -99,6 +102,5 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   - ✅ Covered: paired presence and omitted ungrouped case.
 - `strokeWidth`
   - ✅ Covered: default `3`, representative explicit; invalid values delegated to line mark.
-- 🟣 Proposed: curve option forwarded only after line interpolation contract exists.
+- 🟡 Planned: shared 8-value curve option forwarded to `createLineMark` and concrete path grammar.
 - Evidence: regression unit/chart tests.
-
