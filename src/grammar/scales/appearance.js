@@ -51,7 +51,8 @@ function isDashPattern(pattern) {
   return (
     Array.isArray(pattern) &&
     pattern.length % 2 === 0 &&
-    pattern.every(value => Number.isFinite(value) && value >= 0)
+    pattern.every(value => Number.isFinite(value) && value >= 0) &&
+    (pattern.length === 0 || pattern.some(value => value > 0))
   );
 }
 
@@ -65,7 +66,7 @@ export function normalizeStrokeDashPattern(pattern) {
   }
   if (!isDashPattern(pattern)) {
     throw new TypeError(
-      "Stroke dash pattern must be a named style or an even-length array of non-negative finite numbers."
+      "Stroke dash pattern must be a named style or an empty or nonzero even-length array of non-negative finite numbers."
     );
   }
   return cloneAndFreeze(pattern);

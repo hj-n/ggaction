@@ -277,12 +277,12 @@
       "domain": "encodings",
       "status": "implemented",
       "lifecycle": "Assignment",
-      "update": "Same action will replace field and scale binding",
-      "audit": "Reassignment — Planned",
+      "update": "Same action atomically replaces field, constant value, and scale binding",
+      "audit": "Reassignment — Implemented",
       "coverage": {
         "contract": "complete",
         "effects": "complete",
-        "tests": "partial"
+        "tests": "complete"
       },
       "contract": {
         "file": "agent_docs/contract/current/ENCODINGS.md",
@@ -421,8 +421,8 @@
       "domain": "encodings",
       "status": "implemented",
       "lifecycle": "Assignment",
-      "update": "Same action will replace compatible path grouping",
-      "audit": "Reassignment — Planned",
+      "update": "Same action replaces compatible path grouping",
+      "audit": "Reassignment — Implemented",
       "coverage": {
         "contract": "complete",
         "effects": "complete",
@@ -1378,30 +1378,6 @@
       }
     },
     {
-      "id": "encodeGroup-reassignment",
-      "kind": "behavior",
-      "action": "encodeGroup",
-      "name": "encodeGroup reassignment",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/ENCODINGS.md",
-        "anchor": "grouping-reassignment"
-      }
-    },
-    {
-      "id": "encodeStrokeDash-reassignment",
-      "kind": "behavior",
-      "action": "encodeStrokeDash",
-      "name": "encodeStrokeDash reassignment",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/ENCODINGS.md",
-        "anchor": "scale-backed-appearance-reassignment"
-      }
-    },
-    {
       "id": "encodeXOffset-reassignment",
       "kind": "behavior",
       "action": "encodeXOffset",
@@ -1535,17 +1511,6 @@
       "contract": {
         "file": "agent_docs/contract/planned/ENCODINGS.md",
         "anchor": "continuous-color-bar-consumer"
-      }
-    },
-    {
-      "id": "named-and-constant-stroke-dash-vocabulary",
-      "kind": "parameter",
-      "name": "Named and constant stroke dash vocabulary",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/ENCODINGS.md",
-        "anchor": "named-and-constant-stroke-dash-vocabulary"
       }
     },
     {
@@ -1770,6 +1735,7 @@
       "createCategoricalLegend",
       "createGradientLegend",
       "createOpacityLegend",
+      "removeCategoricalLegend",
       "removeOpacityLegend",
       "createSizeLegend"
     ],

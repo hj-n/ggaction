@@ -89,7 +89,7 @@ band centers. Reversed explicit ranges are valid. Ordinal scales reject
 `nice` and `zero`.
 
 Color ranges accept explicit colors or a named palette descriptor; stroke-dash
-ranges accept arrays of dash patterns.
+ranges accept named styles and direct dash patterns.
 
 ```javascript
 program.encodeColor({
@@ -103,6 +103,23 @@ program.encodeColor({
 
 User-specified domains and ranges are semantic state. Resolved coordinates,
 colors, and dash patterns are stored as concrete graphical values.
+
+### Stroke-dash ranges
+
+The names `solid`, `dashed`, `dotted`, and `dashdot` resolve to `[]`, `[6, 4]`,
+`[1, 3]`, and `[6, 3, 1, 3]`. A direct pattern is an empty array or an
+even-length array of non-negative finite numbers that is not entirely zero.
+
+```javascript
+program.encodeStrokeDash({
+  field: "Origin",
+  scale: { range: ["solid", "dashed", [8, 3]] }
+});
+```
+
+Semantic scale state preserves the names; the resolved scale, line paths, and
+legend symbols contain numeric patterns only. Pattern lengths use logical
+Canvas units and do not change with output pixel ratio.
 
 ## Named palettes
 

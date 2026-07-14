@@ -510,6 +510,27 @@ const smooth = program.editLineMark({
 Both forms regenerate backend-neutral path commands. The stored x/y fields,
 mean aggregation, grouping, scales, axes, and legend remain unchanged.
 
+## Change the dash assignment
+
+Use named styles in a field scale when each series needs its own pattern:
+
+```javascript
+const named = program.encodeStrokeDash({
+  field: "Origin",
+  scale: { range: ["solid", "dashed", "dotted"] }
+});
+```
+
+Or replace the field mapping with one constant pattern:
+
+```javascript
+const dotted = named.encodeStrokeDash({ value: "dotted" });
+```
+
+The second call removes stroke dash from the categorical legend while keeping
+any remaining color component. It also preserves the old named scale as an
+immutable semantic resource.
+
 ## Key action trace
 
 Aggregate and series actions explicitly rematerialize the path; the renderer
@@ -2566,7 +2587,7 @@ must have identical order before grouped rectangles can be materialized.
 | Action | Shortest call | Inference/defaults | Result |
 | --- | --- | --- | --- |
 | `encodeColor` | `encodeColor({ field: "group" })` | Current mark, nominal field type, color scale | Semantic grouping and concrete color |
-| `encodeStrokeDash` | `encodeStrokeDash({ field: "group" })` | Current line mark and dash scale | Semantic series grouping and concrete dash |
+| `encodeStrokeDash` | `encodeStrokeDash({ field: "group" })` | Current line mark and dash scale | Field-driven or constant concrete dash |
 
 ## `encodeColor(options)`
 
@@ -2666,25 +2687,55 @@ Canvas and shared-scale changes rematerialize every affected area fill.
 
 ## `encodeStrokeDash(options)`
 
-Map a nominal field to line-series dash patterns.
+Map a nominal field to line-series dash patterns, or apply one constant pattern
+to every series.
 
 ```javascript
 program.encodeStrokeDash({ field: "Origin" });
+
+program.encodeStrokeDash({ value: "dotted" });
 ```
 
 | Option | Type | Default |
 | --- | --- | --- |
-| `field` | non-empty string | required |
+| `field` | non-empty string; mutually exclusive with `value` | — |
+| `value` | named style or direct dash pattern; mutually exclusive with `field` | — |
 | `target` | line mark ID | current mark |
-| `fieldType` | `"nominal"` | `"nominal"` |
+| `fieldType` | `"nominal"`; field mode only | `"nominal"` |
 | `scale.id` | scale ID | `"strokeDash"` |
 | `scale.type` | `"ordinal"` | `"ordinal"` |
 | `scale.domain` | `"auto"` or category array | `"auto"` |
-| `scale.range` | `"auto"` or dash-pattern array | `"auto"` |
+| `scale.range` | `"auto"` or named/direct pattern array | `"auto"` |
 
 The automatic range contains ten reusable patterns. An explicit pattern is an
 empty array for a solid stroke or an even-length array of non-negative finite
-numbers.
+numbers that is not entirely zero. Named styles resolve as follows:
+
+| Style | Concrete pattern |
+| --- | --- |
+| `"solid"` | `[]` |
+| `"dashed"` | `[6, 4]` |
+| `"dotted"` | `[1, 3]` |
+| `"dashdot"` | `[6, 3, 1, 3]` |
+
+Names remain in semantic scale state, while resolved scales and graphics store
+only numeric patterns.
+
+```javascript
+program.encodeStrokeDash({
+  field: "Origin",
+  scale: { range: ["solid", "dashed", "dotted"] }
+});
+```
+
+Calling the action again atomically replaces the earlier field or constant.
+The same field reuses its current scale when `scale.id` is omitted. A different
+field uses the default `strokeDash` scale unless an ID is explicit, while old
+named scales remain available as resources. Existing legend domains, symbols,
+and inferred titles update; custom legend settings remain unchanged.
+
+Constant mode accepts no scale or field type. It creates no legend, removes the
+stroke-dash part of an existing combined legend, and removes a dash-only legend.
 
 If color and stroke dash encode the same field, that field appears only once in
 the series key and can be represented by one combined legend. Canvas changes
@@ -2694,9 +2745,9 @@ See [Scale options](./scales.md) and [Legends](./legends.md).
 
 ## Errors and limitations
 
-Series fields must be nominal. Area color must match its group encoding.
-Combined line legends require color and strokeDash to use the same field and
-ordered domain.
+Series fields must be nominal. Area color must match its group encoding. Line
+group, color, and field-driven stroke dash must use one compatible field.
+Combined line legends also require matching ordered domains.
 
 ## Related
 
@@ -2897,7 +2948,7 @@ band centers. Reversed explicit ranges are valid. Ordinal scales reject
 `nice` and `zero`.
 
 Color ranges accept explicit colors or a named palette descriptor; stroke-dash
-ranges accept arrays of dash patterns.
+ranges accept named styles and direct dash patterns.
 
 ```javascript
 program.encodeColor({
@@ -2911,6 +2962,23 @@ program.encodeColor({
 
 User-specified domains and ranges are semantic state. Resolved coordinates,
 colors, and dash patterns are stored as concrete graphical values.
+
+### Stroke-dash ranges
+
+The names `solid`, `dashed`, `dotted`, and `dashdot` resolve to `[]`, `[6, 4]`,
+`[1, 3]`, and `[6, 3, 1, 3]`. A direct pattern is an empty array or an
+even-length array of non-negative finite numbers that is not entirely zero.
+
+```javascript
+program.encodeStrokeDash({
+  field: "Origin",
+  scale: { range: ["solid", "dashed", [8, 3]] }
+});
+```
+
+Semantic scale state preserves the names; the resolved scale, line paths, and
+legend symbols contain numeric patterns only. Pattern lengths use logical
+Canvas units and do not change with output pixel ratio.
 
 ## Named palettes
 
@@ -3690,7 +3758,7 @@ chart-authoring API does not support that combination.
 | Semantic mark | point | line | bar | bar | point + area + line | area |
 | Position | quantitative x/y | temporal x, mean y | binned x, count y | ordinal x, mean y | shared quantitative x/y | value + density x/y |
 | Nominal color | point fill | series stroke | zero-stacked fill | grouped fill and xOffset | point fill + fit stroke | grouped area fill |
-| Stroke dash | — | nominal series | — | — | — | — |
+| Stroke dash | — | nominal or constant; 4 named styles | — | — | — | — |
 | Constant appearance | radius | stroke width, 8 curves | — | band width | opacity, band fill, line width | opacity |
 | Automatic axes | linear | UTC time and linear | bin-aligned and linear | ordinal and linear | shared linear | source value + density |
 | Automatic grid | horizontal | horizontal | horizontal | horizontal | shared horizontal | horizontal; vertical optional |
@@ -3707,7 +3775,7 @@ chart-authoring API does not support that combination.
 | Canvas | Create/edit width, height, background, margin |
 | Data | Immutable arrays of plain row objects, named filters, grouped linear regression, and grouped Gaussian KDE derivations |
 | Coordinates | Named Cartesian and Polar semantic resources; x/y use Cartesian |
-| Scales | Linear, UTC time, ordinal position, color, stroke dash, and band-local xOffset |
+| Scales | Linear, UTC time, ordinal position, color, named/direct stroke dash, and band-local xOffset |
 | Guides | Automatic axes, horizontal/vertical Cartesian grids, and categorical legends |
 | Titles | One plot-aligned top title with one optional single-line subtitle |
 | Rendering | Browser Canvas and Node PNG |
@@ -3948,10 +4016,15 @@ grouped bars require `layout: "group"` and record `encodeXOffset` as a child.
 ### `encodeStrokeDash`
 
 ```javascript
-encodeStrokeDash({ field, target?, fieldType?, scale? })
+encodeStrokeDash(
+  { field, target?, fieldType?, scale? }
+  | { value, target? }
+)
 ```
 
-Create nominal line-series dash patterns.
+Create or replace nominal line-series dash patterns, or apply one constant
+named/direct pattern. Named styles are `solid`, `dashed`, `dotted`, and
+`dashdot`.
 [Series encodings](../api/series-encodings.md)
 
 ### `encodeRadius`

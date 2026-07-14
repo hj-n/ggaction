@@ -1,5 +1,5 @@
 import { action } from "../../../../core/action.js";
-import { isPlainObject } from "../../../../core/immutable.js";
+import { cloneAndFreeze, isPlainObject } from "../../../../core/immutable.js";
 import { noOptions, resolveLayout, activeConfig } from "./layout.js";
 import { normalizeOptions } from "./options.js";
 import {
@@ -22,13 +22,17 @@ export const rematerializeLegend = action(
       const { kind, config } = activeConfig(this);
       const definition = resolveCurrentDefinition(this, config);
       const changed =
+        !sameValues(config.channels, definition.channels) ||
         !sameValues(config.domain, definition.domain) ||
         !sameValues(config.scales, definition.scales) ||
+        config.field !== definition.field ||
         config.title !== definition.title;
       next = changed
         ? this._withLegendConfig(kind, {
             ...config,
+            channels: definition.channels,
             scales: definition.scales,
+            field: definition.field,
             title: definition.title,
             domain: definition.domain
           })
@@ -251,5 +255,61 @@ export const createLegend = action(
       return next;
     }
     return this.createCategoricalLegend(args);
+  }
+);
+
+export const removeCategoricalLegend = action(
+  {
+    op: "removeCategoricalLegend",
+    description: "Remove the active categorical legend and its concrete components."
+  },
+  function (args = {}) {
+    noOptions(args, "removeCategoricalLegend");
+    const entries = ["series", "color"]
+      .filter(kind => this.guideConfigs.legend?.[kind] !== undefined);
+    if (entries.length === 0) return this;
+    if (entries.length !== 1) {
+      throw new Error("removeCategoricalLegend requires one active categorical legend.");
+    }
+    const kind = entries[0];
+    const prefix = kind === "series" ? "seriesLegend" : "colorLegend";
+    const { [kind]: semanticRemoved, ...semanticLegend } =
+      this.semanticSpec.guides.legend ?? {};
+    const { [kind]: configRemoved, ...legendConfigs } =
+      this.guideConfigs.legend ?? {};
+    void semanticRemoved;
+    void configRemoved;
+    const { legend: semanticLegendRoot, ...guidesWithoutLegend } =
+      this.semanticSpec.guides;
+    const guides = Object.keys(semanticLegend).length === 0
+      ? guidesWithoutLegend
+      : { ...guidesWithoutLegend, legend: semanticLegend };
+    void semanticLegendRoot;
+    const { legend: configLegendRoot, ...configsWithoutLegend } =
+      this.materializationConfigs.guides;
+    const guideConfigs = Object.keys(legendConfigs).length === 0
+      ? configsWithoutLegend
+      : { ...configsWithoutLegend, legend: legendConfigs };
+    void configLegendRoot;
+    const removed = new Set(
+      Object.keys(this.graphicSpec.objects).filter(id => id.startsWith(prefix))
+    );
+
+    return this._clone({
+      semanticSpec: cloneAndFreeze({
+        ...this.semanticSpec,
+        guides
+      }),
+      graphicSpec: cloneAndFreeze({
+        objects: Object.fromEntries(
+          Object.entries(this.graphicSpec.objects).filter(([id]) => !removed.has(id))
+        ),
+        order: this.graphicSpec.order.filter(id => !removed.has(id))
+      }),
+      materializationConfigs: cloneAndFreeze({
+        ...this.materializationConfigs,
+        guides: guideConfigs
+      })
+    });
   }
 );

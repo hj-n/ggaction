@@ -228,10 +228,15 @@ grouped bars require `layout: "group"` and record `encodeXOffset` as a child.
 ### `encodeStrokeDash`
 
 ```javascript
-encodeStrokeDash({ field, target?, fieldType?, scale? })
+encodeStrokeDash(
+  { field, target?, fieldType?, scale? }
+  | { value, target? }
+)
 ```
 
-Create nominal line-series dash patterns.
+Create or replace nominal line-series dash patterns, or apply one constant
+named/direct pattern. Named styles are `solid`, `dashed`, `dotted`, and
+`dashdot`.
 [Series encodings](../api/series-encodings.md)
 
 ### `encodeRadius`

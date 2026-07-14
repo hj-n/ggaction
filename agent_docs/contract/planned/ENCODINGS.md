@@ -44,30 +44,11 @@ encodeStrokeWidth({ target?: UserId; value: NonNegativeFinite }): ChartProgram;
 - Status: Planned, NOT IMPLEMENTED. field/datum exclusivity, constant style boundaries, endpoint
   reassignment, shared scale/coordinate errors, existing appearance action reuse와 rematerialization coverage가 필요하다.
 
-## scale-backed appearance reassignment
-
-- 같은 target의 `encodeStrokeDash`를 다시 호출하면 기존 field와 scale binding을 atomic하게
-  교체한다. 별도 `editStrokeDash` action은 만들지 않는다. `encodeSize`와 `encodeShape`
-  reassignment는 current contract에 구현되어 있다.
-- omitted scale ID는 현재 channel scale ID를 재사용한다. explicit new scale ID는 새 scale을
-  만들고 encoding을 rebind하며 이전 named scale은 삭제하지 않는다. 같은 scale ID의
-  domain/range/policy 변경은 accepted `editScale` contract를 wrapped child로 사용한다.
-- semantic encoding, scale, mark, existing legend 순서로 explicit rematerialization한다.
-  inferred legend title은 새 field로 갱신하고 custom title과 appearance config는 유지한다.
-- `encodeStrokeDash`는 color/group series field와 compatible해야 한다. 서로 다른 field가 하나의
-  line grouping을 요구하면 오류이며 기존 program은 유지한다.
-- explicit ordinal range가 새 domain을 표현할 수 없거나 shared consumer가 incompatible하면
-  전체 reassignment를 오류 처리한다.
-- Status: Planned, NOT IMPLEMENTED. 구현은 `editScale` parameter contract가 Accepted된 뒤 진행한다.
-
-## grouping reassignment
+## Remaining grouped-bar reassignment
 
 - reassignment에서 `layout`을 생략하면 현재 `"stack" | "group"` 결정을 유지한다. 첫 계약은
   stack/group 전환을 지원하지 않으며 explicit 다른 layout은 오류다. 전환은 companion 제거와
   scale cleanup 계약을 별도로 정한 뒤 추가한다.
-- `encodeGroup` 재호출은 line/area path grouping field를 교체한다. color, shape 또는
-  strokeDash가 grouping에 참여하면 같은 field여야 하며 library가 임의로 다른 channel을
-  고치지 않는다. `encodeColor`가 소유한 companion group은 `encodeColor`가 wrapped child로 갱신한다.
 - `encodeXOffset` 재호출은 grouped bar의 inner slot field와 ordinal scale binding을 교체한다.
   color group field와 같아야 하고 stack layout에서는 오류다. 새 domain order는 bar slot과
   dependent legend order에 함께 반영한다.
@@ -438,42 +419,3 @@ encodeXRange({
   validation 실패 시 이전 program을 그대로 유지한다.
 - Status: Planned, NOT IMPLEMENTED. direct child actions, semantic x2 path validation, horizontal path
   geometry, shared scale, Canvas edit와 renderer parity coverage가 필요하다.
-
-## Named and constant stroke dash vocabulary
-
-```typescript
-type DashStyle = "solid" | "dashed" | "dotted" | "dashdot";
-type DashValue = DashStyle | DashPattern;
-type DashScaleWithNamedValues = Omit<DashScale, "range"> & {
-  range?: "auto" | readonly DashValue[];
-};
-
-type PlannedStrokeDashEncoding =
-  | {
-      field: FieldName;
-      value?: never;
-      target?: UserId;
-      fieldType?: "nominal";
-      scale?: DashScaleWithNamedValues;
-    }
-  | {
-      field?: never;
-      value: DashValue;
-      target?: UserId;
-    };
-```
-
-- Named styles resolve to backend-neutral logical Canvas patterns:
-  `solid → []`, `dashed → [6, 4]`, `dotted → [1, 3]`,
-  `dashdot → [6, 3, 1, 3]`. Pattern lengths do not scale with stroke width or output pixel ratio.
-- Direct `DashPattern` remains an even-length array of non-negative finite logical lengths. Empty
-  `[]` is solid. A non-empty pattern may not contain only zeros.
-- Named styles are accepted both as a constant `value` and inside an explicit field-driven ordinal
-  dash scale range. Resolved scale ranges contain concrete numeric patterns, not style names.
-- `field` and `value` are mutually exclusive. Constant mode does not create a scale or legend.
-  Field mode retains existing series grouping and categorical legend behavior.
-- Reassigning between field and constant modes is atomic. Obsolete scale definitions are retained as
-  named resources, while an existing legend drops the removed strokeDash component or is removed when
-  it has no remaining channel.
-- Status: Planned, NOT IMPLEMENTED. Four named recipes, direct patterns, field/value exclusivity,
-  mode switching, legend cleanup, Canvas rematerialization and renderer parity coverage가 필요하다.

@@ -44,7 +44,7 @@ function readSeriesFields(rows, layer) {
   for (const channel of SERIES_CHANNELS) {
     const encoding = layer.encoding?.[channel];
 
-    if (encoding === undefined) continue;
+    if (encoding?.field === undefined) continue;
     if (encoding.fieldType !== "nominal") {
       throw new Error(`Line ${channel} encoding on mark "${layer.id}" must be nominal.`);
     }

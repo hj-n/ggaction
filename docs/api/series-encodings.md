@@ -10,7 +10,7 @@ title: Series Encodings
 | Action | Shortest call | Inference/defaults | Result |
 | --- | --- | --- | --- |
 | `encodeColor` | `encodeColor({ field: "group" })` | Current mark, nominal field type, color scale | Semantic grouping and concrete color |
-| `encodeStrokeDash` | `encodeStrokeDash({ field: "group" })` | Current line mark and dash scale | Semantic series grouping and concrete dash |
+| `encodeStrokeDash` | `encodeStrokeDash({ field: "group" })` | Current line mark and dash scale | Field-driven or constant concrete dash |
 
 ## `encodeColor(options)`
 
@@ -110,25 +110,55 @@ Canvas and shared-scale changes rematerialize every affected area fill.
 
 ## `encodeStrokeDash(options)`
 
-Map a nominal field to line-series dash patterns.
+Map a nominal field to line-series dash patterns, or apply one constant pattern
+to every series.
 
 ```javascript
 program.encodeStrokeDash({ field: "Origin" });
+
+program.encodeStrokeDash({ value: "dotted" });
 ```
 
 | Option | Type | Default |
 | --- | --- | --- |
-| `field` | non-empty string | required |
+| `field` | non-empty string; mutually exclusive with `value` | — |
+| `value` | named style or direct dash pattern; mutually exclusive with `field` | — |
 | `target` | line mark ID | current mark |
-| `fieldType` | `"nominal"` | `"nominal"` |
+| `fieldType` | `"nominal"`; field mode only | `"nominal"` |
 | `scale.id` | scale ID | `"strokeDash"` |
 | `scale.type` | `"ordinal"` | `"ordinal"` |
 | `scale.domain` | `"auto"` or category array | `"auto"` |
-| `scale.range` | `"auto"` or dash-pattern array | `"auto"` |
+| `scale.range` | `"auto"` or named/direct pattern array | `"auto"` |
 
 The automatic range contains ten reusable patterns. An explicit pattern is an
 empty array for a solid stroke or an even-length array of non-negative finite
-numbers.
+numbers that is not entirely zero. Named styles resolve as follows:
+
+| Style | Concrete pattern |
+| --- | --- |
+| `"solid"` | `[]` |
+| `"dashed"` | `[6, 4]` |
+| `"dotted"` | `[1, 3]` |
+| `"dashdot"` | `[6, 3, 1, 3]` |
+
+Names remain in semantic scale state, while resolved scales and graphics store
+only numeric patterns.
+
+```javascript
+program.encodeStrokeDash({
+  field: "Origin",
+  scale: { range: ["solid", "dashed", "dotted"] }
+});
+```
+
+Calling the action again atomically replaces the earlier field or constant.
+The same field reuses its current scale when `scale.id` is omitted. A different
+field uses the default `strokeDash` scale unless an ID is explicit, while old
+named scales remain available as resources. Existing legend domains, symbols,
+and inferred titles update; custom legend settings remain unchanged.
+
+Constant mode accepts no scale or field type. It creates no legend, removes the
+stroke-dash part of an existing combined legend, and removes a dash-only legend.
 
 If color and stroke dash encode the same field, that field appears only once in
 the series key and can be represented by one combined legend. Canvas changes
@@ -138,9 +168,9 @@ See [Scale options](./scales.md) and [Legends](./legends.md).
 
 ## Errors and limitations
 
-Series fields must be nominal. Area color must match its group encoding.
-Combined line legends require color and strokeDash to use the same field and
-ordered domain.
+Series fields must be nominal. Area color must match its group encoding. Line
+group, color, and field-driven stroke dash must use one compatible field.
+Combined line legends also require matching ordered domains.
 
 ## Related
 

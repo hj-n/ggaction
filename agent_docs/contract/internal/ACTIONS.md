@@ -29,13 +29,18 @@ domain action을 통해서만 실행한다.
 
 ## Internal guide component inventory
 
-이 action들은 public `createLegend` facade가 호출하는 peer wrapped component다. 둘 다 public
-type과 direct action 계약에서 제외되지만 hierarchy는 `trace`에 남는다.
+이 action들은 public guide 또는 encoding action이 호출하는 peer wrapped component다. Public
+type과 direct action 계약에서는 제외되지만 hierarchy는 `trace`에 남는다.
 
 | Internal action | Public owner | Role |
 | --- | --- | --- |
 | `createCategoricalLegend` | `createLegend` | categorical color/shape/stroke-dash block |
 | `createGradientLegend` | `createLegend` | continuous color gradient block |
 | `createOpacityLegend` | `createLegend` | field-opacity sample block |
+| `removeCategoricalLegend` | `encodeStrokeDash` | remove a dash-only legend after constant reassignment |
 | `removeOpacityLegend` | `encodeOpacity` | remove an ineligible field-opacity guide after constant reassignment |
 | `createSizeLegend` | `createLegend` | quantitative equal-area point-size block |
+
+`clearStrokeDashEncoding`은 `encodeStrokeDash`가 field/constant mode를 교체하기 전에 이전
+semantic channel을 제거하는 internal wrapped state-transition action이다. Named scale resource는
+삭제하지 않으며 새 assignment와 dependent materialization은 public owner가 이어서 수행한다.

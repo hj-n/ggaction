@@ -8,6 +8,9 @@ export type {
   ChartProgram,
   ConcretePathCommand,
   CurveInterpolation,
+  DashPattern,
+  DashScaleOptions,
+  DashStyle,
   EditScaleOptions,
   FieldType,
   GraphicObject,
@@ -27,6 +30,7 @@ export type {
   ScaleOptions,
   ScaleType,
   SemanticSpec,
+  StrokeDashEncodingOptions,
   TraceNode
 } from "./program.js";
 

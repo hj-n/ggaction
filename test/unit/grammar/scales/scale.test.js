@@ -285,6 +285,7 @@ test("resolves and validates ordinal stroke dash ranges", () => {
     resolveStrokeDashRange(["solid", "dashed", "dotted", "dashdot"]),
     [[], [6, 4], [1, 3], [6, 3, 1, 3]]
   );
+  assert.deepEqual(normalizeStrokeDashPattern([]), []);
   assert.deepEqual(normalizeStrokeDashPattern([2, 5]), [2, 5]);
   assert.deepEqual(validateStrokeDashRange([[], [8, 4]]), [[], [8, 4]]);
   assert.throws(() => validateStrokeDashRange([]), /one or more/);
@@ -292,4 +293,5 @@ test("resolves and validates ordinal stroke dash ranges", () => {
   assert.throws(() => validateStrokeDashRange([[3]]), /even-length/);
   assert.throws(() => validateStrokeDashRange([[3, -1]]), /non-negative/);
   assert.throws(() => validateStrokeDashRange([[3, Infinity]]), /finite/);
+  assert.throws(() => validateStrokeDashRange([[0, 0]]), /nonzero/);
 });

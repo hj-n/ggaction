@@ -217,7 +217,10 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 - `fieldType`: 유일한 값 `"nominal"`, 기본값도 nominal이다.
 - Effect: series를 path별로 나누는 semantic group만 저장한다. scale이나 guide는 만들지 않으며
   필요한 position encoding이 이미 완성됐을 때 path를 rematerialize한다.
-- Coverage: line, regression, density tests가 grouped/ungrouped와 mismatch를 검증한다.
+- Reassignment: 같은 target에 다시 호출하면 group field를 원자적으로 교체한다. Line의 color 또는
+  strokeDash field가 이미 있으면 반드시 같은 field여야 하며, 불일치하면 기존 program을 유지한 채
+  오류를 낸다.
+- Coverage: line, regression, density tests가 grouped/ungrouped, reassignment와 mismatch를 검증한다.
 
 ### Formal values — `encodeGroup`
 
@@ -227,7 +230,8 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 ### Value coverage — `encodeGroup`
 
 - `field`, `target`
-  - ✅ Covered: nominal line/area grouping, inferred/explicit target, density group match/mismatch.
+  - ✅ Covered: nominal line/area grouping, inferred/explicit target, density group match/mismatch,
+    line field reassignment와 immutable failure.
 - `fieldType`
   - ✅ Covered: `"nominal"`와 invalid values.
 - No proposal: group은 scale-free path partition이라는 현재 역할을 유지한다.
@@ -357,30 +361,43 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 
 ## `encodeStrokeDash`
 
-- Signature: `encodeStrokeDash({ field, target?, fieldType?, scale? })`
-- `field`, `target`, `fieldType`: nominal field, optional line ID, nominal-only type다.
-- `scale`: ordinal dash scale. range는 non-negative finite number array들의 array다.
-- Effect: line series별 concrete `strokeDash`와 categorical legend symbol을 rematerialize한다.
-- Coverage: line semantic, series legend와 scale tests가 auto/explicit dash를 검증하며 다양한 dash
-  pattern 경계는 부분적이다.
+- Signature: `encodeStrokeDash({ field, target?, fieldType?, scale? } | { value, target? })`
+- `field`, `target`, `fieldType`: field mode의 nominal field, optional line ID, nominal-only type다.
+- `value`: constant mode의 `"solid" | "dashed" | "dotted" | "dashdot" | DashPattern`이다.
+- `scale`: field mode의 ordinal dash scale이다. range는 named style 또는 direct pattern의 array다.
+- Effect: field mode는 line series별 concrete dash와 categorical legend symbol을 rematerialize한다.
+  Constant mode는 모든 series에 같은 concrete dash를 적용하며 scale이나 legend를 만들지 않는다.
+- Reassignment: `field`와 `value`는 mutually exclusive하며 같은 action이 두 mode를 원자적으로
+  교체한다. 같은 field에서 scale ID를 생략하면 기존 binding을 재사용한다. 다른 field로 바꾸며
+  ID를 생략하면 default `strokeDash` scale을 사용하고 이전 named scale은 보존한다. Existing legend는
+  inferred title/domain/symbol을 갱신하고 custom config는 유지한다. Constant mode 전환은 legend의
+  strokeDash component를 제거하고 남은 channel이 없으면 legend 전체를 제거한다.
+- Compatibility: line의 group 또는 color field가 이미 있으면 field mode의 field와 같아야 한다.
+- Coverage: named/direct vocabulary, field/constant 전환, field/group reassignment, legend cleanup,
+  Canvas rematerialization과 invalid option matrix를 검증한다.
 
 ### Formal values — `encodeStrokeDash`
 
-- Implemented: `encodeStrokeDash({ field: FieldName; target?: UserId; fieldType?: "nominal"; scale?: DashScale })`
-- Planned (NOT IMPLEMENTED): `encodeStrokeDash({ value: "solid" | "dashed" | "dotted" | "dashdot" | DashPattern; target?: UserId })`; field-driven scale range도 같은 named styles를 허용한다.
+- Implemented: `encodeStrokeDash({ field: FieldName; target?: UserId; fieldType?: "nominal"; scale?: DashScale } | { value: DashStyle | DashPattern; target?: UserId })`
+- `DashStyle = "solid" | "dashed" | "dotted" | "dashdot"`
+- `DashPattern = readonly number[]`; empty array는 solid, non-empty array는 even-length,
+  non-negative finite values이며 all-zero는 허용하지 않는다.
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `encodeStrokeDash`
 
 - `field`, `target`, `fieldType`
-  - ✅ Covered: nominal line series, inferred/explicit target, invalid mark/type/field.
+  - ✅ Covered: nominal line series, inferred/explicit target, invalid mark/type/field, compatible/incompatible
+    group/color field, same/different-field reassignment.
+- `value`
+  - ✅ Covered: four named styles, direct pattern, field↔constant replacement, field/value exclusivity,
+    scale/type rejection in constant mode.
 - `scale.domain`
   - ✅ Covered: auto and explicit order.
 - `scale.range`
-  - ✅ Covered: automatic pattern cycling, explicit even-length non-negative patterns, invalid patterns.
-  - ⚠️ Partial: empty solid pattern mixed with repeated categories and very long patterns.
-  - 🟡 Planned: `solid | dashed | dotted | dashdot` named values and their concrete recipes.
-- 🟡 Planned: mutually exclusive constant `value` mode and atomic field↔constant reassignment.
+  - ✅ Covered: automatic cycling, direct patterns, named styles, resolved numeric recipes, invalid patterns.
+- Named recipes: `solid → []`, `dashed → [6, 4]`, `dotted → [1, 3]`,
+  `dashdot → [6, 3, 1, 3]`.
 - Evidence: line-series encoding and scale tests.
 
 ## `encodeSize`

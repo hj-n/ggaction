@@ -230,8 +230,6 @@ test("reads the latest shared scale domain when rematerializing", () => {
 });
 
 test("validates combined fields, domains, targets, and appearance options", () => {
-  const differentFields = createSeriesLine({ dash: false })
-    .encodeStrokeDash({ field: "category" });
   const differentDomains = createSeriesLine({ dash: false })
     .encodeStrokeDash({
       field: "origin",
@@ -239,8 +237,9 @@ test("validates combined fields, domains, targets, and appearance options", () =
     });
 
   assert.throws(
-    () => differentFields.createLegend(),
-    /same field/
+    () => createSeriesLine({ dash: false })
+      .encodeStrokeDash({ field: "category" }),
+    /must match color field/
   );
   assert.throws(
     () => differentDomains.createLegend(),
@@ -268,6 +267,6 @@ test("validates combined fields, domains, targets, and appearance options", () =
   );
   assert.throws(
     () => createSeriesLine().createLegend().encodeColor({ field: "category" }),
-    /same field/
+    /must match strokeDash field/
   );
 });

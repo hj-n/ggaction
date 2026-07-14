@@ -206,6 +206,7 @@ test("keeps primitives and internal wrapped actions in separate layers", () => {
     "createCategoricalLegend",
     "createGradientLegend",
     "createOpacityLegend",
+    "removeCategoricalLegend",
     "removeOpacityLegend",
     "createSizeLegend"
   ]);
@@ -308,7 +309,6 @@ test("keeps accepted planned capabilities linked and non-public", () => {
     "Parameterized aggregate operations",
     "Color layout vocabulary",
     "Continuous color bar consumer",
-    "Named and constant stroke dash vocabulary",
     "Histogram bin controls",
     "Scale type vocabulary",
     "Scale mapping policies",
@@ -408,11 +408,11 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   assert.match(plannedCorpus, /## continuous color gradient legend/);
   assert.match(plannedCorpus, /length\?: PositiveFinite/);
   assert.match(plannedCorpus, /adjacent rect strips/);
-  assert.match(plannedCorpus, /type DashStyle = "solid" \| "dashed" \| "dotted" \| "dashdot"/);
-  assert.match(plannedCorpus, /solid → \[\]/);
-  assert.match(plannedCorpus, /dashed → \[6, 4\]/);
-  assert.match(plannedCorpus, /dotted → \[1, 3\]/);
-  assert.match(plannedCorpus, /dashdot → \[6, 3, 1, 3\]/);
+  assert.match(currentCorpus, /DashStyle = "solid" \| "dashed" \| "dotted" \| "dashdot"/);
+  assert.match(currentCorpus, /solid → \[\]/);
+  assert.match(currentCorpus, /dashed → \[6, 4\]/);
+  assert.match(currentCorpus, /dotted → \[1, 3\]/);
+  assert.match(currentCorpus, /dashdot → \[6, 3, 1, 3\]/);
   assert.match(currentCorpus, /encodeOpacity\(\{ value, target\? \} \| \{ field/);
   assert.match(currentCorpus, /auto linear range는 `\[0\.2, 1\]`/);
   assert.match(currentCorpus, /"color" \| "strokeDash" \| "shape" \| "opacity"/);

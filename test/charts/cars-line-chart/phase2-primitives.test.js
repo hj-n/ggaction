@@ -2,7 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  createConstantDashCarsLineChart,
+  createDashReassignmentCarsLineChart,
+  createGroupReassignmentCarsLineChart,
   createMonotoneEditCarsLineChart,
+  createNamedDashVocabularyCarsLineChart,
   createStepCarsLineChart
 } from "../../../examples/cars-line-chart/program.js";
 import {
@@ -323,5 +327,44 @@ test("keeps dash and reassignment targets primitive-only", () => {
       assert.equal(operations.includes(futureAction), false, futureAction);
     }
     assert.deepEqual(program.actionStack, []);
+  }
+});
+
+test("matches approved dash and reassignment primitives with public actions", () => {
+  const pairs = [
+    [
+      createNamedDashVocabularyPrimitives(cars),
+      createNamedDashVocabularyCarsLineChart(cars),
+      "createLegend"
+    ],
+    [
+      createConstantDashPrimitives(cars),
+      createConstantDashCarsLineChart(cars),
+      "encodeStrokeDash"
+    ],
+    [
+      createGroupReassignmentPrimitives(cars),
+      createGroupReassignmentCarsLineChart(cars),
+      "encodeGroup"
+    ],
+    [
+      createDashReassignmentPrimitives(cars),
+      createDashReassignmentCarsLineChart(cars),
+      "encodeStrokeDash"
+    ]
+  ];
+
+  for (const [primitive, publicProgram, finalAction] of pairs) {
+    const primitiveContext = createMockCanvasContext();
+    const publicContext = createMockCanvasContext();
+    renderCarsLineChartPrimitives(primitive, primitiveContext);
+    renderCarsLineChartPrimitives(publicProgram, publicContext);
+
+    assert.deepEqual(publicProgram.semanticSpec, primitive.semanticSpec);
+    assert.deepEqual(publicProgram.graphicSpec, primitive.graphicSpec);
+    assert.deepEqual(publicProgram.graphicSpec.order, primitive.graphicSpec.order);
+    assert.deepEqual(publicContext.calls, primitiveContext.calls);
+    assert.equal(publicProgram.trace.children.at(-1).op, finalAction);
+    assert.deepEqual(publicProgram.actionStack, []);
   }
 });

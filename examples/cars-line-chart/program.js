@@ -120,3 +120,122 @@ export function createMonotoneEditCarsLineChart(cars) {
       strokeWidth: 4
     });
 }
+
+function validDashRows(cars) {
+  return validRows(cars).filter(car => Number.isFinite(car.Cylinders));
+}
+
+export function createNamedDashVocabularyCarsLineChart(cars) {
+  const rows = validDashRows(cars).filter(
+    car => [8, 4, 6, 3].includes(car.Cylinders)
+  );
+
+  return chart()
+    .createCanvas({
+      width: 720,
+      height: 460,
+      margin: { top: 80, right: 170, bottom: 60, left: 80 }
+    })
+    .createData({ id: "cars", values: rows })
+    .createLineMark({ id: "trends" })
+    .encodeX({
+      field: "Year",
+      fieldType: "temporal",
+      scale: { nice: true }
+    })
+    .encodeY({
+      field: "Acceleration",
+      aggregate: "mean",
+      scale: { nice: true, zero: false }
+    })
+    .encodeStrokeDash({
+      field: "Cylinders",
+      scale: {
+        range: ["solid", "dashed", "dotted", "dashdot"]
+      }
+    })
+    .createLegend();
+}
+
+export function createConstantDashCarsLineChart(cars) {
+  const rows = validDashRows(cars);
+
+  return chart()
+    .createCanvas({
+      width: 720,
+      height: 460,
+      margin: { top: 80, right: 170, bottom: 60, left: 80 }
+    })
+    .createData({ id: "cars", values: rows })
+    .createLineMark({ id: "trends" })
+    .encodeX({
+      field: "Year",
+      fieldType: "temporal",
+      scale: { nice: true }
+    })
+    .encodeY({
+      field: "Acceleration",
+      aggregate: "mean",
+      scale: { nice: true, zero: false }
+    })
+    .encodeStrokeDash({
+      field: "Origin",
+      scale: { id: "originDash" }
+    })
+    .createLegend()
+    .encodeStrokeDash({ value: "dotted" });
+}
+
+export function createGroupReassignmentCarsLineChart(cars) {
+  const rows = validDashRows(cars);
+
+  return chart()
+    .createCanvas({
+      width: 720,
+      height: 460,
+      margin: { top: 80, right: 170, bottom: 60, left: 80 }
+    })
+    .createData({ id: "cars", values: rows })
+    .createLineMark({ id: "trends" })
+    .encodeX({
+      field: "Year",
+      fieldType: "temporal",
+      scale: { nice: true }
+    })
+    .encodeY({
+      field: "Acceleration",
+      aggregate: "mean",
+      scale: { nice: true, zero: false }
+    })
+    .encodeGroup({ field: "Origin" })
+    .encodeGroup({ field: "Cylinders" });
+}
+
+export function createDashReassignmentCarsLineChart(cars) {
+  const rows = validDashRows(cars);
+
+  return chart()
+    .createCanvas({
+      width: 720,
+      height: 460,
+      margin: { top: 80, right: 170, bottom: 60, left: 80 }
+    })
+    .createData({ id: "cars", values: rows })
+    .createLineMark({ id: "trends" })
+    .encodeX({
+      field: "Year",
+      fieldType: "temporal",
+      scale: { nice: true }
+    })
+    .encodeY({
+      field: "Acceleration",
+      aggregate: "mean",
+      scale: { nice: true, zero: false }
+    })
+    .encodeStrokeDash({
+      field: "Origin",
+      scale: { id: "originDash" }
+    })
+    .createLegend()
+    .encodeStrokeDash({ field: "Cylinders" });
+}

@@ -29,6 +29,8 @@ export type CurveInterpolation =
   | "cardinal"
   | "monotone"
   | "natural";
+export type DashStyle = "solid" | "dashed" | "dotted" | "dashdot";
+export type DashPattern = readonly number[];
 export type ScaleType = "linear" | "time" | "ordinal";
 export type ContinuousColorInterpolation =
   | "rgb"
@@ -157,6 +159,29 @@ export interface CategoricalEncodingOptions {
   layout?: "stack" | "group";
 }
 
+export interface DashScaleOptions {
+  id?: string;
+  type?: "ordinal";
+  domain?: "auto" | readonly unknown[];
+  range?: "auto" | readonly (DashStyle | DashPattern)[];
+}
+
+export type StrokeDashEncodingOptions =
+  | {
+      field: string;
+      value?: never;
+      target?: string;
+      fieldType?: "nominal";
+      scale?: DashScaleOptions;
+    }
+  | {
+      value: DashStyle | DashPattern;
+      field?: never;
+      target?: string;
+      fieldType?: never;
+      scale?: never;
+    };
+
 export interface ContinuousColorScaleOptions {
   id?: string;
   type?: "sequential";
@@ -265,7 +290,7 @@ export class ChartProgram {
   encodeX(options: PositionEncodingOptions): ChartProgram;
   encodeY(options: PositionEncodingOptions): ChartProgram;
   encodeColor(options: ColorEncodingOptions): ChartProgram;
-  encodeStrokeDash(options: CategoricalEncodingOptions): ChartProgram;
+  encodeStrokeDash(options: StrokeDashEncodingOptions): ChartProgram;
   encodeSize(options: { field: string; target?: string; fieldType?: "quantitative"; scale?: ScaleOptions }): ChartProgram;
   encodeShape(options: { field: string; target?: string; fieldType?: "nominal"; scale?: ScaleOptions }): ChartProgram;
   encodeOpacity(options: OpacityEncodingOptions): ChartProgram;

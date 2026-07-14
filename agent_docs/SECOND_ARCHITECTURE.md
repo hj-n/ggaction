@@ -830,6 +830,10 @@ materialization policy에 정의한다.
 
 - x/y와 supported raw quantitative 또는 aggregate-mean semantics가 필요하다.
 - group/color/strokeDash에 따라 series를 나눈다.
+- group, color, field-driven strokeDash가 함께 series identity에 참여하면 같은 field여야 한다.
+- `encodeGroup`과 `encodeStrokeDash` 재호출은 기존 assignment를 원자적으로 교체한다.
+  StrokeDash의 field/constant mode도 같은 action이 소유하며, 더 이상 참조하지 않는 named scale은
+  resource identity를 보존하기 위해 자동 삭제하지 않는다.
 - series 하나당 backend-neutral path 하나를 만든다.
 - source first-appearance group order와 명시적 x sort를 사용한다.
 - curve는 mark materialization config이며 `linear`, step family와 네 cubic family를 final `M/L/C`
@@ -942,6 +946,11 @@ graphics           background + layered symbols + labels + title
 Line, point, rect/area symbol 차이는 complete legend implementation fork가 아니라 symbol
 recipe로 표현한다. Point quantitative size legend는 별도 quantitative recipe를 사용하지만
 `createLegend`와 `createGuides`의 public flow 안에서 함께 조정된다.
+
+Encoding reassignment는 existing categorical legend의 inferred field/title/domain/symbol을
+갱신하되 explicit title과 appearance config를 보존한다. Field-driven strokeDash를 constant로
+바꾸면 strokeDash component만 제거하고, 남는 channel이 없을 때만 legend resource와 graphics를
+제거한다.
 
 Chart-independent legend default는 right다. Top/bottom, horizontal/vertical direction,
 columns, alignment, title position, border 등은 explicit option이다.

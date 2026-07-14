@@ -100,6 +100,27 @@ const smooth = program.editLineMark({
 Both forms regenerate backend-neutral path commands. The stored x/y fields,
 mean aggregation, grouping, scales, axes, and legend remain unchanged.
 
+## Change the dash assignment
+
+Use named styles in a field scale when each series needs its own pattern:
+
+```javascript
+const named = program.encodeStrokeDash({
+  field: "Origin",
+  scale: { range: ["solid", "dashed", "dotted"] }
+});
+```
+
+Or replace the field mapping with one constant pattern:
+
+```javascript
+const dotted = named.encodeStrokeDash({ value: "dotted" });
+```
+
+The second call removes stroke dash from the categorical legend while keeping
+any remaining color component. It also preserves the old named scale as an
+immutable semantic resource.
+
 ## Key action trace
 
 Aggregate and series actions explicitly rematerialize the path; the renderer

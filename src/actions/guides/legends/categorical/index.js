@@ -1,6 +1,7 @@
 import {
   createCategoricalLegend,
   createLegend,
+  removeCategoricalLegend,
   rematerializeLegend
 } from "./actions.js";
 import {
@@ -25,6 +26,7 @@ import {
 export function registerCategoricalLegendActions(ProgramClass) {
   ProgramClass.prototype.createLegend = createLegend;
   ProgramClass.prototype.createCategoricalLegend = createCategoricalLegend;
+  ProgramClass.prototype.removeCategoricalLegend = removeCategoricalLegend;
   ProgramClass.prototype.createLegendBackground = createLegendBackground;
   ProgramClass.prototype.editLegendBackground = editLegendBackground;
   ProgramClass.prototype.createLegendSymbols = createLegendSymbols;

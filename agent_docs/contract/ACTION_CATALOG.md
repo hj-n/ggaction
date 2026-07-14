@@ -23,7 +23,7 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | user-facing | [`encodeX`](current/ENCODINGS.md#encodex) | encodings | Assignment | Reassignment — Implemented | ✅ / ✅ / ⚠️ |
 | user-facing | [`encodeY`](current/ENCODINGS.md#encodey) | encodings | Assignment | Reassignment — Implemented | ✅ / ✅ / ⚠️ |
 | user-facing | [`encodeColor`](current/ENCODINGS.md#encodecolor) | encodings | Assignment | Reassignment — Implemented | ✅ / ✅ / ✅ |
-| user-facing | [`encodeStrokeDash`](current/ENCODINGS.md#encodestrokedash) | encodings | Assignment | Reassignment — Planned | ✅ / ✅ / ⚠️ |
+| user-facing | [`encodeStrokeDash`](current/ENCODINGS.md#encodestrokedash) | encodings | Assignment | Reassignment — Implemented | ✅ / ✅ / ✅ |
 | user-facing | [`encodeSize`](current/ENCODINGS.md#encodesize) | encodings | Assignment | Reassignment — Implemented | ✅ / ✅ / ⚠️ |
 | user-facing | [`encodeShape`](current/ENCODINGS.md#encodeshape) | encodings | Assignment | Reassignment — Implemented | ✅ / ✅ / ⚠️ |
 | user-facing | [`encodeOpacity`](current/ENCODINGS.md#encodeopacity) | encodings | Assignment | Reassignment — Implemented | ✅ / ✅ / ✅ |
@@ -31,7 +31,7 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | user-facing | [`encodeXOffset`](current/ENCODINGS.md#encodexoffset) | encodings | Assignment | Reassignment — Planned | ✅ / ✅ / ✅ |
 | user-facing | [`encodeY2`](current/ENCODINGS.md#encodey2) | encodings | Assignment | Reassignment — Planned | ✅ / ✅ / ✅ |
 | user-facing | [`encodeYRange`](current/ENCODINGS.md#encodeyrange) | encodings | Assignment | Reassignment — Planned | ✅ / ✅ / ⚠️ |
-| user-facing | [`encodeGroup`](current/ENCODINGS.md#encodegroup) | encodings | Assignment | Reassignment — Planned | ✅ / ✅ / ✅ |
+| user-facing | [`encodeGroup`](current/ENCODINGS.md#encodegroup) | encodings | Assignment | Reassignment — Implemented | ✅ / ✅ / ✅ |
 | user-facing | [`encodeHistogram`](current/ENCODINGS.md#encodehistogram) | encodings | Assignment | Reassignment — Planned | ✅ / ✅ / ⚠️ |
 | user-facing | [`encodeDensity`](current/ENCODINGS.md#encodedensity) | encodings | Assignment | `editDensity` — Planned | ✅ / ✅ / ⚠️ |
 | user-facing | [`encodeBarWidth`](current/ENCODINGS.md#encodebarwidth) | encodings | Assignment | Reassignment — Implemented | ✅ / ✅ / ✅ |
@@ -104,8 +104,6 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | --- | --- | --- | --- |
 | composition | Regression band delegation through error band | accepted | [Open](planned/COMPOSITE_MARKS.md#regression-band-delegation) |
 | composition | Composite mark ownership and storage | accepted | [Open](planned/COMPOSITE_MARKS.md#composite-ownership-and-storage) |
-| behavior | encodeGroup reassignment | accepted | [Open](planned/ENCODINGS.md#grouping-reassignment) |
-| behavior | encodeStrokeDash reassignment | accepted | [Open](planned/ENCODINGS.md#scale-backed-appearance-reassignment) |
 | behavior | encodeXOffset reassignment | accepted | [Open](planned/ENCODINGS.md#positional-reassignment) |
 | behavior | encodeY2 reassignment | accepted | [Open](planned/ENCODINGS.md#positional-reassignment) |
 | behavior | encodeYRange reassignment | accepted | [Open](planned/ENCODINGS.md#positional-reassignment) |
@@ -118,7 +116,6 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | parameter | Parameterized aggregate operations | accepted | [Open](planned/ENCODINGS.md#parameterized-aggregate-operations) |
 | parameter | Color layout vocabulary | accepted | [Open](planned/ENCODINGS.md#color-layout-vocabulary) |
 | parameter | Continuous color bar consumer | accepted | [Open](planned/ENCODINGS.md#continuous-color-bar-consumer) |
-| parameter | Named and constant stroke dash vocabulary | accepted | [Open](planned/ENCODINGS.md#named-and-constant-stroke-dash-vocabulary) |
 | parameter | Histogram bin controls | accepted | [Open](planned/ENCODINGS.md#histogram-bin-controls) |
 | parameter | Scale type vocabulary | accepted | [Open](planned/SCALES.md#scale-type-vocabulary) |
 | parameter | Scale mapping policies | accepted | [Open](planned/SCALES.md#scale-mapping-policies) |

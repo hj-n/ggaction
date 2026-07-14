@@ -14,6 +14,7 @@ import {
   buildCurvePathCommands,
   validateCurveInterpolation
 } from "../../grammar/curveCommands.js";
+import { normalizeStrokeDashPattern } from "../../grammar/scales.js";
 import { canMaterializeLine } from "./materialization.js";
 
 const DEFAULT_LINE_STROKE = DEFAULT_COLORS.mark;
@@ -160,7 +161,9 @@ const rematerializeLineMark = action(
         existingChildren[index]?.properties.strokeWidth ??
         DEFAULT_LINE_WIDTH
     );
-    const strokeDashes = dashEncoding?.scale === undefined
+    const strokeDashes = dashEncoding?.datum !== undefined
+      ? commands.map(() => normalizeStrokeDashPattern(dashEncoding.datum))
+      : dashEncoding?.scale === undefined
       ? commands.map(
           (_, index) => existingChildren[index]?.properties.strokeDash ?? []
         )

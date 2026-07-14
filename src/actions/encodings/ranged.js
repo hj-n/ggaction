@@ -6,7 +6,11 @@ import {
   canMaterializeLine
 } from "../marks/materialization.js";
 import { findLayer } from "../../selectors/layers.js";
-import { resolveTarget, validateOptions } from "./shared.js";
+import {
+  resolveTarget,
+  validateLineSeriesCompatibility,
+  validateOptions
+} from "./shared.js";
 
 const Y2_OPTIONS = Object.freeze(["field", "target", "fieldType", "scale"]);
 const Y_RANGE_OPTIONS = Object.freeze([
@@ -113,6 +117,7 @@ const encodeGroup = action(
       );
     }
     readNominalField(dataset.values, args.field);
+    validateLineSeriesCompatibility(layer, "group", args.field);
     const next = this
       .editSemantic({
         property: `layer[${target}].encoding.group.field`,

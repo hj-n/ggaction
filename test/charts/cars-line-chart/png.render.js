@@ -2,7 +2,11 @@ import test from "node:test";
 
 import {
   createCarsLineChart,
+  createConstantDashCarsLineChart,
+  createDashReassignmentCarsLineChart,
+  createGroupReassignmentCarsLineChart,
   createMonotoneEditCarsLineChart,
+  createNamedDashVocabularyCarsLineChart,
   createStepCarsLineChart
 } from "../../../examples/cars-line-chart/program.js";
 import { loadCars } from "../../support/data.js";
@@ -156,7 +160,8 @@ const dashPrimitiveArtifacts = Object.freeze([
   })
   .createLegend();`
     }),
-    primitive: createNamedDashVocabularyPrimitives(cars)
+    primitive: createNamedDashVocabularyPrimitives(cars),
+    userFacing: createNamedDashVocabularyCarsLineChart(cars)
   }),
   Object.freeze({
     artifact: Object.freeze({
@@ -182,7 +187,8 @@ const dashPrimitiveArtifacts = Object.freeze([
   .createLegend()
   .encodeStrokeDash({ value: "dotted" });`
     }),
-    primitive: createConstantDashPrimitives(cars)
+    primitive: createConstantDashPrimitives(cars),
+    userFacing: createConstantDashCarsLineChart(cars)
   }),
   Object.freeze({
     artifact: Object.freeze({
@@ -207,7 +213,8 @@ const dashPrimitiveArtifacts = Object.freeze([
   .encodeGroup({ field: "Origin" })
   .encodeGroup({ field: "Cylinders" });`
     }),
-    primitive: createGroupReassignmentPrimitives(cars)
+    primitive: createGroupReassignmentPrimitives(cars),
+    userFacing: createGroupReassignmentCarsLineChart(cars)
   }),
   Object.freeze({
     artifact: Object.freeze({
@@ -233,7 +240,8 @@ const dashPrimitiveArtifacts = Object.freeze([
   .createLegend()
   .encodeStrokeDash({ field: "Cylinders" });`
     }),
-    primitive: createDashReassignmentPrimitives(cars)
+    primitive: createDashReassignmentPrimitives(cars),
+    userFacing: createDashReassignmentCarsLineChart(cars)
   })
 ]);
 
@@ -275,12 +283,17 @@ test("renders the public and primitive line charts with visible series", async (
     }
   }
 
-  for (const { artifact, primitive } of dashPrimitiveArtifacts) {
-    await assertRenderedPNG(primitive, {
-      artifact: { ...artifact, kind: "primitive" },
-      width: 720,
-      height: 460,
-      colors: ["#4c78a8"]
-    });
+  for (const { artifact, primitive, userFacing } of dashPrimitiveArtifacts) {
+    for (const [kind, program] of [
+      ["primitive", primitive],
+      ["user-facing", userFacing]
+    ]) {
+      await assertRenderedPNG(program, {
+        artifact: { ...artifact, kind },
+        width: 720,
+        height: 460,
+        colors: ["#4c78a8"]
+      });
+    }
   }
 });
