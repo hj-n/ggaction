@@ -150,9 +150,11 @@
 - A documentation change is not complete until Markdown contracts, the Jekyll build, built-link and asset checks, search-index checks, and desktop/mobile browser smoke tests pass.
 - Keep unimplemented roadmap ideas out of current API documentation except where a concise limitation is required to explain an accepted value or error.
 - Do not exhaustively document internal modules, helper functions, data structures, or implementation mechanics in public docs unless users must understand them to use the library correctly.
-- Write each new chart implementation contract in Korean at `agent_docs/impl/chart/<chart-name>.md`. Keep the complete chart description, final user-facing API, important action hierarchy, and stored-result contract readable in that one chart document.
-- A phase may contain any number of chart development cycles. Use `agent_docs/impl/phaseN/GOAL.md` and `STEPn.md` flexibly to manage that phase's chart set, shared prerequisites, execution order, integration work, and cleanup; do not impose a fixed mapping between chart cycles and STEP documents.
+- Write each new chart implementation contract in Korean at `agent_docs/impl/roadmapN/chart/<chart-name>.md`. Keep the complete chart description, final user-facing API, important action hierarchy, and stored-result contract readable in that one chart document.
+- A phase may contain any number of chart development cycles. Use `agent_docs/impl/roadmapN/phaseM/GOAL.md` and `STEPn.md` flexibly to manage that phase's chart set, shared prerequisites, execution order, integration work, and cleanup; do not impose a fixed mapping between chart cycles and STEP documents.
 - Every Phase STEP document must place a `진행 상태` checklist near the beginning and keep it updated. Phase documents should link the chart contracts they coordinate, but must not split one chart's complete specification across STEP files.
+- For Roadmap 2 visual work, author the graphical primitive variant first, render its browser/PNG result, and pause for user confirmation before implementing the corresponding user-facing action flow. Revise and reconfirm the primitive when feedback changes the intended appearance.
+- Store Roadmap 2 visual pairs under `.artifacts/test/png/roadmap2/<chart>/<variant>/primitive.png` and `user-facing.png`. Generate a hierarchical Roadmap 2 gallery from those artifacts; keep the entire artifact tree gitignored.
 - Preserve `agent_docs/INITIAL_ARCHITECTURE.md` as an initial design record unless the user explicitly asks to revise it; it does not need to mirror every later implementation decision.
 - Keep historical design references distinct from documentation of the current behavior.
 

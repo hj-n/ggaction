@@ -16,6 +16,10 @@ const catalog = readFileSync(
   path.join(contractRoot, "ACTION_CATALOG.md"),
   "utf8"
 );
+const roadmap2 = readFileSync(
+  path.join(root, "agent_docs/impl/roadmap2/ROADMAP.md"),
+  "utf8"
+);
 
 function markdownFiles(directory) {
   return readdirSync(path.join(contractRoot, directory))
@@ -271,6 +275,23 @@ test("keeps planned direct actions and reassignment gaps explicit", () => {
     .filter(capability => capability.kind === "behavior")
     .map(capability => capability.action);
   assert.deepEqual(new Set(indexedReassignments), new Set(plannedReassignments));
+});
+
+test("maps every planned contract into Roadmap 2", () => {
+  for (const action of index.plannedActions) {
+    assert.equal(
+      roadmap2.includes(`\`${action.name}\``),
+      true,
+      `Roadmap 2 is missing planned action ${action.name}`
+    );
+  }
+  for (const capability of index.plannedCapabilities) {
+    assert.equal(
+      roadmap2.includes(`\`${capability.id}\``),
+      true,
+      `Roadmap 2 is missing planned capability ${capability.id}`
+    );
+  }
 });
 
 test("keeps accepted planned capabilities linked and non-public", () => {

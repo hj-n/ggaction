@@ -1100,7 +1100,7 @@ src/
 Chart example 이름에 따라 source implementation을 나누지 않는다. Histogram, grouped
 bar, regression 같은 chart-level capability가 필요하더라도 reusable mark, encoding,
 transform, guide 책임으로 분해한다. Chart-specific 완성 flow는 example, test program,
-tutorial과 `agent_docs/impl/chart/` 계약에 둔다.
+tutorial과 `agent_docs/impl/roadmapN/chart/` 계약에 둔다.
 
 각 action category의 `index.js`는 registrar boundary다. `actions/index.js`가 모든 built-in
 registrar를 한 번 조립하고 `ChartProgram`에 등록한다.
