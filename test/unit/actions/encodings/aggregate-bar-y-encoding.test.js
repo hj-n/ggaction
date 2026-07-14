@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { chart } from "../../../../src/index.js";
-import { deriveBarAggregates } from "../../../../src/grammar/barAggregate.js";
+import { deriveBarAggregates } from "../../../../src/grammar/bars/aggregate.js";
 
 const values = [
   { year: 1850, perc: 2 },

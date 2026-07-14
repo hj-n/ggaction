@@ -1,4 +1,4 @@
-import { cloneAndFreeze } from "../core/immutable.js";
+import { cloneAndFreeze, isPlainObject } from "../core/immutable.js";
 
 const NICE_FACTORS = Object.freeze([1, 2, 3, 5]);
 
@@ -13,6 +13,17 @@ function validateMaxBins(maxBins) {
     throw new TypeError("Histogram maxBins must be a positive integer.");
   }
   return maxBins;
+}
+
+export function normalizeHistogramBin(bin = {}) {
+  if (!isPlainObject(bin)) {
+    throw new TypeError("Histogram bin must be a plain object.");
+  }
+  const unknown = Object.keys(bin).find(key => key !== "maxBins");
+  if (unknown !== undefined) {
+    throw new Error(`Unknown bin option "${unknown}".`);
+  }
+  return cloneAndFreeze({ maxBins: validateMaxBins(bin.maxBins ?? 10) });
 }
 
 function validateDomain(domain) {
@@ -87,13 +98,19 @@ function niceBins(extent, maxBins) {
 
 export function resolveHistogramBins({
   values,
+  bin,
   maxBins,
   domain = "auto",
   nice = true,
   zero = false
 }) {
   validateValues(values);
-  validateMaxBins(maxBins);
+  if (bin !== undefined && maxBins !== undefined) {
+    throw new Error("Histogram bins require either bin or maxBins, not both.");
+  }
+  maxBins = normalizeHistogramBin(
+    bin ?? (maxBins === undefined ? {} : { maxBins })
+  ).maxBins;
 
   if (typeof nice !== "boolean") {
     throw new TypeError("Histogram nice must be a boolean.");

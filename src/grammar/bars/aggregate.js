@@ -1,11 +1,11 @@
-import { cloneAndFreeze } from "../core/immutable.js";
-import { readNominalField } from "./scales.js";
+import { cloneAndFreeze } from "../../core/immutable.js";
+import { readNominalField } from "../scales.js";
 import {
   aggregateRows,
-  isAggregate,
   validateAggregateFieldType,
   validateAggregateFieldValues,
-} from "./aggregate.js";
+} from "../aggregate.js";
+import { BAR_GRAINS, resolveBarGrain } from "./policy.js";
 
 function requireAggregateBarEncoding(layer) {
   if (layer?.mark?.type !== "bar") {
@@ -18,10 +18,7 @@ function requireAggregateBarEncoding(layer) {
   if (x?.fieldType !== "ordinal") {
     throw new Error(`Bar mark "${layer.id}" requires an ordinal x encoding.`);
   }
-  if (
-    !isAggregate(y?.aggregate) ||
-    y.stack !== null
-  ) {
+  if (resolveBarGrain(layer) !== BAR_GRAINS.aggregate) {
     throw new Error(
       `Bar mark "${layer.id}" requires a supported aggregate/non-stacked y encoding.`
     );

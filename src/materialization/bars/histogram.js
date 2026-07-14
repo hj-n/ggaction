@@ -2,13 +2,13 @@ import {
   countHistogramBins,
   findHistogramBinIndex,
   resolveHistogramBins
-} from "../../../grammar/histogram.js";
+} from "../../grammar/histogram.js";
 import {
   mapLinearValues,
   mapOrdinalValues,
   readNominalField,
   readQuantitativeField
-} from "../../../grammar/scales.js";
+} from "../../grammar/scales.js";
 import {
   DEFAULT_BAR_FILL,
   DEFAULT_BAR_STROKE,
@@ -25,7 +25,7 @@ function deriveSegments({
   const xValues = readQuantitativeField(dataset.values, xEncoding.field);
   const bins = resolveHistogramBins({
     values: xValues,
-    maxBins: xEncoding.bin.maxBins,
+    bin: xEncoding.bin,
     domain: xScale.domain,
     nice: xScale.nice ?? true,
     zero: xScale.zero ?? false

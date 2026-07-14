@@ -1,6 +1,6 @@
 import { action } from "../../core/action.js";
 import { resolveTarget, validateOptions } from "./shared.js";
-import { isAggregate } from "../../grammar/aggregate.js";
+import { BAR_GRAINS, resolveBarGrain } from "../../grammar/bars/policy.js";
 
 const OPTIONS = Object.freeze(["band", "target"]);
 
@@ -23,9 +23,7 @@ const encodeBarWidth = action(
       "bar mark"
     );
     if (
-      layer.encoding?.x?.fieldType !== "ordinal" ||
-      !isAggregate(layer.encoding?.y?.aggregate) ||
-      layer.encoding.y.stack !== null ||
+      resolveBarGrain(layer) !== BAR_GRAINS.aggregate ||
       layer.encoding?.color?.field === undefined ||
       layer.encoding?.xOffset?.field !== layer.encoding.color.field
     ) {

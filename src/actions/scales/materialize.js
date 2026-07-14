@@ -103,7 +103,7 @@ export const rematerializeScale = action(
       }
       domain = resolveHistogramBins({
         values: allValues,
-        maxBins: [...maxBins][0],
+        bin: { maxBins: [...maxBins][0] },
         domain: scale.domain,
         nice: scale.nice ?? true,
         zero: scale.zero ?? false

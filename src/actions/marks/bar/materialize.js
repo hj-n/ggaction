@@ -1,9 +1,9 @@
 import { action } from "../../../core/action.js";
 import { validateUserId } from "../../../core/identifiers.js";
 import { validateMarkOptions } from "../shared.js";
-import { deriveGroupedRectangles } from "./grouped.js";
-import { deriveHistogramRectangles } from "./histogram.js";
-import { requireCompleteBar } from "./resolve.js";
+import { deriveGroupedRectangles } from "../../../materialization/bars/grouped.js";
+import { deriveHistogramRectangles } from "../../../materialization/bars/histogram.js";
+import { requireCompleteBar } from "../../../materialization/bars/resolve.js";
 
 const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);
 
@@ -69,7 +69,7 @@ export const rematerializeBarMark = action(
       resolved = resolved.rematerializeScale({ id: colorScaleId });
     }
 
-    if (required.materialization === "ordinalAggregate") {
+    if (required.materialization === "aggregate") {
       const offsetScaleId = required.layer.encoding?.xOffset?.scale;
       if (offsetScaleId !== undefined) {
         resolved = resolved.rematerializeScale({ id: offsetScaleId });

@@ -776,6 +776,7 @@ semantic definition을 받아 deterministic result를 반환한다.
 - linear mapping과 ordinal mapping
 - nice numeric ticks와 calendar-aligned time ticks
 - histogram bin boundary와 count
+- bar grain 분류와 color layout 추론
 - grouped scalar and parameterized line/bar aggregation
 - line/area series grouping과 stable ordering
 - OLS coefficient와 Student-t mean-response confidence interval
@@ -820,6 +821,24 @@ scale에서 의미가 충돌하는 조합은 공유하지 못한다.
 
 각 semantic mark type은 자신이 concrete output을 만들 준비가 되었는지를 mark
 materialization policy에 정의한다.
+
+### Bar
+
+Bar는 mark type만으로 geometry를 결정하지 않는다. `grammar/bars/policy.js`가 현재
+semantic encoding을 하나의 canonical grain으로 분류한다.
+
+- `histogram`: binned quantitative x + count y + zero stack
+- `aggregate`: ordinal x + scalar aggregate y + non-stack
+
+Color의 기본 layout도 같은 grain에서 추론한다. Histogram은 `stack`, aggregate bar는
+`group`이며 action, scale consumer, mark materializer가 각자 이 조건을 다시 작성하지 않는다.
+Pure aggregate 계산은 `grammar/bars/`, concrete rectangle 계산과 completeness 검증은
+`materialization/bars/`가 소유한다.
+
+Histogram bin authoring의 canonical shape은 `{ maxBins }`다. 기본값과 validation은
+`normalizeHistogramBin` 한 곳이 소유하며 semantic encoding, scale consumer, tick과 bar
+materializer는 그 normalized bin object를 전달한다. 현재 `step`과 explicit boundaries는
+planned contract이므로 시각 구현 승인을 받기 전에는 지원하지 않는다.
 
 ### Point
 
@@ -1120,8 +1139,10 @@ src/
 │  └─ titles/          chart title actions
 ├─ core/               action-free ChartProgram, action wrapper, immutable ownership, empty specs
 ├─ grammar/            pure Grammar-of-Graphics/statistical/schema calculations
+│  └─ bars/            bar grain policy와 aggregate 계산
 ├─ layout/             Canvas state와 plot bounds
 ├─ materialization/    mark completeness policy와 cross-cutting dependency plan
+│  └─ bars/            bar completeness와 concrete rectangle 계산
 ├─ renderers/          Canvas primitive renderer와 PNG adapter
 ├─ selectors/          named semantic resource lookup
 └─ theme/              shared built-in visual token

@@ -1,4 +1,5 @@
-import { deriveBarAggregates } from "../../grammar/barAggregate.js";
+import { deriveBarAggregates } from "../../grammar/bars/aggregate.js";
+import { BAR_GRAINS, resolveBarGrain } from "../../grammar/bars/policy.js";
 import { countHistogramBins, resolveHistogramBins } from "../../grammar/histogram.js";
 import { deriveLineSeries } from "../../grammar/lineSeries.js";
 import {
@@ -58,10 +59,7 @@ export function resolveConsumerValues(program, consumer) {
   }
 
   if (
-    consumer.layer.mark?.type === "bar" &&
-    consumer.layer.encoding?.x?.fieldType === "ordinal" &&
-    isAggregate(consumer.layer.encoding?.y?.aggregate) &&
-    consumer.layer.encoding.y.stack === null
+    resolveBarGrain(consumer.layer) === BAR_GRAINS.aggregate
   ) {
     const derived = deriveBarAggregates(dataset.values, consumer.layer);
     return consumer.channel === "x" ? derived.xValues : derived.yValues;
@@ -102,7 +100,7 @@ export function resolveHistogramCountValues(program, consumer) {
   const xValues = readQuantitativeField(dataset.values, xEncoding.field);
   const bins = resolveHistogramBins({
     values: xValues,
-    maxBins: xEncoding.bin.maxBins,
+    bin: xEncoding.bin,
     domain: xScale.domain,
     nice: xScale.nice ?? true,
     zero: xScale.zero ?? false

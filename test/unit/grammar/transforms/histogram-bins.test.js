@@ -3,8 +3,23 @@ import test from "node:test";
 
 import {
   countHistogramBins,
+  normalizeHistogramBin,
   resolveHistogramBins
 } from "../../../../src/grammar/histogram.js";
+
+test("normalizes the current histogram bin policy in one owner", () => {
+  assert.deepEqual(normalizeHistogramBin(), { maxBins: 10 });
+  assert.deepEqual(normalizeHistogramBin({ maxBins: 4 }), { maxBins: 4 });
+  assert.deepEqual(
+    resolveHistogramBins({ values: [0, 8], bin: { maxBins: 4 }, nice: false }),
+    { domain: [0, 8], step: 2, boundaries: [0, 2, 4, 6, 8] }
+  );
+  assert.throws(() => normalizeHistogramBin({ step: 2 }), /Unknown bin option/);
+  assert.throws(
+    () => resolveHistogramBins({ values: [0, 8], bin: {}, maxBins: 4 }),
+    /either bin or maxBins/
+  );
+});
 
 test("resolves deterministic nice histogram bins", () => {
   const bins = resolveHistogramBins({

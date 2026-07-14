@@ -5,7 +5,7 @@ import {
 } from "../../grammar/scales.js";
 import { resolveOffsetScaleDefinition } from "../scales/definitions.js";
 import { resolveTarget, validateOptions } from "./shared.js";
-import { isAggregate } from "../../grammar/aggregate.js";
+import { BAR_GRAINS, resolveBarGrain } from "../../grammar/bars/policy.js";
 
 const ENCODING_OPTIONS = Object.freeze(["field", "target", "fieldType", "scale"]);
 const encodeXOffset = action(
@@ -24,10 +24,8 @@ const encodeXOffset = action(
     );
 
     if (
-      layer.encoding?.x?.fieldType !== "ordinal" ||
-      layer.encoding.x.scale === undefined ||
-      !isAggregate(layer.encoding?.y?.aggregate) ||
-      layer.encoding.y.stack !== null
+      resolveBarGrain(layer) !== BAR_GRAINS.aggregate ||
+      layer.encoding.x.scale === undefined
     ) {
       throw new Error(
         "encodeXOffset requires an ordinal x and aggregate/non-stacked y bar encoding."

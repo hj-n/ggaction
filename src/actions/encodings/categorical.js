@@ -20,7 +20,11 @@ import {
   validateLineSeriesCompatibility,
   validateOptions
 } from "./shared.js";
-import { isAggregate } from "../../grammar/aggregate.js";
+import {
+  BAR_GRAINS,
+  inferBarColorLayout,
+  resolveBarGrain
+} from "../../grammar/bars/policy.js";
 
 const COLOR_ENCODING_OPTIONS = Object.freeze([
   "field", "target", "fieldType", "scale", "layout"
@@ -119,24 +123,13 @@ const encodeColor = action(
     }
     validateLineSeriesCompatibility(layer, "color", args.field);
 
-    const isHistogram =
-      layer.mark.type === "bar" &&
-      layer.encoding?.x?.bin !== undefined &&
-      layer.encoding?.y?.aggregate === "count" &&
-      layer.encoding.y.stack === "zero";
-    const isOrdinalAggregate =
-      layer.mark.type === "bar" &&
-      layer.encoding?.x?.fieldType === "ordinal" &&
-      isAggregate(layer.encoding?.y?.aggregate) &&
-      layer.encoding.y.stack === null;
+    const barGrain = resolveBarGrain(layer);
+    const isHistogram = barGrain === BAR_GRAINS.histogram;
+    const isOrdinalAggregate = barGrain === BAR_GRAINS.aggregate;
     const layout = args.layout ?? (
       layer.encoding?.color === undefined
         ? undefined
-        : isHistogram
-          ? "stack"
-          : isOrdinalAggregate
-            ? "group"
-            : undefined
+        : inferBarColorLayout(layer)
     );
 
     if (layer.mark.type === "bar") {

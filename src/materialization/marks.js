@@ -1,5 +1,6 @@
 import { findDataset } from "../selectors/datasets.js";
 import { isAggregate } from "../grammar/aggregate.js";
+import { BAR_GRAINS, resolveBarGrain } from "../grammar/bars/policy.js";
 
 function hasPositionScales(layer) {
   return (
@@ -48,18 +49,11 @@ export function canMaterializeBar(program, layer) {
   if (layer.mark?.type !== "bar" || !hasPositionScales(layer)) {
     return false;
   }
-
-  const histogram =
-    layer.encoding?.x?.bin !== undefined &&
-    layer.encoding?.y?.aggregate === "count" &&
-    layer.encoding.y.stack === "zero";
-  const grouped =
-    layer.encoding?.x?.fieldType === "ordinal" &&
-    isAggregate(layer.encoding?.y?.aggregate) &&
-    layer.encoding.y.stack === null &&
-    program.markConfigs[layer.id]?.barWidth !== undefined;
-
-  return histogram || grouped;
+  const grain = resolveBarGrain(layer);
+  return grain === BAR_GRAINS.histogram || (
+    grain === BAR_GRAINS.aggregate &&
+    program.markConfigs[layer.id]?.barWidth !== undefined
+  );
 }
 
 const MARK_MATERIALIZATION_POLICIES = Object.freeze({

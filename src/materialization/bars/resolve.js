@@ -1,8 +1,8 @@
-import { DEFAULT_COLORS } from "../../../theme/defaults.js";
-import { findDataset } from "../../../selectors/datasets.js";
-import { findLayer } from "../../../selectors/layers.js";
-import { findSemanticScale } from "../../../selectors/scales.js";
-import { isAggregate } from "../../../grammar/aggregate.js";
+import { DEFAULT_COLORS } from "../../theme/defaults.js";
+import { findDataset } from "../../selectors/datasets.js";
+import { findLayer } from "../../selectors/layers.js";
+import { findSemanticScale } from "../../selectors/scales.js";
+import { BAR_GRAINS, resolveBarGrain } from "../../grammar/bars/policy.js";
 
 export const DEFAULT_BAR_FILL = DEFAULT_COLORS.mark;
 export const DEFAULT_BAR_STROKE = "white";
@@ -24,19 +24,12 @@ export function requireCompleteBar(program, id) {
 
   const xEncoding = layer.encoding?.x;
   const yEncoding = layer.encoding?.y;
-  const isHistogram =
-    xEncoding?.bin !== undefined &&
-    yEncoding?.aggregate === "count" &&
-    yEncoding.stack === "zero";
-  const isOrdinalAggregate =
-    xEncoding?.fieldType === "ordinal" &&
-    isAggregate(yEncoding?.aggregate) &&
-    yEncoding.stack === null;
+  const grain = resolveBarGrain(layer);
 
   if (
     xEncoding?.scale === undefined ||
     yEncoding?.scale === undefined ||
-    (!isHistogram && !isOrdinalAggregate)
+    grain === undefined
   ) {
     throw new Error(
       `Bar mark "${id}" requires binned x/count y or ordinal x/aggregate y encodings.`
@@ -55,6 +48,6 @@ export function requireCompleteBar(program, id) {
     yEncoding,
     xScale,
     yScale,
-    materialization: isHistogram ? "histogram" : "ordinalAggregate"
+    materialization: grain
   };
 }

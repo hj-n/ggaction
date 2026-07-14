@@ -1,6 +1,6 @@
-import { isPlainObject } from "../../../core/immutable.js";
 import { validateUserId } from "../../../core/identifiers.js";
 import { getPositionCoordinateDefaults } from "../../../grammar/coordinates.js";
+import { normalizeHistogramBin } from "../../../grammar/histogram.js";
 import {
   readNominalField,
   readQuantitativeField,
@@ -25,7 +25,6 @@ import {
 const POSITION_ENCODING_OPTIONS = Object.freeze([
   "field", "target", "fieldType", "scale", "coordinate", "aggregate", "bin", "stack"
 ]);
-const BIN_OPTIONS = Object.freeze(["maxBins"]);
 
 function resolveCoordinate(program, channel, layer, requestedId) {
   const defaults = getPositionCoordinateDefaults(channel);
@@ -45,13 +44,7 @@ function resolveCoordinate(program, channel, layer, requestedId) {
 }
 
 function resolveBin(bin) {
-  if (!isPlainObject(bin)) throw new TypeError("Bar x bin must be a plain object.");
-  validateOptions(bin, BIN_OPTIONS, "bin");
-  const maxBins = bin.maxBins ?? 10;
-  if (!Number.isInteger(maxBins) || maxBins <= 0) {
-    throw new TypeError("Histogram maxBins must be a positive integer.");
-  }
-  return { maxBins };
+  return normalizeHistogramBin(bin);
 }
 
 function validateMarkPolicy(layer, dataset, channel, args, fieldType, field) {

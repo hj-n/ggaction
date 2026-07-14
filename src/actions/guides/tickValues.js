@@ -33,7 +33,7 @@ export function inferHistogramBoundaries(program, channel, scaleId) {
 
   return resolveHistogramBins({
     values: readQuantitativeField(dataset.values, encoding.field),
-    maxBins: encoding.bin.maxBins,
+    bin: encoding.bin,
     domain: scale.domain,
     nice: scale.nice ?? true,
     zero: scale.zero ?? false

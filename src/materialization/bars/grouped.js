@@ -1,6 +1,6 @@
-import { deriveBarAggregates } from "../../../grammar/barAggregate.js";
-import { mapLinearValues } from "../../../grammar/scales.js";
-import { sameOrderedValues } from "../../../core/validation.js";
+import { deriveBarAggregates } from "../../grammar/bars/aggregate.js";
+import { mapLinearValues } from "../../grammar/scales.js";
+import { sameOrderedValues } from "../../core/validation.js";
 import {
   DEFAULT_BAR_STROKE,
   DEFAULT_BAR_STROKE_WIDTH

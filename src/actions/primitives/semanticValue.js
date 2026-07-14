@@ -3,6 +3,7 @@ import { isPlainObject } from "../../core/immutable.js";
 import { validateAggregate } from "../../grammar/aggregate.js";
 import { findSemanticScale, hasDataset } from "../../selectors/index.js";
 import { validateCoordinateType } from "../../grammar/coordinates.js";
+import { normalizeHistogramBin } from "../../grammar/histogram.js";
 import {
   validateSemanticFieldType,
   validateContinuousColorInterpolation,
@@ -174,12 +175,7 @@ export function validateSemanticValue(program, parsed, value) {
     const property = parsed.path.join(".");
     if (property.endsWith(".fieldType")) validateSemanticFieldType(value);
     if (property.endsWith(".aggregate")) validateAggregate(value);
-    if (
-      property.endsWith(".bin.maxBins") &&
-      (!Number.isInteger(value) || value <= 0)
-    ) {
-      throw new TypeError("Histogram bin maxBins must be a positive integer.");
-    }
+    if (property.endsWith(".bin.maxBins")) normalizeHistogramBin({ maxBins: value });
     if (property.endsWith(".stack") && value !== "zero" && value !== null) {
       throw new Error(`Unsupported stack "${value}".`);
     }
