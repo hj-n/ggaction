@@ -44,21 +44,21 @@ test("distributes arrays and broadcasts scalar values to collection children", (
   assert.deepEqual(points.graphicSpec.objects.points.children[0].properties, {});
 });
 
-test("stores nested path arrays intact and can target one child", () => {
+test("stores nested path commands intact and can target one child", () => {
   const paths = [
-    [{ x: 0, y: 1 }, { x: 2, y: 3 }],
-    [{ x: 4, y: 5 }, { x: 6, y: 7 }]
+    [{ op: "M", x: 0, y: 1 }, { op: "L", x: 2, y: 3 }],
+    [{ op: "M", x: 4, y: 5 }, { op: "L", x: 6, y: 7 }]
   ];
   const program = chart()
     .createGraphics({ id: "paths", type: "path", length: 2 })
-    .editGraphics({ target: "paths", property: "points", value: paths })
+    .editGraphics({ target: "paths", property: "commands", value: paths })
     .editGraphics({ target: "paths:1", property: "opacity", value: 0.4 });
 
   paths[0][0].x = 99;
 
   assert.deepEqual(
-    program.graphicSpec.objects.paths.children[0].properties.points,
-    [{ x: 0, y: 1 }, { x: 2, y: 3 }]
+    program.graphicSpec.objects.paths.children[0].properties.commands,
+    [{ op: "M", x: 0, y: 1 }, { op: "L", x: 2, y: 3 }]
   );
   assert.equal(
     program.graphicSpec.objects.paths.children[1].properties.opacity,

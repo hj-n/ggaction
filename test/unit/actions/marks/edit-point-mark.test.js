@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { chart } from "../../../../src/index.js";
+import { linearCommandPoints } from "../../../support/path.js";
 
 function completePointProgram() {
   return chart()
@@ -34,10 +35,10 @@ test("edits a constant point shape into normalized diamond paths", () => {
   assert.equal(after.graphicSpec.objects.points.type, "collection");
   assert.equal(after.markConfigs.points.shape, "diamond");
   assert.equal(children.every(child => child.type === "path"), true);
-  assert.equal(children.every(child => child.properties.closed === true), true);
+  assert.equal(children.every(child => child.properties.commands.at(-1).op === "Z"), true);
   assert.equal(
     children.every(child =>
-      Math.abs(pathArea(child.properties.points) - Math.PI * 3 ** 2) < 1e-9
+      Math.abs(pathArea(linearCommandPoints(child.properties.commands)) - Math.PI * 3 ** 2) < 1e-9
     ),
     true
   );
@@ -61,7 +62,7 @@ test("supports every constant shape and preserves equal logical area", () => {
       ? Math.PI * child.properties.radius ** 2
       : type === "rect"
         ? child.properties.width * child.properties.height
-        : pathArea(child.properties.points);
+        : pathArea(linearCommandPoints(child.properties.commands));
     assert.equal(Math.abs(area - Math.PI * 3 ** 2) < 1e-9, true, shape);
   }
 });

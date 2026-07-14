@@ -1,4 +1,5 @@
 import { chart, render } from "../../../src/index.js";
+import { linearPathCommands } from "../../support/path.js";
 
 import { createCarsRegressionScatterplotValues } from
   "./reference-values.js";
@@ -323,13 +324,10 @@ export function createCarsRegressionScatterplotPrimitives(cars) {
     })
     .editGraphics({
       target: "pointsRegressionBands",
-      property: "points",
-      value: values.regressionBands.map(band => band.points)
-    })
-    .editGraphics({
-      target: "pointsRegressionBands",
-      property: "closed",
-      value: true
+      property: "commands",
+      value: values.regressionBands.map(band =>
+        linearPathCommands(band.points, { close: true })
+      )
     })
     .editGraphics({
       target: "pointsRegressionBands",
@@ -348,8 +346,8 @@ export function createCarsRegressionScatterplotPrimitives(cars) {
     })
     .editGraphics({
       target: "pointsRegressionLines",
-      property: "points",
-      value: values.regressionLines.map(line => line.points)
+      property: "commands",
+      value: values.regressionLines.map(line => linearPathCommands(line.points))
     })
     .editGraphics({
       target: "pointsRegressionLines",

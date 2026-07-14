@@ -111,7 +111,7 @@ the density horizontally. Advanced options include `extent`, `steps`, `as`,
 The value scale defaults to `{ nice: false, zero: false }`; the density scale
 defaults to `{ nice: true, zero: true }`. Explicit scale options override those
 defaults. Grouped density delegates to `encodeGroup`, so every observed group
-becomes one baseline-closed path.
+becomes one baseline-closed command path ending in `Z`.
 
 ## Series
 

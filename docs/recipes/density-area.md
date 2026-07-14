@@ -29,7 +29,7 @@ const program = chart()
 - Immutable derived dataset and deterministic output field names
 - Automatic Gaussian bandwidth and shared 100-step sample grid
 - Value and zero-inclusive density scales
-- One baseline-closed path per group
+- One baseline-closed command path per group
 - Cartesian axes, horizontal grid, and a categorical legend when colored
 
 Use `createGuides({ grid: { horizontal: {}, vertical: {} } })` for both grid

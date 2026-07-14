@@ -30,7 +30,7 @@ For multiple series, add `encodeColor({ field: "group" })`,
 
 - UTC time x and linear y scales
 - Mean aggregation at each x/series group
-- Sorted concrete path points
+- Sorted concrete `M/L` path commands
 - Axes, horizontal grid, and a right-side categorical legend when applicable
 
 Every materialized series needs at least two points. Reserve right margin for a

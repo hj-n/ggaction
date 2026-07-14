@@ -10,6 +10,7 @@ import {
 import { DEFAULT_COLORS } from "../../theme/defaults.js";
 import { findDataset } from "../../selectors/datasets.js";
 import { findLayer } from "../../selectors/layers.js";
+import { buildLinearPathCommands } from "../../grammar/pathCommands.js";
 
 const DEFAULT_LINE_STROKE = DEFAULT_COLORS.mark;
 const DEFAULT_LINE_WIDTH = 2;
@@ -107,7 +108,7 @@ const rematerializeLineMark = action(
 
     const xScale = resolved.resolvedScales[xScaleId];
     const yScale = resolved.resolvedScales[yScaleId];
-    const points = derived.series.map(series => {
+    const commands = derived.series.map(series => {
       const x = mapLinearValues(
         series.values.map(value => value.x),
         xScale.domain,
@@ -121,12 +122,14 @@ const rematerializeLineMark = action(
         { clamp: yScale.clamp ?? false }
       );
 
-      return series.values.map((_, index) => ({ x: x[index], y: y[index] }));
+      return buildLinearPathCommands(
+        series.values.map((_, index) => ({ x: x[index], y: y[index] }))
+      );
     });
     const colorEncoding = layer.encoding?.color;
     const dashEncoding = layer.encoding?.strokeDash;
     const strokes = colorEncoding?.scale === undefined
-      ? points.map(
+      ? commands.map(
           (_, index) =>
             existingChildren[index]?.properties.stroke ?? DEFAULT_LINE_STROKE
         )
@@ -135,14 +138,14 @@ const rematerializeLineMark = action(
           resolved.resolvedScales[colorEncoding.scale].domain,
           resolved.resolvedScales[colorEncoding.scale].range
         );
-    const strokeWidths = points.map(
+    const strokeWidths = commands.map(
       (_, index) =>
         this.markConfigs[id]?.strokeWidth ??
         existingChildren[index]?.properties.strokeWidth ??
         DEFAULT_LINE_WIDTH
     );
     const strokeDashes = dashEncoding?.scale === undefined
-      ? points.map(
+      ? commands.map(
           (_, index) => existingChildren[index]?.properties.strokeDash ?? []
         )
       : mapOrdinalValues(
@@ -152,8 +155,8 @@ const rematerializeLineMark = action(
         );
 
     return resolved
-      .editGraphics({ target: id, property: "length", value: points.length })
-      .editGraphics({ target: id, property: "points", value: points })
+      .editGraphics({ target: id, property: "length", value: commands.length })
+      .editGraphics({ target: id, property: "commands", value: commands })
       .editGraphics({ target: id, property: "stroke", value: strokes })
       .editGraphics({ target: id, property: "strokeWidth", value: strokeWidths })
       .editGraphics({

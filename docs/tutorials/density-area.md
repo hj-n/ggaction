@@ -63,7 +63,7 @@ render(program, document.querySelector("#chart").getContext("2d"));
 | Stage | Semantic result | Graphical result |
 | --- | --- | --- |
 | `createAreaMark` | Area layer initially bound to `cars` | Empty path collection with opacity `0.5` |
-| `encodeDensity` | KDE transform, derived data, x/y and group encodings | Three sorted, baseline-closed paths |
+| `encodeDensity` | KDE transform, derived data, x/y and group encodings | Three sorted, baseline-closed command paths |
 | `encodeColor` | Origin ordinal color scale | Tableau fills in first-appearance order |
 | `createGuides` | Shared axes, two grids, color legend | Grid behind paths; axes and top swatches above them |
 | `createTitle` | Chart title and subtitle | Plot-aligned text above the non-overlapping legend |

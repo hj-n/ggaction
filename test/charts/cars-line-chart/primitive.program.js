@@ -1,6 +1,7 @@
 import { chart, render } from "../../../src/index.js";
 
 import { createCarsLineChartValues } from "./reference-values.js";
+import { linearPathCommands } from "../../support/path.js";
 
 export function createCarsLineChartPrimitives(cars) {
   const width = 720;
@@ -108,8 +109,8 @@ export function createCarsLineChartPrimitives(cars) {
     .createGraphics({ id: "trends", type: "path", length: values.series.length })
     .editGraphics({
       target: "trends",
-      property: "points",
-      value: values.series.map(series => series.points)
+      property: "commands",
+      value: values.series.map(series => linearPathCommands(series.points))
     })
     .editGraphics({
       target: "trends",

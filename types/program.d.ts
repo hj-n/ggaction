@@ -7,6 +7,19 @@ export type GraphicType =
   | "line"
   | "text"
   | "path";
+export type ConcretePathCommand =
+  | { readonly op: "M"; readonly x: number; readonly y: number }
+  | { readonly op: "L"; readonly x: number; readonly y: number }
+  | {
+      readonly op: "C";
+      readonly x1: number;
+      readonly y1: number;
+      readonly x2: number;
+      readonly y2: number;
+      readonly x: number;
+      readonly y: number;
+    }
+  | { readonly op: "Z" };
 export type ScaleType = "linear" | "time" | "ordinal";
 export type ContinuousColorInterpolation =
   | "rgb"

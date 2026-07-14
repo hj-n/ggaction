@@ -31,7 +31,7 @@ const program = chart()
 
 The semantic mark type is `point`; a fixed shape is graphical appearance.
 Circle is the default. Square uses a rect, while the remaining shapes use
-backend-neutral closed paths. A later field-driven `encodeShape` converts the
+backend-neutral Z-closed command paths. A later field-driven `encodeShape` converts the
 mark into one typed mixed collection.
 Points are not renderable until later actions assign the required position,
 size, and fill properties.
@@ -63,7 +63,7 @@ Create a semantic area mark backed by an initially empty path collection.
 defaults to `0.2`. The fixed fill and opacity are graphical appearance.
 
 An area becomes renderable after quantitative x and atomic `encodeYRange`
-encodings exist. Optional `encodeGroup` creates one closed filled path per
+encodings exist. Optional `encodeGroup` creates one Z-closed filled path per
 nominal group without creating a scale or legend. A density-derived dataset may
 instead use value/density x and y encodings: the density axis is closed against
 zero, while the value axis determines sample order. Both horizontal-density and
@@ -93,7 +93,7 @@ program.graphicSpec.objects.trends;
 ```
 
 Line mark creation does not infer one default series, coordinates, encodings,
-or path points. Temporal `encodeX` resolves the horizontal scale while leaving
+or path commands. Temporal `encodeX` resolves the horizontal scale while leaving
 the collection empty. Aggregate line `encodeY` then derives the currently known
 series, resizes the collection, and materializes sorted concrete point arrays.
 `encodeColor` and `encodeStrokeDash` can further regroup those paths and apply

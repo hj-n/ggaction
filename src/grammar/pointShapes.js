@@ -1,4 +1,5 @@
 import { cloneAndFreeze } from "../core/immutable.js";
+import { buildLinearPathCommands } from "./pathCommands.js";
 
 export const POINT_SHAPES = cloneAndFreeze([
   "circle",
@@ -153,9 +154,11 @@ export function createPointShapeGraphic({
   return {
     type: "path",
     properties: {
-      points: normalizePolygon(shapePolygon(validated), x, y, area),
-      ...shared,
-      closed: true
+      commands: buildLinearPathCommands(
+        normalizePolygon(shapePolygon(validated), x, y, area),
+        { close: true }
+      ),
+      ...shared
     }
   };
 }

@@ -40,7 +40,7 @@ test("builds the final public density area chart contract", () => {
   );
   assert.equal(program.semanticSpec.datasets[1].values.length, 300);
   assert.equal(program.graphicSpec.objects.densities.children.length, 3);
-  assert.equal(program.graphicSpec.objects.densities.children[0].properties.points.length, 102);
+  assert.equal(program.graphicSpec.objects.densities.children[0].properties.commands.length, 103);
   assert.equal(program.semanticSpec.guides.axis.x.title, "Acceleration");
   assert.equal(program.semanticSpec.guides.axis.y.title, "Density");
 });

@@ -13,6 +13,7 @@ import {
 import { DEFAULT_COLORS } from "../../theme/defaults.js";
 import { findDataset } from "../../selectors/datasets.js";
 import { findLayer } from "../../selectors/layers.js";
+import { buildLinearPathCommands } from "../../grammar/pathCommands.js";
 
 const CREATE_OPTIONS = Object.freeze(["id", "data", "fill", "opacity"]);
 const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);
@@ -112,7 +113,7 @@ const rematerializeAreaMark = action(
           densityScale.range,
           { clamp: densityScale.clamp ?? false }
         )[0];
-        return derived.mode === "y-density"
+        const points = derived.mode === "y-density"
           ? [
               { x: x[0], y: baseline },
               ...x.map((value, index) => ({ x: value, y: lower[index] })),
@@ -123,6 +124,7 @@ const rematerializeAreaMark = action(
               ...x.map((value, index) => ({ x: value, y: lower[index] })),
               { x: baseline, y: lower.at(-1) }
             ];
+        return buildLinearPathCommands(points, { close: true });
       }
       const upper = mapLinearValues(
         series.values.map(value => value.y2),
@@ -130,13 +132,13 @@ const rematerializeAreaMark = action(
         yScale.range,
         { clamp: yScale.clamp ?? false }
       );
-      return [
+      return buildLinearPathCommands([
         ...x.map((value, index) => ({ x: value, y: lower[index] })),
         ...[...x].reverse().map((value, reverseIndex) => ({
           x: value,
           y: upper[upper.length - reverseIndex - 1]
         }))
-      ];
+      ], { close: true });
     });
     const config = this.markConfigs[id];
     const fills = colorEncoding?.scale === undefined
@@ -148,8 +150,7 @@ const rematerializeAreaMark = action(
         );
     return resolved
       .editGraphics({ target: id, property: "length", value: paths.length })
-      .editGraphics({ target: id, property: "points", value: paths })
-      .editGraphics({ target: id, property: "closed", value: true })
+      .editGraphics({ target: id, property: "commands", value: paths })
       .editGraphics({ target: id, property: "fill", value: fills })
       .editGraphics({ target: id, property: "opacity", value: config.opacity });
   }

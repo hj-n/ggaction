@@ -123,6 +123,10 @@ export function createMockCanvasContext() {
       calls.push({ op: "lineTo", args });
     },
 
+    bezierCurveTo(...args) {
+      calls.push({ op: "bezierCurveTo", args });
+    },
+
     setLineDash(value) {
       calls.push({ op: "setLineDash", value: [...value] });
     },

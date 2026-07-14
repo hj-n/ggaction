@@ -435,7 +435,6 @@ export function createCarsRegressionScatterplotValues(
     return {
       group,
       points: [...lower, ...upper],
-      closed: true,
       fill: "#111111",
       opacity: 0.18
     };

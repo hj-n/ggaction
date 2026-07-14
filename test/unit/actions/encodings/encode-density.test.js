@@ -5,6 +5,7 @@ import { chart } from "../../../../src/core/ChartProgram.js";
 import { createCarsDensityAreaValues } from
   "../../../charts/density-area/reference-values.js";
 import { loadCars } from "../../../support/data.js";
+import { linearPathCommands } from "../../../support/path.js";
 
 function areaProgram(id = "densities") {
   return chart()
@@ -48,8 +49,8 @@ test("matches primitive density geometry and records aggregate children", () => 
     bandwidth: 0.6
   });
   assert.deepEqual(
-    program.graphicSpec.objects.densities.children.map(child => child.properties.points),
-    expected.areas.map(area => area.points)
+    program.graphicSpec.objects.densities.children.map(child => child.properties.commands),
+    expected.areas.map(area => linearPathCommands(area.points, { close: true }))
   );
   const node = program.trace.children.at(-1);
   assert.deepEqual(node.children.map(child => child.op), [
@@ -88,7 +89,7 @@ test("supports explicit x-density, output fields, scales, and coordinate", () =>
   assert.equal(layer.encoding.y.scale, "value");
   assert.equal(layer.encoding.group, undefined);
   assert.equal(program.graphicSpec.objects.horizontal.children.length, 1);
-  assert.equal(program.graphicSpec.objects.horizontal.children[0].properties.points.length, 27);
+  assert.equal(program.graphicSpec.objects.horizontal.children[0].properties.commands.length, 28);
 });
 
 test("rejects ambiguous, conflicting, and invalid density requests atomically", () => {

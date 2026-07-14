@@ -5,6 +5,7 @@ import { chart } from "../../../../src/core/ChartProgram.js";
 import { createCarsRegressionScatterplotValues } from
   "../../../charts/regression-scatterplot/reference-values.js";
 import { loadCars } from "../../../support/data.js";
+import { linearPathCommands } from "../../../support/path.js";
 
 function pointProgram() {
   const cars = loadCars();
@@ -65,8 +66,7 @@ test("matches primitive band and line graphics exactly", () => {
       child => child.properties
     ),
     expected.regressionBands.map(band => ({
-      points: band.points,
-      closed: true,
+      commands: linearPathCommands(band.points, { close: true }),
       fill: band.fill,
       opacity: band.opacity
     }))
@@ -76,7 +76,7 @@ test("matches primitive band and line graphics exactly", () => {
       child => child.properties
     ),
     expected.regressionLines.map(line => ({
-      points: line.points,
+      commands: linearPathCommands(line.points),
       stroke: line.stroke,
       strokeWidth: line.strokeWidth,
       strokeDash: line.strokeDash

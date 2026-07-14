@@ -49,7 +49,7 @@ produces a 1280×800 image. The result contains the absolute `output`, physical
 `width` and `height`, `pixelRatio`, and byte count.
 
 The current renderer supports concrete canvas, collection, circle, rect, line,
-text, and point-array path graphics. Path and line strokes may use concrete
+text, and `M/L/C/Z` command-path graphics. Path and line strokes may use concrete
 dash arrays. The renderer validates values with the same concrete property
 contract used by `editGraphics`.
 

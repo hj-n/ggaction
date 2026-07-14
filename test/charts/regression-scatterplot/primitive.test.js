@@ -12,6 +12,7 @@ import {
   createCarsRegressionScatterplotPrimitives,
   renderCarsRegressionScatterplotPrimitives
 } from "./primitive.program.js";
+import { linearPathCommands } from "../../support/path.js";
 
 const cars = loadCars();
 
@@ -146,8 +147,7 @@ test("authors and renders the complete primitive regression scatterplot", () => 
       child => child.properties
     ),
     values.regressionBands.map(band => ({
-      points: band.points,
-      closed: true,
+      commands: linearPathCommands(band.points, { close: true }),
       fill: "#111111",
       opacity: 0.18
     }))
@@ -157,7 +157,7 @@ test("authors and renders the complete primitive regression scatterplot", () => 
       child => child.properties
     ),
     values.regressionLines.map(line => ({
-      points: line.points,
+      commands: linearPathCommands(line.points),
       stroke: line.stroke,
       strokeWidth: 3,
       strokeDash: []

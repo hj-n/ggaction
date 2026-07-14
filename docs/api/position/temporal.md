@@ -63,7 +63,7 @@ program.encodeY({
 | `scale.zero` | boolean | omitted |
 
 The action groups by encoded non-aggregate fields, computes each mean, sorts
-each series by temporal x, and materializes concrete path points. Automatic y
+each series by temporal x, and materializes concrete path commands. Automatic y
 domains use aggregate means rather than raw rows.
 
 ## Errors and limitations

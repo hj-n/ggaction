@@ -41,8 +41,8 @@ test("colors density paths in the group domain order", () => {
     expected.areas.map(area => area.fill)
   );
   assert.deepEqual(
-    program.graphicSpec.objects.densities.children.map(child => child.properties.points),
-    before.graphicSpec.objects.densities.children.map(child => child.properties.points)
+    program.graphicSpec.objects.densities.children.map(child => child.properties.commands),
+    before.graphicSpec.objects.densities.children.map(child => child.properties.commands)
   );
 });
 
@@ -66,8 +66,8 @@ test("rematerializes colored area paths after Canvas edits", () => {
   const after = before.editCanvas({ width: 820, height: 540 });
 
   assert.notDeepEqual(
-    after.graphicSpec.objects.densities.children[0].properties.points,
-    before.graphicSpec.objects.densities.children[0].properties.points
+    after.graphicSpec.objects.densities.children[0].properties.commands,
+    before.graphicSpec.objects.densities.children[0].properties.commands
   );
   assert.deepEqual(
     after.graphicSpec.objects.densities.children.map(child => child.properties.fill),

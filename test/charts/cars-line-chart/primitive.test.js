@@ -115,7 +115,7 @@ test("authors and renders the complete primitive cars line chart", () => {
   const trends = program.graphicSpec.objects.trends;
   assert.equal(trends.type, "path");
   assert.equal(trends.children.length, 3);
-  assert.deepEqual(trends.children.map(child => child.properties.points.length), [
+  assert.deepEqual(trends.children.map(child => child.properties.commands.length), [
     12, 12, 12
   ]);
   assert.deepEqual(trends.children.map(child => child.properties.strokeDash), [
@@ -178,7 +178,7 @@ test("authors and renders the complete primitive cars line chart", () => {
   ), false);
   assert.deepEqual(program.actionStack, []);
   assert.equal(Object.isFrozen(program.semanticSpec.title), true);
-  assert.equal(Object.isFrozen(trends.children[0].properties.points), true);
+  assert.equal(Object.isFrozen(trends.children[0].properties.commands), true);
 });
 
 test("owns primitive chart input and renders from graphicSpec alone", () => {

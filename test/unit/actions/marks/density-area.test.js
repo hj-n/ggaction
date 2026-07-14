@@ -5,6 +5,10 @@ import { chart } from "../../../../src/core/ChartProgram.js";
 import { createCarsDensityAreaValues } from
   "../../../charts/density-area/reference-values.js";
 import { loadCars } from "../../../support/data.js";
+import {
+  linearCommandPoints,
+  linearPathCommands
+} from "../../../support/path.js";
 
 function densityData({ groupBy = "Origin" } = {}) {
   return chart()
@@ -42,12 +46,12 @@ test("materializes grouped y-density paths against a zero baseline", () => {
   const paths = program.graphicSpec.objects.densities.children;
 
   assert.deepEqual(
-    paths.map(child => child.properties.points),
-    expected.areas.map(area => area.points)
+    paths.map(child => child.properties.commands),
+    expected.areas.map(area => linearPathCommands(area.points, { close: true }))
   );
   assert.deepEqual(
     paths.map(child => ({
-      closed: child.properties.closed,
+      closed: child.properties.commands.at(-1).op === "Z",
       fill: child.properties.fill,
       opacity: child.properties.opacity
     })),
@@ -70,7 +74,8 @@ test("materializes an ungrouped x-density path against a zero baseline", () => {
       field: "Acceleration_value",
       scale: { nice: false, zero: false }
     });
-  const points = program.graphicSpec.objects.density.children[0].properties.points;
+  const commands = program.graphicSpec.objects.density.children[0].properties.commands;
+  const points = linearCommandPoints(commands);
   const baseline = program.resolvedScales.x.range[0];
 
   assert.equal(points.length, 102);

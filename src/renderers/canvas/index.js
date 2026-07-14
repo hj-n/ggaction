@@ -25,6 +25,7 @@ function requireCanvasContext(context) {
     "fill",
     "moveTo",
     "lineTo",
+    "bezierCurveTo",
     "setLineDash",
     "stroke",
     "translate",

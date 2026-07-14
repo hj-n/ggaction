@@ -882,7 +882,7 @@ render(program, document.querySelector("#chart").getContext("2d"));
 | Stage | Semantic result | Graphical result |
 | --- | --- | --- |
 | `createAreaMark` | Area layer initially bound to `cars` | Empty path collection with opacity `0.5` |
-| `encodeDensity` | KDE transform, derived data, x/y and group encodings | Three sorted, baseline-closed paths |
+| `encodeDensity` | KDE transform, derived data, x/y and group encodings | Three sorted, baseline-closed command paths |
 | `encodeColor` | Origin ordinal color scale | Tableau fills in first-appearance order |
 | `createGuides` | Shared axes, two grids, color legend | Grid behind paths; axes and top swatches above them |
 | `createTitle` | Chart title and subtitle | Plot-aligned text above the non-overlapping legend |
@@ -1018,7 +1018,7 @@ For multiple series, add `encodeColor({ field: "group" })`,
 
 - UTC time x and linear y scales
 - Mean aggregation at each x/series group
-- Sorted concrete path points
+- Sorted concrete `M/L` path commands
 - Axes, horizontal grid, and a right-side categorical legend when applicable
 
 Every materialized series needs at least two points. Reserve right margin for a
@@ -1199,7 +1199,7 @@ const program = chart()
 - Immutable derived dataset and deterministic output field names
 - Automatic Gaussian bandwidth and shared 100-step sample grid
 - Value and zero-inclusive density scales
-- One baseline-closed path per group
+- One baseline-closed command path per group
 - Cartesian axes, horizontal grid, and a categorical legend when colored
 
 Use `createGuides({ grid: { horizontal: {}, vertical: {} } })` for both grid
@@ -1547,7 +1547,7 @@ const program = chart()
 
 The semantic mark type is `point`; a fixed shape is graphical appearance.
 Circle is the default. Square uses a rect, while the remaining shapes use
-backend-neutral closed paths. A later field-driven `encodeShape` converts the
+backend-neutral Z-closed command paths. A later field-driven `encodeShape` converts the
 mark into one typed mixed collection.
 Points are not renderable until later actions assign the required position,
 size, and fill properties.
@@ -1579,7 +1579,7 @@ Create a semantic area mark backed by an initially empty path collection.
 defaults to `0.2`. The fixed fill and opacity are graphical appearance.
 
 An area becomes renderable after quantitative x and atomic `encodeYRange`
-encodings exist. Optional `encodeGroup` creates one closed filled path per
+encodings exist. Optional `encodeGroup` creates one Z-closed filled path per
 nominal group without creating a scale or legend. A density-derived dataset may
 instead use value/density x and y encodings: the density axis is closed against
 zero, while the value axis determines sample order. Both horizontal-density and
@@ -1609,7 +1609,7 @@ program.graphicSpec.objects.trends;
 ```
 
 Line mark creation does not infer one default series, coordinates, encodings,
-or path points. Temporal `encodeX` resolves the horizontal scale while leaving
+or path commands. Temporal `encodeX` resolves the horizontal scale while leaving
 the collection empty. Aggregate line `encodeY` then derives the currently known
 series, resizes the collection, and materializes sorted concrete point arrays.
 `encodeColor` and `encodeStrokeDash` can further regroup those paths and apply
@@ -1768,7 +1768,7 @@ the density horizontally. Advanced options include `extent`, `steps`, `as`,
 The value scale defaults to `{ nice: false, zero: false }`; the density scale
 defaults to `{ nice: true, zero: true }`. Explicit scale options override those
 defaults. Grouped density delegates to `encodeGroup`, so every observed group
-becomes one baseline-closed path.
+becomes one baseline-closed command path ending in `Z`.
 
 ## Series
 
@@ -2126,7 +2126,7 @@ produces a 1280×800 image. The result contains the absolute `output`, physical
 `width` and `height`, `pixelRatio`, and byte count.
 
 The current renderer supports concrete canvas, collection, circle, rect, line,
-text, and point-array path graphics. Path and line strokes may use concrete
+text, and `M/L/C/Z` command-path graphics. Path and line strokes may use concrete
 dash arrays. The renderer validates values with the same concrete property
 contract used by `editGraphics`.
 
@@ -2292,7 +2292,7 @@ program.encodeY({
 | `scale.zero` | boolean | omitted |
 
 The action groups by encoded non-aggregate fields, computes each mean, sorts
-each series by temporal x, and materializes concrete path points. Automatic y
+each series by temporal x, and materializes concrete path commands. Automatic y
 domains use aggregate means rather than raw rows.
 
 ## Errors and limitations
@@ -2687,7 +2687,7 @@ range is `[24, 196]`. Circles use `sqrt(area / PI)` as radius and squares use
 Its ordinal scale accepts the 12 shared point shapes documented under
 [Marks](./marks.md). The automatic range uses each shape once and rejects more
 than 12 distinct categories rather than silently repeating symbols. Explicit
-ranges must contain unique supported shapes. Mixed circle, rect, and closed-path
+ranges must contain unique supported shapes. Mixed circle, rect, and Z-closed path
 symbols are stored as typed children in one graphical collection.
 
 `encodeOpacity` accepts exactly one of `value` or `field`. A constant value from
@@ -3646,7 +3646,7 @@ chart-authoring API does not support that combination.
 | Guides | Automatic axes, horizontal/vertical Cartesian grids, and categorical legends |
 | Titles | One plot-aligned top title with one optional single-line subtitle |
 | Rendering | Browser Canvas and Node PNG |
-| Graphics | Concrete canvas, circle, line, rect, text, open/closed point-array paths, and heterogeneous drawable collections |
+| Graphics | Concrete canvas, circle, line, rect, text, `M/L/C/Z` command paths, and heterogeneous drawable collections |
 
 ## Current limitations
 
@@ -4196,24 +4196,37 @@ program.createGraphics({
 });
 ```
 
-Line-chart series use backend-neutral `path.points` arrays rather than SVG `d`
-strings. Each point is a finite `{ x, y }` object. `path.strokeDash` and
-`line.strokeDash` accept non-negative finite number arrays; an empty array is a
-solid stroke.
+Path graphics use backend-neutral `path.commands` arrays rather than renderer-specific
+path strings. The closed command vocabulary is `M`, `L`, `C`, and `Z`. A path starts
+with one `M`; `L` and `C` draw straight and cubic segments; an optional final `Z`
+closes the path. At least one `L` or `C` segment is required. Coordinates and cubic
+control points must be finite numbers.
+TypeScript users can import the `ConcretePathCommand` union from `ggaction`.
+`path.strokeDash` and `line.strokeDash` accept non-negative finite number arrays;
+an empty array is a solid stroke.
 
 Circle graphics support a required fill and an optional concrete
 `stroke`/`strokeWidth` pair. Accepted graphic properties have Canvas rendering
 semantics; opaque style bags are not stored in `graphicSpec`.
 
-A path can be open and stroked or closed and filled. Filled paths require
-`closed: true`; their stroke is optional. When both fill and stroke are present,
-the Canvas renderer fills first and strokes second.
+A path can be open and stroked or Z-closed and filled. Filled paths require a final
+`Z` command; their stroke is optional. When both fill and stroke are present, the
+Canvas renderer fills first and strokes second.
 
 ```javascript
 program
   .createGraphics({ id: "band", type: "path" })
-  .editGraphics({ target: "band", property: "points", value: polygon })
-  .editGraphics({ target: "band", property: "closed", value: true })
+  .editGraphics({
+    target: "band",
+    property: "commands",
+    value: [
+      { op: "M", x: 10, y: 80 },
+      { op: "L", x: 70, y: 40 },
+      { op: "L", x: 70, y: 60 },
+      { op: "L", x: 10, y: 100 },
+      { op: "Z" }
+    ]
+  })
   .editGraphics({ target: "band", property: "fill", value: "#111111" })
   .editGraphics({ target: "band", property: "opacity", value: 0.18 });
 ```

@@ -476,21 +476,24 @@ points: {
   children: [
     { id: "points:0", type: "circle", properties: { ... } },
     { id: "points:1", type: "rect", properties: { ... } },
-    { id: "points:2", type: "path", properties: { points: [...], closed: true, ... } }
+    { id: "points:2", type: "path", properties: { commands: [...], ... } }
   ]
 }
 ```
 
 `graphicSpec`에는 field reference, scale reference, `"auto"`, callback, backend tag 또는
 renderer가 해석해야 할 declarative expression이 들어가지 않는다. Path는 최종
-`{ x, y }` point array, text는 최종 문자열과 좌표, rect는 최종 x/y/width/height를
-가진다.
+`M | L | C | Z` command array, text는 최종 문자열과 좌표, rect는 최종
+x/y/width/height를 가진다. Path command는 하나의 `M`으로 시작하고 straight segment는
+`L`, cubic segment는 `C`, closure는 마지막 `Z`로 명시한다. Line은 `Z`를 사용하지 않고
+filled area와 polygon point shape는 마지막 `Z`를 저장한다. Original point array,
+`closed` flag 또는 renderer-specific path string을 함께 저장하지 않는다.
 
 ### Shared concrete-graphic contract
 
 Graphic type별 허용 property vocabulary는 하나의 schema가 소유한다. Concrete value
 schema는 finite coordinate, non-negative size, opacity range, text alignment, dash array,
-path point shape 등을 검증한다.
+exact path command shape와 command ordering 등을 검증한다.
 
 이 contract는 `editGraphics`와 Canvas renderer가 공유한다. Renderer는 실제 draw에
 필요한 property가 빠졌는지 추가로 확인할 수 있지만, editor와 다른 value 규칙을

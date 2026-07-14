@@ -1,4 +1,5 @@
 import { createCarsScatterplotPrimitiveValues } from "./primitive.program.js";
+import { linearPathCommands } from "../../support/path.js";
 
 export const POINT_SHAPES = Object.freeze([
   "circle",
@@ -166,11 +167,13 @@ export function createShapeGraphic(
   return {
     type: "path",
     properties: {
-      points: normalizePolygon(shapePolygon(shape), x, y, area),
+      commands: linearPathCommands(
+        normalizePolygon(shapePolygon(shape), x, y, area),
+        { close: true }
+      ),
       fill,
       ...(stroke === undefined ? {} : { stroke }),
-      ...(strokeWidth === undefined ? {} : { strokeWidth }),
-      closed: true
+      ...(strokeWidth === undefined ? {} : { strokeWidth })
     }
   };
 }

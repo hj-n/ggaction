@@ -97,24 +97,37 @@ program.createGraphics({
 });
 ```
 
-Line-chart series use backend-neutral `path.points` arrays rather than SVG `d`
-strings. Each point is a finite `{ x, y }` object. `path.strokeDash` and
-`line.strokeDash` accept non-negative finite number arrays; an empty array is a
-solid stroke.
+Path graphics use backend-neutral `path.commands` arrays rather than renderer-specific
+path strings. The closed command vocabulary is `M`, `L`, `C`, and `Z`. A path starts
+with one `M`; `L` and `C` draw straight and cubic segments; an optional final `Z`
+closes the path. At least one `L` or `C` segment is required. Coordinates and cubic
+control points must be finite numbers.
+TypeScript users can import the `ConcretePathCommand` union from `ggaction`.
+`path.strokeDash` and `line.strokeDash` accept non-negative finite number arrays;
+an empty array is a solid stroke.
 
 Circle graphics support a required fill and an optional concrete
 `stroke`/`strokeWidth` pair. Accepted graphic properties have Canvas rendering
 semantics; opaque style bags are not stored in `graphicSpec`.
 
-A path can be open and stroked or closed and filled. Filled paths require
-`closed: true`; their stroke is optional. When both fill and stroke are present,
-the Canvas renderer fills first and strokes second.
+A path can be open and stroked or Z-closed and filled. Filled paths require a final
+`Z` command; their stroke is optional. When both fill and stroke are present, the
+Canvas renderer fills first and strokes second.
 
 ```javascript
 program
   .createGraphics({ id: "band", type: "path" })
-  .editGraphics({ target: "band", property: "points", value: polygon })
-  .editGraphics({ target: "band", property: "closed", value: true })
+  .editGraphics({
+    target: "band",
+    property: "commands",
+    value: [
+      { op: "M", x: 10, y: 80 },
+      { op: "L", x: 70, y: 40 },
+      { op: "L", x: 70, y: 60 },
+      { op: "L", x: 10, y: 100 },
+      { op: "Z" }
+    ]
+  })
   .editGraphics({ target: "band", property: "fill", value: "#111111" })
   .editGraphics({ target: "band", property: "opacity", value: 0.18 });
 ```

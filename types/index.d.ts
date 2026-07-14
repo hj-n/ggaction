@@ -6,6 +6,7 @@ export type {
   CategoricalEncodingOptions,
   ColorEncodingOptions,
   ChartProgram,
+  ConcretePathCommand,
   EditScaleOptions,
   FieldType,
   GraphicObject,

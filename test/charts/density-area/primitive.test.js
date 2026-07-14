@@ -12,6 +12,7 @@ import {
   createCarsDensityAreaPrimitives,
   renderCarsDensityAreaPrimitives
 } from "./primitive.program.js";
+import { linearPathCommands } from "../../support/path.js";
 
 const cars = loadCars();
 
@@ -104,8 +105,7 @@ test("authors and renders the complete primitive density area chart", () => {
   assert.deepEqual(
     program.graphicSpec.objects.densities.children.map(child => child.properties),
     values.areas.map(area => ({
-      points: area.points,
-      closed: true,
+      commands: linearPathCommands(area.points, { close: true }),
       fill: area.fill,
       opacity: 0.5
     }))

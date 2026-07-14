@@ -1,4 +1,5 @@
 import { chart, render } from "../../../src/index.js";
+import { linearPathCommands } from "../../support/path.js";
 
 import { createCarsDensityAreaValues } from
   "./reference-values.js";
@@ -216,10 +217,11 @@ export function createCarsDensityAreaPrimitives(cars) {
     })
     .editGraphics({
       target: "densities",
-      property: "points",
-      value: values.areas.map(area => area.points)
+      property: "commands",
+      value: values.areas.map(area =>
+        linearPathCommands(area.points, { close: true })
+      )
     })
-    .editGraphics({ target: "densities", property: "closed", value: true })
     .editGraphics({
       target: "densities",
       property: "fill",

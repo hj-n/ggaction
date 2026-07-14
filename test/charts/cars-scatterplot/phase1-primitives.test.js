@@ -24,6 +24,7 @@ import {
   createShapeVocabularyPrimitives
 } from "./phase1-primitives.program.js";
 import { renderCarsScatterplotPrimitives } from "./primitive.program.js";
+import { linearCommandPoints } from "../../support/path.js";
 import {
   POINT_SHAPES,
   SET2_COLORS,
@@ -51,7 +52,7 @@ function graphicArea(graphic) {
   if (graphic.type === "rect") {
     return graphic.properties.width * graphic.properties.height;
   }
-  return polygonArea(graphic.properties.points);
+  return polygonArea(linearCommandPoints(graphic.properties.commands));
 }
 
 test("derives reversed positions without changing the baseline domain", () => {
@@ -88,7 +89,7 @@ test("materializes the constant diamond as equal-area concrete paths", () => {
   assert.equal(program.graphicSpec.objects.points.type, "collection");
   assert.equal(points.length, 392);
   assert.equal(points.every(point => point.type === "path"), true);
-  assert.equal(points.every(point => point.properties.closed === true), true);
+  assert.equal(points.every(point => point.properties.commands.at(-1).op === "Z"), true);
   assert.equal(
     points.every(point =>
       Math.abs(graphicArea(point) - Math.PI * 3 ** 2) < 1e-9

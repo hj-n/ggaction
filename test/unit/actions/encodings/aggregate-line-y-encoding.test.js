@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { chart } from "../../../../src/core/ChartProgram.js";
+import { linearPathCommands } from "../../../support/path.js";
 
 const rows = [
   { year: "2021-01-01", value: 10 },
@@ -50,10 +51,10 @@ test("encodes aggregate y and materializes one sorted mean line", () => {
   });
   assert.equal(paths.length, 1);
   assert.deepEqual(paths[0].properties, {
-    points: [
+    commands: linearPathCommands([
       { x: 20, y: 140 },
       { x: 220, y: 20 }
-    ],
+    ]),
     stroke: "#4c78a8",
     strokeWidth: 2,
     strokeDash: []
@@ -103,11 +104,11 @@ test("keeps explicit y domains ahead of zero and nice", () => {
 
   assert.deepEqual(program.resolvedScales.y.domain, [0, 20]);
   assert.deepEqual(
-    program.graphicSpec.objects.trends.children[0].properties.points,
-    [
+    program.graphicSpec.objects.trends.children[0].properties.commands,
+    linearPathCommands([
       { x: 20, y: 116 },
       { x: 220, y: 68 }
-    ]
+    ])
   );
 });
 
@@ -122,11 +123,11 @@ test("rematerializes line scales and points after Canvas bounds change", () => {
   assert.deepEqual(program.resolvedScales.x.range, [40, 400]);
   assert.deepEqual(program.resolvedScales.y.range, [120, 40]);
   assert.deepEqual(
-    program.graphicSpec.objects.trends.children[0].properties.points,
-    [
+    program.graphicSpec.objects.trends.children[0].properties.commands,
+    linearPathCommands([
       { x: 40, y: 120 },
       { x: 400, y: 40 }
-    ]
+    ])
   );
   assert.equal(
     program.graphicSpec.objects.trends.children[0].properties.stroke,
@@ -171,15 +172,15 @@ test("regroups and rematerializes paths when a series field is introduced", () =
 
   assert.deepEqual(program.resolvedScales.y.domain, [2, 14]);
   assert.equal(paths.length, 2);
-  assert.deepEqual(paths.map(path => path.properties.points), [
-    [
+  assert.deepEqual(paths.map(path => path.properties.commands), [
+    linearPathCommands([
       { x: 20, y: 140 },
       { x: 220, y: 60 }
-    ],
-    [
+    ]),
+    linearPathCommands([
       { x: 20, y: 100 },
       { x: 220, y: 20 }
-    ]
+    ])
   ]);
 });
 

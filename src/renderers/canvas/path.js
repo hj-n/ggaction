@@ -6,27 +6,14 @@ function drawPath(context, child, collectionId) {
   const properties = child.properties ?? {};
   const graphicId = child.id ?? collectionId;
   validateConcreteGraphicProperties("path", properties);
-  const points = properties.points;
+  const commands = properties.commands;
 
-  if (
-    !Array.isArray(points) ||
-    points.length < 2 ||
-    !points.every(point =>
-      point !== null &&
-      typeof point === "object" &&
-      Number.isFinite(point.x) &&
-      Number.isFinite(point.y)
-    )
-  ) {
+  if (!Array.isArray(commands)) {
     throw new Error(
-      `Graphic "${graphicId}" requires at least two finite path points.`
+      `Graphic "${graphicId}" requires concrete path commands.`
     );
   }
 
-  const closed = properties.closed ?? false;
-  if (typeof closed !== "boolean") {
-    throw new Error(`Graphic "${graphicId}" requires a boolean closed property.`);
-  }
   const hasFill = properties.fill !== undefined;
   const hasStroke = properties.stroke !== undefined;
   if (!hasFill && !hasStroke) {
@@ -35,8 +22,8 @@ function drawPath(context, child, collectionId) {
   if (hasFill && typeof properties.fill !== "string") {
     throw new Error(`Graphic "${graphicId}" requires a string fill property.`);
   }
-  if (hasFill && !closed) {
-    throw new Error(`Graphic "${graphicId}" requires closed: true when filled.`);
+  if (hasFill && commands.at(-1).op !== "Z") {
+    throw new Error(`Graphic "${graphicId}" requires a final Z command when filled.`);
   }
   if (hasStroke && typeof properties.stroke !== "string") {
     throw new Error(`Graphic "${graphicId}" requires a string stroke property.`);
@@ -68,13 +55,25 @@ function drawPath(context, child, collectionId) {
 
   context.globalAlpha = opacity;
   context.beginPath();
-  context.moveTo(points[0].x, points[0].y);
-
-  for (const point of points.slice(1)) {
-    context.lineTo(point.x, point.y);
+  for (const command of commands) {
+    if (command.op === "M") {
+      context.moveTo(command.x, command.y);
+    } else if (command.op === "L") {
+      context.lineTo(command.x, command.y);
+    } else if (command.op === "C") {
+      context.bezierCurveTo(
+        command.x1,
+        command.y1,
+        command.x2,
+        command.y2,
+        command.x,
+        command.y
+      );
+    } else {
+      context.closePath();
+    }
   }
 
-  if (closed) context.closePath();
   if (hasFill) {
     context.fillStyle = properties.fill;
     context.fill();

@@ -5,6 +5,7 @@ import { chart } from "../../../../src/core/ChartProgram.js";
 import { createCarsRegressionScatterplotValues } from
   "../../../charts/regression-scatterplot/reference-values.js";
 import { loadCars } from "../../../support/data.js";
+import { linearPathCommands } from "../../../support/path.js";
 
 function regressionBase() {
   const cars = loadCars();
@@ -68,14 +69,14 @@ test("stores ranged area semantics and grouped closed paths", () => {
   assert.deepEqual(program.resolvedScales.y.domain, [6, 24]);
   assert.deepEqual(
     program.graphicSpec.objects.regressionBand.children.map(child => ({
-      length: child.properties.points.length,
-      closed: child.properties.closed,
+      length: child.properties.commands.length,
+      closed: child.properties.commands.at(-1).op === "Z",
       fill: child.properties.fill,
       opacity: child.properties.opacity
     })),
     [
-      { length: 96, closed: true, fill: "#111111", opacity: 0.18 },
-      { length: 50, closed: true, fill: "#111111", opacity: 0.18 }
+      { length: 97, closed: true, fill: "#111111", opacity: 0.18 },
+      { length: 51, closed: true, fill: "#111111", opacity: 0.18 }
     ]
   );
 });
@@ -86,8 +87,7 @@ test("matches primitive confidence-band geometry", () => {
   assert.deepEqual(
     program.graphicSpec.objects.regressionBand.children.map(child => child.properties),
     expected.regressionBands.map(band => ({
-      points: band.points,
-      closed: band.closed,
+      commands: linearPathCommands(band.points, { close: true }),
       fill: band.fill,
       opacity: band.opacity
     }))

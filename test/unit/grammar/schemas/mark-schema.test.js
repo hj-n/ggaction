@@ -9,6 +9,7 @@ import {
   POINT_SHAPES,
   createPointShapeGraphic
 } from "../../../../src/grammar/pointShapes.js";
+import { linearCommandPoints } from "../../../support/path.js";
 
 function polygonArea(points) {
   return Math.abs(points.reduce((sum, point, index) => {
@@ -24,7 +25,7 @@ function graphicArea(graphic) {
   if (graphic.type === "rect") {
     return graphic.properties.width * graphic.properties.height;
   }
-  return polygonArea(graphic.properties.points);
+  return polygonArea(linearCommandPoints(graphic.properties.commands));
 }
 
 test("maps the supported point shape to its graphic primitive", () => {
@@ -57,7 +58,7 @@ test("normalizes every point-shape recipe to one target area", () => {
     true
   );
   assert.equal(
-    graphics.slice(2).every(graphic => graphic.properties.closed === true),
+    graphics.slice(2).every(graphic => graphic.properties.commands.at(-1).op === "Z"),
     true
   );
 });

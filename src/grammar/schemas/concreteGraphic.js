@@ -1,4 +1,5 @@
 import { isPlainObject } from "../../core/immutable.js";
+import { validatePathCommands } from "../pathCommands.js";
 import { validateGraphicProperty } from "./graphic.js";
 
 const FINITE_PROPERTIES = new Set([
@@ -46,9 +47,6 @@ export function validateConcreteGraphicValue(type, property, value) {
   if (property === "textBaseline" && !TEXT_BASELINES.has(value)) {
     throw new Error(`Unsupported text.textBaseline "${value}".`);
   }
-  if (property === "closed" && typeof value !== "boolean") {
-    throw new TypeError(`${type}.closed must be a boolean.`);
-  }
   if (property === "strokeDash" && (
     !Array.isArray(value) ||
     !value.every(item => Number.isFinite(item) && item >= 0)
@@ -57,19 +55,8 @@ export function validateConcreteGraphicValue(type, property, value) {
       `${type}.strokeDash must be an array of non-negative finite numbers.`
     );
   }
-  if (type === "path" && property === "points" && (
-    !Array.isArray(value) ||
-    value.length < 2 ||
-    !value.every(point =>
-      isPlainObject(point) &&
-      Object.keys(point).length === 2 &&
-      Number.isFinite(point.x) &&
-      Number.isFinite(point.y)
-    )
-  )) {
-    throw new TypeError(
-      "path.points must contain at least two finite { x, y } points."
-    );
+  if (type === "path" && property === "commands") {
+    validatePathCommands(value);
   }
   return value;
 }
