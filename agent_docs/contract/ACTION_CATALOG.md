@@ -46,9 +46,9 @@ Coverage 퍼센트는 사용하지 않는다. 체크된 case는 반드시 아래
 | Layer | Action | Status | Contract | Effects | Tests |
 | --- | --- | --- | ---: | ---: | ---: |
 | User-facing | [`createCanvas`](#createcanvas) | Implemented | ✅ | ✅ | ✅ |
-| User-facing | [`editCanvas`](#editcanvas) | Implemented | ✅ | ✅ | ✅ |
-| User-facing | [`createData`](#createdata) | Implemented | ✅ | ✅ | ✅ |
-| User-facing | [`filterData`](#filterdata) | Implemented | ✅ | ✅ | ✅ |
+| User-facing | [`editCanvas`](#editcanvas) | Implemented | ✅ | ✅ | ⚠️ |
+| User-facing | [`createData`](#createdata) | Implemented | ✅ | ✅ | ⚠️ |
+| User-facing | [`filterData`](#filterdata) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`createDensityData`](#createdensitydata) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`createRegressionData`](#createregressiondata) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`createPointMark`](#createpointmark) | Implemented | ✅ | ✅ | ✅ |
@@ -57,63 +57,63 @@ Coverage 퍼센트는 사용하지 않는다. 체크된 case는 반드시 아래
 | User-facing | [`createAreaMark`](#createareamark) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`encodeX`](#encodex) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`encodeY`](#encodey) | Implemented | ✅ | ✅ | ⚠️ |
-| User-facing | [`encodeColor`](#encodecolor) | Implemented | ✅ | ✅ | ⚠️ |
+| User-facing | [`encodeColor`](#encodecolor) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`encodeStrokeDash`](#encodestrokedash) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`encodeSize`](#encodesize) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`encodeShape`](#encodeshape) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`encodeOpacity`](#encodeopacity) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`encodeRadius`](#encoderadius) | Implemented | ✅ | ✅ | ✅ |
-| User-facing | [`encodeXOffset`](#encodexoffset) | Implemented | ✅ | ✅ | ⚠️ |
-| User-facing | [`encodeY2`](#encodey2) | Implemented | ✅ | ✅ | ⚠️ |
+| User-facing | [`encodeXOffset`](#encodexoffset) | Implemented | ✅ | ✅ | ✅ |
+| User-facing | [`encodeY2`](#encodey2) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`encodeYRange`](#encodeyrange) | Implemented | ✅ | ✅ | ⚠️ |
-| User-facing | [`encodeGroup`](#encodegroup) | Implemented | ✅ | ✅ | ⚠️ |
-| User-facing | [`encodeHistogram`](#encodehistogram) | Implemented | ✅ | ✅ | ✅ |
+| User-facing | [`encodeGroup`](#encodegroup) | Implemented | ✅ | ✅ | ✅ |
+| User-facing | [`encodeHistogram`](#encodehistogram) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`encodeDensity`](#encodedensity) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`encodeBarWidth`](#encodebarwidth) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`createRegression`](#createregression) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`createAxes`](#createaxes) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`createXAxis`](#createxaxis) | Implemented | ✅ | ✅ | ⚠️ |
-| User-facing | [`createYAxis`](#createyaxis) | Implemented | ✅ | ✅ | ⚠️ |
+| User-facing | [`createYAxis`](#createyaxis) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`createXAxisLine`](#createxaxisline) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`createYAxisLine`](#createyaxisline) | Implemented | ✅ | ✅ | ✅ |
-| User-facing | [`editXAxisLine`](#editxaxisline) | Implemented | ✅ | ✅ | ✅ |
+| User-facing | [`editXAxisLine`](#editxaxisline) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`editYAxisLine`](#edityaxisline) | Implemented | ✅ | ✅ | ✅ |
-| User-facing | [`createXAxisTicks`](#createxaxisticks) | Implemented | ✅ | ✅ | ⚠️ |
+| User-facing | [`createXAxisTicks`](#createxaxisticks) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`createYAxisTicks`](#createyaxisticks) | Implemented | ✅ | ✅ | ⚠️ |
-| User-facing | [`editXAxisTicks`](#editxaxisticks) | Implemented | ✅ | ✅ | ⚠️ |
+| User-facing | [`editXAxisTicks`](#editxaxisticks) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`editYAxisTicks`](#edityaxisticks) | Implemented | ✅ | ✅ | ⚠️ |
-| User-facing | [`createXAxisLabels`](#createxaxislabels) | Implemented | ✅ | ✅ | ⚠️ |
+| User-facing | [`createXAxisLabels`](#createxaxislabels) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`createYAxisLabels`](#createyaxislabels) | Implemented | ✅ | ✅ | ⚠️ |
-| User-facing | [`editXAxisLabels`](#editxaxislabels) | Implemented | ✅ | ✅ | ⚠️ |
+| User-facing | [`editXAxisLabels`](#editxaxislabels) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`editYAxisLabels`](#edityaxislabels) | Implemented | ✅ | ✅ | ⚠️ |
-| User-facing | [`createXAxisTicksAndLabels`](#createxaxisticksandlabels) | Implemented | ✅ | ✅ | ✅ |
-| User-facing | [`createYAxisTicksAndLabels`](#createyaxisticksandlabels) | Implemented | ✅ | ✅ | ✅ |
+| User-facing | [`createXAxisTicksAndLabels`](#createxaxisticksandlabels) | Implemented | ✅ | ✅ | ⚠️ |
+| User-facing | [`createYAxisTicksAndLabels`](#createyaxisticksandlabels) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`editXAxisTicksAndLabels`](#editxaxisticksandlabels) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`editYAxisTicksAndLabels`](#edityaxisticksandlabels) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`createXAxisTitle`](#createxaxistitle) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`createYAxisTitle`](#createyaxistitle) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`editXAxisTitle`](#editxaxistitle) | Implemented | ✅ | ✅ | ✅ |
-| User-facing | [`editYAxisTitle`](#edityaxistitle) | Implemented | ✅ | ✅ | ✅ |
+| User-facing | [`editYAxisTitle`](#edityaxistitle) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`createGrid`](#creategrid) | Implemented | ✅ | ✅ | ✅ |
-| User-facing | [`createHorizontalGrid`](#createhorizontalgrid) | Implemented | ✅ | ✅ | ⚠️ |
+| User-facing | [`createHorizontalGrid`](#createhorizontalgrid) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`createVerticalGrid`](#createverticalgrid) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`createLegend`](#createlegend) | Implemented | ✅ | ✅ | ⚠️ |
-| User-facing | [`createSizeLegend`](#createsizelegend) | Implemented | ✅ | ✅ | ⚠️ |
-| User-facing | [`rematerializeSizeLegend`](#rematerializesizelegend) | Implemented | ✅ | ✅ | ⚠️ |
-| User-facing | [`createGuides`](#createguides) | Implemented | ✅ | ✅ | ✅ |
+| User-facing | [`createSizeLegend`](#createsizelegend) | Implemented | ✅ | ✅ | ✅ |
+| User-facing | [`rematerializeSizeLegend`](#rematerializesizelegend) | Implemented | ✅ | ✅ | ✅ |
+| User-facing | [`createGuides`](#createguides) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`createTitle`](#createtitle) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`createCoordinate`](#createcoordinate) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`createScale`](#createscale) | Implemented | ✅ | ✅ | ⚠️ |
-| User-facing | [`rematerializeScale`](#rematerializescale) | Implemented | ✅ | ✅ | ✅ |
+| User-facing | [`rematerializeScale`](#rematerializescale) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`createDerivedData`](#createderiveddata) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`materializeFilteredData`](#materializefiltereddata) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`materializeRegressionData`](#materializeregressiondata) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`materializeDensityData`](#materializedensitydata) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`createRegressionBand`](#createregressionband) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`createRegressionLine`](#createregressionline) | Implemented | ✅ | ✅ | ⚠️ |
-| Primitive | [`editSemantic`](#editsemantic) | Implemented | ✅ | ✅ | ✅ |
+| Primitive | [`editSemantic`](#editsemantic) | Implemented | ✅ | ✅ | ⚠️ |
 | Primitive | [`createGraphics`](#creategraphics) | Implemented | ✅ | ✅ | ✅ |
-| Primitive | [`editGraphics`](#editgraphics) | Implemented | ✅ | ✅ | ✅ |
+| Primitive | [`editGraphics`](#editgraphics) | Implemented | ✅ | ✅ | ⚠️ |
 
 ## 상세 계약 작성 규칙
 
@@ -969,3 +969,804 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 Faceting, h/v program composition과 additional transforms는 현재 limitations이지만, 구체 action contract를
 사용자와 합의하지 않았으므로 Planned로 표시하지 않는다.
 
+## Parameter value coverage and proposals
+
+이 section은 앞의 action 계약을 **값 단위**로 펼친 coverage ledger다. 각 action에서 parameter를
+생략했을 때, 현재 허용되는 값, 경계와 잘못된 값, 앞으로 고려할 값을 구분한다.
+
+- **✅ Covered**: 해당 값 또는 equivalence class를 직접 검증하는 executable test가 있다.
+- **⚠️ Partial**: 값은 구현됐지만 일부 경계나 다른 parameter와의 조합만 검증됐다.
+- **❌ Missing**: 구현된 값인데 직접적인 검증 근거가 없다.
+- **🟣 Proposed**: future candidate다. 구현, TypeScript와 public docs에는 아직 존재하지 않는다.
+- **No proposal**: 현재 합의되거나 필요성이 확인된 future value가 없다.
+
+`Implemented` 값이 있다고 해서 모든 조합을 Cartesian product로 테스트하지 않는다. 닫힌 값은 각각
+검증하고, 열린 값은 default, 대표값, 경계, invalid class와 의미 있는 precedence pair를 검증한다.
+
+### Value coverage — `createCanvas`
+
+- `width`, `height`
+  - ✅ Covered: 생략(default `640 × 400`), 양의 정수/소수, 0·음수·`NaN`·`Infinity` rejection.
+  - 🟣 Proposed: `"auto"` 또는 responsive dimension. Canvas resize observer와 renderer logical size
+    contract가 필요하며 모든 auto-range consumer를 rematerialize해야 한다.
+- `background`
+  - ✅ Covered: 생략(`"white"`), non-empty color string, empty/non-string rejection.
+  - No proposal: 현재 arbitrary Canvas-compatible color string으로 충분하다.
+- `margin`
+  - ✅ Covered: 생략, scalar, partial/full object, zero, negative/non-finite rejection, plot보다 큰 margin rejection.
+  - 🟣 Proposed: `"auto"` margin. guide/title text measurement가 생기기 전에는 안전하게 계산할 수 없다.
+- Evidence: `test/unit/actions/canvas/create-canvas.test.js`,
+  `test/unit/grammar/layout/canvas-layout.test.js`.
+
+### Value coverage — `editCanvas`
+
+- `width`, `height`, `margin`
+  - ✅ Covered: 한 property만 변경, 여러 property 변경, unchanged omission, auto-range rematerialization,
+    explicit-range preservation과 invalid resolved bounds.
+  - ⚠️ Partial: 여러 legend/title block과 다중 shared scale이 동시에 존재할 때의 resize 조합.
+- `background`
+  - ✅ Covered: background-only edit가 scale/mark/guide를 rematerialize하지 않음.
+- Empty options
+  - ✅ Covered: `{}` rejection.
+- Proposed values는 `createCanvas`의 responsive/auto 후보와 동일하다.
+- Evidence: `test/unit/actions/canvas/edit-canvas.test.js`.
+
+### Value coverage — `createData`
+
+- `id`
+  - ✅ Covered: valid custom ID, empty/malformed ID, duplicate ID.
+  - No proposal: ID vocabulary는 user-defined 상태를 유지한다.
+- `values`
+  - ✅ Covered: empty/non-empty array, multiple datasets, plain-object rows, caller ownership/immutability.
+  - ⚠️ Partial: deeply nested arrays/objects와 unusual scalar cells의 explicit contract cases.
+  - 🟣 Proposed: async iterable/columnar input adapter. Source dataset immutability와 deterministic trace
+    completion 정책이 먼저 필요하다.
+- Evidence: `test/unit/actions/data/create-data.test.js`.
+
+### Value coverage — `filterData`
+
+- `id`, `source`
+  - ✅ Covered: explicit source, current-data inference, missing/ambiguous source, duplicate derived ID.
+- `field`
+  - ✅ Covered: non-empty string과 invalid field option.
+  - ⚠️ Partial: rows에 field가 일부만 존재하는 sparse data의 명시적 result case.
+- `oneOf`
+  - ✅ Covered: string/number/boolean scalar membership, owned input, invalid transform values.
+  - ⚠️ Partial: empty list, duplicate values와 `null` membership의 direct behavior.
+  - 🟣 Proposed: range/comparison predicate와 composable boolean filter. 새 transform schema가 필요하다.
+- Evidence: `test/unit/actions/data/filter-data.test.js`.
+
+### Value coverage — `createRegressionData`
+
+- `id`, `source`, `x`, `y`, `groupBy`
+  - ✅ Covered: inferred/explicit source, grouped/ungrouped, missing fields, non-finite data와 degenerate groups.
+- `method`
+  - ✅ Covered: `"linear"`와 unknown value rejection.
+  - 🟣 Proposed: `"polynomial"`, `"loess"`. degree/span parameter와 provenance/output ordering 계약이 필요하다.
+- `confidence`
+  - ✅ Covered: default `0.95`, representative explicit value, 0/1/out-of-range rejection.
+  - ⚠️ Partial: near-boundary positive values의 numeric stability.
+- `interval`
+  - ✅ Covered: `"mean"`과 unknown value rejection.
+  - 🟣 Proposed: `"prediction"`. residual variance를 포함한 wider bound contract가 필요하다.
+- Evidence: `test/unit/actions/data/regression-data.test.js`,
+  `test/charts/regression-scatterplot/reference-values.test.js`.
+
+### Value coverage — `createDensityData`
+
+- `id`, `source`, `field`, `groupBy`
+  - ✅ Covered: inferred/explicit source, grouped/ungrouped, missing field와 non-finite samples.
+- `bandwidth`
+  - ✅ Covered: 생략/`"auto"`, positive finite representative, zero/negative/non-finite rejection.
+  - ⚠️ Partial: 매우 작은/큰 positive bandwidth numeric behavior.
+- `extent`
+  - ✅ Covered: `"auto"`, explicit `[min, max]`, reversed/non-finite rejection.
+  - ⚠️ Partial: constant extent와 source 밖으로 확장한 extent.
+- `steps`
+  - ✅ Covered: default `100`, explicit representative, `<2`/non-integer rejection.
+  - ⚠️ Partial: minimum `2`와 매우 큰 steps의 performance boundary.
+- `as`
+  - ✅ Covered: inferred names, two explicit names, wrong cardinality/invalid names rejection.
+- 🟣 Proposed: `kernel: "gaussian" | ...`; 현재는 Gaussian만 구현돼 별도 parameter가 없다.
+- Evidence: `test/unit/actions/data/density-data.test.js`,
+  `test/charts/density-area/reference-values.test.js`.
+
+### Value coverage — `createDerivedData`
+
+- `id`, `source`
+  - ✅ Covered: valid IDs, duplicate output, unknown source.
+- `transform`
+  - ✅ Covered: filter/regression/density schema through their public parent actions.
+  - ⚠️ Partial: direct low-level call의 각 schema와 multi-entry array rejection/acceptance boundary.
+  - 🟣 Proposed: ordered multi-transform pipeline. 각 step의 input/output field provenance와 materialization
+    ownership을 먼저 정의해야 한다.
+- Evidence: data action tests와 `test/charts/regression-scatterplot/semantic.test.js`.
+
+### Value coverage — `materializeFilteredData`
+
+- `id`
+  - ✅ Covered: existing filter dataset, unknown ID, wrong transform type.
+  - No proposal: 이 action은 stored transform 재실행만 담당한다.
+- Evidence: `test/unit/actions/data/filter-data.test.js`.
+
+### Value coverage — `materializeRegressionData`
+
+- `id`
+  - ✅ Covered: existing regression dataset, unknown/wrong transform, deterministic rewrite.
+  - No proposal.
+- Evidence: `test/unit/actions/data/regression-data.test.js`.
+
+### Value coverage — `materializeDensityData`
+
+- `id`
+  - ✅ Covered: existing density dataset, unknown/wrong transform, resolved auto bandwidth persistence.
+  - No proposal.
+- Evidence: `test/unit/actions/data/density-data.test.js`.
+
+### Value coverage — `createPointMark`
+
+- `id`, `data`
+  - ✅ Covered: current/explicit dataset, empty dataset, multiple marks, unknown data와 duplicate IDs.
+- `shape`
+  - ✅ Covered: `"circle"`, `"square"`, omission→circle, unknown shape rejection.
+  - 🟣 Proposed: `"triangle"`, `"diamond"`. backend-neutral point primitive/legend recipe 또는 path shape
+    contract가 필요하다.
+- Evidence: `test/unit/actions/marks/create-point-mark.test.js`.
+
+### Value coverage — `createLineMark`
+
+- `id`, `data`
+  - ✅ Covered: current/explicit/empty dataset, invalid IDs와 conflicts.
+- `strokeWidth`
+  - ✅ Covered: omission→`2`, zero, positive representative, negative/non-finite rejection.
+- 🟣 Proposed: `curve: "linear" | "step" | "basis"`; path interpolation을 semantic인지 graphical인지 먼저 결정해야 한다.
+- Evidence: `test/unit/actions/marks/create-line-mark.test.js`.
+
+### Value coverage — `createBarMark`
+
+- `id`, `data`
+  - ✅ Covered: current/explicit/empty dataset, invalid options와 conflicts.
+- No proposal: orientation/group/stack/width는 mark parameter가 아니라 encoding action이 소유한다.
+- Evidence: `test/unit/actions/marks/create-bar-mark.test.js`.
+
+### Value coverage — `createAreaMark`
+
+- `id`, `data`
+  - ✅ Covered: current/explicit derived dataset과 invalid resources through density/regression flows.
+- `fill`
+  - ⚠️ Partial: omission/theme default와 representative explicit color; empty/non-string rejection은 action
+    validation에 있으나 dedicated boundary test가 부족하다.
+- `opacity`
+  - ⚠️ Partial: default `0.2`, representative `0.18`/`0.5`, invalid range; exact 0/1 endpoints direct test가 부족하다.
+- 🟣 Proposed: `stroke`, `strokeWidth`; filled path outline의 create/rematerialize persistence 계약이 필요하다.
+- Evidence: area materialization, density and regression chart tests.
+
+### Value coverage — `encodeX`
+
+- `field`, `target`
+  - ✅ Covered: inferred/explicit point, line, bar, area targets; missing field, ambiguous/invalid target.
+- `fieldType`
+  - ✅ Covered: point/area `"quantitative"`, line `"temporal"`, bar `"quantitative"` bin과 `"ordinal"`.
+  - ✅ Covered: unsupported mark/type pairs rejection.
+  - 🟣 Proposed: broader raw temporal/ordinal combinations per mark; each needs scale and mark grain policy.
+- `coordinate`
+  - ✅ Covered: omitted Cartesian default, explicit/reused coordinate, incompatible coordinate rejection.
+  - 🟣 Proposed: Polar theta/radial mapping; action naming unresolved.
+- `aggregate`
+  - ⚠️ Partial: 현재 x에서는 생략만 supported; unsupported aggregate rejection matrix가 부분적이다.
+- `bin.maxBins`
+  - ✅ Covered: default via histogram, representative positive integer, invalid integer/value.
+  - ⚠️ Partial: `1`, very large maxBins와 constant field interaction.
+- `scale.id/type/domain/range/nice/zero`
+  - ✅ Covered: auto/explicit linear, time, ordinal definitions; explicit domain/range precedence;
+    wrong type and shared-channel conflicts.
+  - ⚠️ Partial: 모든 fieldType × nice × zero × explicit bound pairwise 조합.
+  - 🟣 Proposed: `log`, `sqrt`, `symlog` scale types and reverse/clamp options.
+- Evidence: position, temporal, histogram-bin and ordinal-bar action tests.
+
+### Value coverage — `encodeY`
+
+- `field`, `target`, `coordinate`
+  - ✅ Covered: raw quantitative point/area, aggregate line/bar, inferred histogram count and target ambiguity.
+- `fieldType`
+  - ✅ Covered: current quantitative combinations와 invalid types.
+  - 🟣 Proposed: temporal/ordinal y mark combinations.
+- `aggregate`
+  - ✅ Covered: omission, `"mean"`, `"count"`, incompatible aggregate rejection.
+  - 🟣 Proposed: `"sum" | "min" | "max" | "median"`; aggregate grain과 title/domain inference가 필요하다.
+- `stack`
+  - ✅ Covered: `"zero"`, `null`, incompatible policy rejection.
+  - 🟣 Proposed: `"normalize" | "center"`; y scale domain과 baseline semantics가 필요하다.
+- `scale`
+  - ✅ Covered: auto/explicit domain/range, nice/zero precedence, shared consumer conflicts.
+  - ⚠️ Partial: aggregate/stack/scale option pairwise matrix.
+- Evidence: point position, line aggregate, histogram y and ordinal aggregate bar tests.
+
+### Value coverage — `encodeXOffset`
+
+- `field`, `target`
+  - ✅ Covered: nominal grouping field, explicit/inferred eligible grouped bar, missing/incompatible prerequisites.
+- `fieldType`
+  - ✅ Covered: `"nominal"`와 invalid alternatives.
+- `scale.id/type/domain/range`
+  - ✅ Covered: defaults, explicit order, reversed range, auto range rematerialization, invalid definitions.
+  - 🟣 Proposed: padding controls between sub-bands; parent/child band geometry ownership이 필요하다.
+- Evidence: `test/unit/actions/encodings/x-offset-encoding.test.js`.
+
+### Value coverage — `encodeY2`
+
+- `field`, `target`
+  - ✅ Covered: quantitative upper field, eligible area, missing y/missing field errors.
+- `fieldType`
+  - ✅ Covered: `"quantitative"`와 invalid alternatives.
+- `scale.id`
+  - ✅ Covered: omission/shared y ID, same explicit ID, conflicting ID rejection.
+  - No proposal: y2는 y scale 공유가 semantic invariant다.
+- Evidence: ranged-area and regression semantic/materialization tests.
+
+### Value coverage — `encodeYRange`
+
+- `lower`, `upper`
+  - ✅ Covered: distinct quantitative fields와 missing/invalid fields.
+- `target`, `fieldType`, `coordinate`, `scale`
+  - ✅ Covered: inferred/explicit target와 shared y/y2 child hierarchy.
+  - ⚠️ Partial: explicit coordinate/scale option combinations direct test.
+- 🟣 Proposed: horizontal ranged area의 atomic `encodeXRange`; x2 semantic channel이 먼저 필요하다.
+- Evidence: ranged-area and regression tests.
+
+### Value coverage — `encodeGroup`
+
+- `field`, `target`
+  - ✅ Covered: nominal line/area grouping, inferred/explicit target, density group match/mismatch.
+- `fieldType`
+  - ✅ Covered: `"nominal"`와 invalid values.
+- No proposal: group은 scale-free path partition이라는 현재 역할을 유지한다.
+- Evidence: line-series, ranged-area and density-area tests.
+
+### Value coverage — `encodeHistogram`
+
+- `field`, `target`, `coordinate`
+  - ✅ Covered: shortest/inferred call, explicit forwarding, missing/invalid child prerequisites.
+- `maxBins`
+  - ✅ Covered: omission→`10`, representative explicit values, invalid through child `encodeX`.
+  - ⚠️ Partial: minimum/large values와 sparse/constant data pair.
+- `stack`
+  - ✅ Covered: omission→`"zero"`, explicit `"zero"`와 `null` forwarding/rejection by supported semantics.
+- `xScale`, `yScale`
+  - ✅ Covered: explicit objects, default policies, domain/range precedence.
+  - ⚠️ Partial: independent scale IDs and all policy combinations.
+- 🟣 Proposed: `binStep`/explicit bin boundaries; maxBins와 mutually exclusive precedence가 필요하다.
+- Evidence: `test/unit/actions/encodings/encode-histogram.test.js`와 histogram chart tests.
+
+### Value coverage — `encodeDensity`
+
+- `field`, `target`, `source`, `groupBy`
+  - ✅ Covered: inferred/explicit target/source, grouped/ungrouped, ambiguity와 conflicting pre-encodings.
+- `bandwidth`, `extent`, `steps`, `as`
+  - ✅ Covered: forwarding of auto/default and representative explicit values, invalid input atomicity.
+  - ⚠️ Partial: full numeric boundary matrix는 `createDensityData` coverage에 의존한다.
+- `densityChannel`
+  - ✅ Covered: omission→`"y"`, explicit `"x"`, unknown value rejection.
+- `coordinate`
+  - ✅ Covered: omitted/inferred and explicit compatible Cartesian coordinate.
+- `valueScale`, `densityScale`
+  - ✅ Covered: defaults, explicit IDs/domain/range, baseline zero requirement.
+  - ⚠️ Partial: reversed ranges and explicit density domain excluding zero across both orientations.
+- 🟣 Proposed: normalization/count scaling mode and alternate kernels.
+- Evidence: density encoding/data/mark/chart tests.
+
+### Value coverage — `encodeColor`
+
+- `field`, `target`
+  - ✅ Covered: point/line/bar/area, inferred/explicit target, missing/invalid nominal values.
+- `fieldType`
+  - ✅ Covered: `"nominal"`와 invalid alternatives.
+- `layout`
+  - ✅ Covered: omission, `"stack"`, `"group"`, incompatible mark/layout rejection.
+  - 🟣 Proposed: `"overlay"` area/bar policy; overlap order/opacity contract가 필요하다.
+- `scale.id/type/domain`
+  - ✅ Covered: ordinal default, explicit ID/order, incomplete explicit domain rejection.
+- `scale.range/palette`
+  - ✅ Covered: explicit color array, `{ palette: "tableau10" }`, range+palette conflict, invalid colors.
+  - 🟣 Proposed: additional named categorical palettes and continuous color interpolation.
+- Evidence: color, line-series, bar-color, area-color and grouped-bar tests.
+
+### Value coverage — `encodeStrokeDash`
+
+- `field`, `target`, `fieldType`
+  - ✅ Covered: nominal line series, inferred/explicit target, invalid mark/type/field.
+- `scale.domain`
+  - ✅ Covered: auto and explicit order.
+- `scale.range`
+  - ✅ Covered: automatic pattern cycling, explicit even-length non-negative patterns, invalid patterns.
+  - ⚠️ Partial: empty solid pattern mixed with repeated categories and very long patterns.
+- 🟣 Proposed: constant strokeDash action for non-field-driven line appearance.
+- Evidence: line-series encoding and scale tests.
+
+### Value coverage — `encodeSize`
+
+- `field`, `target`, `fieldType`
+  - ✅ Covered: quantitative point field, inferred/explicit target, invalid type/field.
+- `scale.domain/range`
+  - ✅ Covered: auto domain/range `[24, 196]`, representative mapping and explicit values through shared scale tests.
+  - ⚠️ Partial: zero/negative area range rejection and constant domains in direct action tests.
+- Interaction
+  - ✅ Covered: constant radius conflict and shape-independent equal-area materialization.
+- 🟣 Proposed: legend-friendly range presets or `minArea`/`maxArea` shorthand; scale range와의 precedence가 필요하다.
+- Evidence: point appearance and regression-guide tests.
+
+### Value coverage — `encodeShape`
+
+- `field`, `target`, `fieldType`
+  - ✅ Covered: nominal point field와 invalid alternatives.
+- `scale.domain/range`
+  - ✅ Covered: auto domain, circle/square result, heterogeneous collection and legend symbol materialization.
+  - ⚠️ Partial: explicit shape range order와 incomplete domain/range direct cases.
+  - 🟣 Proposed: triangle/diamond symbols, matching `createPointMark.shape` proposal.
+- Evidence: point appearance and regression chart/guide tests.
+
+### Value coverage — `encodeOpacity`
+
+- `value`
+  - ✅ Covered: representative value, 0, 1, below/above range와 non-finite rejection.
+- `target`
+  - ✅ Covered: inferred/explicit point, unknown/incompatible target.
+- 🟣 Proposed: field-driven quantitative opacity with scale; constant action과 distinct API/semantic contract가 필요하다.
+- Evidence: point appearance and regression tests.
+
+### Value coverage — `encodeRadius`
+
+- `value`
+  - ✅ Covered: 0, positive representative, negative/non-finite rejection.
+- `target`
+  - ✅ Covered: inferred/explicit point와 invalid target.
+- Interaction
+  - ✅ Covered: semanticSpec unchanged, child broadcast, encodeSize conflict.
+- Proposed: additional constant point size units(`area` vs `radius`)는 별도 naming/precedence 결정이 필요하다.
+- Evidence: `test/unit/actions/encodings/radius-encoding.test.js`.
+
+### Value coverage — `encodeBarWidth`
+
+- `band`
+  - ✅ Covered: omission→`0.72`, representative `(0,1)`, exact `1`, 0/negative/>1/non-finite rejection.
+- `target`
+  - ✅ Covered: inferred/explicit grouped bar와 incomplete prerequisites.
+- 🟣 Proposed: absolute pixel width와 inner padding. responsive band layout과 충돌하지 않는 precedence가 필요하다.
+- Evidence: grouped-bar width and chart reference tests.
+
+### Value coverage — `createRegression`
+
+- `target`, `x`, `y`
+  - ✅ Covered: current/unique inference, explicit values, ambiguous/invalid target와 field override.
+- `groupBy`
+  - ✅ Covered: color/shape inference, explicit field, explicit ungrouped `undefined`, ambiguous candidates.
+- `confidence`
+  - ✅ Covered: omission→`0.95`, representative explicit and invalid via child data action.
+- `band.color`, `band.opacity`, `line.strokeWidth`
+  - ✅ Covered: defaults and representative explicit styles.
+  - ⚠️ Partial: color/type and numeric endpoints are mostly child-action validation rather than aggregate direct tests.
+- 🟣 Proposed: methods/intervals follow `createRegressionData`; aggregate API should forward only after those contracts exist.
+- Evidence: `test/unit/actions/regression/create-regression.test.js` and regression chart tests.
+
+### Value coverage — `createRegressionBand`
+
+- `id`, `data`, `x`, `lower`, `upper`, `coordinate`, `xScale`, `yScale`
+  - ✅ Covered: valid aggregate flow and shared-scale output.
+  - ⚠️ Partial: each missing/unknown resource as an independent direct-call case.
+- `groupBy`
+  - ✅ Covered: present/omitted.
+- `color`, `opacity`
+  - ⚠️ Partial: defaults/representative values; endpoints and invalid types rely on area child validation.
+- 🟣 Proposed: optional band outline forwarded to proposed area stroke options.
+- Evidence: regression unit/chart tests.
+
+### Value coverage — `createRegressionLine`
+
+- `id`, `data`, `x`, `y`, `coordinate`, `xScale`, `yScale`
+  - ✅ Covered: valid grouped/ungrouped flow and shared coordinates/scales.
+  - ⚠️ Partial: missing resource direct-call matrix.
+- `groupBy`, `colorScale`
+  - ✅ Covered: paired presence and omitted ungrouped case.
+- `strokeWidth`
+  - ✅ Covered: default `3`, representative explicit; invalid values delegated to line mark.
+- 🟣 Proposed: curve option forwarded only after line interpolation contract exists.
+- Evidence: regression unit/chart tests.
+
+### Value coverage — `createAxes`
+
+- `coordinate.id`
+  - ✅ Covered: omission with unique coordinate, explicit matching ID, unknown/ambiguous IDs.
+- `coordinate.type`
+  - ✅ Covered: omission/`"auto"`, `"cartesian"`, stored `"polar"` rejection, unknown value.
+  - 🟣 Proposed: `"polar"` execution after Polar guide materialization exists; currently it is assertion-only and rejected.
+- `x`, `y`
+  - ✅ Covered: omission inference, `{}` explicit selection, `false` opt-out, nested options, neither selected error.
+  - ⚠️ Partial: multi-layer shared coordinate with one disabled axis and multiple candidate scales pairwise cases.
+- Proposed: future Polar axes should use coordinate channels rather than force x/y objects into Polar semantics.
+- Evidence: `test/unit/actions/guides/create-axes.test.js`.
+
+### Value coverage — `createXAxis`
+
+- `scale`, `coordinate`
+  - ✅ Covered: defaults, explicit IDs, missing/unused/conflicting resources.
+- `position`
+  - ✅ Covered: omission→`"bottom"`, explicit bottom, unsupported value rejection.
+  - 🟣 Proposed: `"top"`; baseline, tick direction, label/title offsets와 margin ownership이 필요하다.
+- `line`, `ticksAndLabels`, `title`
+  - ✅ Covered: omission/default objects, nested representative overrides, unknown nested keys, partial duplicate failure.
+  - ⚠️ Partial: all three nested appearance objects customized simultaneously.
+- Evidence: `test/unit/actions/guides/axis-actions.test.js`.
+
+### Value coverage — `createYAxis`
+
+- `scale`, `coordinate`
+  - ✅ Covered: defaults, explicit IDs and conflicts.
+- `position`
+  - ✅ Covered: omission→`"left"`, explicit left, unsupported value rejection.
+  - 🟣 Proposed: `"right"`; mirrored tick/label/title geometry와 right-margin reservation이 필요하다.
+- `line`, `ticksAndLabels`, `title`
+  - ✅ Covered: defaults, representative nested overrides and invalid nested keys.
+- Evidence: `test/unit/actions/guides/axis-actions.test.js`.
+
+### Value coverage — `createXAxisLine`
+
+- `scale`: ✅ Covered default `"x"`, explicit ID, unknown/unconsumed/unresolved scale.
+- `position`: ✅ Covered `"bottom"`, invalid; 🟣 Proposed `"top"`.
+- `color`: ✅ Covered default, explicit non-empty, empty/non-string rejection.
+- `lineWidth`: ✅ Covered default `1`, zero, positive, negative/non-finite rejection.
+- Evidence: `test/unit/actions/guides/axis-line-actions.test.js`.
+
+### Value coverage — `createYAxisLine`
+
+- `scale`: ✅ Covered default `"y"`, explicit and invalid resources.
+- `position`: ✅ Covered `"left"`, invalid; 🟣 Proposed `"right"`.
+- `color`, `lineWidth`: ✅ Covered default/representative/boundary/invalid classes shared with x.
+- Evidence: `test/unit/actions/guides/axis-line-actions.test.js`.
+
+### Value coverage — `editXAxisLine`
+
+- `position`: ✅ Covered omitted/existing and `"bottom"`; 🟣 Proposed `"top"` only with create support.
+- `color`, `lineWidth`: ✅ Covered partial edits, unchanged omissions and invalid values.
+- Empty options: ⚠️ Partial. 현재 geometry re-inference 용도로 `{}`가 허용되는 동작을 더 명시적으로 고정할 필요가 있다.
+- Evidence: `test/unit/actions/guides/axis-line-actions.test.js`.
+
+### Value coverage — `editYAxisLine`
+
+- `position`, `color`, `lineWidth`: ✅ Covered symmetric left-side partial edit and errors.
+- 🟣 Proposed: right-side edit after right axis creation exists.
+- Evidence: `test/unit/actions/guides/axis-line-actions.test.js`.
+
+### Value coverage — `createXAxisTicks`
+
+- `scale`: ✅ Covered default/explicit and invalid resources.
+- `position`: ✅ Covered `"bottom"`/invalid; 🟣 Proposed `"top"`.
+- `count`: ✅ Covered omission→5, positive integer, zero/negative/non-integer, count+values conflict.
+- `values`: ✅ Covered finite values/timestamps, histogram boundaries, ordinal domain/subset, out-of-domain/invalid values.
+- `length`: ✅ Covered default `6`, zero, positive and negative rejection.
+- `color`, `lineWidth`: ✅ Covered defaults, representatives and invalid values.
+- Evidence: `test/unit/actions/guides/axis-tick-actions.test.js`, histogram/ordinal/temporal axis tests.
+
+### Value coverage — `createYAxisTicks`
+
+- `scale`, `position`, `count`, `values`, `length`, `color`, `lineWidth`
+  - ✅ Covered: linear y defaults, explicit values and shared invalid classes.
+  - ⚠️ Partial: reversed y domain with explicit values and very dense count.
+- 🟣 Proposed: right position after right-axis contract.
+- Evidence: axis-tick and chart guide tests.
+
+### Value coverage — `editXAxisTicks`
+
+- `position`: ✅ Covered bottom/invalid.
+- `count`, `values`: ✅ Covered mode switch, mutually exclusive inputs, rematerialization and invalid domains.
+- `length`, `color`, `lineWidth`: ✅ Covered partial appearance edits and invalid values.
+- 🟣 Proposed: top-position geometry only after `createXAxisTicks` supports top.
+- Evidence: `test/unit/actions/guides/axis-tick-actions.test.js`.
+
+### Value coverage — `editYAxisTicks`
+
+- 모든 parameter는 x edit과 같은 value classes를 사용한다.
+  - ✅ Covered: representative values, mode policy and invalid options.
+  - ⚠️ Partial: repeated count↔values switching sequence.
+- 🟣 Proposed: right-position geometry only after `createYAxisTicks` supports right.
+- Evidence: axis-tick and tick-group tests.
+
+### Value coverage — `createXAxisLabels`
+
+- `scale`, `position`, `count`, `values`
+  - ✅ Covered: linear/time/ordinal modes, existing tick reuse, conflict/out-of-domain rejection.
+- `offset`: ✅ Covered default `18`, zero/positive, negative rejection.
+- `format`
+  - ✅ Covered: `"auto"`, `{ decimals: 0 }`, positive decimals, invalid object.
+  - ✅ Covered: non-auto time/ordinal rejection.
+  - 🟣 Proposed: date/number format string or formatter callback; deterministic serialization과 browser/Node parity가 필요하다.
+- `color`, `fontSize`, `fontFamily`, `fontWeight`
+  - ✅ Covered: defaults, representative string/numeric weight and invalid classes.
+- Evidence: `test/unit/actions/guides/axis-label-actions.test.js`, temporal/ordinal axis tests.
+
+### Value coverage — `createYAxisLabels`
+
+- `scale`, `position`, `count`, `values`, `offset`, `format`, font style
+  - ✅ Covered: linear y defaults, explicit/derived values, decimal formatting and conflicts.
+  - ⚠️ Partial: numeric fontWeight boundaries and reversed range alignment.
+- 🟣 Proposed: right-side label alignment after right axis support.
+- Evidence: axis-label and chart guide tests.
+
+### Value coverage — `editXAxisLabels`
+
+- `position`, `count`, `values`, `offset`, `format`, color/font parameters
+  - ✅ Covered: partial style edit, decimal format, tick conflict and Canvas rematerialization.
+- 🟣 Proposed formatter values follow create labels.
+- Evidence: `test/unit/actions/guides/axis-label-actions.test.js`.
+
+### Value coverage — `editYAxisLabels`
+
+- 모든 edit parameter
+  - ✅ Covered: representative partial edits and shared invalid classes.
+  - ⚠️ Partial: switching between auto and decimal format across repeated edits.
+- 🟣 Proposed: right-side alignment and formatter values follow `createYAxisLabels`.
+- Evidence: axis-label tests.
+
+### Value coverage — `createXAxisTicksAndLabels`
+
+- `scale`, `position`, `count`, `values`
+  - ✅ Covered: shared forwarding, count/values conflict and default inference.
+- `ticks.length/color/lineWidth`, `labels.offset/format/color/fontSize/fontFamily/fontWeight`
+  - ✅ Covered: representative nested overrides, unknown nested keys and independent child effects.
+  - ⚠️ Partial: all nested properties explicitly set in one call.
+- Proposed values follow leaf tick/label actions.
+- Evidence: `test/unit/actions/guides/axis-tick-group-actions.test.js`.
+
+### Value coverage — `createYAxisTicksAndLabels`
+
+- shared and nested parameters
+  - ✅ Covered: y defaults, explicit values and trace hierarchy.
+  - ⚠️ Partial: full nested option object.
+- 🟣 Proposed: new leaf values are inherited only after both y tick and label actions support them.
+- Evidence: axis-tick-group tests.
+
+### Value coverage — `editXAxisTicksAndLabels`
+
+- `position`, `count`, `values`
+  - ✅ Covered: atomic policy changes and invalid mutual use.
+- `ticks`, `labels`
+  - ✅ Covered: only requested child edit, both child edit and empty edit rejection.
+- Proposed values follow leaf actions.
+- Evidence: `test/unit/actions/guides/axis-tick-group-actions.test.js`.
+
+### Value coverage — `editYAxisTicksAndLabels`
+
+- shared/nested edit parameters
+  - ✅ Covered: representative values, child selection and invalid options.
+- 🟣 Proposed: right-position aggregate edit follows both leaf actions.
+- Evidence: axis-tick-group tests.
+
+### Value coverage — `createXAxisTitle`
+
+- `text`: ✅ Covered inferred field/aggregate/density text, explicit non-empty, ambiguous/empty rejection.
+- `scale`: ✅ Covered default/explicit/conflicting scale.
+- `position`: ✅ Covered `"bottom"`/invalid; 🟣 Proposed `"top"`.
+- `at`: ✅ Covered `"start" | "center" | "end"`, in-domain number/category and out-of-domain/invalid.
+- `offset`: ✅ Covered default `42`, zero/positive, negative rejection.
+- `rotation`: ✅ Covered default `0`, finite explicit and non-finite rejection.
+- `color`, `fontSize`, `fontFamily`, `fontWeight`: ✅ Covered defaults, representatives and invalid classes.
+- Evidence: `test/unit/actions/guides/axis-title-actions.test.js`.
+
+### Value coverage — `createYAxisTitle`
+
+- `text`, `scale`, `at`, style: ✅ Covered symmetric inference, data positions and invalid values.
+- `position`: ✅ Covered `"left"`; 🟣 Proposed `"right"`.
+- `offset`: ✅ Covered default `52`; `rotation`: ✅ Covered default `-Math.PI / 2` and explicit finite values.
+- Evidence: axis-title tests.
+
+### Value coverage — `editXAxisTitle`
+
+- `text`, `position`, `at`, `offset`, `rotation`, style
+  - ✅ Covered: semantic text edit, graphical-only appearance edit, data-space relocation, invalid values.
+- 🟣 Proposed: top position follows `createXAxisTitle`.
+- Evidence: axis-title tests.
+
+### Value coverage — `editYAxisTitle`
+
+- 모든 edit parameter
+  - ✅ Covered: representative semantic/graphical edits and rematerialization.
+  - ⚠️ Partial: repeated rotation/at interactions.
+- 🟣 Proposed: right position follows `createYAxisTitle`.
+- Evidence: axis-title tests.
+
+### Value coverage — `createGrid`
+
+- `horizontal`
+  - ✅ Covered: omission→enabled, `true`, `{}`, option object, `false`.
+- `vertical`
+  - ✅ Covered: omission→disabled, `true`, `{}`, option object, `false`.
+- Interaction
+  - ✅ Covered: horizontal only, both directions, neither selected error, invalid non-object value.
+- No proposal at aggregate level; future direction options belong to direction actions.
+- Evidence: `test/unit/actions/guides/grid-actions.test.js`.
+
+### Value coverage — `createHorizontalGrid`
+
+- `scale`, `coordinate`: ✅ Covered inference, explicit IDs, ambiguity/unknown/non-Cartesian errors.
+- `count`: ✅ Covered default/inferred 5, positive integer, invalid and values conflict.
+- `values`: ✅ Covered axis-tick reuse, explicit finite in-domain values, invalid/out-of-domain.
+- `color`: ✅ Covered default/explicit/invalid.
+- `lineWidth`: ✅ Covered default, zero/positive/invalid.
+- `strokeDash`: ✅ Covered `[]`, even-length pattern, odd/negative/non-finite rejection.
+- 🟣 Proposed: ordinal grid support; category boundary vs center policy를 정해야 한다.
+- Evidence: `test/unit/actions/guides/grid-actions.test.js`.
+
+### Value coverage — `createVerticalGrid`
+
+- direction parameters
+  - ✅ Covered: x-scale inference, histogram bin alignment, explicit values/styles and invalid resources.
+  - ⚠️ Partial: temporal vertical grid with calendar ticks.
+- 🟣 Proposed: ordinal boundary/center grid contract.
+- Evidence: grid and density-guide tests.
+
+### Value coverage — `createLegend`
+
+- `target`
+  - ✅ Covered: inferred/explicit line, bar, area and compatible point; ambiguity/invalid target.
+- `channels`
+  - ✅ Covered: color, strokeDash, color+strokeDash, point color+shape, duplicates/incompatible combinations.
+- `position`
+  - ✅ Covered: omission→`"right"`, `"right"`, `"bottom"`, `"top"`, invalid value.
+  - 🟣 Proposed: `"left"`; left margin and point/size block geometry가 필요하다.
+- `align`
+  - ✅ Covered: top/bottom `"left" | "center" | "right"`, right center-only and invalid combinations.
+- `direction`
+  - ✅ Covered: `"horizontal" | "vertical"` top fill order and invalid value.
+- `columns`
+  - ✅ Covered: omitted, positive integer representative, invalid zero/non-integer.
+- `offset`
+  - ✅ Covered: default `8`, zero/positive, negative/non-finite rejection.
+- `titlePosition`
+  - ✅ Covered: `"top" | "left"`, defaults and invalid value.
+- `title`
+  - ✅ Covered: inferred field, explicit non-empty, empty/non-string rejection.
+- `symbol`
+  - ✅ Covered: `"auto"`, line shorthand, swatch shorthand, layered line+point recipes.
+  - ⚠️ Partial: every layer type's zero/max dimensions, fill/stroke combinations and invalid nested keys.
+  - 🟣 Proposed: triangle/diamond point layers and area-gradient/continuous symbols.
+- `labels`, `titleStyle`
+  - ✅ Covered: representative color/font overrides and invalid styles.
+  - ⚠️ Partial: numeric/string fontWeight boundaries across every position.
+- `itemGap`
+  - ✅ Covered: defaults and positive representative; ⚠️ Partial exact near-zero boundary.
+- `border`
+  - ✅ Covered: omission/`false`, `true`, explicit color/lineWidth/padding/background and invalid objects.
+- `count`
+  - ✅ Covered: omission→5, integer `>=2`, `<2`/non-integer rejection for size block.
+- 🟣 Proposed: non-right point composite/size layout, continuous color and interactive legends.
+- Evidence: series, histogram, grouped-bar, top categorical and regression legend tests.
+
+### Value coverage — `createSizeLegend`
+
+- `target`: ✅ Covered unique inference, explicit eligible point, ambiguity/incompatible target.
+- `count`: ✅ Covered default `5`, explicit `>=2`, 0/1/non-integer rejection.
+- 🟣 Proposed: `position`, `align`, label format and title overrides after size block uses shared legend layout.
+- Evidence: `test/unit/actions/guides/regression-guides.test.js`.
+
+### Value coverage — `rematerializeSizeLegend`
+
+- Options
+  - ✅ Covered: `{}`/omission, unknown option rejection.
+- Stored config/domain/Canvas
+  - ✅ Covered: existing config, latest scale values and Canvas resize; missing config rejection.
+- Proposed values follow future shared size-legend layout rather than this rematerialization action.
+- Evidence: regression-guide tests.
+
+### Value coverage — `createGuides`
+
+- `axes`, `grid`, `legend`
+  - ✅ Covered: omission/applicability inference, `{}` explicit selection, nested options, `false` opt-out.
+  - ✅ Covered: unsupported/non-object values, no selected guide and ambiguous child errors.
+  - ⚠️ Partial: explicit selection of all three with every nested option family simultaneously.
+- No proposal: title remains intentionally separate. New guide types should be added only with a concrete domain action.
+- Evidence: `test/unit/actions/guides/guide-collection-actions.test.js` and density/regression guide tests.
+
+### Value coverage — `createTitle`
+
+- `text`, `subtitle`
+  - ✅ Covered: required non-empty title, subtitle omitted/present, empty/non-string rejection.
+- `position`
+  - ✅ Covered: omission→`"top"`, explicit top, invalid value.
+  - 🟣 Proposed: `"bottom" | "left" | "right"`; occupied bounds, rotation과 guide collision contract가 필요하다.
+- `align`
+  - ✅ Covered: `"left" | "center" | "right"`, default left and invalid value.
+- `offset`
+  - ✅ Covered: zero/default, positive/negative finite values within layout, non-finite/out-of-layout rejection.
+- `gap`
+  - ✅ Covered: default `8`, zero/positive, negative/non-finite rejection.
+- `titleStyle`, `subtitleStyle`
+  - ✅ Covered: default and explicit color/fontSize/fontFamily/fontWeight, invalid values.
+- 🟣 Proposed: wrapping, maxWidth, lineHeight and text measurement; browser/Node deterministic metrics가 필요하다.
+- Evidence: `test/unit/actions/guides/title-actions.test.js`.
+
+### Value coverage — `createCoordinate`
+
+- `id`: ✅ Covered omission→`"main"`, valid custom IDs, malformed IDs and conflicting duplicate.
+- `type`
+  - ✅ Covered: omission→`"cartesian"`, `"cartesian"`, `"polar"`, unknown value.
+  - Planned capability: Polar resource는 저장되지만 positional/guide materialization은 아직 없다.
+- `layers`
+  - ✅ Covered: omission/empty, one/multiple existing IDs, duplicates, unknown layer, reattachment conflict.
+- Proposed: coordinate-level `clip`/transform options는 semantic vs graphical ownership 결정 전까지 추가하지 않는다.
+- Evidence: `test/unit/actions/coordinates/create-coordinate.test.js`.
+
+### Value coverage — `createScale`
+
+- `id`: ✅ Covered valid/invalid IDs, equivalent idempotence and conflicting duplicate.
+- `type`
+  - ✅ Covered: omission→`"linear"`, `"linear" | "time" | "ordinal"`, unknown value.
+  - 🟣 Proposed: `"log" | "sqrt" | "symlog"`; domain restrictions와 tick mapping이 필요하다.
+- `domain`
+  - ✅ Covered: `"auto"`, continuous pair, ordinal unique array, reversed pair and invalid arrays.
+  - ⚠️ Partial: temporal Date/string/timestamp normalization at direct action boundary.
+- `range`
+  - ✅ Covered: `"auto"`, numeric pair, colors, palette descriptor and dash patterns through consumers.
+  - ⚠️ Partial: raw createScale cannot fully validate consumer-specific ordinal range until consumers exist.
+- `nice`
+  - ✅ Covered: omitted, true, false, non-boolean and ordinal rejection.
+- `zero`
+  - ✅ Covered: omitted, true, false, non-boolean and time/ordinal rejection.
+- Precedence
+  - ✅ Covered: explicit domain overrides nice/zero; zero applies before nice on auto linear domain.
+- 🟣 Proposed: clamp, reverse and unknown/missing policies.
+- Evidence: `test/unit/actions/scales/scale-actions.test.js` and grammar scale tests.
+
+### Value coverage — `rematerializeScale`
+
+- `id`
+  - ✅ Covered: existing scale with single/shared consumers, unknown/incomplete/incompatible consumers.
+- resolved values
+  - ✅ Covered: linear/time/ordinal, auto/explicit domain/range, aggregate consumers, plan ordering/deduplication.
+  - ⚠️ Partial: one scale connected to every supported guide/mark consumer type in the same program.
+- No proposal: new scale types automatically require their own resolver and consumer coverage here.
+- Evidence: scale action/consumer tests and `test/contracts/materialization-plan.test.js`.
+
+### Value coverage — `editSemantic`
+
+- `property`
+  - ✅ Covered: supported dataset/layer/encoding/scale/coordinate/guide/title paths, user IDs, unknown path rejection.
+  - ⚠️ Partial: every supported leaf path does not yet have one direct primitive case.
+  - 🟣 Proposed: no wildcard/batch paths; primitive remains one-property-per-action by design.
+- `value`
+  - ✅ Covered: scalar, nested object/array ownership, closed vocabulary/schema validation, trace summarization.
+  - ✅ Covered: source dataset values cannot be replaced.
+  - ⚠️ Partial: every transform schema leaf and every guide semantic leaf direct coverage.
+- Effect
+  - ✅ Covered: structural copy and context inference without automatic graphic compilation.
+- Evidence: `test/unit/actions/primitives/edit-semantic.test.js`.
+
+### Value coverage — `createGraphics`
+
+- `id`: ✅ Covered valid/invalid IDs, equivalent idempotence and conflicts.
+- `type`
+  - ✅ Covered: `"canvas" | "collection" | "circle" | "rect" | "line" | "text" | "path"` creation paths.
+  - ✅ Covered: unknown type rejection.
+  - 🟣 Proposed: no renderer-specific `svg/g`; new backend-neutral primitive only when multiple actions need it.
+- `length`
+  - ✅ Covered: omitted single, zero empty, positive collection, invalid negative/non-integer and resize transition.
+- `before`, `after`
+  - ✅ Covered: each placement, mutual exclusion, unknown anchor, Canvas-before restriction, idempotent/conflicting placement.
+- 🟣 Proposed: parent attachment/container composition after program composition contract is approved.
+- Evidence: `test/unit/actions/primitives/create-graphics.test.js`.
+
+### Value coverage — `editGraphics`
+
+- `target`
+  - ✅ Covered: top-level ID, generated child ID, unknown target.
+- `property`
+  - ✅ Covered: type-specific canvas/circle/rect/line/text/path properties, `length`, heterogeneous `children`.
+  - ⚠️ Partial: every valid property does not yet have all boundary classes in direct primitive tests.
+- `value` distribution
+  - ✅ Covered: scalar broadcast, outer array distribution, mismatched length, nested points arrays preserved,
+    heterogeneous child replacement and shared compatible-property broadcast.
+- concrete value classes
+  - ✅ Covered: finite geometry, non-negative dimensions/strokes, `[0,1]` opacity, non-empty appearance strings,
+    Canvas text vocabulary and renderer-shared validation.
+  - ⚠️ Partial: extreme finite magnitudes and every fontWeight/string color accepted by each backend.
+- 🟣 Proposed: no multi-property dict edit; one action continues to represent one property change.
+- Evidence: `test/unit/actions/primitives/edit-graphics.test.js`,
+  `test/contracts/shared-graphic-validation.test.js`.

@@ -55,6 +55,26 @@ function detailSections() {
   }));
 }
 
+function valueCoverageSections() {
+  const headings = [...catalog.matchAll(
+    /^### Value coverage — `([A-Za-z][A-Za-z0-9]*)`$/gm
+  )];
+
+  return headings.map((heading, index) => ({
+    action: heading[1],
+    source: catalog.slice(
+      heading.index,
+      headings[index + 1]?.index ?? catalog.length
+    )
+  }));
+}
+
+function expectedTestStatus(source) {
+  if (source.includes("❌ Missing")) return "❌";
+  if (source.includes("⚠️ Partial")) return "⚠️";
+  return "✅";
+}
+
 function runtimeActionMethods() {
   return Object.entries(
     Object.getOwnPropertyDescriptors(ChartProgram.prototype)
@@ -109,6 +129,34 @@ test("keeps primitive and runtime-only actions out of the wrong catalog layer", 
   assert.equal(internal.includes("createLegendSymbols"), true);
   for (const action of internal) {
     assert.equal(cataloged.has(action), false, action);
+  }
+});
+
+test("keeps one value coverage and proposal ledger for every direct action", () => {
+  const declared = declaredProgramMethods();
+  const rows = new Map(summaryRows().map(row => [row.action, row]));
+  const sections = valueCoverageSections();
+  const actions = sections.map(section => section.action);
+
+  assert.equal(new Set(actions).size, actions.length);
+  assert.deepEqual(new Set(actions), new Set(declared));
+
+  for (const section of sections) {
+    assert.match(
+      section.source,
+      /(✅ Covered|⚠️ Partial|❌ Missing)/,
+      `${section.action} has no current value coverage state`
+    );
+    assert.match(
+      section.source,
+      /(🟣 Proposed|Proposed:|Proposed values|No proposal|Planned capability|future)/i,
+      `${section.action} has no future value state`
+    );
+    assert.equal(
+      rows.get(section.action)?.tests,
+      expectedTestStatus(section.source),
+      `${section.action} summary does not reflect its value ledger`
+    );
   }
 });
 
