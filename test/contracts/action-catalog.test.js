@@ -320,7 +320,14 @@ test("classifies every direct action lifecycle and keeps edit gaps explicit", ()
     new Set(plannedBehaviors.map(row => row.action)),
     new Set(expectedPlannedBehaviors)
   );
-  for (const action of ["encodeShape", "encodeSize", "encodeStrokeDash"]) {
+  for (const action of [
+    "encodeColor",
+    "encodeGroup",
+    "encodeShape",
+    "encodeSize",
+    "encodeStrokeDash",
+    "encodeXOffset"
+  ]) {
     assert.equal(
       plannedBehaviors.find(row => row.action === action)?.readiness,
       "Accepted",
@@ -329,6 +336,8 @@ test("classifies every direct action lifecycle and keeps edit gaps explicit", ()
   }
   assert.match(catalog, /### Planned contract: scale-backed appearance reassignment/);
   assert.match(catalog, /accepted `editScale` contract/);
+  assert.match(catalog, /### Planned contract: grouping reassignment/);
+  assert.match(catalog, /stack\/group 전환을 지원하지 않으며/);
   assert.equal(
     rows.find(row => row.action === "createCoordinate")?.lifecycle,
     "Structural create-only"

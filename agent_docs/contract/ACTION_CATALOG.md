@@ -146,16 +146,16 @@ properties, rematerialization ownership과 conflict behavior를 정해야 한다
 | `createAreaMark` | Stable resource, edit gap | Encoding actions only; no base-mark edit | `editAreaMark` — Planned |
 | `encodeX` | Assignment | No replacement contract | Reassignment — Proposed |
 | `encodeY` | Assignment | No replacement contract | Reassignment — Proposed |
-| `encodeColor` | Assignment | No replacement contract | Reassignment — Proposed |
+| `encodeColor` | Assignment | Same action will replace compatible color grouping | Reassignment — Planned |
 | `encodeStrokeDash` | Assignment | Same action will replace field and scale binding | Reassignment — Planned |
 | `encodeSize` | Assignment | Same action will replace field and scale binding | Reassignment — Planned |
 | `encodeShape` | Assignment | Same action will replace field and scale binding | Reassignment — Planned |
 | `encodeOpacity` | Assignment | Same action replaces the constant value | Reassignment — Implemented |
 | `encodeRadius` | Assignment | Same action replaces the constant value | Reassignment — Implemented |
-| `encodeXOffset` | Assignment | No replacement contract | Reassignment — Proposed |
+| `encodeXOffset` | Assignment | Same action will replace compatible grouped-bar slots | Reassignment — Planned |
 | `encodeY2` | Assignment | No replacement contract | Reassignment — Proposed |
 | `encodeYRange` | Assignment | No replacement contract | Reassignment — Proposed |
-| `encodeGroup` | Assignment | No replacement contract | Reassignment — Proposed |
+| `encodeGroup` | Assignment | Same action will replace compatible path grouping | Reassignment — Planned |
 | `encodeHistogram` | Assignment | Atomic child encodings; no replacement contract | Reassignment — Proposed |
 | `encodeDensity` | Assignment | Atomic child encodings; no replacement contract | Reassignment — Proposed |
 | `encodeBarWidth` | Assignment | Same action replaces the band fraction | Reassignment — Implemented |
@@ -372,9 +372,12 @@ editTitle({
 
 | Existing action behavior | Status | Contract readiness |
 | --- | --- | --- |
+| `encodeColor` reassignment | Planned | Accepted |
+| `encodeGroup` reassignment | Planned | Accepted |
 | `encodeShape` reassignment | Planned | Accepted |
 | `encodeSize` reassignment | Planned | Accepted |
 | `encodeStrokeDash` reassignment | Planned | Accepted |
+| `encodeXOffset` reassignment | Planned | Accepted |
 
 ### Planned contract: scale-backed appearance reassignment
 
@@ -392,6 +395,26 @@ editTitle({
   line grouping을 요구하면 오류이며 기존 program은 유지한다.
 - explicit ordinal range가 새 domain을 표현할 수 없거나 shared consumer가 incompatible하면
   전체 reassignment를 오류 처리한다.
+- Status: Planned, NOT IMPLEMENTED. 구현은 `editScale` parameter contract가 Accepted된 뒤 진행한다.
+
+### Planned contract: grouping reassignment
+
+- `encodeColor` 재호출은 같은 target의 color field와 scale binding을 교체한다. point는 fill,
+  line/area는 compatible path grouping, stacked bar는 stack groups, grouped bar는 owning
+  `encodeXOffset` child까지 함께 갱신한다.
+- reassignment에서 `layout`을 생략하면 현재 `"stack" | "group"` 결정을 유지한다. 첫 계약은
+  stack/group 전환을 지원하지 않으며 explicit 다른 layout은 오류다. 전환은 companion 제거와
+  scale cleanup 계약을 별도로 정한 뒤 추가한다.
+- `encodeGroup` 재호출은 line/area path grouping field를 교체한다. color, shape 또는
+  strokeDash가 grouping에 참여하면 같은 field여야 하며 library가 임의로 다른 channel을
+  고치지 않는다. `encodeColor`가 소유한 companion group은 `encodeColor`가 wrapped child로 갱신한다.
+- `encodeXOffset` 재호출은 grouped bar의 inner slot field와 ordinal scale binding을 교체한다.
+  color group field와 같아야 하고 stack layout에서는 오류다. 새 domain order는 bar slot과
+  dependent legend order에 함께 반영한다.
+- 같은 scale ID의 policy 변경은 `editScale`, explicit new scale ID는 `createScale`을 wrapped
+  child로 사용한다. 이전 named scale은 자동 삭제하지 않는다.
+- semantic companion actions, scales, mark와 existing legend를 deterministic plan으로
+  rematerialize하며 validation 실패 시 기존 program을 그대로 유지한다.
 - Status: Planned, NOT IMPLEMENTED. 구현은 `editScale` parameter contract가 Accepted된 뒤 진행한다.
 
 ## Internal materialization inventory
