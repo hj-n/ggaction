@@ -1,0 +1,300 @@
+import {
+  createCarsScatterplotPrimitives
+} from "./primitive.program.js";
+import {
+  createCategoricalPalettePrimitiveValues,
+  createDiamondPrimitiveValues,
+  createScaleReversePrimitiveValues,
+  createShapeVocabularyPrimitiveValues
+} from "./phase1-reference-values.js";
+
+export function createScaleReversePrimitives(cars) {
+  const values = createScaleReversePrimitiveValues(cars);
+
+  return createCarsScatterplotPrimitives(cars)
+    .editSemantic({
+      property: "layer[points].encoding.x.field",
+      value: "Horsepower"
+    })
+    .editSemantic({
+      property: "layer[points].encoding.x.fieldType",
+      value: "quantitative"
+    })
+    .editSemantic({ property: "layer[points].encoding.x.scale", value: "x" })
+    .editSemantic({ property: "scale[x].type", value: "linear" })
+    .editSemantic({ property: "scale[x].domain", value: "auto" })
+    .editSemantic({
+      property: "scale[x].range",
+      value: [values.baseline.bounds.right, values.baseline.bounds.left]
+    })
+    .editSemantic({ property: "guide.axis.x.scale", value: "x" })
+    .editSemantic({ property: "guide.axis.x.coordinate", value: "main" })
+    .editSemantic({ property: "guide.axis.x.title", value: "Horsepower" })
+    .editGraphics({ target: "points", property: "x", value: values.x })
+    .editGraphics({
+      target: "xAxisTicks",
+      property: "x1",
+      value: values.xTicks
+    })
+    .editGraphics({
+      target: "xAxisTicks",
+      property: "x2",
+      value: values.xTicks
+    })
+    .editGraphics({
+      target: "xAxisLabels",
+      property: "x",
+      value: values.xTicks
+    });
+}
+
+export function createPointShapeDiamondPrimitives(cars) {
+  const values = createDiamondPrimitiveValues(cars);
+
+  return createCarsScatterplotPrimitives(cars)
+    .editGraphics({
+      target: "points",
+      property: "children",
+      value: values.children
+    });
+}
+
+export function createShapeVocabularyPrimitives(cars) {
+  const values = createShapeVocabularyPrimitiveValues(cars);
+  const labelX = values.legend.labels.map(label => label.x);
+  const labelY = values.legend.labels.map(label => label.y);
+  const labelText = values.legend.labels.map(label => label.text);
+
+  return createCarsScatterplotPrimitives(cars)
+    .editSemantic({ property: "dataset[shapeCars].values", value: values.rows })
+    .editSemantic({ property: "layer[points].data", value: "shapeCars" })
+    .editSemantic({
+      property: "layer[points].encoding.shape.field",
+      value: "ShapeCategory"
+    })
+    .editSemantic({
+      property: "layer[points].encoding.shape.fieldType",
+      value: "nominal"
+    })
+    .editSemantic({
+      property: "layer[points].encoding.shape.scale",
+      value: "shape"
+    })
+    .editSemantic({ property: "scale[shape].type", value: "ordinal" })
+    .editSemantic({ property: "scale[shape].domain", value: values.shapes })
+    .editSemantic({ property: "scale[shape].range", value: values.shapes })
+    .editSemantic({
+      property: "guide.legend.series.channels",
+      value: ["shape"]
+    })
+    .editSemantic({
+      property: "guide.legend.series.scales",
+      value: ["shape"]
+    })
+    .editSemantic({ property: "guide.legend.series.title", value: "Shape" })
+    .editGraphics({ target: "canvas", property: "width", value: 860 })
+    .editGraphics({
+      target: "points",
+      property: "children",
+      value: values.children
+    })
+    .createGraphics({ id: "shapeLegendSymbols", type: "collection" })
+    .editGraphics({
+      target: "shapeLegendSymbols",
+      property: "children",
+      value: values.legend.symbols
+    })
+    .createGraphics({
+      id: "shapeLegendLabels",
+      type: "text",
+      length: values.legend.labels.length
+    })
+    .editGraphics({ target: "shapeLegendLabels", property: "x", value: labelX })
+    .editGraphics({ target: "shapeLegendLabels", property: "y", value: labelY })
+    .editGraphics({
+      target: "shapeLegendLabels",
+      property: "text",
+      value: labelText
+    })
+    .editGraphics({ target: "shapeLegendLabels", property: "fill", value: "#334155" })
+    .editGraphics({ target: "shapeLegendLabels", property: "fontSize", value: 12 })
+    .editGraphics({
+      target: "shapeLegendLabels",
+      property: "fontFamily",
+      value: "sans-serif"
+    })
+    .editGraphics({
+      target: "shapeLegendLabels",
+      property: "fontWeight",
+      value: "normal"
+    })
+    .editGraphics({
+      target: "shapeLegendLabels",
+      property: "textAlign",
+      value: "left"
+    })
+    .editGraphics({
+      target: "shapeLegendLabels",
+      property: "textBaseline",
+      value: "middle"
+    })
+    .createGraphics({ id: "shapeLegendTitle", type: "text" })
+    .editGraphics({
+      target: "shapeLegendTitle",
+      property: "x",
+      value: values.legend.title.x
+    })
+    .editGraphics({
+      target: "shapeLegendTitle",
+      property: "y",
+      value: values.legend.title.y
+    })
+    .editGraphics({
+      target: "shapeLegendTitle",
+      property: "text",
+      value: values.legend.title.text
+    })
+    .editGraphics({ target: "shapeLegendTitle", property: "fill", value: "#334155" })
+    .editGraphics({ target: "shapeLegendTitle", property: "fontSize", value: 13 })
+    .editGraphics({
+      target: "shapeLegendTitle",
+      property: "fontFamily",
+      value: "sans-serif"
+    })
+    .editGraphics({ target: "shapeLegendTitle", property: "fontWeight", value: 600 })
+    .editGraphics({ target: "shapeLegendTitle", property: "textAlign", value: "left" })
+    .editGraphics({
+      target: "shapeLegendTitle",
+      property: "textBaseline",
+      value: "middle"
+    });
+}
+
+export function createCategoricalPalettePrimitives(cars) {
+  const values = createCategoricalPalettePrimitiveValues(cars);
+  const symbolX = values.legend.symbols.map(symbol => symbol.x);
+  const symbolY = values.legend.symbols.map(symbol => symbol.y);
+  const symbolWidth = values.legend.symbols.map(symbol => symbol.width);
+  const symbolHeight = values.legend.symbols.map(symbol => symbol.height);
+  const symbolFill = values.legend.symbols.map(symbol => symbol.fill);
+  const symbolStroke = values.legend.symbols.map(symbol => symbol.stroke);
+  const symbolStrokeWidth = values.legend.symbols.map(
+    symbol => symbol.strokeWidth
+  );
+  const labelX = values.legend.labels.map(label => label.x);
+  const labelY = values.legend.labels.map(label => label.y);
+  const labelText = values.legend.labels.map(label => label.text);
+
+  return createCarsScatterplotPrimitives(cars)
+    .editSemantic({
+      property: "layer[points].encoding.color.field",
+      value: "Origin"
+    })
+    .editSemantic({
+      property: "layer[points].encoding.color.fieldType",
+      value: "nominal"
+    })
+    .editSemantic({
+      property: "layer[points].encoding.color.scale",
+      value: "color"
+    })
+    .editSemantic({ property: "scale[color].type", value: "ordinal" })
+    .editSemantic({ property: "scale[color].domain", value: values.domain })
+    .editSemantic({ property: "scale[color].range", value: values.range })
+    .editSemantic({ property: "guide.legend.color.scale", value: "color" })
+    .editSemantic({ property: "guide.legend.color.title", value: "Origin" })
+    .editGraphics({ target: "canvas", property: "width", value: 760 })
+    .editGraphics({ target: "points", property: "fill", value: values.fill })
+    .createGraphics({
+      id: "colorLegendSymbols",
+      type: "rect",
+      length: values.legend.symbols.length
+    })
+    .editGraphics({ target: "colorLegendSymbols", property: "x", value: symbolX })
+    .editGraphics({ target: "colorLegendSymbols", property: "y", value: symbolY })
+    .editGraphics({
+      target: "colorLegendSymbols",
+      property: "width",
+      value: symbolWidth
+    })
+    .editGraphics({
+      target: "colorLegendSymbols",
+      property: "height",
+      value: symbolHeight
+    })
+    .editGraphics({
+      target: "colorLegendSymbols",
+      property: "fill",
+      value: symbolFill
+    })
+    .editGraphics({
+      target: "colorLegendSymbols",
+      property: "stroke",
+      value: symbolStroke
+    })
+    .editGraphics({
+      target: "colorLegendSymbols",
+      property: "strokeWidth",
+      value: symbolStrokeWidth
+    })
+    .createGraphics({
+      id: "colorLegendLabels",
+      type: "text",
+      length: values.legend.labels.length
+    })
+    .editGraphics({ target: "colorLegendLabels", property: "x", value: labelX })
+    .editGraphics({ target: "colorLegendLabels", property: "y", value: labelY })
+    .editGraphics({
+      target: "colorLegendLabels",
+      property: "text",
+      value: labelText
+    })
+    .editGraphics({ target: "colorLegendLabels", property: "fill", value: "#334155" })
+    .editGraphics({ target: "colorLegendLabels", property: "fontSize", value: 12 })
+    .editGraphics({
+      target: "colorLegendLabels",
+      property: "fontFamily",
+      value: "sans-serif"
+    })
+    .editGraphics({
+      target: "colorLegendLabels",
+      property: "fontWeight",
+      value: "normal"
+    })
+    .editGraphics({ target: "colorLegendLabels", property: "textAlign", value: "left" })
+    .editGraphics({
+      target: "colorLegendLabels",
+      property: "textBaseline",
+      value: "middle"
+    })
+    .createGraphics({ id: "colorLegendTitle", type: "text" })
+    .editGraphics({
+      target: "colorLegendTitle",
+      property: "x",
+      value: values.legend.title.x
+    })
+    .editGraphics({
+      target: "colorLegendTitle",
+      property: "y",
+      value: values.legend.title.y
+    })
+    .editGraphics({
+      target: "colorLegendTitle",
+      property: "text",
+      value: values.legend.title.text
+    })
+    .editGraphics({ target: "colorLegendTitle", property: "fill", value: "#334155" })
+    .editGraphics({ target: "colorLegendTitle", property: "fontSize", value: 13 })
+    .editGraphics({
+      target: "colorLegendTitle",
+      property: "fontFamily",
+      value: "sans-serif"
+    })
+    .editGraphics({ target: "colorLegendTitle", property: "fontWeight", value: 600 })
+    .editGraphics({ target: "colorLegendTitle", property: "textAlign", value: "left" })
+    .editGraphics({
+      target: "colorLegendTitle",
+      property: "textBaseline",
+      value: "middle"
+    });
+}

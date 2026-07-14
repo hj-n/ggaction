@@ -4,6 +4,12 @@ import { createCarsScatterplot } from "../../../examples/cars-scatterplot/progra
 import { loadCars } from "../../support/data.js";
 import { assertRenderedPNG } from "../../support/png.js";
 import { createCarsScatterplotPrimitives } from "./primitive.program.js";
+import {
+  createCategoricalPalettePrimitives,
+  createPointShapeDiamondPrimitives,
+  createScaleReversePrimitives,
+  createShapeVocabularyPrimitives
+} from "./phase1-primitives.program.js";
 
 const cars = loadCars();
 const baselineArtifact = Object.freeze({
@@ -30,6 +36,140 @@ const baselineArtifact = Object.freeze({
     }
   });`
 });
+
+const phase1Artifacts = Object.freeze([
+  Object.freeze({
+    artifact: Object.freeze({
+      roadmap: "roadmap2",
+      chart: "cars-scatterplot",
+      variant: "scale-reverse",
+      kind: "primitive",
+      title: "Reversed X Scale",
+      userFacingCallChain: `chart()
+  .createCanvas({
+    width: 640,
+    height: 400,
+    margin: { top: 30, right: 30, bottom: 60, left: 70 }
+  })
+  .createData({ id: "cars", values: rows })
+  .createPointMark({ id: "points" })
+  .encodeX({ field: "Horsepower" })
+  .encodeY({ field: "Miles_per_Gallon" })
+  .encodeColor({ field: "Origin" })
+  .encodeRadius({ value: 3 })
+  .createGuides({
+    axes: {
+      x: { title: { text: "Horsepower" } },
+      y: { title: { text: "Miles per Gallon" } }
+    }
+  })
+  .editScale({ id: "x", reverse: true });`
+    }),
+    program: createScaleReversePrimitives(cars),
+    width: 640,
+    height: 400,
+    colors: ["#4c78a8", "#f58518", "#e45756"]
+  }),
+  Object.freeze({
+    artifact: Object.freeze({
+      roadmap: "roadmap2",
+      chart: "cars-scatterplot",
+      variant: "point-shape-diamond",
+      kind: "primitive",
+      title: "Constant Diamond Points",
+      userFacingCallChain: `chart()
+  .createCanvas({
+    width: 640,
+    height: 400,
+    margin: { top: 30, right: 30, bottom: 60, left: 70 }
+  })
+  .createData({ id: "cars", values: rows })
+  .createPointMark({ id: "points" })
+  .encodeX({ field: "Horsepower" })
+  .encodeY({ field: "Miles_per_Gallon" })
+  .encodeColor({ field: "Origin" })
+  .encodeRadius({ value: 3 })
+  .createGuides({
+    axes: {
+      x: { title: { text: "Horsepower" } },
+      y: { title: { text: "Miles per Gallon" } }
+    }
+  })
+  .editPointMark({ target: "points", shape: "diamond" });`
+    }),
+    program: createPointShapeDiamondPrimitives(cars),
+    width: 640,
+    height: 400,
+    colors: ["#4c78a8", "#f58518", "#e45756"]
+  }),
+  Object.freeze({
+    artifact: Object.freeze({
+      roadmap: "roadmap2",
+      chart: "cars-scatterplot",
+      variant: "shape-vocabulary",
+      kind: "primitive",
+      title: "Twelve Point Shapes",
+      userFacingCallChain: `chart()
+  .createCanvas({
+    width: 860,
+    height: 400,
+    margin: { top: 30, right: 250, bottom: 60, left: 70 }
+  })
+  .createData({ id: "shapeCars", values: shapeRows })
+  .createPointMark({ id: "points" })
+  .encodeX({ field: "Horsepower", scale: { domain: [46, 230] } })
+  .encodeY({ field: "Miles_per_Gallon", scale: { domain: [9, 46.6] } })
+  .encodeRadius({ value: 7 })
+  .encodeShape({
+    field: "ShapeCategory",
+    scale: { range: pointShapes }
+  })
+  .createGuides({
+    axes: {
+      x: { title: { text: "Horsepower" } },
+      y: { title: { text: "Miles per Gallon" } }
+    },
+    legend: { channels: ["shape"] }
+  });`
+    }),
+    program: createShapeVocabularyPrimitives(cars),
+    width: 860,
+    height: 400,
+    colors: ["#4c78a8"]
+  }),
+  Object.freeze({
+    artifact: Object.freeze({
+      roadmap: "roadmap2",
+      chart: "cars-scatterplot",
+      variant: "categorical-palette",
+      kind: "primitive",
+      title: "Set2 Categorical Palette",
+      userFacingCallChain: `chart()
+  .createCanvas({
+    width: 760,
+    height: 400,
+    margin: { top: 30, right: 150, bottom: 60, left: 70 }
+  })
+  .createData({ id: "cars", values: rows })
+  .createPointMark({ id: "points" })
+  .encodeX({ field: "Horsepower" })
+  .encodeY({ field: "Miles_per_Gallon" })
+  .encodeColor({ field: "Origin", scale: { palette: "set2" } })
+  .encodeRadius({ value: 3 })
+  .createGuides({
+    axes: {
+      x: { title: { text: "Horsepower" } },
+      y: { title: { text: "Miles per Gallon" } }
+    },
+    legend: { channels: ["color"] }
+  });`
+    }),
+    program: createCategoricalPalettePrimitives(cars),
+    width: 760,
+    height: 400,
+    colors: ["#66c2a5", "#fc8d62", "#8da0cb"]
+  })
+]);
 
 test("renders the public and primitive scatterplots with visible points", async () => {
   const programs = [
@@ -66,5 +206,9 @@ test("renders the public and primitive scatterplots with visible points", async 
       height: 400,
       colors
     });
+  }
+
+  for (const options of phase1Artifacts) {
+    await assertRenderedPNG(options.program, options);
   }
 });
