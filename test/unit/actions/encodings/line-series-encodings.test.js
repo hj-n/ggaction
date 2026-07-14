@@ -138,6 +138,36 @@ test("records line series encodings through wrapped materialization actions", ()
   );
 });
 
+test("converges across equivalent curve, group, color, and dash call orders", () => {
+  const earlyCurve = chart()
+    .createCanvas({ width: 240, height: 160, margin: 20 })
+    .createData({ id: "data", values: rows })
+    .createLineMark({ id: "trends", curve: "step" })
+    .encodeX({ field: "year", fieldType: "temporal" })
+    .encodeY({ field: "value", aggregate: "median" })
+    .encodeColor({ field: "origin" })
+    .encodeStrokeDash({ field: "origin" })
+    .encodeGroup({ field: "origin" });
+  const lateCurve = chart()
+    .createCanvas({ width: 240, height: 160, margin: 20 })
+    .createData({ id: "data", values: rows })
+    .createLineMark({ id: "trends" })
+    .encodeX({ field: "year", fieldType: "temporal" })
+    .encodeY({ field: "value", aggregate: "median" })
+    .encodeGroup({ field: "origin" })
+    .encodeStrokeDash({ field: "origin" })
+    .encodeColor({ field: "origin" })
+    .editLineMark({ curve: "step" });
+
+  assert.deepEqual(lateCurve.graphicSpec, earlyCurve.graphicSpec);
+  assert.deepEqual(lateCurve.resolvedScales, earlyCurve.resolvedScales);
+  assert.deepEqual(lateCurve.markConfigs, earlyCurve.markConfigs);
+  assert.deepEqual(
+    lateCurve.semanticSpec.layers[0],
+    earlyCurve.semanticSpec.layers[0]
+  );
+});
+
 test("supports explicit dash ranges and cycles automatic patterns", () => {
   const explicit = createMeanLine().encodeStrokeDash({
     field: "origin",
