@@ -14,7 +14,9 @@ import {
 import { loadCars } from "../../support/data.js";
 import {
   createCategoricalPalettePrimitives,
+  createContinuousColorPrimitives,
   createEncodingReassignmentPrimitives,
+  createFieldOpacityPrimitives,
   createPointShapeDiamondPrimitives,
   createScaleReversePrimitives,
   createShapeVocabularyPrimitives
@@ -23,8 +25,10 @@ import { renderCarsScatterplotPrimitives } from "./primitive.program.js";
 import {
   POINT_SHAPES,
   SET2_COLORS,
+  createContinuousColorPrimitiveValues,
   createDiamondPrimitiveValues,
   createEncodingReassignmentPrimitiveValues,
+  createFieldOpacityPrimitiveValues,
   createScaleReversePrimitiveValues,
   createShapeVocabularyPrimitiveValues
 } from "./phase1-reference-values.js";
@@ -226,4 +230,85 @@ test("authors the encoding-reassignment target as concrete primitive state", () 
   );
   assert.equal(program.graphicSpec.objects.xAxisTitle.properties.text, "Displacement");
   assert.equal(program.graphicSpec.objects.yAxisTitle.properties.text, "Acceleration");
+});
+
+test("materializes quantitative color as concrete points and a gradient legend", () => {
+  const values = createContinuousColorPrimitiveValues(cars);
+  const program = createContinuousColorPrimitives(cars);
+  const points = program.graphicSpec.objects.points.children;
+  const strips = program.graphicSpec.objects.colorGradientStrips.children;
+  const ticks = program.graphicSpec.objects.colorGradientTicks.children;
+  const labels = program.graphicSpec.objects.colorGradientLabels.children;
+  const scale = program.semanticSpec.scales.find(candidate =>
+    candidate.id === "color"
+  );
+
+  assert.deepEqual(values.domain, [8, 24.8]);
+  assert.deepEqual(scale.domain, values.domain);
+  assert.equal(scale.type, "linear");
+  assert.equal(points.length, 392);
+  assert.deepEqual(
+    points.map(point => point.properties.fill),
+    values.fill
+  );
+  assert.equal(points.every(point => /^#[0-9a-f]{6}$/.test(point.properties.fill)), true);
+  assert.equal(strips.length, 60);
+  assert.equal(strips.every(strip => /^#[0-9a-f]{6}$/.test(strip.properties.fill)), true);
+  assert.equal(strips.every((strip, index) =>
+    index === strips.length - 1 ||
+      strip.properties.y + strip.properties.height === strips[index + 1].properties.y
+  ), true);
+  assert.equal(ticks.length, 5);
+  assert.deepEqual(
+    labels.map(label => label.properties.text),
+    ["8", "12.2", "16.4", "20.6", "24.8"]
+  );
+  assert.equal(program.graphicSpec.order.indexOf("points") <
+    program.graphicSpec.order.indexOf("colorGradientStrips"), true);
+  assert.equal(program.graphicSpec.objects.canvas.properties.width, 760);
+});
+
+test("materializes field opacity with ascending concrete legend samples", () => {
+  const values = createFieldOpacityPrimitiveValues(cars);
+  const program = createFieldOpacityPrimitives(cars);
+  const layer = program.semanticSpec.layers[0];
+  const points = program.graphicSpec.objects.points.children;
+  const symbols = program.graphicSpec.objects.opacityLegendSymbols.children;
+  const labels = program.graphicSpec.objects.opacityLegendLabels.children;
+  const scale = program.semanticSpec.scales.find(candidate =>
+    candidate.id === "opacity"
+  );
+
+  assert.deepEqual(values.domain, [8, 24.8]);
+  assert.deepEqual(values.range, [0.2, 1]);
+  assert.deepEqual(scale, {
+    id: "opacity",
+    type: "linear",
+    domain: [8, 24.8],
+    range: [0.2, 1]
+  });
+  assert.equal(layer.encoding.color, undefined);
+  assert.deepEqual(layer.encoding.opacity, {
+    field: "Acceleration",
+    fieldType: "quantitative",
+    scale: "opacity"
+  });
+  assert.deepEqual(
+    points.map(point => point.properties.opacity),
+    values.opacity
+  );
+  assert.equal(points.every(point => point.properties.fill === "#4c78a8"), true);
+  assert.equal(
+    symbols.every((symbol, index) =>
+      Math.abs(symbol.properties.opacity - (0.2 + index * 0.2)) < 1e-12
+    ),
+    true
+  );
+  assert.deepEqual(
+    labels.map(label => label.properties.text),
+    ["8", "12.2", "16.4", "20.6", "24.8"]
+  );
+  assert.equal(program.graphicSpec.order.indexOf("points") <
+    program.graphicSpec.order.indexOf("opacityLegendSymbols"), true);
+  assert.equal(program.graphicSpec.objects.canvas.properties.width, 760);
 });

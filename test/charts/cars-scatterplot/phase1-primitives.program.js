@@ -3,11 +3,43 @@ import {
 } from "./primitive.program.js";
 import {
   createCategoricalPalettePrimitiveValues,
+  createContinuousColorPrimitiveValues,
   createDiamondPrimitiveValues,
   createEncodingReassignmentPrimitiveValues,
+  createFieldOpacityPrimitiveValues,
   createScaleReversePrimitiveValues,
   createShapeVocabularyPrimitiveValues
 } from "./phase1-reference-values.js";
+
+function editLegendText(program, id, values) {
+  return program
+    .editGraphics({ target: id, property: "x", value: values.map(value => value.x) })
+    .editGraphics({ target: id, property: "y", value: values.map(value => value.y) })
+    .editGraphics({
+      target: id,
+      property: "text",
+      value: values.map(value => value.text)
+    })
+    .editGraphics({ target: id, property: "fill", value: "#334155" })
+    .editGraphics({ target: id, property: "fontSize", value: 12 })
+    .editGraphics({ target: id, property: "fontFamily", value: "sans-serif" })
+    .editGraphics({ target: id, property: "fontWeight", value: "normal" })
+    .editGraphics({ target: id, property: "textAlign", value: "left" })
+    .editGraphics({ target: id, property: "textBaseline", value: "middle" });
+}
+
+function editLegendTitle(program, id, title) {
+  return program
+    .editGraphics({ target: id, property: "x", value: title.x })
+    .editGraphics({ target: id, property: "y", value: title.y })
+    .editGraphics({ target: id, property: "text", value: title.text })
+    .editGraphics({ target: id, property: "fill", value: "#334155" })
+    .editGraphics({ target: id, property: "fontSize", value: 13 })
+    .editGraphics({ target: id, property: "fontFamily", value: "sans-serif" })
+    .editGraphics({ target: id, property: "fontWeight", value: 600 })
+    .editGraphics({ target: id, property: "textAlign", value: "left" })
+    .editGraphics({ target: id, property: "textBaseline", value: "middle" });
+}
 
 export function createEncodingReassignmentPrimitives(cars) {
   const values = createEncodingReassignmentPrimitiveValues(cars);
@@ -433,4 +465,173 @@ export function createCategoricalPalettePrimitives(cars) {
       property: "textBaseline",
       value: "middle"
     });
+}
+
+export function createContinuousColorPrimitives(cars) {
+  const values = createContinuousColorPrimitiveValues(cars);
+  const strips = values.legend.strips;
+  const ticks = values.legend.ticks;
+
+  let program = createCarsScatterplotPrimitives(cars)
+    .editSemantic({
+      property: "layer[points].encoding.color.field",
+      value: "Acceleration"
+    })
+    .editSemantic({
+      property: "layer[points].encoding.color.fieldType",
+      value: "quantitative"
+    })
+    .editSemantic({ property: "layer[points].encoding.color.scale", value: "color" })
+    .editSemantic({ property: "scale[color].type", value: "linear" })
+    .editSemantic({ property: "scale[color].domain", value: values.domain })
+    .editSemantic({ property: "scale[color].range", value: values.range })
+    .editSemantic({ property: "guide.legend.color.scale", value: "color" })
+    .editSemantic({ property: "guide.legend.color.title", value: "Acceleration" })
+    .editGraphics({ target: "canvas", property: "width", value: 760 })
+    .editGraphics({ target: "points", property: "fill", value: values.fill })
+    .createGraphics({
+      id: "colorGradientStrips",
+      type: "rect",
+      length: strips.length,
+      after: "points"
+    })
+    .editGraphics({
+      target: "colorGradientStrips",
+      property: "x",
+      value: strips.map(strip => strip.x)
+    })
+    .editGraphics({
+      target: "colorGradientStrips",
+      property: "y",
+      value: strips.map(strip => strip.y)
+    })
+    .editGraphics({
+      target: "colorGradientStrips",
+      property: "width",
+      value: strips.map(strip => strip.width)
+    })
+    .editGraphics({
+      target: "colorGradientStrips",
+      property: "height",
+      value: strips.map(strip => strip.height)
+    })
+    .editGraphics({
+      target: "colorGradientStrips",
+      property: "fill",
+      value: strips.map(strip => strip.fill)
+    })
+    .editGraphics({
+      target: "colorGradientStrips",
+      property: "stroke",
+      value: strips.map(strip => strip.stroke)
+    })
+    .editGraphics({
+      target: "colorGradientStrips",
+      property: "strokeWidth",
+      value: strips.map(strip => strip.strokeWidth)
+    })
+    .createGraphics({
+      id: "colorGradientTicks",
+      type: "line",
+      length: ticks.length
+    })
+    .editGraphics({
+      target: "colorGradientTicks",
+      property: "x1",
+      value: ticks.map(tick => tick.x1)
+    })
+    .editGraphics({
+      target: "colorGradientTicks",
+      property: "y1",
+      value: ticks.map(tick => tick.y1)
+    })
+    .editGraphics({
+      target: "colorGradientTicks",
+      property: "x2",
+      value: ticks.map(tick => tick.x2)
+    })
+    .editGraphics({
+      target: "colorGradientTicks",
+      property: "y2",
+      value: ticks.map(tick => tick.y2)
+    })
+    .editGraphics({ target: "colorGradientTicks", property: "stroke", value: "#64748b" })
+    .editGraphics({ target: "colorGradientTicks", property: "strokeWidth", value: 1 })
+    .createGraphics({
+      id: "colorGradientLabels",
+      type: "text",
+      length: values.legend.labels.length
+    });
+  program = editLegendText(program, "colorGradientLabels", values.legend.labels)
+    .createGraphics({ id: "colorGradientTitle", type: "text" });
+
+  return editLegendTitle(program, "colorGradientTitle", values.legend.title);
+}
+
+export function createFieldOpacityPrimitives(cars) {
+  const values = createFieldOpacityPrimitiveValues(cars);
+  const symbols = values.legend.symbols;
+
+  let program = createCarsScatterplotPrimitives(cars)
+    .editSemantic({
+      property: "layer[points].encoding.opacity.field",
+      value: "Acceleration"
+    })
+    .editSemantic({
+      property: "layer[points].encoding.opacity.fieldType",
+      value: "quantitative"
+    })
+    .editSemantic({
+      property: "layer[points].encoding.opacity.scale",
+      value: "opacity"
+    })
+    .editSemantic({ property: "scale[opacity].type", value: "linear" })
+    .editSemantic({ property: "scale[opacity].domain", value: values.domain })
+    .editSemantic({ property: "scale[opacity].range", value: values.range })
+    .editSemantic({ property: "guide.legend.opacity.scale", value: "opacity" })
+    .editSemantic({ property: "guide.legend.opacity.title", value: "Acceleration" })
+    .editGraphics({ target: "canvas", property: "width", value: 760 })
+    .editGraphics({ target: "points", property: "fill", value: "#4c78a8" })
+    .editGraphics({ target: "points", property: "radius", value: 4 })
+    .editGraphics({ target: "points", property: "opacity", value: values.opacity })
+    .createGraphics({
+      id: "opacityLegendSymbols",
+      type: "circle",
+      length: symbols.length,
+      after: "points"
+    })
+    .editGraphics({
+      target: "opacityLegendSymbols",
+      property: "x",
+      value: symbols.map(symbol => symbol.x)
+    })
+    .editGraphics({
+      target: "opacityLegendSymbols",
+      property: "y",
+      value: symbols.map(symbol => symbol.y)
+    })
+    .editGraphics({
+      target: "opacityLegendSymbols",
+      property: "radius",
+      value: symbols.map(symbol => symbol.radius)
+    })
+    .editGraphics({
+      target: "opacityLegendSymbols",
+      property: "fill",
+      value: symbols.map(symbol => symbol.fill)
+    })
+    .editGraphics({
+      target: "opacityLegendSymbols",
+      property: "opacity",
+      value: symbols.map(symbol => symbol.opacity)
+    })
+    .createGraphics({
+      id: "opacityLegendLabels",
+      type: "text",
+      length: values.legend.labels.length
+    });
+  program = editLegendText(program, "opacityLegendLabels", values.legend.labels)
+    .createGraphics({ id: "opacityLegendTitle", type: "text" });
+
+  return editLegendTitle(program, "opacityLegendTitle", values.legend.title);
 }

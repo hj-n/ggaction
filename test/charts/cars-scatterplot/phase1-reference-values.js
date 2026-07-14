@@ -37,6 +37,25 @@ const DEFAULT_COLORS = Object.freeze([
   "#eeca3b", "#b279a2", "#ff9da6", "#9d755d", "#bab0ac"
 ]);
 
+const VIRIDIS_COLORS = Object.freeze([
+  "#440154", "#470e61", "#481a6c", "#482575", "#472f7d",
+  "#443a83", "#414487", "#3d4e8a", "#39568c", "#35608d",
+  "#31688e", "#2d708e", "#2a788e", "#27818e", "#23888e",
+  "#21918d", "#1f988b", "#1fa088", "#22a884", "#2ab07f",
+  "#35b779", "#43bf71", "#54c568", "#66cc5d", "#7ad151",
+  "#8fd744", "#a5db36", "#bcdf27", "#d2e21b", "#e9e51a",
+  "#fde725"
+]);
+
+const CONTINUOUS_LEGEND = Object.freeze({
+  x: 640,
+  titleY: 50,
+  startY: 76,
+  length: 120,
+  thickness: 12,
+  count: 5
+});
+
 function polygonArea(points) {
   let twiceArea = 0;
   for (let index = 0; index < points.length; index += 1) {
@@ -289,6 +308,118 @@ function firstAppearance(values) {
 function mapLinear(value, domain, range) {
   const ratio = (value - domain[0]) / (domain[1] - domain[0]);
   return range[0] + ratio * (range[1] - range[0]);
+}
+
+function colorChannel(color, offset) {
+  return Number.parseInt(color.slice(offset, offset + 2), 16);
+}
+
+function interpolateRgb(left, right, ratio) {
+  const channels = [1, 3, 5].map(offset => Math.round(
+    colorChannel(left, offset) +
+      (colorChannel(right, offset) - colorChannel(left, offset)) * ratio
+  ).toString(16).padStart(2, "0"));
+  return `#${channels.join("")}`;
+}
+
+function sampleViridis(ratio) {
+  const bounded = Math.max(0, Math.min(1, ratio));
+  const scaled = bounded * (VIRIDIS_COLORS.length - 1);
+  const left = Math.floor(scaled);
+  const right = Math.min(VIRIDIS_COLORS.length - 1, left + 1);
+  return interpolateRgb(VIRIDIS_COLORS[left], VIRIDIS_COLORS[right], scaled - left);
+}
+
+function createContinuousLegendValues(domain) {
+  const { x, titleY, startY, length, thickness, count } = CONTINUOUS_LEGEND;
+  const stripCount = 60;
+  const stripHeight = length / stripCount;
+  const strips = Array.from({ length: stripCount }, (_, index) => ({
+    x,
+    y: startY + index * stripHeight,
+    width: thickness,
+    height: stripHeight,
+    fill: sampleViridis(1 - (index + 0.5) / stripCount),
+    stroke: sampleViridis(1 - (index + 0.5) / stripCount),
+    strokeWidth: 0
+  }));
+  const values = Array.from({ length: count }, (_, index) =>
+    mapLinear(index, [0, count - 1], domain)
+  );
+  const positions = values.map(value =>
+    mapLinear(value, domain, [startY + length, startY])
+  );
+
+  return Object.freeze({
+    title: Object.freeze({ x, y: titleY, text: "Acceleration" }),
+    strips: Object.freeze(strips),
+    ticks: Object.freeze(positions.map(y => ({
+      x1: x + thickness,
+      y1: y,
+      x2: x + thickness + 6,
+      y2: y
+    }))),
+    labels: Object.freeze(values.map((value, index) => ({
+      x: x + thickness + 12,
+      y: positions[index],
+      text: Number(value.toFixed(1)).toString()
+    })))
+  });
+}
+
+export function createContinuousColorPrimitiveValues(cars) {
+  const baseline = createCarsScatterplotPrimitiveValues(cars);
+  const values = baseline.validCars.map(row => row.Acceleration);
+  const domain = Object.freeze([Math.min(...values), Math.max(...values)]);
+
+  return Object.freeze({
+    baseline,
+    domain,
+    range: VIRIDIS_COLORS,
+    fill: Object.freeze(values.map(value =>
+      sampleViridis(mapLinear(value, domain, [0, 1]))
+    )),
+    legend: createContinuousLegendValues(domain)
+  });
+}
+
+export function createFieldOpacityPrimitiveValues(cars) {
+  const baseline = createCarsScatterplotPrimitiveValues(cars);
+  const values = baseline.validCars.map(row => row.Acceleration);
+  const domain = Object.freeze([Math.min(...values), Math.max(...values)]);
+  const range = Object.freeze([0.2, 1]);
+  const count = CONTINUOUS_LEGEND.count;
+  const legendValues = Array.from({ length: count }, (_, index) =>
+    mapLinear(index, [0, count - 1], domain)
+  );
+  const legendStartY = CONTINUOUS_LEGEND.startY;
+  const legendGap = 28;
+
+  return Object.freeze({
+    baseline,
+    domain,
+    range,
+    opacity: Object.freeze(values.map(value => mapLinear(value, domain, range))),
+    legend: Object.freeze({
+      title: Object.freeze({
+        x: CONTINUOUS_LEGEND.x,
+        y: CONTINUOUS_LEGEND.titleY,
+        text: "Acceleration"
+      }),
+      symbols: Object.freeze(legendValues.map((value, index) => ({
+        x: CONTINUOUS_LEGEND.x + 7,
+        y: legendStartY + index * legendGap,
+        radius: 7,
+        fill: "#4c78a8",
+        opacity: mapLinear(value, domain, range)
+      }))),
+      labels: Object.freeze(legendValues.map((value, index) => ({
+        x: CONTINUOUS_LEGEND.x + 24,
+        y: legendStartY + index * legendGap,
+        text: Number(value.toFixed(1)).toString()
+      })))
+    })
+  });
 }
 
 export function createEncodingReassignmentPrimitiveValues(cars) {

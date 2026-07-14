@@ -6,15 +6,17 @@ Quantitative color와 field-driven opacity의 목표 graphic/guide 결과를 두
 
 ## 진행 상태
 
-- [ ] `continuous-color-gradient` independent scale/color reference
-- [ ] Sequential point fill과 gradient strip/tick/label primitive
-- [ ] `field-opacity-legend` independent opacity reference
-- [ ] Per-point opacity와 sample symbol/label primitive
-- [ ] Rendering order, margin fit과 background interaction
-- [ ] 두 variant의 exact target user-facing call chain metadata
-- [ ] Primitive-only PNG와 responsive gallery verification
+- [x] `continuous-color-gradient` independent scale/color reference
+- [x] Sequential point fill과 gradient strip/tick/label primitive
+- [x] `field-opacity-legend` independent opacity reference
+- [x] Per-point opacity와 sample symbol/label primitive
+- [x] Rendering order, margin fit과 background interaction
+- [x] 두 variant의 exact target user-facing call chain metadata
+- [x] Primitive-only PNG와 responsive gallery verification
 - [ ] Gate C 사용자 visual confirmation
-- [ ] STEP 상태, conceptual commit와 push
+- [x] STEP 상태, conceptual commit와 push
+
+현재 상태: primitive 구현과 기계적/시각 검증 완료. Gate C 사용자 승인 대기.
 
 ## `continuous-color-gradient`
 

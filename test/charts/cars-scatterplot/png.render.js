@@ -13,7 +13,9 @@ import { assertRenderedPNG } from "../../support/png.js";
 import { createCarsScatterplotPrimitives } from "./primitive.program.js";
 import {
   createCategoricalPalettePrimitives,
+  createContinuousColorPrimitives,
   createEncodingReassignmentPrimitives,
+  createFieldOpacityPrimitives,
   createPointShapeDiamondPrimitives,
   createScaleReversePrimitives,
   createShapeVocabularyPrimitives
@@ -224,6 +226,68 @@ const phase1Artifacts = Object.freeze([
     width: 640,
     height: 400,
     colors: ["#4c78a8", "#f58518", "#e45756", "#72b7b2", "#54a24b"]
+  }),
+  Object.freeze({
+    artifact: Object.freeze({
+      roadmap: "roadmap2",
+      chart: "cars-scatterplot",
+      variant: "continuous-color-gradient",
+      title: "Continuous Acceleration Color",
+      userFacingCallChain: `chart()
+  .createCanvas({
+    width: 760,
+    height: 400,
+    margin: { top: 30, right: 150, bottom: 60, left: 70 }
+  })
+  .createData({ id: "cars", values: rows })
+  .createPointMark({ id: "points" })
+  .encodeX({ field: "Horsepower" })
+  .encodeY({ field: "Miles_per_Gallon" })
+  .encodeColor({ field: "Acceleration", fieldType: "quantitative" })
+  .encodeRadius({ value: 3 })
+  .createGuides({
+    axes: {
+      x: { title: { text: "Horsepower" } },
+      y: { title: { text: "Miles per Gallon" } }
+    },
+    legend: { channels: ["color"] }
+  });`
+    }),
+    primitive: createContinuousColorPrimitives(cars),
+    width: 760,
+    height: 400,
+    colors: ["#440154", "#fde725"]
+  }),
+  Object.freeze({
+    artifact: Object.freeze({
+      roadmap: "roadmap2",
+      chart: "cars-scatterplot",
+      variant: "field-opacity-legend",
+      title: "Field-driven Acceleration Opacity",
+      userFacingCallChain: `chart()
+  .createCanvas({
+    width: 760,
+    height: 400,
+    margin: { top: 30, right: 150, bottom: 60, left: 70 }
+  })
+  .createData({ id: "cars", values: rows })
+  .createPointMark({ id: "points" })
+  .encodeX({ field: "Horsepower" })
+  .encodeY({ field: "Miles_per_Gallon" })
+  .encodeRadius({ value: 4 })
+  .encodeOpacity({ field: "Acceleration" })
+  .createGuides({
+    axes: {
+      x: { title: { text: "Horsepower" } },
+      y: { title: { text: "Miles per Gallon" } }
+    },
+    legend: { channels: ["opacity"] }
+  });`
+    }),
+    primitive: createFieldOpacityPrimitives(cars),
+    width: 760,
+    height: 400,
+    colors: ["#4c78a8"]
   })
 ]);
 
