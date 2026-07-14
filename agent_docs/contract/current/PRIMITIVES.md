@@ -18,14 +18,15 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 ### Formal values — `editSemantic`
 
 - Implemented: `editSemantic({ property: SemanticPropertyPath; value: ValueForSemanticPath<typeof property> })`; path/value pair는 semantic grammar의 closed schema다.
-- Proposed (NOT IMPLEMENTED): wildcard path, multi-property object 또는 batch edit.
+- Proposed (NOT IMPLEMENTED): —
+- Maybe Future (NOT IMPLEMENTED): wildcard path, multi-property object 또는 batch edit.
 
 ### Value coverage — `editSemantic`
 
 - `property`
   - ✅ Covered: supported dataset/layer/encoding/scale/coordinate/guide/title paths, user IDs, unknown path rejection.
   - ⚠️ Partial: every supported leaf path does not yet have one direct primitive case.
-  - 🟣 Proposed: no wildcard/batch paths; primitive remains one-property-per-action by design.
+  - Maybe Future: wildcard/batch paths; current primitive remains one-property-per-action by design.
 - `value`
   - ✅ Covered: scalar, nested object/array ownership, closed vocabulary/schema validation, trace summarization.
   - ✅ Covered: source dataset values cannot be replaced.
@@ -52,7 +53,8 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 
 - Implemented: `createGraphics({ id: UserId; type: "canvas" | "collection" | "circle" | "rect" | "line" | "text" | "path"; length?: NonNegativeInteger; before?: UserId; after?: UserId })`; `before | after` 중 최대 하나.
 - Planned (NOT IMPLEMENTED): `{ parent?: UserId }` for backend-neutral graphic-tree attachment.
-- Proposed (NOT IMPLEMENTED): renderer-specific `svg | g` types는 추가하지 않는다.
+- Proposed (NOT IMPLEMENTED): —
+- Maybe Future (NOT IMPLEMENTED): renderer-specific `svg | g` graphic types.
 
 ### Value coverage — `createGraphics`
 
@@ -60,7 +62,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 - `type`
   - ✅ Covered: `"canvas" | "collection" | "circle" | "rect" | "line" | "text" | "path"` creation paths.
   - ✅ Covered: unknown type rejection.
-  - 🟣 Proposed: no renderer-specific `svg/g`; new backend-neutral primitive only when multiple actions need it.
+  - Maybe Future: renderer-specific `svg/g`; current contract adds only backend-neutral primitives needed by multiple actions.
 - `length`
   - ✅ Covered: omitted single, zero empty, positive collection, invalid negative/non-integer and resize transition.
 - `before`, `after`
@@ -90,7 +92,8 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 
 - Implemented: `editGraphics({ target: UserId | GeneratedChildId; property: GraphicPropertyForTarget; value: GraphicValueForProperty })`; one property per action, collection scalar broadcast 또는 exact-length distribution.
 - Planned (NOT IMPLEMENTED): path `{ property: "commands"; value: readonly ConcretePathCommand[] }` after the atomic points-to-commands migration.
-- Proposed (NOT IMPLEMENTED): multi-property dictionary/batch edit는 현재 one-change trace invariant와 충돌하므로 제안하지 않는다.
+- Proposed (NOT IMPLEMENTED): —
+- Maybe Future (NOT IMPLEMENTED): multi-property dictionary/batch edit.
 
 ### Value coverage — `editGraphics`
 
@@ -107,6 +110,6 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   - ✅ Covered: finite geometry, non-negative dimensions/strokes, `[0,1]` opacity, non-empty appearance strings,
     Canvas text vocabulary and renderer-shared validation.
   - ⚠️ Partial: extreme finite magnitudes and every fontWeight/string color accepted by each backend.
-- 🟣 Proposed: no multi-property dict edit; one action continues to represent one property change.
+- Maybe Future: multi-property dictionary/batch edit; current action continues to represent one property change.
 - Evidence: `test/unit/actions/primitives/edit-graphics.test.js`,
   `test/contracts/shared-graphic-validation.test.js`.

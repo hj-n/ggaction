@@ -448,6 +448,21 @@ test("keeps implemented and planned formal values distinct", () => {
   assert.match(point, /shape\?: PointShape/);
 });
 
+test("keeps maybe-future ideas outside the active proposal queue", () => {
+  const entries = [...currentCorpus.matchAll(
+    /^- Maybe Future \(NOT IMPLEMENTED\): (.+)$/gm
+  )].map(match => match[1]);
+
+  assert.equal(entries.length, 3);
+  assert.equal(entries.some(entry => entry.includes("wildcard path")), true);
+  assert.equal(entries.some(entry => entry.includes("svg | g")), true);
+  assert.equal(entries.some(entry => entry.includes("multi-property dictionary")), true);
+  assert.doesNotMatch(
+    currentCorpus,
+    /🟣 Proposed: no wildcard|🟣 Proposed: no renderer-specific|🟣 Proposed: no multi-property/
+  );
+});
+
 test("keeps all executable coverage evidence paths valid", () => {
   const evidence = [...currentCorpus.matchAll(
     /`(test\/[A-Za-z0-9_./-]+\.test\.js)`/g

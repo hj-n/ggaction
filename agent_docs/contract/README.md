@@ -23,6 +23,8 @@ Regenerate the compact index with `npm run contracts:catalog`. Contract tests ve
 - **Implemented** means the public type, runtime, current contract, and executable evidence exist.
 - **Planned** means the contract direction is accepted but is not current public behavior.
 - **Proposed** means the design remains unresolved and must not appear as current API.
+- **Maybe Future** means the idea is intentionally outside the active proposal queue. It has no accepted
+  contract or implementation commitment and may be reconsidered only from a concrete future use case.
 - Coverage states are `complete`, `partial`, `missing`, and `not-applicable`. A case is complete only when matching executable evidence exists.
 
 ## Lifecycle vocabulary
@@ -48,6 +50,8 @@ Each implemented action appears exactly once under `current/` and keeps its purp
 - **Planned (NOT IMPLEMENTED)**는 사용자와 계약이 합의됐지만 아직 public type/runtime에는 없다.
 - **Proposed (NOT IMPLEMENTED)** code block은 구현, TypeScript declaration, public docs 또는 runtime
   validation에 아직 존재하지 않는다.
+- **Maybe Future (NOT IMPLEMENTED)**는 active design review 대상이 아니며 public API에 존재하지 않는다.
+  구체적인 chart/extension 요구가 생기면 Proposed로 다시 승격해 검토한다.
 - `—`는 현재 proposed parameter/value가 없다는 뜻이다.
 - 아래 type alias는 문서용 formal notation이며 새로운 runtime export가 아니다.
 
@@ -161,4 +165,3 @@ type TextStyle = {
   fontWeight?: FontWeight;
 };
 ```
-
