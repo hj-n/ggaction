@@ -132,7 +132,7 @@ function lifecycleRows() {
   const section = catalog.slice(start, end === -1 ? catalog.length : end);
 
   return [...section.matchAll(
-    /^\| `([A-Za-z][A-Za-z0-9]*)` \| (Immutable create-only|Mutable resource|Assignment|Aggregate create-only|Stable create-only|Stable resource, edit gap|Primitive) \| ([^|]+) \| ([^|]+) \|$/gm
+    /^\| `([A-Za-z][A-Za-z0-9]*)` \| (Immutable create-only|Mutable resource|Assignment|Aggregate create-only|Stable create-only|Structural create-only|Stable resource, edit gap|Primitive) \| ([^|]+) \| ([^|]+) \|$/gm
   )].map(match => ({
     action: match[1],
     lifecycle: match[2],
@@ -233,6 +233,10 @@ test("classifies every direct action lifecycle and keeps edit gaps explicit", ()
     if (row.lifecycle === "Immutable create-only") {
       assert.doesNotMatch(row.action, /^edit/, row.action);
     }
+    if (row.lifecycle === "Structural create-only") {
+      assert.match(row.action, /^create/, row.action);
+      assert.equal(row.audit, "Intentional", row.action);
+    }
     if (row.lifecycle === "Assignment") {
       assert.match(row.action, /^encode/, row.action);
       assert.match(row.audit, /Implemented|Planned|Proposed/, row.action);
@@ -288,6 +292,18 @@ test("classifies every direct action lifecycle and keeps edit gaps explicit", ()
       action
     );
   }
+  assert.equal(
+    rows.find(row => row.action === "createCoordinate")?.lifecycle,
+    "Structural create-only"
+  );
+  assert.equal(
+    rows.find(row => row.action === "createRegressionBand")?.lifecycle,
+    "Stable create-only"
+  );
+  assert.equal(
+    rows.find(row => row.action === "createRegressionLine")?.lifecycle,
+    "Stable create-only"
+  );
 });
 
 test("keeps one value coverage and proposal ledger for every direct action", () => {

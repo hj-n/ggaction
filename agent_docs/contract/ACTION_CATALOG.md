@@ -123,6 +123,8 @@ Coverage 퍼센트는 사용하지 않는다. 체크된 case는 반드시 아래
   않고 지원되는 child edit으로 수정한다.
 - **Stable create-only**: stable identity는 있지만 현재 action이 직접 소유하는 editable
   property가 없다. encoding이나 다른 owning action으로 수정하며 빈 edit action을 만들지 않는다.
+- **Structural create-only**: type이나 attachment 변경이 여러 semantic/graphic dependency를
+  동시에 무효화한다. 기존 resource를 부분 수정하지 않고 새 resource를 만든 뒤 consumer를 rebind한다.
 - **Stable resource, edit gap**: independently addressable한 resource지만 아직 public edit 또는
   replacement 계약이 없다. 합의된 action만 Planned이고 나머지는 Proposed다.
 - **Primitive**: extension authoring의 low-level create/edit/assignment 연산이다.
@@ -187,11 +189,11 @@ properties, rematerialization ownership과 conflict behavior를 정해야 한다
 | `createLegend` | Stable resource, edit gap | Internal rematerialization only | `editLegend` — Planned |
 | `createGuides` | Aggregate create-only | Guide child actions | Intentional; child edit gaps remain |
 | `createTitle` | Stable resource, edit gap | Internal rematerialization only | `editTitle` — Planned |
-| `createCoordinate` | Stable resource, edit gap | Equivalent recreation only | Replacement contract — Proposed |
+| `createCoordinate` | Structural create-only | Create another coordinate and rebind encodings | Intentional |
 | `createScale` | Stable resource, edit gap | Equivalent recreation only | `editScale` — Planned |
 | `createDerivedData` | Immutable create-only | Create a new derived dataset ID | Intentional |
-| `createRegressionBand` | Stable resource, edit gap | Owning regression action only | Gap — Proposed |
-| `createRegressionLine` | Stable resource, edit gap | Owning regression action only | Gap — Proposed |
+| `createRegressionBand` | Stable create-only | Planned `editAreaMark` owns appearance updates | Intentional |
+| `createRegressionLine` | Stable create-only | Planned `editLineMark` owns appearance updates | Intentional |
 | `editSemantic` | Primitive | Assigns one semantic property | Complete |
 | `createGraphics` | Primitive | `editGraphics` | Complete |
 | `editGraphics` | Primitive | Edits one graphical property | Complete |
