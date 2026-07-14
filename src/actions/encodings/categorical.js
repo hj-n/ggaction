@@ -20,6 +20,7 @@ import {
   validateLineSeriesCompatibility,
   validateOptions
 } from "./shared.js";
+import { isScalarAggregate } from "../../grammar/aggregate.js";
 
 const COLOR_ENCODING_OPTIONS = Object.freeze([
   "field", "target", "fieldType", "scale", "layout"
@@ -123,17 +124,17 @@ const encodeColor = action(
       layer.encoding?.x?.bin !== undefined &&
       layer.encoding?.y?.aggregate === "count" &&
       layer.encoding.y.stack === "zero";
-    const isOrdinalMean =
+    const isOrdinalAggregate =
       layer.mark.type === "bar" &&
       layer.encoding?.x?.fieldType === "ordinal" &&
-      layer.encoding?.y?.aggregate === "mean" &&
+      isScalarAggregate(layer.encoding?.y?.aggregate) &&
       layer.encoding.y.stack === null;
     const layout = args.layout ?? (
       layer.encoding?.color === undefined
         ? undefined
         : isHistogram
           ? "stack"
-          : isOrdinalMean
+          : isOrdinalAggregate
             ? "group"
             : undefined
     );
@@ -142,12 +143,12 @@ const encodeColor = action(
       if (isHistogram && layout !== undefined && layout !== "stack") {
         throw new Error('Histogram color layout must be "stack".');
       }
-      if (isOrdinalMean && layout !== "group") {
-        throw new Error('Ordinal mean bar color layout must be "group".');
+      if (isOrdinalAggregate && layout !== "group") {
+        throw new Error('Ordinal aggregate bar color layout must be "group".');
       }
-      if (!isHistogram && !isOrdinalMean) {
+      if (!isHistogram && !isOrdinalAggregate) {
         throw new Error(
-          "Bar color encoding requires a complete histogram encoding or a complete ordinal mean encoding."
+          "Bar color encoding requires a complete histogram encoding or a complete ordinal aggregate encoding."
         );
       }
     }
@@ -175,7 +176,7 @@ const encodeColor = action(
       reassignment: layer.encoding?.color?.scale === scale.id
     });
 
-    if (isOrdinalMean) {
+    if (isOrdinalAggregate) {
       next = next
         .editSemantic({
           property: `layer[${target}].encoding.y.stack`,

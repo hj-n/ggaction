@@ -1,7 +1,13 @@
 import { cloneAndFreeze } from "../core/immutable.js";
-import { readNominalField, readQuantitativeField } from "./scales.js";
+import { readNominalField } from "./scales.js";
+import {
+  aggregateScalarValues,
+  isScalarAggregate,
+  validateAggregateFieldValues,
+  validateScalarAggregateFieldType
+} from "./aggregate.js";
 
-function requireMeanBarEncoding(layer) {
+function requireAggregateBarEncoding(layer) {
   if (layer?.mark?.type !== "bar") {
     throw new Error("Bar aggregate derivation requires a semantic bar mark.");
   }
@@ -13,22 +19,23 @@ function requireMeanBarEncoding(layer) {
     throw new Error(`Bar mark "${layer.id}" requires an ordinal x encoding.`);
   }
   if (
-    y?.fieldType !== "quantitative" ||
-    y.aggregate !== "mean" ||
+    !isScalarAggregate(y?.aggregate) ||
     y.stack !== null
   ) {
     throw new Error(
-      `Bar mark "${layer.id}" requires a quantitative mean/non-stacked y encoding.`
+      `Bar mark "${layer.id}" requires a supported scalar aggregate/non-stacked y encoding.`
     );
   }
+  validateScalarAggregateFieldType(y.aggregate, y.fieldType);
 
   return { x, y };
 }
 
-export function deriveBarMeans(rows, layer) {
-  const { x, y } = requireMeanBarEncoding(layer);
+export function deriveBarAggregates(rows, layer) {
+  const { x, y } = requireAggregateBarEncoding(layer);
+  validateAggregateFieldValues(rows, y.field, y.fieldType);
   const xValues = readNominalField(rows, x.field);
-  const yValues = readQuantitativeField(rows, y.field);
+  const yValues = rows.map(row => row[y.field]);
   const color = layer.encoding?.color;
   let colorValues;
 
@@ -47,11 +54,9 @@ export function deriveBarMeans(rows, layer) {
     const group = groups.get(key) ?? {
       x: xValue,
       ...(colorValues === undefined ? {} : { color: colorValue }),
-      sum: 0,
-      count: 0
+      values: []
     };
-    group.sum += yValues[index];
-    group.count += 1;
+    group.values.push(yValues[index]);
     groups.set(key, group);
   }
 
@@ -59,12 +64,19 @@ export function deriveBarMeans(rows, layer) {
     throw new Error(`Bar mark "${layer.id}" has no values to aggregate.`);
   }
 
-  const values = [...groups.values()].map(group => ({
-    x: group.x,
-    ...(Object.hasOwn(group, "color") ? { color: group.color } : {}),
-    y: group.sum / group.count,
-    count: group.count
-  }));
+  const values = [...groups.values()].flatMap(group => {
+    const value = aggregateScalarValues(group.values, y.aggregate);
+    return value === undefined ? [] : [{
+      x: group.x,
+      ...(Object.hasOwn(group, "color") ? { color: group.color } : {}),
+      y: value,
+      count: group.values.length
+    }];
+  });
+
+  if (values.length === 0) {
+    throw new Error(`Bar mark "${layer.id}" has no complete aggregate values.`);
+  }
 
   return cloneAndFreeze({
     xValues: values.map(value => value.x),

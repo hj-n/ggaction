@@ -69,7 +69,7 @@ export const rematerializeBarMark = action(
       resolved = resolved.rematerializeScale({ id: colorScaleId });
     }
 
-    if (required.materialization === "ordinalMean") {
+    if (required.materialization === "ordinalAggregate") {
       const offsetScaleId = required.layer.encoding?.xOffset?.scale;
       if (offsetScaleId !== undefined) {
         resolved = resolved.rematerializeScale({ id: offsetScaleId });

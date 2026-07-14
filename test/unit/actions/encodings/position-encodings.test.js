@@ -130,7 +130,7 @@ test("validates position encoding inputs before changing the program", () => {
   assert.throws(() => program.encodeX({ field: "missing" }), /finite number/);
   assert.throws(
     () => program.encodeX({ field: "horsepower", fieldType: "nominal" }),
-    /Unsupported field type/
+    /requires quantitative fields/
   );
   assert.throws(
     () => program.encodeX({ field: "horsepower", scale: { type: "log" } }),

@@ -4,6 +4,12 @@ import {
   readQuantitativeField,
   readTemporalField
 } from "./scales.js";
+import {
+  aggregateScalarValues,
+  isScalarAggregate,
+  validateAggregateFieldValues,
+  validateScalarAggregateFieldType
+} from "./aggregate.js";
 
 const SERIES_CHANNELS = Object.freeze(["group", "color", "strokeDash"]);
 
@@ -19,7 +25,8 @@ function requireLineEncoding(layer) {
     throw new Error(`Line mark "${layer.id}" requires a temporal x encoding.`);
   }
 
-  const isAggregate = x?.fieldType === "temporal" && y?.aggregate === "mean";
+  const isAggregate =
+    x?.fieldType === "temporal" && isScalarAggregate(y?.aggregate);
   const isDirect =
     x?.fieldType === "quantitative" &&
     y?.fieldType === "quantitative" &&
@@ -27,12 +34,15 @@ function requireLineEncoding(layer) {
   if (!isAggregate && !isDirect) {
     if (x?.fieldType === "temporal") {
       throw new Error(
-        `Line mark "${layer.id}" requires a quantitative mean y encoding.`
+        `Line mark "${layer.id}" requires a supported scalar aggregate y encoding.`
       );
     }
     throw new Error(
       `Line mark "${layer.id}" requires temporal/mean or direct quantitative x/y encodings.`
     );
+  }
+  if (isAggregate) {
+    validateScalarAggregateFieldType(y.aggregate, y.fieldType);
   }
   return { x, y, isAggregate };
 }
@@ -64,10 +74,15 @@ function groupKey(values) {
 
 export function deriveLineSeries(rows, layer) {
   const { x, y, isAggregate } = requireLineEncoding(layer);
+  if (isAggregate) {
+    validateAggregateFieldValues(rows, y.field, y.fieldType);
+  }
   const xValues = isAggregate
     ? readTemporalField(rows, x.field)
     : readQuantitativeField(rows, x.field);
-  const yValues = readQuantitativeField(rows, y.field);
+  const yValues = isAggregate
+    ? rows.map(row => row[y.field])
+    : readQuantitativeField(rows, y.field);
   const seriesFields = readSeriesFields(rows, layer);
   const aggregateGroups = new Map();
 
@@ -79,12 +94,10 @@ export function deriveLineSeries(rows, layer) {
     const group = aggregateGroups.get(key) ?? {
       x: xValues[index],
       dimensions,
-      sum: 0,
-      count: 0
+      values: []
     };
 
-    group.sum += yValues[index];
-    group.count += 1;
+    group.values.push(yValues[index]);
     aggregateGroups.set(key, group);
   }
 
@@ -95,6 +108,10 @@ export function deriveLineSeries(rows, layer) {
   const seriesGroups = new Map();
 
   for (const group of aggregateGroups.values()) {
+    const value = isAggregate
+      ? aggregateScalarValues(group.values, y.aggregate)
+      : group.values.reduce((sum, item) => sum + item, 0);
+    if (value === undefined) continue;
     const key = groupKey(group.dimensions);
     const series = seriesGroups.get(key) ?? {
       key: Object.fromEntries(
@@ -105,22 +122,26 @@ export function deriveLineSeries(rows, layer) {
 
     series.values.push({
       x: group.x,
-      y: isAggregate ? group.sum / group.count : group.sum
+      y: value
     });
     seriesGroups.set(key, series);
   }
 
-  const series = [...seriesGroups.values()].map(item => {
+  const series = [...seriesGroups.values()].flatMap(item => {
     const values = item.values.sort((left, right) => left.x - right.x);
 
     if (values.length < 2) {
-      throw new Error(
-        `Line series on mark "${layer.id}" requires at least two aggregate points.`
-      );
+      return [];
     }
 
-    return { key: item.key, values };
+    return [{ key: item.key, values }];
   });
+
+  if (series.length === 0) {
+    throw new Error(
+      `Line series on mark "${layer.id}" requires at least two aggregate points.`
+    );
+  }
 
   return cloneAndFreeze({
     xValues: series.flatMap(item => item.values.map(value => value.x)),

@@ -1,4 +1,5 @@
 import { findDataset } from "../../selectors/datasets.js";
+import { isScalarAggregate } from "../../grammar/aggregate.js";
 
 function hasPositionScales(layer) {
   return (
@@ -15,7 +16,7 @@ export function canMaterializeLine(_program, layer) {
   return (
     layer.mark?.type === "line" &&
     hasPositionScales(layer) &&
-    (layer.encoding.y.aggregate === "mean" ||
+    (isScalarAggregate(layer.encoding.y.aggregate) ||
       (layer.encoding.x.fieldType === "quantitative" &&
         layer.encoding.y.fieldType === "quantitative"))
   );
@@ -54,7 +55,7 @@ export function canMaterializeBar(program, layer) {
     layer.encoding.y.stack === "zero";
   const grouped =
     layer.encoding?.x?.fieldType === "ordinal" &&
-    layer.encoding?.y?.aggregate === "mean" &&
+    isScalarAggregate(layer.encoding?.y?.aggregate) &&
     layer.encoding.y.stack === null &&
     program.markConfigs[layer.id]?.barWidth !== undefined;
 

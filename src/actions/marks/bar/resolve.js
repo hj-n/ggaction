@@ -2,6 +2,7 @@ import { DEFAULT_COLORS } from "../../../theme/defaults.js";
 import { findDataset } from "../../../selectors/datasets.js";
 import { findLayer } from "../../../selectors/layers.js";
 import { findSemanticScale } from "../../../selectors/scales.js";
+import { isScalarAggregate } from "../../../grammar/aggregate.js";
 
 export const DEFAULT_BAR_FILL = DEFAULT_COLORS.mark;
 export const DEFAULT_BAR_STROKE = "white";
@@ -27,19 +28,18 @@ export function requireCompleteBar(program, id) {
     xEncoding?.bin !== undefined &&
     yEncoding?.aggregate === "count" &&
     yEncoding.stack === "zero";
-  const isOrdinalMean =
+  const isOrdinalAggregate =
     xEncoding?.fieldType === "ordinal" &&
-    yEncoding?.fieldType === "quantitative" &&
-    yEncoding.aggregate === "mean" &&
+    isScalarAggregate(yEncoding?.aggregate) &&
     yEncoding.stack === null;
 
   if (
     xEncoding?.scale === undefined ||
     yEncoding?.scale === undefined ||
-    (!isHistogram && !isOrdinalMean)
+    (!isHistogram && !isOrdinalAggregate)
   ) {
     throw new Error(
-      `Bar mark "${id}" requires binned x/count y or ordinal x/mean y encodings.`
+      `Bar mark "${id}" requires binned x/count y or ordinal x/scalar aggregate y encodings.`
     );
   }
   const xScale = findSemanticScale(program, xEncoding.scale);
@@ -55,6 +55,6 @@ export function requireCompleteBar(program, id) {
     yEncoding,
     xScale,
     yScale,
-    materialization: isHistogram ? "histogram" : "ordinalMean"
+    materialization: isHistogram ? "histogram" : "ordinalAggregate"
   };
 }

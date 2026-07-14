@@ -1,4 +1,4 @@
-import { deriveBarMeans } from "../../grammar/barAggregate.js";
+import { deriveBarAggregates } from "../../grammar/barAggregate.js";
 import { countHistogramBins, resolveHistogramBins } from "../../grammar/histogram.js";
 import { deriveLineSeries } from "../../grammar/lineSeries.js";
 import {
@@ -8,6 +8,7 @@ import {
 } from "../../grammar/scales.js";
 import { findDataset } from "../../selectors/datasets.js";
 import { requireSemanticScale } from "../../selectors/scales.js";
+import { isScalarAggregate } from "../../grammar/aggregate.js";
 
 export function findScale(program, id) {
   return requireSemanticScale(program, id);
@@ -50,7 +51,7 @@ export function resolveConsumerValues(program, consumer) {
 
   if (
     consumer.layer.mark?.type === "line" &&
-    consumer.layer.encoding?.y?.aggregate === "mean"
+    isScalarAggregate(consumer.layer.encoding?.y?.aggregate)
   ) {
     const derived = deriveLineSeries(dataset.values, consumer.layer);
     return consumer.channel === "x" ? derived.xValues : derived.yValues;
@@ -59,10 +60,10 @@ export function resolveConsumerValues(program, consumer) {
   if (
     consumer.layer.mark?.type === "bar" &&
     consumer.layer.encoding?.x?.fieldType === "ordinal" &&
-    consumer.layer.encoding?.y?.aggregate === "mean" &&
+    isScalarAggregate(consumer.layer.encoding?.y?.aggregate) &&
     consumer.layer.encoding.y.stack === null
   ) {
-    const derived = deriveBarMeans(dataset.values, consumer.layer);
+    const derived = deriveBarAggregates(dataset.values, consumer.layer);
     return consumer.channel === "x" ? derived.xValues : derived.yValues;
   }
 

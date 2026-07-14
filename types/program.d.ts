@@ -32,6 +32,11 @@ export type CurveInterpolation =
 export type DashStyle = "solid" | "dashed" | "dotted" | "dashdot";
 export type DashPattern = readonly number[];
 export type ScaleType = "linear" | "time" | "ordinal";
+export type ScalarAggregateOperation =
+  | "count" | "sum" | "mean" | "median" | "min" | "max"
+  | "distinct" | "valid" | "missing"
+  | "variance" | "varianceP" | "stdev" | "stdevP" | "stderr"
+  | "q1" | "q3" | "ciLower" | "ciUpper";
 export type ContinuousColorInterpolation =
   | "rgb"
   | "hsl"
@@ -146,7 +151,7 @@ export interface PositionEncodingOptions {
   fieldType?: FieldType;
   scale?: ScaleOptions;
   coordinate?: string;
-  aggregate?: "mean" | "count";
+  aggregate?: ScalarAggregateOperation;
   bin?: { maxBins?: number };
   stack?: "zero" | null;
 }

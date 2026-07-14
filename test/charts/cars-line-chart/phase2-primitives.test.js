@@ -4,7 +4,9 @@ import test from "node:test";
 import {
   createConstantDashCarsLineChart,
   createDashReassignmentCarsLineChart,
+  createDispersionCarsLineChart,
   createGroupReassignmentCarsLineChart,
+  createMedianCarsLineChart,
   createMonotoneEditCarsLineChart,
   createNamedDashVocabularyCarsLineChart,
   createStepCarsLineChart
@@ -486,10 +488,26 @@ test("authors the four aggregate targets with concrete paths and inferred guides
   }
 });
 
-test("keeps aggregate targets primitive-only until Gate C approval", () => {
+test("matches approved median and dispersion primitives with public programs", () => {
+  for (const [primitive, publicProgram] of [
+    [createAggregateMedianPrimitives(cars), createMedianCarsLineChart(cars)],
+    [createAggregateDispersionPrimitives(cars), createDispersionCarsLineChart(cars)]
+  ]) {
+    const primitiveContext = createMockCanvasContext();
+    const publicContext = createMockCanvasContext();
+    renderCarsLineChartPrimitives(primitive, primitiveContext);
+    renderCarsLineChartPrimitives(publicProgram, publicContext);
+
+    assert.deepEqual(publicProgram.semanticSpec, primitive.semanticSpec);
+    assert.deepEqual(publicProgram.graphicSpec, primitive.graphicSpec);
+    assert.deepEqual(publicProgram.graphicSpec.order, primitive.graphicSpec.order);
+    assert.deepEqual(publicContext.calls, primitiveContext.calls);
+    assert.deepEqual(publicProgram.actionStack, []);
+  }
+});
+
+test("keeps parameterized aggregate targets primitive-only until Step 9", () => {
   for (const program of [
-    createAggregateMedianPrimitives(cars),
-    createAggregateDispersionPrimitives(cars),
     createAggregateQuantilePrimitives(cars),
     createAggregateOrderedPrimitives(cars)
   ]) {

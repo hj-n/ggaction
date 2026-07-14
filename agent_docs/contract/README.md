@@ -75,6 +75,11 @@ type Margin = NonNegativeFinite | {
   left?: NonNegativeFinite;
 };
 type FieldType = "quantitative" | "temporal" | "ordinal" | "nominal";
+type ScalarAggregateOperation =
+  | "count" | "sum" | "mean" | "median" | "min" | "max"
+  | "distinct" | "valid" | "missing"
+  | "variance" | "varianceP" | "stdev" | "stdevP" | "stderr"
+  | "q1" | "q3" | "ciLower" | "ciUpper";
 type ScaleType = "linear" | "time" | "ordinal";
 type ContinuousDomain = "auto" | readonly [unknown, unknown];
 type OrdinalDomain = "auto" | readonly unknown[];

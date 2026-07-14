@@ -47,8 +47,9 @@ groupedBarProgram.encodeX({ field: "year", fieldType: "ordinal" });
 
 Ordinal bar x resolves its domain and band geometry but leaves concrete rects
 empty until aggregate y and group layout are authored. On an ordinal bar,
-`encodeY({ field, aggregate: "mean" })` computes its automatic scale domain
-from x-category means. It still leaves rects empty until grouping is authored.
+`encodeY({ field, aggregate })` computes its automatic scale domain from the
+selected scalar summary at each final x/category and series grain. `aggregate`
+defaults to `"mean"`. It still leaves rects empty until grouping is authored.
 The advanced `encodeXOffset({ field })` action resolves nominal slots within
 each x band; grouped color layout normally calls it on the author's behalf.
 
@@ -119,7 +120,7 @@ becomes one baseline-closed command path ending in `Z`.
 series identity and concrete colors or dash patterns. On line marks they can
 split one aggregate path into multiple series. On complete histograms,
 `encodeColor` splits every bin into category-stacked rects.
-On ordinal mean bars, `encodeColor({ layout: "group" })` records non-stacked
+On ordinal aggregate bars, `encodeColor({ layout: "group" })` records non-stacked
 color meaning and invokes `encodeXOffset` for the same field. Rectangles remain
 empty until `encodeBarWidth({ band? })` authors slot occupancy and materializes
 concrete grouped rectangles.

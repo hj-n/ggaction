@@ -773,7 +773,7 @@ semantic definition을 받아 deterministic result를 반환한다.
 - linear mapping과 ordinal mapping
 - nice numeric ticks와 calendar-aligned time ticks
 - histogram bin boundary와 count
-- grouped mean line/bar aggregation
+- grouped scalar line/bar aggregation
 - line/area series grouping과 stable ordering
 - OLS coefficient와 Student-t mean-response confidence interval
 - Gaussian KDE bandwidth, shared sample grid와 density
@@ -803,8 +803,8 @@ rematerializeScale
 Consumer resolution은 mark policy를 고려한다.
 
 - ordinary point position은 row field 값을 직접 mapping한다.
-- line mean aggregation은 derived series grain에서 domain을 계산한다.
-- grouped bar mean은 x/category cell grain에서 domain을 계산한다.
+- line scalar aggregation은 final temporal x/series grain에서 domain을 계산한다.
+- grouped bar scalar aggregation은 final x/category cell grain에서 domain을 계산한다.
 - histogram x는 shared bin policy를, y는 final stacked count를 사용한다.
 - appearance scale은 deterministic ordinal domain과 palette/range를 사용한다.
 - palette registry는 accepted name, family, sampling을 소유하고 concrete CSS color array만
@@ -828,7 +828,7 @@ materialization policy에 정의한다.
 
 ### Line
 
-- x/y와 supported raw quantitative 또는 aggregate-mean semantics가 필요하다.
+- x/y와 supported raw quantitative 또는 scalar-aggregate semantics가 필요하다.
 - group/color/strokeDash에 따라 series를 나눈다.
 - group, color, field-driven strokeDash가 함께 series identity에 참여하면 같은 field여야 한다.
 - `encodeGroup`과 `encodeStrokeDash` 재호출은 기존 assignment를 원자적으로 교체한다.
@@ -850,7 +850,7 @@ materialization policy에 정의한다.
 ### Bar
 
 - Histogram은 binned x, count y, zero stack이 함께 있어야 한다.
-- Grouped bar는 ordinal x, mean y, null stack, xOffset group과 bar width가 필요하다.
+- Grouped bar는 ordinal x, scalar aggregate y, null stack, xOffset group과 bar width가 필요하다.
 - final grouping grain에서 aggregate하고 observed cell만 rect로 만든다.
 - Missing categorical combination을 자동으로 zero rect로 합성하지 않는다.
 

@@ -83,7 +83,7 @@ test("rejects incomplete encodings, invalid values, and one-point series", () =>
       mark: { type: "line" },
       encoding: { x: lineLayer().encoding.x }
     }),
-    /quantitative mean y encoding/
+    /supported scalar aggregate y encoding/
   );
   assert.throws(
     () => deriveLineSeries([{ year: "bad", value: 1 }], lineLayer()),

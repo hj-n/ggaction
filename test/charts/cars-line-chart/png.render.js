@@ -4,7 +4,9 @@ import {
   createCarsLineChart,
   createConstantDashCarsLineChart,
   createDashReassignmentCarsLineChart,
+  createDispersionCarsLineChart,
   createGroupReassignmentCarsLineChart,
+  createMedianCarsLineChart,
   createMonotoneEditCarsLineChart,
   createNamedDashVocabularyCarsLineChart,
   createStepCarsLineChart
@@ -286,7 +288,8 @@ const aggregatePrimitiveArtifacts = Object.freeze([
       title: "Median Acceleration",
       userFacingCallChain: aggregateTargetCallChain('"median"')
     }),
-    primitive: createAggregateMedianPrimitives(cars)
+    primitive: createAggregateMedianPrimitives(cars),
+    userFacing: createMedianCarsLineChart(cars)
   }),
   Object.freeze({
     artifact: Object.freeze({
@@ -296,7 +299,8 @@ const aggregatePrimitiveArtifacts = Object.freeze([
       title: "Acceleration Dispersion",
       userFacingCallChain: aggregateTargetCallChain('"stdev"')
     }),
-    primitive: createAggregateDispersionPrimitives(cars)
+    primitive: createAggregateDispersionPrimitives(cars),
+    userFacing: createDispersionCarsLineChart(cars)
   }),
   Object.freeze({
     artifact: Object.freeze({
@@ -376,12 +380,17 @@ test("renders the public and primitive line charts with visible series", async (
     }
   }
 
-  for (const { artifact, primitive } of aggregatePrimitiveArtifacts) {
-    await assertRenderedPNG(primitive, {
-      artifact: { ...artifact, kind: "primitive" },
-      width: 720,
-      height: 460,
-      colors: ["#4c78a8", "#f58518", "#e45756"]
-    });
+  for (const { artifact, primitive, userFacing } of aggregatePrimitiveArtifacts) {
+    for (const [kind, program] of [
+      ["primitive", primitive],
+      ...(userFacing === undefined ? [] : [["user-facing", userFacing]])
+    ]) {
+      await assertRenderedPNG(program, {
+        artifact: { ...artifact, kind },
+        width: 720,
+        height: 460,
+        colors: ["#4c78a8", "#f58518", "#e45756"]
+      });
+    }
   }
 });

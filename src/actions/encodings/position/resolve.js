@@ -15,6 +15,12 @@ import {
   resolveTarget,
   validateOptions
 } from "../shared.js";
+import {
+  isScalarAggregate,
+  validateAggregate,
+  validateAggregateFieldValues,
+  validateScalarAggregateFieldType
+} from "../../../grammar/aggregate.js";
 
 const POSITION_ENCODING_OPTIONS = Object.freeze([
   "field", "target", "fieldType", "scale", "coordinate", "aggregate", "bin", "stack"
@@ -77,15 +83,23 @@ function validateMarkPolicy(layer, dataset, channel, args, fieldType, field) {
   } else if (layer.mark.type === "line") {
     if (args.bin !== undefined) throw new Error("Line y encoding does not support bin.");
     const regression = dataset.transform?.some(item => item.type === "regression");
-    if (fieldType !== "quantitative") {
+    if (regression && fieldType !== "quantitative") {
       throw new Error(regression
         ? "Regression line y encoding requires a quantitative field."
-        : 'Line y encoding currently requires a quantitative field and aggregate "mean".');
+        : "Line y encoding requires a supported aggregate field type.");
     }
-    if ((!regression && args.aggregate !== "mean") || (regression && args.aggregate !== undefined)) {
+    if (regression && args.aggregate !== undefined) {
       throw new Error(regression
         ? "Regression line y encoding does not support aggregate."
-        : 'Line y encoding currently requires a quantitative field and aggregate "mean".');
+        : "Line y encoding requires a supported scalar aggregate.");
+    }
+    if (!regression) {
+      validateAggregate(args.aggregate);
+      if (!isScalarAggregate(args.aggregate)) {
+        throw new Error("Line y encoding requires a supported scalar aggregate.");
+      }
+      validateScalarAggregateFieldType(args.aggregate, fieldType);
+      aggregate = args.aggregate;
     }
     if (args.stack !== undefined) throw new Error("Line y encoding does not support stack.");
   } else if (channel === "x") {
@@ -114,7 +128,11 @@ function validateMarkPolicy(layer, dataset, channel, args, fieldType, field) {
     } else if (xEncoding.fieldType === "ordinal") {
       aggregate = args.aggregate ?? "mean";
       stack = Object.hasOwn(args, "stack") ? args.stack : null;
-      if (aggregate !== "mean") throw new Error('Ordinal bar y aggregate must be "mean".');
+      validateAggregate(aggregate);
+      if (!isScalarAggregate(aggregate)) {
+        throw new Error("Ordinal bar y requires a supported scalar aggregate.");
+      }
+      validateScalarAggregateFieldType(aggregate, fieldType);
       if (stack !== null) throw new Error("Ordinal bar y stack must be null.");
     } else {
       throw new Error("Bar y encoding requires a binned quantitative or ordinal x encoding.");
@@ -132,9 +150,11 @@ export function resolvePositionEncoding(program, channel, args, operation) {
     ["point", "line", "bar", "area"]
   );
   const previous = layer.encoding?.[channel];
-  const fieldType = validateFieldType(
-    args.fieldType ?? previous?.fieldType ?? "quantitative"
-  );
+  const requestedFieldType =
+    args.fieldType ?? previous?.fieldType ?? "quantitative";
+  const fieldType = requestedFieldType === "nominal"
+    ? "nominal"
+    : validateFieldType(requestedFieldType);
   const xEncoding = layer.encoding?.x;
   const field = layer.mark.type === "bar" && channel === "y" &&
     xEncoding?.bin !== undefined && args.field === undefined
@@ -155,10 +175,18 @@ export function resolvePositionEncoding(program, channel, args, operation) {
     fieldType,
     field
   );
+  if (typeof field !== "string" || field.length === 0) {
+    throw new TypeError(`${operation} field must be a non-empty string.`);
+  }
 
-  if (fieldType === "temporal") readTemporalField(dataset.values, field);
-  else if (fieldType === "ordinal") readNominalField(dataset.values, field);
-  else readQuantitativeField(dataset.values, field);
+  const scalarAggregate = isScalarAggregate(policy.aggregate);
+  if (scalarAggregate) {
+    validateScalarAggregateFieldType(policy.aggregate, fieldType);
+    validateAggregateFieldValues(dataset.values, field, fieldType);
+  } else if (fieldType === "temporal") readTemporalField(dataset.values, field);
+  else if (["ordinal", "nominal"].includes(fieldType)) {
+    readNominalField(dataset.values, field);
+  } else readQuantitativeField(dataset.values, field);
 
   const requestedScale = resolveReassignmentScaleOptions(
     previous,
@@ -167,7 +195,7 @@ export function resolvePositionEncoding(program, channel, args, operation) {
   const scale = resolvePositionScaleDefinition(
     program,
     channel,
-    fieldType,
+    scalarAggregate ? "quantitative" : fieldType,
     requestedScale,
     layer.mark.type === "bar" && fieldType !== "ordinal"
       ? channel === "x" || policy.stack === null

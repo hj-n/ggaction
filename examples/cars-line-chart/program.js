@@ -121,6 +121,66 @@ export function createMonotoneEditCarsLineChart(cars) {
     });
 }
 
+export function createMedianCarsLineChart(cars) {
+  const rows = validRows(cars);
+
+  return chart()
+    .createCanvas({
+      width: 720,
+      height: 460,
+      margin: { top: 80, right: 170, bottom: 60, left: 80 }
+    })
+    .createData({ id: "cars", values: rows })
+    .createLineMark({ id: "trends" })
+    .encodeX({
+      field: "Year",
+      fieldType: "temporal",
+      scale: { nice: true }
+    })
+    .encodeY({
+      field: "Acceleration",
+      aggregate: "median",
+      scale: { nice: true, zero: false }
+    })
+    .encodeColor({ field: "Origin", scale: { palette: "tableau10" } })
+    .encodeStrokeDash({ field: "Origin" })
+    .createGuides({ axes: { y: { ticksAndLabels: { count: 6 } } } })
+    .createTitle({
+      text: "The trend of acceleration by year",
+      subtitle: "from 1970 to 1982"
+    });
+}
+
+export function createDispersionCarsLineChart(cars) {
+  const rows = validRows(cars);
+
+  return chart()
+    .createCanvas({
+      width: 720,
+      height: 460,
+      margin: { top: 80, right: 170, bottom: 60, left: 80 }
+    })
+    .createData({ id: "cars", values: rows })
+    .createLineMark({ id: "trends" })
+    .encodeX({
+      field: "Year",
+      fieldType: "temporal",
+      scale: { nice: true }
+    })
+    .encodeY({
+      field: "Acceleration",
+      aggregate: "stdev",
+      scale: { nice: true, zero: false }
+    })
+    .encodeColor({ field: "Origin", scale: { palette: "tableau10" } })
+    .encodeStrokeDash({ field: "Origin" })
+    .createGuides({ axes: { y: { ticksAndLabels: { count: 6 } } } })
+    .createTitle({
+      text: "The trend of acceleration by year",
+      subtitle: "from 1970 to 1982"
+    });
+}
+
 function validDashRows(cars) {
   return validRows(cars).filter(car => Number.isFinite(car.Cylinders));
 }

@@ -1,4 +1,4 @@
-import { deriveBarMeans } from "../../../grammar/barAggregate.js";
+import { deriveBarAggregates } from "../../../grammar/barAggregate.js";
 import { mapLinearValues } from "../../../grammar/scales.js";
 import { sameOrderedValues } from "../../../core/validation.js";
 import {
@@ -50,7 +50,7 @@ export function deriveGroupedRectangles(required, resolved, band) {
     yScale.range,
     { clamp: yScale.clamp ?? false }
   )[0];
-  const cells = [...deriveBarMeans(dataset.values, layer).values].sort(
+  const cells = [...deriveBarAggregates(dataset.values, layer).values].sort(
     (left, right) =>
       xIndex.get(left.x) - xIndex.get(right.x) ||
       offsetIndex.get(left.color) - offsetIndex.get(right.color)

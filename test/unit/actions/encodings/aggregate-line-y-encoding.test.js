@@ -187,14 +187,7 @@ test("regroups and rematerializes paths when a series field is introduced", () =
 test("validates aggregate line y requirements", () => {
   assert.throws(
     () => createXEncodedLine().encodeY({ field: "value" }),
-    /aggregate "mean"/
-  );
-  assert.throws(
-    () => createXEncodedLine().encodeY({
-      field: "value",
-      aggregate: "sum"
-    }),
-    /aggregate "mean"/
+    /Aggregate must be a supported operation/
   );
   assert.throws(
     () => createXEncodedLine().encodeY({
@@ -202,7 +195,7 @@ test("validates aggregate line y requirements", () => {
       fieldType: "temporal",
       aggregate: "mean"
     }),
-    /quantitative field/
+    /does not support field type "temporal"/
   );
   assert.throws(
     () => chart()

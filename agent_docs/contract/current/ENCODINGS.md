@@ -79,29 +79,42 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 
 ## `encodeY`
 
+```typescript
+type ScalarAggregateOperation =
+  | "count" | "sum" | "mean" | "median" | "min" | "max"
+  | "distinct" | "valid" | "missing"
+  | "variance" | "varianceP" | "stdev" | "stdevP" | "stderr"
+  | "q1" | "q3" | "ciLower" | "ciUpper";
+```
+
 - Signature: `encodeY({ field?, target?, fieldType?, scale?, coordinate?, aggregate?, bin?, stack? })`
 - `field`: point/area/line/ordinal-bar에서는 필수 field다. histogram count y는 x field에서 추론한다.
 - `target`, `fieldType`, `scale`, `coordinate`: x와 같은 selection/storage contract이며 auto range는
   bottom-to-top plot bounds다.
-- `aggregate`: Implemented values `"mean" | "count"`. line과 ordinal bar는 mean, histogram은 count를
-  사용한다. Planned values는 `"sum" | "median" | "min" | "max" | "distinct" | "valid" |
-  "missing" | "variance" | "varianceP" | "stdev" | "stdevP" | "stderr" | "q1" | "q3" |
-  "ciLower" | "ciUpper"`이며 raw quantitative point/area는 생략한다.
+- `aggregate`: line과 ordinal bar는 `"count" | "sum" | "mean" | "median" | "min" | "max" |
+  "distinct" | "valid" | "missing" | "variance" | "varianceP" | "stdev" | "stdevP" | "stderr" |
+  "q1" | "q3" | "ciLower" | "ciUpper"`를 지원한다. Histogram은 count를 사용하고 raw quantitative
+  point/area는 aggregate를 생략한다.
+- `count`는 group row 수, `valid`/`missing`은 null·undefined·NaN 여부, `distinct`는 valid value의
+  SameValueZero distinct count를 반환한다. 이 네 연산은 nominal input도 허용하되 output scale은 linear다.
+- 나머지 연산은 finite quantitative sample만 사용한다. Sample variance/stdev/stderr와 CI는 `n < 2`,
+  다른 quantitative 연산은 finite sample이 없으면 해당 final group을 생략한다. Quartile은 linear
+  interpolation, CI endpoint는 `mean ± 1.96 * stderr`다.
 - `stack`: Implemented values `"zero" | null`. histogram color series는 zero stack, grouped ordinal
   bar는 `null`이다.
 - `bin`: 현재 y에서는 지원되지 않는다.
-- Effect: y semantic, scale, bar aggregate grain 또는 line mean grain을 저장하고 mark geometry와
+- Effect: y semantic, scale, final bar/line aggregate grain을 저장하고 mark geometry와
   existing guides를 rematerialize한다.
 - Reassignment: 같은 target의 existing fieldType, aggregate/bin/stack mode와 coordinate를 유지하며
   compatible field를 교체한다. current scale reuse, explicit new-scale rebind, inferred/custom title
   규칙은 x와 같다.
-- Coverage: supported charts가 raw/mean/count, zero/null 조합을 검증한다. unsupported 조합과
-  scale override의 pairwise coverage는 부분적이다.
+- Coverage: 전체 scalar vocabulary의 numeric/validity fixture, line public materialization, ordinal bar
+  final grain, zero/null 조합을 검증한다. Aggregate × scale override pairwise coverage는 부분적이다.
 
 ### Formal values — `encodeY`
 
-- Implemented: `encodeY({ field?: FieldName; target?: UserId; fieldType?: "quantitative"; scale?: PositionScale; coordinate?: UserId; aggregate?: "mean" | "count"; stack?: "zero" | null })`; mark/x policy가 가능한 조합을 제한한다.
-- Planned (NOT IMPLEMENTED): `{ fieldType?: "temporal" | "ordinal"; aggregate?: "sum" | "median" | "min" | "max" | "distinct" | "valid" | "missing" | "variance" | "varianceP" | "stdev" | "stdevP" | "stderr" | "q1" | "q3" | "ciLower" | "ciUpper" | { op: "quantile"; probability: UnitInterval } | { op: "first" | "last"; orderBy: FieldName; order?: "ascending" | "descending" }; stack?: "normalize"; scale?: { type?: "log" | "pow" | "sqrt" | "symlog" | "utc" | "band" | "point"; base?: PositiveFiniteExceptOne; exponent?: PositiveFinite; constant?: PositiveFinite; clamp?: boolean; reverse?: boolean; unknown?: unknown } }`
+- Implemented: `encodeY({ field?: FieldName; target?: UserId; fieldType?: "quantitative" | "nominal"; scale?: PositionScale; coordinate?: UserId; aggregate?: "count" | "sum" | "mean" | "median" | "min" | "max" | "distinct" | "valid" | "missing" | "variance" | "varianceP" | "stdev" | "stdevP" | "stderr" | "q1" | "q3" | "ciLower" | "ciUpper"; stack?: "zero" | null })`; mark/x policy와 aggregate compatibility가 조합을 제한한다.
+- Planned (NOT IMPLEMENTED): `{ fieldType?: "temporal" | "ordinal"; aggregate?: { op: "quantile"; probability: UnitInterval } | { op: "first" | "last"; orderBy: FieldName; order?: "ascending" | "descending" }; stack?: "normalize"; scale?: { type?: "log" | "pow" | "sqrt" | "symlog" | "utc" | "band" | "point"; base?: PositiveFiniteExceptOne; exponent?: PositiveFinite; constant?: PositiveFinite; clamp?: boolean; reverse?: boolean; unknown?: unknown } }`
 - Proposed (NOT IMPLEMENTED): `{ stack?: "center" }`; extreme-row selection은 Planned `selectRows`가 소유한다.
 
 ### Value coverage — `encodeY`
@@ -109,13 +122,11 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 - `field`, `target`, `coordinate`
   - ✅ Covered: raw quantitative point/area, aggregate line/bar, inferred histogram count and target ambiguity.
 - `fieldType`
-  - ✅ Covered: current quantitative combinations와 invalid types.
+  - ✅ Covered: quantitative combinations, nominal count/distinct/valid/missing와 invalid compatibility.
   - 🟡 Planned: temporal/ordinal y combinations allowed by the mark × channel compatibility matrix.
 - `aggregate`
-  - ✅ Covered: omission, `"mean"`, `"count"`, incompatible aggregate rejection.
-  - 🟡 Planned: `"sum" | "median" | "min" | "max" | "distinct" | "valid" | "missing" |
-    "variance" | "varianceP" | "stdev" | "stdevP" | "stderr" | "q1" | "q3" | "ciLower" |
-    "ciUpper"`; final visual grain, sample validity, title/domain inference가 필요하다.
+  - ✅ Covered: full scalar vocabulary, final line/bar grain, missing/sample boundary, inferred/custom title,
+    domain/rematerialization과 incompatible aggregate rejection.
   - 🟡 Planned: parameterized quantile과 ordered first/last.
   - 🟡 Planned: full-row min/max selection은 scalar aggregate가 아닌 `selectRows` transform으로 제공한다.
 - `stack`
@@ -131,7 +142,7 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 ## `encodeXOffset`
 
 - Signature: `encodeXOffset({ field, target?, fieldType?, scale? })`
-- `field`: Implemented, nominal grouping field. ordinal x/mean y/non-stacked bar에만 허용된다.
+- `field`: Implemented, nominal grouping field. ordinal x/scalar aggregate y/non-stacked bar에만 허용된다.
 - `target`: optional eligible bar ID.
 - `fieldType`: Implemented, 유일한 값 `"nominal"`, 기본값도 nominal이다.
 - `scale`: ordinal scale contract; 기본 ID `xOffset`, domain은 grouping order, range는 parent x band다.
@@ -521,7 +532,7 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 - `target`: optional complete grouped bar ID.
 - Effect: graphical mark config에 band fraction을 저장하고 rect x/width를 rematerialize한다.
   같은 target에 다시 호출하면 기존 band fraction을 교체한다.
-- 오류: ordinal x, mean/non-stacked y, matching color/xOffset가 완성되지 않으면 거부한다.
+- 오류: ordinal x, scalar aggregate/non-stacked y, matching color/xOffset가 완성되지 않으면 거부한다.
 - Coverage: grouped-bar semantic/reference tests가 default, explicit value, invalid range와 geometry를 검증한다.
 
 ### Formal values — `encodeBarWidth`

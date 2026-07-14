@@ -106,39 +106,6 @@ encodeBarWidth({
 - Status: Planned, NOT IMPLEMENTED. mode switching, padding boundaries, Canvas resize와 overlap
   coverage가 필요하다.
 
-## aggregate vocabulary
-
-```typescript
-type AggregateOperation =
-  | "count" | "sum" | "mean" | "median" | "min" | "max"
-  | "distinct" | "valid" | "missing"
-  | "variance" | "varianceP" | "stdev" | "stdevP" | "stderr"
-  | "q1" | "q3" | "ciLower" | "ciUpper";
-```
-
-- `mean`과 `count`는 Implemented이며 나머지 값이 이 Planned extension의 구현 대상이다.
-  모든 aggregate는 source row가 아니라 최종 x/category와 series grouping grain마다 계산한다.
-- `count`는 group row 수를 센다. `valid`는 null/undefined/NaN이 아닌 field value, `missing`은
-  그 반대, `distinct`는 valid value의 SameValueZero distinct count를 반환한다. 이 세 연산은
-  nominal field에도 사용할 수 있다.
-- `sum`, `mean`, `median`, `min`, `max`, `variance`, `varianceP`, `stdev`, `stdevP`, `stderr`,
-  `q1`, `q3`, `ciLower`, `ciUpper`는 finite quantitative value만 받는다. `variance`와 `stdev`는
-  sample denominator `n - 1`, `varianceP`와 `stdevP`는 population denominator `n`, `stderr`는
-  sample standard deviation divided by `sqrt(n)`이다.
-- `median`, `q1`, `q3`는 정렬된 finite values에 linear interpolation을 적용한 각각 0.5, 0.25,
-  0.75 quantile이다. `ciLower`와 `ciUpper`는 mean에서 `1.96 * stderr`를 빼고 더한 deterministic
-  two-sided 95% normal interval endpoint다.
-- 필요한 valid sample이 없는 연산은 aggregate value를 만들지 않는다. sample variance, sample
-  standard deviation, standard error와 confidence interval은 `n < 2`이면 value를 만들지 않는다.
-  이 정책이 missing category나 zero-valued graphic을 자동 합성하지는 않는다.
-- inferred guide title은 `${aggregate}(${field})`를 사용하고 explicit title은 보존한다. aggregate
-  교체는 scale domain, mark geometry, axes와 grids를 deterministic plan으로 rematerialize한다.
-- parameter가 필요한 `quantile`과 정렬 계약이 필요한 `first`/`last`는 별도 accepted aggregate
-  object가 소유한다. Full-row min/max selection은 scalar vocabulary에 포함하지 않고 accepted
-  `selectRows` transform이 소유한다.
-- Status: Planned, NOT IMPLEMENTED. 각 operation의 representative/empty/singleton/missing-value
-  fixtures와 line/bar grain, title/domain/rematerialization coverage가 필요하다.
-
 ## color layout vocabulary
 
 ```typescript

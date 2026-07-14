@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { chart } from "../../../../src/index.js";
-import { deriveBarMeans } from "../../../../src/grammar/barAggregate.js";
+import { deriveBarAggregates } from "../../../../src/grammar/barAggregate.js";
 
 const values = [
   { year: 1850, perc: 2 },
@@ -41,7 +41,7 @@ test("derives immutable means in ordinal x appearance order", () => {
       property: "layer[bars].encoding.y.stack",
       value: null
     }).semanticSpec.layers[0];
-  const derived = deriveBarMeans(values, layer);
+  const derived = deriveBarAggregates(values, layer);
 
   assert.deepEqual(derived, {
     xValues: [1850, 1860],
@@ -129,10 +129,6 @@ test("validates aggregate ordinal bar y requirements", () => {
 
   assert.throws(() => program.encodeY(), /field must be a non-empty string/i);
   assert.throws(
-    () => program.encodeY({ field: "perc", aggregate: "count" }),
-    /aggregate must be "mean"/
-  );
-  assert.throws(
     () => program.encodeY({ field: "perc", stack: "zero" }),
     /stack must be null/
   );
@@ -146,7 +142,7 @@ test("validates aggregate ordinal bar y requirements", () => {
   );
   assert.throws(
     () => program.encodeY({ field: "missing" }),
-    /finite number/
+    /no complete aggregate values/
   );
 
   const pointX = chart()

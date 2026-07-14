@@ -1470,17 +1470,6 @@
       }
     },
     {
-      "id": "aggregate-vocabulary",
-      "kind": "parameter",
-      "name": "Aggregate vocabulary",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/ENCODINGS.md",
-        "anchor": "aggregate-vocabulary"
-      }
-    },
-    {
       "id": "parameterized-aggregate-operations",
       "kind": "parameter",
       "name": "Parameterized aggregate operations",
