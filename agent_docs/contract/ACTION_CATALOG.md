@@ -91,7 +91,7 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | `editPointMark` | accepted | [Open](planned/EDITING.md#mark-edits) |
 | `editRegressionBand` | accepted | [Open](planned/EDITING.md#regression-component-edits) |
 | `editRegressionLine` | accepted | [Open](planned/EDITING.md#regression-component-edits) |
-| `editScale` | pending-parameter-review | Pending |
+| `editScale` | accepted | [Open](planned/SCALES.md#editscale) |
 | `editTitle` | accepted | [Open](planned/EDITING.md#edittitle) |
 | `editVerticalGrid` | accepted | [Open](planned/EDITING.md#directional-grid-edits) |
 | `encodeX2` | accepted | [Open](planned/ENCODINGS.md#horizontal-ranged-position) |

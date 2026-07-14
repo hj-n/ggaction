@@ -2,7 +2,8 @@
 
 ## 상태
 
-사용자 검토 대기. 이 문서는 아직 accepted Planned contract가 아니며 구현을 승인하지 않는다.
+승인 완료. 2026-07-14에 네 결정이 모두 승인되었고 canonical Planned contract는
+`agent_docs/contract/planned/SCALES.md#editscale`에 기록되었다.
 
 ## 필요한 이유
 
@@ -55,11 +56,11 @@ editScale({
 - Plan은 scale consumers, related axes/grids와 legends를 순서대로 deduplicate해 rematerialize한다.
 - Existing named scale과 consumer를 자동 삭제하거나 다른 scale로 자동 rebind하지 않는다.
 
-## 사용자 결정이 필요한 항목
+## 승인된 결정
 
-1. 첫 계약에서 `type` 변경을 금지하고 새 scale + rebind만 허용할지.
-2. `unknown`을 첫 implementation에 포함할지, Phase 10 scale vocabulary와 함께 구현할지.
-3. `id` 생략 시 current scale inference를 허용할지, 항상 explicit ID를 요구할지.
-4. Domain/range에 `"auto"`를 전달하는 방식으로 reset을 통일할지.
+1. 첫 계약에서 `type` 변경을 금지하고 새 scale + rebind만 허용한다.
+2. `unknown`은 Phase 10 scale vocabulary와 함께 구현한다.
+3. `id` 생략 시 current scale 또는 유일한 scale inference를 허용한다.
+4. Domain/range reset은 명시적 `"auto"`로 통일한다.
 
-이 네 항목이 승인되면 canonical Planned scale contract와 ACTION_INDEX를 갱신하고 Phase 1에서 구현한다.
+Phase 1은 current scale vocabulary의 `editScale`부터 구현한 뒤 scale-backed reassignment로 진행한다.

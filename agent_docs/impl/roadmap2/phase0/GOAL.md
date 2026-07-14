@@ -19,8 +19,8 @@ recursive cleanup과 static comparison gallery를 구축한다. 동시에 Phase 
 - [x] Desktop/mobile gallery browser verification
 - [x] Roadmap/agent/test documentation 갱신
 - [x] `editScale` review draft 작성
-- [ ] `editScale` contract 사용자 승인
-- [ ] Phase 0 종료 및 Phase 1 시작 승인
+- [x] `editScale` contract 사용자 승인
+- [x] Phase 0 종료
 
 ## 산출물
 
@@ -44,7 +44,7 @@ gallery를 다시 만든다. `npm run artifacts:gallery`는 이미 존재하는 
 - Primitive-only variant는 visual confirmation 대기로 표시한다.
 - `user-facing.png`만 존재하면 generator와 test가 실패한다.
 - Existing render suite와 새로운 infrastructure tests가 모두 통과한다.
-- `editScale` contract가 승인되기 전에는 Phase 1 scale-backed reassignment를 시작하지 않는다.
+- 승인된 `editScale` contract를 Phase 1의 첫 implementation slice로 사용한다.
 
 ## 관련 문서
 

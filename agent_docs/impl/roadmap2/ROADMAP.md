@@ -7,13 +7,12 @@ capability를 실제 구현, executable coverage, public documentation으로 전
 example chart를 활용해 검증 가능한 계획을 구현하고, 남은 계획은 새 example chart를 하나씩
 설계하면서 완성한다.
 
-Proposed와 Maybe Future는 이 Roadmap의 범위가 아니다. `editScale`은 Planned이지만 parameter
-contract가 아직 pending이며 encoding reassignment의 선행 조건이므로 Phase 0에서 사용자와 계약을
-확정하고 Phase 1의 첫 implementation slice로 구현한다.
+Proposed와 Maybe Future는 이 Roadmap의 범위가 아니다. `editScale` contract는 Phase 0에서 승인됐으며
+encoding reassignment의 선행 조건으로 Phase 1의 첫 implementation slice에서 구현한다.
 
 ## 진행 상태
 
-- [ ] Phase 0 — Roadmap 2 artifact/gallery와 coverage tracking 기반 (infrastructure complete; `editScale` approval pending)
+- [x] Phase 0 — Roadmap 2 artifact/gallery, coverage tracking과 `editScale` contract
 - [ ] Phase 1 — 기존 scatterplot variants
 - [ ] Phase 2 — 기존 line-chart variants
 - [ ] Phase 3 — 기존 histogram/grouped-bar variants
