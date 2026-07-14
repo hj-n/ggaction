@@ -142,8 +142,16 @@ test("validates position encoding inputs before changing the program", () => {
   );
   assert.throws(
     () => chart().encodeX({ field: "horsepower" }),
-    /Mark id/
+    /requires an eligible layer/
   );
+});
+
+test("infers the only eligible mark when authoring context is absent", () => {
+  const program = createPointProgram()._clone({ context: {} });
+  const encoded = program.encodeX({ field: "horsepower" });
+
+  assert.equal(encoded.semanticSpec.layers[0].encoding.x.field, "horsepower");
+  assert.equal(program.semanticSpec.layers[0].encoding, undefined);
 });
 
 test("rejects sharing one scale across x and y channels", () => {

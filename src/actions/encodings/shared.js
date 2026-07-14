@@ -1,6 +1,6 @@
 import { validateUserId } from "../../core/identifiers.js";
 import { findDataset } from "../../selectors/datasets.js";
-import { findLayer } from "../../selectors/layers.js";
+import { resolveEligibleLayer } from "../../selectors/layers.js";
 import { findSemanticScale } from "../../selectors/scales.js";
 import { validateKeys } from "../../core/validation.js";
 
@@ -142,12 +142,15 @@ export function resolveTarget(
   supportedTypes = ["point", "line"],
   label = "position mark"
 ) {
-  const id = validateUserId(target ?? program.context.currentMark, "Mark id");
-  const layer = findLayer(program, id);
-
-  if (layer === undefined || !supportedTypes.includes(layer.mark?.type)) {
-    throw new Error(`Unknown ${label} "${id}".`);
-  }
+  const requested = target === undefined
+    ? undefined
+    : validateUserId(target, "Mark id");
+  const layer = resolveEligibleLayer(program, {
+    target: requested,
+    predicate: candidate => supportedTypes.includes(candidate.mark?.type),
+    label
+  });
+  const id = layer.id;
 
   const dataset = findDataset(program, layer.data);
 
