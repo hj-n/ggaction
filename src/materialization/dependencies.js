@@ -81,6 +81,12 @@ export function planScaleGuideRematerialization(program, id) {
   if (program.guideConfigs.grid?.vertical?.scale === id) {
     plan.push({ op: "rematerializeVerticalGrid" });
   }
+  const categorical = ["series", "color"].some(kind => {
+    const config = program.guideConfigs.legend?.[kind];
+    return config?.scales?.includes(id) || config?.scales?.[0] === id;
+  });
+  const size = program.guideConfigs.legend?.size?.scale === id;
+  if (categorical || size) plan.push({ op: "rematerializeLegend" });
   return plan;
 }
 

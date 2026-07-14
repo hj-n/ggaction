@@ -177,7 +177,7 @@ test("keeps lifecycle, coverage, and edit gaps machine-readable", () => {
 
   assert.equal(
     index.actions.find(action => action.name === "createScale").audit,
-    "`editScale` — Planned"
+    "Complete"
   );
   for (const name of ["encodeOpacity", "encodeRadius", "encodeBarWidth"]) {
     assert.equal(
@@ -239,7 +239,6 @@ test("keeps planned direct actions and reassignment gaps explicit", () => {
     "editPointMark",
     "editRegressionBand",
     "editRegressionLine",
-    "editScale",
     "editTitle",
     "editVerticalGrid",
     "encodeStroke",
@@ -249,10 +248,6 @@ test("keeps planned direct actions and reassignment gaps explicit", () => {
     "selectRows"
   ]));
   assert.equal(names.includes("editRuleMark"), false);
-  assert.equal(
-    index.plannedActions.find(action => action.name === "editScale").readiness,
-    "accepted"
-  );
 
   for (const action of index.plannedActions) {
     assert.equal(action.status, "planned");
@@ -344,10 +339,7 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   }
 
   assert.match(plannedCorpus, /type PointShape =/);
-  assert.match(plannedCorpus, /type EditableCurrentScale =/);
-  assert.match(plannedCorpus, /type\?: never/);
-  assert.match(plannedCorpus, /unknown\?: never/);
-  assert.match(plannedCorpus, /Setting domain or range to `"auto"` is the only reset syntax/);
+  assert.match(currentCorpus, /type EditableCurrentScale =/);
   assert.match(plannedCorpus, /createRuleMark\(\{/);
   assert.match(plannedCorpus, /별도 `encodeRule`\/`editRuleMark`가 아니라/);
   assert.match(plannedCorpus, /encodeStroke\(\{ target\?: UserId; value: NonEmptyString \}\)/);

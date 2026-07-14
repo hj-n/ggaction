@@ -15,7 +15,7 @@ appearance vocabulary, encoding reassignment, continuous color와 field-driven o
 - [x] Contract 충돌과 Phase 10 경계 명시
 - [x] STEP1~STEP8 실행 계획
 - [x] Canonical baseline primitive 승인과 equivalence
-- [ ] Primitive batch A 승인
+- [x] Primitive batch A 승인
 - [ ] `editScale`, point shape, `editPointMark`, palette 구현
 - [ ] Reassignment primitive 승인과 구현
 - [ ] Continuous appearance primitive 승인과 구현

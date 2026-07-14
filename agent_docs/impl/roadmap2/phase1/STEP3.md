@@ -7,9 +7,9 @@ Gate A에서 승인된 네 primitive를 재현하도록 `editScale`, shared poin
 
 ## 진행 상태
 
-- [ ] `editScale` selector, patch normalization과 atomic validation
-- [ ] Linear/time/ordinal domain/range/policy editing
-- [ ] Scale materialization plan과 deterministic consumer deduplication
+- [x] `editScale` selector, patch normalization과 atomic validation
+- [x] Linear/time/ordinal domain/range/policy editing
+- [x] Scale materialization plan과 deterministic consumer deduplication
 - [ ] Shared `PointShape` 12종 validation과 geometry recipes
 - [ ] Shape target-area normalization과 Canvas path parity
 - [ ] `createPointMark`, `editPointMark`, `encodeShape`, legend symbol 공유

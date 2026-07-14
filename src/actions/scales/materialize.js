@@ -144,7 +144,7 @@ export const rematerializeScale = action(
       );
     }
 
-    const resolvedScale = isOrdinalOffset
+    let resolvedScale = isOrdinalOffset
       ? resolveOrdinalOffsetScale({
           domain: scale.domain,
           values: allValues,
@@ -180,8 +180,18 @@ export const rematerializeScale = action(
                 ? validateTimeScaleType(scale.type)
                 : validateLinearScaleType(scale.type),
             domain,
-            range
+            range,
+            ...(scale.clamp === undefined ? {} : { clamp: scale.clamp })
           };
+    if (scale.reverse === true) {
+      resolvedScale = {
+        ...resolvedScale,
+        range: [...resolvedScale.range].reverse(),
+        ...(resolvedScale.step === undefined
+          ? {}
+          : { step: -resolvedScale.step })
+      };
+    }
     let next = this._withResolvedScale(id, resolvedScale);
 
     for (const { consumer, values } of valuesByConsumer) {
@@ -194,7 +204,9 @@ export const rematerializeScale = action(
         property: channel === "color" ? "fill" : channel,
         value: isOrdinalAppearance
           ? mapOrdinalValues(values, domain, range)
-          : mapLinearValues(values, domain, range)
+          : mapLinearValues(values, resolvedScale.domain, resolvedScale.range, {
+              clamp: resolvedScale.clamp ?? false
+            })
       });
     }
 

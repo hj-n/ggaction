@@ -356,7 +356,7 @@ are available on programs used by extension actions.
 | Semantic primitive | `editSemantic({ property, value })` |
 | Graphic primitive | `createGraphics({ id, type, length?, before?, after? })` |
 | Graphic primitive | `editGraphics({ target, property, value })` |
-| Scale action | `createScale({ id, type?, domain?, range?, nice?, zero? })` |
+| Scale actions | `createScale({ id, type?, domain?, range?, nice?, zero? })`, `editScale({ id?, domain?, range?, nice?, zero?, clamp?, reverse? })` |
 
 See [Action authoring](../extension/action-authoring.md) and
 [Primitive API](../extension/primitives.md).

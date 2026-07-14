@@ -47,7 +47,8 @@ export function deriveGroupedRectangles(required, resolved, band) {
   const baseline = mapLinearValues(
     [yScale.domain[0]],
     yScale.domain,
-    yScale.range
+    yScale.range,
+    { clamp: yScale.clamp ?? false }
   )[0];
   const cells = [...deriveBarMeans(dataset.values, layer).values].sort(
     (left, right) =>
@@ -71,7 +72,12 @@ export function deriveGroupedRectangles(required, resolved, band) {
         direction * (
           offsetStart + offsetScale.step / 2 - offsetMidpoint
         );
-    const valueY = mapLinearValues([cell.y], yScale.domain, yScale.range)[0];
+    const valueY = mapLinearValues(
+      [cell.y],
+      yScale.domain,
+      yScale.range,
+      { clamp: yScale.clamp ?? false }
+    )[0];
 
     return {
       x: center - width / 2,

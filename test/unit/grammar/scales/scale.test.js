@@ -75,6 +75,14 @@ test("maps linear values and centers a constant domain", () => {
     () => mapLinearValues([NaN], [2, 2], [10, 20]),
     /finite numbers/
   );
+  assert.deepEqual(
+    mapLinearValues([-5, 5, 15], [0, 10], [20, 100], { clamp: true }),
+    [20, 60, 100]
+  );
+  assert.throws(
+    () => mapLinearValues([5], [0, 10], [20, 100], { clamp: "yes" }),
+    /must be a boolean/
+  );
 });
 
 test("stabilizes a near-constant nice domain", () => {

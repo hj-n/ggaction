@@ -91,7 +91,12 @@ function resolveGeometry(program, channel, config) {
     } else {
       const low = Math.min(...scale.domain), high = Math.max(...scale.domain);
       if (config.at < low || config.at > high) throw new RangeError("Axis title at value must be inside the scale domain.");
-      along = mapLinearValues([config.at], scale.domain, scale.range)[0];
+      along = mapLinearValues(
+        [config.at],
+        scale.domain,
+        scale.range,
+        { clamp: scale.clamp ?? false }
+      )[0];
     }
   }
   return channel === "x"

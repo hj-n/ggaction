@@ -59,7 +59,9 @@ function geometry(program, channel, config) {
   }
   const positions = scale.type === "ordinal"
     ? mapOrdinalPositionValues(values, scale)
-    : mapLinearValues(values, domain, scale.range);
+    : mapLinearValues(values, domain, scale.range, {
+        clamp: scale.clamp ?? false
+      });
   const baseline = channel === "x" ? bounds.y + bounds.height : bounds.x;
   return channel === "x"
     ? { values, x1: positions, y1: baseline, x2: positions, y2: baseline + config.length }

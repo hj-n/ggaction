@@ -83,7 +83,9 @@ function resolve(program, channel, config) {
   }
   const positions = scale.type === "ordinal"
     ? mapOrdinalPositionValues(values, scale)
-    : mapLinearValues(values, scale.domain, scale.range);
+    : mapLinearValues(values, scale.domain, scale.range, {
+        clamp: scale.clamp ?? false
+      });
   const text = values.map(value =>
     scale.type === "time"
       ? formatTimeTick(value, scale.domain)

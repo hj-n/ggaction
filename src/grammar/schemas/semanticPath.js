@@ -66,7 +66,9 @@ const ENTITY_PATHS = Object.freeze({
   },
   scale: {
     collection: "scales",
-    properties: new Set(["type", "domain", "range", "nice", "zero"])
+    properties: new Set([
+      "type", "domain", "range", "nice", "zero", "clamp", "reverse"
+    ])
   },
   coordinate: {
     collection: "coordinates",

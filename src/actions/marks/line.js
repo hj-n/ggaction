@@ -111,12 +111,14 @@ const rematerializeLineMark = action(
       const x = mapLinearValues(
         series.values.map(value => value.x),
         xScale.domain,
-        xScale.range
+        xScale.range,
+        { clamp: xScale.clamp ?? false }
       );
       const y = mapLinearValues(
         series.values.map(value => value.y),
         yScale.domain,
-        yScale.range
+        yScale.range,
+        { clamp: yScale.clamp ?? false }
       );
 
       return series.values.map((_, index) => ({ x: x[index], y: y[index] }));

@@ -83,7 +83,9 @@ export const rematerializeSizeLegend = action(
       (_, index) => scale.domain[0] +
         index / (config.count - 1) * (scale.domain[1] - scale.domain[0])
     );
-    const areas = mapLinearValues(values, scale.domain, scale.range);
+    const areas = mapLinearValues(values, scale.domain, scale.range, {
+      clamp: scale.clamp ?? false
+    });
     const itemY = values.map((_, index) => titleY + 34 + index * 40);
     let next = this
       .editGraphics({ target: "sizeLegendSymbols", property: "length", value: values.length })

@@ -66,7 +66,9 @@ function resolveMappedValues(program, layer, dataset, channel) {
     : readQuantitativeField(dataset.values, encoding.field);
   return channel === "color" || channel === "shape"
     ? mapOrdinalValues(values, scale.domain, scale.range)
-    : mapLinearValues(values, scale.domain, scale.range);
+    : mapLinearValues(values, scale.domain, scale.range, {
+        clamp: scale.clamp ?? false
+      });
 }
 
 function compactProperties(properties) {

@@ -103,12 +103,14 @@ export function deriveHistogramRectangles(required, resolved) {
     const [x1, x2] = mapLinearValues(
       [segment.start, segment.end],
       xScale.domain,
-      xScale.range
+      xScale.range,
+      { clamp: xScale.clamp ?? false }
     );
     const [y1, y2] = mapLinearValues(
       [segment.stackStart, segment.stackEnd],
       yScale.domain,
-      yScale.range
+      yScale.range,
+      { clamp: yScale.clamp ?? false }
     );
     return {
       x: Math.min(x1, x2),

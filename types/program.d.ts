@@ -55,6 +55,16 @@ export interface ScaleOptions {
   palette?: string;
 }
 
+export interface EditScaleOptions {
+  id?: string;
+  domain?: "auto" | readonly unknown[];
+  range?: "auto" | readonly unknown[];
+  nice?: boolean;
+  zero?: boolean;
+  clamp?: boolean;
+  reverse?: boolean;
+}
+
 export interface PositionEncodingOptions {
   field: string;
   target?: string;
@@ -168,6 +178,7 @@ export class ChartProgram {
 
   createCoordinate(options?: ActionOptions): ChartProgram;
   createScale(options: ActionOptions & { id: string }): ChartProgram;
+  editScale(options: EditScaleOptions): ChartProgram;
   createDerivedData(options: ActionOptions): ChartProgram;
   createRegressionBand(options: ActionOptions & { id: string }): ChartProgram;
   createRegressionLine(options: ActionOptions & { id: string }): ChartProgram;

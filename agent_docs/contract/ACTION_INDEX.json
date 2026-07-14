@@ -1014,9 +1014,9 @@
       "layer": "user-facing",
       "domain": "core",
       "status": "implemented",
-      "lifecycle": "Stable resource, edit gap",
-      "update": "Equivalent recreation only",
-      "audit": "`editScale` — Planned",
+      "lifecycle": "Mutable resource",
+      "update": "`editScale`",
+      "audit": "Complete",
       "coverage": {
         "contract": "complete",
         "effects": "complete",
@@ -1025,6 +1025,24 @@
       "contract": {
         "file": "agent_docs/contract/current/CORE.md",
         "anchor": "createscale"
+      }
+    },
+    {
+      "name": "editScale",
+      "layer": "user-facing",
+      "domain": "core",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Edits an existing scale",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/CORE.md",
+        "anchor": "editscale"
       }
     },
     {
@@ -1270,15 +1288,6 @@
       "contract": {
         "file": "agent_docs/contract/planned/EDITING.md",
         "anchor": "regression-component-edits"
-      }
-    },
-    {
-      "name": "editScale",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/SCALES.md",
-        "anchor": "editscale"
       }
     },
     {

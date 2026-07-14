@@ -149,7 +149,9 @@ export function resolveGridGeometry(program, config) {
   if (!values.every(value => value >= low && value <= high)) {
     throw new RangeError("Grid values must be inside the scale domain.");
   }
-  const positions = mapLinearValues(values, scale.domain, scale.range);
+  const positions = mapLinearValues(values, scale.domain, scale.range, {
+    clamp: scale.clamp ?? false
+  });
   return config.direction === "horizontal"
     ? { values, x1: bounds.x, y1: positions, x2: bounds.x + bounds.width, y2: positions }
     : { values, x1: positions, y1: bounds.y, x2: positions, y2: bounds.y + bounds.height };

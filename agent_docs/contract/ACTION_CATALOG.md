@@ -64,7 +64,8 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | user-facing | [`createGuides`](current/LEGEND_AND_TITLE.md#createguides) | legend_and_title | Aggregate create-only | Intentional; child edit gaps remain | ✅ / ✅ / ⚠️ |
 | user-facing | [`createTitle`](current/LEGEND_AND_TITLE.md#createtitle) | legend_and_title | Stable resource, edit gap | `editTitle` — Planned | ✅ / ✅ / ✅ |
 | user-facing | [`createCoordinate`](current/CORE.md#createcoordinate) | core | Structural create-only | Intentional | ✅ / ✅ / ✅ |
-| user-facing | [`createScale`](current/CORE.md#createscale) | core | Stable resource, edit gap | `editScale` — Planned | ✅ / ✅ / ⚠️ |
+| user-facing | [`createScale`](current/CORE.md#createscale) | core | Mutable resource | Complete | ✅ / ✅ / ⚠️ |
+| user-facing | [`editScale`](current/CORE.md#editscale) | core | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`createDerivedData`](current/CORE.md#createderiveddata) | core | Immutable create-only | Intentional | ✅ / ✅ / ⚠️ |
 | user-facing | [`createRegressionBand`](current/STATISTICS.md#createregressionband) | statistics | Stable resource, edit gap | `editRegressionBand` — Planned | ✅ / ✅ / ⚠️ |
 | user-facing | [`createRegressionLine`](current/STATISTICS.md#createregressionline) | statistics | Stable resource, edit gap | `editRegressionLine` — Planned | ✅ / ✅ / ⚠️ |
@@ -91,7 +92,6 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | `editPointMark` | accepted | [Open](planned/EDITING.md#mark-edits) |
 | `editRegressionBand` | accepted | [Open](planned/EDITING.md#regression-component-edits) |
 | `editRegressionLine` | accepted | [Open](planned/EDITING.md#regression-component-edits) |
-| `editScale` | accepted | [Open](planned/SCALES.md#editscale) |
 | `editTitle` | accepted | [Open](planned/EDITING.md#edittitle) |
 | `editVerticalGrid` | accepted | [Open](planned/EDITING.md#directional-grid-edits) |
 | `encodeX2` | accepted | [Open](planned/ENCODINGS.md#horizontal-ranged-position) |

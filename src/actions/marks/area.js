@@ -92,12 +92,14 @@ const rematerializeAreaMark = action(
       const x = mapLinearValues(
         series.values.map(value => value.x),
         xScale.domain,
-        xScale.range
+        xScale.range,
+        { clamp: xScale.clamp ?? false }
       );
       const lower = mapLinearValues(
         series.values.map(value => value.y),
         yScale.domain,
-        yScale.range
+        yScale.range,
+        { clamp: yScale.clamp ?? false }
       );
       if (densityTransform !== undefined) {
         const densityScale = derived.mode === "y-density" ? yScale : xScale;
@@ -107,7 +109,8 @@ const rematerializeAreaMark = action(
         const baseline = mapLinearValues(
           [0],
           densityScale.domain,
-          densityScale.range
+          densityScale.range,
+          { clamp: densityScale.clamp ?? false }
         )[0];
         return derived.mode === "y-density"
           ? [
@@ -124,7 +127,8 @@ const rematerializeAreaMark = action(
       const upper = mapLinearValues(
         series.values.map(value => value.y2),
         yScale.domain,
-        yScale.range
+        yScale.range,
+        { clamp: yScale.clamp ?? false }
       );
       return [
         ...x.map((value, index) => ({ x: value, y: lower[index] })),

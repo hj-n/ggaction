@@ -339,3 +339,46 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   - ✅ Covered: explicit domain overrides nice/zero; zero applies before nice on auto linear domain.
 - 🟡 Planned: clamp, reverse and channel-valid unknown/missing policies.
 - Evidence: `test/unit/actions/scales/scale-actions.test.js` and grammar scale tests.
+
+## `editScale`
+
+- Implemented: immutable edits for existing `linear | time | ordinal` scales.
+- Signature: `editScale({ id?, domain?, range?, nice?, zero?, clamp?, reverse? })`.
+- `id`는 existing scale을 선택한다. 생략하면 current scale, 그렇지 않으면 유일한 scale을 사용하며
+  안전하게 하나를 정할 수 없으면 explicit ID를 요구한다.
+- 최소 한 editable property가 필요하다. `type`, scale 삭제, consumer rebind와 `unknown`은 지원하지 않는다.
+- `domain`/`range`의 `"auto"`는 reset이고 omission은 기존 값을 보존한다. Explicit domain은
+  `nice`/`zero`보다 우선하며 `reverse`는 auto 또는 explicit 최종 range에 적용된다.
+- `nice`는 linear/time, `zero`는 linear, `clamp`는 linear/time에만 적용된다. `reverse`는 현재
+  linear/time/ordinal scale에서 지원한다.
+- Complete patch와 shared-consumer channel compatibility를 먼저 검증한 뒤 semantic scale을 수정하고,
+  scale, mark, axes, grids와 legend consumer를 wrapped materialization plan으로 갱신한다.
+- 실패하면 이전 program의 semantic, graphic, context와 trace는 변하지 않는다.
+
+### Formal values — `editScale`
+
+```typescript
+type EditableCurrentScale = {
+  id?: UserId;
+  domain?: "auto" | readonly unknown[];
+  range?: "auto" | readonly unknown[];
+  nice?: boolean;
+  zero?: boolean;
+  clamp?: boolean;
+  reverse?: boolean;
+};
+```
+
+- Implemented for existing `linear | time | ordinal` scales.
+- Planned (NOT IMPLEMENTED): `unknown` mapping and the additional scale types in
+  [`../planned/SCALES.md`](../planned/SCALES.md).
+- Proposed (NOT IMPLEMENTED): no additional direct `editScale` surface beyond the planned vocabulary.
+
+### Value coverage — `editScale`
+
+- ✅ Covered: existing scale selection through explicit ID, current scale, sole scale, unknown and ambiguous failures.
+- ✅ Covered: domain/range patch, `"auto"` reset, omission preservation and caller-owned array isolation.
+- ✅ Covered: `nice`, `zero`, `clamp`, `reverse`, type compatibility and invalid value rejection.
+- ✅ Covered: concrete point/guide rematerialization, immutable failure and nested trace.
+- Evidence: `test/unit/actions/scales/edit-scale.test.js` and
+  `test/unit/grammar/scales/scale.test.js`.

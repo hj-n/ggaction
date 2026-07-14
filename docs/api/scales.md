@@ -16,6 +16,17 @@ title: Scale Options
 Encoding actions accept a nested `scale` object. Omitted properties use channel
 defaults and stored program state.
 
+Existing scales can be changed with `editScale`:
+
+```javascript
+const reversed = program.editScale({ id: "x", reverse: true });
+```
+
+`id` may be omitted when the current scale or the program's only scale is
+unambiguous. At least one of `domain`, `range`, `nice`, `zero`, `clamp`, or
+`reverse` is required. Use `"auto"` to reset domain or range; omission preserves
+the current value.
+
 ## Continuous scales
 
 | Option | Type | Default |
@@ -36,8 +47,12 @@ The precedence is:
 
 ```text
 explicit domain > nice / zero > inferred domain
-explicit range  > inferred range
+reverse(explicit range > inferred range)
 ```
+
+`clamp: true` constrains values outside a linear or time domain to the nearest
+range endpoint. `reverse: true` reverses the final resolved range. Ordinal
+scales support `reverse` but reject `nice`, `zero`, and `clamp`.
 
 ### Binned bar x scales
 
@@ -92,7 +107,9 @@ colors, and dash patterns are stored as concrete graphical values.
 ## Errors and limitations
 
 One scale cannot be shared across different channels. Explicit domains must
-contain every observed value required by the connected consumers.
+contain every observed value required by ordinal consumers. A successful edit
+rematerializes connected marks and guides; a failed edit leaves the earlier
+immutable program unchanged.
 
 ## Related
 

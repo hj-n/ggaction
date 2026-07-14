@@ -206,6 +206,13 @@ export function validateSemanticValue(program, parsed, value) {
       if (existing?.type !== undefined && existing.type !== "linear") {
         throw new Error(`Scale type "${existing.type}" does not support zero.`);
       }
+    } else if (property === "clamp") {
+      if (typeof value !== "boolean") throw new TypeError("Scale clamp must be a boolean.");
+      if (existing?.type === "ordinal") {
+        throw new Error('Scale type "ordinal" does not support clamp.');
+      }
+    } else if (property === "reverse") {
+      if (typeof value !== "boolean") throw new TypeError("Scale reverse must be a boolean.");
     }
   }
   if (parsed.kind === "coordinate" && parsed.path[0] === "type") {

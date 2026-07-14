@@ -5,6 +5,7 @@ export type {
   CanvasOptions,
   CategoricalEncodingOptions,
   ChartProgram,
+  EditScaleOptions,
   FieldType,
   GraphicObject,
   GraphicSpec,

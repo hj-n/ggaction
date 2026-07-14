@@ -2,48 +2,12 @@
 
 These contracts are accepted future API work; they are not current public behavior.
 
-## editScale
+## Current edit baseline
 
-```typescript
-type EditableCurrentScale = {
-  id?: UserId;
-  type?: never;
-  domain?: "auto" | readonly unknown[];
-  range?: "auto" | readonly unknown[];
-  nice?: boolean;
-  zero?: boolean;
-  clamp?: boolean;
-  reverse?: boolean;
-  unknown?: never;
-};
-
-editScale(options: EditableCurrentScale): ChartProgram;
-```
-
-- `id` selects an existing named scale. When omitted, the action uses the current scale or the only
-  existing scale; no candidate or multiple candidates require an explicit ID.
-- The first implementation edits domain, range, `nice`, `zero`, `clamp`, and `reverse` for the current
-  `linear | time | ordinal` vocabulary. At least one editable property is required.
-- Scale `type` is not editable. A type change creates a new scale and the owning encoding action explicitly
-  rebinds its consumer. `editScale` rejects `type` rather than partially changing incompatible consumers.
-- `unknown` is intentionally deferred to the Phase 10 scale-vocabulary expansion and is not accepted by the
-  first implementation.
-- Explicit domain takes precedence over `zero` and `nice`: stored policies remain but do not rewrite explicit
-  bounds. Setting domain to `"auto"` resolves `zero` first and `nice` second. Explicit range takes precedence
-  over Canvas/palette auto resolution, and `reverse` applies after the final auto or explicit range is resolved.
-- Setting domain or range to `"auto"` is the only reset syntax. Omission means preserve the stored property;
-  `undefined` is not a removal value.
-- The complete patch is normalized and checked against every shared consumer before changing the program.
-  Scale-type/channel compatibility continues to restrict which properties and values are valid; for example,
-  ordinal rejects `nice`, `zero`, and `clamp`, while time rejects `zero`.
-- On success the action performs one semantic scale update and invokes the registered scale materialization
-  plan. Marks, related axes/grids, and legends are rematerialized in deterministic deduplicated order. It does
-  not delete named scales, rebind consumers, or infer a different scale.
-- Any validation or downstream materialization failure leaves semantic, graphic, context, and trace state of
-  the previous program unchanged.
-- Status: Planned, NOT IMPLEMENTED. Current linear/time/ordinal edits, inference/ambiguity, auto reset,
-  explicit precedence, shared-consumer compatibility, atomic failure, trace order and Canvas/guide/legend
-  rematerialization coverage are required. Phase 10 adds `unknown` and applies the same lifecycle to new types.
+`editScale` for `linear | time | ordinal` scales, including domain/range reset, `nice`, `zero`, `clamp`,
+`reverse` and deterministic consumer rematerialization, is implemented and documented in
+[`../current/CORE.md`](../current/CORE.md#editscale). This file retains only scale types and mapping policies
+that are still planned.
 
 ## Scale type vocabulary
 
