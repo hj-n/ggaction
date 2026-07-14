@@ -15,9 +15,10 @@ Catalog의 최상위 분류는 두 개뿐이다.
 
 `action()` wrapper와 renderer는 action method가 아니므로 제외한다. Runtime trace에만
 나타나는 `rematerializePointMark`, `createLegendSymbols` 같은 내부 wrapped action도
-Catalog 본문에서 제외한다. Public type에 선언된 materialization action은 현재 지원되는
-direct call이므로 User-facing actions에 포함한다. 이 경계가 바뀌면 type, public reference,
-Catalog와 contract test를 같은 변경에서 갱신해야 한다.
+direct action 계약 본문에서 제외한다. 모든 `materialize*`와 `rematerialize*` action은
+상위 domain action이 호출하는 internal wrapped action이며 public direct call이나 primitive가
+아니다. 전체 internal materialization inventory는 별도 표로 관리한다. 이 경계가 바뀌면 type,
+public reference, Catalog와 contract test를 같은 변경에서 갱신해야 한다.
 
 ## 상태와 coverage 표기
 
@@ -99,21 +100,39 @@ Coverage 퍼센트는 사용하지 않는다. 체크된 case는 반드시 아래
 | User-facing | [`createVerticalGrid`](#createverticalgrid) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`createLegend`](#createlegend) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`createSizeLegend`](#createsizelegend) | Implemented | ✅ | ✅ | ✅ |
-| User-facing | [`rematerializeSizeLegend`](#rematerializesizelegend) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`createGuides`](#createguides) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`createTitle`](#createtitle) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`createCoordinate`](#createcoordinate) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`createScale`](#createscale) | Implemented | ✅ | ✅ | ⚠️ |
-| User-facing | [`rematerializeScale`](#rematerializescale) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`createDerivedData`](#createderiveddata) | Implemented | ✅ | ✅ | ⚠️ |
-| User-facing | [`materializeFilteredData`](#materializefiltereddata) | Implemented | ✅ | ✅ | ✅ |
-| User-facing | [`materializeRegressionData`](#materializeregressiondata) | Implemented | ✅ | ✅ | ✅ |
-| User-facing | [`materializeDensityData`](#materializedensitydata) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`createRegressionBand`](#createregressionband) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`createRegressionLine`](#createregressionline) | Implemented | ✅ | ✅ | ⚠️ |
 | Primitive | [`editSemantic`](#editsemantic) | Implemented | ✅ | ✅ | ⚠️ |
 | Primitive | [`createGraphics`](#creategraphics) | Implemented | ✅ | ✅ | ✅ |
 | Primitive | [`editGraphics`](#editgraphics) | Implemented | ✅ | ✅ | ⚠️ |
+
+## Internal materialization inventory
+
+이 표는 runtime과 trace에 존재하지만 public type과 direct action 계약에서 제외되는 wrapped
+action의 전체 목록이다. 각 action은 해당 state 또는 graphical consumer를 소유한 public
+domain action을 통해서만 실행한다.
+
+| Internal action | Owning domain |
+| --- | --- |
+| `materializeDensityData` | density data actions |
+| `materializeFilteredData` | filter data actions |
+| `materializeRegressionData` | regression data actions |
+| `rematerializeAreaMark` | area mark and encoding actions |
+| `rematerializeBarMark` | bar mark and encoding actions |
+| `rematerializeGrid` | grid aggregate and Canvas actions |
+| `rematerializeHorizontalGrid` | horizontal grid and Canvas actions |
+| `rematerializeLegend` | legend, encoding, scale, and Canvas actions |
+| `rematerializeLineMark` | line mark and encoding actions |
+| `rematerializePointMark` | point mark and encoding actions |
+| `rematerializeScale` | scale-owning encoding and Canvas actions |
+| `rematerializeSizeLegend` | point size legend, scale, and Canvas actions |
+| `rematerializeTitle` | title and Canvas actions |
+| `rematerializeVerticalGrid` | vertical grid and Canvas actions |
 
 ## 상세 계약 작성 규칙
 
@@ -252,27 +271,6 @@ Coverage 퍼센트는 사용하지 않는다. 체크된 case는 반드시 아래
 - 오류: duplicate ID, unknown source, invalid/empty transform schema를 거부한다.
 - Coverage: transform schema는 data action 및 `test/charts/regression-scatterplot/semantic.test.js`에서
   검증되지만 각 transform을 이 low-level action으로 직접 호출하는 조합은 부분적이다.
-
-#### `materializeFilteredData`
-
-- Signature: `materializeFilteredData({ id })`
-- `id`: Implemented. filter transform이 하나 저장된 existing derived dataset ID다.
-- Effect: source values를 strict membership으로 필터링해 derived values만 갱신한다.
-- Coverage: `test/unit/actions/data/filter-data.test.js`에서 child trace와 결과를 검증한다.
-
-#### `materializeRegressionData`
-
-- Signature: `materializeRegressionData({ id })`
-- `id`: Implemented. regression transform이 저장된 existing derived dataset ID다.
-- Effect: provenance를 읽어 deterministic OLS values를 다시 계산한다.
-- Coverage: `test/unit/actions/data/regression-data.test.js`에서 child trace와 결과를 검증한다.
-
-#### `materializeDensityData`
-
-- Signature: `materializeDensityData({ id })`
-- `id`: Implemented. density transform이 저장된 existing derived dataset ID다.
-- Effect: KDE values를 계산하고 resolved auto bandwidth까지 provenance에 갱신한다.
-- Coverage: `test/unit/actions/data/density-data.test.js`에서 child trace와 결과를 검증한다.
 
 ### Marks
 
@@ -830,13 +828,6 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
   right-side block으로 만든다.
 - Coverage: regression-guide tests가 default 5와 explicit count, primitive equivalence를 검증한다.
 
-#### `rematerializeSizeLegend`
-
-- Signature: `rematerializeSizeLegend({})`; options를 받지 않는다.
-- Effect: stored size legend config와 최신 resolved scale/Canvas bounds에서 symbol size, label과 위치를
-  다시 계산한다.
-- Coverage: regression-guide tests에서 Canvas edit와 scale results를 검증한다.
-
 ### Aggregate guides and chart title
 
 #### `createGuides`
@@ -895,15 +886,6 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 - Coverage: `test/unit/actions/scales/scale-actions.test.js`와 grammar scale tests가 types,
   auto/explicit values, idempotence와 conflicts를 검증한다. raw `createScale`의 consumer별 ordinal range
   compatibility는 부분적이다.
-
-#### `rematerializeScale`
-
-- Signature: `rematerializeScale({ id })`.
-- `id`: existing semantic scale ID with compatible consumers.
-- Effect: 모든 connected consumer에서 domain/range를 deterministic하게 resolve해 private resolved scale을
-  갱신하고 registered mark/guide consumer action을 명시적으로 호출한다.
-- Coverage: scale-actions, consumers와 materialization-plan contract tests가 shared consumers,
-  zero-before-nice, ordering/deduplication과 errors를 검증한다.
 
 ## Primitives
 
@@ -1124,21 +1106,6 @@ type TextStyle = {
 
 - Implemented: `createDerivedData({ id: UserId; source: UserId; transform: readonly [FilterTransform | LinearRegressionTransform | GaussianDensityTransform] })`
 - Proposed (NOT IMPLEMENTED): `{ transform: readonly (FilterTransform | LinearRegressionTransform | GaussianDensityTransform)[] }`의 ordered multi-transform pipeline.
-
-### Formal values — `materializeFilteredData`
-
-- Implemented: `materializeFilteredData({ id: UserId })`
-- Proposed (NOT IMPLEMENTED): —
-
-### Formal values — `materializeRegressionData`
-
-- Implemented: `materializeRegressionData({ id: UserId })`
-- Proposed (NOT IMPLEMENTED): —
-
-### Formal values — `materializeDensityData`
-
-- Implemented: `materializeDensityData({ id: UserId })`
-- Proposed (NOT IMPLEMENTED): —
 
 ### Formal values — `createPointMark`
 
@@ -1458,11 +1425,6 @@ type LegendBorder = false | true | {
 - Implemented: `createSizeLegend({ target?: UserId; count?: IntegerAtLeast2 } = {})`
 - Proposed (NOT IMPLEMENTED): `{ position?: "right" | "bottom" | "top" | "left"; align?: LegendAlign; title?: NonEmptyString; format?: NonEmptyString }`
 
-### Formal values — `rematerializeSizeLegend`
-
-- Implemented: `rematerializeSizeLegend({} = {})`
-- Proposed (NOT IMPLEMENTED): —; future layout values belong to `createSizeLegend` config.
-
 ### Formal values — `createGuides`
 
 - Implemented: `createGuides({ axes?: false | Parameters<ChartProgram["createAxes"]>[0]; grid?: false | Parameters<ChartProgram["createGrid"]>[0]; legend?: false | Parameters<ChartProgram["createLegend"]>[0] } = {})`
@@ -1482,11 +1444,6 @@ type LegendBorder = false | true | {
 
 - Implemented: `createScale({ id: UserId; type?: ScaleType; domain?: ContinuousDomain | OrdinalDomain; range?: "auto" | readonly unknown[]; nice?: boolean; zero?: boolean })`; type별 validation이 값을 제한한다.
 - Proposed (NOT IMPLEMENTED): `{ type?: "log" | "sqrt" | "symlog"; clamp?: boolean; reverse?: boolean; unknown?: unknown }`
-
-### Formal values — `rematerializeScale`
-
-- Implemented: `rematerializeScale({ id: UserId })`
-- Proposed (NOT IMPLEMENTED): —; proposed scale types가 구현되면 resolver coverage가 추가된다.
 
 ### Formal values — `editSemantic`
 
@@ -1615,27 +1572,6 @@ type LegendBorder = false | true | {
   - 🟣 Proposed: ordered multi-transform pipeline. 각 step의 input/output field provenance와 materialization
     ownership을 먼저 정의해야 한다.
 - Evidence: data action tests와 `test/charts/regression-scatterplot/semantic.test.js`.
-
-### Value coverage — `materializeFilteredData`
-
-- `id`
-  - ✅ Covered: existing filter dataset, unknown ID, wrong transform type.
-  - No proposal: 이 action은 stored transform 재실행만 담당한다.
-- Evidence: `test/unit/actions/data/filter-data.test.js`.
-
-### Value coverage — `materializeRegressionData`
-
-- `id`
-  - ✅ Covered: existing regression dataset, unknown/wrong transform, deterministic rewrite.
-  - No proposal.
-- Evidence: `test/unit/actions/data/regression-data.test.js`.
-
-### Value coverage — `materializeDensityData`
-
-- `id`
-  - ✅ Covered: existing density dataset, unknown/wrong transform, resolved auto bandwidth persistence.
-  - No proposal.
-- Evidence: `test/unit/actions/data/density-data.test.js`.
 
 ### Value coverage — `createPointMark`
 
@@ -2181,15 +2117,6 @@ type LegendBorder = false | true | {
 - 🟣 Proposed: `position`, `align`, label format and title overrides after size block uses shared legend layout.
 - Evidence: `test/unit/actions/guides/regression-guides.test.js`.
 
-### Value coverage — `rematerializeSizeLegend`
-
-- Options
-  - ✅ Covered: `{}`/omission, unknown option rejection.
-- Stored config/domain/Canvas
-  - ✅ Covered: existing config, latest scale values and Canvas resize; missing config rejection.
-- Proposed values follow future shared size-legend layout rather than this rematerialization action.
-- Evidence: regression-guide tests.
-
 ### Value coverage — `createGuides`
 
 - `axes`, `grid`, `legend`
@@ -2248,16 +2175,6 @@ type LegendBorder = false | true | {
   - ✅ Covered: explicit domain overrides nice/zero; zero applies before nice on auto linear domain.
 - 🟣 Proposed: clamp, reverse and unknown/missing policies.
 - Evidence: `test/unit/actions/scales/scale-actions.test.js` and grammar scale tests.
-
-### Value coverage — `rematerializeScale`
-
-- `id`
-  - ✅ Covered: existing scale with single/shared consumers, unknown/incomplete/incompatible consumers.
-- resolved values
-  - ✅ Covered: linear/time/ordinal, auto/explicit domain/range, aggregate consumers, plan ordering/deduplication.
-  - ⚠️ Partial: one scale connected to every supported guide/mark consumer type in the same program.
-- No proposal: new scale types automatically require their own resolver and consumer coverage here.
-- Evidence: scale action/consumer tests and `test/contracts/materialization-plan.test.js`.
 
 ### Value coverage — `editSemantic`
 

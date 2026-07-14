@@ -155,17 +155,18 @@ properties needed to draw the primitive to be present.
 ## Scale materialization
 
 `createScale({ id, type?, domain?, range?, nice?, zero? })` creates an
-idempotent semantic scale. `rematerializeScale({ id })` resolves all consumers
-and invokes concrete graphic edits, including connected axis updates. Aggregate
-line consumers resolve their domains from derived means rather than raw rows.
-Ordinal ranges may contain color strings, the `tableau10` descriptor, or
-validated even-length stroke-dash patterns for the matching channel.
+idempotent semantic scale. Domain actions that own scale consumers invoke the
+internal wrapped `rematerializeScale` operation to resolve all consumers and
+apply concrete graphic edits, including connected axis updates. Aggregate line
+consumers resolve their domains from derived means rather than raw rows. Ordinal
+ranges may contain color strings, the `tableau10` descriptor, or validated
+even-length stroke-dash patterns for the matching channel.
 
 ```javascript
-program
-  .createScale({ id: "x", type: "linear" })
-  .rematerializeScale({ id: "x" });
+program.createScale({ id: "x", type: "linear" });
 ```
 
-Rematerialization is explicit. It never runs merely because `semanticSpec`
-changed.
+Extension actions should call the public domain action that owns the affected
+consumer instead of calling `rematerializeScale` directly. Rematerialization is
+still explicit inside that action and remains visible in `program.trace`; it
+never runs merely because `semanticSpec` changed.

@@ -103,6 +103,17 @@ function runtimeActionMethods() {
     .filter(name => name !== "constructor");
 }
 
+function internalMaterializationInventory() {
+  const heading = "## Internal materialization inventory";
+  const start = catalog.indexOf(heading);
+  const end = catalog.indexOf("\n## ", start + heading.length);
+  const section = catalog.slice(start, end === -1 ? catalog.length : end);
+
+  return [...section.matchAll(
+    /^\| `((?:materialize|rematerialize)[A-Za-z0-9]*)` \|/gm
+  )].map(match => match[1]);
+}
+
 test("keeps the action catalog aligned with every declared direct action", () => {
   const declared = declaredProgramMethods();
   const rows = summaryRows();
@@ -141,11 +152,19 @@ test("keeps primitive and runtime-only actions out of the wrong catalog layer", 
   const declared = new Set(declaredProgramMethods());
   const cataloged = new Set(rows.map(row => row.action));
   const internal = runtimeActionMethods().filter(name => !declared.has(name));
+  const materialization = runtimeActionMethods()
+    .filter(name => /^(?:materialize|rematerialize)/.test(name))
+    .sort();
+  const inventory = internalMaterializationInventory().sort();
 
   assert.equal(internal.includes("rematerializePointMark"), true);
   assert.equal(internal.includes("createLegendSymbols"), true);
+  assert.deepEqual(inventory, materialization);
   for (const action of internal) {
     assert.equal(cataloged.has(action), false, action);
+  }
+  for (const action of materialization) {
+    assert.equal(declared.has(action), false, action);
   }
 });
 

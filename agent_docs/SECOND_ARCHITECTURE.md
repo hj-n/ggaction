@@ -644,17 +644,24 @@ default를 사용한다.
 
 ```text
 createCoordinate
-createScale / rematerializeScale
-createDerivedData와 transform별 materializer
+createScale
+createDerivedData
 encodeY2 / encodeYRange / encodeXOffset / encodeGroup
 createXAxis / createYAxis
 axis line, tick, label, title component actions
 directional grid와 legend component actions
-mark rematerialization actions
 ```
 
 Aggregate action은 이 action을 실제 wrapped child로 호출하며 validation, inference,
 materialization을 복제하지 않는다.
+
+### Internal wrapped actions
+
+`materialize*`와 `rematerialize*` action은 public direct-call API나 primitive가 아니다.
+이들은 data, scale, mark, guide 같은 의미 있는 상위 action이 호출하는 내부 wrapped
+action이며, explicit materialization 순서와 계층을 `trace`에 남긴다. 구현과 단위 테스트는
+이 메서드를 직접 다룰 수 있지만 chart author와 extension author는 이를 소유한 public
+domain action을 호출한다.
 
 ### Action Authoring Primitives
 

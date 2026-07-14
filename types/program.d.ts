@@ -164,17 +164,12 @@ export class ChartProgram {
   createVerticalGrid(options?: ActionOptions): ChartProgram;
   createLegend(options?: LegendOptions): ChartProgram;
   createSizeLegend(options?: ActionOptions): ChartProgram;
-  rematerializeSizeLegend(options?: ActionOptions): ChartProgram;
   createGuides(options?: ActionOptions): ChartProgram;
   createTitle(options: ActionOptions & { text: string; subtitle?: string }): ChartProgram;
 
   createCoordinate(options?: ActionOptions): ChartProgram;
   createScale(options: ActionOptions & { id: string }): ChartProgram;
-  rematerializeScale(options: { id: string }): ChartProgram;
   createDerivedData(options: ActionOptions): ChartProgram;
-  materializeFilteredData(options: { id: string }): ChartProgram;
-  materializeRegressionData(options: { id: string }): ChartProgram;
-  materializeDensityData(options: { id: string }): ChartProgram;
   createRegressionBand(options: ActionOptions & { id: string }): ChartProgram;
   createRegressionLine(options: ActionOptions & { id: string }): ChartProgram;
 

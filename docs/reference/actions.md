@@ -332,7 +332,7 @@ Use these actions for explicit semantic resources or focused axis control.
 | Group | Actions |
 | --- | --- |
 | Coordinate | `createCoordinate({ id?, type?, layers? })` |
-| Derived data | `createDerivedData({ id, source, transform })`, `materializeFilteredData({ id })`, `materializeRegressionData({ id })`, `materializeDensityData({ id })` |
+| Derived data | `createDerivedData({ id, source, transform })` |
 | Regression layers | `createRegressionBand({ id, ... })`, `createRegressionLine({ id, ... })` |
 | Complete channel axis | `createXAxis(options?)`, `createYAxis(options?)` |
 | Axis lines | `createXAxisLine`, `createYAxisLine`, `editXAxisLine`, `editYAxisLine` |
@@ -341,7 +341,7 @@ Use these actions for explicit semantic resources or focused axis control.
 | Tick/label groups | `createXAxisTicksAndLabels`, `createYAxisTicksAndLabels`, `editXAxisTicksAndLabels`, `editYAxisTicksAndLabels` |
 | Axis titles | `createXAxisTitle`, `createYAxisTitle`, `editXAxisTitle`, `editYAxisTitle` |
 | Grid directions | `createHorizontalGrid`, `createVerticalGrid` |
-| Point size legend | `createSizeLegend`, `rematerializeSizeLegend` |
+| Point size legend | `createSizeLegend` |
 
 See [Coordinates](../api/coordinates.md) and
 [Advanced axis components](../advanced/axis-components.md).
@@ -358,16 +358,16 @@ are available on programs used by extension actions.
 | Graphic primitive | `createGraphics({ id, type, length?, before?, after? })` |
 | Graphic primitive | `editGraphics({ target, property, value })` |
 | Scale action | `createScale({ id, type?, domain?, range?, nice?, zero? })` |
-| Scale action | `rematerializeScale({ id })` |
 
 See [Action authoring](../extension/action-authoring.md) and
 [Primitive API](../extension/primitives.md).
 
 ## Internal trace operations
 
-High-level actions call additional wrapped operations for mark, guide, title,
-and layout materialization. Names such as `rematerializePointMark`,
-`createLegendSymbols`, and `createTitleText` may therefore appear in
+High-level actions call additional wrapped operations for data, scale, mark,
+guide, title, and layout materialization. Names such as
+`materializeDensityData`, `rematerializeScale`, `rematerializePointMark`,
+`rematerializeSizeLegend`, `createLegendSymbols`, and `createTitleText` may appear in
 `program.trace`. They are deliberately absent from the public TypeScript
 declaration and this direct-call reference. Their arguments and decomposition
 may change as implementation details while the parent public action remains

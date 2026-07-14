@@ -60,6 +60,7 @@
 ## Actions and Trace
 
 - Define every authoring action through the shared `action()` wrapper.
+- Treat every `materialize*` and `rematerialize*` method as an internal wrapped action, not as a public direct-call API or an authoring primitive. The public domain action that owns the affected semantic resource must invoke it, and the resulting operation must remain visible in the trace.
 - Provide an atomic domain action when multiple semantic operations are interdependent and separately authoring them would leave an incomplete or misleading chart state.
 - When one public encoding choice requires a companion encoding, let the representative domain action create that companion through a wrapped child action. Keep the companion action available only as an advanced API when ordinary chart authors should not need to coordinate the pair manually.
 - Implement an atomic action by orchestrating the existing wrapped child actions that own the relevant validation, inference, and materialization; do not duplicate their behavior inside the aggregate.
