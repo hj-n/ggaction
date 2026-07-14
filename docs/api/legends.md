@@ -159,6 +159,10 @@ createLegend
 └─ createSizeLegend
 ~~~
 
+`createCategoricalLegend` and `createSizeLegend` are internal wrapped component
+actions. Chart and extension authors call the public `createLegend()` facade;
+the internal children remain visible in the trace.
+
 `createGuides()` selects line-series, histogram color, grouped-bar color,
 grouped-area color, and compatible point color/shape/size legends automatically.
 Pass `createGuides({ legend: false })` to opt out.

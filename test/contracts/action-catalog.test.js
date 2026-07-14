@@ -114,6 +114,17 @@ function internalMaterializationInventory() {
   )].map(match => match[1]);
 }
 
+function internalGuideComponentInventory() {
+  const heading = "## Internal guide component inventory";
+  const start = catalog.indexOf(heading);
+  const end = catalog.indexOf("\n## ", start + heading.length);
+  const section = catalog.slice(start, end === -1 ? catalog.length : end);
+
+  return [...section.matchAll(
+    /^\| `(create[A-Za-z0-9]+Legend)` \| `createLegend` \|/gm
+  )].map(match => match[1]);
+}
+
 function lifecycleRows() {
   const heading = "## Action lifecycle audit";
   const start = catalog.indexOf(heading);
@@ -189,7 +200,13 @@ test("keeps primitive and runtime-only actions out of the wrong catalog layer", 
 
   assert.equal(internal.includes("rematerializePointMark"), true);
   assert.equal(internal.includes("createLegendSymbols"), true);
+  assert.equal(internal.includes("createCategoricalLegend"), true);
+  assert.equal(internal.includes("createSizeLegend"), true);
   assert.deepEqual(inventory, materialization);
+  assert.deepEqual(internalGuideComponentInventory(), [
+    "createCategoricalLegend",
+    "createSizeLegend"
+  ]);
   for (const action of internal) {
     assert.equal(cataloged.has(action), false, action);
   }

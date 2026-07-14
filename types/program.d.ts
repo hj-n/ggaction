@@ -163,7 +163,6 @@ export class ChartProgram {
   createHorizontalGrid(options?: ActionOptions): ChartProgram;
   createVerticalGrid(options?: ActionOptions): ChartProgram;
   createLegend(options?: LegendOptions): ChartProgram;
-  createSizeLegend(options?: ActionOptions): ChartProgram;
   createGuides(options?: ActionOptions): ChartProgram;
   createTitle(options: ActionOptions & { text: string; subtitle?: string }): ChartProgram;
 

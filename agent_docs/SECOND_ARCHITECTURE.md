@@ -649,7 +649,7 @@ createDerivedData
 encodeY2 / encodeYRange / encodeXOffset / encodeGroup
 createXAxis / createYAxis
 axis line, tick, label, title component actions
-directional grid와 legend component actions
+directional grid actions
 ```
 
 Aggregate action은 이 action을 실제 wrapped child로 호출하며 validation, inference,
@@ -662,6 +662,10 @@ materialization을 복제하지 않는다.
 action이며, explicit materialization 순서와 계층을 `trace`에 남긴다. 구현과 단위 테스트는
 이 메서드를 직접 다룰 수 있지만 chart author와 extension author는 이를 소유한 public
 domain action을 호출한다.
+
+동일한 public facade 아래에서 같은 역할을 분담하는 component는 공개 경계를 대칭적으로
+유지한다. Legend에서는 `createLegend`만 public이고 `createCategoricalLegend`와
+`createSizeLegend`는 trace에 보이는 internal wrapped component다.
 
 ### Action Authoring Primitives
 

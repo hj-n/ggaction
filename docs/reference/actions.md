@@ -341,7 +341,6 @@ Use these actions for explicit semantic resources or focused axis control.
 | Tick/label groups | `createXAxisTicksAndLabels`, `createYAxisTicksAndLabels`, `editXAxisTicksAndLabels`, `editYAxisTicksAndLabels` |
 | Axis titles | `createXAxisTitle`, `createYAxisTitle`, `editXAxisTitle`, `editYAxisTitle` |
 | Grid directions | `createHorizontalGrid`, `createVerticalGrid` |
-| Point size legend | `createSizeLegend` |
 
 See [Coordinates](../api/coordinates.md) and
 [Advanced axis components](../advanced/axis-components.md).
@@ -367,7 +366,8 @@ See [Action authoring](../extension/action-authoring.md) and
 High-level actions call additional wrapped operations for data, scale, mark,
 guide, title, and layout materialization. Names such as
 `materializeDensityData`, `rematerializeScale`, `rematerializePointMark`,
-`rematerializeSizeLegend`, `createLegendSymbols`, and `createTitleText` may appear in
+`createCategoricalLegend`, `createSizeLegend`, `rematerializeSizeLegend`,
+`createLegendSymbols`, and `createTitleText` may appear in
 `program.trace`. They are deliberately absent from the public TypeScript
 declaration and this direct-call reference. Their arguments and decomposition
 may change as implementation details while the parent public action remains

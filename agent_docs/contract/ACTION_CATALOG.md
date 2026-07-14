@@ -99,7 +99,6 @@ Coverage 퍼센트는 사용하지 않는다. 체크된 case는 반드시 아래
 | User-facing | [`createHorizontalGrid`](#createhorizontalgrid) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`createVerticalGrid`](#createverticalgrid) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`createLegend`](#createlegend) | Implemented | ✅ | ✅ | ⚠️ |
-| User-facing | [`createSizeLegend`](#createsizelegend) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`createGuides`](#createguides) | Implemented | ✅ | ✅ | ⚠️ |
 | User-facing | [`createTitle`](#createtitle) | Implemented | ✅ | ✅ | ✅ |
 | User-facing | [`createCoordinate`](#createcoordinate) | Implemented | ✅ | ✅ | ✅ |
@@ -184,7 +183,6 @@ properties, rematerialization ownership과 conflict behavior를 정해야 한다
 | `createHorizontalGrid` | Stable resource, edit gap | Internal rematerialization only | `editHorizontalGrid` — Planned |
 | `createVerticalGrid` | Stable resource, edit gap | Internal rematerialization only | `editVerticalGrid` — Planned |
 | `createLegend` | Stable resource, edit gap | Internal rematerialization only | `editLegend` — Planned |
-| `createSizeLegend` | Stable resource, edit gap | Internal rematerialization only | Gap — Proposed |
 | `createGuides` | Aggregate create-only | Guide child actions | Intentional; child edit gaps remain |
 | `createTitle` | Stable resource, edit gap | Internal rematerialization only | `editTitle` — Planned |
 | `createCoordinate` | Stable resource, edit gap | Equivalent recreation only | Replacement contract — Proposed |
@@ -318,6 +316,16 @@ domain action을 통해서만 실행한다.
 | `rematerializeSizeLegend` | point size legend, scale, and Canvas actions |
 | `rematerializeTitle` | title and Canvas actions |
 | `rematerializeVerticalGrid` | vertical grid and Canvas actions |
+
+## Internal guide component inventory
+
+이 action들은 public `createLegend` facade가 호출하는 peer wrapped component다. 둘 다 public
+type과 direct action 계약에서 제외되지만 hierarchy는 `trace`에 남는다.
+
+| Internal action | Public owner | Role |
+| --- | --- | --- |
+| `createCategoricalLegend` | `createLegend` | categorical color/shape/stroke-dash block |
+| `createSizeLegend` | `createLegend` | quantitative equal-area point-size block |
 
 ## 상세 계약 작성 규칙
 
@@ -1004,15 +1012,6 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 - Proposed: left legend와 non-right point composite/size layout, continuous color legend와 interactive
   legend는 현재 확정된 public contract가 아니다.
 
-#### `createSizeLegend`
-
-- Signature: `createSizeLegend({ target?, count? })`.
-- `target`: color+shape+size가 compatible한 point mark ID; 생략 시 유일한 eligible point를 사용한다.
-- `count`: integer `>= 2`, 기본 `5`.
-- Effect: quantitative size domain에서 evenly spaced 값을 sampling해 equal-area circles, labels와 title을
-  right-side block으로 만든다.
-- Coverage: regression-guide tests가 default 5와 explicit count, primitive equivalence를 검증한다.
-
 ### Aggregate guides and chart title
 
 #### `createGuides`
@@ -1604,11 +1603,6 @@ type LegendBorder = false | true | {
 
 - Implemented: `createLegend({ target?: UserId; channels?: readonly ("color" | "strokeDash" | "shape")[]; position?: LegendPosition; align?: LegendAlign; direction?: LegendDirection; columns?: PositiveInteger; offset?: NonNegativeFinite; titlePosition?: "top" | "left"; title?: NonEmptyString; symbol?: "auto" | LegendSymbolLayer | { layers: readonly LegendSymbolLayer[] }; labels?: TextStyle; titleStyle?: TextStyle; itemGap?: PositiveFinite; border?: LegendBorder; count?: IntegerAtLeast2 } = {})`
 - Proposed (NOT IMPLEMENTED): `{ position?: "left"; symbol.point.shape?: "triangle" | "diamond"; interactive?: boolean }` plus continuous-color symbol contract.
-
-### Formal values — `createSizeLegend`
-
-- Implemented: `createSizeLegend({ target?: UserId; count?: IntegerAtLeast2 } = {})`
-- Proposed (NOT IMPLEMENTED): `{ position?: "right" | "bottom" | "top" | "left"; align?: LegendAlign; title?: NonEmptyString; format?: NonEmptyString }`
 
 ### Formal values — `createGuides`
 
@@ -2294,13 +2288,6 @@ type LegendBorder = false | true | {
   - ✅ Covered: omission→5, integer `>=2`, `<2`/non-integer rejection for size block.
 - 🟣 Proposed: non-right point composite/size layout, continuous color and interactive legends.
 - Evidence: series, histogram, grouped-bar, top categorical and regression legend tests.
-
-### Value coverage — `createSizeLegend`
-
-- `target`: ✅ Covered unique inference, explicit eligible point, ambiguity/incompatible target.
-- `count`: ✅ Covered default `5`, explicit `>=2`, 0/1/non-integer rejection.
-- 🟣 Proposed: `position`, `align`, label format and title overrides after size block uses shared legend layout.
-- Evidence: `test/unit/actions/guides/regression-guides.test.js`.
 
 ### Value coverage — `createGuides`
 

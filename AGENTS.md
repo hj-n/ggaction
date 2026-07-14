@@ -40,6 +40,7 @@
 - Maintain three clear layers: the default Chart Authoring API, the public Action Authoring API, and private library internals.
 - Assign every public action an explicit lifecycle in the action catalog: immutable create-only, mutable resource, assignment, aggregate create-only, stable resource with an edit gap, or primitive. Do not infer that every `create*` action mechanically requires an `edit*` counterpart.
 - A stable independently addressable resource must either have a supported edit path or an explicit cataloged gap. Define editable properties, rematerialization ownership, and conflict behavior before adding its edit action; aggregate actions remain create-only and delegate updates to child actions.
+- Keep sibling component actions behind the same public facade unless a distinct direct authoring use case justifies exposing one. Internal wrapped components remain visible in traces, but do not expose one sibling merely because implementation staging made it convenient.
 - The default `ggaction` entry point serves chart authors through domain-specific actions and rendering.
 - The `ggaction/extension` entry point serves action authors through `ChartProgram`, `action()`, primitive actions, and trace inspection.
 - The Node-only `ggaction/png` entry point exports completed programs without adding Node dependencies to the browser entry point.
