@@ -209,10 +209,10 @@ the y channel; pass `densityChannel: "x"` for a horizontal orientation.
 encodeColor({ field, target?, fieldType?, layout?, scale? })
 ```
 
-Create or compatibly replace nominal point fill, line-series color, grouped area fill, stacked
-histogram color, or grouped ordinal-bar color. Area color must match an
-existing group field. Grouped bars require `layout: "group"` and record
-`encodeXOffset` as a child action.
+Create or compatibly replace point fill, line-series color, grouped area fill,
+stacked histogram color, or grouped ordinal-bar color. Quantitative and temporal
+point fields use a sequential scale with concrete interpolated colors. Nominal
+grouped bars require `layout: "group"` and record `encodeXOffset` as a child.
 [Series encodings](../api/series-encodings.md)
 
 ### `encodeStrokeDash`
@@ -254,9 +254,12 @@ Encode or replace a nominal field with the shared 12-value point-shape vocabular
 
 ```javascript
 encodeOpacity({ value, target? })
+encodeOpacity({ field, target?, fieldType?, scale? })
 ```
 
-Apply a constant point opacity from `0` to `1`.
+Apply a constant point opacity from `0` to `1`, or map a quantitative field
+through a linear opacity scale. The two modes are mutually exclusive and may
+replace each other through the same action.
 [Appearance encodings](../api/appearance.md)
 
 ### `encodeBarWidth`
@@ -312,14 +315,14 @@ marks. [Grids](../api/grids.md)
 ```javascript
 createLegend({
   target?, channels?, position?, align?, direction?, columns?, offset?,
-  titlePosition?, title?, symbol?, labels?, titleStyle?, itemGap?, border?, count?
+  titlePosition?, title?, symbol?, labels?, titleStyle?, itemGap?, border?, count?,
+  gradient?
 })
 ```
 
-Create applicable categorical or point size legend blocks. Categorical legends
-use a right-side default and support explicit bottom or top placement. Top
-layouts support row/column fill and a title above or left of the items; point
-color/shape/size composites currently use stacked right-side blocks.
+Create categorical, point-size, continuous-color gradient, or field-opacity
+sample legends. Continuous legends support right, left, top, and bottom
+placement; categorical layouts retain their documented position constraints.
 [Legends](../api/legends.md)
 
 ### `createTitle`

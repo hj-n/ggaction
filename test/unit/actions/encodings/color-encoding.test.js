@@ -251,6 +251,37 @@ test("supports continuous palette extent, interpolation, and reversal", () => {
   );
 });
 
+test("rematerializes every point consumer of one sequential color scale", () => {
+  const values = [{ value: 0 }, { value: 5 }, { value: 10 }];
+  const shared = chart()
+    .createCanvas({ width: 200, height: 160, margin: 20 })
+    .createData({ id: "cars", values })
+    .createPointMark({ id: "first" })
+    .encodeColor({
+      target: "first",
+      field: "value",
+      fieldType: "quantitative",
+      scale: { id: "sharedColor" }
+    })
+    .createPointMark({ id: "second" })
+    .encodeColor({
+      target: "second",
+      field: "value",
+      fieldType: "quantitative",
+      scale: { id: "sharedColor" }
+    });
+  const before = shared.graphicSpec.objects.first.children[0].properties.fill;
+  const reversed = shared.editScale({ id: "sharedColor", reverse: true });
+  assert.notEqual(
+    reversed.graphicSpec.objects.first.children[0].properties.fill,
+    before
+  );
+  assert.deepEqual(
+    reversed.graphicSpec.objects.first.children.map(child => child.properties.fill),
+    reversed.graphicSpec.objects.second.children.map(child => child.properties.fill)
+  );
+});
+
 test("validates color encoding inputs", () => {
   const program = createPointProgram();
 

@@ -9,13 +9,13 @@ title: Legends
 
 | Action | Shortest call | Inference/defaults | Result |
 | --- | --- | --- | --- |
-| `createLegend` | `createLegend()` | Current/unique compatible mark; right position | Categorical or quantitative symbols, labels, and title |
+| `createLegend` | `createLegend()` | Current/unique compatible mark; right position | Categorical, size, gradient, or opacity guide |
 
 ## `createLegend(options?)`
 
 Creates inferred legend blocks. It supports combined line-series,
-color-stacked histogram, grouped ordinal-bar, grouped area, composite point-series, and
-quantitative point-size legends.
+color-stacked histogram, grouped ordinal-bar, grouped area, composite point-series,
+quantitative point-size, continuous-color gradient, and field-opacity legends.
 
 ~~~javascript
 program.createLegend();
@@ -32,12 +32,14 @@ Every categorical legend uses the same right-side default:
 | point | explicitly selected `color` only | `right` | swatch |
 | point + matching line | `color` + `shape` | `right` | line over typed point |
 | quantitative point size | `size` | `right`, below point series | five equal-area circles |
+| quantitative/temporal point color | `color` | `right` | continuous gradient with five labels |
+| quantitative point opacity | `opacity` | `right` | five constant-size circles with sampled opacity |
 
 | Option | Type | Default |
 | --- | --- | --- |
 | `target` | compatible mark ID | current or unique compatible mark |
-| `channels` | unique categorical channel array | compatible encoded channels |
-| `position` | `"right"`, `"bottom"`, or `"top"` | `"right"` |
+| `channels` | compatible channel array; continuous guides use one `color` or `opacity` | compatible encoded channels |
+| `position` | categorical: `right/bottom/top`; continuous: `right/left/bottom/top` | `"right"` |
 | `align` | `"left"`, `"center"`, or `"right"` | `"center"` |
 | `direction` | `"horizontal"` or `"vertical"` | `"horizontal"` |
 | `columns` | positive integer | all items in one row at top |
@@ -50,6 +52,7 @@ Every categorical legend uses the same right-side default:
 | `itemGap` | positive number | `28` at right, `20` at bottom |
 | `border` | boolean or border style object | `false` |
 | `count` | size-legend symbol count of at least `2` | `5` for point legends |
+| `gradient` | `{ length?, thickness? }` with positive values | `{ length: 120, thickness: 12 }` |
 
 Pass `position: "bottom"` explicitly for a horizontal legend. Bottom legends
 can use left, center, or right alignment; right legends require center
@@ -70,6 +73,35 @@ densityArea.createLegend({
   offset: 8
 });
 ~~~
+
+## Continuous color and opacity
+
+A point `color` encoding with a quantitative or temporal field produces a
+continuous gradient. Right/left positions orient it vertically; top/bottom
+orient it horizontally. The implementation writes 60 adjacent concrete rects,
+tick lines, and text to `graphicSpec`; renderers do not interpolate colors.
+
+~~~javascript
+program.createLegend({
+  channels: ["color"],
+  count: 5,
+  gradient: { length: 120, thickness: 12 }
+});
+~~~
+
+A field-driven quantitative `opacity` encoding produces representative point
+samples in ascending domain order. Reversing the opacity range changes symbol
+appearance without reversing labels. Its neutral default symbol is a circle
+with radius `7` and fill `#4c78a8`; pass one `{ type: "point", ... }` recipe to
+override it.
+
+~~~javascript
+program.createLegend({ channels: ["opacity"], position: "left" });
+~~~
+
+Gradient legends reject categorical-only `symbol`, `columns`, `direction`, and
+`itemGap`. Opacity legends reject `columns`, `direction`, and `gradient`.
+Both forms require enough requested Canvas margin and never resize the Canvas.
 
 ## Layered symbols
 
@@ -152,25 +184,24 @@ only concrete `graphicSpec` values.
 
 ~~~text
 createLegend
-├─ createCategoricalLegend
-│  ├─ createLegendBackground?
-│  ├─ createLegendSymbols
-│  ├─ createLegendLabels
-│  └─ createLegendTitle
-└─ createSizeLegend
+├─ createCategoricalLegend | createGradientLegend | createOpacityLegend
+│  └─ concrete background?, symbols/strips, labels, and title
+└─ createSizeLegend?
 ~~~
 
-`createCategoricalLegend` and `createSizeLegend` are internal wrapped component
-actions. Chart and extension authors call the public `createLegend()` facade;
-the internal children remain visible in the trace.
+The component actions shown above are internal wrapped actions. Chart and
+extension authors call the public `createLegend()` facade; the children remain
+visible in the trace.
 
 `createGuides()` selects line-series, histogram color, grouped-bar color,
-grouped-area color, and compatible point color/shape/size legends automatically.
+grouped-area color, and compatible point color/shape/size, sequential color,
+or standalone field-opacity legends automatically.
 Pass `createGuides({ legend: false })` to opt out.
 
 ## Errors and limitations
 
-General continuous color legends and interactive legends are unsupported.
+Continuous color is currently limited to point marks, and field opacity is
+limited to quantitative point fields. Interactive legends are unsupported.
 Combined point-series and quantitative-size legends currently require right
 position so both blocks remain in one vertical stack.
 Right-side layout requires sufficient right margin; bottom layout requires

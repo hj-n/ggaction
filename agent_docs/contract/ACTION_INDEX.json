@@ -1540,28 +1540,6 @@
       }
     },
     {
-      "id": "field-driven-opacity",
-      "kind": "parameter",
-      "name": "Field-driven opacity",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/ENCODINGS.md",
-        "anchor": "field-driven-opacity"
-      }
-    },
-    {
-      "id": "field-driven-opacity-legend",
-      "kind": "parameter",
-      "name": "Field-driven opacity legend",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/GUIDES_AND_LAYOUT.md",
-        "anchor": "field-driven-opacity-legend"
-      }
-    },
-    {
       "id": "histogram-bin-controls",
       "kind": "parameter",
       "name": "Histogram bin controls",

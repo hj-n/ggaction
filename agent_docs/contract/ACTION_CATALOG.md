@@ -119,8 +119,6 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | parameter | Color layout vocabulary | accepted | [Open](planned/ENCODINGS.md#color-layout-vocabulary) |
 | parameter | Continuous color vertical contract | accepted | [Open](planned/ENCODINGS.md#continuous-color-vertical-contract) |
 | parameter | Named and constant stroke dash vocabulary | accepted | [Open](planned/ENCODINGS.md#named-and-constant-stroke-dash-vocabulary) |
-| parameter | Field-driven opacity | accepted | [Open](planned/ENCODINGS.md#field-driven-opacity) |
-| parameter | Field-driven opacity legend | accepted | [Open](planned/GUIDES_AND_LAYOUT.md#field-driven-opacity-legend) |
 | parameter | Histogram bin controls | accepted | [Open](planned/ENCODINGS.md#histogram-bin-controls) |
 | parameter | Scale type vocabulary | accepted | [Open](planned/SCALES.md#scale-type-vocabulary) |
 | parameter | Scale mapping policies | accepted | [Open](planned/SCALES.md#scale-mapping-policies) |

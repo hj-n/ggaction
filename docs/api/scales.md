@@ -135,6 +135,26 @@ The semantic scale stores the palette descriptor. Materialized scales, marks,
 legends, and renderers receive only concrete CSS colors. Explicit `range` and
 `palette` cannot be supplied together.
 
+## Continuous point color
+
+Quantitative or temporal point color uses `fieldType: "quantitative"` or
+`"temporal"` and an internal sequential scale. The default palette is
+`viridis`; an explicit palette may use `extent`, while an explicit range needs
+at least two colors. `interpolate` accepts `rgb`, `hsl`, `hsl-long`, `lab`,
+`hcl`, `hcl-long`, `cubehelix`, or `cubehelix-long`. `clamp` and `reverse`
+affect both points and a connected gradient legend.
+
+```javascript
+program.encodeColor({
+  field: "Acceleration",
+  fieldType: "quantitative",
+  scale: { palette: "viridis", interpolate: "rgb" }
+});
+```
+
+The sequential type is inferred inside `encodeColor`; it is not added to the
+general direct `createScale` vocabulary.
+
 ## Errors and limitations
 
 One scale cannot be shared across different channels. Explicit domains must

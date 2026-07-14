@@ -20,6 +20,9 @@ const TEXT_OPTIONS = Object.freeze([
 const SYMBOL_OPTIONS = Object.freeze([
   "type", "radius", "fill", "stroke", "strokeWidth"
 ]);
+const BORDER_OPTIONS = Object.freeze([
+  "color", "lineWidth", "padding", "background"
+]);
 const POSITIONS = Object.freeze(["right", "left", "top", "bottom"]);
 const DEFAULT_LABELS = Object.freeze({
   offset: 12,
@@ -33,6 +36,12 @@ const DEFAULT_TITLE = Object.freeze({
   fontSize: 13,
   fontFamily: DEFAULT_FONT_FAMILY,
   fontWeight: 600
+});
+const DEFAULT_BORDER = Object.freeze({
+  color: DEFAULT_COLORS.border,
+  lineWidth: 1,
+  padding: 12,
+  background: "transparent"
 });
 
 function validatePositive(value, label) {
@@ -72,6 +81,23 @@ function validateTextOptions(value, label, defaults) {
   return result;
 }
 
+function normalizeBorder(value) {
+  if (value === undefined || value === false) return false;
+  if (value !== true && !isPlainObject(value)) {
+    throw new TypeError("createLegend.border must be a boolean or plain object.");
+  }
+  if (value !== true) validateKeys(value, BORDER_OPTIONS, "createLegend.border");
+  const border = { ...DEFAULT_BORDER, ...(value === true ? {} : value) };
+  for (const key of ["color", "background"]) {
+    if (typeof border[key] !== "string" || border[key].length === 0) {
+      throw new TypeError(`Legend border ${key} must be a non-empty string.`);
+    }
+  }
+  validateNonNegative(border.lineWidth, "Legend border lineWidth");
+  validateNonNegative(border.padding, "Legend border padding");
+  return border;
+}
+
 function normalizeCommon(args, kind) {
   if (!isPlainObject(args)) {
     throw new TypeError("createLegend options must be a plain object.");
@@ -101,9 +127,6 @@ function normalizeCommon(args, kind) {
   if (args.titlePosition !== undefined && args.titlePosition !== "top") {
     throw new Error("Continuous legends currently require top titlePosition.");
   }
-  if (args.border !== undefined && args.border !== false) {
-    throw new Error("Continuous legend border is not implemented yet.");
-  }
   if (kind === "gradient") {
     for (const key of ["symbol", "columns", "direction", "itemGap"]) {
       if (Object.hasOwn(args, key)) {
@@ -132,7 +155,7 @@ function normalizeCommon(args, kind) {
       DEFAULT_TITLE
     ),
     itemGap,
-    border: false
+    border: normalizeBorder(args.border)
   };
 }
 
@@ -208,6 +231,30 @@ function assertInsideCanvas(items, canvas, label) {
   }
 }
 
+function backgroundBounds(points, border, canvas, label) {
+  if (border === false) return undefined;
+  const x = Math.min(...points.map(point => point.x)) - border.padding;
+  const y = Math.min(...points.map(point => point.y)) - border.padding;
+  const right = Math.max(...points.map(point => point.x)) + border.padding;
+  const bottom = Math.max(...points.map(point => point.y)) + border.padding;
+  if (x < 0 || y < 0 || right > canvas.width || bottom > canvas.height) {
+    throw new Error(`${label} background requires more Canvas margin space.`);
+  }
+  return { x, y, width: right - x, height: bottom - y };
+}
+
+function editBackground(program, id, bounds, border) {
+  if (bounds === undefined) return program;
+  return program
+    .editGraphics({ target: id, property: "x", value: bounds.x })
+    .editGraphics({ target: id, property: "y", value: bounds.y })
+    .editGraphics({ target: id, property: "width", value: bounds.width })
+    .editGraphics({ target: id, property: "height", value: bounds.height })
+    .editGraphics({ target: id, property: "fill", value: border.background })
+    .editGraphics({ target: id, property: "stroke", value: border.color })
+    .editGraphics({ target: id, property: "strokeWidth", value: border.lineWidth });
+}
+
 function resolveGradientLayout(program, config, scale) {
   const { plot, canvas } = resolveBounds(program);
   const vertical = ["right", "left"].includes(config.position);
@@ -270,7 +317,18 @@ function resolveGradientLayout(program, config, scale) {
       y + (vertical ? length : thickness) > canvas.height) {
     throw new Error("Gradient legend layout requires more Canvas margin space.");
   }
-  return { vertical, x, y, length, thickness, values, labels, ticks, title };
+  const background = backgroundBounds([
+    { x, y },
+    { x: x + (vertical ? thickness : length), y: y + (vertical ? length : thickness) },
+    title,
+    ...labels.map(label => ({
+      x: label.x + (label.align === "left" ? 42 : label.align === "right" ? -42 : 0),
+      y: label.y
+    }))
+  ], config.border, canvas, "Gradient legend");
+  return {
+    vertical, x, y, length, thickness, values, labels, ticks, title, background
+  };
 }
 
 function resolveGradientConfig(program, config) {
@@ -329,6 +387,12 @@ export const rematerializeGradientLegend = action(
       .editSemantic({ property: "guide.legend.color.title", value: config.title })
       ._withLegendConfig("gradient", config)
       .editGraphics({ target: "colorGradientStrips", property: "length", value: strips.length });
+    next = editBackground(
+      next,
+      "colorGradientBackground",
+      layout.background,
+      config.border
+    );
     for (const property of ["x", "y", "width", "height", "fill", "stroke", "strokeWidth"]) {
       next = next.editGraphics({
         target: "colorGradientStrips",
@@ -394,11 +458,26 @@ export const createGradientLegend = action(
     if (this.graphicSpec.objects.colorGradientStrips !== undefined) {
       throw new Error("createGradientLegend requires a missing gradient legend.");
     }
-    return this
+    let next = this
       .editSemantic({ property: "guide.legend.color.scale", value: resolved.encoding.scale })
       .editSemantic({ property: "guide.legend.color.title", value: resolved.config.title })
-      ._withLegendConfig("gradient", resolved.config)
-      .createGraphics({ id: "colorGradientStrips", type: "rect", length: 0, after: resolved.layer.id })
+      ._withLegendConfig("gradient", resolved.config);
+    if (resolved.config.border !== false) {
+      next = next.createGraphics({
+        id: "colorGradientBackground",
+        type: "rect",
+        after: resolved.layer.id
+      });
+    }
+    return next
+      .createGraphics({
+        id: "colorGradientStrips",
+        type: "rect",
+        length: 0,
+        after: resolved.config.border === false
+          ? resolved.layer.id
+          : "colorGradientBackground"
+      })
       .createGraphics({ id: "colorGradientTicks", type: "line", length: 0 })
       .createGraphics({ id: "colorGradientLabels", type: "text", length: 0 })
       .createGraphics({ id: "colorGradientTitle", type: "text" })
@@ -513,7 +592,16 @@ function resolveOpacityLayout(program, config, scale) {
     title = { x: startX + width / 2, y: y - 26, align: "center" };
   }
   assertInsideCanvas([title, ...symbols, ...labels], canvas, "Opacity legend layout");
-  return { values, symbols, labels, title };
+  const background = backgroundBounds([
+    title,
+    ...symbols.map(symbol => ({ x: symbol.x + radius, y: symbol.y + radius })),
+    ...symbols.map(symbol => ({ x: symbol.x - radius, y: symbol.y - radius })),
+    ...labels.map(label => ({
+      x: label.x + (label.align === "left" ? 42 : label.align === "right" ? -42 : 0),
+      y: label.y
+    }))
+  ], config.border, canvas, "Opacity legend");
+  return { values, symbols, labels, title, background };
 }
 
 export const rematerializeOpacityLegend = action(
@@ -547,6 +635,12 @@ export const rematerializeOpacityLegend = action(
         property: "text",
         value: formatValues(layout.values, scale.domain, "quantitative")
       });
+    next = editBackground(
+      next,
+      "opacityLegendBackground",
+      layout.background,
+      config.border
+    );
     if (config.symbol.stroke !== undefined) {
       next = next.editGraphics({
         target: "opacityLegendSymbols",
@@ -590,11 +684,26 @@ export const createOpacityLegend = action(
     if (this.graphicSpec.objects.opacityLegendSymbols !== undefined) {
       throw new Error("createOpacityLegend requires a missing opacity legend.");
     }
-    return this
+    let next = this
       .editSemantic({ property: "guide.legend.opacity.scale", value: resolved.encoding.scale })
       .editSemantic({ property: "guide.legend.opacity.title", value: resolved.config.title })
-      ._withLegendConfig("opacity", resolved.config)
-      .createGraphics({ id: "opacityLegendSymbols", type: "circle", length: 0, after: resolved.layer.id })
+      ._withLegendConfig("opacity", resolved.config);
+    if (resolved.config.border !== false) {
+      next = next.createGraphics({
+        id: "opacityLegendBackground",
+        type: "rect",
+        after: resolved.layer.id
+      });
+    }
+    return next
+      .createGraphics({
+        id: "opacityLegendSymbols",
+        type: "circle",
+        length: 0,
+        after: resolved.config.border === false
+          ? resolved.layer.id
+          : "opacityLegendBackground"
+      })
       .createGraphics({ id: "opacityLegendLabels", type: "text", length: 0 })
       .createGraphics({ id: "opacityLegendTitle", type: "text" })
       .rematerializeOpacityLegend();
@@ -613,7 +722,8 @@ export const removeOpacityLegend = action(
     void semanticOpacity;
     void configOpacity;
     const removed = new Set([
-      "opacityLegendSymbols", "opacityLegendLabels", "opacityLegendTitle"
+      "opacityLegendBackground", "opacityLegendSymbols", "opacityLegendLabels",
+      "opacityLegendTitle"
     ]);
     return this._clone({
       semanticSpec: cloneAndFreeze({

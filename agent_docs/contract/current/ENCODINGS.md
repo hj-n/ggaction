@@ -21,8 +21,8 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 - `palette`: Implemented for color scale. palette name이며 `range`와 동시에 사용할 수 없다.
 - Planned: transformed quantitative, UTC, explicit band/point, discretizing scale types와
   clamp/reverse/unknown mapping policies는 `planned/SCALES.md`, named palette vocabulary는
-  이 domain의 planned palette contract가 소유한다. Quantitative/temporal color, sequential scale,
-  interpolation과 continuous gradient legend도 하나의 accepted vertical contract다.
+  이 domain의 planned palette contract가 소유한다. Point quantitative/temporal color의 internal
+  sequential scale, interpolation, clamp/reverse와 continuous gradient legend는 Implemented다.
 - Proposed: —
 
 ## `encodeX`
@@ -310,14 +310,17 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 ## `encodeColor`
 
 - Signature: `encodeColor({ field, target?, fieldType?, layout?, scale? })`
-- `field`: 필수 nominal field.
+- `field`: 필수 field. nominal은 모든 current mark contract에, quantitative/temporal은 point에 사용한다.
 - `target`: point, line, bar 또는 area ID; current/unique inference를 지원한다.
-- `fieldType`: 유일한 값 `"nominal"`, 기본값도 nominal이다.
+- `fieldType`: `"nominal" | "quantitative" | "temporal"`; 기본값은 nominal이다.
 - `layout`: 현재 bar에서 `"stack" | "group"`; histogram default는 stack이고 ordinal grouped bar는
   group이다. Planned vocabulary는 bar/area별 `"fill" | "overlay" | "diverging"` compatibility를
   추가한다. `"center"` streamgraph는 Proposed이며 다른 mark에서는 layout을 생략해야 한다.
-- `scale`: ordinal color scale. `palette` 또는 explicit `range` 중 하나를 사용할 수 있다. Palette는
+- `scale`: nominal은 ordinal, continuous point color는 internal sequential scale이다. `palette` 또는
+  explicit `range` 중 하나를 사용할 수 있다. Palette는
   [`PALETTES.md`](PALETTES.md)의 frozen 68-name vocabulary와 `{ name, count?, extent? }` object를 받는다.
+- Continuous color는 default `viridis`, eight interpolation tokens, `clamp`, `reverse`, quantitative/temporal
+  auto domain을 지원하며 layout을 거부한다. General `createScale` vocabulary에는 sequential을 노출하지 않는다.
 - Effect: color semantic과 scale을 저장한다. point fill, line stroke, bar fill, area fill로 materialize한다.
   group layout은 wrapped `encodeXOffset`, stack layout은 zero-stack bar geometry를 사용한다.
 - Reassignment: 같은 target의 nominal color field를 교체한다. omitted scale ID는 current color scale을
@@ -328,8 +331,8 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 
 ### Formal values — `encodeColor`
 
-- Implemented: `encodeColor({ field: FieldName; target?: UserId; fieldType?: "nominal"; layout?: "stack" | "group"; scale?: ColorScale })`
-- Planned (NOT IMPLEMENTED): `{ layout?: "fill" | "overlay" | "diverging"; fieldType?: "quantitative" | "temporal"; scale?: { type?: "sequential"; palette?: Palette; interpolate?: ContinuousColorInterpolation } }`; full accepted `ColorLayout`은 existing `"stack" | "group"`을 포함하고 continuous field에서는 layout을 허용하지 않는다.
+- Implemented: `encodeColor({ field: FieldName; target?: UserId; fieldType?: "nominal"; layout?: "stack" | "group"; scale?: ColorScale } | { field: FieldName; target?: UserId; fieldType: "quantitative" | "temporal"; scale?: SequentialColorScale })`
+- Planned (NOT IMPLEMENTED): `{ layout?: "fill" | "overlay" | "diverging" }` and continuous bar consumers; continuous fields reject layout.
 - Proposed (NOT IMPLEMENTED): `{ layout?: "center" }`.
 
 ### Value coverage — `encodeColor`
@@ -337,7 +340,7 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 - `field`, `target`
   - ✅ Covered: point/line/bar/area, inferred/explicit target, missing/invalid nominal values.
 - `fieldType`
-  - ✅ Covered: `"nominal"`와 invalid alternatives.
+  - ✅ Covered: nominal, quantitative/temporal point color와 invalid alternatives.
 - `layout`
   - ✅ Covered: omission, `"stack"`, `"group"`, incompatible mark/layout rejection.
   - 🟡 Planned: `"fill" | "overlay" | "diverging"` with mark compatibility, normalized and signed
@@ -348,7 +351,8 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 - `scale.range/palette`
   - ✅ Covered: explicit color array, all 68 named palettes, `{ name, count?, extent? }`, conflict와 invalid values.
   - ✅ Covered: categorical/continuous-family sampling, cycling, reverse and mark/legend parity.
-  - 🟡 Planned: quantitative/temporal continuous color, sequential mapping, interpolation and gradient legend.
+  - ✅ Covered: quantitative/temporal point color, sequential mapping, eight interpolation tokens,
+    reverse/extent/clamp and gradient legend parity.
 - Evidence: color, palette, line-series, bar-color, area-color and grouped-bar tests.
 
 ## `encodeStrokeDash`
@@ -437,17 +441,18 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 
 ## `encodeOpacity`
 
-- Signature: `encodeOpacity({ value, target? })`
-- `value`: 필수 finite `[0, 1]` number. 0은 완전 투명, 1은 완전 불투명이다.
+- Signature: `encodeOpacity({ value, target? } | { field, target?, fieldType?, scale? })`
+- `value`: field와 mutually exclusive인 finite `[0, 1]` number.
+- `field`: value와 mutually exclusive인 quantitative point field. auto linear range는 `[0.2, 1]`이다.
 - `target`: optional point ID.
-- Effect: semantic encoding이 아니라 mark graphical config와 모든 point child opacity를 바꾼다.
-  같은 target에 다시 호출하면 기존 constant opacity를 교체하고 point를 rematerialize한다.
+- Effect: constant는 graphical config, field는 semantic encoding과 linear scale을 저장한다. 같은 target에
+  다시 호출하면 constant↔field 또는 field↔field를 structural copy로 교체하고 point/legend를 rematerialize한다.
 - Coverage: point/regression tests와 validation이 representative, reassignment 및 invalid range를 검증한다.
 
 ### Formal values — `encodeOpacity`
 
-- Implemented: `encodeOpacity({ value: UnitInterval; target?: UserId })`
-- Planned (NOT IMPLEMENTED): `encodeOpacity({ field: FieldName; target?: UserId; fieldType?: "quantitative"; scale?: { id?: UserId; type?: "linear" | "log" | "pow" | "sqrt" | "symlog"; domain?: ContinuousDomain; range?: "auto" | readonly [UnitInterval, UnitInterval]; nice?: boolean; zero?: boolean; clamp?: boolean; reverse?: boolean } })`; field와 value는 mutually exclusive.
+- Implemented: `encodeOpacity({ value: UnitInterval; target?: UserId } | { field: FieldName; target?: UserId; fieldType?: "quantitative"; scale?: { id?: UserId; type?: "linear"; domain?: ContinuousDomain; range?: "auto" | readonly [UnitInterval, UnitInterval]; nice?: boolean; zero?: boolean; clamp?: boolean; reverse?: boolean } })`
+- Planned (NOT IMPLEMENTED): transformed opacity scale types.
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `encodeOpacity`
@@ -457,10 +462,9 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 - `target`
   - ✅ Covered: inferred/explicit point, unknown/incompatible target.
 - Reassignment
-  - ✅ Covered: same action replaces the stored constant and concrete child opacity immutably.
-- 🟡 Planned: field-driven quantitative opacity, auto range `[0.2, 1]` and atomic constant↔field reassignment.
-- 🟡 Planned: field-driven opacity legend with target-derived point recipe and continuous scale samples.
-- Evidence: point appearance and regression tests.
+  - ✅ Covered: constant↔constant, field↔field and constant↔field immutable replacement.
+- ✅ Covered: auto/explicit descending range, clamp/reverse, continuous sample legend and constant-mode cleanup.
+- Evidence: point appearance, continuous legend and regression tests.
 
 ## `encodeRadius`
 

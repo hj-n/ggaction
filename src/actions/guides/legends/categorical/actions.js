@@ -162,7 +162,19 @@ export const createLegend = action(
     if (channels !== undefined && !Array.isArray(channels)) {
       throw new TypeError("createLegend channels must be an array.");
     }
-    if (channels?.length === 1 && channels[0] === "opacity") {
+    const opacityCandidates = this.semanticSpec.layers.filter(layer =>
+      layer.mark?.type === "point" && layer.encoding?.opacity?.scale !== undefined
+    );
+    const hasOtherLegendCandidate = this.semanticSpec.layers.some(layer =>
+      ["color", "shape", "strokeDash", "size"].some(channel =>
+        layer.encoding?.[channel]?.scale !== undefined
+      )
+    );
+    if (
+      (channels?.length === 1 && channels[0] === "opacity") ||
+      (channels === undefined && opacityCandidates.length === 1 &&
+        !hasOtherLegendCandidate)
+    ) {
       return this.createOpacityLegend(args);
     }
     const continuousColorCandidates = this.semanticSpec.layers.filter(layer => {

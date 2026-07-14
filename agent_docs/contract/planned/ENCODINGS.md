@@ -269,8 +269,8 @@ type ContinuousColorScale = {
 };
 ```
 
-- `encodeColor.fieldType` accepts `"quantitative" | "temporal"` in addition to existing nominal.
-  Continuous color is first accepted for point and bar marks, whose concrete children each own one fill.
+- `encodeColor.fieldType` already accepts `"quantitative" | "temporal"` for point marks. This remaining
+  planned extension adds bar marks, whose concrete children each own one fill.
   Line and area paths remain unsupported until a segment/gradient-path materialization contract exists.
 - The scale type is `"sequential"` whether inferred or explicit. Auto quantitative domain is the finite
   field extent; auto temporal domain is the normalized timestamp extent. The first contract rejects
@@ -286,9 +286,9 @@ type ContinuousColorScale = {
   deterministic plan while preserving earlier programs.
 - `createLegend({ channels: ["color"] })` infers the gradient form from the sequential scale; the concrete
   layout contract is owned by [continuous color gradient legend](GUIDES_AND_LAYOUT.md#continuous-color-gradient-legend).
-- Status: Planned, NOT IMPLEMENTED. quantitative/temporal domains, default and explicit palettes/ranges,
-  every interpolation token, policies, invalid mark/layout combinations, shared consumers, mark/legend
-  rematerialization and browser/PNG color parity coverage가 필요하다.
+- Status: Partially implemented. Point quantitative/temporal domains, palettes/ranges, all interpolation
+  tokens, policies, gradient legend, rematerialization and renderer parity are Current. Continuous bar
+  consumers and `unknown` fallback remain Planned.
 
 ## histogram bin controls
 
@@ -477,46 +477,3 @@ type PlannedStrokeDashEncoding =
   it has no remaining channel.
 - Status: Planned, NOT IMPLEMENTED. Four named recipes, direct patterns, field/value exclusivity,
   mode switching, legend cleanup, Canvas rematerialization and renderer parity coverage가 필요하다.
-
-## Field-driven opacity
-
-```typescript
-type PlannedOpacityEncoding =
-  | {
-      value: UnitInterval;
-      field?: never;
-      target?: UserId;
-    }
-  | {
-      value?: never;
-      field: FieldName;
-      target?: UserId;
-      fieldType?: "quantitative";
-      scale?: {
-        id?: UserId;
-        type?: "linear" | "log" | "pow" | "sqrt" | "symlog";
-        domain?: ContinuousDomain;
-        range?: "auto" | readonly [UnitInterval, UnitInterval];
-        nice?: boolean;
-        zero?: boolean;
-        clamp?: boolean;
-        reverse?: boolean;
-      };
-    };
-```
-
-- `field`와 `value`는 mutually exclusive다. Existing constant mode는 graphical mark config를
-  사용하고 field mode는 semantic opacity encoding과 scale binding을 저장한다.
-- 첫 field-driven contract는 quantitative point mark만 지원한다. Auto domain은 finite field
-  values, auto range는 `[0.2, 1]`이며 explicit range의 두 endpoint는 각각 `[0, 1]` 안에 있어야
-  하지만 ascending일 필요는 없다.
-- Scale mapping 뒤 concrete opacity를 모든 point child에 적용한다. Shape, size, color와 position
-  materialization order에 독립적이어야 한다.
-- 같은 action의 reassignment는 constant↔constant, field↔field와 constant↔field를 atomic하게
-  교체한다. Unreferenced named scale은 자동 삭제하지 않는다.
-- Constant mode는 legend channel을 만들지 않는다. Field mode는 explicit `createLegend({ channels:
-  ["opacity"] })`와 aggregate `createGuides` inference에 eligible하며 concrete guide behavior는
-  [field-driven opacity legend](GUIDES_AND_LAYOUT.md#field-driven-opacity-legend)가 소유한다.
-- Status: Planned, NOT IMPLEMENTED. default/explicit domains and ranges, boundary opacity, mode
-  exclusivity and switching, shared scale conflicts, appearance call order, legend integration, Canvas
-  rematerialization and renderer parity coverage가 필요하다.

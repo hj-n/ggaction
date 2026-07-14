@@ -342,6 +342,49 @@ connected guide, update inferred titles, and preserve explicit guide styling.
 `encodeSize` remains incompatible with a stored constant radius; it does not
 silently delete that graphical choice.
 
+## Continuous appearance variants
+
+Use a quantitative field type to map point color continuously, then request its
+gradient legend:
+
+```javascript
+const continuousColor = chart()
+  .createCanvas({
+    width: 760,
+    height: 400,
+    margin: { top: 30, right: 150, bottom: 60, left: 70 }
+  })
+  .createData({ id: "cars", values: rows })
+  .createPointMark({ id: "points" })
+  .encodeX({ field: "Horsepower" })
+  .encodeY({ field: "Miles_per_Gallon" })
+  .encodeColor({ field: "Acceleration", fieldType: "quantitative" })
+  .encodeRadius({ value: 3 })
+  .createGuides({ legend: { channels: ["color"] } });
+```
+
+Field opacity uses the same assignment style and automatically maps its domain
+to `[0.2, 1]`:
+
+```javascript
+const fieldOpacity = chart()
+  .createCanvas({
+    width: 760,
+    height: 400,
+    margin: { top: 30, right: 150, bottom: 60, left: 70 }
+  })
+  .createData({ id: "cars", values: rows })
+  .createPointMark({ id: "points" })
+  .encodeX({ field: "Horsepower" })
+  .encodeY({ field: "Miles_per_Gallon" })
+  .encodeRadius({ value: 4 })
+  .encodeOpacity({ field: "Acceleration" })
+  .createGuides({ legend: { channels: ["opacity"] } });
+```
+
+Both guides materialize concrete graphics and update after compatible scale or
+Canvas edits.
+
 ## Key action trace
 
 The trace keeps the user flow and meaningful guide decomposition. Primitive
@@ -1748,10 +1791,10 @@ program
 
 ## Point appearance
 
-[`encodeSize` and `encodeShape`](./appearance.md) create semantic field
-encodings. `encodeOpacity` and `encodeRadius` store graphical constants. A
-single point materializer combines the stored channels, so their call order
-does not change the resulting graphics.
+[`encodeSize`, `encodeShape`, and field-driven `encodeOpacity`](./appearance.md)
+create semantic field encodings. Constant `encodeOpacity` and `encodeRadius`
+store graphical values. A single point materializer combines the stored
+channels, so their call order does not change the resulting graphics.
 
 ```javascript
 program
@@ -2606,7 +2649,8 @@ ordered domain.
 | `encodeRadius` | `encodeRadius({ value: 3 })` | Current point mark | Concrete circle radius |
 | `encodeSize` | `encodeSize({ field: "Acceleration" })` | Current point; linear scale; area range `[24, 196]` | Semantic size and concrete equal-area symbols |
 | `encodeShape` | `encodeShape({ field: "Origin" })` | Current point; 12-value ordinal shape range | Semantic shape and mixed concrete symbols |
-| `encodeOpacity` | `encodeOpacity({ value: 0.27 })` | Current point mark | Concrete opacity |
+| `encodeOpacity` | `encodeOpacity({ value: 0.27 })` | Current point mark | Constant concrete opacity |
+| `encodeOpacity` | `encodeOpacity({ field: "Acceleration" })` | Current point; linear scale; range `[0.2, 1]` | Semantic field opacity and concrete values |
 | `encodeBarWidth` | `encodeBarWidth()` | Current grouped bar; band `0.72` | Concrete grouped rectangles |
 
 ## `encodeRadius({ value, target? })`
@@ -2646,10 +2690,12 @@ than 12 distinct categories rather than silently repeating symbols. Explicit
 ranges must contain unique supported shapes. Mixed circle, rect, and closed-path
 symbols are stored as typed children in one graphical collection.
 
-`encodeOpacity({ value, target? })` accepts a constant from `0` to `1`. It is
-graphical and does not add a semantic field encoding. Size and shape are
-semantic; their resolved radius, width, height, primitive type, and opacity are
-fully concrete in `graphicSpec`.
+`encodeOpacity` accepts exactly one of `value` or `field`. A constant value from
+`0` to `1` is graphical. A quantitative field creates semantic opacity and a
+linear scale with automatic range `[0.2, 1]`; its scale supports explicit
+domain/range plus `nice`, `zero`, `clamp`, and `reverse`. Calling the action
+again atomically replaces constant↔field or field↔field mode. Every resolved
+opacity remains concrete in `graphicSpec`.
 
 All point appearance actions invoke the same point materializer. Existing x,
 y, color, size, shape, and opacity state is recombined after each change and
@@ -2687,7 +2733,8 @@ Canvas geometry changes explicitly rematerialize the scales and rectangles.
 
 ## Errors and limitations
 
-Radius, opacity, and bar band are graphical constants, not field encodings.
+Radius, constant opacity, and bar band are graphical constants. Field opacity
+is a semantic encoding.
 Size cannot be combined with a constant radius. A constant `editPointMark`
 shape cannot be combined with field-driven `encodeShape`. Bar width
 requires complete ordinal x, aggregate y, color, and xOffset semantics.
@@ -2830,6 +2877,26 @@ within `[0, 1]`; descending values reverse the sampling direction. Scale
 The semantic scale stores the palette descriptor. Materialized scales, marks,
 legends, and renderers receive only concrete CSS colors. Explicit `range` and
 `palette` cannot be supplied together.
+
+## Continuous point color
+
+Quantitative or temporal point color uses `fieldType: "quantitative"` or
+`"temporal"` and an internal sequential scale. The default palette is
+`viridis`; an explicit palette may use `extent`, while an explicit range needs
+at least two colors. `interpolate` accepts `rgb`, `hsl`, `hsl-long`, `lab`,
+`hcl`, `hcl-long`, `cubehelix`, or `cubehelix-long`. `clamp` and `reverse`
+affect both points and a connected gradient legend.
+
+```javascript
+program.encodeColor({
+  field: "Acceleration",
+  fieldType: "quantitative",
+  scale: { palette: "viridis", interpolate: "rgb" }
+});
+```
+
+The sequential type is inferred inside `encodeColor`; it is not added to the
+general direct `createScale` vocabulary.
 
 ## Errors and limitations
 
@@ -3082,13 +3149,13 @@ coordinate. Ambiguous resources require explicit IDs.
 
 | Action | Shortest call | Inference/defaults | Result |
 | --- | --- | --- | --- |
-| `createLegend` | `createLegend()` | Current/unique compatible mark; right position | Categorical or quantitative symbols, labels, and title |
+| `createLegend` | `createLegend()` | Current/unique compatible mark; right position | Categorical, size, gradient, or opacity guide |
 
 ## `createLegend(options?)`
 
 Creates inferred legend blocks. It supports combined line-series,
-color-stacked histogram, grouped ordinal-bar, grouped area, composite point-series, and
-quantitative point-size legends.
+color-stacked histogram, grouped ordinal-bar, grouped area, composite point-series,
+quantitative point-size, continuous-color gradient, and field-opacity legends.
 
 ~~~javascript
 program.createLegend();
@@ -3105,12 +3172,14 @@ Every categorical legend uses the same right-side default:
 | point | explicitly selected `color` only | `right` | swatch |
 | point + matching line | `color` + `shape` | `right` | line over typed point |
 | quantitative point size | `size` | `right`, below point series | five equal-area circles |
+| quantitative/temporal point color | `color` | `right` | continuous gradient with five labels |
+| quantitative point opacity | `opacity` | `right` | five constant-size circles with sampled opacity |
 
 | Option | Type | Default |
 | --- | --- | --- |
 | `target` | compatible mark ID | current or unique compatible mark |
-| `channels` | unique categorical channel array | compatible encoded channels |
-| `position` | `"right"`, `"bottom"`, or `"top"` | `"right"` |
+| `channels` | compatible channel array; continuous guides use one `color` or `opacity` | compatible encoded channels |
+| `position` | categorical: `right/bottom/top`; continuous: `right/left/bottom/top` | `"right"` |
 | `align` | `"left"`, `"center"`, or `"right"` | `"center"` |
 | `direction` | `"horizontal"` or `"vertical"` | `"horizontal"` |
 | `columns` | positive integer | all items in one row at top |
@@ -3123,6 +3192,7 @@ Every categorical legend uses the same right-side default:
 | `itemGap` | positive number | `28` at right, `20` at bottom |
 | `border` | boolean or border style object | `false` |
 | `count` | size-legend symbol count of at least `2` | `5` for point legends |
+| `gradient` | `{ length?, thickness? }` with positive values | `{ length: 120, thickness: 12 }` |
 
 Pass `position: "bottom"` explicitly for a horizontal legend. Bottom legends
 can use left, center, or right alignment; right legends require center
@@ -3143,6 +3213,35 @@ densityArea.createLegend({
   offset: 8
 });
 ~~~
+
+## Continuous color and opacity
+
+A point `color` encoding with a quantitative or temporal field produces a
+continuous gradient. Right/left positions orient it vertically; top/bottom
+orient it horizontally. The implementation writes 60 adjacent concrete rects,
+tick lines, and text to `graphicSpec`; renderers do not interpolate colors.
+
+~~~javascript
+program.createLegend({
+  channels: ["color"],
+  count: 5,
+  gradient: { length: 120, thickness: 12 }
+});
+~~~
+
+A field-driven quantitative `opacity` encoding produces representative point
+samples in ascending domain order. Reversing the opacity range changes symbol
+appearance without reversing labels. Its neutral default symbol is a circle
+with radius `7` and fill `#4c78a8`; pass one `{ type: "point", ... }` recipe to
+override it.
+
+~~~javascript
+program.createLegend({ channels: ["opacity"], position: "left" });
+~~~
+
+Gradient legends reject categorical-only `symbol`, `columns`, `direction`, and
+`itemGap`. Opacity legends reject `columns`, `direction`, and `gradient`.
+Both forms require enough requested Canvas margin and never resize the Canvas.
 
 ## Layered symbols
 
@@ -3225,25 +3324,24 @@ only concrete `graphicSpec` values.
 
 ~~~text
 createLegend
-├─ createCategoricalLegend
-│  ├─ createLegendBackground?
-│  ├─ createLegendSymbols
-│  ├─ createLegendLabels
-│  └─ createLegendTitle
-└─ createSizeLegend
+├─ createCategoricalLegend | createGradientLegend | createOpacityLegend
+│  └─ concrete background?, symbols/strips, labels, and title
+└─ createSizeLegend?
 ~~~
 
-`createCategoricalLegend` and `createSizeLegend` are internal wrapped component
-actions. Chart and extension authors call the public `createLegend()` facade;
-the internal children remain visible in the trace.
+The component actions shown above are internal wrapped actions. Chart and
+extension authors call the public `createLegend()` facade; the children remain
+visible in the trace.
 
 `createGuides()` selects line-series, histogram color, grouped-bar color,
-grouped-area color, and compatible point color/shape/size legends automatically.
+grouped-area color, and compatible point color/shape/size, sequential color,
+or standalone field-opacity legends automatically.
 Pass `createGuides({ legend: false })` to opt out.
 
 ## Errors and limitations
 
-General continuous color legends and interactive legends are unsupported.
+Continuous color is currently limited to point marks, and field opacity is
+limited to quantitative point fields. Interactive legends are unsupported.
 Combined point-series and quantitative-size legends currently require right
 position so both blocks remain in one vertical stack.
 Right-side layout requires sufficient right margin; bottom layout requires
@@ -3766,10 +3864,10 @@ the y channel; pass `densityChannel: "x"` for a horizontal orientation.
 encodeColor({ field, target?, fieldType?, layout?, scale? })
 ```
 
-Create or compatibly replace nominal point fill, line-series color, grouped area fill, stacked
-histogram color, or grouped ordinal-bar color. Area color must match an
-existing group field. Grouped bars require `layout: "group"` and record
-`encodeXOffset` as a child action.
+Create or compatibly replace point fill, line-series color, grouped area fill,
+stacked histogram color, or grouped ordinal-bar color. Quantitative and temporal
+point fields use a sequential scale with concrete interpolated colors. Nominal
+grouped bars require `layout: "group"` and record `encodeXOffset` as a child.
 [Series encodings](../api/series-encodings.md)
 
 ### `encodeStrokeDash`
@@ -3811,9 +3909,12 @@ Encode or replace a nominal field with the shared 12-value point-shape vocabular
 
 ```javascript
 encodeOpacity({ value, target? })
+encodeOpacity({ field, target?, fieldType?, scale? })
 ```
 
-Apply a constant point opacity from `0` to `1`.
+Apply a constant point opacity from `0` to `1`, or map a quantitative field
+through a linear opacity scale. The two modes are mutually exclusive and may
+replace each other through the same action.
 [Appearance encodings](../api/appearance.md)
 
 ### `encodeBarWidth`
@@ -3869,14 +3970,14 @@ marks. [Grids](../api/grids.md)
 ```javascript
 createLegend({
   target?, channels?, position?, align?, direction?, columns?, offset?,
-  titlePosition?, title?, symbol?, labels?, titleStyle?, itemGap?, border?, count?
+  titlePosition?, title?, symbol?, labels?, titleStyle?, itemGap?, border?, count?,
+  gradient?
 })
 ```
 
-Create applicable categorical or point size legend blocks. Categorical legends
-use a right-side default and support explicit bottom or top placement. Top
-layouts support row/column fill and a title above or left of the items; point
-color/shape/size composites currently use stacked right-side blocks.
+Create categorical, point-size, continuous-color gradient, or field-opacity
+sample legends. Continuous legends support right, left, top, and bottom
+placement; categorical layouts retain their documented position constraints.
 [Legends](../api/legends.md)
 
 ### `createTitle`

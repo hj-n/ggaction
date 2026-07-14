@@ -134,10 +134,10 @@ program
 
 ## Point appearance
 
-[`encodeSize` and `encodeShape`](./appearance.md) create semantic field
-encodings. `encodeOpacity` and `encodeRadius` store graphical constants. A
-single point materializer combines the stored channels, so their call order
-does not change the resulting graphics.
+[`encodeSize`, `encodeShape`, and field-driven `encodeOpacity`](./appearance.md)
+create semantic field encodings. Constant `encodeOpacity` and `encodeRadius`
+store graphical values. A single point materializer combines the stored
+channels, so their call order does not change the resulting graphics.
 
 ```javascript
 program

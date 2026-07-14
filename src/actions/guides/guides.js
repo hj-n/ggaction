@@ -66,7 +66,7 @@ function selectOption(explicit, applicable) {
 const createGuides = action(
   {
     op: "createGuides",
-    description: "Create applicable axes, grid, and categorical legend."
+    description: "Create applicable axes, grid, and legend."
   },
   function (args = {}) {
     validateOptions(args);

@@ -66,6 +66,31 @@ test("lays gradient legends out in all four positions", () => {
   }
 });
 
+test("formats temporal gradient labels from normalized time domains", () => {
+  const temporalRows = rows.map((row, index) => ({
+    ...row,
+    date: `${2020 + index}-01-01T00:00:00.000Z`
+  }));
+  const program = chart()
+    .createCanvas({
+      width: 760,
+      height: 460,
+      margin: { top: 90, right: 150, bottom: 90, left: 150 }
+    })
+    .createData({ id: "rows", values: temporalRows })
+    .createPointMark({ id: "points" })
+    .encodeX({ field: "x" })
+    .encodeY({ field: "y" })
+    .encodeColor({ field: "date", fieldType: "temporal" })
+    .createLegend({ channels: ["color"] });
+  const labels = program.graphicSpec.objects.colorGradientLabels.children.map(
+    label => label.properties.text
+  );
+  assert.equal(labels.length, 5);
+  assert.equal(labels.every(label => typeof label === "string" && label.length > 0), true);
+  assert.equal(program.guideConfigs.legend.gradient.fieldType, "temporal");
+});
+
 test("creates ascending opacity samples and removes them in constant mode", () => {
   const fieldProgram = pointProgram({ top: 30, left: 70, bottom: 60 })
     .encodeOpacity({ field: "value" })
@@ -89,6 +114,13 @@ test("creates ascending opacity samples and removes them in constant mode", () =
   assert.equal(constantProgram.semanticSpec.guides.legend.opacity, undefined);
   assert.equal(constantProgram.guideConfigs.legend.opacity, undefined);
   assert.equal(constantProgram.graphicSpec.objects.opacityLegendSymbols, undefined);
+});
+
+test("infers the only field-opacity legend through createGuides", () => {
+  const program = pointProgram({ top: 30, left: 70, bottom: 60 })
+    .encodeOpacity({ field: "value" })
+    .createGuides({ axes: false, grid: false });
+  assert.equal(program.graphicSpec.objects.opacityLegendSymbols.children.length, 5);
 });
 
 test("lays opacity legends out in all four positions", () => {
@@ -126,6 +158,33 @@ test("rematerializes continuous legends after scale and Canvas edits", () => {
   assert.equal(
     resized.graphicSpec.objects.opacityLegendSymbols.children[0].properties.x,
     647
+  );
+});
+
+test("materializes optional continuous legend backgrounds before content", () => {
+  const gradient = pointProgram({ top: 30, left: 70, bottom: 60 })
+    .encodeColor({ field: "value", fieldType: "quantitative" })
+    .createLegend({
+      channels: ["color"],
+      border: { background: "white", padding: 8 }
+    });
+  assert.equal(
+    gradient.graphicSpec.order.indexOf("colorGradientBackground") <
+      gradient.graphicSpec.order.indexOf("colorGradientStrips"),
+    true
+  );
+  assert.equal(
+    gradient.graphicSpec.objects.colorGradientBackground.properties.fill,
+    "white"
+  );
+
+  const opacity = pointProgram({ top: 30, left: 70, bottom: 60 })
+    .encodeOpacity({ field: "value" })
+    .createLegend({ channels: ["opacity"], border: true });
+  assert.equal(
+    opacity.graphicSpec.order.indexOf("opacityLegendBackground") <
+      opacity.graphicSpec.order.indexOf("opacityLegendSymbols"),
+    true
   );
 });
 

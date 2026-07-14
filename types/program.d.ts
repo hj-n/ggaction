@@ -8,6 +8,15 @@ export type GraphicType =
   | "text"
   | "path";
 export type ScaleType = "linear" | "time" | "ordinal";
+export type ContinuousColorInterpolation =
+  | "rgb"
+  | "hsl"
+  | "hsl-long"
+  | "lab"
+  | "hcl"
+  | "hcl-long"
+  | "cubehelix"
+  | "cubehelix-long";
 export type PointShape =
   | "circle"
   | "square"
@@ -126,6 +135,49 @@ export interface CategoricalEncodingOptions {
   layout?: "stack" | "group";
 }
 
+export interface ContinuousColorScaleOptions {
+  id?: string;
+  type?: "sequential";
+  domain?: "auto" | readonly [unknown, unknown];
+  range?: "auto" | readonly [string, string, ...string[]];
+  palette?: PaletteName | {
+    name: PaletteName;
+    extent?: readonly [number, number];
+  };
+  interpolate?: ContinuousColorInterpolation;
+  clamp?: boolean;
+  reverse?: boolean;
+}
+
+export type ColorEncodingOptions = CategoricalEncodingOptions | {
+  field: string;
+  target?: string;
+  fieldType: "quantitative" | "temporal";
+  scale?: ContinuousColorScaleOptions;
+  layout?: never;
+};
+
+export interface OpacityScaleOptions {
+  id?: string;
+  type?: "linear";
+  domain?: "auto" | readonly [number, number];
+  range?: "auto" | readonly [number, number];
+  nice?: boolean;
+  zero?: boolean;
+  clamp?: boolean;
+  reverse?: boolean;
+}
+
+export type OpacityEncodingOptions =
+  | { value: number; field?: never; target?: string }
+  | {
+      field: string;
+      value?: never;
+      target?: string;
+      fieldType?: "quantitative";
+      scale?: OpacityScaleOptions;
+    };
+
 export interface RegressionOptions {
   target?: string;
   x?: string;
@@ -138,8 +190,8 @@ export interface RegressionOptions {
 
 export interface LegendOptions extends ActionOptions {
   target?: string;
-  channels?: readonly ("color" | "strokeDash" | "shape")[];
-  position?: "right" | "bottom" | "top";
+  channels?: readonly ("color" | "strokeDash" | "shape" | "opacity")[];
+  position?: "right" | "left" | "bottom" | "top";
   align?: "left" | "center" | "right";
   direction?: "horizontal" | "vertical";
   columns?: number;
@@ -147,6 +199,12 @@ export interface LegendOptions extends ActionOptions {
   titlePosition?: "top" | "left";
   title?: string;
   count?: number;
+  gradient?: { length?: number; thickness?: number };
+  symbol?: ActionOptions;
+  labels?: ActionOptions;
+  titleStyle?: ActionOptions;
+  itemGap?: number;
+  border?: boolean | ActionOptions;
 }
 
 export class ChartProgram {
@@ -174,11 +232,11 @@ export class ChartProgram {
 
   encodeX(options: PositionEncodingOptions): ChartProgram;
   encodeY(options: PositionEncodingOptions): ChartProgram;
-  encodeColor(options: CategoricalEncodingOptions): ChartProgram;
+  encodeColor(options: ColorEncodingOptions): ChartProgram;
   encodeStrokeDash(options: CategoricalEncodingOptions): ChartProgram;
   encodeSize(options: { field: string; target?: string; fieldType?: "quantitative"; scale?: ScaleOptions }): ChartProgram;
   encodeShape(options: { field: string; target?: string; fieldType?: "nominal"; scale?: ScaleOptions }): ChartProgram;
-  encodeOpacity(options: { value: number; target?: string }): ChartProgram;
+  encodeOpacity(options: OpacityEncodingOptions): ChartProgram;
   encodeRadius(options: { value: number; target?: string }): ChartProgram;
   encodeXOffset(options: ActionOptions): ChartProgram;
   encodeY2(options: ActionOptions): ChartProgram;

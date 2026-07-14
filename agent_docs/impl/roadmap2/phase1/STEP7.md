@@ -7,18 +7,18 @@ Gate C primitive를 재현하도록 sequential color, gradient legend, field-dri
 
 ## 진행 상태
 
-- [ ] Quantitative/temporal sequential domain resolution
-- [ ] Palette/range exclusivity와 interpolation grammar
-- [ ] Concrete sequential color mapping과 point rematerialization
-- [ ] Gradient legend inference, layout와 materialization
-- [ ] Field/value opacity discriminated options
-- [ ] Opacity linear scale와 point rematerialization
-- [ ] Constant↔field, field↔field opacity reassignment
-- [ ] Opacity sample legend inference/layout/materialization
-- [ ] Scale/Canvas/legend edit rematerialization
-- [ ] Shared consumer, invalid option와 atomic failure coverage
-- [ ] Approved user-facing programs와 PNG pairs
-- [ ] Public declarations/docs와 conceptual commits/push
+- [x] Quantitative/temporal sequential domain resolution
+- [x] Palette/range exclusivity와 interpolation grammar
+- [x] Concrete sequential color mapping과 point rematerialization
+- [x] Gradient legend inference, layout와 materialization
+- [x] Field/value opacity discriminated options
+- [x] Opacity linear scale와 point rematerialization
+- [x] Constant↔field, field↔field opacity reassignment
+- [x] Opacity sample legend inference/layout/materialization
+- [x] Scale/Canvas/legend edit rematerialization
+- [x] Shared consumer, invalid option와 atomic failure coverage
+- [x] Approved user-facing programs와 PNG pairs
+- [x] Public declarations/docs와 conceptual commits/push
 
 ## Continuous color 범위
 

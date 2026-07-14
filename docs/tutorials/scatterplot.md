@@ -92,6 +92,49 @@ connected guide, update inferred titles, and preserve explicit guide styling.
 `encodeSize` remains incompatible with a stored constant radius; it does not
 silently delete that graphical choice.
 
+## Continuous appearance variants
+
+Use a quantitative field type to map point color continuously, then request its
+gradient legend:
+
+```javascript
+const continuousColor = chart()
+  .createCanvas({
+    width: 760,
+    height: 400,
+    margin: { top: 30, right: 150, bottom: 60, left: 70 }
+  })
+  .createData({ id: "cars", values: rows })
+  .createPointMark({ id: "points" })
+  .encodeX({ field: "Horsepower" })
+  .encodeY({ field: "Miles_per_Gallon" })
+  .encodeColor({ field: "Acceleration", fieldType: "quantitative" })
+  .encodeRadius({ value: 3 })
+  .createGuides({ legend: { channels: ["color"] } });
+```
+
+Field opacity uses the same assignment style and automatically maps its domain
+to `[0.2, 1]`:
+
+```javascript
+const fieldOpacity = chart()
+  .createCanvas({
+    width: 760,
+    height: 400,
+    margin: { top: 30, right: 150, bottom: 60, left: 70 }
+  })
+  .createData({ id: "cars", values: rows })
+  .createPointMark({ id: "points" })
+  .encodeX({ field: "Horsepower" })
+  .encodeY({ field: "Miles_per_Gallon" })
+  .encodeRadius({ value: 4 })
+  .encodeOpacity({ field: "Acceleration" })
+  .createGuides({ legend: { channels: ["opacity"] } });
+```
+
+Both guides materialize concrete graphics and update after compatible scale or
+Canvas edits.
+
 ## Key action trace
 
 The trace keeps the user flow and meaningful guide decomposition. Primitive

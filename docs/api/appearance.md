@@ -12,7 +12,8 @@ title: Appearance Encodings
 | `encodeRadius` | `encodeRadius({ value: 3 })` | Current point mark | Concrete circle radius |
 | `encodeSize` | `encodeSize({ field: "Acceleration" })` | Current point; linear scale; area range `[24, 196]` | Semantic size and concrete equal-area symbols |
 | `encodeShape` | `encodeShape({ field: "Origin" })` | Current point; 12-value ordinal shape range | Semantic shape and mixed concrete symbols |
-| `encodeOpacity` | `encodeOpacity({ value: 0.27 })` | Current point mark | Concrete opacity |
+| `encodeOpacity` | `encodeOpacity({ value: 0.27 })` | Current point mark | Constant concrete opacity |
+| `encodeOpacity` | `encodeOpacity({ field: "Acceleration" })` | Current point; linear scale; range `[0.2, 1]` | Semantic field opacity and concrete values |
 | `encodeBarWidth` | `encodeBarWidth()` | Current grouped bar; band `0.72` | Concrete grouped rectangles |
 
 ## `encodeRadius({ value, target? })`
@@ -52,10 +53,12 @@ than 12 distinct categories rather than silently repeating symbols. Explicit
 ranges must contain unique supported shapes. Mixed circle, rect, and closed-path
 symbols are stored as typed children in one graphical collection.
 
-`encodeOpacity({ value, target? })` accepts a constant from `0` to `1`. It is
-graphical and does not add a semantic field encoding. Size and shape are
-semantic; their resolved radius, width, height, primitive type, and opacity are
-fully concrete in `graphicSpec`.
+`encodeOpacity` accepts exactly one of `value` or `field`. A constant value from
+`0` to `1` is graphical. A quantitative field creates semantic opacity and a
+linear scale with automatic range `[0.2, 1]`; its scale supports explicit
+domain/range plus `nice`, `zero`, `clamp`, and `reverse`. Calling the action
+again atomically replaces constant↔field or field↔field mode. Every resolved
+opacity remains concrete in `graphicSpec`.
 
 All point appearance actions invoke the same point materializer. Existing x,
 y, color, size, shape, and opacity state is recombined after each change and
@@ -93,7 +96,8 @@ Canvas geometry changes explicitly rematerialize the scales and rectangles.
 
 ## Errors and limitations
 
-Radius, opacity, and bar band are graphical constants, not field encodings.
+Radius, constant opacity, and bar band are graphical constants. Field opacity
+is a semantic encoding.
 Size cannot be combined with a constant radius. A constant `editPointMark`
 shape cannot be combined with field-driven `encodeShape`. Bar width
 requires complete ordinal x, aggregate y, color, and xOffset semantics.

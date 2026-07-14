@@ -310,8 +310,6 @@ test("keeps accepted planned capabilities linked and non-public", () => {
     "Color layout vocabulary",
     "Continuous color vertical contract",
     "Named and constant stroke dash vocabulary",
-    "Field-driven opacity",
-    "Field-driven opacity legend",
     "Histogram bin controls",
     "Scale type vocabulary",
     "Scale mapping policies",
@@ -414,11 +412,10 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   assert.match(plannedCorpus, /dashed → \[6, 4\]/);
   assert.match(plannedCorpus, /dotted → \[1, 3\]/);
   assert.match(plannedCorpus, /dashdot → \[6, 3, 1, 3\]/);
-  assert.match(plannedCorpus, /type PlannedOpacityEncoding =/);
-  assert.match(plannedCorpus, /auto range는 `\[0\.2, 1\]`/);
-  assert.match(plannedCorpus, /## field-driven opacity legend/);
-  assert.match(plannedCorpus, /channels: \["opacity"\]/);
-  assert.match(plannedCorpus, /shape: "circle", radius: 5, fill: "#4c78a8"/);
+  assert.match(currentCorpus, /encodeOpacity\(\{ value, target\? \} \| \{ field/);
+  assert.match(currentCorpus, /auto linear range는 `\[0\.2, 1\]`/);
+  assert.match(currentCorpus, /"color" \| "strokeDash" \| "shape" \| "opacity"/);
+  assert.match(currentCorpus, /gradient\?: \{ length\?: PositiveFinite; thickness\?: PositiveFinite \}/);
   assert.doesNotMatch(currentCorpus, /minArea|maxArea/);
   assert.doesNotMatch(currentCorpus, /unit\?: "radius" \| "area"/);
   assert.match(plannedCorpus, /type PlannedPositionFieldType =/);
