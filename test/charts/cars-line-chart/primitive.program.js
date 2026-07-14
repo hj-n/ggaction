@@ -89,6 +89,11 @@ export function createCarsLineChartPrimitives(cars) {
       property: "guide.axis.y.title",
       value: "mean(Acceleration)"
     })
+    .editSemantic({ property: "guide.grid.horizontal.scale", value: "y" })
+    .editSemantic({
+      property: "guide.grid.horizontal.coordinate",
+      value: "main"
+    })
     .editSemantic({
       property: "guide.legend.series.channels",
       value: ["color", "strokeDash"]
@@ -117,6 +122,23 @@ export function createCarsLineChartPrimitives(cars) {
       property: "strokeDash",
       value: values.series.map(series => series.strokeDash)
     })
+    .createGraphics({
+      id: "horizontalGridLines",
+      type: "line",
+      length: yAxis.ticks.length,
+      before: "trends"
+    })
+    .editGraphics({ target: "horizontalGridLines", property: "x1", value: xAxis.line.x1 })
+    .editGraphics({ target: "horizontalGridLines", property: "y1", value: yTickPositions })
+    .editGraphics({ target: "horizontalGridLines", property: "x2", value: xAxis.line.x2 })
+    .editGraphics({ target: "horizontalGridLines", property: "y2", value: yTickPositions })
+    .editGraphics({ target: "horizontalGridLines", property: "stroke", value: "#e2e8f0" })
+    .editGraphics({ target: "horizontalGridLines", property: "strokeWidth", value: 1 })
+    .editGraphics({
+      target: "horizontalGridLines",
+      property: "strokeDash",
+      value: yAxis.ticks.map(() => [])
+    })
     .createGraphics({ id: "xAxisLine", type: "line" })
     .editGraphics({ target: "xAxisLine", property: "x1", value: xAxis.line.x1 })
     .editGraphics({ target: "xAxisLine", property: "y1", value: xAxis.line.y1 })
@@ -131,7 +153,12 @@ export function createCarsLineChartPrimitives(cars) {
     .editGraphics({ target: "yAxisLine", property: "y2", value: yAxis.line.y2 })
     .editGraphics({ target: "yAxisLine", property: "stroke", value: "#334155" })
     .editGraphics({ target: "yAxisLine", property: "strokeWidth", value: 1 })
-    .createGraphics({ id: "xAxisTicks", type: "line", length: xAxis.ticks.length })
+    .createGraphics({
+      id: "xAxisTicks",
+      type: "line",
+      length: xAxis.ticks.length,
+      before: "yAxisLine"
+    })
     .editGraphics({ target: "xAxisTicks", property: "x1", value: xTickPositions })
     .editGraphics({ target: "xAxisTicks", property: "y1", value: xAxis.line.y1 })
     .editGraphics({ target: "xAxisTicks", property: "x2", value: xTickPositions })
@@ -145,7 +172,12 @@ export function createCarsLineChartPrimitives(cars) {
     .editGraphics({ target: "yAxisTicks", property: "y2", value: yTickPositions })
     .editGraphics({ target: "yAxisTicks", property: "stroke", value: "#64748b" })
     .editGraphics({ target: "yAxisTicks", property: "strokeWidth", value: 1 })
-    .createGraphics({ id: "xAxisLabels", type: "text", length: xAxis.ticks.length })
+    .createGraphics({
+      id: "xAxisLabels",
+      type: "text",
+      length: xAxis.ticks.length,
+      before: "yAxisLine"
+    })
     .editGraphics({ target: "xAxisLabels", property: "x", value: xTickPositions })
     .editGraphics({ target: "xAxisLabels", property: "y", value: xAxis.line.y1 + 18 })
     .editGraphics({
@@ -173,7 +205,7 @@ export function createCarsLineChartPrimitives(cars) {
     .editGraphics({ target: "yAxisLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "yAxisLabels", property: "textAlign", value: "right" })
     .editGraphics({ target: "yAxisLabels", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "xAxisTitle", type: "text" })
+    .createGraphics({ id: "xAxisTitle", type: "text", before: "yAxisLine" })
     .editGraphics({ target: "xAxisTitle", property: "x", value: xAxis.title.x })
     .editGraphics({ target: "xAxisTitle", property: "y", value: xAxis.title.y })
     .editGraphics({ target: "xAxisTitle", property: "text", value: xAxis.title.text })
@@ -260,9 +292,9 @@ export function createCarsLineChartPrimitives(cars) {
     .editGraphics({ target: "chartTitle", property: "y", value: values.title.titleY })
     .editGraphics({ target: "chartTitle", property: "text", value: values.title.text })
     .editGraphics({ target: "chartTitle", property: "fill", value: "#0f172a" })
-    .editGraphics({ target: "chartTitle", property: "fontSize", value: 20 })
+    .editGraphics({ target: "chartTitle", property: "fontSize", value: 22 })
     .editGraphics({ target: "chartTitle", property: "fontFamily", value: "sans-serif" })
-    .editGraphics({ target: "chartTitle", property: "fontWeight", value: 700 })
+    .editGraphics({ target: "chartTitle", property: "fontWeight", value: 600 })
     .editGraphics({ target: "chartTitle", property: "textAlign", value: "left" })
     .editGraphics({ target: "chartTitle", property: "textBaseline", value: "middle" })
     .createGraphics({ id: "chartSubtitle", type: "text" })
@@ -270,7 +302,7 @@ export function createCarsLineChartPrimitives(cars) {
     .editGraphics({ target: "chartSubtitle", property: "y", value: values.title.subtitleY })
     .editGraphics({ target: "chartSubtitle", property: "text", value: values.title.subtitle })
     .editGraphics({ target: "chartSubtitle", property: "fill", value: "#64748b" })
-    .editGraphics({ target: "chartSubtitle", property: "fontSize", value: 13 })
+    .editGraphics({ target: "chartSubtitle", property: "fontSize", value: 14 })
     .editGraphics({ target: "chartSubtitle", property: "fontFamily", value: "sans-serif" })
     .editGraphics({ target: "chartSubtitle", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "chartSubtitle", property: "textAlign", value: "left" })

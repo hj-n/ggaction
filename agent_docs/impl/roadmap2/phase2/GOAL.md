@@ -12,7 +12,7 @@ legend를 구현한다.
 
 ## 진행 상태
 
-- [ ] Phase 2 범위, variant와 approval gate 확정
+- [x] Phase 2 범위, variant와 approval gate 확정
 - [ ] Canonical baseline audit와 gallery pair
 - [ ] Concrete path-command 기반과 기존 path chart parity
 - [ ] Curve primitive 승인과 public implementation

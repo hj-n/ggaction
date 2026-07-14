@@ -35,6 +35,13 @@ chart()
 Baseline의 series grain은 `Year × Origin`, y summary는 mean이다. Phase 2의 path migration 뒤에도
 semantic state, rendered pixels, drawing order와 Canvas calls는 기존 baseline과 같아야 한다.
 
+Step 1 audit에서 older primitive가 current shared defaults보다 horizontal grid, automatic dash pattern,
+guide order와 title theme에서 뒤처진 것을 확인했다. Canonical baseline은 horizontal grid와 current shared
+theme을 사용하는 public result로 선택했다. Primitive는 406개 valid row, first-appearance
+`USA → Europe → Japan` order와 36개 `Year × Origin` mean group을 독립적으로 계산해 같은 concrete state를
+명시한다. 두 program의 complete `semanticSpec`, `graphicSpec`, order와 463개 Canvas calls는 정확히 같으며
+현재 Gate 0 visual confirmation을 기다린다.
+
 ## Variant 목록
 
 | Variant | Distinctive public call | 핵심 의미 |

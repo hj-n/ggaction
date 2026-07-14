@@ -20,8 +20,8 @@ test("aggregates, groups, sorts, and maps the cars line-chart values", () => {
   assert.deepEqual(result.series.map(item => item.points.length), [12, 12, 12]);
   assert.deepEqual(result.series.map(item => item.strokeDash), [
     [],
-    [6, 4],
-    [2, 3]
+    [8, 4],
+    [3, 3]
   ]);
   assert.deepEqual(result.bounds, { x: 80, y: 80, width: 470, height: 320 });
   assert.deepEqual(result.scales.y.domain, [10, 20]);

@@ -1,5 +1,5 @@
 const COLORS = ["#4c78a8", "#f58518", "#e45756"];
-const DASHES = [[], [6, 4], [2, 3]];
+const DASHES = [[], [8, 4], [3, 3]];
 
 function requireLayout({ width, height, margin }) {
   if (!Number.isFinite(width) || !Number.isFinite(height)) {
@@ -177,8 +177,8 @@ export function createCarsLineChartValues(cars, { width, height, margin }) {
   };
   const title = {
     x: bounds.x,
-    titleY: 28,
-    subtitleY: 52,
+    titleY: 27,
+    subtitleY: 53,
     text: "The trend of acceleration by year",
     subtitle: "from 1970 to 1982"
   };
@@ -204,7 +204,7 @@ export function createCarsLineChartValues(cars, { width, height, margin }) {
         },
         title: {
           x: bounds.x + bounds.width / 2,
-          y: height - 16,
+          y: height - 18,
           text: "Year"
         }
       },
@@ -217,7 +217,7 @@ export function createCarsLineChartValues(cars, { width, height, margin }) {
           y2: yRange[1]
         },
         title: {
-          x: 22,
+          x: 28,
           y: bounds.y + bounds.height / 2,
           text: "mean(Acceleration)",
           rotation: -Math.PI / 2
