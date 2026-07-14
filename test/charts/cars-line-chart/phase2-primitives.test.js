@@ -2,6 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  createMonotoneEditCarsLineChart,
+  createStepCarsLineChart
+} from "../../../examples/cars-line-chart/program.js";
+import {
   createMockCanvasContext,
   findCanvasCalls
 } from "../../support/canvas.js";
@@ -154,5 +158,30 @@ test("keeps curve primitive programs free of future public curve actions", () =>
     assert.equal(operations.includes("createLineMark"), false);
     assert.equal(operations.at(-1), "editGraphics");
     assert.deepEqual(program.actionStack, []);
+  }
+});
+
+test("matches approved curve primitives with user-facing action flows", () => {
+  const pairs = [
+    [createCurveStepPrimitives(cars), createStepCarsLineChart(cars), "createTitle"],
+    [
+      createCurveMonotoneEditPrimitives(cars),
+      createMonotoneEditCarsLineChart(cars),
+      "editLineMark"
+    ]
+  ];
+
+  for (const [primitive, publicProgram, finalAction] of pairs) {
+    const primitiveContext = createMockCanvasContext();
+    const publicContext = createMockCanvasContext();
+    renderCarsLineChartPrimitives(primitive, primitiveContext);
+    renderCarsLineChartPrimitives(publicProgram, publicContext);
+
+    assert.deepEqual(publicProgram.semanticSpec, primitive.semanticSpec);
+    assert.deepEqual(publicProgram.graphicSpec, primitive.graphicSpec);
+    assert.deepEqual(publicProgram.graphicSpec.order, primitive.graphicSpec.order);
+    assert.deepEqual(publicContext.calls, primitiveContext.calls);
+    assert.equal(publicProgram.trace.children.at(-1).op, finalAction);
+    assert.deepEqual(publicProgram.actionStack, []);
   }
 });

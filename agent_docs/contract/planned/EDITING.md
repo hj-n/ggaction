@@ -5,12 +5,6 @@ These contracts are accepted or pending future API work; they are not current pu
 ## mark edits
 
 ```typescript
-editLineMark({
-  target?: UserId;
-  strokeWidth?: NonNegativeFinite;
-  curve?: CurveInterpolation;
-}): ChartProgram;
-
 editAreaMark({
   target?: UserId;
   fill?: NonEmptyString;
@@ -21,16 +15,16 @@ editAreaMark({
 
 - `target`은 existing compatible mark selector이며 수정 property가 아니다. compatible mark가
   유일하면 생략할 수 있고 여러 개면 explicit target이 필요하다. target 외 최소 한 변경값을 요구한다.
-- 이 action들은 mark가 직접 소유한 graphical materialization config만 수정한다. dataset
+- `editLineMark`는 current mark contract로 이동했다. Remaining edit action은 mark가 직접 소유한
+  graphical materialization config만 수정한다. dataset
   binding, field encoding, scale과 coordinate는 변경하지 않는다.
 - `editPointMark`는 구현되어 current mark contract로 이동했다. `editAreaMark.fill`은 field-driven
   `encodeColor`가 있으면 오류지만 opacity는 독립적으로
   수정할 수 있다.
-- 각 action은 대응하는 내부 wrapped `rematerializePointMark`, `rematerializeLineMark`,
-  `rematerializeAreaMark`를 호출한다. 기존 legend recipe가 변경된 mark property에서 파생되면
+- Remaining action은 대응하는 내부 wrapped `rematerializeAreaMark`를 호출한다. 기존 legend recipe가 변경된 mark property에서 파생되면
   materialization plan이 `rematerializeLegend`도 호출한다.
-- Curve edit는 stored fields/scales를 유지하고 accepted shared grammar로 every affected path command를
-  다시 만든다. Area는 upper/lower boundaries를 분리해 보간하며 renderer는 curve token을 읽지 않는다.
+- Area curve edit는 stored fields/scales를 유지하고 upper/lower boundaries를 분리해 보간하며 renderer는
+  curve token을 읽지 않는다.
 - `createBarMark`는 현재 직접 소유한 editable parameter가 없으므로 `editBarMark`를 계획하지
   않는다. width, color, grouping, stack과 position은 기존 encoding action이 소유한다.
 - Status: Planned, NOT IMPLEMENTED. 실행 가능한 coverage는 구현 단계에서 추가한다.

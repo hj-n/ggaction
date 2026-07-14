@@ -9,13 +9,25 @@ import {
 } from "./shared.js";
 import { DEFAULT_COLORS } from "../../theme/defaults.js";
 import { findDataset } from "../../selectors/datasets.js";
-import { findLayer } from "../../selectors/layers.js";
-import { buildLinearPathCommands } from "../../grammar/pathCommands.js";
+import { findLayer, resolveEligibleLayer } from "../../selectors/layers.js";
+import {
+  buildCurvePathCommands,
+  validateCurveInterpolation
+} from "../../grammar/curveCommands.js";
+import { canMaterializeLine } from "./materialization.js";
 
 const DEFAULT_LINE_STROKE = DEFAULT_COLORS.mark;
 const DEFAULT_LINE_WIDTH = 2;
-const CREATE_OPTIONS = Object.freeze(["id", "data", "strokeWidth"]);
+const CREATE_OPTIONS = Object.freeze(["id", "data", "strokeWidth", "curve"]);
+const EDIT_OPTIONS = Object.freeze(["target", "strokeWidth", "curve"]);
 const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);
+
+function validateStrokeWidth(value) {
+  if (!Number.isFinite(value) || value < 0) {
+    throw new RangeError("Line strokeWidth must be a non-negative finite number.");
+  }
+  return value;
+}
 
 const createLineMark = action(
   {
@@ -26,10 +38,10 @@ const createLineMark = action(
     validateMarkOptions(args, CREATE_OPTIONS, "createLineMark");
     const id = validateUserId(args.id, "Line mark id");
     const { data } = resolveMarkData(this, args);
-    const strokeWidth = args.strokeWidth ?? DEFAULT_LINE_WIDTH;
-    if (!Number.isFinite(strokeWidth) || strokeWidth < 0) {
-      throw new RangeError("Line strokeWidth must be a non-negative finite number.");
-    }
+    const strokeWidth = validateStrokeWidth(
+      args.strokeWidth ?? DEFAULT_LINE_WIDTH
+    );
+    const curve = validateCurveInterpolation(args.curve ?? "linear");
     assertMarkAvailable(this, id);
 
     return this
@@ -48,7 +60,10 @@ const createLineMark = action(
       })
       ._withMarkConfig(
         id,
-        Object.hasOwn(args, "strokeWidth") ? { strokeWidth } : {}
+        {
+          ...(Object.hasOwn(args, "strokeWidth") ? { strokeWidth } : {}),
+          ...(Object.hasOwn(args, "curve") ? { curve } : {})
+        }
       );
   }
 );
@@ -122,8 +137,9 @@ const rematerializeLineMark = action(
         { clamp: yScale.clamp ?? false }
       );
 
-      return buildLinearPathCommands(
-        series.values.map((_, index) => ({ x: x[index], y: y[index] }))
+      return buildCurvePathCommands(
+        series.values.map((_, index) => ({ x: x[index], y: y[index] })),
+        this.markConfigs[id]?.curve ?? "linear"
       );
     });
     const colorEncoding = layer.encoding?.color;
@@ -167,7 +183,45 @@ const rematerializeLineMark = action(
   }
 );
 
+const editLineMark = action(
+  {
+    op: "editLineMark",
+    description: "Edit line-mark curve and stroke width."
+  },
+  function (args = {}) {
+    validateMarkOptions(args, EDIT_OPTIONS, "editLineMark");
+    if (
+      !Object.hasOwn(args, "strokeWidth") &&
+      !Object.hasOwn(args, "curve")
+    ) {
+      throw new Error("editLineMark requires strokeWidth or curve.");
+    }
+    const target = Object.hasOwn(args, "target")
+      ? validateUserId(args.target, "Line mark id")
+      : undefined;
+    const layer = resolveEligibleLayer(this, {
+      target,
+      predicate: candidate => candidate.mark?.type === "line",
+      label: "line mark"
+    });
+    const config = {
+      ...this.markConfigs[layer.id],
+      ...(Object.hasOwn(args, "strokeWidth")
+        ? { strokeWidth: validateStrokeWidth(args.strokeWidth) }
+        : {}),
+      ...(Object.hasOwn(args, "curve")
+        ? { curve: validateCurveInterpolation(args.curve) }
+        : {})
+    };
+    const next = this._withMarkConfig(layer.id, config);
+    return canMaterializeLine(next, layer)
+      ? next.rematerializeLineMark({ id: layer.id })
+      : next;
+  }
+);
+
 export function registerLineMarkActions(ProgramClass) {
   ProgramClass.prototype.createLineMark = createLineMark;
+  ProgramClass.prototype.editLineMark = editLineMark;
   ProgramClass.prototype.rematerializeLineMark = rematerializeLineMark;
 }

@@ -11,7 +11,8 @@ title: Marks
 | --- | --- | --- | --- |
 | `createPointMark` | `createPointMark({ id: "points" })` | Current dataset; circle shape | Empty/concrete point collection |
 | `editPointMark` | `editPointMark({ shape: "diamond" })` | Current or unique point mark | Rematerialized equal-area symbols |
-| `createLineMark` | `createLineMark({ id: "lines" })` | Current dataset | Empty path collection |
+| `createLineMark` | `createLineMark({ id: "lines" })` | Current dataset; linear curve | Empty path collection |
+| `editLineMark` | `editLineMark({ curve: "monotone" })` | Current or unique line mark | Rematerialized path commands |
 | `createBarMark` | `createBarMark({ id: "bars" })` | Current dataset | Empty rect collection |
 | `createAreaMark` | `createAreaMark({ id: "band" })` | Current dataset; blue fill; opacity `0.2` | Empty path collection |
 
@@ -69,13 +70,14 @@ instead use value/density x and y encodings: the density axis is closed against
 zero, while the value axis determines sample order. Both horizontal-density and
 vertical-density orientations are supported.
 
-## `createLineMark({ id, data?, strokeWidth? })`
+## `createLineMark({ id, data?, strokeWidth?, curve? })`
 
 | Option | Type | Default |
 | --- | --- | --- |
 | `id` | valid user-defined ID | required |
 | `data` | existing dataset ID | current dataset |
 | `strokeWidth` | non-negative finite number | materializer default `2` |
+| `curve` | supported curve interpolation | `"linear"` |
 
 ```javascript
 const program = chart()
@@ -95,10 +97,33 @@ program.graphicSpec.objects.trends;
 Line mark creation does not infer one default series, coordinates, encodings,
 or path commands. Temporal `encodeX` resolves the horizontal scale while leaving
 the collection empty. Aggregate line `encodeY` then derives the currently known
-series, resizes the collection, and materializes sorted concrete point arrays.
+series, resizes the collection, and materializes sorted concrete commands.
 `encodeColor` and `encodeStrokeDash` can further regroup those paths and apply
 semantic series styles. Regression-derived quantitative x/y values may be
 materialized directly without temporal aggregation.
+
+`curve` accepts `linear`, `step`, `step-before`, `step-after`, `basis`,
+`cardinal`, `monotone`, and `natural`. Linear and step curves materialize `L`
+commands; smooth curves materialize cubic `C` commands. Smooth curves with only
+two points fall back to linear. A monotone curve requires strictly increasing
+materialized x values.
+
+## `editLineMark({ target?, strokeWidth?, curve? })`
+
+Edit line appearance without changing fields, grouping, coordinates, or scales:
+
+```javascript
+const smooth = program.editLineMark({
+  target: "trends",
+  curve: "monotone",
+  strokeWidth: 4
+});
+```
+
+`target` may be omitted for the current or only line mark. At least one of
+`strokeWidth` and `curve` is required. A complete line is rematerialized
+immediately; an incomplete line retains the choice until its encodings make it
+renderable. Canvas resizing and later series regrouping preserve both settings.
 
 ## `createBarMark({ id, data? })`
 

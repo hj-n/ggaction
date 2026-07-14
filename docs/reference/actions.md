@@ -96,11 +96,21 @@ Change constant point shape and rematerialize its concrete children. [Marks](../
 ### `createLineMark`
 
 ```javascript
-createLineMark({ id, data?, strokeWidth? })
+createLineMark({ id, data?, strokeWidth?, curve? })
 ```
 
-Create a semantic line mark and empty path collection. An explicit
-`strokeWidth` is retained during rematerialization. [Marks](../api/marks.md)
+Create a semantic line mark and empty path collection. Curve defaults to
+`"linear"`; explicit curve and `strokeWidth` values are retained during
+rematerialization. [Marks](../api/marks.md)
+
+### `editLineMark`
+
+```javascript
+editLineMark({ target?, strokeWidth?, curve? })
+```
+
+Edit line appearance and rematerialize concrete path commands without changing
+semantic encodings. [Marks](../api/marks.md)
 
 ### `createBarMark`
 

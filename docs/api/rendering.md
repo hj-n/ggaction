@@ -53,6 +53,10 @@ text, and `M/L/C/Z` command-path graphics. Path and line strokes may use concret
 dash arrays. The renderer validates values with the same concrete property
 contract used by `editGraphics`.
 
+Line curve actions resolve interpolation into those commands before rendering.
+The Canvas renderer executes `L` and cubic `C` segments but does not read curve
+names or calculate control points.
+
 ## Errors and limitations
 
 Rendering never reads `semanticSpec`. Every drawable property must already be

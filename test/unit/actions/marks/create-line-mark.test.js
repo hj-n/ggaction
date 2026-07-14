@@ -58,6 +58,20 @@ test("supports empty datasets because series cardinality is unresolved", () => {
   assert.equal(program.graphicSpec.objects.trends.children.length, 0);
 });
 
+test("stores explicit curve and stroke appearance for later materialization", () => {
+  const program = dataProgram().createLineMark({
+    id: "trends",
+    curve: "step",
+    strokeWidth: 0
+  });
+
+  assert.deepEqual(program.markConfigs.trends, {
+    curve: "step",
+    strokeWidth: 0
+  });
+  assert.deepEqual(dataProgram().createLineMark({ id: "trends" }).markConfigs.trends, {});
+});
+
 test("validates line mark options, ids, data, and conflicts", () => {
   const program = dataProgram();
 
@@ -73,6 +87,10 @@ test("validates line mark options, ids, data, and conflicts", () => {
   assert.throws(
     () => program.createLineMark({ id: "trends", shape: "path" }),
     /Unknown createLineMark option/
+  );
+  assert.throws(
+    () => program.createLineMark({ id: "trends", curve: "smooth" }),
+    /Unsupported curve interpolation/
   );
 
   const created = program.createLineMark({ id: "trends" });

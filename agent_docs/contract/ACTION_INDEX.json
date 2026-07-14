@@ -150,9 +150,9 @@
       "layer": "user-facing",
       "domain": "marks",
       "status": "implemented",
-      "lifecycle": "Stable resource, edit gap",
-      "update": "Encoding actions only; no base-mark edit",
-      "audit": "`editLineMark` — Planned",
+      "lifecycle": "Mutable resource",
+      "update": "`editLineMark`",
+      "audit": "Complete",
       "coverage": {
         "contract": "complete",
         "effects": "complete",
@@ -161,6 +161,24 @@
       "contract": {
         "file": "agent_docs/contract/current/MARKS.md",
         "anchor": "createlinemark"
+      }
+    },
+    {
+      "name": "editLineMark",
+      "layer": "user-facing",
+      "domain": "marks",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Edits curve and stroke width",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/MARKS.md",
+        "anchor": "editlinemark"
       }
     },
     {
@@ -1270,15 +1288,6 @@
       "contract": {
         "file": "agent_docs/contract/planned/EDITING.md",
         "anchor": "editlegend"
-      }
-    },
-    {
-      "name": "editLineMark",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/EDITING.md",
-        "anchor": "mark-edits"
       }
     },
     {

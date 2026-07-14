@@ -489,6 +489,27 @@ The source rows remain immutable. Aggregation creates derived series values;
 it does not replace the dataset. Because color and stroke dash encode the same
 field and ordered domain, `createGuides` combines them into one legend.
 
+## Change the curve
+
+Curve is line appearance rather than a semantic field encoding. It can be set
+when the mark is created:
+
+```javascript
+.createLineMark({ id: "trends", curve: "step" })
+```
+
+or edited after the complete chart exists:
+
+```javascript
+const smooth = program.editLineMark({
+  curve: "monotone",
+  strokeWidth: 4
+});
+```
+
+Both forms regenerate backend-neutral path commands. The stored x/y fields,
+mean aggregation, grouping, scales, axes, and legend remain unchanged.
+
 ## Key action trace
 
 Aggregate and series actions explicitly rematerialize the path; the renderer
@@ -1019,10 +1040,25 @@ For multiple series, add `encodeColor({ field: "group" })`,
 - UTC time x and linear y scales
 - Mean aggregation at each x/series group
 - Sorted concrete `M/L` path commands
+- Linear interpolation unless `createLineMark({ curve })` selects another curve
 - Axes, horizontal grid, and a right-side categorical legend when applicable
 
 Every materialized series needs at least two points. Reserve right margin for a
 legend or pass `createLegend({ position: "bottom" })` with bottom margin.
+
+Use `curve: "step"` during creation for midpoint steps, or edit an existing
+line without changing its encodings:
+
+```javascript
+const smooth = program.editLineMark({
+  curve: "monotone",
+  strokeWidth: 4
+});
+```
+
+The accepted curve vocabulary is `linear`, `step`, `step-before`, `step-after`,
+`basis`, `cardinal`, `monotone`, and `natural`. The renderer receives only final
+`M/L/C` commands and never interprets these names.
 
 ## Continue
 
@@ -1527,7 +1563,8 @@ extent or bandwidth, invalid output fields, and fewer than two sample steps.
 | --- | --- | --- | --- |
 | `createPointMark` | `createPointMark({ id: "points" })` | Current dataset; circle shape | Empty/concrete point collection |
 | `editPointMark` | `editPointMark({ shape: "diamond" })` | Current or unique point mark | Rematerialized equal-area symbols |
-| `createLineMark` | `createLineMark({ id: "lines" })` | Current dataset | Empty path collection |
+| `createLineMark` | `createLineMark({ id: "lines" })` | Current dataset; linear curve | Empty path collection |
+| `editLineMark` | `editLineMark({ curve: "monotone" })` | Current or unique line mark | Rematerialized path commands |
 | `createBarMark` | `createBarMark({ id: "bars" })` | Current dataset | Empty rect collection |
 | `createAreaMark` | `createAreaMark({ id: "band" })` | Current dataset; blue fill; opacity `0.2` | Empty path collection |
 
@@ -1585,13 +1622,14 @@ instead use value/density x and y encodings: the density axis is closed against
 zero, while the value axis determines sample order. Both horizontal-density and
 vertical-density orientations are supported.
 
-## `createLineMark({ id, data?, strokeWidth? })`
+## `createLineMark({ id, data?, strokeWidth?, curve? })`
 
 | Option | Type | Default |
 | --- | --- | --- |
 | `id` | valid user-defined ID | required |
 | `data` | existing dataset ID | current dataset |
 | `strokeWidth` | non-negative finite number | materializer default `2` |
+| `curve` | supported curve interpolation | `"linear"` |
 
 ```javascript
 const program = chart()
@@ -1611,10 +1649,33 @@ program.graphicSpec.objects.trends;
 Line mark creation does not infer one default series, coordinates, encodings,
 or path commands. Temporal `encodeX` resolves the horizontal scale while leaving
 the collection empty. Aggregate line `encodeY` then derives the currently known
-series, resizes the collection, and materializes sorted concrete point arrays.
+series, resizes the collection, and materializes sorted concrete commands.
 `encodeColor` and `encodeStrokeDash` can further regroup those paths and apply
 semantic series styles. Regression-derived quantitative x/y values may be
 materialized directly without temporal aggregation.
+
+`curve` accepts `linear`, `step`, `step-before`, `step-after`, `basis`,
+`cardinal`, `monotone`, and `natural`. Linear and step curves materialize `L`
+commands; smooth curves materialize cubic `C` commands. Smooth curves with only
+two points fall back to linear. A monotone curve requires strictly increasing
+materialized x values.
+
+## `editLineMark({ target?, strokeWidth?, curve? })`
+
+Edit line appearance without changing fields, grouping, coordinates, or scales:
+
+```javascript
+const smooth = program.editLineMark({
+  target: "trends",
+  curve: "monotone",
+  strokeWidth: 4
+});
+```
+
+`target` may be omitted for the current or only line mark. At least one of
+`strokeWidth` and `curve` is required. A complete line is rematerialized
+immediately; an incomplete line retains the choice until its encodings make it
+renderable. Canvas resizing and later series regrouping preserve both settings.
 
 ## `createBarMark({ id, data? })`
 
@@ -2129,6 +2190,10 @@ The current renderer supports concrete canvas, collection, circle, rect, line,
 text, and `M/L/C/Z` command-path graphics. Path and line strokes may use concrete
 dash arrays. The renderer validates values with the same concrete property
 contract used by `editGraphics`.
+
+Line curve actions resolve interpolation into those commands before rendering.
+The Canvas renderer executes `L` and cubic `C` segments but does not read curve
+names or calculate control points.
 
 ## Errors and limitations
 
@@ -3626,7 +3691,7 @@ chart-authoring API does not support that combination.
 | Position | quantitative x/y | temporal x, mean y | binned x, count y | ordinal x, mean y | shared quantitative x/y | value + density x/y |
 | Nominal color | point fill | series stroke | zero-stacked fill | grouped fill and xOffset | point fill + fit stroke | grouped area fill |
 | Stroke dash | — | nominal series | — | — | — | — |
-| Constant appearance | radius | — | — | band width | opacity, band fill, line width | opacity |
+| Constant appearance | radius | stroke width, 8 curves | — | band width | opacity, band fill, line width | opacity |
 | Automatic axes | linear | UTC time and linear | bin-aligned and linear | ordinal and linear | shared linear | source value + density |
 | Automatic grid | horizontal | horizontal | horizontal | horizontal | shared horizontal | horizontal; vertical optional |
 | Legend | point color + shape | categorical | categorical | categorical | composite color/shape/line + size | categorical top/right/bottom |
@@ -3646,7 +3711,7 @@ chart-authoring API does not support that combination.
 | Guides | Automatic axes, horizontal/vertical Cartesian grids, and categorical legends |
 | Titles | One plot-aligned top title with one optional single-line subtitle |
 | Rendering | Browser Canvas and Node PNG |
-| Graphics | Concrete canvas, circle, line, rect, text, `M/L/C/Z` command paths, and heterogeneous drawable collections |
+| Graphics | Concrete canvas, circle, line, rect, text, `M/L/C/Z` command paths, 8 line curves, and heterogeneous drawable collections |
 
 ## Current limitations
 
@@ -3751,11 +3816,21 @@ Change constant point shape and rematerialize its concrete children. [Marks](../
 ### `createLineMark`
 
 ```javascript
-createLineMark({ id, data?, strokeWidth? })
+createLineMark({ id, data?, strokeWidth?, curve? })
 ```
 
-Create a semantic line mark and empty path collection. An explicit
-`strokeWidth` is retained during rematerialization. [Marks](../api/marks.md)
+Create a semantic line mark and empty path collection. Curve defaults to
+`"linear"`; explicit curve and `strokeWidth` values are retained during
+rematerialization. [Marks](../api/marks.md)
+
+### `editLineMark`
+
+```javascript
+editLineMark({ target?, strokeWidth?, curve? })
+```
+
+Edit line appearance and rematerialize concrete path commands without changing
+semantic encodings. [Marks](../api/marks.md)
 
 ### `createBarMark`
 
@@ -4204,6 +4279,11 @@ control points must be finite numbers.
 TypeScript users can import the `ConcretePathCommand` union from `ggaction`.
 `path.strokeDash` and `line.strokeDash` accept non-negative finite number arrays;
 an empty array is a solid stroke.
+
+Chart authors choose line interpolation through `createLineMark({ curve })` or
+`editLineMark({ curve })`. Extension authors still write final commands rather
+than storing curve names in `graphicSpec`; the renderer never performs
+interpolation.
 
 Circle graphics support a required fill and an optional concrete
 `stroke`/`strokeWidth` pair. Accepted graphic properties have Canvas rendering

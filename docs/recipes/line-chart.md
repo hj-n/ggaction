@@ -31,10 +31,25 @@ For multiple series, add `encodeColor({ field: "group" })`,
 - UTC time x and linear y scales
 - Mean aggregation at each x/series group
 - Sorted concrete `M/L` path commands
+- Linear interpolation unless `createLineMark({ curve })` selects another curve
 - Axes, horizontal grid, and a right-side categorical legend when applicable
 
 Every materialized series needs at least two points. Reserve right margin for a
 legend or pass `createLegend({ position: "bottom" })` with bottom margin.
+
+Use `curve: "step"` during creation for midpoint steps, or edit an existing
+line without changing its encodings:
+
+```javascript
+const smooth = program.editLineMark({
+  curve: "monotone",
+  strokeWidth: 4
+});
+```
+
+The accepted curve vocabulary is `linear`, `step`, `step-before`, `step-after`,
+`basis`, `cardinal`, `monotone`, and `natural`. The renderer receives only final
+`M/L/C` commands and never interprets these names.
 
 ## Continue
 

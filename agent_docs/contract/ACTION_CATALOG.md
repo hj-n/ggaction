@@ -16,7 +16,8 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | user-facing | [`createRegressionData`](current/CORE.md#createregressiondata) | core | Immutable create-only | Intentional | ✅ / ✅ / ⚠️ |
 | user-facing | [`createPointMark`](current/MARKS.md#createpointmark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editPointMark`](current/MARKS.md#editpointmark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
-| user-facing | [`createLineMark`](current/MARKS.md#createlinemark) | marks | Stable resource, edit gap | `editLineMark` — Planned | ✅ / ✅ / ✅ |
+| user-facing | [`createLineMark`](current/MARKS.md#createlinemark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
+| user-facing | [`editLineMark`](current/MARKS.md#editlinemark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`createBarMark`](current/MARKS.md#createbarmark) | marks | Stable create-only | Intentional | ✅ / ✅ / ✅ |
 | user-facing | [`createAreaMark`](current/MARKS.md#createareamark) | marks | Stable resource, edit gap | `editAreaMark` — Planned | ✅ / ✅ / ⚠️ |
 | user-facing | [`encodeX`](current/ENCODINGS.md#encodex) | encodings | Assignment | Reassignment — Implemented | ✅ / ✅ / ⚠️ |
@@ -89,7 +90,6 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | `editDensity` | accepted | [Open](planned/EDITING.md#editdensity) |
 | `editHorizontalGrid` | accepted | [Open](planned/EDITING.md#directional-grid-edits) |
 | `editLegend` | accepted | [Open](planned/EDITING.md#editlegend) |
-| `editLineMark` | accepted | [Open](planned/EDITING.md#mark-edits) |
 | `editRegressionBand` | accepted | [Open](planned/EDITING.md#regression-component-edits) |
 | `editRegressionLine` | accepted | [Open](planned/EDITING.md#regression-component-edits) |
 | `editTitle` | accepted | [Open](planned/EDITING.md#edittitle) |

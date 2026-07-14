@@ -79,6 +79,27 @@ The source rows remain immutable. Aggregation creates derived series values;
 it does not replace the dataset. Because color and stroke dash encode the same
 field and ordered domain, `createGuides` combines them into one legend.
 
+## Change the curve
+
+Curve is line appearance rather than a semantic field encoding. It can be set
+when the mark is created:
+
+```javascript
+.createLineMark({ id: "trends", curve: "step" })
+```
+
+or edited after the complete chart exists:
+
+```javascript
+const smooth = program.editLineMark({
+  curve: "monotone",
+  strokeWidth: 4
+});
+```
+
+Both forms regenerate backend-neutral path commands. The stored x/y fields,
+mean aggregation, grouping, scales, axes, and legend remain unchanged.
+
 ## Key action trace
 
 Aggregate and series actions explicitly rematerialize the path; the renderer

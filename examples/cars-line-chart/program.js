@@ -1,7 +1,7 @@
 import { chart } from "../../src/index.js";
 
-export function createCarsLineChart(cars) {
-  const rows = cars.filter(
+function validRows(cars) {
+  return cars.filter(
     car =>
       typeof car.Year === "string" &&
       Number.isFinite(Date.parse(car.Year)) &&
@@ -9,6 +9,10 @@ export function createCarsLineChart(cars) {
       typeof car.Origin === "string" &&
       car.Origin.length > 0
   );
+}
+
+export function createCarsLineChart(cars) {
+  const rows = validRows(cars);
 
   return chart()
     .createCanvas({
@@ -39,5 +43,80 @@ export function createCarsLineChart(cars) {
     .createTitle({
       text: "The trend of acceleration by year",
       subtitle: "from 1970 to 1982"
+    });
+}
+
+export function createStepCarsLineChart(cars) {
+  const rows = validRows(cars);
+
+  return chart()
+    .createCanvas({
+      width: 720,
+      height: 460,
+      margin: { top: 80, right: 170, bottom: 60, left: 80 }
+    })
+    .createData({ id: "cars", values: rows })
+    .createLineMark({ id: "trends", curve: "step" })
+    .encodeX({
+      field: "Year",
+      fieldType: "temporal",
+      scale: { nice: true }
+    })
+    .encodeY({
+      field: "Acceleration",
+      aggregate: "mean",
+      scale: { nice: true, zero: false }
+    })
+    .encodeColor({
+      field: "Origin",
+      scale: { palette: "tableau10" }
+    })
+    .encodeStrokeDash({ field: "Origin" })
+    .createGuides({
+      axes: { y: { ticksAndLabels: { count: 6 } } }
+    })
+    .createTitle({
+      text: "The trend of acceleration by year",
+      subtitle: "from 1970 to 1982"
+    });
+}
+
+export function createMonotoneEditCarsLineChart(cars) {
+  const rows = validRows(cars);
+
+  return chart()
+    .createCanvas({
+      width: 720,
+      height: 460,
+      margin: { top: 80, right: 170, bottom: 60, left: 80 }
+    })
+    .createData({ id: "cars", values: rows })
+    .createLineMark({ id: "trends" })
+    .encodeX({
+      field: "Year",
+      fieldType: "temporal",
+      scale: { nice: true }
+    })
+    .encodeY({
+      field: "Acceleration",
+      aggregate: "mean",
+      scale: { nice: true, zero: false }
+    })
+    .encodeColor({
+      field: "Origin",
+      scale: { palette: "tableau10" }
+    })
+    .encodeStrokeDash({ field: "Origin" })
+    .createGuides({
+      axes: { y: { ticksAndLabels: { count: 6 } } }
+    })
+    .createTitle({
+      text: "The trend of acceleration by year",
+      subtitle: "from 1970 to 1982"
+    })
+    .editLineMark({
+      target: "trends",
+      curve: "monotone",
+      strokeWidth: 4
     });
 }

@@ -16,7 +16,7 @@ chart-authoring API does not support that combination.
 | Position | quantitative x/y | temporal x, mean y | binned x, count y | ordinal x, mean y | shared quantitative x/y | value + density x/y |
 | Nominal color | point fill | series stroke | zero-stacked fill | grouped fill and xOffset | point fill + fit stroke | grouped area fill |
 | Stroke dash | — | nominal series | — | — | — | — |
-| Constant appearance | radius | — | — | band width | opacity, band fill, line width | opacity |
+| Constant appearance | radius | stroke width, 8 curves | — | band width | opacity, band fill, line width | opacity |
 | Automatic axes | linear | UTC time and linear | bin-aligned and linear | ordinal and linear | shared linear | source value + density |
 | Automatic grid | horizontal | horizontal | horizontal | horizontal | shared horizontal | horizontal; vertical optional |
 | Legend | point color + shape | categorical | categorical | categorical | composite color/shape/line + size | categorical top/right/bottom |
@@ -36,7 +36,7 @@ chart-authoring API does not support that combination.
 | Guides | Automatic axes, horizontal/vertical Cartesian grids, and categorical legends |
 | Titles | One plot-aligned top title with one optional single-line subtitle |
 | Rendering | Browser Canvas and Node PNG |
-| Graphics | Concrete canvas, circle, line, rect, text, `M/L/C/Z` command paths, and heterogeneous drawable collections |
+| Graphics | Concrete canvas, circle, line, rect, text, `M/L/C/Z` command paths, 8 line curves, and heterogeneous drawable collections |
 
 ## Current limitations
 

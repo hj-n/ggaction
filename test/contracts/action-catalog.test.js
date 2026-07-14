@@ -238,7 +238,6 @@ test("keeps planned direct actions and reassignment gaps explicit", () => {
     "editDensity",
     "editHorizontalGrid",
     "editLegend",
-    "editLineMark",
     "editRegressionBand",
     "editRegressionLine",
     "editTitle",

@@ -49,7 +49,8 @@ type ConcretePathCommand =
   | { op: "Z" };
 ```
 
-- `createLineMark.curve`와 `createAreaMark.curve`는 shared closed vocabulary를 사용하며 default는
+- `createLineMark.curve`와 `editLineMark.curve`는 구현되어 current mark contract가 소유한다.
+  `createAreaMark.curve`는 같은 shared closed vocabulary를 사용할 Planned parameter이며 default는
   `"linear"`다. Curve is graphical mark materialization config: it does not change fields, grouping,
   coordinates or scale semantics.
 - `"linear"` emits `M` followed by `L` commands. For each pair `(x0, y0)`→`(x1, y1)`, `"step"` emits
@@ -71,6 +72,6 @@ type ConcretePathCommand =
   grammar. Browser and Node use the same command list, and invalid input leaves the previous program unchanged.
 - Regression line/band actions forward their curve options to the corresponding line/area mark actions.
   Density and ranged-area charts reuse `createAreaMark.curve` without a density-specific interpolation API.
-- Status: Planned, NOT IMPLEMENTED. Every token needs exact command fixtures, two/three/many-point and
-  reversed-area cases, monotone validation, edit/rematerialization trace, renderer parity, declaration and
-  primitive-schema coverage.
+- Status: Partially implemented for line marks. Line은 every token exact fixtures, short-series fallback,
+  monotone validation, edit/rematerialization trace, renderer parity, declarations와 approved visual pair를 가진다.
+  Area boundary interpolation, reversed-area cases, `createAreaMark.curve`, regression band forwarding은 Planned다.

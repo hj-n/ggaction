@@ -1,6 +1,10 @@
 import test from "node:test";
 
-import { createCarsLineChart } from "../../../examples/cars-line-chart/program.js";
+import {
+  createCarsLineChart,
+  createMonotoneEditCarsLineChart,
+  createStepCarsLineChart
+} from "../../../examples/cars-line-chart/program.js";
 import { loadCars } from "../../support/data.js";
 import { assertRenderedPNG } from "../../support/png.js";
 import { createCarsLineChartPrimitives } from "./primitive.program.js";
@@ -80,7 +84,8 @@ const curveArtifacts = Object.freeze([
     subtitle: "from 1970 to 1982"
   });`
     }),
-    program: createCurveStepPrimitives(cars)
+    primitive: createCurveStepPrimitives(cars),
+    userFacing: createStepCarsLineChart(cars)
   }),
   Object.freeze({
     artifact: Object.freeze({
@@ -115,7 +120,8 @@ const curveArtifacts = Object.freeze([
   })
   .editLineMark({ target: "trends", curve: "monotone", strokeWidth: 4 });`
     }),
-    program: createCurveMonotoneEditPrimitives(cars)
+    primitive: createCurveMonotoneEditPrimitives(cars),
+    userFacing: createMonotoneEditCarsLineChart(cars)
   })
 ]);
 
@@ -143,12 +149,17 @@ test("renders the public and primitive line charts with visible series", async (
     });
   }
 
-  for (const { artifact, program } of curveArtifacts) {
-    await assertRenderedPNG(program, {
-      artifact: { ...artifact, kind: "primitive" },
-      width: 720,
-      height: 460,
-      colors: ["#4c78a8", "#f58518", "#e45756"]
-    });
+  for (const { artifact, primitive, userFacing } of curveArtifacts) {
+    for (const [kind, program] of [
+      ["primitive", primitive],
+      ["user-facing", userFacing]
+    ]) {
+      await assertRenderedPNG(program, {
+        artifact: { ...artifact, kind },
+        width: 720,
+        height: 460,
+        colors: ["#4c78a8", "#f58518", "#e45756"]
+      });
+    }
   }
 });

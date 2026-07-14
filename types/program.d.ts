@@ -20,6 +20,15 @@ export type ConcretePathCommand =
       readonly y: number;
     }
   | { readonly op: "Z" };
+export type CurveInterpolation =
+  | "linear"
+  | "step"
+  | "step-before"
+  | "step-after"
+  | "basis"
+  | "cardinal"
+  | "monotone"
+  | "natural";
 export type ScaleType = "linear" | "time" | "ordinal";
 export type ContinuousColorInterpolation =
   | "rgb"
@@ -239,7 +248,17 @@ export class ChartProgram {
 
   createPointMark(options: { id: string; data?: string; shape?: PointShape }): ChartProgram;
   editPointMark(options: { target?: string; shape: PointShape }): ChartProgram;
-  createLineMark(options: { id: string; data?: string; strokeWidth?: number }): ChartProgram;
+  createLineMark(options: {
+    id: string;
+    data?: string;
+    strokeWidth?: number;
+    curve?: CurveInterpolation;
+  }): ChartProgram;
+  editLineMark(options: {
+    target?: string;
+    strokeWidth?: number;
+    curve?: CurveInterpolation;
+  }): ChartProgram;
   createBarMark(options: { id: string; data?: string }): ChartProgram;
   createAreaMark(options: { id: string; data?: string; fill?: string; opacity?: number }): ChartProgram;
 

@@ -106,6 +106,11 @@ TypeScript users can import the `ConcretePathCommand` union from `ggaction`.
 `path.strokeDash` and `line.strokeDash` accept non-negative finite number arrays;
 an empty array is a solid stroke.
 
+Chart authors choose line interpolation through `createLineMark({ curve })` or
+`editLineMark({ curve })`. Extension authors still write final commands rather
+than storing curve names in `graphicSpec`; the renderer never performs
+interpolation.
+
 Circle graphics support a required fill and an optional concrete
 `stroke`/`strokeWidth` pair. Accepted graphic properties have Canvas rendering
 semantics; opaque style bags are not stored in `graphicSpec`.

@@ -7,6 +7,7 @@ export type {
   ColorEncodingOptions,
   ChartProgram,
   ConcretePathCommand,
+  CurveInterpolation,
   EditScaleOptions,
   FieldType,
   GraphicObject,

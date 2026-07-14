@@ -832,6 +832,8 @@ materialization policy에 정의한다.
 - group/color/strokeDash에 따라 series를 나눈다.
 - series 하나당 backend-neutral path 하나를 만든다.
 - source first-appearance group order와 명시적 x sort를 사용한다.
+- curve는 mark materialization config이며 `linear`, step family와 네 cubic family를 final `M/L/C`
+  commands로 변환한다. `editLineMark`는 field/scale/group을 유지한 채 curve와 stroke width를 갱신한다.
 
 ### Area
 

@@ -7,6 +7,10 @@ type PointShape =
   | "circle" | "square" | "diamond"
   | "triangle-up" | "triangle-down" | "triangle-left" | "triangle-right"
   | "plus" | "cross" | "star" | "hexagon" | "wye";
+
+type CurveInterpolation =
+  | "linear" | "step" | "step-before" | "step-after"
+  | "basis" | "cardinal" | "monotone" | "natural";
 ```
 
 This closed vocabulary is owned by the shared point-shape grammar and reused by mark creation/editing,
@@ -71,6 +75,8 @@ shape encoding, concrete materialization, and legend symbols.
 - `id`, `data`: `createPointMark`와 같은 ID/data 계약이다.
 - `strokeWidth`: Implemented, non-negative finite number이며 concrete default는 `2`다. 명시한 값은
   mark materialization config에 저장되어 path 재생성 후에도 유지된다.
+- `curve`: Implemented. `linear | step | step-before | step-after | basis | cardinal | monotone | natural`이며
+  기본값은 `linear`다. Curve는 graphical materialization config이고 semantic field/scale/group을 바꾸지 않는다.
 - Effect: semantic `line` layer와 길이 0의 path collection을 만든다. x/y encoding이 완성되기
   전에는 path가 없다.
 - Coverage: `test/unit/actions/marks/create-line-mark.test.js`가 default/explicit data,
@@ -78,8 +84,8 @@ shape encoding, concrete materialization, and legend symbols.
 
 ### Formal values — `createLineMark`
 
-- Implemented: `createLineMark({ id: UserId; data?: UserId; strokeWidth?: NonNegativeFinite })`
-- Planned (NOT IMPLEMENTED): `{ curve?: CurveInterpolation }`; default는 `"linear"`이며 accepted 8-value vocabulary를 사용한다.
+- Implemented: `createLineMark({ id: UserId; data?: UserId; strokeWidth?: NonNegativeFinite; curve?: CurveInterpolation })`
+- Planned (NOT IMPLEMENTED): —
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createLineMark`
@@ -88,8 +94,34 @@ shape encoding, concrete materialization, and legend symbols.
   - ✅ Covered: current/explicit/empty dataset, invalid IDs와 conflicts.
 - `strokeWidth`
   - ✅ Covered: omission→`2`, zero, positive representative, negative/non-finite rejection.
-- 🟡 Planned: 8-value curve grammar, graphical config persistence, concrete commands와 rematerialization parity.
-- Evidence: `test/unit/actions/marks/create-line-mark.test.js`.
+- `curve`
+  - ✅ Covered: 전체 8-value vocabulary, omission→linear, exact straight/step/cubic commands, short smooth-series fallback와 invalid rejection.
+  - ✅ Covered: create-time config persistence, Canvas/scale/group rematerialization과 approved step primitive/public pair.
+- Evidence: `test/unit/actions/marks/create-line-mark.test.js`, `test/unit/grammar/curve-commands.test.js`,
+  `test/charts/cars-line-chart/phase2-primitives.test.js`.
+
+## `editLineMark`
+
+- Signature: `editLineMark({ target?, strokeWidth?, curve? })`.
+- `target`: existing line mark. Current compatible mark 또는 유일한 line mark로 infer하며 ambiguity는 explicit target을 요구한다.
+- `strokeWidth`: non-negative finite number. 전달되면 stored line config와 every concrete series path를 갱신한다.
+- `curve`: shared `CurveInterpolation`. Field, grouping, coordinates와 scale semantics를 유지한 채 commands를 다시 만든다.
+- 최소 한 변경값이 필요하다. 아직 x/y encoding이 완성되지 않은 line은 config만 저장하고, complete line은 wrapped
+  `rematerializeLineMark`를 호출한다.
+
+### Formal values — `editLineMark`
+
+- Implemented: `editLineMark({ target?: UserId; strokeWidth?: NonNegativeFinite; curve?: CurveInterpolation })`.
+- Planned (NOT IMPLEMENTED): —
+- Proposed (NOT IMPLEMENTED): —
+
+### Value coverage — `editLineMark`
+
+- ✅ Covered: explicit/current/unique target, stroke width zero/positive와 전체 curve vocabulary.
+- ✅ Covered: empty edit, unknown option/target, ambiguity, invalid width/curve와 earlier-program immutability.
+- ✅ Covered: Canvas resize, group rematerialization, deterministic nested trace and approved monotone primitive/public pair.
+- Evidence: `test/unit/actions/marks/edit-line-mark.test.js` and
+  `test/charts/cars-line-chart/phase2-primitives.test.js`.
 
 ## `createBarMark`
 
