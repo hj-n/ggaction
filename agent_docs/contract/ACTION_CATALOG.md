@@ -180,10 +180,10 @@ properties, rematerialization ownership과 conflict behavior를 정해야 한다
 | `createYAxisTitle` | Mutable resource | `editYAxisTitle` | Complete |
 | `editXAxisTitle` | Mutable resource | Edits the x-axis title | Complete |
 | `editYAxisTitle` | Mutable resource | Edits the y-axis title | Complete |
-| `createGrid` | Aggregate create-only | Directional grid children | Intentional; child edit gaps remain |
-| `createHorizontalGrid` | Stable resource, edit gap | Internal rematerialization only | Gap — Proposed |
-| `createVerticalGrid` | Stable resource, edit gap | Internal rematerialization only | Gap — Proposed |
-| `createLegend` | Stable resource, edit gap | Internal rematerialization only | Gap — Proposed |
+| `createGrid` | Aggregate create-only | Directional grid children | Intentional; planned child edits |
+| `createHorizontalGrid` | Stable resource, edit gap | Internal rematerialization only | `editHorizontalGrid` — Planned |
+| `createVerticalGrid` | Stable resource, edit gap | Internal rematerialization only | `editVerticalGrid` — Planned |
+| `createLegend` | Stable resource, edit gap | Internal rematerialization only | `editLegend` — Planned |
 | `createSizeLegend` | Stable resource, edit gap | Internal rematerialization only | Gap — Proposed |
 | `createGuides` | Aggregate create-only | Guide child actions | Intentional; child edit gaps remain |
 | `createTitle` | Stable resource, edit gap | Internal rematerialization only | `editTitle` — Planned |
@@ -203,8 +203,70 @@ action이다. Contract readiness가 `Accepted`인 action만 구현을 시작할 
 
 | Planned action | Status | Contract readiness |
 | --- | --- | --- |
+| `editHorizontalGrid` | Planned | Accepted |
+| `editLegend` | Planned | Accepted |
 | `editScale` | Planned | Pending parameter review |
 | `editTitle` | Planned | Accepted |
+| `editVerticalGrid` | Planned | Accepted |
+
+### Planned contract: directional grid edits
+
+```typescript
+type EditGridOptions = {
+  count?: PositiveInteger;
+  values?: readonly Finite[] | "auto";
+  color?: NonEmptyString;
+  lineWidth?: NonNegativeFinite;
+  strokeDash?: DashPattern;
+};
+
+editHorizontalGrid(options: EditGridOptions): ChartProgram;
+editVerticalGrid(options: EditGridOptions): ChartProgram;
+```
+
+- 해당 방향의 기존 grid가 필수이며 최소 한 option을 요구한다. `scale`과 `coordinate`는
+  stable binding이므로 edit parameter에 포함하지 않는다.
+- `count`는 explicit `values`를 제거하고 scale에서 새 values를 생성한다. finite `values`
+  array는 stored count를 제거하며, `values: "auto"`는 count와 explicit values를 모두 지우고
+  axis/scale inference를 복원한다. `count`와 `values`를 함께 주면 오류다.
+- style option은 전달된 property만 변경한다. 각 action은 대응하는 내부 wrapped
+  `rematerializeHorizontalGrid` 또는 `rematerializeVerticalGrid`를 호출한다.
+- `createGrid`는 aggregate create-only로 유지하며 별도 `editGrid`는 만들지 않는다.
+- Status: Planned, NOT IMPLEMENTED. 실행 가능한 coverage는 구현 단계에서 추가한다.
+
+### Planned contract: editLegend
+
+```typescript
+editLegend({
+  target?: UserId;
+  position?: "right" | "bottom" | "top";
+  align?: "left" | "center" | "right";
+  direction?: "horizontal" | "vertical";
+  columns?: PositiveInteger;
+  offset?: NonNegativeFinite;
+  titlePosition?: "top" | "left";
+  title?: NonEmptyString | "auto" | false;
+  symbol?: "auto" | LegendSymbolLayer | { layers: readonly LegendSymbolLayer[] };
+  labels?: TextStyle;
+  titleStyle?: TextStyle;
+  itemGap?: PositiveFinite;
+  border?: LegendBorder;
+  count?: IntegerAtLeast2;
+}): ChartProgram;
+```
+
+- `target`은 existing legend selector이며 수정 property가 아니다. eligible legend가 유일하면
+  생략할 수 있고 여러 개면 explicit target이 필요하다. target 외 최소 한 변경값을 요구한다.
+- `channels`는 semantic binding이므로 edit parameter에 포함하지 않는다. layout과 appearance만
+  부분 수정하며 nested text style은 전달된 leaf를 기존 stored style에 merge한다.
+- title 생략은 기존 값을 유지하고, string은 custom title, `"auto"`는 encoding provenance 기반
+  inference 복원, `false`는 title graphic을 숨긴다.
+- position과 layout 값은 기존 legend kind가 지원해야 한다. categorical legend는 현재
+  right/bottom/top을 지원하지만 point composite legend는 right만 지원한다.
+- action은 내부 wrapped `rematerializeLegend`를 호출한다. compatible point size block에서
+  `count`가 바뀌면 stored count를 갱신하고 `rematerializeSizeLegend`도 호출한다.
+- overlap, margin 부족, incompatible option과 없는/ambiguous target은 명확한 오류다.
+- Status: Planned, NOT IMPLEMENTED. 실행 가능한 coverage는 구현 단계에서 추가한다.
 
 ### Planned contract: editTitle
 

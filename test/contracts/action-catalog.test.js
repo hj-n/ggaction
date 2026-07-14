@@ -236,10 +236,22 @@ test("classifies every direct action lifecycle and keeps edit gaps explicit", ()
     new Set(planned.map(row => row.action)),
     new Set(expectedPlanned)
   );
-  assert.equal(
-    planned.find(row => row.action === "editTitle")?.readiness,
-    "Accepted"
-  );
+  for (const action of [
+    "editHorizontalGrid",
+    "editLegend",
+    "editTitle",
+    "editVerticalGrid"
+  ]) {
+    assert.equal(
+      planned.find(row => row.action === action)?.readiness,
+      "Accepted",
+      action
+    );
+  }
+  assert.match(catalog, /### Planned contract: directional grid edits/);
+  assert.match(catalog, /values\?: readonly Finite\[\] \| "auto"/);
+  assert.match(catalog, /### Planned contract: editLegend/);
+  assert.match(catalog, /title\?: NonEmptyString \| "auto" \| false/);
   assert.match(catalog, /### Planned contract: editTitle/);
   assert.match(catalog, /subtitle\?: NonEmptyString \| false/);
   assert.match(catalog, /wrapped `rematerializeTitle`/);
