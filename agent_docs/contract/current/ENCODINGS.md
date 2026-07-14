@@ -353,7 +353,7 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
   - ✅ Covered: categorical/continuous-family sampling, cycling, reverse and mark/legend parity.
   - ✅ Covered: quantitative/temporal point color, sequential mapping, eight interpolation tokens,
     reverse/extent/clamp and gradient legend parity.
-- Evidence: color, palette, line-series, bar-color, area-color and grouped-bar tests.
+- Evidence: color, palette, line-series, bar-color, area-color, grouped-bar and Phase 1 integration tests.
 
 ## `encodeStrokeDash`
 
@@ -464,7 +464,7 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 - Reassignment
   - ✅ Covered: constant↔constant, field↔field and constant↔field immutable replacement.
 - ✅ Covered: auto/explicit descending range, clamp/reverse, continuous sample legend and constant-mode cleanup.
-- Evidence: point appearance, continuous legend and regression tests.
+- Evidence: point appearance, continuous legend, regression and Phase 1 integration tests.
 
 ## `encodeRadius`
 

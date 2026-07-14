@@ -241,9 +241,9 @@ type ImplementedPalette =
   registration API는 두지 않는다.
 - Status: Implemented. The canonical current contract moved to
   [`../current/PALETTES.md`](../current/PALETTES.md). This compatibility note remains only because the planned
-  continuous-color contract below references the implemented palette vocabulary.
+  continuous-color bar contract below references the implemented palette vocabulary.
 
-## continuous color vertical contract
+## continuous color bar consumer
 
 ```typescript
 type ContinuousColorInterpolation =
@@ -286,9 +286,9 @@ type ContinuousColorScale = {
   deterministic plan while preserving earlier programs.
 - `createLegend({ channels: ["color"] })` infers the gradient form from the sequential scale; the concrete
   layout contract is owned by [continuous color gradient legend](GUIDES_AND_LAYOUT.md#continuous-color-gradient-legend).
-- Status: Partially implemented. Point quantitative/temporal domains, palettes/ranges, all interpolation
-  tokens, policies, gradient legend, rematerialization and renderer parity are Current. Continuous bar
-  consumers and `unknown` fallback remain Planned.
+- Status: Planned, NOT IMPLEMENTED. Point quantitative/temporal domains, palettes/ranges, all interpolation
+  tokens, policies, gradient legend, rematerialization and renderer parity are Current. This contract now
+  contains only the continuous bar consumer and its `unknown` fallback.
 
 ## histogram bin controls
 

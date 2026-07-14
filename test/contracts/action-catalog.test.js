@@ -308,7 +308,7 @@ test("keeps accepted planned capabilities linked and non-public", () => {
     "Aggregate vocabulary",
     "Parameterized aggregate operations",
     "Color layout vocabulary",
-    "Continuous color vertical contract",
+    "Continuous color bar consumer",
     "Named and constant stroke dash vocabulary",
     "Histogram bin controls",
     "Scale type vocabulary",
@@ -404,6 +404,8 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   assert.match(plannedCorpus, /type ContinuousColorScale =/);
   assert.match(plannedCorpus, /type\?: "sequential"/);
   assert.match(plannedCorpus, /palette defaults to `"viridis"`/);
+  assert.match(plannedCorpus, /## continuous color bar consumer/);
+  assert.match(plannedCorpus, /contains only the continuous bar consumer/);
   assert.match(plannedCorpus, /## continuous color gradient legend/);
   assert.match(plannedCorpus, /length\?: PositiveFinite/);
   assert.match(plannedCorpus, /adjacent rect strips/);

@@ -117,7 +117,7 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | parameter | Aggregate vocabulary | accepted | [Open](planned/ENCODINGS.md#aggregate-vocabulary) |
 | parameter | Parameterized aggregate operations | accepted | [Open](planned/ENCODINGS.md#parameterized-aggregate-operations) |
 | parameter | Color layout vocabulary | accepted | [Open](planned/ENCODINGS.md#color-layout-vocabulary) |
-| parameter | Continuous color vertical contract | accepted | [Open](planned/ENCODINGS.md#continuous-color-vertical-contract) |
+| parameter | Continuous color bar consumer | accepted | [Open](planned/ENCODINGS.md#continuous-color-bar-consumer) |
 | parameter | Named and constant stroke dash vocabulary | accepted | [Open](planned/ENCODINGS.md#named-and-constant-stroke-dash-vocabulary) |
 | parameter | Histogram bin controls | accepted | [Open](planned/ENCODINGS.md#histogram-bin-controls) |
 | parameter | Scale type vocabulary | accepted | [Open](planned/SCALES.md#scale-type-vocabulary) |

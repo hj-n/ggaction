@@ -92,7 +92,7 @@ test로 exhaustive하게 검증하고, 실제 모양이 달라지는 대표 equi
 - Capability: `encodeY-reassignment`
 - Capability: `point-shape-vocabulary`
 - Capability: `named-palette-vocabulary`
-- Capability: `continuous-color-vertical-contract`
+- Capability: `continuous-point-color`
 - Capability: `field-driven-opacity`
 - Capability: `field-driven-opacity-legend`
 
@@ -224,6 +224,7 @@ empty groups, deterministic order와 explicit consumer rebinding을 numeric fixt
 - Direct action expansion: `editScale`
 - Capability: `scale-type-vocabulary`
 - Capability: `scale-mapping-policies`
+- Capability: `continuous-color-bar-consumer`
 
 Log/pow/sqrt/symlog/UTC/band/point와 quantize/quantile/threshold/sequential을 compatible channel별로
 나누어 검증한다. Clamp/reverse/unknown과 explicit domain/range precedence를 exact mapping fixture로

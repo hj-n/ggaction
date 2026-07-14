@@ -380,5 +380,5 @@ type EditableCurrentScale = {
 - ✅ Covered: domain/range patch, `"auto"` reset, omission preservation and caller-owned array isolation.
 - ✅ Covered: `nice`, `zero`, `clamp`, `reverse`, type compatibility and invalid value rejection.
 - ✅ Covered: concrete point/guide rematerialization, immutable failure and nested trace.
-- Evidence: `test/unit/actions/scales/edit-scale.test.js` and
-  `test/unit/grammar/scales/scale.test.js`.
+- Evidence: `test/unit/actions/scales/edit-scale.test.js`,
+  `test/unit/grammar/scales/scale.test.js` and the Phase 1 chart integration test.

@@ -1518,14 +1518,14 @@
       }
     },
     {
-      "id": "continuous-color-vertical-contract",
+      "id": "continuous-color-bar-consumer",
       "kind": "parameter",
-      "name": "Continuous color vertical contract",
+      "name": "Continuous color bar consumer",
       "status": "planned",
       "readiness": "accepted",
       "contract": {
         "file": "agent_docs/contract/planned/ENCODINGS.md",
-        "anchor": "continuous-color-vertical-contract"
+        "anchor": "continuous-color-bar-consumer"
       }
     },
     {
