@@ -1,0 +1,1559 @@
+{
+  "version": 1,
+  "actions": [
+    {
+      "name": "createCanvas",
+      "layer": "user-facing",
+      "domain": "core",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "`editCanvas`",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/CORE.md",
+        "anchor": "createcanvas"
+      }
+    },
+    {
+      "name": "editCanvas",
+      "layer": "user-facing",
+      "domain": "core",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Edits the Canvas",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/CORE.md",
+        "anchor": "editcanvas"
+      }
+    },
+    {
+      "name": "createData",
+      "layer": "user-facing",
+      "domain": "core",
+      "status": "implemented",
+      "lifecycle": "Immutable create-only",
+      "update": "Create a new dataset ID",
+      "audit": "Intentional",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/CORE.md",
+        "anchor": "createdata"
+      }
+    },
+    {
+      "name": "filterData",
+      "layer": "user-facing",
+      "domain": "core",
+      "status": "implemented",
+      "lifecycle": "Immutable create-only",
+      "update": "Create a new derived dataset ID",
+      "audit": "Intentional",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/CORE.md",
+        "anchor": "filterdata"
+      }
+    },
+    {
+      "name": "createDensityData",
+      "layer": "user-facing",
+      "domain": "core",
+      "status": "implemented",
+      "lifecycle": "Immutable create-only",
+      "update": "Create a new derived dataset ID",
+      "audit": "Intentional",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/CORE.md",
+        "anchor": "createdensitydata"
+      }
+    },
+    {
+      "name": "createRegressionData",
+      "layer": "user-facing",
+      "domain": "core",
+      "status": "implemented",
+      "lifecycle": "Immutable create-only",
+      "update": "Create a new derived dataset ID",
+      "audit": "Intentional",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/CORE.md",
+        "anchor": "createregressiondata"
+      }
+    },
+    {
+      "name": "createPointMark",
+      "layer": "user-facing",
+      "domain": "marks",
+      "status": "implemented",
+      "lifecycle": "Stable resource, edit gap",
+      "update": "Encoding actions only; no base-mark edit",
+      "audit": "`editPointMark` — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/MARKS.md",
+        "anchor": "createpointmark"
+      }
+    },
+    {
+      "name": "createLineMark",
+      "layer": "user-facing",
+      "domain": "marks",
+      "status": "implemented",
+      "lifecycle": "Stable resource, edit gap",
+      "update": "Encoding actions only; no base-mark edit",
+      "audit": "`editLineMark` — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/MARKS.md",
+        "anchor": "createlinemark"
+      }
+    },
+    {
+      "name": "createBarMark",
+      "layer": "user-facing",
+      "domain": "marks",
+      "status": "implemented",
+      "lifecycle": "Stable create-only",
+      "update": "Encoding actions own its current appearance and geometry",
+      "audit": "Intentional",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/MARKS.md",
+        "anchor": "createbarmark"
+      }
+    },
+    {
+      "name": "createAreaMark",
+      "layer": "user-facing",
+      "domain": "marks",
+      "status": "implemented",
+      "lifecycle": "Stable resource, edit gap",
+      "update": "Encoding actions only; no base-mark edit",
+      "audit": "`editAreaMark` — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/MARKS.md",
+        "anchor": "createareamark"
+      }
+    },
+    {
+      "name": "encodeX",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Same action will replace a compatible x field and scale",
+      "audit": "Reassignment — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "encodex"
+      }
+    },
+    {
+      "name": "encodeY",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Same action will replace a compatible y field and scale",
+      "audit": "Reassignment — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "encodey"
+      }
+    },
+    {
+      "name": "encodeColor",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Same action will replace compatible color grouping",
+      "audit": "Reassignment — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "encodecolor"
+      }
+    },
+    {
+      "name": "encodeStrokeDash",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Same action will replace field and scale binding",
+      "audit": "Reassignment — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "encodestrokedash"
+      }
+    },
+    {
+      "name": "encodeSize",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Same action will replace field and scale binding",
+      "audit": "Reassignment — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "encodesize"
+      }
+    },
+    {
+      "name": "encodeShape",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Same action will replace field and scale binding",
+      "audit": "Reassignment — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "encodeshape"
+      }
+    },
+    {
+      "name": "encodeOpacity",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Same action replaces the constant value",
+      "audit": "Reassignment — Implemented",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "encodeopacity"
+      }
+    },
+    {
+      "name": "encodeRadius",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Same action replaces the constant value",
+      "audit": "Reassignment — Implemented",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "encoderadius"
+      }
+    },
+    {
+      "name": "encodeXOffset",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Same action will replace compatible grouped-bar slots",
+      "audit": "Reassignment — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "encodexoffset"
+      }
+    },
+    {
+      "name": "encodeY2",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Same action will replace a compatible upper field",
+      "audit": "Reassignment — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "encodey2"
+      }
+    },
+    {
+      "name": "encodeYRange",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Same action will atomically replace lower/upper fields",
+      "audit": "Reassignment — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "encodeyrange"
+      }
+    },
+    {
+      "name": "encodeGroup",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Same action will replace compatible path grouping",
+      "audit": "Reassignment — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "encodegroup"
+      }
+    },
+    {
+      "name": "encodeHistogram",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Same action will replace atomic bin/count encodings",
+      "audit": "Reassignment — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "encodehistogram"
+      }
+    },
+    {
+      "name": "encodeDensity",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "`editDensity` will create and rebind a derived revision",
+      "audit": "`editDensity` — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "encodedensity"
+      }
+    },
+    {
+      "name": "encodeBarWidth",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Same action replaces the band fraction",
+      "audit": "Reassignment — Implemented",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "encodebarwidth"
+      }
+    },
+    {
+      "name": "createRegression",
+      "layer": "user-facing",
+      "domain": "statistics",
+      "status": "implemented",
+      "lifecycle": "Aggregate create-only",
+      "update": "Owned data/layer/encoding children",
+      "audit": "Intentional",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/STATISTICS.md",
+        "anchor": "createregression"
+      }
+    },
+    {
+      "name": "createAxes",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Aggregate create-only",
+      "update": "Channel axis or component edits",
+      "audit": "Intentional",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "createaxes"
+      }
+    },
+    {
+      "name": "createXAxis",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Aggregate create-only",
+      "update": "X-axis component edits",
+      "audit": "Intentional",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "createxaxis"
+      }
+    },
+    {
+      "name": "createYAxis",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Aggregate create-only",
+      "update": "Y-axis component edits",
+      "audit": "Intentional",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "createyaxis"
+      }
+    },
+    {
+      "name": "createXAxisLine",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "`editXAxisLine`",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "createxaxisline"
+      }
+    },
+    {
+      "name": "createYAxisLine",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "`editYAxisLine`",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "createyaxisline"
+      }
+    },
+    {
+      "name": "editXAxisLine",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Edits the x-axis line",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "editxaxisline"
+      }
+    },
+    {
+      "name": "editYAxisLine",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Edits the y-axis line",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "edityaxisline"
+      }
+    },
+    {
+      "name": "createXAxisTicks",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "`editXAxisTicks`",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "createxaxisticks"
+      }
+    },
+    {
+      "name": "createYAxisTicks",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "`editYAxisTicks`",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "createyaxisticks"
+      }
+    },
+    {
+      "name": "editXAxisTicks",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Edits x-axis ticks",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "editxaxisticks"
+      }
+    },
+    {
+      "name": "editYAxisTicks",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Edits y-axis ticks",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "edityaxisticks"
+      }
+    },
+    {
+      "name": "createXAxisLabels",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "`editXAxisLabels`",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "createxaxislabels"
+      }
+    },
+    {
+      "name": "createYAxisLabels",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "`editYAxisLabels`",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "createyaxislabels"
+      }
+    },
+    {
+      "name": "editXAxisLabels",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Edits x-axis labels",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "editxaxislabels"
+      }
+    },
+    {
+      "name": "editYAxisLabels",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Edits y-axis labels",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "edityaxislabels"
+      }
+    },
+    {
+      "name": "createXAxisTicksAndLabels",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "`editXAxisTicksAndLabels`",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "createxaxisticksandlabels"
+      }
+    },
+    {
+      "name": "createYAxisTicksAndLabels",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "`editYAxisTicksAndLabels`",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "createyaxisticksandlabels"
+      }
+    },
+    {
+      "name": "editXAxisTicksAndLabels",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Edits x-axis ticks and labels",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "editxaxisticksandlabels"
+      }
+    },
+    {
+      "name": "editYAxisTicksAndLabels",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Edits y-axis ticks and labels",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "edityaxisticksandlabels"
+      }
+    },
+    {
+      "name": "createXAxisTitle",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "`editXAxisTitle`",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "createxaxistitle"
+      }
+    },
+    {
+      "name": "createYAxisTitle",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "`editYAxisTitle`",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "createyaxistitle"
+      }
+    },
+    {
+      "name": "editXAxisTitle",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Edits the x-axis title",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "editxaxistitle"
+      }
+    },
+    {
+      "name": "editYAxisTitle",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Edits the y-axis title",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "edityaxistitle"
+      }
+    },
+    {
+      "name": "createGrid",
+      "layer": "user-facing",
+      "domain": "grid",
+      "status": "implemented",
+      "lifecycle": "Aggregate create-only",
+      "update": "Directional grid children",
+      "audit": "Intentional; planned child edits",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/GRID.md",
+        "anchor": "creategrid"
+      }
+    },
+    {
+      "name": "createHorizontalGrid",
+      "layer": "user-facing",
+      "domain": "grid",
+      "status": "implemented",
+      "lifecycle": "Stable resource, edit gap",
+      "update": "Internal rematerialization only",
+      "audit": "`editHorizontalGrid` — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/GRID.md",
+        "anchor": "createhorizontalgrid"
+      }
+    },
+    {
+      "name": "createVerticalGrid",
+      "layer": "user-facing",
+      "domain": "grid",
+      "status": "implemented",
+      "lifecycle": "Stable resource, edit gap",
+      "update": "Internal rematerialization only",
+      "audit": "`editVerticalGrid` — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/GRID.md",
+        "anchor": "createverticalgrid"
+      }
+    },
+    {
+      "name": "createLegend",
+      "layer": "user-facing",
+      "domain": "legend_and_title",
+      "status": "implemented",
+      "lifecycle": "Stable resource, edit gap",
+      "update": "Internal rematerialization only",
+      "audit": "`editLegend` — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/LEGEND_AND_TITLE.md",
+        "anchor": "createlegend"
+      }
+    },
+    {
+      "name": "createGuides",
+      "layer": "user-facing",
+      "domain": "legend_and_title",
+      "status": "implemented",
+      "lifecycle": "Aggregate create-only",
+      "update": "Guide child actions",
+      "audit": "Intentional; child edit gaps remain",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/LEGEND_AND_TITLE.md",
+        "anchor": "createguides"
+      }
+    },
+    {
+      "name": "createTitle",
+      "layer": "user-facing",
+      "domain": "legend_and_title",
+      "status": "implemented",
+      "lifecycle": "Stable resource, edit gap",
+      "update": "Internal rematerialization only",
+      "audit": "`editTitle` — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/LEGEND_AND_TITLE.md",
+        "anchor": "createtitle"
+      }
+    },
+    {
+      "name": "createCoordinate",
+      "layer": "user-facing",
+      "domain": "core",
+      "status": "implemented",
+      "lifecycle": "Structural create-only",
+      "update": "Create another coordinate and rebind encodings",
+      "audit": "Intentional",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/CORE.md",
+        "anchor": "createcoordinate"
+      }
+    },
+    {
+      "name": "createScale",
+      "layer": "user-facing",
+      "domain": "core",
+      "status": "implemented",
+      "lifecycle": "Stable resource, edit gap",
+      "update": "Equivalent recreation only",
+      "audit": "`editScale` — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/CORE.md",
+        "anchor": "createscale"
+      }
+    },
+    {
+      "name": "createDerivedData",
+      "layer": "user-facing",
+      "domain": "core",
+      "status": "implemented",
+      "lifecycle": "Immutable create-only",
+      "update": "Create a new derived dataset ID",
+      "audit": "Intentional",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/CORE.md",
+        "anchor": "createderiveddata"
+      }
+    },
+    {
+      "name": "createRegressionBand",
+      "layer": "user-facing",
+      "domain": "statistics",
+      "status": "implemented",
+      "lifecycle": "Stable resource, edit gap",
+      "update": "Generic area edit is insufficient for regression design",
+      "audit": "`editRegressionBand` — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/STATISTICS.md",
+        "anchor": "createregressionband"
+      }
+    },
+    {
+      "name": "createRegressionLine",
+      "layer": "user-facing",
+      "domain": "statistics",
+      "status": "implemented",
+      "lifecycle": "Stable resource, edit gap",
+      "update": "Generic line edit is insufficient for regression design",
+      "audit": "`editRegressionLine` — Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/STATISTICS.md",
+        "anchor": "createregressionline"
+      }
+    },
+    {
+      "name": "editSemantic",
+      "layer": "primitive",
+      "domain": "primitives",
+      "status": "implemented",
+      "lifecycle": "Primitive",
+      "update": "Assigns one semantic property",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/PRIMITIVES.md",
+        "anchor": "editsemantic"
+      }
+    },
+    {
+      "name": "createGraphics",
+      "layer": "primitive",
+      "domain": "primitives",
+      "status": "implemented",
+      "lifecycle": "Primitive",
+      "update": "`editGraphics`",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/PRIMITIVES.md",
+        "anchor": "creategraphics"
+      }
+    },
+    {
+      "name": "editGraphics",
+      "layer": "primitive",
+      "domain": "primitives",
+      "status": "implemented",
+      "lifecycle": "Primitive",
+      "update": "Edits one graphical property",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/PRIMITIVES.md",
+        "anchor": "editgraphics"
+      }
+    }
+  ],
+  "plannedActions": [
+    {
+      "name": "editAreaMark",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/EDITING.md",
+        "anchor": "mark-edits"
+      }
+    },
+    {
+      "name": "editDensity",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/EDITING.md",
+        "anchor": "editdensity"
+      }
+    },
+    {
+      "name": "editHorizontalGrid",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/EDITING.md",
+        "anchor": "directional-grid-edits"
+      }
+    },
+    {
+      "name": "editLegend",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/EDITING.md",
+        "anchor": "editlegend"
+      }
+    },
+    {
+      "name": "editLineMark",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/EDITING.md",
+        "anchor": "mark-edits"
+      }
+    },
+    {
+      "name": "editPointMark",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/EDITING.md",
+        "anchor": "mark-edits"
+      }
+    },
+    {
+      "name": "editRegressionBand",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/EDITING.md",
+        "anchor": "regression-component-edits"
+      }
+    },
+    {
+      "name": "editRegressionLine",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/EDITING.md",
+        "anchor": "regression-component-edits"
+      }
+    },
+    {
+      "name": "editScale",
+      "status": "planned",
+      "readiness": "pending-parameter-review",
+      "contract": null
+    },
+    {
+      "name": "editTitle",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/EDITING.md",
+        "anchor": "edittitle"
+      }
+    },
+    {
+      "name": "editVerticalGrid",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/EDITING.md",
+        "anchor": "directional-grid-edits"
+      }
+    }
+  ],
+  "plannedCapabilities": [
+    {
+      "id": "encodeColor-reassignment",
+      "kind": "behavior",
+      "action": "encodeColor",
+      "name": "encodeColor reassignment",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "scale-backed-appearance-reassignment"
+      }
+    },
+    {
+      "id": "encodeGroup-reassignment",
+      "kind": "behavior",
+      "action": "encodeGroup",
+      "name": "encodeGroup reassignment",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "grouping-reassignment"
+      }
+    },
+    {
+      "id": "encodeShape-reassignment",
+      "kind": "behavior",
+      "action": "encodeShape",
+      "name": "encodeShape reassignment",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "scale-backed-appearance-reassignment"
+      }
+    },
+    {
+      "id": "encodeSize-reassignment",
+      "kind": "behavior",
+      "action": "encodeSize",
+      "name": "encodeSize reassignment",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "scale-backed-appearance-reassignment"
+      }
+    },
+    {
+      "id": "encodeStrokeDash-reassignment",
+      "kind": "behavior",
+      "action": "encodeStrokeDash",
+      "name": "encodeStrokeDash reassignment",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "scale-backed-appearance-reassignment"
+      }
+    },
+    {
+      "id": "encodeXOffset-reassignment",
+      "kind": "behavior",
+      "action": "encodeXOffset",
+      "name": "encodeXOffset reassignment",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "positional-reassignment"
+      }
+    },
+    {
+      "id": "encodeX-reassignment",
+      "kind": "behavior",
+      "action": "encodeX",
+      "name": "encodeX reassignment",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "positional-reassignment"
+      }
+    },
+    {
+      "id": "encodeY-reassignment",
+      "kind": "behavior",
+      "action": "encodeY",
+      "name": "encodeY reassignment",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "positional-reassignment"
+      }
+    },
+    {
+      "id": "encodeY2-reassignment",
+      "kind": "behavior",
+      "action": "encodeY2",
+      "name": "encodeY2 reassignment",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "positional-reassignment"
+      }
+    },
+    {
+      "id": "encodeYRange-reassignment",
+      "kind": "behavior",
+      "action": "encodeYRange",
+      "name": "encodeYRange reassignment",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "positional-reassignment"
+      }
+    },
+    {
+      "id": "encodeHistogram-reassignment",
+      "kind": "behavior",
+      "action": "encodeHistogram",
+      "name": "encodeHistogram reassignment",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "positional-reassignment"
+      }
+    },
+    {
+      "id": "point-shape-vocabulary",
+      "kind": "parameter",
+      "name": "Point shape vocabulary",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "point-shape-vocabulary"
+      }
+    },
+    {
+      "id": "area-outline",
+      "kind": "parameter",
+      "name": "Area outline",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "area-outline"
+      }
+    },
+    {
+      "id": "bar-width-modes",
+      "kind": "parameter",
+      "name": "Bar width modes",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "bar-width-modes"
+      }
+    },
+    {
+      "id": "aggregate-vocabulary",
+      "kind": "parameter",
+      "name": "Aggregate vocabulary",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "aggregate-vocabulary"
+      }
+    },
+    {
+      "id": "color-layout-vocabulary",
+      "kind": "parameter",
+      "name": "Color layout vocabulary",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "color-layout-vocabulary"
+      }
+    },
+    {
+      "id": "histogram-bin-controls",
+      "kind": "parameter",
+      "name": "Histogram bin controls",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "histogram-bin-controls"
+      }
+    },
+    {
+      "id": "density-kernel-vocabulary",
+      "kind": "parameter",
+      "name": "Density kernel vocabulary",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/DATA_AND_STATISTICS.md",
+        "anchor": "density-kernel-vocabulary"
+      }
+    },
+    {
+      "id": "filter-predicate-modes",
+      "kind": "parameter",
+      "name": "Filter predicate modes",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/DATA_AND_STATISTICS.md",
+        "anchor": "filter-predicate-modes"
+      }
+    },
+    {
+      "id": "regression-method-vocabulary",
+      "kind": "parameter",
+      "name": "Regression method vocabulary",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/DATA_AND_STATISTICS.md",
+        "anchor": "regression-method-vocabulary"
+      }
+    },
+    {
+      "id": "regression-prediction-interval",
+      "kind": "parameter",
+      "name": "Regression prediction interval",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/DATA_AND_STATISTICS.md",
+        "anchor": "regression-prediction-interval"
+      }
+    },
+    {
+      "id": "top-x-axis-position",
+      "kind": "parameter",
+      "name": "Top x axis position",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/GUIDES_AND_LAYOUT.md",
+        "anchor": "mirrored-cartesian-axis-positions"
+      }
+    },
+    {
+      "id": "right-y-axis-position",
+      "kind": "parameter",
+      "name": "Right y axis position",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/GUIDES_AND_LAYOUT.md",
+        "anchor": "mirrored-cartesian-axis-positions"
+      }
+    },
+    {
+      "id": "axis-label-format-strings",
+      "kind": "parameter",
+      "name": "Axis label format strings",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/GUIDES_AND_LAYOUT.md",
+        "anchor": "axis-label-format-strings"
+      }
+    },
+    {
+      "id": "left-legend-position",
+      "kind": "parameter",
+      "name": "Left legend position",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/GUIDES_AND_LAYOUT.md",
+        "anchor": "left-legend-position"
+      }
+    },
+    {
+      "id": "chart-title-positions",
+      "kind": "parameter",
+      "name": "Chart title positions",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/GUIDES_AND_LAYOUT.md",
+        "anchor": "chart-title-positions"
+      }
+    }
+  ],
+  "internal": {
+    "materialization": [
+      "materializeDensityData",
+      "materializeFilteredData",
+      "materializeRegressionData",
+      "rematerializeAreaMark",
+      "rematerializeBarMark",
+      "rematerializeGrid",
+      "rematerializeHorizontalGrid",
+      "rematerializeLegend",
+      "rematerializeLineMark",
+      "rematerializePointMark",
+      "rematerializeScale",
+      "rematerializeSizeLegend",
+      "rematerializeTitle",
+      "rematerializeVerticalGrid"
+    ],
+    "guideComponents": [
+      "createCategoricalLegend",
+      "createSizeLegend"
+    ],
+    "contract": "agent_docs/contract/internal/ACTIONS.md"
+  }
+}

@@ -1,17 +1,36 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { ChartProgram } from "../../src/core/ChartProgram.js";
+import { renderActionCatalog } from "../../scripts/generate-action-catalog.js";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
-const catalogPath = path.join(
-  root,
-  "agent_docs/contract/ACTION_CATALOG.md"
+const contractRoot = path.join(root, "agent_docs/contract");
+const index = JSON.parse(
+  readFileSync(path.join(contractRoot, "ACTION_INDEX.json"), "utf8")
 );
-const catalog = readFileSync(catalogPath, "utf8");
+const catalog = readFileSync(
+  path.join(contractRoot, "ACTION_CATALOG.md"),
+  "utf8"
+);
+
+function markdownFiles(directory) {
+  return readdirSync(path.join(contractRoot, directory))
+    .filter(file => file.endsWith(".md"))
+    .map(file => path.join(contractRoot, directory, file));
+}
+
+const currentFiles = markdownFiles("current");
+const plannedFiles = markdownFiles("planned");
+const currentCorpus = currentFiles
+  .map(file => readFileSync(file, "utf8"))
+  .join("\n");
+const plannedCorpus = plannedFiles
+  .map(file => readFileSync(file, "utf8"))
+  .join("\n");
 
 function declaredProgramMethods() {
   const declaration = readFileSync(
@@ -27,71 +46,6 @@ function declaredProgramMethods() {
     .filter(name => name !== "constructor");
 }
 
-function summaryRows() {
-  return [...catalog.matchAll(
-    /^\| (User-facing|Primitive) \| \[`([A-Za-z][A-Za-z0-9]*)`\]\(#([a-z0-9-]+)\) \| (Implemented|Planned|Proposed) \| (✅|⚠️|❌|—) \| (✅|⚠️|❌|—) \| (✅|⚠️|❌|—) \|$/gmu
-  )].map(match => ({
-    layer: match[1],
-    action: match[2],
-    anchor: match[3],
-    status: match[4],
-    contract: match[5],
-    effects: match[6],
-    tests: match[7]
-  }));
-}
-
-function detailSections() {
-  const headings = [...catalog.matchAll(
-    /^#{3,6} `([A-Za-z][A-Za-z0-9]*)`$/gm
-  )];
-
-  return headings.map((heading, index) => ({
-    action: heading[1],
-    source: catalog.slice(
-      heading.index,
-      headings[index + 1]?.index ?? catalog.length
-    )
-  }));
-}
-
-function valueCoverageSections() {
-  const headings = [...catalog.matchAll(
-    /^### Value coverage — `([A-Za-z][A-Za-z0-9]*)`$/gm
-  )];
-
-  return headings.map((heading, index) => ({
-    action: heading[1],
-    source: catalog.slice(
-      heading.index,
-      headings[index + 1]?.index ?? catalog.length
-    )
-  }));
-}
-
-function formalValueSections() {
-  const headings = [...catalog.matchAll(
-    /^### Formal values — `([A-Za-z][A-Za-z0-9]*)`$/gm
-  )];
-
-  return headings.map((heading, index) => ({
-    action: heading[1],
-    source: catalog.slice(
-      heading.index,
-      headings[index + 1]?.index ?? catalog.indexOf(
-        "## Parameter value coverage and proposals",
-        heading.index
-      )
-    )
-  }));
-}
-
-function expectedTestStatus(source) {
-  if (source.includes("❌ Missing")) return "❌";
-  if (source.includes("⚠️ Partial")) return "⚠️";
-  return "✅";
-}
-
 function runtimeActionMethods() {
   return Object.entries(
     Object.getOwnPropertyDescriptors(ChartProgram.prototype)
@@ -103,190 +57,171 @@ function runtimeActionMethods() {
     .filter(name => name !== "constructor");
 }
 
-function internalMaterializationInventory() {
-  const heading = "## Internal materialization inventory";
-  const start = catalog.indexOf(heading);
-  const end = catalog.indexOf("\n## ", start + heading.length);
-  const section = catalog.slice(start, end === -1 ? catalog.length : end);
-
-  return [...section.matchAll(
-    /^\| `((?:materialize|rematerialize)[A-Za-z0-9]*)` \|/gm
-  )].map(match => match[1]);
+function actionSections(source) {
+  const headings = [...source.matchAll(/^## \`([A-Za-z][A-Za-z0-9]*)\`$/gm)];
+  return headings.map((heading, indexInFile) => {
+    const rest = source.slice(heading.index + heading[0].length);
+    const next = rest.search(/^## /m);
+    return {
+      action: heading[1],
+      source: source.slice(
+        heading.index,
+        next < 0
+          ? source.length
+          : heading.index + heading[0].length + next
+      )
+    };
+  });
 }
 
-function internalGuideComponentInventory() {
-  const heading = "## Internal guide component inventory";
-  const start = catalog.indexOf(heading);
-  const end = catalog.indexOf("\n## ", start + heading.length);
-  const section = catalog.slice(start, end === -1 ? catalog.length : end);
-
-  return [...section.matchAll(
-    /^\| `(create[A-Za-z0-9]+Legend)` \| `createLegend` \|/gm
-  )].map(match => match[1]);
+function owningSection(action) {
+  const matches = currentFiles.flatMap(file => {
+    const source = readFileSync(file, "utf8");
+    return actionSections(source)
+      .filter(section => section.action === action)
+      .map(section => ({ ...section, file }));
+  });
+  assert.equal(matches.length, 1, `${action} must have one owning contract`);
+  return matches[0];
 }
 
-function lifecycleRows() {
-  const heading = "## Action lifecycle audit";
-  const start = catalog.indexOf(heading);
-  const end = catalog.indexOf("\n## ", start + heading.length);
-  const section = catalog.slice(start, end === -1 ? catalog.length : end);
-
-  return [...section.matchAll(
-    /^\| `([A-Za-z][A-Za-z0-9]*)` \| (Immutable create-only|Mutable resource|Assignment|Aggregate create-only|Stable create-only|Structural create-only|Stable resource, edit gap|Primitive) \| ([^|]+) \| ([^|]+) \|$/gm
-  )].map(match => ({
-    action: match[1],
-    lifecycle: match[2],
-    update: match[3].trim(),
-    audit: match[4].trim()
-  }));
+function assertContractTarget(contract) {
+  assert.ok(contract);
+  const file = path.join(root, contract.file);
+  assert.equal(existsSync(file), true, contract.file);
+  const source = readFileSync(file, "utf8");
+  const expectedHeading = contract.file.includes("/current/")
+    ? new RegExp(`^## \\\`${contract.anchor}\\\`$`, "mi")
+    : new RegExp(
+      `^## (?:${contract.anchor.replaceAll("-", " ")}|[^\\n]+)$`,
+      "mi"
+    );
+  if (contract.file.includes("/current/")) {
+    assert.match(source, expectedHeading, contract.file);
+  } else {
+    const anchors = [...source.matchAll(/^## (.+)$/gm)]
+      .map(match => match[1].toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""));
+    assert.equal(anchors.includes(contract.anchor), true, `${contract.file}#${contract.anchor}`);
+  }
 }
 
-function plannedActionRows() {
-  const heading = "## Planned direct actions";
-  const start = catalog.indexOf(heading);
-  const end = catalog.indexOf("\n## ", start + heading.length);
-  const section = catalog.slice(start, end === -1 ? catalog.length : end);
-
-  return [...section.matchAll(
-    /^\| `([A-Za-z][A-Za-z0-9]*)` \| Planned \| ([^|]+) \|$/gm
-  )].map(match => ({
-    action: match[1],
-    readiness: match[2].trim()
-  }));
-}
-
-function plannedBehaviorRows() {
-  const heading = "## Planned behavior extensions";
-  const start = catalog.indexOf(heading);
-  const end = catalog.indexOf("\n## ", start + heading.length);
-  const section = catalog.slice(start, end === -1 ? catalog.length : end);
-
-  return [...section.matchAll(
-    /^\| `([A-Za-z][A-Za-z0-9]*)` reassignment \| Planned \| ([^|]+) \|$/gm
-  )].map(match => ({
-    action: match[1],
-    readiness: match[2].trim()
-  }));
-}
-
-function plannedParameterRows() {
-  const heading = "## Planned parameter extensions";
-  const start = catalog.indexOf(heading);
-  const end = catalog.indexOf("\n## ", start + heading.length);
-  const section = catalog.slice(start, end === -1 ? catalog.length : end);
-
-  return [...section.matchAll(
-    /^\| ([A-Za-z][A-Za-z0-9 ]+) \| [^|]+ \| Planned \| ([^|]+) \|$/gm
-  )].map(match => ({
-    capability: match[1],
-    readiness: match[2].trim()
-  }));
-}
-
-test("keeps the action catalog aligned with every declared direct action", () => {
+test("keeps the generated catalog synchronized with the manifest", () => {
+  assert.equal(catalog, renderActionCatalog(index));
+  assert.equal(index.version, 1);
+});
+test("keeps every declared direct action in one current domain contract", () => {
   const declared = declaredProgramMethods();
-  const rows = summaryRows();
-  const details = detailSections();
-  const rowActions = rows.map(row => row.action);
-  const detailActions = details.map(section => section.action);
+  const indexed = index.actions.map(action => action.name);
+  const documented = currentFiles.flatMap(file =>
+    actionSections(readFileSync(file, "utf8")).map(section => section.action)
+  );
 
   assert.equal(new Set(declared).size, declared.length);
-  assert.equal(new Set(rowActions).size, rowActions.length);
-  assert.equal(new Set(detailActions).size, detailActions.length);
-  assert.deepEqual(new Set(rowActions), new Set(declared));
-  assert.deepEqual(new Set(detailActions), new Set(declared));
+  assert.equal(new Set(indexed).size, indexed.length);
+  assert.equal(new Set(documented).size, documented.length);
+  assert.deepEqual(new Set(indexed), new Set(declared));
+  assert.deepEqual(new Set(documented), new Set(declared));
 
-  for (const row of rows) {
-    assert.equal(row.anchor, row.action.toLowerCase(), row.action);
-    assert.equal(row.status, "Implemented", row.action);
-  }
-
-  for (const section of details) {
-    assert.match(section.source, /Coverage:/, section.action);
-  }
-});
-
-test("keeps primitive and runtime-only actions out of the wrong catalog layer", () => {
-  const rows = summaryRows();
-  const primitives = rows
-    .filter(row => row.layer === "Primitive")
-    .map(row => row.action);
-
-  assert.deepEqual(primitives, [
-    "editSemantic",
-    "createGraphics",
-    "editGraphics"
-  ]);
-
-  const declared = new Set(declaredProgramMethods());
-  const cataloged = new Set(rows.map(row => row.action));
-  const internal = runtimeActionMethods().filter(name => !declared.has(name));
-  const materialization = runtimeActionMethods()
-    .filter(name => /^(?:materialize|rematerialize)/.test(name))
-    .sort();
-  const inventory = internalMaterializationInventory().sort();
-
-  assert.equal(internal.includes("rematerializePointMark"), true);
-  assert.equal(internal.includes("createLegendSymbols"), true);
-  assert.equal(internal.includes("createCategoricalLegend"), true);
-  assert.equal(internal.includes("createSizeLegend"), true);
-  assert.deepEqual(inventory, materialization);
-  assert.deepEqual(internalGuideComponentInventory(), [
-    "createCategoricalLegend",
-    "createSizeLegend"
-  ]);
-  for (const action of internal) {
-    assert.equal(cataloged.has(action), false, action);
-  }
-  for (const action of materialization) {
-    assert.equal(declared.has(action), false, action);
+  for (const action of index.actions) {
+    assert.equal(action.status, "implemented", action.name);
+    assertContractTarget(action.contract);
+    const section = owningSection(action.name).source;
+    assert.match(section, new RegExp(`^### Formal values — \\\`${action.name}\\\`$`, "m"));
+    assert.match(section, new RegExp(`^### Value coverage — \\\`${action.name}\\\`$`, "m"));
+    assert.match(section, /^- Implemented: /m, action.name);
+    assert.match(section, /^- Proposed \(NOT IMPLEMENTED\): /m, action.name);
+    assert.match(section, /(✅ Covered|⚠️ Partial|❌ Missing)/, action.name);
+    assert.match(section, /(Proposed|Planned|future|No proposal)/i, action.name);
+    assert.match(section, /Evidence:/, action.name);
   }
 });
 
-test("classifies every direct action lifecycle and keeps edit gaps explicit", () => {
-  const declared = declaredProgramMethods();
-  const rows = lifecycleRows();
-  const actions = rows.map(row => row.action);
+test("keeps lifecycle, coverage, and edit gaps machine-readable", () => {
+  const lifecycles = new Set([
+    "Immutable create-only",
+    "Mutable resource",
+    "Assignment",
+    "Aggregate create-only",
+    "Stable create-only",
+    "Structural create-only",
+    "Stable resource, edit gap",
+    "Primitive"
+  ]);
+  const coverageStates = new Set([
+    "complete",
+    "partial",
+    "missing",
+    "not-applicable"
+  ]);
 
-  assert.equal(new Set(actions).size, actions.length);
-  assert.deepEqual(new Set(actions), new Set(declared));
-
-  for (const row of rows) {
-    if (row.lifecycle === "Stable resource, edit gap") {
-      assert.match(row.audit, /Planned|Proposed/, row.action);
+  for (const action of index.actions) {
+    assert.equal(lifecycles.has(action.lifecycle), true, action.name);
+    for (const state of Object.values(action.coverage)) {
+      assert.equal(coverageStates.has(state), true, `${action.name}: ${state}`);
     }
-    if (row.lifecycle === "Aggregate create-only") {
-      assert.match(row.action, /^create/, row.action);
+    if (action.lifecycle === "Stable resource, edit gap") {
+      assert.match(action.audit, /Planned|Proposed/, action.name);
     }
-    if (row.lifecycle === "Immutable create-only") {
-      assert.doesNotMatch(row.action, /^edit/, row.action);
+    if (action.lifecycle === "Assignment") {
+      assert.match(action.name, /^encode/, action.name);
+      assert.match(action.audit, /Implemented|Planned|Proposed/, action.name);
     }
-    if (row.lifecycle === "Structural create-only") {
-      assert.match(row.action, /^create/, row.action);
-      assert.equal(row.audit, "Intentional", row.action);
-    }
-    if (row.lifecycle === "Assignment") {
-      assert.match(row.action, /^encode/, row.action);
-      assert.match(row.audit, /Implemented|Planned|Proposed/, row.action);
+    if (action.lifecycle === "Structural create-only") {
+      assert.equal(action.audit, "Intentional", action.name);
     }
   }
 
   assert.equal(
-    rows.find(row => row.action === "createScale")?.audit,
+    index.actions.find(action => action.name === "createScale").audit,
     "`editScale` — Planned"
   );
+  for (const name of ["encodeOpacity", "encodeRadius", "encodeBarWidth"]) {
+    assert.equal(
+      index.actions.find(action => action.name === name).audit,
+      "Reassignment — Implemented"
+    );
+  }
+});
 
-  const expectedPlanned = rows
-    .map(row => row.audit.match(/`([A-Za-z][A-Za-z0-9]*)` — Planned/))
-    .filter(Boolean)
-    .map(match => match[1]);
-  const planned = plannedActionRows();
-
+test("keeps primitives and internal wrapped actions in separate layers", () => {
   assert.deepEqual(
-    new Set(planned.map(row => row.action)),
-    new Set(expectedPlanned)
+    index.actions
+      .filter(action => action.layer === "primitive")
+      .map(action => action.name),
+    ["editSemantic", "createGraphics", "editGraphics"]
   );
-  for (const action of [
+
+  const declared = new Set(declaredProgramMethods());
+  const runtime = runtimeActionMethods();
+  const materialization = runtime
+    .filter(name => /^(?:materialize|rematerialize)/.test(name))
+    .sort();
+
+  assert.deepEqual([...index.internal.materialization].sort(), materialization);
+  assert.deepEqual(index.internal.guideComponents, [
+    "createCategoricalLegend",
+    "createSizeLegend"
+  ]);
+  assert.equal(runtime.includes("createLegendSymbols"), true);
+  assert.equal(runtime.includes("createCategoricalLegend"), true);
+  assert.equal(runtime.includes("createSizeLegend"), true);
+  assert.equal(
+    existsSync(path.join(root, index.internal.contract)),
+    true
+  );
+  for (const name of [
+    ...index.internal.materialization,
+    ...index.internal.guideComponents,
+    "createLegendSymbols"
+  ]) {
+    assert.equal(declared.has(name), false, name);
+  }
+});
+
+test("keeps planned direct actions and reassignment gaps explicit", () => {
+  const names = index.plannedActions.map(action => action.name);
+  assert.equal(new Set(names).size, names.length);
+  assert.deepEqual(new Set(names), new Set([
     "editAreaMark",
     "editDensity",
     "editHorizontalGrid",
@@ -295,139 +230,96 @@ test("classifies every direct action lifecycle and keeps edit gaps explicit", ()
     "editPointMark",
     "editRegressionBand",
     "editRegressionLine",
+    "editScale",
     "editTitle",
     "editVerticalGrid"
-  ]) {
-    assert.equal(
-      planned.find(row => row.action === action)?.readiness,
-      "Accepted",
-      action
-    );
-  }
-  assert.match(catalog, /### Planned contract: mark edits/);
-  assert.match(catalog, /shape: "circle" \| "square"/);
-  assert.match(catalog, /strokeWidth: NonNegativeFinite/);
-  assert.match(catalog, /opacity\?: UnitInterval/);
-  assert.match(catalog, /### Planned contract: editDensity/);
-  assert.match(catalog, /DensityDataRevision\$\{n\}/);
-  assert.match(catalog, /`releaseDerivedData`/);
-  assert.match(catalog, /### Planned contract: regression component edits/);
-  assert.match(catalog, /editRegressionBand\(\{/);
-  assert.match(catalog, /editRegressionLine\(\{/);
-  assert.match(catalog, /### Planned contract: directional grid edits/);
-  assert.match(catalog, /values\?: readonly Finite\[\] \| "auto"/);
-  assert.match(catalog, /### Planned contract: editLegend/);
-  assert.match(catalog, /title\?: NonEmptyString \| "auto" \| false/);
-  assert.match(catalog, /### Planned contract: editTitle/);
-  assert.match(catalog, /subtitle\?: NonEmptyString \| false/);
-  assert.match(catalog, /wrapped `rematerializeTitle`/);
+  ]));
 
-  for (const action of ["encodeOpacity", "encodeRadius", "encodeBarWidth"]) {
+  for (const action of index.plannedActions) {
+    assert.equal(action.status, "planned");
     assert.equal(
-      rows.find(row => row.action === action)?.audit,
-      "Reassignment — Implemented",
-      action
+      ["accepted", "pending-parameter-review"].includes(action.readiness),
+      true,
+      action.name
     );
+    if (action.contract) assertContractTarget(action.contract);
   }
-  const expectedPlannedBehaviors = rows
-    .filter(row => row.audit === "Reassignment — Planned")
-    .map(row => row.action);
-  const plannedBehaviors = plannedBehaviorRows();
 
-  assert.deepEqual(
-    new Set(plannedBehaviors.map(row => row.action)),
-    new Set(expectedPlannedBehaviors)
-  );
-  for (const action of [
-    "encodeColor",
-    "encodeGroup",
-    "encodeHistogram",
-    "encodeShape",
-    "encodeSize",
-    "encodeStrokeDash",
-    "encodeX",
-    "encodeXOffset",
-    "encodeY",
-    "encodeY2",
-    "encodeYRange"
-  ]) {
-    assert.equal(
-      plannedBehaviors.find(row => row.action === action)?.readiness,
-      "Accepted",
-      action
-    );
-  }
-  assert.match(catalog, /### Planned contract: scale-backed appearance reassignment/);
-  assert.match(catalog, /accepted `editScale` contract/);
-  assert.match(catalog, /### Planned contract: grouping reassignment/);
-  assert.match(catalog, /stack\/group 전환을 지원하지 않으며/);
-  assert.match(catalog, /### Planned contract: positional reassignment/);
-  assert.match(catalog, /기존 fieldType,/);
-  assert.match(catalog, /binned x와 count y를 함께 교체/);
-  assert.equal(
-    rows.find(row => row.action === "createCoordinate")?.lifecycle,
-    "Structural create-only"
-  );
-  assert.equal(
-    rows.find(row => row.action === "createRegressionBand")?.audit,
-    "`editRegressionBand` — Planned"
-  );
-  assert.equal(
-    rows.find(row => row.action === "createRegressionLine")?.audit,
-    "`editRegressionLine` — Planned"
-  );
+  const expectedFromAudit = index.actions
+    .map(action => action.audit.match(/\`([A-Za-z][A-Za-z0-9]*)\` — Planned/))
+    .filter(Boolean)
+    .map(match => match[1]);
+  assert.deepEqual(new Set(names), new Set(expectedFromAudit));
+
+  const plannedReassignments = index.actions
+    .filter(action => action.audit === "Reassignment — Planned")
+    .map(action => action.name);
+  const indexedReassignments = index.plannedCapabilities
+    .filter(capability => capability.kind === "behavior")
+    .map(capability => capability.action);
+  assert.deepEqual(new Set(indexedReassignments), new Set(plannedReassignments));
 });
 
-test("keeps one value coverage and proposal ledger for every direct action", () => {
-  const declared = declaredProgramMethods();
-  const rows = new Map(summaryRows().map(row => [row.action, row]));
-  const sections = valueCoverageSections();
-  const actions = sections.map(section => section.action);
+test("keeps accepted planned capabilities linked and non-public", () => {
+  const parameterNames = index.plannedCapabilities
+    .filter(capability => capability.kind === "parameter")
+    .map(capability => capability.name);
 
-  assert.equal(new Set(actions).size, actions.length);
-  assert.deepEqual(new Set(actions), new Set(declared));
+  assert.deepEqual(parameterNames, [
+    "Point shape vocabulary",
+    "Area outline",
+    "Bar width modes",
+    "Aggregate vocabulary",
+    "Color layout vocabulary",
+    "Histogram bin controls",
+    "Density kernel vocabulary",
+    "Filter predicate modes",
+    "Regression method vocabulary",
+    "Regression prediction interval",
+    "Top x axis position",
+    "Right y axis position",
+    "Axis label format strings",
+    "Left legend position",
+    "Chart title positions"
+  ]);
 
-  for (const section of sections) {
-    assert.match(
-      section.source,
-      /(✅ Covered|⚠️ Partial|❌ Missing)/,
-      `${section.action} has no current value coverage state`
-    );
-    assert.match(
-      section.source,
-      /(🟣 Proposed|🟡 Planned|Proposed:|Proposed values|No proposal|Planned capability|future)/i,
-      `${section.action} has no future value state`
-    );
-    assert.equal(
-      rows.get(section.action)?.tests,
-      expectedTestStatus(section.source),
-      `${section.action} summary does not reflect its value ledger`
-    );
+  for (const capability of index.plannedCapabilities) {
+    assert.equal(capability.status, "planned", capability.name);
+    assert.equal(capability.readiness, "accepted", capability.name);
+    assertContractTarget(capability.contract);
   }
+
+  assert.match(plannedCorpus, /type PointShape =/);
+  assert.match(plannedCorpus, /"plus" \| "cross" \| "star" \| "hexagon" \| "wye"/);
+  assert.match(plannedCorpus, /stroke\?: NonEmptyString \| false/);
+  assert.match(plannedCorpus, /band\?: UnitIntervalExclusiveZero/);
+  assert.match(plannedCorpus, /pixels\?: PositiveFinite/);
+  assert.match(plannedCorpus, /paddingInner\?: UnitIntervalLessThan1/);
+  assert.match(plannedCorpus, /type AggregateOperation =/);
+  assert.match(plannedCorpus, /two-sided 95% normal interval endpoint/);
+  assert.match(plannedCorpus, /type ColorLayout =/);
+  assert.match(plannedCorpus, /"stack" \| "fill" \| "group" \| "overlay" \| "center" \| "diverging"/);
+  assert.match(plannedCorpus, /별도 action `encodeGroup`과 다른 개념/);
+  assert.match(plannedCorpus, /binBoundaries\?: readonly \[Finite, Finite, \.\.\.Finite\[\]\]/);
+  assert.match(plannedCorpus, /zero를 anchor로/);
+  assert.match(plannedCorpus, /type DensityKernel =/);
+  assert.match(plannedCorpus, /sum\(K\(u\)\) \/ \(n \* bandwidth\)/);
+  assert.match(plannedCorpus, /type FilterComparison =/);
+  assert.match(plannedCorpus, /oneOf.*predicate.*range.*정확히 하나/);
+  assert.match(plannedCorpus, /type RegressionMethod = "linear" \| "polynomial" \| "loess"/);
+  assert.match(plannedCorpus, /tricube-weighted local-linear fit/);
+  assert.match(plannedCorpus, /residualVariance \* \(1 \+ leverage\)/);
+  assert.doesNotMatch(plannedCorpus, /ordered multi-transform pipeline/);
+  assert.match(plannedCorpus, /top x title 기본 rotation은 `0`/);
+  assert.match(plannedCorpus, /right y title 기본 rotation은/);
+  assert.match(plannedCorpus, /type AxisFormatString =/);
+  assert.match(plannedCorpus, /"\.0f" \| "\.1f" \| "\.2f"/);
+  assert.match(plannedCorpus, /point composite와 quantitative size block을 지원/);
+  assert.match(plannedCorpus, /"top" \| "bottom" \| "left" \| "right"/);
 });
 
-test("separates implemented and proposed values for every direct action", () => {
-  const declared = declaredProgramMethods();
-  const sections = formalValueSections();
-  const actions = sections.map(section => section.action);
-
-  assert.equal(new Set(actions).size, actions.length);
-  assert.deepEqual(new Set(actions), new Set(declared));
-
-  for (const section of sections) {
-    assert.match(
-      section.source,
-      /^- Implemented: /m,
-      `${section.action} has no formal implemented signature`
-    );
-    assert.match(
-      section.source,
-      /^- Proposed \(NOT IMPLEMENTED\): /m,
-      `${section.action} has no explicit unimplemented proposal state`
-    );
-  }
-
-  const encodeY = sections.find(section => section.action === "encodeY").source;
+test("keeps implemented and planned formal values distinct", () => {
+  const encodeY = owningSection("encodeY").source;
   assert.match(encodeY, /aggregate\?: "mean" \| "count"/);
   assert.match(
     encodeY,
@@ -435,77 +327,23 @@ test("separates implemented and proposed values for every direct action", () => 
   );
   assert.match(encodeY, /op: "quantile"; probability: UnitInterval/);
   assert.match(encodeY, /op: "first" \| "last"; orderBy: FieldName/);
-  const point = sections.find(
-    section => section.action === "createPointMark"
-  ).source;
+
+  const point = owningSection("createPointMark").source;
   assert.match(point, /shape\?: "circle" \| "square"/);
   assert.match(point, /shape\?: PointShape/);
 });
 
-test("keeps accepted parameter extensions explicit and non-public", () => {
-  const rows = plannedParameterRows();
-
-  assert.deepEqual(rows, [
-    { capability: "Point shape vocabulary", readiness: "Accepted" },
-    { capability: "Area outline", readiness: "Accepted" },
-    { capability: "Bar width modes", readiness: "Accepted" },
-    { capability: "Aggregate vocabulary", readiness: "Accepted" },
-    { capability: "Color layout vocabulary", readiness: "Accepted" },
-    { capability: "Histogram bin controls", readiness: "Accepted" },
-    { capability: "Density kernel vocabulary", readiness: "Accepted" },
-    { capability: "Filter predicate modes", readiness: "Accepted" },
-    { capability: "Regression method vocabulary", readiness: "Accepted" },
-    { capability: "Regression prediction interval", readiness: "Accepted" },
-    { capability: "Top x axis position", readiness: "Accepted" },
-    { capability: "Right y axis position", readiness: "Accepted" },
-    { capability: "Axis label format strings", readiness: "Accepted" },
-    { capability: "Left legend position", readiness: "Accepted" },
-    { capability: "Chart title positions", readiness: "Accepted" }
-  ]);
-  assert.match(catalog, /type PointShape =/);
-  assert.match(catalog, /"plus" \| "cross" \| "star" \| "hexagon" \| "wye"/);
-  assert.match(catalog, /stroke\?: NonEmptyString \| false/);
-  assert.match(catalog, /band\?: UnitIntervalExclusiveZero/);
-  assert.match(catalog, /pixels\?: PositiveFinite/);
-  assert.match(catalog, /paddingInner\?: UnitIntervalLessThan1/);
-  assert.match(catalog, /type AggregateOperation =/);
-  assert.match(catalog, /two-sided 95% normal interval endpoint/);
-  assert.match(catalog, /type ColorLayout =/);
-  assert.match(catalog, /"stack" \| "fill" \| "group" \| "overlay" \| "center" \| "diverging"/);
-  assert.match(catalog, /별도 action `encodeGroup`과 다른 개념/);
-  assert.match(catalog, /### Planned contract: histogram bin controls/);
-  assert.match(catalog, /binBoundaries\?: readonly \[Finite, Finite, \.\.\.Finite\[\]\]/);
-  assert.match(catalog, /zero를 anchor로/);
-  assert.match(catalog, /### Planned contract: density kernel vocabulary/);
-  assert.match(catalog, /type DensityKernel =/);
-  assert.match(catalog, /sum\(K\(u\)\) \/ \(n \* bandwidth\)/);
-  assert.match(catalog, /type FilterComparison =/);
-  assert.match(catalog, /oneOf.*predicate.*range.*정확히 하나/);
-  assert.match(catalog, /type RegressionMethod = "linear" \| "polynomial" \| "loess"/);
-  assert.match(catalog, /tricube-weighted local-linear fit/);
-  assert.match(catalog, /residualVariance \* \(1 \+ leverage\)/);
-  assert.doesNotMatch(catalog, /ordered multi-transform pipeline/);
-  assert.match(catalog, /### Planned contract: mirrored Cartesian axis positions/);
-  assert.match(catalog, /top x title 기본 rotation은 `0`/);
-  assert.match(catalog, /right y title 기본 rotation은/);
-  assert.match(catalog, /type AxisFormatString =/);
-  assert.match(catalog, /"\.0f" \| "\.1f" \| "\.2f"/);
-  assert.match(catalog, /### Planned contract: left legend position/);
-  assert.match(catalog, /point composite와 quantitative size block을 지원/);
-  assert.match(catalog, /### Planned contract: chart title positions/);
-  assert.match(catalog, /"top" \| "bottom" \| "left" \| "right"/);
-});
-
-test("keeps catalog coverage evidence paths executable", () => {
-  const evidence = [...catalog.matchAll(/`(test\/[A-Za-z0-9_./-]+\.test\.js)`/g)]
-    .map(match => match[1]);
+test("keeps all executable coverage evidence paths valid", () => {
+  const evidence = [...currentCorpus.matchAll(
+    /`(test\/[A-Za-z0-9_./-]+\.test\.js)`/g
+  )].map(match => match[1]);
 
   assert.equal(evidence.length > 0, true);
   for (const relative of new Set(evidence)) {
     assert.equal(
       existsSync(path.join(root, relative)),
       true,
-      `Missing catalog coverage evidence: ${relative}`
+      `Missing contract coverage evidence: ${relative}`
     );
   }
 });

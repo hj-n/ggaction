@@ -158,13 +158,15 @@
 
 ## Action Contract Catalog
 
-- Keep `agent_docs/contract/ACTION_CATALOG.md` as the canonical engineering catalog for every supported direct user-facing action and every public primitive action.
-- Keep the lifecycle audit exhaustive: every declared direct action must appear exactly once, and every stable resource without an edit path must remain visibly marked Planned or Proposed.
-- Record each action parameter's implementation status, type, required state, accepted values or value partitions, default and inference rules, option interactions, semantic effect, graphical and rendering effect, rematerialization impact, error conditions, and executable coverage evidence.
+- Keep `agent_docs/contract/ACTION_INDEX.json` as the canonical machine-readable inventory for every direct user-facing action, public primitive, planned direct action, planned capability, and internal wrapped-action inventory.
+- Keep current action contracts under `agent_docs/contract/current/`, planned contracts under `agent_docs/contract/planned/`, and internal inventories under `agent_docs/contract/internal/`. Every implemented direct action must have exactly one owning current contract.
+- Treat `agent_docs/contract/ACTION_CATALOG.md` as a generated compact index. Regenerate it with `npm run contracts:catalog`; do not maintain duplicate status tables by hand.
+- Keep the lifecycle audit exhaustive: every declared direct action must appear exactly once in the manifest, and every stable resource without an edit path must remain visibly marked Planned or Proposed.
+- Keep an action's parameter status, types, accepted values, defaults and inference, interactions, semantic and graphical effects, rematerialization impact, errors, formal values, coverage ledger, and executable evidence together in its owning domain contract. State shared family rules once per domain.
 - Distinguish `Implemented`, `Planned`, and `Proposed` contracts. Only behavior present in the implementation may be marked `Implemented`; only behavior explicitly agreed with the user may be marked `Planned`; unresolved candidates remain `Proposed` and must not appear as current public API.
 - Mark a coverage case complete only when a matching executable test exists. Keep missing and partial cases visible rather than estimating a coverage percentage.
-- Update the catalog in the same conceptual commit whenever a supported action, parameter, accepted value, default, inference rule, precedence rule, effect, or public/private classification changes.
-- Keep the catalog summary synchronized with its detailed action sections, and enforce mechanically verifiable inventory, classification, link, and test-evidence rules through contract tests.
+- Update the manifest, owning contract, generated catalog, and contract tests in the same conceptual commit whenever a supported action, parameter, accepted value, default, inference rule, precedence rule, effect, lifecycle, coverage, or public/private classification changes.
+- Enforce mechanically verifiable inventory, classification, contract-link, status, evidence-path, and generation-freshness rules through contract tests; do not test Korean prose placement.
 
 ## Change Scope
 
