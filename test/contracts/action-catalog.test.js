@@ -278,6 +278,8 @@ test("keeps accepted planned capabilities linked and non-public", () => {
     "Parameterized aggregate operations",
     "Color layout vocabulary",
     "Vega named palette vocabulary",
+    "Named and constant stroke dash vocabulary",
+    "Field-driven opacity",
     "Histogram bin controls",
     "Scale type vocabulary",
     "Scale mapping policies",
@@ -347,6 +349,15 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   assert.match(plannedCorpus, /count\?: PositiveInteger/);
   assert.match(plannedCorpus, /extent\?: readonly \[UnitInterval, UnitInterval\]/);
   assert.match(plannedCorpus, /Quantitative\/temporal color encoding[\s\S]*Proposed/);
+  assert.match(plannedCorpus, /type DashStyle = "solid" \| "dashed" \| "dotted" \| "dashdot"/);
+  assert.match(plannedCorpus, /solid → \[\]/);
+  assert.match(plannedCorpus, /dashed → \[6, 4\]/);
+  assert.match(plannedCorpus, /dotted → \[1, 3\]/);
+  assert.match(plannedCorpus, /dashdot → \[6, 3, 1, 3\]/);
+  assert.match(plannedCorpus, /type PlannedOpacityEncoding =/);
+  assert.match(plannedCorpus, /auto range는 `\[0\.2, 1\]`/);
+  assert.doesNotMatch(currentCorpus, /minArea|maxArea/);
+  assert.doesNotMatch(currentCorpus, /unit\?: "radius" \| "area"/);
   assert.match(plannedCorpus, /type PlannedPositionFieldType =/);
   assert.match(plannedCorpus, /type PlannedStackMode = "normalize"/);
   assert.match(plannedCorpus, /paddingOuter\?: NonNegativeFinite/);

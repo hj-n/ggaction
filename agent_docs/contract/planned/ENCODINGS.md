@@ -384,3 +384,84 @@ encodeXRange({
   validation 실패 시 이전 program을 그대로 유지한다.
 - Status: Planned, NOT IMPLEMENTED. direct child actions, semantic x2 path validation, horizontal path
   geometry, shared scale, Canvas edit와 renderer parity coverage가 필요하다.
+
+## Named and constant stroke dash vocabulary
+
+```typescript
+type DashStyle = "solid" | "dashed" | "dotted" | "dashdot";
+type DashValue = DashStyle | DashPattern;
+type DashScaleWithNamedValues = Omit<DashScale, "range"> & {
+  range?: "auto" | readonly DashValue[];
+};
+
+type PlannedStrokeDashEncoding =
+  | {
+      field: FieldName;
+      value?: never;
+      target?: UserId;
+      fieldType?: "nominal";
+      scale?: DashScaleWithNamedValues;
+    }
+  | {
+      field?: never;
+      value: DashValue;
+      target?: UserId;
+    };
+```
+
+- Named styles resolve to backend-neutral logical Canvas patterns:
+  `solid → []`, `dashed → [6, 4]`, `dotted → [1, 3]`,
+  `dashdot → [6, 3, 1, 3]`. Pattern lengths do not scale with stroke width or output pixel ratio.
+- Direct `DashPattern` remains an even-length array of non-negative finite logical lengths. Empty
+  `[]` is solid. A non-empty pattern may not contain only zeros.
+- Named styles are accepted both as a constant `value` and inside an explicit field-driven ordinal
+  dash scale range. Resolved scale ranges contain concrete numeric patterns, not style names.
+- `field` and `value` are mutually exclusive. Constant mode does not create a scale or legend.
+  Field mode retains existing series grouping and categorical legend behavior.
+- Reassigning between field and constant modes is atomic. Obsolete scale definitions are retained as
+  named resources, while an existing legend drops the removed strokeDash component or is removed when
+  it has no remaining channel.
+- Status: Planned, NOT IMPLEMENTED. Four named recipes, direct patterns, field/value exclusivity,
+  mode switching, legend cleanup, Canvas rematerialization and renderer parity coverage가 필요하다.
+
+## Field-driven opacity
+
+```typescript
+type PlannedOpacityEncoding =
+  | {
+      value: UnitInterval;
+      field?: never;
+      target?: UserId;
+    }
+  | {
+      value?: never;
+      field: FieldName;
+      target?: UserId;
+      fieldType?: "quantitative";
+      scale?: {
+        id?: UserId;
+        type?: "linear" | "log" | "pow" | "sqrt" | "symlog";
+        domain?: ContinuousDomain;
+        range?: "auto" | readonly [UnitInterval, UnitInterval];
+        nice?: boolean;
+        zero?: boolean;
+        clamp?: boolean;
+        reverse?: boolean;
+      };
+    };
+```
+
+- `field`와 `value`는 mutually exclusive다. Existing constant mode는 graphical mark config를
+  사용하고 field mode는 semantic opacity encoding과 scale binding을 저장한다.
+- 첫 field-driven contract는 quantitative point mark만 지원한다. Auto domain은 finite field
+  values, auto range는 `[0.2, 1]`이며 explicit range의 두 endpoint는 각각 `[0, 1]` 안에 있어야
+  하지만 ascending일 필요는 없다.
+- Scale mapping 뒤 concrete opacity를 모든 point child에 적용한다. Shape, size, color와 position
+  materialization order에 독립적이어야 한다.
+- 같은 action의 reassignment는 constant↔constant, field↔field와 constant↔field를 atomic하게
+  교체한다. Unreferenced named scale은 자동 삭제하지 않는다.
+- 첫 contract는 opacity legend를 자동 생성하거나 `createLegend` channel로 노출하지 않는다.
+  Opacity legend는 별도 Proposed guide contract다.
+- Status: Planned, NOT IMPLEMENTED. default/explicit domains and ranges, boundary opacity, mode
+  exclusivity and switching, shared scale conflicts, appearance call order, Canvas rematerialization
+  and no-legend behavior coverage가 필요하다.

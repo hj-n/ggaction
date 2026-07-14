@@ -353,7 +353,8 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 ### Formal values — `encodeStrokeDash`
 
 - Implemented: `encodeStrokeDash({ field: FieldName; target?: UserId; fieldType?: "nominal"; scale?: DashScale })`
-- Proposed (NOT IMPLEMENTED): 별도 constant dash action `{ value: DashPattern; target?: UserId }`.
+- Planned (NOT IMPLEMENTED): `encodeStrokeDash({ value: "solid" | "dashed" | "dotted" | "dashdot" | DashPattern; target?: UserId })`; field-driven scale range도 같은 named styles를 허용한다.
+- Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `encodeStrokeDash`
 
@@ -364,7 +365,8 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 - `scale.range`
   - ✅ Covered: automatic pattern cycling, explicit even-length non-negative patterns, invalid patterns.
   - ⚠️ Partial: empty solid pattern mixed with repeated categories and very long patterns.
-- 🟣 Proposed: constant strokeDash action for non-field-driven line appearance.
+  - 🟡 Planned: `solid | dashed | dotted | dashdot` named values and their concrete recipes.
+- 🟡 Planned: mutually exclusive constant `value` mode and atomic field↔constant reassignment.
 - Evidence: line-series encoding and scale tests.
 
 ## `encodeSize`
@@ -382,7 +384,7 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 ### Formal values — `encodeSize`
 
 - Implemented: `encodeSize({ field: FieldName; target?: UserId; fieldType?: "quantitative"; scale?: { id?: UserId; type?: "linear"; domain?: ContinuousDomain; range?: "auto" | readonly [NonNegativeFinite, NonNegativeFinite] } })`
-- Proposed (NOT IMPLEMENTED): `{ minArea?: NonNegativeFinite; maxArea?: NonNegativeFinite }`; explicit range와 precedence 결정 필요.
+- Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `encodeSize`
 
@@ -393,7 +395,7 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
   - ⚠️ Partial: zero/negative area range rejection and constant domains in direct action tests.
 - Interaction
   - ✅ Covered: constant radius conflict and shape-independent equal-area materialization.
-- 🟣 Proposed: legend-friendly range presets or `minArea`/`maxArea` shorthand; scale range와의 precedence가 필요하다.
+- No proposal: explicit `scale.range` remains the single size-area range API.
 - Evidence: point appearance and regression-guide tests.
 
 ## `encodeShape`
@@ -434,7 +436,8 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 ### Formal values — `encodeOpacity`
 
 - Implemented: `encodeOpacity({ value: UnitInterval; target?: UserId })`
-- Proposed (NOT IMPLEMENTED): 별도 field-driven action `{ field: FieldName; target?: UserId; scale?: PositionScale }`.
+- Planned (NOT IMPLEMENTED): `encodeOpacity({ field: FieldName; target?: UserId; fieldType?: "quantitative"; scale?: { id?: UserId; type?: "linear" | "log" | "pow" | "sqrt" | "symlog"; domain?: ContinuousDomain; range?: "auto" | readonly [UnitInterval, UnitInterval]; nice?: boolean; zero?: boolean; clamp?: boolean; reverse?: boolean } })`; field와 value는 mutually exclusive.
+- Proposed (NOT IMPLEMENTED): opacity legend.
 
 ### Value coverage — `encodeOpacity`
 
@@ -444,7 +447,8 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
   - ✅ Covered: inferred/explicit point, unknown/incompatible target.
 - Reassignment
   - ✅ Covered: same action replaces the stored constant and concrete child opacity immutably.
-- 🟣 Proposed: field-driven quantitative opacity with scale; constant action과 distinct API/semantic contract가 필요하다.
+- 🟡 Planned: field-driven quantitative opacity, auto range `[0.2, 1]` and atomic constant↔field reassignment.
+- 🟣 Proposed: opacity legend.
 - Evidence: point appearance and regression tests.
 
 ## `encodeRadius`
@@ -463,7 +467,7 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 ### Formal values — `encodeRadius`
 
 - Implemented: `encodeRadius({ value: NonNegativeFinite; target?: UserId })`
-- Proposed (NOT IMPLEMENTED): `{ unit?: "radius" | "area" }`; Polar radial action 이름과도 분리 필요.
+- Proposed (NOT IMPLEMENTED): —; constant value는 radius unit만 유지한다.
 
 ### Value coverage — `encodeRadius`
 
@@ -473,15 +477,15 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
   - ✅ Covered: inferred/explicit point와 invalid target.
 - Interaction
   - ✅ Covered: semanticSpec unchanged, child broadcast, same-action reassignment, encodeSize conflict.
-- Proposed: additional constant point size units(`area` vs `radius`)는 별도 naming/precedence 결정이 필요하다.
+- No proposal: constant area shorthand는 추가하지 않고 field-driven area는 `encodeSize`가 소유한다.
 - Evidence: `test/unit/actions/encodings/radius-encoding.test.js`.
 
 ## `encodeBarWidth`
 
 - Signature: `encodeBarWidth({ band?, target? })`
 - `band`: `(0, 1]` finite number, 기본값 `0.72`. 각 xOffset slot 중 rect가 차지하는 비율이다.
-- `pixels`, `paddingInner`: Planned. fixed logical-pixel width와 grouped slot spacing이며 pixels는
-  band와 mutually exclusive다.
+- `pixels`: Planned fixed logical-pixel width이며 band와 mutually exclusive다. Group slot spacing은
+  `encodeXOffset`이 소유한다.
 - `target`: optional complete grouped bar ID.
 - Effect: graphical mark config에 band fraction을 저장하고 rect x/width를 rematerialize한다.
   같은 target에 다시 호출하면 기존 band fraction을 교체한다.
@@ -491,7 +495,7 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 ### Formal values — `encodeBarWidth`
 
 - Implemented: `encodeBarWidth({ band?: number; target?: UserId })`, `0 < band <= 1`, default `0.72`.
-- Planned (NOT IMPLEMENTED): `{ pixels?: PositiveFinite; paddingInner?: UnitIntervalLessThan1 }`; `band`와 mutually exclusive.
+- Planned (NOT IMPLEMENTED): `{ pixels?: PositiveFinite }`; `band`와 mutually exclusive.
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `encodeBarWidth`
@@ -502,5 +506,5 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
   - ✅ Covered: inferred/explicit grouped bar와 incomplete prerequisites.
 - Reassignment
   - ✅ Covered: same action replaces the stored band and concrete rect widths immutably.
-- 🟡 Planned: mutually exclusive fixed pixels/band modes and `[0,1)` inner padding with responsive behavior.
+- 🟡 Planned: mutually exclusive fixed pixels/band modes; grouped padding은 `encodeXOffset` contract가 소유한다.
 - Evidence: grouped-bar width and chart reference tests.

@@ -1474,6 +1474,28 @@
       }
     },
     {
+      "id": "named-and-constant-stroke-dash-vocabulary",
+      "kind": "parameter",
+      "name": "Named and constant stroke dash vocabulary",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "named-and-constant-stroke-dash-vocabulary"
+      }
+    },
+    {
+      "id": "field-driven-opacity",
+      "kind": "parameter",
+      "name": "Field-driven opacity",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/ENCODINGS.md",
+        "anchor": "field-driven-opacity"
+      }
+    },
+    {
       "id": "histogram-bin-controls",
       "kind": "parameter",
       "name": "Histogram bin controls",
