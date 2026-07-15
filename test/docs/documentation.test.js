@@ -208,10 +208,16 @@ test("keeps tutorial modules runnable from a repository checkout", () => {
 
 test("indexes documentation headings for section search", () => {
   const index = read("docs/_includes/search-index.html");
+  const indexPage = read("docs/search-index.json");
   const search = read("docs/assets/js/docs-search.js");
   const layout = read("docs/_layouts/default.html");
 
-  assert.match(index, /entry\.content \| markdownify/);
+  assert.match(index, /data-index-url/);
+  assert.doesNotMatch(index, /entry\.content \| markdownify/);
+  assert.match(indexPage, /entry\.content \| markdownify/);
+  assert.match(indexPage, /layout: null/);
+  assert.match(search, /fetch\(config\.dataset\.indexUrl/);
+  assert.match(search, /input\.addEventListener\("focus"/);
   assert.match(search, /querySelectorAll\("h2\[id\], h3\[id\]"\)/);
   assert.match(search, /sectionTitle/);
   assert.match(search, /seenPages/);

@@ -11,6 +11,7 @@ const contentTypes = new Map([
   [".css", "text/css"],
   [".html", "text/html"],
   [".js", "text/javascript"],
+  [".json", "application/json"],
   [".png", "image/png"],
   [".txt", "text/plain"]
 ]);
@@ -127,6 +128,7 @@ try {
   assert.equal(await search.evaluate(element => element === document.activeElement), true);
   await search.fill("legend");
   const results = desktop.locator("#docs-search-results a");
+  await results.first().waitFor({ state: "visible" });
   const resultCount = await results.count();
   assert.equal(resultCount > 0 && resultCount <= 8, true);
   assert.equal(await desktop.locator(".docs-search-snippet").count(), resultCount);
@@ -190,6 +192,8 @@ try {
     ),
     true
   );
+  await mobile.locator("#docs-search-input").fill("legend");
+  await mobile.locator("#docs-search-results a").first().waitFor({ state: "visible" });
   assert.deepEqual(mobileErrors, []);
   await mobile.screenshot({ path: path.join(artifactRoot, "mobile.png"), fullPage: true });
 

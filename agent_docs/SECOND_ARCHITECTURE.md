@@ -1287,7 +1287,10 @@ generated artifact이며 직접 수정하지 않는다.
 CI documentation job은 generated artifact drift를 검사한 뒤 GitHub Pages와 같은 공식
 Jekyll action으로 site를 build한다. Built HTML의 local link/asset과 미처리 Liquid를
 검사하고, headless Chromium에서 desktop search와 mobile navigation, focus recovery,
-horizontal overflow, console/page error를 검증한다.
+horizontal overflow, console/page error를 검증한다. 모든 built page는 320px, 390px,
+768px viewport에서 document-level overflow 없이 code/table 내부 scroll만 허용해야 한다.
+검색용 rendered HTML은 각 page에 반복 삽입하지 않고 하나의 `search-index.json`으로
+build하며, browser는 search focus 시점에 index를 lazy-load하고 section entry를 만든다.
 
 ### Render regression
 

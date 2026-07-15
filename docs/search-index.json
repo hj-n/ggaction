@@ -1,0 +1,19 @@
+---
+layout: null
+permalink: /search-index.json
+---
+[
+  {% assign searchable_pages = site.html_pages | sort: "title" %}
+  {% assign first_searchable_page = true %}
+  {% for entry in searchable_pages %}
+    {% if entry.title %}
+      {% unless first_searchable_page %},{% endunless %}
+      {
+        "title": {{ entry.title | jsonify }},
+        "url": {{ entry.url | relative_url | jsonify }},
+        "html": {{ entry.content | markdownify | jsonify }}
+      }
+      {% assign first_searchable_page = false %}
+    {% endif %}
+  {% endfor %}
+]

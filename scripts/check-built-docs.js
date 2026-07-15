@@ -54,6 +54,7 @@ for (const expected of [
   "index.html",
   "getting-started/index.html",
   "reference/actions/index.html",
+  "search-index.json",
   "llms.txt",
   "llms-full.txt",
   "assets/js/docs-navigation.js",

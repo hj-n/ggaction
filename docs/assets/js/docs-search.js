@@ -1,45 +1,68 @@
 (() => {
   const input = document.querySelector("#docs-search-input");
   const results = document.querySelector("#docs-search-results");
-  const source = document.querySelector("#docs-search-index");
+  const config = document.querySelector("#docs-search-config");
 
-  if (!input || !results || !source) return;
+  if (!input || !results || !config) return;
 
-  let pages = [];
-  try {
-    pages = JSON.parse(source.textContent);
-  } catch {
-    input.disabled = true;
-    input.placeholder = "Search unavailable";
-    return;
+  let sections;
+  let loading;
+
+  function buildSections(pages) {
+    return pages.flatMap(page => {
+      const documentFragment = new DOMParser().parseFromString(page.html, "text/html");
+      const pageText = documentFragment.body.textContent.replace(/\s+/g, " ").trim();
+      const entries = [{
+        pageTitle: page.title,
+        sectionTitle: undefined,
+        url: page.url,
+        content: pageText
+      }];
+
+      for (const heading of documentFragment.querySelectorAll("h2[id], h3[id]")) {
+        const content = [];
+        let sibling = heading.nextElementSibling;
+        while (sibling && !["H2", "H3"].includes(sibling.tagName)) {
+          content.push(sibling.textContent);
+          sibling = sibling.nextElementSibling;
+        }
+        entries.push({
+          pageTitle: page.title,
+          sectionTitle: heading.textContent.trim(),
+          url: `${page.url}#${heading.id}`,
+          content: content.join(" ").replace(/\s+/g, " ").trim()
+        });
+      }
+      return entries;
+    });
   }
 
-  const sections = pages.flatMap(page => {
-    const documentFragment = new DOMParser().parseFromString(page.html, "text/html");
-    const pageText = documentFragment.body.textContent.replace(/\s+/g, " ").trim();
-    const entries = [{
-      pageTitle: page.title,
-      sectionTitle: undefined,
-      url: page.url,
-      content: pageText
-    }];
+  function setBusy(busy) {
+    input.setAttribute("aria-busy", String(busy));
+    results.setAttribute("aria-busy", String(busy));
+  }
 
-    for (const heading of documentFragment.querySelectorAll("h2[id], h3[id]")) {
-      const content = [];
-      let sibling = heading.nextElementSibling;
-      while (sibling && !["H2", "H3"].includes(sibling.tagName)) {
-        content.push(sibling.textContent);
-        sibling = sibling.nextElementSibling;
-      }
-      entries.push({
-        pageTitle: page.title,
-        sectionTitle: heading.textContent.trim(),
-        url: `${page.url}#${heading.id}`,
-        content: content.join(" ").replace(/\s+/g, " ").trim()
-      });
-    }
-    return entries;
-  });
+  async function loadSections() {
+    if (sections) return sections;
+    if (loading) return loading;
+    setBusy(true);
+    loading = fetch(config.dataset.indexUrl, {
+      headers: { Accept: "application/json" }
+    }).then(response => {
+      if (!response.ok) throw new Error(`Search index request failed: ${response.status}`);
+      return response.json();
+    }).then(pages => {
+      if (!Array.isArray(pages)) throw new Error("Search index must be an array.");
+      sections = buildSections(pages);
+      return sections;
+    }).catch(() => {
+      input.disabled = true;
+      input.placeholder = "Search unavailable";
+      clearResults();
+      return [];
+    }).finally(() => setBusy(false));
+    return loading;
+  }
 
   function clearResults() {
     results.replaceChildren();
@@ -56,14 +79,21 @@
     return `${start > 0 ? "…" : ""}${normalized.slice(start, end)}${end < normalized.length ? "…" : ""}`;
   }
 
-  input.addEventListener("input", () => {
+  input.addEventListener("focus", () => {
+    void loadSections();
+  }, { once: true });
+
+  input.addEventListener("input", async () => {
     const query = input.value.trim().toLowerCase();
     if (query.length < 2) {
       clearResults();
       return;
     }
 
-    const ranked = sections
+    const searchableSections = await loadSections();
+    if (query !== input.value.trim().toLowerCase()) return;
+
+    const ranked = searchableSections
       .map(section => {
         const pageTitle = section.pageTitle.toLowerCase();
         const sectionTitle = section.sectionTitle?.toLowerCase();
