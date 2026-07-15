@@ -4,28 +4,81 @@
 
   const headings = [...content.querySelectorAll(":scope > h2, :scope > h3")]
     .filter(heading => heading.id);
+  const labels = new Map(headings.map(heading => [heading, heading.textContent.trim()]));
+
+  for (const heading of headings) {
+    const anchor = document.createElement("a");
+    anchor.className = "docs-heading-anchor";
+    anchor.href = `#${heading.id}`;
+    anchor.textContent = "#";
+    anchor.setAttribute("aria-label", `Link to ${labels.get(heading)}`);
+    heading.append(anchor);
+  }
+
   if (headings.length < 4) return;
 
-  const navigation = document.createElement("nav");
+  const navigation = document.createElement("details");
   navigation.className = "docs-page-toc";
-  navigation.setAttribute("aria-label", "On this page");
+  navigation.open = !window.matchMedia("(max-width: 860px)").matches;
 
+  const summary = document.createElement("summary");
   const title = document.createElement("strong");
   title.textContent = "On this page";
-  navigation.append(title);
+  const count = document.createElement("span");
+  count.textContent = `${headings.length} sections`;
+  summary.append(title, count);
+  navigation.append(summary);
 
   const list = document.createElement("ul");
+  const items = new Map();
   for (const heading of headings) {
     const item = document.createElement("li");
     if (heading.tagName === "H3") item.className = "is-nested";
     const link = document.createElement("a");
     link.href = `#${heading.id}`;
-    link.textContent = heading.textContent;
+    link.textContent = labels.get(heading);
+    link.addEventListener("click", () => {
+      if (window.matchMedia("(max-width: 860px)").matches) navigation.open = false;
+    });
     item.append(link);
     list.append(item);
+    items.set(heading, item);
   }
   navigation.append(list);
 
   const firstHeading = content.querySelector(":scope > h2");
   content.insertBefore(navigation, firstHeading);
+
+  let scheduled = false;
+  function updateCurrentSection() {
+    scheduled = false;
+    const top = parseFloat(getComputedStyle(document.documentElement)
+      .getPropertyValue("--docs-topbar")) + 24;
+    let current = headings[0];
+    for (const heading of headings) {
+      if (heading.getBoundingClientRect().top > top) break;
+      current = heading;
+    }
+    for (const item of items.values()) {
+      item.classList.remove("is-current", "is-parent-current");
+    }
+    items.get(current)?.classList.add("is-current");
+    if (current.tagName === "H3") {
+      const currentIndex = headings.indexOf(current);
+      for (let index = currentIndex - 1; index >= 0; index -= 1) {
+        if (headings[index].tagName === "H2") {
+          items.get(headings[index])?.classList.add("is-parent-current");
+          break;
+        }
+      }
+    }
+  }
+  function scheduleUpdate() {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(updateCurrentSection);
+  }
+  window.addEventListener("scroll", scheduleUpdate, { passive: true });
+  window.addEventListener("resize", scheduleUpdate);
+  updateCurrentSection();
 })();

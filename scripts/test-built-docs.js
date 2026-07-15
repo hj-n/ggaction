@@ -117,7 +117,9 @@ try {
   const response = await desktop.goto(baseUrl, { waitUntil: "networkidle" });
   assert.equal(response.ok(), true);
   assert.equal(await desktop.locator(".docs-topnav a").count(), 4);
-  assert.equal(await desktop.locator(".docs-chart-gallery a").count(), 6);
+  assert.equal(await desktop.locator(".docs-chart-gallery article").count(), 6);
+  assert.equal(await desktop.locator(".docs-chart-gallery__image").count(), 6);
+  assert.equal(await desktop.locator(".docs-chart-gallery__title").count(), 6);
   assert.equal(
     await desktop.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth),
     false
@@ -198,6 +200,9 @@ try {
   await mobile.screenshot({ path: path.join(artifactRoot, "mobile.png"), fullPage: true });
 
   await mobile.goto(`${baseUrl}reference/actions/`, { waitUntil: "networkidle" });
+  assert.equal(await mobile.locator(".docs-page-toc").getAttribute("open"), null);
+  assert.equal(await mobile.locator(".docs-copy-button").count() > 0, true);
+  assert.equal(await mobile.locator(".docs-heading-anchor").count() > 0, true);
   await mobile.screenshot({
     path: path.join(artifactRoot, "mobile-action-reference.png"),
     fullPage: false

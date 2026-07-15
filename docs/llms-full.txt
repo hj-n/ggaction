@@ -40,30 +40,42 @@ The main, extension, and PNG entry points include TypeScript declarations.
 ## Choose a chart
 
 <div class="docs-chart-gallery">
-  <a href="./tutorials/scatterplot/">
-    <img src="./assets/images/cars-scatterplot.png" alt="Cars scatterplot">
-    <span>Scatterplot</span>
-  </a>
-  <a href="./tutorials/line-chart/">
-    <img src="./assets/images/cars-line-chart.png" alt="Cars aggregate line chart">
-    <span>Line chart</span>
-  </a>
-  <a href="./tutorials/histogram/">
-    <img src="./assets/images/cars-histogram.png" alt="Cars stacked histogram">
-    <span>Histogram</span>
-  </a>
-  <a href="./tutorials/grouped-bar/">
-    <img src="./assets/images/jobs-grouped-bar.png" alt="Jobs grouped bar example">
-    <span>Bar chart</span>
-  </a>
-  <a href="./tutorials/regression-scatterplot/">
-    <img src="./assets/images/cars-regression-scatterplot.png" alt="Cars regression scatterplot with confidence bands">
-    <span>Regression scatterplot</span>
-  </a>
-  <a href="./tutorials/density-area/">
-    <img src="./assets/images/cars-density-area.png" alt="Cars density area chart">
-    <span>Density area</span>
-  </a>
+  <article>
+    <a class="docs-chart-gallery__image" href="./assets/images/cars-scatterplot.png" aria-label="Open the full-size cars scatterplot">
+      <img src="./assets/images/cars-scatterplot.png" alt="Cars scatterplot" width="1280" height="800" loading="eager" fetchpriority="high">
+    </a>
+    <a class="docs-chart-gallery__title" href="./tutorials/scatterplot/">Scatterplot</a>
+  </article>
+  <article>
+    <a class="docs-chart-gallery__image" href="./assets/images/cars-line-chart.png" aria-label="Open the full-size aggregate line chart">
+      <img src="./assets/images/cars-line-chart.png" alt="Cars aggregate line chart" width="1440" height="920" loading="lazy">
+    </a>
+    <a class="docs-chart-gallery__title" href="./tutorials/line-chart/">Line chart</a>
+  </article>
+  <article>
+    <a class="docs-chart-gallery__image" href="./assets/images/cars-histogram.png" aria-label="Open the full-size stacked histogram">
+      <img src="./assets/images/cars-histogram.png" alt="Cars stacked histogram" width="864" height="920" loading="lazy">
+    </a>
+    <a class="docs-chart-gallery__title" href="./tutorials/histogram/">Histogram</a>
+  </article>
+  <article>
+    <a class="docs-chart-gallery__image" href="./assets/images/jobs-grouped-bar.png" aria-label="Open the full-size grouped bar chart">
+      <img src="./assets/images/jobs-grouped-bar.png" alt="Jobs grouped bar example" width="1440" height="920" loading="lazy">
+    </a>
+    <a class="docs-chart-gallery__title" href="./tutorials/grouped-bar/">Bar chart</a>
+  </article>
+  <article>
+    <a class="docs-chart-gallery__image" href="./assets/images/cars-regression-scatterplot.png" aria-label="Open the full-size regression scatterplot">
+      <img src="./assets/images/cars-regression-scatterplot.png" alt="Cars regression scatterplot with confidence bands" width="1520" height="960" loading="lazy">
+    </a>
+    <a class="docs-chart-gallery__title" href="./tutorials/regression-scatterplot/">Regression scatterplot</a>
+  </article>
+  <article>
+    <a class="docs-chart-gallery__image" href="./assets/images/cars-density-area.png" aria-label="Open the full-size density area chart">
+      <img src="./assets/images/cars-density-area.png" alt="Cars density area chart" width="1440" height="1000" loading="lazy">
+    </a>
+    <a class="docs-chart-gallery__title" href="./tutorials/density-area/">Density area</a>
+  </article>
 </div>
 
 ## Go deeper

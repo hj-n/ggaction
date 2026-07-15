@@ -224,6 +224,7 @@ test("indexes documentation headings for section search", () => {
   assert.match(search, /docs-search-snippet/);
   assert.match(search, /event\.metaKey \|\| event\.ctrlKey/);
   assert.match(layout, /docs-toc\.js/);
+  assert.match(layout, /docs-content\.js/);
   assert.match(layout, /page-navigation\.html/);
   assert.match(layout, /docs-navigation\.js/);
 
@@ -249,6 +250,12 @@ test("keeps one generated gallery image for every public chart", async () => {
     assert.equal(image.readUInt32BE(20), height * 2, `${id} height`);
     assert.match(index, new RegExp(`assets/images/${id}\\.png`));
   }
+  assert.equal((index.match(/<article>/g) ?? []).length, 6);
+  assert.equal((index.match(/class="docs-chart-gallery__image"/g) ?? []).length, 6);
+  assert.equal((index.match(/class="docs-chart-gallery__title"/g) ?? []).length, 6);
+  assert.equal((index.match(/loading="lazy"/g) ?? []).length, 5);
+  assert.equal((index.match(/loading="eager"/g) ?? []).length, 1);
+  assert.equal((index.match(/<img [^>]*width="\d+"[^>]*height="\d+"/g) ?? []).length, 6);
 
   for (const tutorial of [
     "scatterplot",

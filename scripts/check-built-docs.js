@@ -58,6 +58,7 @@ for (const expected of [
   "llms.txt",
   "llms-full.txt",
   "assets/js/docs-navigation.js",
+  "assets/js/docs-content.js",
   "assets/js/docs-search.js"
 ]) {
   await assert.doesNotReject(access(path.join(siteRoot, expected)), expected);

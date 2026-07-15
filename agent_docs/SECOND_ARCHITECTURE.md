@@ -1291,6 +1291,10 @@ horizontal overflow, console/page error를 검증한다. 모든 built page는 32
 768px viewport에서 document-level overflow 없이 code/table 내부 scroll만 허용해야 한다.
 검색용 rendered HTML은 각 page에 반복 삽입하지 않고 하나의 `search-index.json`으로
 build하며, browser는 search focus 시점에 index를 lazy-load하고 section entry를 만든다.
+긴 page는 mobile에서 접힌 `details` TOC를 사용하고 scroll 위치에 따라 current section을
+표시한다. Heading permalink, code copy, code/table local-overflow affordance와 명시적 image
+dimensions/lazy loading은 공통 content script와 style이 소유하며 개별 Markdown page가
+동작을 복제하지 않는다.
 
 ### Render regression
 

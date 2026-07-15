@@ -21,6 +21,14 @@ body {
   background: #fff;
 }
 
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+summary:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.32);
+  outline-offset: 3px;
+}
+
 .skip-link {
   position: fixed;
   left: 1rem;
@@ -281,6 +289,69 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+.docs-scroll-region {
+  position: relative;
+  max-width: 100%;
+}
+
+.docs-scroll-region::after {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 2.5rem;
+  background: linear-gradient(to right, rgba(248, 250, 252, 0), #f8fafc);
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+
+.docs-scroll-region.has-overflow:not(.is-scrolled-end)::after {
+  opacity: 1;
+}
+
+.docs-code-block {
+  margin: 0 0 1rem;
+}
+
+.docs-code-block pre {
+  margin: 0;
+  padding-top: 3rem;
+}
+
+.docs-copy-button {
+  position: absolute;
+  z-index: 3;
+  top: 0.45rem;
+  right: 0.45rem;
+  min-width: 4.25rem;
+  min-height: 2.5rem;
+  padding: 0.35rem 0.65rem;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.4rem;
+  background: rgba(255, 255, 255, 0.96);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.docs-copy-button:hover {
+  color: var(--docs-accent);
+  border-color: #93c5fd;
+}
+
+.docs-table-region {
+  margin: 0 0 1rem;
+}
+
+.docs-table-region table {
+  margin: 0;
+}
+
 .docs-content pre {
   width: 100%;
   max-width: 100%;
@@ -356,24 +427,53 @@ body {
   line-height: 1.45;
 }
 
-.docs-chart-gallery a {
+.docs-chart-gallery article {
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
   padding: 0.7rem;
-  color: #0f172a;
   border: 1px solid var(--docs-border);
   border-radius: 0.65rem;
+}
+
+.docs-chart-gallery article:focus-within,
+.docs-chart-gallery article:hover {
+  border-color: #93c5fd;
+  background: var(--docs-accent-soft);
+}
+
+.docs-chart-gallery__image {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 0.4rem;
+}
+
+.docs-chart-gallery__image::after {
+  position: absolute;
+  right: 0.45rem;
+  bottom: 0.45rem;
+  padding: 0.2rem 0.4rem;
+  color: #fff;
+  border-radius: 0.25rem;
+  background: rgba(15, 23, 42, 0.78);
+  content: "Full size";
+  font-size: 0.68rem;
+  opacity: 0;
+}
+
+.docs-chart-gallery__image:focus::after,
+.docs-chart-gallery__image:hover::after {
+  opacity: 1;
+}
+
+.docs-chart-gallery__title {
+  color: #0f172a;
   font-weight: 600;
 }
 
-.docs-chart-gallery a:hover {
-  border-color: #93c5fd;
-  background: var(--docs-accent-soft);
-  text-decoration: none;
-}
-
 .docs-chart-gallery img {
+  display: block;
   width: 100%;
   aspect-ratio: 16 / 10;
   object-fit: contain;
@@ -388,11 +488,41 @@ body {
   background: #f8fafc;
 }
 
-.docs-page-toc > strong {
+.docs-page-toc summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.docs-page-toc summary::-webkit-details-marker {
+  display: none;
+}
+
+.docs-page-toc summary::after {
+  color: var(--docs-muted);
+  content: "+";
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.docs-page-toc[open] summary::after {
+  content: "−";
+}
+
+.docs-page-toc summary strong {
   color: #0f172a;
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+}
+
+.docs-page-toc summary span {
+  margin-left: auto;
+  color: var(--docs-muted);
+  font-size: 0.74rem;
 }
 
 .docs-page-toc ul {
@@ -411,6 +541,27 @@ body {
 
 .docs-page-toc a {
   font-size: 0.84rem;
+}
+
+.docs-page-toc li.is-current > a,
+.docs-page-toc li.is-parent-current > a {
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.docs-heading-anchor {
+  margin-left: 0.4rem;
+  color: #94a3b8;
+  font-size: 0.72em;
+  font-weight: 500;
+  opacity: 0;
+}
+
+h2:hover .docs-heading-anchor,
+h3:hover .docs-heading-anchor,
+.docs-heading-anchor:focus {
+  opacity: 1;
+  text-decoration: none;
 }
 
 .docs-page-navigation {
@@ -550,6 +701,22 @@ body {
 
   .docs-page-navigation__next {
     text-align: left;
+  }
+
+  .docs-page-toc summary span {
+    display: none;
+  }
+
+  .docs-page-toc .is-nested:not(.is-current) {
+    display: none;
+  }
+
+  .docs-heading-anchor {
+    opacity: 1;
+  }
+
+  .docs-copy-button {
+    min-height: 2.75rem;
   }
 
   .docs-chart-gallery {
