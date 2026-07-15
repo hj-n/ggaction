@@ -11,6 +11,11 @@ import {
   valuesFromTickConfig
 } from "../tickValues.js";
 import { DEFAULT_COLORS } from "../../../theme/defaults.js";
+import {
+  defaultAxisPosition,
+  resolveAxisTickGeometry,
+  validateAxisPosition
+} from "./policy.js";
 
 const OPTIONS = Object.freeze(["scale", "position", "count", "values", "length", "color", "lineWidth"]);
 const DEFAULTS = Object.freeze({
@@ -26,8 +31,7 @@ function validateOptions(args, operation, create) {
 }
 
 function validateConfig(channel, config) {
-  const position = channel === "x" ? "bottom" : "left";
-  if (config.position !== position) throw new Error(`Unsupported ${channel}-axis position "${config.position}".`);
+  validateAxisPosition(channel, config.position);
   if (config.mode === "count" && (!Number.isInteger(config.count) || config.count <= 0)) throw new RangeError("Tick count must be a positive integer.");
   if (
     config.mode === "values" &&
@@ -61,10 +65,31 @@ function geometry(program, channel, config) {
     : mapLinearValues(values, domain, scale.range, {
         clamp: scale.clamp ?? false
       });
-  const baseline = channel === "x" ? bounds.y + bounds.height : bounds.x;
-  return channel === "x"
-    ? { values, x1: positions, y1: baseline, x2: positions, y2: baseline + config.length }
-    : { values, x1: baseline - config.length, y1: positions, x2: baseline, y2: positions };
+  const resolved = {
+    values,
+    ...resolveAxisTickGeometry({
+      bounds,
+      channel,
+      position: config.position,
+      positions,
+      length: config.length
+    })
+  };
+  const canvas = program.graphicSpec.objects.canvas?.properties;
+  const coordinates = channel === "x"
+    ? [...resolved.x1, ...resolved.x2, resolved.y1, resolved.y2]
+    : [resolved.x1, resolved.x2, ...resolved.y1, ...resolved.y2];
+  const newEdgeDoesNotFit =
+    (config.position === "top" && resolved.y2 < 0) ||
+    (config.position === "right" && resolved.x2 > canvas?.width);
+  if (
+    !canvas ||
+    coordinates.some(value => !Number.isFinite(value)) ||
+    newEdgeDoesNotFit
+  ) {
+    throw new Error(`The ${channel}-axis ticks do not fit the Canvas margin.`);
+  }
+  return resolved;
 }
 
 function makeEdit(channel) {
@@ -122,7 +147,7 @@ function makeCreate(channel) {
           : inferHistogramBoundaries(this, channel, scale);
     const options =
       inferredValues === undefined ? args : { ...args, values: inferredValues };
-    const config = { scale, position: channel === "x" ? "bottom" : "left", length: DEFAULTS.length, color: DEFAULTS.color, lineWidth: DEFAULTS.lineWidth, ...options, inferredValues: inferredValues !== undefined, mode: Object.hasOwn(options, "values") ? "values" : "count" };
+    const config = { scale, position: defaultAxisPosition(channel), length: DEFAULTS.length, color: DEFAULTS.color, lineWidth: DEFAULTS.lineWidth, ...options, inferredValues: inferredValues !== undefined, mode: Object.hasOwn(options, "values") ? "values" : "count" };
     if (config.mode === "values") delete config.count; else config.count ??= DEFAULTS.count;
     validateConfig(channel, config); geometry(this, channel, config);
     return this.editSemantic({ property: `guide.axis.${channel}.scale`, value: scale })

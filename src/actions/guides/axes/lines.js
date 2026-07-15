@@ -3,20 +3,15 @@ import { validateUserId } from "../../../core/identifiers.js";
 import { validateKeys } from "../../../core/validation.js";
 import { resolveGraphicBounds } from "../../../layout/canvas.js";
 import { DEFAULT_COLORS } from "../../../theme/defaults.js";
+import {
+  defaultAxisPosition,
+  resolveAxisLineGeometry,
+  validateAxisPosition
+} from "./policy.js";
 
 const DEFAULT_STYLE = Object.freeze({ color: DEFAULT_COLORS.text, lineWidth: 1 });
 const CREATE_OPTIONS = Object.freeze(["scale", "position", "color", "lineWidth"]);
 const EDIT_OPTIONS = Object.freeze(["position", "color", "lineWidth"]);
-
-function validatePosition(channel, position) {
-  const supported = channel === "x" ? "bottom" : "left";
-
-  if (position !== supported) {
-    throw new Error(`Unsupported ${channel}-axis position "${position}".`);
-  }
-
-  return position;
-}
 
 function validateStyle({ color, lineWidth }) {
   if (typeof color !== "string" || color.length === 0) {
@@ -28,7 +23,7 @@ function validateStyle({ color, lineWidth }) {
   }
 }
 
-function resolveGeometry(program, channel, scaleId) {
+function resolveGeometry(program, channel, scaleId, position) {
   const hasConsumer = program.semanticSpec.layers.some(
     layer => layer.encoding?.[channel]?.scale === scaleId
   );
@@ -53,9 +48,7 @@ function resolveGeometry(program, channel, scaleId) {
     throw new Error("Axis line requires graphical Canvas bounds.");
   }
 
-  return channel === "x"
-    ? { x1: range[0], y1: bounds.y + bounds.height, x2: range[1], y2: bounds.y + bounds.height }
-    : { x1: bounds.x, y1: range[0], x2: bounds.x, y2: range[1] };
+  return resolveAxisLineGeometry(bounds, channel, position, range);
 }
 
 function axisIds(channel) {
@@ -72,7 +65,6 @@ function createEditAxisLine(channel) {
     { op: operation, description: `Edit the concrete ${channel}-axis line.` },
     function (args = {}) {
       validateKeys(args, EDIT_OPTIONS, operation);
-      validatePosition(channel, args.position ?? (channel === "x" ? "bottom" : "left"));
       const { graphic } = axisIds(channel);
       const line = this.graphicSpec.objects[graphic];
 
@@ -80,12 +72,21 @@ function createEditAxisLine(channel) {
         throw new Error(`${operation} requires an existing ${channel}-axis line.`);
       }
 
+      const previous = this.guideConfigs.axis?.[channel]?.line;
+      const position = validateAxisPosition(
+        channel,
+        args.position ?? previous?.position ?? defaultAxisPosition(channel)
+      );
       const scaleId = this.semanticSpec.guides.axis?.[channel]?.scale;
-      const geometry = resolveGeometry(this, channel, scaleId);
+      const geometry = resolveGeometry(this, channel, scaleId, position);
       const color = args.color ?? line.properties.stroke;
       const lineWidth = args.lineWidth ?? line.properties.strokeWidth;
       validateStyle({ color, lineWidth });
-      let next = this;
+      let next = this._withGuideConfig(channel, "line", {
+        position,
+        color,
+        lineWidth
+      });
 
       for (const property of ["x1", "y1", "x2", "y2"]) {
         next = next.editGraphics({ target: graphic, property, value: geometry[property] });
@@ -110,14 +111,14 @@ function createAxisLine(channel) {
     function (args = {}) {
       validateKeys(args, CREATE_OPTIONS, operation);
       const scale = validateUserId(args.scale ?? channel, "Scale id");
-      const position = validatePosition(
+      const position = validateAxisPosition(
         channel,
-        args.position ?? (channel === "x" ? "bottom" : "left")
+        args.position ?? defaultAxisPosition(channel)
       );
       const color = args.color ?? DEFAULT_STYLE.color;
       const lineWidth = args.lineWidth ?? DEFAULT_STYLE.lineWidth;
       validateStyle({ color, lineWidth });
-      resolveGeometry(this, channel, scale);
+      resolveGeometry(this, channel, scale, position);
       const { graphic, guidePath } = axisIds(channel);
 
       if (this.graphicSpec.objects[graphic] !== undefined) {

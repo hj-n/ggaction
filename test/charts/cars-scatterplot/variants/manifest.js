@@ -4,6 +4,7 @@ import {
   createDiamondCarsScatterplot,
   createEncodingReassignmentCarsScatterplot,
   createFieldOpacityCarsScatterplot,
+  createMirroredAxesCarsScatterplot,
   createPaletteCarsScatterplot,
   createScaleReverseCarsScatterplot,
   createShapeVocabularyCarsScatterplot
@@ -75,18 +76,23 @@ const scatterArtifacts = Object.freeze([
     axes: {
       x: {
         position: "top",
-        labels: { format: ".1f" },
-        title: { text: "Horsepower" }
+        ticksAndLabels: {
+          labels: { offset: 12, format: ".1f" }
+        },
+        title: { text: "Horsepower", offset: 62 }
       },
       y: {
         position: "right",
-        labels: { format: ".1f" },
-        title: { text: "Miles per Gallon" }
+        ticksAndLabels: {
+          labels: { offset: 12, format: ".1f" }
+        },
+        title: { text: "Miles per Gallon", offset: 70 }
       }
     }
   });`
     }),
     primitive: createMirroredAxesPrimitives(cars),
+    userFacing: createMirroredAxesCarsScatterplot(cars),
     width: 640,
     height: 400,
     colors: ["#4c78a8", "#f58518", "#e45756"]

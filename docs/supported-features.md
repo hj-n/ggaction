@@ -34,7 +34,7 @@ chart-authoring API does not support that combination.
 | Coordinates | Named Cartesian and Polar semantic resources; x/y use Cartesian |
 | Scales | Linear, UTC time, ordinal position, color, named/direct stroke dash, and padded band-local xOffset |
 | Aggregates | count, sum, mean, median, min/max, distinct/valid/missing, sample/population dispersion, quartiles, standard error, normal 95% mean endpoints, parameterized quantile, and ordered first/last |
-| Guides | Automatic axes, horizontal/vertical Cartesian grids, and categorical legends |
+| Guides | Automatic bottom/top x axes, left/right y axes, closed numeric/UTC label formats, horizontal/vertical Cartesian grids, and categorical legends |
 | Titles | One plot-aligned top title with one optional single-line subtitle |
 | Rendering | Browser Canvas and Node PNG |
 | Graphics | Concrete canvas, circle, line, rect, text, `M/L/C/Z` command paths, 8 line curves, and heterogeneous drawable collections |

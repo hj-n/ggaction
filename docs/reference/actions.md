@@ -476,6 +476,10 @@ editYAxisLabels({
 })
 ```
 
+Axis `position` is `"bottom" | "top"` for x and `"left" | "right"` for y.
+Label `format` accepts `"auto"`, `{ decimals }`, numeric `.0f/.1f/.2f/.0%/.1%/.2e`,
+or UTC `%Y/%Y-%m/%Y-%m-%d` tokens when compatible with the resolved scale.
+
 ### Tick/label groups and axis titles
 
 ```javascript

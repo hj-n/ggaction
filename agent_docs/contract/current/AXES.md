@@ -8,20 +8,19 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 
 - `scale`: optional scale ID. 생략하면 channel ID를 사용하거나 parent `createAxes`가 유일한 scale을 전달한다.
 - `coordinate`: optional existing coordinate ID. 선택 channel/scale을 소비하는 layer가 실제로 연결돼야 한다.
-- `position`: x는 Implemented `"bottom"`과 Planned `"top"`, y는 Implemented `"left"`와 Planned
-  `"right"`를 사용하며 defaults는 bottom/left다.
+- `position`: x는 `"bottom" | "top"`, y는 `"left" | "right"`를 사용하며 defaults는 bottom/left다.
 - `line`: `{ color?, lineWidth? }`; axis-line child에 전달한다.
 - `ticksAndLabels`: `{ count?, values?, ticks?, labels? }`; shared tick/label child에 전달한다.
 - `title`: `{ text?, at?, offset?, rotation?, color?, fontSize?, fontFamily?, fontWeight? }`.
 - Effect: line → ticks/labels → title wrapped action 순서로 semantic guide와 concrete graphics를 만든다.
-- Planned: complete axis는 선택한 top/right position을 모든 child action에 전달한다.
+- Complete axis는 선택한 position을 line, ticks/labels와 title child 모두에 전달한다.
 
 ## Shared axis-line contract
 
 - Create parameters: `scale?`, `position?`, `color?`, `lineWidth?`.
 - Edit parameters: `position?`, `color?`, `lineWidth?`; scale은 semantic guide에서 읽는다.
 - `scale`: create-only ID, 기본 channel ID.
-- `position`: x=`"bottom"`, y=`"left"`는 Implemented이고 x=`"top"`, y=`"right"`는 Planned다.
+- `position`: x=`"bottom" | "top"`, y=`"left" | "right"`; defaults는 bottom/left다.
 - `color`: non-empty string, 기본 theme text color.
 - `lineWidth`: non-negative finite number, 기본값 `1`; 0은 보이지 않는 line을 허용한다.
 - Effect: endpoint는 resolved scale range와 Canvas plot bounds에서 항상 재추론한다. semantic guide에는
@@ -46,8 +45,8 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   `fontSize?`, `fontFamily?`, `fontWeight?`; edit에서는 scale을 제외한다.
 - `count`/`values`: tick contract와 같으며 existing ticks가 있으면 생략 시 그 정책을 재사용한다.
 - `offset`: non-negative finite number; x default `18`, y default `12`.
-- `format`: Implemented `"auto" | { decimals: nonNegativeInteger }`와 Planned `AxisFormatString`.
-  Planned numeric tokens는 quantitative, UTC tokens는 time에서만 허용하고 ordinal은 auto만 허용한다.
+- `format`: `"auto" | { decimals: nonNegativeInteger } | AxisFormatString`. Numeric tokens는
+  quantitative, UTC tokens는 time에서만 허용하고 ordinal은 auto만 허용한다.
 - `color`: non-empty string; `fontSize`: positive finite; `fontFamily`: non-empty string;
   `fontWeight`: string 또는 finite number.
 - Effect: formatted text, aligned data-space coordinates와 font style을 text collection에 저장한다.
@@ -66,10 +65,10 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 - Create: `text?`, `scale?`, `position?`, `at?`, `offset?`, `rotation?`, `color?`, `fontSize?`,
   `fontFamily?`, `fontWeight?`; edit에서는 scale을 제외한다.
 - `text`: non-empty string. 생략하면 unique connected field/aggregate 또는 density provenance에서 추론한다.
-- `at`: `"start" | "center" | "end"` 또는 scale domain 안의 data value; 기본 center.
+- `at`: `"start" | "center" | "end"` 또는 continuous scale domain 안의 finite number; 기본 center.
 - `offset`: non-negative finite; x default `42`, y default `52`.
-- `rotation`: finite radians; x bottom/top default `0`, y left default `-Math.PI / 2`, Planned right
-  default `Math.PI / 2`.
+- `rotation`: finite radians; x bottom/top default `0`, y left default `-Math.PI / 2`, y right default
+  `Math.PI / 2`. Explicit rotation은 position default보다 우선한다.
 - font/color contract는 labels와 같고 default font size는 `13`, weight는 `600`이다.
 - Effect: semantic axis title text와 graphical layout/style을 분리 저장한다.
 
@@ -88,8 +87,12 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 ## Shared formal types
 
 ```typescript
-type AxisPositionX = "bottom";
-type AxisPositionY = "left";
+type AxisPositionX = "bottom" | "top";
+type AxisPositionY = "left" | "right";
+type AxisFormatString =
+  | ".0f" | ".1f" | ".2f"
+  | ".0%" | ".1%" | ".2e"
+  | "%Y" | "%Y-%m" | "%Y-%m-%d";
 type TickValue = string | boolean | Finite;
 type TickOptions = {
   length?: NonNegativeFinite;
@@ -98,7 +101,7 @@ type TickOptions = {
 };
 type LabelOptions = {
   offset?: NonNegativeFinite;
-  format?: "auto" | { decimals: NonNegativeInteger };
+  format?: "auto" | { decimals: NonNegativeInteger } | AxisFormatString;
   color?: NonEmptyString;
   fontSize?: PositiveFinite;
   fontFamily?: NonEmptyString;
@@ -113,7 +116,7 @@ type TickAndLabelOptions = {
 type AxisTitleOptions<P extends string> = TextStyle & {
   text?: NonEmptyString;
   position?: P;
-  at?: "start" | "center" | "end" | TickValue;
+  at?: "start" | "center" | "end" | Finite;
   offset?: NonNegativeFinite;
   rotation?: Finite;
 };
@@ -143,8 +146,7 @@ type CompleteAxisOptions<P extends string> = {
 
 ### Formal values — `createAxes`
 
-- Implemented: `createAxes({ coordinate?: { id?: UserId; type?: "auto" | "cartesian" | "polar" }; x?: false | CompleteAxisOptions<"bottom">; y?: false | CompleteAxisOptions<"left"> } = {})`; Polar 선택은 현재 validation error다.
-- Planned (NOT IMPLEMENTED): `{ x?: false | CompleteAxisOptions<"bottom" | "top">; y?: false | CompleteAxisOptions<"left" | "right"> }`
+- Implemented: `createAxes({ coordinate?: { id?: UserId; type?: "auto" | "cartesian" | "polar" }; x?: false | CompleteAxisOptions<AxisPositionX>; y?: false | CompleteAxisOptions<AxisPositionY> } = {})`; Polar 선택은 현재 validation error다.
 - Proposed (NOT IMPLEMENTED): Polar axis option schema; x/y에 Polar 값을 억지로 추가하지 않는다.
 
 ### Value coverage — `createAxes`
@@ -157,20 +159,19 @@ type CompleteAxisOptions<P extends string> = {
 - `x`, `y`
   - ✅ Covered: omission inference, `{}` explicit selection, `false` opt-out, nested options, neither selected error.
   - ⚠️ Partial: multi-layer shared coordinate with one disabled axis and multiple candidate scales pairwise cases.
-  - 🟡 Planned: x top/y right complete-axis forwarding while preserving channel defaults.
+  - ✅ Covered: x top/y right complete-axis forwarding while preserving channel defaults.
 - Proposed: future Polar axes should use coordinate channels rather than force x/y objects into Polar semantics.
 - Evidence: `test/unit/actions/guides/create-axes.test.js`.
 
 ## `createXAxis`
 
 - Signature: `createXAxis({ scale?, coordinate?, position?, line?, ticksAndLabels?, title? })`
-- Parameter contract와 effect는 Shared complete-axis contract를 따른다. x default는 bottom이고 top은 Planned다.
+- Parameter contract와 effect는 Shared complete-axis contract를 따른다. x default는 bottom이다.
 - Coverage: `test/unit/actions/guides/axis-actions.test.js`가 defaults, routing, coordinate와 duplicates를 검증한다.
 
 ### Formal values — `createXAxis`
 
-- Implemented: `createXAxis(options?: CompleteAxisOptions<"bottom">)`
-- Planned (NOT IMPLEMENTED): `CompleteAxisOptions<"bottom" | "top">`
+- Implemented: `createXAxis(options?: CompleteAxisOptions<AxisPositionX>)`
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createXAxis`
@@ -178,8 +179,8 @@ type CompleteAxisOptions<P extends string> = {
 - `scale`, `coordinate`
   - ✅ Covered: defaults, explicit IDs, missing/unused/conflicting resources.
 - `position`
-  - ✅ Covered: omission→`"bottom"`, explicit bottom, unsupported value rejection.
-  - 🟡 Planned: `"top"`; outward baseline/ticks, labels/title offsets와 top-margin validation.
+  - ✅ Covered: omission→`"bottom"`, explicit bottom/top, unsupported value rejection, outward top
+    geometry와 top-margin validation.
 - `line`, `ticksAndLabels`, `title`
   - ✅ Covered: omission/default objects, nested representative overrides, unknown nested keys, partial duplicate failure.
   - ⚠️ Partial: all three nested appearance objects customized simultaneously.
@@ -188,13 +189,12 @@ type CompleteAxisOptions<P extends string> = {
 ## `createYAxis`
 
 - Signature: `createYAxis({ scale?, coordinate?, position?, line?, ticksAndLabels?, title? })`
-- Parameter contract와 effect는 Shared complete-axis contract를 따른다. y default는 left이고 right는 Planned다.
+- Parameter contract와 effect는 Shared complete-axis contract를 따른다. y default는 left다.
 - Coverage: `test/unit/actions/guides/axis-actions.test.js`가 symmetric behavior를 검증한다.
 
 ### Formal values — `createYAxis`
 
-- Implemented: `createYAxis(options?: CompleteAxisOptions<"left">)`
-- Planned (NOT IMPLEMENTED): `CompleteAxisOptions<"left" | "right">`
+- Implemented: `createYAxis(options?: CompleteAxisOptions<AxisPositionY>)`
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createYAxis`
@@ -202,8 +202,8 @@ type CompleteAxisOptions<P extends string> = {
 - `scale`, `coordinate`
   - ✅ Covered: defaults, explicit IDs and conflicts.
 - `position`
-  - ✅ Covered: omission→`"left"`, explicit left, unsupported value rejection.
-  - 🟡 Planned: `"right"`; mirrored tick/label/title geometry와 right-margin validation.
+  - ✅ Covered: omission→`"left"`, explicit left/right, unsupported value rejection, mirrored right
+    geometry와 right-margin validation.
 - `line`, `ticksAndLabels`, `title`
   - ✅ Covered: defaults, representative nested overrides and invalid nested keys.
 - Evidence: `test/unit/actions/guides/axis-actions.test.js`.
@@ -216,14 +216,13 @@ type CompleteAxisOptions<P extends string> = {
 
 ### Formal values — `createXAxisLine`
 
-- Implemented: `createXAxisLine({ scale?: UserId; position?: "bottom"; color?: NonEmptyString; lineWidth?: NonNegativeFinite } = {})`
-- Planned (NOT IMPLEMENTED): `{ position?: "bottom" | "top" }`
+- Implemented: `createXAxisLine({ scale?: UserId; position?: AxisPositionX; color?: NonEmptyString; lineWidth?: NonNegativeFinite } = {})`
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createXAxisLine`
 
 - `scale`: ✅ Covered default `"x"`, explicit ID, unknown/unconsumed/unresolved scale.
-- `position`: ✅ Covered `"bottom"`, invalid; 🟡 Planned `"top"`.
+- `position`: ✅ Covered default/bottom/top, outward geometry and invalid values.
 - `color`: ✅ Covered default, explicit non-empty, empty/non-string rejection.
 - `lineWidth`: ✅ Covered default `1`, zero, positive, negative/non-finite rejection.
 - Evidence: `test/unit/actions/guides/axis-line-actions.test.js`.
@@ -235,14 +234,13 @@ type CompleteAxisOptions<P extends string> = {
 
 ### Formal values — `createYAxisLine`
 
-- Implemented: `createYAxisLine({ scale?: UserId; position?: "left"; color?: NonEmptyString; lineWidth?: NonNegativeFinite } = {})`
-- Planned (NOT IMPLEMENTED): `{ position?: "left" | "right" }`
+- Implemented: `createYAxisLine({ scale?: UserId; position?: AxisPositionY; color?: NonEmptyString; lineWidth?: NonNegativeFinite } = {})`
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createYAxisLine`
 
 - `scale`: ✅ Covered default `"y"`, explicit and invalid resources.
-- `position`: ✅ Covered `"left"`, invalid; 🟡 Planned `"right"`.
+- `position`: ✅ Covered default/left/right, outward geometry and invalid values.
 - `color`, `lineWidth`: ✅ Covered default/representative/boundary/invalid classes shared with x.
 - Evidence: `test/unit/actions/guides/axis-line-actions.test.js`.
 
@@ -254,13 +252,12 @@ type CompleteAxisOptions<P extends string> = {
 
 ### Formal values — `editXAxisLine`
 
-- Implemented: `editXAxisLine({ position?: "bottom"; color?: NonEmptyString; lineWidth?: NonNegativeFinite } = {})`
-- Planned (NOT IMPLEMENTED): `{ position?: "bottom" | "top" }`
+- Implemented: `editXAxisLine({ position?: AxisPositionX; color?: NonEmptyString; lineWidth?: NonNegativeFinite } = {})`
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `editXAxisLine`
 
-- `position`: ✅ Covered omitted/existing and `"bottom"`; 🟡 Planned `"top"` with create/edit parity.
+- `position`: ✅ Covered omitted/existing, bottom/top and create/edit parity.
 - `color`, `lineWidth`: ✅ Covered partial edits, unchanged omissions and invalid values.
 - Empty options: ⚠️ Partial. 현재 geometry re-inference 용도로 `{}`가 허용되는 동작을 더 명시적으로 고정할 필요가 있다.
 - Evidence: `test/unit/actions/guides/axis-line-actions.test.js`.
@@ -272,31 +269,28 @@ type CompleteAxisOptions<P extends string> = {
 
 ### Formal values — `editYAxisLine`
 
-- Implemented: `editYAxisLine({ position?: "left"; color?: NonEmptyString; lineWidth?: NonNegativeFinite } = {})`
-- Planned (NOT IMPLEMENTED): `{ position?: "left" | "right" }`
+- Implemented: `editYAxisLine({ position?: AxisPositionY; color?: NonEmptyString; lineWidth?: NonNegativeFinite } = {})`
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `editYAxisLine`
 
-- `position`, `color`, `lineWidth`: ✅ Covered symmetric left-side partial edit and errors.
-- 🟡 Planned: right-side edit with mirrored create/edit geometry.
+- `position`, `color`, `lineWidth`: ✅ Covered left/right partial edits, mirrored geometry and errors.
 - Evidence: `test/unit/actions/guides/axis-line-actions.test.js`.
 
 ## `createXAxisTicks`
 
-- Shared tick create contract를 사용하며 bottom ticks를 만들고 Planned top ticks는 바깥쪽 위를 향한다.
+- Shared tick create contract를 사용하며 bottom/top ticks를 각 edge 바깥쪽으로 만든다.
 - Coverage: axis-tick, histogram-axis, ordinal-axis, temporal-axis tests.
 
 ### Formal values — `createXAxisTicks`
 
-- Implemented: `createXAxisTicks({ scale?: UserId; position?: "bottom"; count?: PositiveInteger; values?: readonly TickValue[]; length?: NonNegativeFinite; color?: NonEmptyString; lineWidth?: NonNegativeFinite } = {})`; `count | values` 중 최대 하나.
-- Planned (NOT IMPLEMENTED): `{ position?: "bottom" | "top" }`
+- Implemented: `createXAxisTicks({ scale?: UserId; position?: AxisPositionX; count?: PositiveInteger; values?: readonly TickValue[]; length?: NonNegativeFinite; color?: NonEmptyString; lineWidth?: NonNegativeFinite } = {})`; `count | values` 중 최대 하나.
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createXAxisTicks`
 
 - `scale`: ✅ Covered default/explicit and invalid resources.
-- `position`: ✅ Covered `"bottom"`/invalid; 🟡 Planned `"top"`.
+- `position`: ✅ Covered bottom/top, outward geometry, margin errors and invalid values.
 - `count`: ✅ Covered omission→5, positive integer, zero/negative/non-integer, count+values conflict.
 - `values`: ✅ Covered finite values/timestamps, histogram boundaries, ordinal domain/subset, out-of-domain/invalid values.
 - `length`: ✅ Covered default `6`, zero, positive and negative rejection.
@@ -305,13 +299,12 @@ type CompleteAxisOptions<P extends string> = {
 
 ## `createYAxisTicks`
 
-- Shared tick create contract를 사용하며 left ticks를 만들고 Planned right ticks는 바깥쪽 오른쪽을 향한다.
+- Shared tick create contract를 사용하며 left/right ticks를 각 edge 바깥쪽으로 만든다.
 - Coverage: axis-tick와 chart axis tests.
 
 ### Formal values — `createYAxisTicks`
 
-- Implemented: x tick schema와 같고 `position?: "left"`.
-- Planned (NOT IMPLEMENTED): `{ position?: "left" | "right" }`
+- Implemented: x tick schema와 같고 `position?: AxisPositionY`.
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createYAxisTicks`
@@ -319,7 +312,7 @@ type CompleteAxisOptions<P extends string> = {
 - `scale`, `position`, `count`, `values`, `length`, `color`, `lineWidth`
   - ✅ Covered: linear y defaults, explicit values and shared invalid classes.
   - ⚠️ Partial: reversed y domain with explicit values and very dense count.
-- 🟡 Planned: right position after mirrored y-axis contract.
+- ✅ Covered: right position, outward geometry and margin failure.
 - Evidence: axis-tick and chart guide tests.
 
 ## `editXAxisTicks`
@@ -330,15 +323,13 @@ type CompleteAxisOptions<P extends string> = {
 ### Formal values — `editXAxisTicks`
 
 - Implemented: create x tick schema에서 `scale`을 제외한다.
-- Planned (NOT IMPLEMENTED): `{ position?: "bottom" | "top" }`
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `editXAxisTicks`
 
-- `position`: ✅ Covered bottom/invalid.
+- `position`: ✅ Covered bottom/top transitions and invalid values.
 - `count`, `values`: ✅ Covered mode switch, mutually exclusive inputs, rematerialization and invalid domains.
 - `length`, `color`, `lineWidth`: ✅ Covered partial appearance edits and invalid values.
-- 🟡 Planned: top-position geometry with create/edit parity.
 - Evidence: `test/unit/actions/guides/axis-tick-actions.test.js`.
 
 ## `editYAxisTicks`
@@ -349,7 +340,6 @@ type CompleteAxisOptions<P extends string> = {
 ### Formal values — `editYAxisTicks`
 
 - Implemented: create y tick schema에서 `scale`을 제외한다.
-- Planned (NOT IMPLEMENTED): `{ position?: "left" | "right" }`
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `editYAxisTicks`
@@ -357,7 +347,7 @@ type CompleteAxisOptions<P extends string> = {
 - 모든 parameter는 x edit과 같은 value classes를 사용한다.
   - ✅ Covered: representative values, mode policy and invalid options.
   - ⚠️ Partial: repeated count↔values switching sequence.
-- 🟡 Planned: right-position geometry with create/edit parity.
+- ✅ Covered: left/right position transitions with create/edit parity.
 - Evidence: axis-tick and tick-group tests.
 
 ## `createXAxisLabels`
@@ -367,8 +357,7 @@ type CompleteAxisOptions<P extends string> = {
 
 ### Formal values — `createXAxisLabels`
 
-- Implemented: `createXAxisLabels({ scale?: UserId; position?: "bottom"; count?: PositiveInteger; values?: readonly TickValue[]; ...LabelOptions } = {})`; `count | values` 중 최대 하나.
-- Planned (NOT IMPLEMENTED): `{ position?: "bottom" | "top"; format?: AxisFormatString }`
+- Implemented: `createXAxisLabels({ scale?: UserId; position?: AxisPositionX; count?: PositiveInteger; values?: readonly TickValue[]; ...LabelOptions } = {})`; `count | values` 중 최대 하나.
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createXAxisLabels`
@@ -377,9 +366,8 @@ type CompleteAxisOptions<P extends string> = {
   - ✅ Covered: linear/time/ordinal modes, existing tick reuse, conflict/out-of-domain rejection.
 - `offset`: ✅ Covered default `18`, zero/positive, negative rejection.
 - `format`
-  - ✅ Covered: `"auto"`, `{ decimals: 0 }`, positive decimals, invalid object.
-  - ✅ Covered: non-auto time/ordinal rejection.
-  - 🟡 Planned: closed `AxisFormatString` numeric/UTC tokens with deterministic browser/Node parity.
+  - ✅ Covered: `"auto"`, `{ decimals: 0 }`, positive decimals, every closed numeric/UTC token,
+    invalid objects and wrong-scale rejection.
 - `color`, `fontSize`, `fontFamily`, `fontWeight`
   - ✅ Covered: defaults, representative string/numeric weight and invalid classes.
 - Evidence: `test/unit/actions/guides/axis-label-actions.test.js`, temporal/ordinal axis tests.
@@ -391,8 +379,7 @@ type CompleteAxisOptions<P extends string> = {
 
 ### Formal values — `createYAxisLabels`
 
-- Implemented: x label schema와 같고 `position?: "left"`.
-- Planned (NOT IMPLEMENTED): `{ position?: "left" | "right"; format?: AxisFormatString }`
+- Implemented: x label schema와 같고 `position?: AxisPositionY`.
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createYAxisLabels`
@@ -400,7 +387,7 @@ type CompleteAxisOptions<P extends string> = {
 - `scale`, `position`, `count`, `values`, `offset`, `format`, font style
   - ✅ Covered: linear y defaults, explicit/derived values, decimal formatting and conflicts.
   - ⚠️ Partial: numeric fontWeight boundaries and reversed range alignment.
-- 🟡 Planned: right-side label alignment and shared format tokens.
+- ✅ Covered: right-side alignment and shared format tokens.
 - Evidence: axis-label and chart guide tests.
 
 ## `editXAxisLabels`
@@ -411,14 +398,13 @@ type CompleteAxisOptions<P extends string> = {
 ### Formal values — `editXAxisLabels`
 
 - Implemented: create x label schema에서 `scale`을 제외한다.
-- Planned (NOT IMPLEMENTED): `{ position?: "bottom" | "top"; format?: AxisFormatString }`
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `editXAxisLabels`
 
 - `position`, `count`, `values`, `offset`, `format`, color/font parameters
-  - ✅ Covered: partial style edit, decimal format, tick conflict and Canvas rematerialization.
-- 🟡 Planned: top position and shared format tokens follow create labels.
+  - ✅ Covered: partial style edit, position transition, decimal/token format, tick conflict and Canvas
+    rematerialization.
 - Evidence: `test/unit/actions/guides/axis-label-actions.test.js`.
 
 ## `editYAxisLabels`
@@ -429,15 +415,14 @@ type CompleteAxisOptions<P extends string> = {
 ### Formal values — `editYAxisLabels`
 
 - Implemented: create y label schema에서 `scale`을 제외한다.
-- Planned (NOT IMPLEMENTED): `{ position?: "left" | "right"; format?: AxisFormatString }`
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `editYAxisLabels`
 
 - 모든 edit parameter
   - ✅ Covered: representative partial edits and shared invalid classes.
-  - ⚠️ Partial: switching between auto and decimal format across repeated edits.
-- 🟡 Planned: right-side alignment and shared format tokens follow `createYAxisLabels`.
+  - ✅ Covered: left/right position transitions and numeric format switching.
+  - ⚠️ Partial: repeated auto↔token↔decimal switching sequence.
 - Evidence: axis-label tests.
 
 ## `createXAxisTicksAndLabels`
@@ -447,8 +432,7 @@ type CompleteAxisOptions<P extends string> = {
 
 ### Formal values — `createXAxisTicksAndLabels`
 
-- Implemented: `createXAxisTicksAndLabels({ scale?: UserId; position?: "bottom"; ...TickAndLabelOptions } = {})`
-- Planned (NOT IMPLEMENTED): `{ position?: "bottom" | "top"; labels?: { format?: AxisFormatString } }`
+- Implemented: `createXAxisTicksAndLabels({ scale?: UserId; position?: AxisPositionX; ...TickAndLabelOptions } = {})`
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createXAxisTicksAndLabels`
@@ -458,7 +442,7 @@ type CompleteAxisOptions<P extends string> = {
 - `ticks.length/color/lineWidth`, `labels.offset/format/color/fontSize/fontFamily/fontWeight`
   - ✅ Covered: representative nested overrides, unknown nested keys and independent child effects.
   - ⚠️ Partial: all nested properties explicitly set in one call.
-- 🟡 Planned: top position and label format tokens follow leaf actions.
+- ✅ Covered: top position and label format tokens follow leaf actions through complete-axis integration.
 - Evidence: `test/unit/actions/guides/axis-tick-group-actions.test.js`.
 
 ## `createYAxisTicksAndLabels`
@@ -468,8 +452,7 @@ type CompleteAxisOptions<P extends string> = {
 
 ### Formal values — `createYAxisTicksAndLabels`
 
-- Implemented: x aggregate schema와 같고 `position?: "left"`.
-- Planned (NOT IMPLEMENTED): `{ position?: "left" | "right"; labels?: { format?: AxisFormatString } }`
+- Implemented: x aggregate schema와 같고 `position?: AxisPositionY`.
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createYAxisTicksAndLabels`
@@ -477,7 +460,7 @@ type CompleteAxisOptions<P extends string> = {
 - shared and nested parameters
   - ✅ Covered: y defaults, explicit values and trace hierarchy.
   - ⚠️ Partial: full nested option object.
-- 🟡 Planned: right position and label format tokens follow both y leaf actions.
+- ✅ Covered: right position and label format tokens follow both y leaf actions.
 - Evidence: axis-tick-group tests.
 
 ## `editXAxisTicksAndLabels`
@@ -488,7 +471,6 @@ type CompleteAxisOptions<P extends string> = {
 ### Formal values — `editXAxisTicksAndLabels`
 
 - Implemented: create x aggregate schema에서 `scale`을 제외하며 최소 한 option이 필요하다.
-- Planned (NOT IMPLEMENTED): `{ position?: "bottom" | "top"; labels?: { format?: AxisFormatString } }`
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `editXAxisTicksAndLabels`
@@ -497,7 +479,7 @@ type CompleteAxisOptions<P extends string> = {
   - ✅ Covered: atomic policy changes and invalid mutual use.
 - `ticks`, `labels`
   - ✅ Covered: only requested child edit, both child edit and empty edit rejection.
-- 🟡 Planned: top position and label format tokens follow leaf actions.
+- ✅ Covered: top position and label format tokens follow leaf actions.
 - Evidence: `test/unit/actions/guides/axis-tick-group-actions.test.js`.
 
 ## `editYAxisTicksAndLabels`
@@ -508,33 +490,31 @@ type CompleteAxisOptions<P extends string> = {
 ### Formal values — `editYAxisTicksAndLabels`
 
 - Implemented: create y aggregate schema에서 `scale`을 제외하며 최소 한 option이 필요하다.
-- Planned (NOT IMPLEMENTED): `{ position?: "left" | "right"; labels?: { format?: AxisFormatString } }`
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `editYAxisTicksAndLabels`
 
 - shared/nested edit parameters
   - ✅ Covered: representative values, child selection and invalid options.
-- 🟡 Planned: right-position aggregate edit follows both leaf actions.
+- ✅ Covered: right-position aggregate edit follows both leaf actions.
 - Evidence: axis-tick-group tests.
 
 ## `createXAxisTitle`
 
-- Shared title create contract를 bottom x-axis에 적용하며 top은 Planned다.
+- Shared title create contract를 bottom/top x-axis에 적용한다.
 - Coverage: `test/unit/actions/guides/axis-title-actions.test.js`.
 
 ### Formal values — `createXAxisTitle`
 
-- Implemented: `createXAxisTitle({ scale?: UserId; ...AxisTitleOptions<"bottom"> } = {})`
-- Planned (NOT IMPLEMENTED): `AxisTitleOptions<"bottom" | "top">`
+- Implemented: `createXAxisTitle({ scale?: UserId; ...AxisTitleOptions<AxisPositionX> } = {})`
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createXAxisTitle`
 
 - `text`: ✅ Covered inferred field/aggregate/density text, explicit non-empty, ambiguous/empty rejection.
 - `scale`: ✅ Covered default/explicit/conflicting scale.
-- `position`: ✅ Covered `"bottom"`/invalid; 🟡 Planned `"top"`.
-- `at`: ✅ Covered `"start" | "center" | "end"`, in-domain number/category and out-of-domain/invalid.
+- `position`: ✅ Covered bottom/top, default rotation, margin failure and invalid values.
+- `at`: ✅ Covered `"start" | "center" | "end"`, in-domain number and out-of-domain/invalid.
 - `offset`: ✅ Covered default `42`, zero/positive, negative rejection.
 - `rotation`: ✅ Covered default `0`, finite explicit and non-finite rejection.
 - `color`, `fontSize`, `fontFamily`, `fontWeight`: ✅ Covered defaults, representatives and invalid classes.
@@ -542,19 +522,18 @@ type CompleteAxisOptions<P extends string> = {
 
 ## `createYAxisTitle`
 
-- Shared title create contract를 left y-axis에 적용하며 right는 Planned다.
+- Shared title create contract를 left/right y-axis에 적용한다.
 - Coverage: axis-title tests.
 
 ### Formal values — `createYAxisTitle`
 
-- Implemented: `createYAxisTitle({ scale?: UserId; ...AxisTitleOptions<"left"> } = {})`
-- Planned (NOT IMPLEMENTED): `AxisTitleOptions<"left" | "right">`
+- Implemented: `createYAxisTitle({ scale?: UserId; ...AxisTitleOptions<AxisPositionY> } = {})`
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createYAxisTitle`
 
 - `text`, `scale`, `at`, style: ✅ Covered symmetric inference, data positions and invalid values.
-- `position`: ✅ Covered `"left"`; 🟡 Planned `"right"` with default positive half-turn rotation.
+- `position`: ✅ Covered left/right with default negative/positive half-turn rotations and margin failure.
 - `offset`: ✅ Covered default `52`; `rotation`: ✅ Covered default `-Math.PI / 2` and explicit finite values.
 - Evidence: axis-title tests.
 
@@ -566,14 +545,13 @@ type CompleteAxisOptions<P extends string> = {
 ### Formal values — `editXAxisTitle`
 
 - Implemented: create x title schema에서 `scale`을 제외한다.
-- Planned (NOT IMPLEMENTED): `AxisTitleOptions<"bottom" | "top">`
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `editXAxisTitle`
 
 - `text`, `position`, `at`, `offset`, `rotation`, style
   - ✅ Covered: semantic text edit, graphical-only appearance edit, data-space relocation, invalid values.
-- 🟡 Planned: top position follows `createXAxisTitle`.
+- ✅ Covered: bottom/top position transitions follow `createXAxisTitle`.
 - Evidence: axis-title tests.
 
 ## `editYAxisTitle`
@@ -584,14 +562,12 @@ type CompleteAxisOptions<P extends string> = {
 ### Formal values — `editYAxisTitle`
 
 - Implemented: create y title schema에서 `scale`을 제외한다.
-- Planned (NOT IMPLEMENTED): `AxisTitleOptions<"left" | "right">`
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `editYAxisTitle`
 
 - 모든 edit parameter
   - ✅ Covered: representative semantic/graphical edits and rematerialization.
-  - ⚠️ Partial: repeated rotation/at interactions.
-- 🟡 Planned: right position follows `createYAxisTitle`.
+  - ✅ Covered: inferred rotation follows left/right position edits while explicit rotation wins.
+  - ⚠️ Partial: repeated explicit rotation/at interactions.
 - Evidence: axis-title tests.
-

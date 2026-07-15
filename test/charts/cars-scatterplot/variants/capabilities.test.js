@@ -6,6 +6,7 @@ import {
   createDiamondCarsScatterplot,
   createEncodingReassignmentCarsScatterplot,
   createFieldOpacityCarsScatterplot,
+  createMirroredAxesCarsScatterplot,
   createPaletteCarsScatterplot,
   createScaleReverseCarsScatterplot,
   createShapeVocabularyCarsScatterplot
@@ -82,6 +83,24 @@ test("authors mirrored axes and fixed-decimal labels as raw primitives", () => {
   assert.equal(program.trace.children.every(node =>
     ["editSemantic", "createGraphics", "editGraphics"].includes(node.op)
   ), true);
+});
+
+test("matches the approved mirrored-axis primitive with public guides", () => {
+  const primitive = createMirroredAxesPrimitives(cars);
+  const publicProgram = createMirroredAxesCarsScatterplot(cars);
+
+  assert.deepEqual(publicProgram.semanticSpec, primitive.semanticSpec);
+  assert.deepEqual(publicProgram.graphicSpec, primitive.graphicSpec);
+  assert.deepEqual(publicProgram.trace.children.map(node => node.op), [
+    "createCanvas",
+    "createData",
+    "createPointMark",
+    "encodeX",
+    "encodeY",
+    "encodeColor",
+    "encodeRadius",
+    "createGuides"
+  ]);
 });
 
 test("derives reversed positions without changing the baseline domain", () => {
@@ -180,6 +199,11 @@ test("applies set2 colors consistently to points and a color-only legend", () =>
 test("matches every approved primitive with a user-facing action flow", () => {
   const shapeRows = createShapeVocabularyPrimitiveValues(cars).rows;
   const pairs = [
+    [
+      createMirroredAxesPrimitives(cars),
+      createMirroredAxesCarsScatterplot(cars),
+      "createGuides"
+    ],
     [
       createScaleReversePrimitives(cars),
       createScaleReverseCarsScatterplot(cars),

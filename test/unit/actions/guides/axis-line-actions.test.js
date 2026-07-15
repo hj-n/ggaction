@@ -53,14 +53,33 @@ test("edits style while re-inferring geometry", () => {
 test("validates positions, style, scale state, duplicates, and missing edits", () => {
   const program = encodedProgram();
 
-  assert.throws(() => program.createXAxisLine({ position: "top" }), /Unsupported/);
-  assert.throws(() => program.createYAxisLine({ position: "right" }), /Unsupported/);
+  assert.throws(() => program.createXAxisLine({ position: "left" }), /Unsupported/);
+  assert.throws(() => program.createYAxisLine({ position: "top" }), /Unsupported/);
   assert.throws(() => program.createXAxisLine({ lineWidth: -1 }), /non-negative/);
   assert.throws(() => program.createXAxisLine({ color: "" }), /non-empty/);
   assert.throws(() => program.createXAxisLine({ scale: "missing" }), /requires scale/);
   assert.throws(() => program.editXAxisLine(), /existing/);
   const created = program.createXAxisLine();
   assert.throws(() => created.createXAxisLine(), /missing x-axis line/);
+});
+
+test("creates and rematerializes top and right axis lines", () => {
+  const created = encodedProgram()
+    .createXAxisLine({ position: "top" })
+    .createYAxisLine({ position: "right" });
+
+  assert.deepEqual(created.graphicSpec.objects.xAxisLine.properties, {
+    x1: 10, y1: 10, x2: 190, y2: 10, stroke: "#334155", strokeWidth: 1
+  });
+  assert.deepEqual(created.graphicSpec.objects.yAxisLine.properties, {
+    x1: 190, y1: 110, x2: 190, y2: 10, stroke: "#334155", strokeWidth: 1
+  });
+  assert.equal(created.guideConfigs.axis.x.line.position, "top");
+  assert.equal(created.guideConfigs.axis.y.line.position, "right");
+
+  const resized = created.editCanvas({ width: 300, height: 180, margin: 20 });
+  assert.equal(resized.graphicSpec.objects.xAxisLine.properties.y1, 20);
+  assert.equal(resized.graphicSpec.objects.yAxisLine.properties.x1, 280);
 });
 
 test("rematerializes axis lines after Canvas bounds change", () => {

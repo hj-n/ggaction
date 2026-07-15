@@ -59,3 +59,42 @@ test("rematerializes titles and validates invalid at values", () => {
   assert.throws(() => program().createXAxisTitle({ at: 20 }), /inside the scale domain/);
   assert.throws(() => program().createXAxisTitle({ at: "middle" }), /start, center, end/);
 });
+
+test("creates mirrored titles and preserves explicit rotation across position edits", () => {
+  const base = chart()
+    .createCanvas({
+      width: 260,
+      height: 180,
+      margin: { top: 60, right: 70, bottom: 30, left: 30 }
+    })
+    .createData({ id: "data", values: [{ x: 0, y: 5 }, { x: 10, y: 15 }] })
+    .createPointMark({ id: "points" })
+    .encodeX({ field: "x" })
+    .encodeY({ field: "y" });
+  const created = base
+    .createXAxisTitle({ position: "top" })
+    .createYAxisTitle({ position: "right" });
+
+  assert.equal(created.graphicSpec.objects.xAxisTitle.properties.y, 18);
+  assert.equal(created.graphicSpec.objects.yAxisTitle.properties.x, 242);
+  assert.equal(created.graphicSpec.objects.yAxisTitle.properties.rotation, Math.PI / 2);
+
+  const inferred = created.editYAxisTitle({ position: "left" });
+  assert.equal(inferred.graphicSpec.objects.yAxisTitle.properties.rotation, -Math.PI / 2);
+  const explicit = created
+    .editYAxisTitle({ rotation: 0 })
+    .editYAxisTitle({ position: "left" });
+  assert.equal(explicit.graphicSpec.objects.yAxisTitle.properties.rotation, 0);
+  assert.equal(created.guideConfigs.axis.y.title.position, "right");
+});
+
+test("rejects mirrored titles when the requested margin is too small", () => {
+  assert.throws(
+    () => program().createXAxisTitle({ position: "top" }),
+    /does not fit the Canvas margin/
+  );
+  assert.throws(
+    () => program().createYAxisTitle({ position: "right" }),
+    /does not fit the Canvas margin/
+  );
+});

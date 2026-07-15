@@ -102,11 +102,20 @@ test("rematerializes temporal axis geometry after Canvas edits", () => {
 test("validates temporal axis formatting and explicit tick values", () => {
   const encoded = createTemporalLine();
 
+  assert.deepEqual(
+    encoded.createXAxis({
+      ticksAndLabels: { labels: { format: "%Y" } }
+    }).graphicSpec.objects.xAxisLabels.children.map(
+      child => child.properties.text
+    ),
+    ["1970", "1972", "1974", "1976", "1978", "1980", "1982"]
+  );
+
   assert.throws(
     () => encoded.createXAxis({
       ticksAndLabels: { labels: { format: { decimals: 0 } } }
     }),
-    /Time axis labels currently require format "auto"/
+    /supported time format/
   );
   assert.throws(
     () => encoded.createXAxis({

@@ -48,6 +48,41 @@ export function createCarsScatterplot(cars) {
     });
 }
 
+export function createMirroredAxesCarsScatterplot(cars) {
+  const rows = validCars(cars);
+
+  return chart()
+    .createCanvas({
+      width: 640,
+      height: 400,
+      margin: { top: 80, right: 90, bottom: 30, left: 30 }
+    })
+    .createData({ id: "cars", values: rows })
+    .createPointMark({ id: "points" })
+    .encodeX({ field: "Horsepower" })
+    .encodeY({ field: "Miles_per_Gallon" })
+    .encodeColor({ field: "Origin" })
+    .encodeRadius({ value: 3 })
+    .createGuides({
+      axes: {
+        x: {
+          position: "top",
+          ticksAndLabels: {
+            labels: { offset: 12, format: ".1f" }
+          },
+          title: { text: "Horsepower", offset: 62 }
+        },
+        y: {
+          position: "right",
+          ticksAndLabels: {
+            labels: { offset: 12, format: ".1f" }
+          },
+          title: { text: "Miles per Gallon", offset: 70 }
+        }
+      }
+    });
+}
+
 export function createScaleReverseCarsScatterplot(cars) {
   return createCarsScatterplot(cars)
     .editScale({ id: "x", reverse: true });

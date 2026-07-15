@@ -51,3 +51,77 @@ test("rejects conflicts and rematerializes after Canvas edits", () => {
   assert.equal(resized.graphicSpec.objects.xAxisLabels.children[0].properties.y, 118);
   assert.equal(created.graphicSpec.objects.xAxisLabels.children[0].properties.y, 128);
 });
+
+test("creates mirrored labels and edits their position and format immutably", () => {
+  const base = chart()
+    .createCanvas({
+      width: 260,
+      height: 180,
+      margin: { top: 40, right: 60, bottom: 30, left: 30 }
+    })
+    .createData({ id: "data", values: [{ x: 0, y: 0 }, { x: 1, y: 1 }] })
+    .createPointMark({ id: "points" })
+    .encodeX({ field: "x" })
+    .encodeY({ field: "y" });
+  const created = base
+    .createXAxisLabels({
+      position: "top",
+      values: [0, 0.5, 1],
+      format: ".1f"
+    })
+    .createYAxisLabels({
+      position: "right",
+      values: [0, 0.5, 1],
+      format: ".0%"
+    });
+
+  assert.equal(created.graphicSpec.objects.xAxisLabels.children[0].properties.y, 22);
+  assert.equal(created.graphicSpec.objects.xAxisLabels.children[0].properties.textBaseline, "bottom");
+  assert.deepEqual(
+    created.graphicSpec.objects.yAxisLabels.children.map(child => child.properties.text),
+    ["0%", "50%", "100%"]
+  );
+  assert.equal(created.graphicSpec.objects.yAxisLabels.children[0].properties.textAlign, "left");
+
+  const edited = created
+    .editXAxisLabels({ position: "bottom", format: ".2f" })
+    .editYAxisLabels({ position: "left" });
+  assert.equal(edited.graphicSpec.objects.xAxisLabels.children[0].properties.y, 168);
+  assert.deepEqual(
+    edited.graphicSpec.objects.xAxisLabels.children.map(child => child.properties.text),
+    ["0.00", "0.50", "1.00"]
+  );
+  assert.equal(edited.graphicSpec.objects.yAxisLabels.children[0].properties.textAlign, "right");
+  assert.equal(created.guideConfigs.axis.x.labels.position, "top");
+});
+
+test("rejects incompatible formats and insufficient mirrored label margins", () => {
+  const temporal = chart()
+    .createCanvas({ width: 240, height: 140, margin: 30 })
+    .createData({
+      id: "data",
+      values: [{ date: "2020-01-01" }, { date: "2021-01-01" }]
+    })
+    .createPointMark({ id: "points" })
+    .encodeX({ field: "date", fieldType: "temporal" });
+
+  assert.deepEqual(
+    temporal.createXAxisLabels({
+      values: [Date.UTC(2020, 0, 1), Date.UTC(2021, 0, 1)],
+      format: "%Y-%m-%d"
+    }).graphicSpec.objects.xAxisLabels.children.map(child => child.properties.text),
+    ["2020-01-01", "2021-01-01"]
+  );
+  assert.throws(
+    () => temporal.createXAxisLabels({ format: ".1f" }),
+    /supported time format/
+  );
+  assert.throws(
+    () => program().createXAxisLabels({ position: "top" }),
+    /do not fit the Canvas margin/
+  );
+  assert.throws(
+    () => program().createYAxisLabels({ position: "right" }),
+    /do not fit the Canvas margin/
+  );
+});

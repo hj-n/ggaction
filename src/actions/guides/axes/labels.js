@@ -9,6 +9,13 @@ import {
 import { formatTimeTick, niceTicks, timeTicks } from "../../../grammar/ticks.js";
 import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from
   "../../../theme/defaults.js";
+import {
+  defaultAxisPosition,
+  formatAxisValue,
+  resolveAxisLabelGeometry,
+  validateAxisFormat,
+  validateAxisPosition
+} from "./policy.js";
 
 const OPTIONS = Object.freeze([
   "scale", "position", "count", "values", "offset", "format", "color",
@@ -35,8 +42,7 @@ function validateOptions(args, operation, create) {
 }
 
 function validateConfig(channel, config) {
-  const supported = channel === "x" ? "bottom" : "left";
-  if (config.position !== supported) throw new Error(`Unsupported ${channel}-axis position "${config.position}".`);
+  validateAxisPosition(channel, config.position);
   if (config.mode === "count" && (!Number.isInteger(config.count) || config.count <= 0)) throw new RangeError("Label count must be a positive integer.");
   if (
     config.mode === "values" &&
@@ -51,7 +57,7 @@ function validateConfig(channel, config) {
   if (typeof config.color !== "string" || !config.color.length) throw new TypeError("Label color must be non-empty.");
   if (typeof config.fontFamily !== "string" || !config.fontFamily.length) throw new TypeError("Label fontFamily must be non-empty.");
   if ((typeof config.fontWeight !== "string" && !Number.isFinite(config.fontWeight))) throw new TypeError("Label fontWeight must be a string or number.");
-  if (config.format !== "auto" && (!config.format || !Number.isInteger(config.format.decimals) || config.format.decimals < 0)) throw new TypeError('Label format must be "auto" or { decimals }.');
+  validateAxisFormat(config.format);
 }
 
 function assertTickCompatibility(ticks, config, operation) {
@@ -66,8 +72,6 @@ function resolve(program, channel, config) {
   const bounds = resolveGraphicBounds(program);
   if (!["linear", "time", "ordinal"].includes(scale?.type) || !bounds) throw new Error("Axis labels require a supported resolved scale and Canvas bounds.");
   if (scale.type === "ordinal" && config.mode !== "values") throw new Error("Ordinal axis labels require explicit or inferred values, not count.");
-  if (scale.type === "time" && config.format !== "auto") throw new Error('Time axis labels currently require format "auto".');
-  if (scale.type === "ordinal" && config.format !== "auto") throw new Error('Ordinal axis labels currently require format "auto".');
   const values = config.mode === "values"
     ? config.values
     : scale.type === "time"
@@ -85,16 +89,39 @@ function resolve(program, channel, config) {
     : mapLinearValues(values, scale.domain, scale.range, {
         clamp: scale.clamp ?? false
       });
-  const text = values.map(value =>
-    scale.type === "time"
-      ? formatTimeTick(value, scale.domain)
-      : scale.type === "ordinal" || config.format === "auto"
-        ? String(value)
-        : value.toFixed(config.format.decimals)
+  const text = values.map(value => formatAxisValue(
+    value,
+    scale.type,
+    config.format,
+    item => scale.type === "time"
+      ? formatTimeTick(item, scale.domain)
+      : String(item)
+  ));
+  const resolved = {
+    values,
+    text,
+    ...resolveAxisLabelGeometry({
+      bounds,
+      channel,
+      position: config.position,
+      positions,
+      offset: config.offset
+    })
+  };
+  const canvas = program.graphicSpec.objects.canvas?.properties;
+  const maximumTextWidth = Math.max(
+    0,
+    ...text.map(value => [...value].length * config.fontSize * 0.6)
   );
-  return channel === "x"
-    ? { values, x: positions, y: bounds.y + bounds.height + config.offset, text, textAlign: "center", textBaseline: "top" }
-    : { values, x: bounds.x - config.offset, y: positions, text, textAlign: "right", textBaseline: "middle" };
+  const fits = config.position === "top"
+    ? resolved.y - config.fontSize >= 0
+    : config.position === "right"
+      ? resolved.x + maximumTextWidth <= canvas?.width
+      : true;
+  if (!canvas || !fits) {
+    throw new Error(`The ${channel}-axis labels do not fit the Canvas margin.`);
+  }
+  return resolved;
 }
 
 function makeEdit(channel) {
@@ -157,7 +184,7 @@ function makeCreate(channel) {
     const mode = hasValues ? "values" : hasCount ? "count" : ticks?.mode ?? "count";
     const config = {
       scale,
-      position: channel === "x" ? "bottom" : "left",
+      position: defaultAxisPosition(channel),
       offset: channel === "x" ? 18 : 12,
       format: "auto",
       color: DEFAULTS.color,

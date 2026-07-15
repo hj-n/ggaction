@@ -10,6 +10,12 @@ import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from
   "../../../theme/defaults.js";
 import { findDataset } from "../../../selectors/datasets.js";
 import { formatAggregateTitle } from "../../../grammar/aggregate.js";
+import {
+  defaultAxisPosition,
+  defaultAxisTitleRotation,
+  resolveAxisTitleGeometry,
+  validateAxisPosition
+} from "./policy.js";
 
 const CREATE_OPTIONS = Object.freeze([
   "text", "scale", "position", "at", "offset", "rotation", "color",
@@ -31,8 +37,7 @@ function validateText(text) {
 }
 
 function validateConfig(channel, config) {
-  const supportedPosition = channel === "x" ? "bottom" : "left";
-  if (config.position !== supportedPosition) throw new Error(`Unsupported ${channel}-axis position "${config.position}".`);
+  validateAxisPosition(channel, config.position);
   if (!["start", "center", "end"].includes(config.at) && !Number.isFinite(config.at)) throw new TypeError("Axis title at must be start, center, end, or a finite number.");
   if (!Number.isFinite(config.offset) || config.offset < 0) throw new RangeError("Axis title offset must be non-negative.");
   if (!Number.isFinite(config.rotation)) throw new TypeError("Axis title rotation must be finite radians.");
@@ -99,9 +104,30 @@ function resolveGeometry(program, channel, config) {
       )[0];
     }
   }
-  return channel === "x"
-    ? { x: along, y: bounds.y + bounds.height + config.offset }
-    : { x: bounds.x - config.offset, y: along };
+  const geometry = resolveAxisTitleGeometry({
+    bounds,
+    channel,
+    position: config.position,
+    along,
+    offset: config.offset
+  });
+  const text = program.semanticSpec.guides.axis?.[channel]?.title ?? "";
+  const width = [...text].length * config.fontSize * 0.6;
+  const height = config.fontSize;
+  const cosine = Math.cos(config.rotation);
+  const sine = Math.sin(config.rotation);
+  const extentX = Math.abs(cosine) * width / 2 + Math.abs(sine) * height / 2;
+  const extentY = Math.abs(sine) * width / 2 + Math.abs(cosine) * height / 2;
+  const canvas = program.graphicSpec.objects.canvas?.properties;
+  const newEdgeFits = config.position === "top"
+    ? geometry.y - extentY >= 0
+    : config.position === "right"
+      ? geometry.x + extentX <= canvas?.width
+      : true;
+  if (!canvas || !newEdgeFits) {
+    throw new Error(`The ${channel}-axis title does not fit the Canvas margin.`);
+  }
+  return geometry;
 }
 
 function names(channel) {
@@ -118,9 +144,19 @@ function makeEdit(channel) {
     if (!previous) throw new Error(`${operation.edit} requires title configuration.`);
     const { text, ...appearance } = args;
     const explicitText = Object.hasOwn(args, "text");
+    const explicitRotation = Object.hasOwn(args, "rotation");
+    const position = appearance.position ?? previous.position;
+    const inferredRotation = explicitRotation
+      ? false
+      : previous.inferredRotation === true;
     const config = {
       ...previous,
       ...appearance,
+      position,
+      rotation: inferredRotation
+        ? defaultAxisTitleRotation(channel, position)
+        : appearance.rotation ?? previous.rotation,
+      inferredRotation,
       ...(explicitText ? { inferredText: false } : {})
     };
     validateConfig(channel, config);
@@ -163,18 +199,25 @@ function makeCreate(channel) {
     if (this.graphicSpec.objects[operation.graphic]) throw new Error(`${operation.create} requires a missing axis title.`);
     const inferredText = !Object.hasOwn(args, "text");
     const text = validateText(args.text ?? inferText(this, channel, scale));
+    const position = args.position ?? defaultAxisPosition(channel);
+    const inferredRotation = !Object.hasOwn(args, "rotation");
     const config = {
       scale,
       inferredText,
-      position: channel === "x" ? "bottom" : "left",
+      position,
       at: "center",
       offset: channel === "x" ? 42 : 52,
-      rotation: channel === "x" ? 0 : -Math.PI / 2,
+      rotation: inferredRotation
+        ? defaultAxisTitleRotation(channel, position)
+        : args.rotation,
+      inferredRotation,
       color: DEFAULTS.color,
       fontSize: DEFAULTS.fontSize,
       fontFamily: DEFAULTS.fontFamily,
       fontWeight: DEFAULTS.fontWeight,
-      ...Object.fromEntries(Object.entries(args).filter(([key]) => !["text", "scale"].includes(key)))
+      ...Object.fromEntries(Object.entries(args).filter(
+        ([key]) => !["text", "scale", "position", "rotation"].includes(key)
+      ))
     };
     validateConfig(channel, config);
     resolveGeometry(this, channel, config);

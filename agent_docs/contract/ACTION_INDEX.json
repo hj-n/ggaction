@@ -1518,39 +1518,6 @@
       }
     },
     {
-      "id": "top-x-axis-position",
-      "kind": "parameter",
-      "name": "Top x axis position",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/GUIDES_AND_LAYOUT.md",
-        "anchor": "mirrored-cartesian-axis-positions"
-      }
-    },
-    {
-      "id": "right-y-axis-position",
-      "kind": "parameter",
-      "name": "Right y axis position",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/GUIDES_AND_LAYOUT.md",
-        "anchor": "mirrored-cartesian-axis-positions"
-      }
-    },
-    {
-      "id": "axis-label-format-strings",
-      "kind": "parameter",
-      "name": "Axis label format strings",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/GUIDES_AND_LAYOUT.md",
-        "anchor": "axis-label-format-strings"
-      }
-    },
-    {
       "id": "left-legend-position",
       "kind": "parameter",
       "name": "Left legend position",

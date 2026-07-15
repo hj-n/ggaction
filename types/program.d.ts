@@ -175,6 +175,83 @@ export interface CanvasOptions {
   margin?: number | Partial<Record<"top" | "right" | "bottom" | "left", number>>;
 }
 
+export type XAxisPosition = "bottom" | "top";
+export type YAxisPosition = "left" | "right";
+export type AxisFormatString =
+  | ".0f" | ".1f" | ".2f"
+  | ".0%" | ".1%" | ".2e"
+  | "%Y" | "%Y-%m" | "%Y-%m-%d";
+export type AxisFormat =
+  | "auto"
+  | AxisFormatString
+  | { decimals: number };
+export type AxisValue = string | boolean | number;
+export interface AxisLineStyleOptions {
+  color?: string;
+  lineWidth?: number;
+}
+export interface AxisTickStyleOptions extends AxisLineStyleOptions {
+  length?: number;
+}
+export interface AxisLabelStyleOptions {
+  offset?: number;
+  format?: AxisFormat;
+  color?: string;
+  fontSize?: number;
+  fontFamily?: string;
+  fontWeight?: string | number;
+}
+export interface AxisTicksAndLabelsOptions<P extends string> {
+  scale?: string;
+  position?: P;
+  count?: number;
+  values?: readonly AxisValue[];
+  ticks?: AxisTickStyleOptions;
+  labels?: AxisLabelStyleOptions;
+}
+export interface AxisTitleOptions<P extends string> {
+  text?: string;
+  scale?: string;
+  position?: P;
+  at?: "start" | "center" | "end" | number;
+  offset?: number;
+  rotation?: number;
+  color?: string;
+  fontSize?: number;
+  fontFamily?: string;
+  fontWeight?: string | number;
+}
+export interface CompleteAxisOptions<P extends string> {
+  scale?: string;
+  coordinate?: string;
+  position?: P;
+  line?: AxisLineStyleOptions;
+  ticksAndLabels?: Omit<AxisTicksAndLabelsOptions<P>, "scale" | "position">;
+  title?: Omit<AxisTitleOptions<P>, "scale" | "position">;
+}
+export interface CreateAxesOptions {
+  coordinate?: {
+    id?: string;
+    type?: "auto" | "cartesian" | "polar";
+  };
+  x?: false | CompleteAxisOptions<XAxisPosition>;
+  y?: false | CompleteAxisOptions<YAxisPosition>;
+}
+export interface AxisTickOptions<P extends string>
+  extends AxisTickStyleOptions {
+  scale?: string;
+  position?: P;
+  count?: number;
+  values?: readonly AxisValue[];
+}
+export interface AxisLabelOptions<P extends string>
+  extends AxisLabelStyleOptions {
+  scale?: string;
+  position?: P;
+  count?: number;
+  values?: readonly AxisValue[];
+}
+
 export interface ScaleOptions {
   id?: string;
   type?: ScaleType;
@@ -548,29 +625,29 @@ export class ChartProgram {
   encodeBarWidth(options?: BarWidthOptions): ChartProgram;
 
   createRegression(options?: RegressionOptions): ChartProgram;
-  createAxes(options?: ActionOptions): ChartProgram;
-  createXAxis(options?: ActionOptions): ChartProgram;
-  createYAxis(options?: ActionOptions): ChartProgram;
-  createXAxisLine(options?: ActionOptions): ChartProgram;
-  createYAxisLine(options?: ActionOptions): ChartProgram;
-  editXAxisLine(options: ActionOptions): ChartProgram;
-  editYAxisLine(options: ActionOptions): ChartProgram;
-  createXAxisTicks(options?: ActionOptions): ChartProgram;
-  createYAxisTicks(options?: ActionOptions): ChartProgram;
-  editXAxisTicks(options: ActionOptions): ChartProgram;
-  editYAxisTicks(options: ActionOptions): ChartProgram;
-  createXAxisLabels(options?: ActionOptions): ChartProgram;
-  createYAxisLabels(options?: ActionOptions): ChartProgram;
-  editXAxisLabels(options: ActionOptions): ChartProgram;
-  editYAxisLabels(options: ActionOptions): ChartProgram;
-  createXAxisTicksAndLabels(options?: ActionOptions): ChartProgram;
-  createYAxisTicksAndLabels(options?: ActionOptions): ChartProgram;
-  editXAxisTicksAndLabels(options: ActionOptions): ChartProgram;
-  editYAxisTicksAndLabels(options: ActionOptions): ChartProgram;
-  createXAxisTitle(options?: ActionOptions): ChartProgram;
-  createYAxisTitle(options?: ActionOptions): ChartProgram;
-  editXAxisTitle(options: ActionOptions): ChartProgram;
-  editYAxisTitle(options: ActionOptions): ChartProgram;
+  createAxes(options?: CreateAxesOptions): ChartProgram;
+  createXAxis(options?: CompleteAxisOptions<XAxisPosition>): ChartProgram;
+  createYAxis(options?: CompleteAxisOptions<YAxisPosition>): ChartProgram;
+  createXAxisLine(options?: AxisLineStyleOptions & { scale?: string; position?: XAxisPosition }): ChartProgram;
+  createYAxisLine(options?: AxisLineStyleOptions & { scale?: string; position?: YAxisPosition }): ChartProgram;
+  editXAxisLine(options?: AxisLineStyleOptions & { position?: XAxisPosition }): ChartProgram;
+  editYAxisLine(options?: AxisLineStyleOptions & { position?: YAxisPosition }): ChartProgram;
+  createXAxisTicks(options?: AxisTickOptions<XAxisPosition>): ChartProgram;
+  createYAxisTicks(options?: AxisTickOptions<YAxisPosition>): ChartProgram;
+  editXAxisTicks(options?: Omit<AxisTickOptions<XAxisPosition>, "scale">): ChartProgram;
+  editYAxisTicks(options?: Omit<AxisTickOptions<YAxisPosition>, "scale">): ChartProgram;
+  createXAxisLabels(options?: AxisLabelOptions<XAxisPosition>): ChartProgram;
+  createYAxisLabels(options?: AxisLabelOptions<YAxisPosition>): ChartProgram;
+  editXAxisLabels(options?: Omit<AxisLabelOptions<XAxisPosition>, "scale">): ChartProgram;
+  editYAxisLabels(options?: Omit<AxisLabelOptions<YAxisPosition>, "scale">): ChartProgram;
+  createXAxisTicksAndLabels(options?: AxisTicksAndLabelsOptions<XAxisPosition>): ChartProgram;
+  createYAxisTicksAndLabels(options?: AxisTicksAndLabelsOptions<YAxisPosition>): ChartProgram;
+  editXAxisTicksAndLabels(options: Omit<AxisTicksAndLabelsOptions<XAxisPosition>, "scale">): ChartProgram;
+  editYAxisTicksAndLabels(options: Omit<AxisTicksAndLabelsOptions<YAxisPosition>, "scale">): ChartProgram;
+  createXAxisTitle(options?: AxisTitleOptions<XAxisPosition>): ChartProgram;
+  createYAxisTitle(options?: AxisTitleOptions<YAxisPosition>): ChartProgram;
+  editXAxisTitle(options?: Omit<AxisTitleOptions<XAxisPosition>, "scale">): ChartProgram;
+  editYAxisTitle(options?: Omit<AxisTitleOptions<YAxisPosition>, "scale">): ChartProgram;
   createGrid(options?: ActionOptions): ChartProgram;
   createHorizontalGrid(options?: ActionOptions): ChartProgram;
   createVerticalGrid(options?: ActionOptions): ChartProgram;

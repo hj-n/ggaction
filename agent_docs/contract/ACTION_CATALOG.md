@@ -111,9 +111,6 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | parameter | Continuous color bar consumer | accepted | [Open](planned/ENCODINGS.md#continuous-color-bar-consumer) |
 | parameter | Scale type vocabulary | accepted | [Open](planned/SCALES.md#scale-type-vocabulary) |
 | parameter | Scale mapping policies | accepted | [Open](planned/SCALES.md#scale-mapping-policies) |
-| parameter | Top x axis position | accepted | [Open](planned/GUIDES_AND_LAYOUT.md#mirrored-cartesian-axis-positions) |
-| parameter | Right y axis position | accepted | [Open](planned/GUIDES_AND_LAYOUT.md#mirrored-cartesian-axis-positions) |
-| parameter | Axis label format strings | accepted | [Open](planned/GUIDES_AND_LAYOUT.md#axis-label-format-strings) |
 | parameter | Left legend position | accepted | [Open](planned/GUIDES_AND_LAYOUT.md#left-legend-position) |
 | parameter | Chart title positions | accepted | [Open](planned/GUIDES_AND_LAYOUT.md#chart-title-positions) |
 | parameter | Title wrapping and measurement | accepted | [Open](planned/GUIDES_AND_LAYOUT.md#title-wrapping-and-measurement) |

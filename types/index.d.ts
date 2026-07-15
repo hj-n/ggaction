@@ -2,14 +2,26 @@ import type { ChartProgram } from "./program.js";
 
 export type {
   ActionOptions,
+  AxisFormat,
+  AxisFormatString,
+  AxisLabelOptions,
+  AxisLabelStyleOptions,
+  AxisLineStyleOptions,
+  AxisTickOptions,
+  AxisTicksAndLabelsOptions,
+  AxisTickStyleOptions,
+  AxisTitleOptions,
+  AxisValue,
   BarWidthOptions,
   CanvasOptions,
   CategoricalEncodingOptions,
   ColorLayout,
   ColorEncodingOptions,
+  CompleteAxisOptions,
   ChartProgram,
   ConcretePathCommand,
   CurveInterpolation,
+  CreateAxesOptions,
   DashPattern,
   DashScaleOptions,
   DashStyle,
@@ -43,6 +55,8 @@ export type {
   SemanticSpec,
   StrokeDashEncodingOptions,
   TraceNode,
+  XAxisPosition,
+  YAxisPosition,
   XOffsetEncodingOptions
 } from "./program.js";
 

@@ -14,8 +14,8 @@ target을 raw primitive로 고정한다.
 - [x] Existing point/grid geometry의 matching plot-bound rematerialization
 - [x] Future public action이 없는 primitive-only trace
 - [x] Expanded target call-chain metadata와 `primitive.png`
-- [ ] Gate A browser/PNG visual confirmation
-- [ ] Feedback 반영과 primitive 재확인
+- [x] Gate A browser/PNG visual confirmation
+- [x] Feedback 반영과 primitive 재확인
 - [x] STEP status, conceptual commit와 push
 
 ## Gate A 결과
@@ -27,6 +27,8 @@ target을 raw primitive로 고정한다.
 - Points와 horizontal grid는 같은 new plot bounds에서 독립적으로 다시 계산했다.
 - Focused capability tests 9개와 full render tests 232개가 통과했다. Gallery는 47 variants를 desktop/mobile로
   검증하며 Gate variant에는 primitive와 expanded future public chain만 존재한다.
+- 사용자가 Gate A 이미지를 승인했다. 시각 target은 변경하지 않았고, public chain metadata에 실제
+  `ticksAndLabels.labels` nesting과 explicit label/title offsets를 명시했다.
 
 ## Gate A target
 

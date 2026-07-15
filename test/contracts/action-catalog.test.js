@@ -432,10 +432,14 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   assert.match(currentCorpus, /interval\?: "mean" \| "prediction"/);
   assert.doesNotMatch(plannedCorpus, /regression method vocabulary|regression prediction interval/);
   assert.doesNotMatch(plannedCorpus, /ordered multi-transform pipeline/);
-  assert.match(plannedCorpus, /top x title 기본 rotation은 `0`/);
-  assert.match(plannedCorpus, /right y title 기본 rotation은/);
-  assert.match(plannedCorpus, /type AxisFormatString =/);
-  assert.match(plannedCorpus, /"\.0f" \| "\.1f" \| "\.2f"/);
+  assert.match(currentCorpus, /type AxisPositionX = "bottom" \| "top"/);
+  assert.match(currentCorpus, /type AxisPositionY = "left" \| "right"/);
+  assert.match(currentCorpus, /x bottom\/top default `0`/);
+  assert.match(currentCorpus, /y right default\s+`Math\.PI \/ 2`/);
+  assert.match(currentCorpus, /type AxisFormatString =/);
+  assert.match(currentCorpus, /"\.0f" \| "\.1f" \| "\.2f"/);
+  assert.doesNotMatch(plannedCorpus, /## mirrored Cartesian axis positions/);
+  assert.doesNotMatch(plannedCorpus, /## axis label format strings/);
   assert.match(plannedCorpus, /point composite와 quantitative size block을 지원/);
   assert.match(currentCorpus, /point-composite symbols in top\/bottom item grids/);
   assert.match(currentCorpus, /Composite layers share one item-local origin/);

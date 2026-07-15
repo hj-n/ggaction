@@ -222,8 +222,6 @@ export function createMirroredAxesPrimitives(cars) {
   const { bounds, xTicks, yTicks } = values.baseline;
 
   return createCarsScatterplotPrimitives(cars)
-    .editSemantic({ property: "scale[x].range", value: [bounds.left, bounds.right] })
-    .editSemantic({ property: "scale[y].range", value: [bounds.bottom, bounds.top] })
     .editGraphics({ target: "horizontalGridLines", property: "x1", value: bounds.left })
     .editGraphics({ target: "horizontalGridLines", property: "y1", value: yTicks.positions })
     .editGraphics({ target: "horizontalGridLines", property: "x2", value: bounds.right })

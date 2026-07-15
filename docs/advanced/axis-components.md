@@ -6,8 +6,8 @@ title: Advanced Axis Components
 # Advanced Axis Components
 
 Use these actions when a complete `createAxes` call is not sufficient. All
-component actions require a resolved continuous (`linear` or `time`) scale and
-Canvas bounds. x supports `bottom`; y supports `left`.
+component actions require a resolved linear, time, or ordinal scale and Canvas
+bounds. x supports `bottom` and `top`; y supports `left` and `right`.
 
 ## Complete single-channel axes
 
@@ -60,7 +60,7 @@ program.editXAxisTicks({ length: 8, color: "black" });
 | Option | Meaning |
 | --- | --- |
 | `scale` | Create-only scale ID; defaults to channel |
-| `position` | `bottom` for x, `left` for y |
+| `position` | x: `bottom/top`; y: `left/right` |
 | `count` | Positive requested tick density; default `5` except inferred binned x boundaries |
 | `values` | Exact finite data-space values or timestamps; mutually exclusive with `count` |
 | `length` | Non-negative tick length; default `6` |
@@ -80,12 +80,18 @@ program.editYAxisLabels({ offset: 16, fontSize: 13 });
 
 Labels accept `scale` on creation plus `position`, `count`, `values`, `offset`,
 `format`, `color`, `fontSize`, `fontFamily`, and `fontWeight`. Format is
-`"auto"` or `{ decimals: nonNegativeInteger }`. Default offsets are 18 for x
-and 12 for y; default font size is 12.
+`"auto"`, `{ decimals: nonNegativeInteger }`, or one of the closed strings
+below. Default offsets are 18 for x and 12 for y; default font size is 12.
 
-Time scales use UTC calendar ticks and require `format: "auto"`. Automatic
-labels select year, month, day, hour, minute, or second precision from the
-resolved domain span. Decimal formatting is limited to linear scales.
+| Scale | Explicit format strings |
+| --- | --- |
+| Linear | `.0f`, `.1f`, `.2f`, `.0%`, `.1%`, `.2e` |
+| Time | `%Y`, `%Y-%m`, `%Y-%m-%d` (UTC) |
+| Ordinal | none; use `"auto"` |
+
+Automatic time labels select year, month, day, hour, minute, or second
+precision from the resolved domain span. Incompatible format/scale pairs are
+rejected before graphics are changed.
 
 Labels reuse existing tick values when count/values are omitted. Conflicting
 tick and label configurations produce an error.
@@ -121,8 +127,8 @@ program.editXAxisTitle({ text: "Engine horsepower", at: "start" });
 | --- | --- |
 | `text` | Non-empty title; inferred from one connected field/aggregate when omitted |
 | `scale` | Create-only scale ID; defaults to channel |
-| `position` | `bottom` for x, `left` for y |
-| `at` | `start`, `center`, `end`, or an in-domain data value |
+| `position` | x: `bottom/top`; y: `left/right` |
+| `at` | `start`, `center`, `end`, or an in-domain finite number |
 | `offset` | Non-negative distance from the plot |
 | `rotation` | Finite radians |
 | `color` | Text fill |
@@ -130,8 +136,13 @@ program.editXAxisTitle({ text: "Engine horsepower", at: "start" });
 | `fontFamily` | Non-empty family |
 | `fontWeight` | String or finite number |
 
-Default title placement is centered. x uses offset 42 and rotation 0; y uses
-offset 52 and rotation `-Math.PI / 2`.
+Default title placement is centered. x uses offset 42 and rotation 0. y uses
+offset 52 with rotation `-Math.PI / 2` on the left or `Math.PI / 2` on the
+right. An explicit rotation remains unchanged when the position is edited.
+
+Top/right components extend outward and require sufficient top/right Canvas
+margin. Component edits and Canvas/scale rematerialization preserve the chosen
+edge, values, formats, and appearance.
 
 Scale or Canvas rematerialization recomputes existing component geometry while
 preserving configured appearance.

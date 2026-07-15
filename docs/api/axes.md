@@ -36,7 +36,7 @@ Each x/y axis option supports:
 | Option | Value |
 | --- | --- |
 | `scale` | scale ID; inferred when one scale is used on the channel |
-| `position` | `"bottom"` for x, `"left"` for y |
+| `position` | x: `"bottom"` or `"top"`; y: `"left"` or `"right"` |
 | `line` | `{ color?, lineWidth? }` |
 | `ticksAndLabels` | `{ count?, values?, ticks?, labels? }` |
 | `title` | title options including `text`, `at`, `offset`, and font styling |
@@ -67,6 +67,29 @@ encodings include their operation, so `mean` on `Acceleration` becomes
 `mean(Acceleration)`. Pass `title.text` when inference is ambiguous or a custom
 label is desired.
 
+The default edges remain bottom for x and left for y. A complete axis forwards
+an explicit edge to its line, ticks, labels, and title:
+
+```javascript
+program.createAxes({
+  x: {
+    position: "top",
+    ticksAndLabels: { labels: { format: ".1f" } }
+  },
+  y: { position: "right" }
+});
+```
+
+Top ticks point upward and right ticks point right. Labels and titles are
+placed outward from the selected edge. The Canvas margin must already be large
+enough; guide creation does not resize it.
+
+Numeric label formats are `.0f`, `.1f`, `.2f`, `.0%`, `.1%`, and `.2e`.
+UTC time formats are `%Y`, `%Y-%m`, and `%Y-%m-%d`. Numeric formats require a
+linear scale, time formats require a time scale, and ordinal labels use
+`"auto"`. The existing `{ decimals: nonNegativeInteger }` form remains
+available for linear labels.
+
 The selected coordinate ID is stored on each semantic axis. Canvas size and
 margin edits explicitly rematerialize positional scales and every connected
 axis component.
@@ -84,8 +107,9 @@ For individual lines, ticks, labels, and titles, see
 
 ## Errors and limitations
 
-Ambiguous scale or coordinate candidates require explicit IDs. Current axis
-positions are bottom for x and left for y; Polar axes are unsupported.
+Ambiguous scale or coordinate candidates require explicit IDs. Each channel
+still has one semantic axis, so top and bottom x axes (or left and right y
+axes) cannot be created simultaneously. Polar axes are unsupported.
 
 ## Related
 
