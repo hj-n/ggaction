@@ -15,6 +15,10 @@ import {
   validateHistogramBinStep
 } from "../../grammar/histogram.js";
 import {
+  validateDensityKernel,
+  validateDensityNormalization
+} from "../../grammar/density.js";
+import {
   validateSemanticFieldType,
   validateContinuousColorInterpolation,
   validateSemanticScaleDomain,
@@ -80,7 +84,8 @@ function validateRegression(transform) {
 
 function validateDensity(transform) {
   const supported = [
-    "type", "field", "groupBy", "bandwidth", "extent", "steps", "as", "resolve"
+    "type", "field", "groupBy", "bandwidth", "extent", "steps", "as", "resolve",
+    "kernel", "normalization"
   ];
   const unknown = Object.keys(transform).find(key => !supported.includes(key));
   if (unknown !== undefined) {
@@ -88,6 +93,8 @@ function validateDensity(transform) {
   }
   nonEmptyString(transform.field, "Density field");
   if (transform.groupBy !== undefined) nonEmptyString(transform.groupBy, "Density groupBy");
+  validateDensityKernel(transform.kernel ?? "gaussian");
+  validateDensityNormalization(transform.normalization ?? "unit");
   if (
     transform.bandwidth !== "auto" &&
     (!Number.isFinite(transform.bandwidth) || transform.bandwidth <= 0)

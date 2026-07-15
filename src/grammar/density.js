@@ -3,6 +3,28 @@ import { isNominalValue } from "./scales.js";
 
 const SQRT_TWO_PI = Math.sqrt(2 * Math.PI);
 
+export const DENSITY_KERNELS = Object.freeze([
+  "gaussian",
+  "epanechnikov",
+  "uniform",
+  "triangular"
+]);
+export const DENSITY_NORMALIZATIONS = Object.freeze(["unit", "count"]);
+
+export function validateDensityKernel(value) {
+  if (!DENSITY_KERNELS.includes(value)) {
+    throw new Error(`Unsupported density kernel "${value}".`);
+  }
+  return value;
+}
+
+export function validateDensityNormalization(value) {
+  if (!DENSITY_NORMALIZATIONS.includes(value)) {
+    throw new Error(`Unsupported density normalization "${value}".`);
+  }
+  return value;
+}
+
 function requireField(value, label) {
   if (typeof value !== "string" || value.length === 0) {
     throw new TypeError(`${label} must be a non-empty string.`);

@@ -4,11 +4,37 @@ import { linearPathCommands } from "../../support/path.js";
 import { createCarsDensityAreaValues } from
   "./reference-values.js";
 
-export function createCarsDensityAreaPrimitives(cars) {
+export function createCarsDensityAreaPrimitiveProgram(cars, {
+  datasetId = "densitiesDensityData",
+  bandwidth = 0.6,
+  kernel,
+  normalization
+} = {}) {
   const width = 720;
   const height = 500;
   const margin = { top: 130, right: 40, bottom: 70, left: 80 };
-  const values = createCarsDensityAreaValues(cars, { width, height, margin });
+  const values = createCarsDensityAreaValues(cars, {
+    width,
+    height,
+    margin,
+    bandwidth,
+    kernel,
+    normalization
+  });
+  const transform = {
+    type: "density",
+    field: "Acceleration",
+    groupBy: "Origin",
+    bandwidth: values.bandwidth,
+    extent: "auto",
+    steps: 100,
+    as: ["Acceleration_value", "Acceleration_density"],
+    resolve: "shared"
+  };
+  if (kernel !== undefined || normalization !== undefined) {
+    transform.kernel = values.kernel;
+    transform.normalization = values.normalization;
+  }
   const { x: xAxis, y: yAxis } = values.axes;
   const xTickPositions = xAxis.ticks.map(tick => tick.position);
   const yTickPositions = yAxis.ticks.map(tick => tick.position);
@@ -21,29 +47,20 @@ export function createCarsDensityAreaPrimitives(cars) {
     .createData({ id: "cars", values: cars })
     .createAreaMark({ id: "densities", opacity: 0.5 })
     .editSemantic({
-      property: "dataset[densitiesDensityData].source",
+      property: `dataset[${datasetId}].source`,
       value: "cars"
     })
     .editSemantic({
-      property: "dataset[densitiesDensityData].transform",
-      value: [{
-        type: "density",
-        field: "Acceleration",
-        groupBy: "Origin",
-        bandwidth: 0.6,
-        extent: "auto",
-        steps: 100,
-        as: ["Acceleration_value", "Acceleration_density"],
-        resolve: "shared"
-      }]
+      property: `dataset[${datasetId}].transform`,
+      value: [transform]
     })
     .editSemantic({
-      property: "dataset[densitiesDensityData].values",
+      property: `dataset[${datasetId}].values`,
       value: values.densityRows
     })
     .editSemantic({
       property: "layer[densities].data",
-      value: "densitiesDensityData"
+      value: datasetId
     })
     .editSemantic({
       property: "layer[densities].coordinate",
@@ -426,6 +443,10 @@ export function createCarsDensityAreaPrimitives(cars) {
       text: values.title.text,
       subtitle: values.title.subtitle
     });
+}
+
+export function createCarsDensityAreaPrimitives(cars) {
+  return createCarsDensityAreaPrimitiveProgram(cars);
 }
 
 export function renderCarsDensityAreaPrimitives(program, context) {

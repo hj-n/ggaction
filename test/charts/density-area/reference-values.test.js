@@ -23,6 +23,8 @@ test("derives deterministic grouped Gaussian KDE rows", () => {
     density: "Acceleration_density"
   });
   assert.equal(values.bandwidth, 0.6);
+  assert.equal(values.kernel, "gaussian");
+  assert.equal(values.normalization, "unit");
   assert.deepEqual(values.extent, [8, 24.8]);
   assert.equal(values.steps, 100);
   assert.deepEqual(values.groupDomain, ["USA", "Europe", "Japan"]);
@@ -78,6 +80,65 @@ test("matches representative densities and group peaks", () => {
   assertApproximately(usa.peak.Acceleration_density, 0.14031074287263104);
   assertApproximately(europe.peak.Acceleration_density, 0.20441491577254337);
   assertApproximately(japan.peak.Acceleration_density, 0.17664749130605972);
+});
+
+test("uses the exact closed density kernel formulas", () => {
+  const rows = [{ value: 0, group: "a" }];
+  const expectedAtCenter = {
+    gaussian: 1 / Math.sqrt(2 * Math.PI),
+    epanechnikov: 0.75,
+    uniform: 0.5,
+    triangular: 1
+  };
+
+  for (const [kernel, expected] of Object.entries(expectedAtCenter)) {
+    const values = createCarsDensityAreaValues(rows, {
+      field: "value",
+      groupBy: "group",
+      bandwidth: 1,
+      extent: [-2, 2],
+      steps: 5,
+      kernel,
+      as: ["sample", "density"]
+    });
+    assertApproximately(values.groups[0].rows[2].density, expected);
+    if (kernel !== "gaussian") {
+      assert.equal(values.groups[0].rows[0].density, 0);
+      assert.equal(values.groups[0].rows.at(-1).density, 0);
+    }
+  }
+});
+
+test("scales count normalization by each group's valid sample count", () => {
+  const rows = [
+    { value: 0, group: "a" },
+    { value: 0.5, group: "a" },
+    { value: 1, group: "b" }
+  ];
+  const options = {
+    field: "value",
+    groupBy: "group",
+    bandwidth: 0.5,
+    extent: [0, 1],
+    steps: 3,
+    kernel: "triangular",
+    as: ["sample", "density"]
+  };
+  const unit = createCarsDensityAreaValues(rows, options);
+  const count = createCarsDensityAreaValues(rows, {
+    ...options,
+    normalization: "count"
+  });
+
+  for (let groupIndex = 0; groupIndex < unit.groups.length; groupIndex += 1) {
+    const groupSize = unit.groups[groupIndex].values.length;
+    for (let rowIndex = 0; rowIndex < unit.groups[groupIndex].rows.length; rowIndex += 1) {
+      assertApproximately(
+        count.groups[groupIndex].rows[rowIndex].density,
+        unit.groups[groupIndex].rows[rowIndex].density * groupSize
+      );
+    }
+  }
 });
 
 test("maps density areas, two-direction grids, axes, and top legend", () => {
@@ -197,6 +258,16 @@ test("rejects invalid density inputs and degenerate automatic resolution", () =>
   assert.throws(
     () => createCarsDensityAreaValues(loadCars(), { steps: 1 }),
     /at least 2/
+  );
+  assert.throws(
+    () => createCarsDensityAreaValues(loadCars(), { kernel: "round" }),
+    /Unsupported density kernel/
+  );
+  assert.throws(
+    () => createCarsDensityAreaValues(loadCars(), {
+      normalization: "probability"
+    }),
+    /Unsupported density normalization/
   );
   assert.throws(
     () => createCarsDensityAreaValues(loadCars(), { as: ["value", "value"] }),

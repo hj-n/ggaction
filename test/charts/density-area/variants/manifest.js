@@ -6,7 +6,12 @@ import {
 import { loadCars } from "../../../support/data.js";
 import { defineVisualVariant } from "../../../support/visual-variants.js";
 import { createCarsDensityAreaPrimitives } from "../primitive.program.js";
-import { createAreaOutlineEditPrimitives } from "./primitive-programs.js";
+import {
+  createAreaOutlineEditPrimitives,
+  createCountNormalizationPrimitives,
+  createDensityRevisionPrimitives,
+  createEpanechnikovKernelPrimitives
+} from "./primitive-programs.js";
 
 const cars = loadCars();
 
@@ -57,6 +62,20 @@ const baselineCallChain = `chart()
     subtitle: "By Origin (cars dataset)"
   });`;
 
+function densityCallChain({ kernel, normalization } = {}) {
+  const additions = [
+    kernel === undefined ? undefined : `    kernel: "${kernel}"`,
+    normalization === undefined
+      ? undefined
+      : `    normalization: "${normalization}"`
+  ].filter(Boolean);
+  if (additions.length === 0) return baselineCallChain;
+  return baselineCallChain.replace(
+    "    bandwidth: 0.6\n  })",
+    `    bandwidth: 0.6,\n${additions.join(",\n")}\n  })`
+  );
+}
+
 export const visualVariants = Object.freeze([defineVisualVariant({
   ...shared,
   variant: "baseline",
@@ -77,4 +96,28 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   });`,
   primitive: createAreaOutlineEditPrimitives(cars),
   userFacing: createAreaOutlineEditCarsDensityArea(cars)
+}), defineVisualVariant({
+  ...shared,
+  variant: "epanechnikov-kernel",
+  title: "Epanechnikov Density Kernel",
+  callChain: densityCallChain({ kernel: "epanechnikov" }),
+  primitive: createEpanechnikovKernelPrimitives(cars)
+}), defineVisualVariant({
+  ...shared,
+  variant: "count-normalization",
+  title: "Count-normalized Density",
+  callChain: densityCallChain({ normalization: "count" }),
+  primitive: createCountNormalizationPrimitives(cars)
+}), defineVisualVariant({
+  ...shared,
+  variant: "density-revision",
+  title: "Revised Triangular Count Density",
+  callChain: `${baselineCallChain.slice(0, -1)}
+  .editDensity({
+    target: "densities",
+    bandwidth: 0.9,
+    kernel: "triangular",
+    normalization: "count"
+  });`,
+  primitive: createDensityRevisionPrimitives(cars)
 })]);

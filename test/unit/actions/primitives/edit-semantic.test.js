@@ -247,6 +247,49 @@ test("validates aggregate semantic values needed by primitive authoring", () => 
   }
 });
 
+test("validates resolved density kernel and normalization provenance", () => {
+  const baseTransform = {
+    type: "density",
+    field: "value",
+    bandwidth: 1,
+    extent: [0, 2],
+    steps: 3,
+    as: ["sample", "density"],
+    resolve: "shared"
+  };
+  const program = chart().editSemantic({
+    property: "dataset[density].transform",
+    value: [{
+      ...baseTransform,
+      kernel: "epanechnikov",
+      normalization: "count"
+    }]
+  });
+
+  assert.equal(
+    program.semanticSpec.datasets[0].transform[0].kernel,
+    "epanechnikov"
+  );
+  assert.equal(
+    program.semanticSpec.datasets[0].transform[0].normalization,
+    "count"
+  );
+  assert.throws(
+    () => chart().editSemantic({
+      property: "dataset[density].transform",
+      value: [{ ...baseTransform, kernel: "round" }]
+    }),
+    /Unsupported density kernel/
+  );
+  assert.throws(
+    () => chart().editSemantic({
+      property: "dataset[density].transform",
+      value: [{ ...baseTransform, normalization: "probability" }]
+    }),
+    /Unsupported density normalization/
+  );
+});
+
 test("validates exact histogram bin semantics through the primitive API", () => {
   const withStep = chart().editSemantic({
     property: "layer[bars].encoding.x.bin.step",

@@ -71,16 +71,52 @@ function resolveExtent(option, values) {
   return [...option];
 }
 
-function gaussianKernel(value) {
-  return Math.exp(-0.5 * value ** 2) / SQRT_TWO_PI;
+const DENSITY_KERNELS = Object.freeze({
+  gaussian(value) {
+    return Math.exp(-0.5 * value ** 2) / SQRT_TWO_PI;
+  },
+  epanechnikov(value) {
+    return Math.abs(value) <= 1 ? 0.75 * (1 - value ** 2) : 0;
+  },
+  uniform(value) {
+    return Math.abs(value) <= 1 ? 0.5 : 0;
+  },
+  triangular(value) {
+    return Math.abs(value) <= 1 ? 1 - Math.abs(value) : 0;
+  }
+});
+
+function resolveKernel(value) {
+  if (!Object.hasOwn(DENSITY_KERNELS, value)) {
+    throw new Error(`Unsupported density kernel "${value}".`);
+  }
+  return value;
 }
 
-function estimateDensity(sample, values, bandwidth) {
+function resolveNormalization(value) {
+  if (!["unit", "count"].includes(value)) {
+    throw new Error(`Unsupported density normalization "${value}".`);
+  }
+  return value;
+}
+
+function estimateDensity(
+  sample,
+  values,
+  bandwidth,
+  kernel,
+  normalization
+) {
   const kernelSum = values.reduce(
-    (sum, value) => sum + gaussianKernel((sample - value) / bandwidth),
+    (sum, value) => sum + DENSITY_KERNELS[kernel](
+      (sample - value) / bandwidth
+    ),
     0
   );
-  return kernelSum / (values.length * bandwidth);
+  const denominator = normalization === "unit"
+    ? values.length * bandwidth
+    : bandwidth;
+  return kernelSum / denominator;
 }
 
 function requireLayout({ width, height, margin }) {
@@ -197,6 +233,8 @@ export function createCarsDensityAreaValues(
     field = "Acceleration",
     groupBy = "Origin",
     bandwidth = 0.6,
+    kernel = "gaussian",
+    normalization = "unit",
     extent = "auto",
     steps = 100,
     as = ["Acceleration_value", "Acceleration_density"],
@@ -242,6 +280,8 @@ export function createCarsDensityAreaValues(
 
   const sourceValues = validRows.map(row => row[field]);
   const resolvedBandwidth = resolveBandwidth(bandwidth, sourceValues);
+  const resolvedKernel = resolveKernel(kernel);
+  const resolvedNormalization = resolveNormalization(normalization);
   const resolvedExtent = resolveExtent(extent, sourceValues);
   const groupDomain = [...new Set(validRows.map(row => row[groupBy]))];
   const sampleStep = (resolvedExtent[1] - resolvedExtent[0]) / (steps - 1);
@@ -258,7 +298,13 @@ export function createCarsDensityAreaValues(
     const rows = sampleValues.map(sample => ({
       [groupBy]: group,
       [as[0]]: sample,
-      [as[1]]: estimateDensity(sample, values, resolvedBandwidth)
+      [as[1]]: estimateDensity(
+        sample,
+        values,
+        resolvedBandwidth,
+        resolvedKernel,
+        resolvedNormalization
+      )
     }));
     return {
       group,
@@ -318,6 +364,8 @@ export function createCarsDensityAreaValues(
     validRows,
     fields: { source: field, group: groupBy, value: as[0], density: as[1] },
     bandwidth: resolvedBandwidth,
+    kernel: resolvedKernel,
+    normalization: resolvedNormalization,
     extent: resolvedExtent,
     steps,
     sampleValues,
