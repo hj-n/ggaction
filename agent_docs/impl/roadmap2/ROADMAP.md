@@ -149,6 +149,10 @@ color layouts다. Missing categorical cells는 기존 규칙대로 합성하지 
 
 현재 density/regression chart를 사용해 statistical variation과 stable component editing을 구현한다.
 
+- Phase goal: [`phase4/GOAL.md`](phase4/GOAL.md)
+- Density variant contract: [`chart/cars-density-area-variants.md`](chart/cars-density-area-variants.md)
+- Regression variant contract: [`chart/cars-regression-scatterplot-variants.md`](chart/cars-regression-scatterplot-variants.md)
+
 - Direct action: `editAreaMark`
 - Direct action: `editDensity`
 - Direct action: `editRegressionBand`
