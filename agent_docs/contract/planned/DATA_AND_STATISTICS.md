@@ -46,8 +46,9 @@ createIntervalData({
   resolved center/extent/level, output fields, and statistical conventions. Source data remains immutable.
 - `createIntervalData` is immutable create-only and makes no graphics. Consumers bind the derived dataset
   explicitly through wrapped semantic actions.
-- Status: Planned, NOT IMPLEMENTED. exact stderr/stdev/t fixtures, quartiles, grouped order, missing values,
-  invalid combinations, custom outputs, provenance, ownership and trace coverage가 필요하다.
+- Status: Planned, NOT IMPLEMENTED. Low-level `editSemantic` interval provenance validation과 independent
+  mean/sample-stdev/stderr/Student-t fixtures는 Current다. `createIntervalData`, production calculation,
+  stderr/stdev/IQR materialization, custom outputs, ownership and trace coverage는 아직 구현이 필요하다.
 
 ## box summary and outlier data
 

@@ -19,6 +19,7 @@ import {
   validateDensityNormalization
 } from "../../grammar/density.js";
 import { validateFilterTransform } from "../../grammar/filter.js";
+import { validateIntervalTransform } from "../../grammar/interval.js";
 import {
   validateSemanticFieldType,
   validateContinuousColorInterpolation,
@@ -136,7 +137,8 @@ function validateTransforms(value) {
   const validators = {
     filter: validateFilterTransform,
     regression: validateRegression,
-    density: validateDensity
+    density: validateDensity,
+    interval: validateIntervalTransform
   };
   for (const transform of value) {
     const validate = validators[transform.type];

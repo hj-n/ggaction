@@ -1,7 +1,13 @@
 import { defineVisualVariant } from "../../../support/visual-variants.js";
-import { createRuleGeometryPrimitives } from "../primitive.program.js";
+import { loadCars } from "../../../support/data.js";
+import {
+  createErrorBarBaselinePrimitives,
+  createRuleGeometryPrimitives
+} from "../primitive.program.js";
 import { createRuleGeometryProgram } from "../public.program.js";
 import {
+  ERROR_BAR_COLOR,
+  ERROR_BAR_LAYOUT,
   RULE_GEOMETRY_COLORS,
   RULE_GEOMETRY_LAYOUT
 } from "../reference-values.js";
@@ -55,6 +61,28 @@ const ruleGeometryCallChain = `chart()
     subtitle: "Full-span, bounded, and diagonal endpoints"
   });`;
 
+const baselineCallChain = `chart()
+  .createCanvas({
+    width: 720,
+    height: 460,
+    margin: { top: 90, right: 40, bottom: 70, left: 80 }
+  })
+  .createData({ values: cars })
+  .createErrorBar({
+    x: {
+      field: "Origin",
+      fieldType: "nominal"
+    },
+    y: {
+      field: "Acceleration"
+    }
+  })
+  .createGuides()
+  .createTitle({
+    text: "Mean Acceleration by Origin",
+    subtitle: "95% confidence intervals"
+  });`;
+
 export const visualVariants = Object.freeze([
   defineVisualVariant({
     chart: "cars-error-bar",
@@ -68,6 +96,19 @@ export const visualVariants = Object.freeze([
     colors: RULE_GEOMETRY_COLORS,
     regions: [
       { name: "plot", x: 80, y: 90, width: 600, height: 320 }
+    ]
+  }),
+  defineVisualVariant({
+    chart: "cars-error-bar",
+    variant: "baseline",
+    title: "Mean Acceleration Error Bars",
+    callChain: baselineCallChain,
+    primitive: createErrorBarBaselinePrimitives(loadCars()),
+    width: ERROR_BAR_LAYOUT.width,
+    height: ERROR_BAR_LAYOUT.height,
+    colors: [ERROR_BAR_COLOR],
+    regions: [
+      { name: "plot", x: 80, y: 90, width: 600, height: 300 }
     ]
   })
 ]);

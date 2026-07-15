@@ -287,6 +287,43 @@ test("validates aggregate semantic values needed by primitive authoring", () => 
   }
 });
 
+test("validates resolved interval provenance needed by primitive authoring", () => {
+  const base = chart().createData({ id: "cars", values: [] });
+  const transform = {
+    type: "interval",
+    field: "Acceleration",
+    groupBy: ["Origin"],
+    center: "mean",
+    extent: "ci",
+    level: 0.95,
+    as: {
+      center: "__errorBar_center",
+      lower: "__errorBar_lower",
+      upper: "__errorBar_upper"
+    }
+  };
+  const program = base
+    .editSemantic({ property: "dataset[summary].source", value: "cars" })
+    .editSemantic({ property: "dataset[summary].transform", value: [transform] });
+
+  assert.deepEqual(program.semanticSpec.datasets[1].transform, [transform]);
+  for (const invalid of [
+    { ...transform, groupBy: [] },
+    { ...transform, center: "median" },
+    { ...transform, extent: "stderr", level: 0.95 },
+    { ...transform, level: 1 },
+    { ...transform, as: { ...transform.as, upper: "Origin" } }
+  ]) {
+    assert.throws(
+      () => base.editSemantic({
+        property: "dataset[summary].transform",
+        value: [invalid]
+      }),
+      /Interval|interval/
+    );
+  }
+});
+
 test("validates resolved density kernel and normalization provenance", () => {
   const baseTransform = {
     type: "density",

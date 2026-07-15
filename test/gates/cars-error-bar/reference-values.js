@@ -1,3 +1,7 @@
+import {
+  createMeanConfidenceIntervalReference
+} from "../../support/interval-reference.js";
+
 export const RULE_GEOMETRY_LAYOUT = Object.freeze({
   width: 720,
   height: 460,
@@ -85,4 +89,150 @@ export function createRuleGeometryReferenceValues() {
   ]);
 
   return Object.freeze({ bounds, rows, rules });
+}
+
+export const ERROR_BAR_LAYOUT = Object.freeze({
+  width: 720,
+  height: 460,
+  margin: Object.freeze({ top: 90, right: 40, bottom: 70, left: 80 }),
+  capSize: 8
+});
+
+export const ERROR_BAR_FIELDS = Object.freeze({
+  center: "__errorBar_center",
+  lower: "__errorBar_lower",
+  upper: "__errorBar_upper"
+});
+
+export const ERROR_BAR_COLOR = "#4c78a8";
+
+const T_975 = new Map([
+  [253, 1.9693848042198945],
+  [72, 1.9934635666618716],
+  [78, 1.9908470688116904]
+]);
+
+function tCritical(degreesOfFreedom, confidence) {
+  if (confidence !== 0.95 || !T_975.has(degreesOfFreedom)) {
+    throw new Error(
+      `Missing 95% Student-t critical value for df=${degreesOfFreedom}.`
+    );
+  }
+  return T_975.get(degreesOfFreedom);
+}
+
+function freezeRows(rows) {
+  return Object.freeze(rows.map(row => Object.freeze(row)));
+}
+
+export function createErrorBarReferenceValues(cars) {
+  const statistics = freezeRows(createMeanConfidenceIntervalReference(cars, {
+    field: "Acceleration",
+    groupBy: "Origin",
+    confidence: 0.95,
+    criticalValue: tCritical
+  }));
+  const rows = freezeRows(statistics.map(row => ({
+    Origin: row.Origin,
+    [ERROR_BAR_FIELDS.center]: row.mean,
+    [ERROR_BAR_FIELDS.lower]: row.lower,
+    [ERROR_BAR_FIELDS.upper]: row.upper
+  })));
+  const transform = Object.freeze({
+    type: "interval",
+    field: "Acceleration",
+    groupBy: Object.freeze(["Origin"]),
+    center: "mean",
+    extent: "ci",
+    level: 0.95,
+    as: ERROR_BAR_FIELDS
+  });
+  const { width, height, margin, capSize } = ERROR_BAR_LAYOUT;
+  const bounds = Object.freeze({
+    left: margin.left,
+    right: width - margin.right,
+    top: margin.top,
+    bottom: height - margin.bottom
+  });
+  const xDomain = Object.freeze(rows.map(row => row.Origin));
+  const yDomain = Object.freeze([
+    Math.floor(Math.min(...statistics.map(row => row.lower))),
+    Math.ceil(Math.max(...statistics.map(row => row.upper)))
+  ]);
+  const xStep = (bounds.right - bounds.left) / xDomain.length;
+  const xPositions = Object.freeze(xDomain.map(
+    (_, index) => bounds.left + xStep * (index + 0.5)
+  ));
+  const y = value => map(
+    value,
+    yDomain,
+    [bounds.bottom, bounds.top]
+  );
+  const yTickValues = Object.freeze(Array.from(
+    { length: yDomain[1] - yDomain[0] + 1 },
+    (_, index) => yDomain[0] + index
+  ));
+  const yTickPositions = Object.freeze(yTickValues.map(y));
+  const mainRules = freezeRows(rows.map((row, index) => ({
+    x1: xPositions[index],
+    y1: y(row[ERROR_BAR_FIELDS.lower]),
+    x2: xPositions[index],
+    y2: y(row[ERROR_BAR_FIELDS.upper])
+  })));
+  const lowerCaps = freezeRows(mainRules.map(rule => ({
+    x1: rule.x1 - capSize / 2,
+    y1: rule.y1,
+    x2: rule.x1 + capSize / 2,
+    y2: rule.y1
+  })));
+  const upperCaps = freezeRows(mainRules.map(rule => ({
+    x1: rule.x2 - capSize / 2,
+    y1: rule.y2,
+    x2: rule.x2 + capSize / 2,
+    y2: rule.y2
+  })));
+  const axes = Object.freeze({
+    x: Object.freeze({
+      line: Object.freeze({
+        x1: bounds.left,
+        y1: bounds.bottom,
+        x2: bounds.right,
+        y2: bounds.bottom
+      }),
+      values: xDomain,
+      positions: xPositions,
+      title: Object.freeze({ x: (bounds.left + bounds.right) / 2, y: 432 })
+    }),
+    y: Object.freeze({
+      line: Object.freeze({
+        x1: bounds.left,
+        y1: bounds.bottom,
+        x2: bounds.left,
+        y2: bounds.top
+      }),
+      values: yTickValues,
+      positions: yTickPositions,
+      title: Object.freeze({ x: 28, y: (bounds.top + bounds.bottom) / 2 })
+    })
+  });
+  const horizontalGrid = freezeRows(yTickPositions.map(position => ({
+    x1: bounds.left,
+    y1: position,
+    x2: bounds.right,
+    y2: position
+  })));
+
+  return Object.freeze({
+    statistics,
+    rows,
+    transform,
+    bounds,
+    xDomain,
+    yDomain,
+    mainRules,
+    lowerCaps,
+    upperCaps,
+    axes,
+    horizontalGrid
+  });
 }

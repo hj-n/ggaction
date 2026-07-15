@@ -1,8 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+import { loadCars } from "../../support/data.js";
 import {
+  ERROR_BAR_LAYOUT,
   RULE_GEOMETRY_LAYOUT,
+  createErrorBarReferenceValues,
   createRuleGeometryReferenceValues
 } from "./reference-values.js";
 
@@ -54,4 +57,61 @@ test("keeps full spans on plot bounds and bounded rules inside them", () => {
     assert.equal(rule.y2 >= bounds.top && rule.y2 <= bounds.bottom, true);
   }
   assert.deepEqual(RULE_GEOMETRY_LAYOUT.domain, [0, 100]);
+});
+
+test("locks the canonical acceleration interval rows and resolved scales", () => {
+  const values = createErrorBarReferenceValues(loadCars());
+
+  assert.deepEqual(values.statistics.map(row => [
+    row.Origin,
+    row.count,
+    row.degreesOfFreedom
+  ]), [
+    ["USA", 254, 253],
+    ["Europe", 73, 72],
+    ["Japan", 79, 78]
+  ]);
+  assert.deepEqual(values.xDomain, ["USA", "Europe", "Japan"]);
+  assert.deepEqual(values.yDomain, [14, 18]);
+  assert.deepEqual(values.axes.x.positions, [180, 380, 580]);
+  assert.deepEqual(values.axes.y.values, [14, 15, 16, 17, 18]);
+  assert.deepEqual(values.axes.y.positions, [390, 315, 240, 165, 90]);
+  assert.deepEqual(values.transform, {
+    type: "interval",
+    field: "Acceleration",
+    groupBy: ["Origin"],
+    center: "mean",
+    extent: "ci",
+    level: 0.95,
+    as: {
+      center: "__errorBar_center",
+      lower: "__errorBar_lower",
+      upper: "__errorBar_upper"
+    }
+  });
+});
+
+test("maps vertical intervals and fixed eight-pixel caps independently", () => {
+  const values = createErrorBarReferenceValues(loadCars());
+
+  assert.deepEqual(
+    values.mainRules.map(rule =>
+      [rule.x1, rule.y1, rule.x2, rule.y2].map(value =>
+        Number(value.toFixed(10))
+      )
+    ),
+    [
+      [180, 345.3028613156, 180, 293.3191859285],
+      [380, 231.0435911745, 380, 125.6687375926],
+      [580, 259.9297595585, 580, 194.2474556314]
+    ]
+  );
+  for (const [index, cap] of values.lowerCaps.entries()) {
+    assert.equal(cap.x2 - cap.x1, ERROR_BAR_LAYOUT.capSize);
+    assert.equal(cap.y1, values.mainRules[index].y1);
+  }
+  for (const [index, cap] of values.upperCaps.entries()) {
+    assert.equal(cap.x2 - cap.x1, ERROR_BAR_LAYOUT.capSize);
+    assert.equal(cap.y1, values.mainRules[index].y2);
+  }
 });
