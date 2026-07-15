@@ -305,13 +305,17 @@ Derived dataset은 source와 transform provenance를 먼저 기록한 뒤 pure g
 
 현재 built-in derived transform은 다음과 같다.
 
-- scalar `oneOf` filter
+- scalar `oneOf` membership, strict comparison, or inclusive/exclusive range filter
 - grouped or ungrouped linear OLS regression
 - grouped or ungrouped kernel density estimation with Gaussian, Epanechnikov, uniform, or triangular kernels
 
 Transform은 source, input/output field, group, method 및 resolved parameter를 보존한다.
 Density의 automatic bandwidth, kernel과 normalization처럼 계산 결과에 영향을 주는 resolved default도
 provenance에 다시 저장한다.
+
+Filter transform은 `oneOf | predicate | range` 중 정확히 하나를 소유한다. Equality는 strict하고
+ordered comparison/range는 양쪽이 모두 finite number이거나 모두 string일 때만 적용한다. Range의
+`inclusive` default도 provenance에 저장하며 materialization은 source row order를 보존한다.
 
 ### Layer와 mark
 

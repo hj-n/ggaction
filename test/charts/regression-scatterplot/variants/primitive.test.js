@@ -8,7 +8,11 @@ import {
 import { loadCars } from "../../../support/data.js";
 import { assertChartProgramsEquivalent } from
   "../../../support/chart-equivalence.js";
-import { createComponentEditCarsRegressionScatterplot } from
+import {
+  createComparisonFilterCarsRegressionScatterplot,
+  createComponentEditCarsRegressionScatterplot,
+  createRangeFilterCarsRegressionScatterplot
+} from
   "../../../../examples/cars-regression-scatterplot/program.js";
 import {
   createCarsRegressionScatterplotPrimitives,
@@ -114,4 +118,15 @@ test("authors comparison and range filter targets with primitive state", () => {
     );
     assert.ok(!program.trace.children.some(node => node.op === "filterData"));
   }
+});
+
+test("matches filter primitives with public filterData modes", () => {
+  assertChartProgramsEquivalent({
+    primitiveProgram: createComparisonFilterPrimitives(cars),
+    publicProgram: createComparisonFilterCarsRegressionScatterplot(cars)
+  });
+  assertChartProgramsEquivalent({
+    primitiveProgram: createRangeFilterPrimitives(cars),
+    publicProgram: createRangeFilterCarsRegressionScatterplot(cars)
+  });
 });

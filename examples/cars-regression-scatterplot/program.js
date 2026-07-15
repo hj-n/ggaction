@@ -1,6 +1,6 @@
 import { chart } from "../../src/index.js";
 
-export function createCarsRegressionScatterplot(cars) {
+function createCarsRegressionScatterplotWithFilter(cars, filter) {
   return chart()
     .createCanvas({
       width: 760,
@@ -10,8 +10,7 @@ export function createCarsRegressionScatterplot(cars) {
     .createData({ id: "cars", values: cars })
     .filterData({
       id: "selectedCars",
-      field: "Origin",
-      oneOf: ["Japan", "USA"]
+      ...filter
     })
     .createPointMark({ id: "points" })
     .encodeX({
@@ -35,6 +34,27 @@ export function createCarsRegressionScatterplot(cars) {
       line: { strokeWidth: 3 }
     })
     .createGuides();
+}
+
+export function createCarsRegressionScatterplot(cars) {
+  return createCarsRegressionScatterplotWithFilter(cars, {
+    field: "Origin",
+    oneOf: ["Japan", "USA"]
+  });
+}
+
+export function createComparisonFilterCarsRegressionScatterplot(cars) {
+  return createCarsRegressionScatterplotWithFilter(cars, {
+    field: "Horsepower",
+    predicate: { op: "gte", value: 150 }
+  });
+}
+
+export function createRangeFilterCarsRegressionScatterplot(cars) {
+  return createCarsRegressionScatterplotWithFilter(cars, {
+    field: "Displacement",
+    range: { min: 100, max: 300, inclusive: true }
+  });
 }
 
 export function createComponentEditCarsRegressionScatterplot(cars) {

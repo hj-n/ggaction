@@ -6,14 +6,15 @@
 
 ## 진행 상태
 
-- [ ] Shared predicate/range validation
-- [ ] `eq | neq | lt | lte | gt | gte`
-- [ ] Numeric/string ordered compatibility
-- [ ] Inclusive/exclusive range endpoints
-- [ ] Immutable values/provenance와 source order
-- [ ] Mutual exclusivity, sparse/mixed/empty coverage
-- [ ] Primitive/public equivalence와 user-facing PNG
-- [ ] Types, docs, contracts, commit와 push
+- [x] Shared predicate/range validation
+- [x] `eq | neq | lt | lte | gt | gte`
+- [x] Numeric/string ordered compatibility
+- [x] Inclusive/exclusive range endpoints
+- [x] Immutable values/provenance와 source order
+- [x] Mutual exclusivity, sparse/mixed/empty coverage
+- [x] Primitive/public equivalence와 user-facing PNG
+- [x] Types, docs와 current contract 승격
+- [x] Full verification, commit와 push
 
 ## 완료 조건
 

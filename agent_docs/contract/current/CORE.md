@@ -118,7 +118,12 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 - `field`: Implemented, 비어 있지 않은 필드 이름. 각 row에 값이 없어도 비교 결과가 false일 수 있다.
 - `oneOf`: Implemented, scalar accepted-value array. strict equality membership으로 row를 유지하며
   transform input은 소유권 복사된다.
-- `predicate`, `range`: Planned comparison/range modes이며 oneOf와 mutually exclusive다.
+- `predicate`: Implemented `{ op, value }` comparison. `eq | neq`는 strict equality를 사용하고
+  `lt | lte | gt | gte`는 같은 type의 finite number 또는 string만 순서 비교한다.
+- `range`: Implemented `{ min, max, inclusive? }`. 같은 type의 finite number/string endpoint를
+  요구하고 `inclusive` 기본값은 `true`다.
+- `oneOf`, `predicate`, `range` 중 정확히 하나만 허용한다. Ordered comparison/range에서 missing 또는
+  incompatible field value는 제외하고 source order를 보존한다.
 - Effect: filter provenance를 가진 immutable derived dataset을 만들고 wrapped
   `materializeFilteredData`가 concrete values를 저장한다. 기존 source는 변하지 않는다.
 - Coverage: `test/unit/actions/data/filter-data.test.js`가 source inference, scalar types,
@@ -126,8 +131,10 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 
 ### Formal values — `filterData`
 
-- Implemented: `filterData({ id: UserId; source?: UserId; field: FieldName; oneOf: readonly unknown[] })`
-- Planned (NOT IMPLEMENTED): `filterData({ id: UserId; source?: UserId; field: FieldName } & ({ oneOf: readonly unknown[] } | { predicate: FilterComparison } | { range: FilterRange }))`
+- Implemented: `filterData({ id: UserId; source?: UserId; field: FieldName } & ({ oneOf: readonly unknown[] } | { predicate: FilterComparison } | { range: FilterRange }))`
+- `FilterComparison = { op: "eq" | "neq"; value: unknown } | { op: "lt" | "lte" | "gt" | "gte"; value: Finite | string }`
+- `FilterRange = { min: Finite | string; max: Finite | string; inclusive?: boolean }`
+- Planned (NOT IMPLEMENTED): —
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `filterData`
@@ -135,12 +142,16 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 - `id`, `source`
   - ✅ Covered: explicit source, current-data inference, missing/ambiguous source, duplicate derived ID.
 - `field`
-  - ✅ Covered: non-empty string과 invalid field option.
-  - ⚠️ Partial: rows에 field가 일부만 존재하는 sparse data의 명시적 result case.
+  - ✅ Covered: non-empty string, invalid option, sparse와 incompatible ordered values.
 - `oneOf`
   - ✅ Covered: string/number/boolean scalar membership, owned input, invalid transform values.
   - ⚠️ Partial: empty list, duplicate values와 `null` membership의 direct behavior.
-  - 🟡 Planned: mutually exclusive comparison/range modes, ordered type rules와 inclusive endpoints.
+- `predicate`
+  - ✅ Covered: 모든 여섯 operator, strict no-coercion, numeric/string order, invalid operator/operand와 owned provenance.
+- `range`
+  - ✅ Covered: inclusive default, exclusive endpoints, equal-endpoint empty result, invalid order/type/inclusive와 owned provenance.
+- Mode interaction
+  - ✅ Covered: exactly-one mutual exclusivity, source immutability/order와 primitive/public chart equivalence.
 - Evidence: `test/unit/actions/data/filter-data.test.js`.
 
 ## `createRegressionData`

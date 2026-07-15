@@ -39,6 +39,23 @@ export type DensityKernel =
   | "uniform"
   | "triangular";
 export type DensityNormalization = "unit" | "count";
+export type FilterComparison =
+  | { op: "eq" | "neq"; value: unknown }
+  | { op: "lt" | "lte" | "gt" | "gte"; value: number | string };
+export type FilterRange = {
+  min: number | string;
+  max: number | string;
+  inclusive?: boolean;
+};
+export type FilterDataOptions = {
+  id: string;
+  source?: string;
+  field: string;
+} & (
+  | { oneOf: readonly unknown[]; predicate?: never; range?: never }
+  | { oneOf?: never; predicate: FilterComparison; range?: never }
+  | { oneOf?: never; predicate?: never; range: FilterRange }
+);
 export type ColorLayout =
   | "stack"
   | "fill"
@@ -428,7 +445,7 @@ export class ChartProgram {
   createCanvas(options?: CanvasOptions): ChartProgram;
   editCanvas(options: CanvasOptions): ChartProgram;
   createData(options: { id: string; values: readonly unknown[] }): ChartProgram;
-  filterData(options: { id: string; source?: string; field: string; oneOf: readonly unknown[] }): ChartProgram;
+  filterData(options: FilterDataOptions): ChartProgram;
   createDensityData(options: DensityDataOptions): ChartProgram;
   createRegressionData(options: ActionOptions): ChartProgram;
 

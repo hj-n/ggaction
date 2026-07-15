@@ -69,32 +69,6 @@ type BoxWhisker =
 - Status: Planned, NOT IMPLEMENTED. quartile/whisker fixtures, even/odd/duplicate samples, missing values,
   grouped order, empty/singleton groups, Tukey factor, minmax, outlier ownership and deterministic IDs가 필요하다.
 
-## filter predicate modes
-
-```typescript
-type FilterComparison =
-  | { op: "eq" | "neq"; value: unknown }
-  | { op: "lt" | "lte" | "gt" | "gte"; value: Finite | string };
-
-type FilterRange = {
-  min: Finite | string;
-  max: Finite | string;
-  inclusive?: boolean;
-};
-```
-
-- `filterData`는 existing `oneOf`, Planned `predicate`, Planned `range` 중 정확히 하나를 요구한다.
-  `inclusive` 기본값은 `true`이며 false이면 양쪽 endpoint를 모두 제외한다.
-- `eq`/`neq`는 existing membership과 같은 strict (`===`) scalar equality를 사용한다. ordered
-  comparison과 range는 field value와 operand가 모두 finite number이거나 모두 string이어야 하며
-  string은 ECMAScript lexicographic order로 비교한다. missing 또는 incompatible value는 row를 유지하지 않는다.
-- range endpoints는 같은 type이고 `min <= max`여야 한다. `min === max`는 inclusive range에서
-  equality filter, exclusive range에서는 empty result가 된다. empty derived dataset은 허용한다.
-- resolved predicate mode와 owned operand/range를 filter transform provenance에 저장한다. wrapped
-  `materializeFilteredData`가 source order를 보존해 immutable derived values를 만들며 source는 변하지 않는다.
-- Status: Planned, NOT IMPLEMENTED. 각 operator/type, endpoint inclusivity, sparse/mixed rows,
-  exclusivity, ownership과 empty-result coverage가 필요하다.
-
 ## selectRows
 
 ```typescript

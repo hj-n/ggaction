@@ -596,7 +596,9 @@ export function createCarsRegressionScatterplotValues(
             { op: "L", x: originLegendX + 16 - diamondRadius, y },
             { op: "Z" }
           ],
-          fill: colorRange[index]
+          fill: colorRange[index],
+          stroke: "white",
+          strokeWidth: 0
         }
       };
     } else {
@@ -635,9 +637,10 @@ export function createCarsRegressionScatterplotValues(
       index / (DEFAULT_SIZE_LEGEND_COUNT - 1) *
       (sizeDomain[1] - sizeDomain[0])
   );
+  const sizeLegendTitleY = bounds.y + 56 + groupDomain.length * 34 + 22;
   const sizeLegendItems = sizeLegendValues.map((value, index) => {
     const area = mapValue(value, sizeDomain, sizeRange);
-    const y = bounds.y + 180 + index * 40;
+    const y = sizeLegendTitleY + 34 + index * 40;
     return {
       value,
       symbol: {
@@ -725,7 +728,7 @@ export function createCarsRegressionScatterplotValues(
         items: originLegendItems
       },
       size: {
-        title: { x: originLegendX, y: bounds.y + 146, text: yField },
+        title: { x: originLegendX, y: sizeLegendTitleY, text: yField },
         items: sizeLegendItems
       }
     }

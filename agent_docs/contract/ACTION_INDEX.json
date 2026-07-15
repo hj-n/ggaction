@@ -84,7 +84,7 @@
       "coverage": {
         "contract": "complete",
         "effects": "complete",
-        "tests": "partial"
+        "tests": "complete"
       },
       "contract": {
         "file": "agent_docs/contract/current/CORE.md",
@@ -1497,17 +1497,6 @@
       "contract": {
         "file": "agent_docs/contract/planned/SCALES.md",
         "anchor": "scale-mapping-policies"
-      }
-    },
-    {
-      "id": "filter-predicate-modes",
-      "kind": "parameter",
-      "name": "Filter predicate modes",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/DATA_AND_STATISTICS.md",
-        "anchor": "filter-predicate-modes"
       }
     },
     {

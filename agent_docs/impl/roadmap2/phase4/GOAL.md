@@ -17,7 +17,7 @@ kernel·normalization·immutable reassignment, filter predicate modes, regressio
 - [x] 두 canonical baseline audit와 Roadmap 2 gallery pair
 - [x] Area outline/component edit primitive 승인과 public implementation
 - [x] Density kernel/normalization primitive 승인과 public implementation
-- [ ] Filter predicate primitive 승인과 public implementation
+- [x] Filter predicate primitive 승인과 public implementation
 - [ ] Regression method/interval primitive 승인과 public implementation
 - [ ] Full parameter, numeric, failure, immutability와 rematerialization matrix
 - [ ] Public docs, contract 승격과 Phase closeout

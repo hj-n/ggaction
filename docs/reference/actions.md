@@ -56,11 +56,12 @@ Create one immutable named dataset. [Data](../api/data.md)
 ### `filterData`
 
 ```javascript
-filterData({ id, source?, field, oneOf })
+filterData({ id, source?, field, oneOf | predicate | range })
 ```
 
-Create an immutable named derived dataset using a scalar `oneOf` filter. The
-source defaults to current data. [Data](../api/data.md)
+Create an immutable named derived dataset using exactly one membership,
+comparison, or range filter. The source defaults to current data.
+[Data](../api/data.md)
 
 ### `createRegressionData`
 

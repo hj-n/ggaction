@@ -10,7 +10,7 @@ title: Data
 | Action | Shortest call | Inference/defaults | Result |
 | --- | --- | --- | --- |
 | `createData` | `createData({ id: "rows", values })` | No ID or value inference | Immutable semantic dataset and current-data context |
-| `filterData` | `filterData({ id: "selected", field, oneOf })` | Source: current dataset | Immutable derived dataset with filter provenance and materialized rows |
+| `filterData` | `filterData({ id: "selected", field, oneOf })` | Source: current dataset | Immutable derived dataset using one membership, comparison, or range filter |
 | `createRegressionData` | `createRegressionData({ id: "fit", x, y })` | Source: current dataset; linear OLS; confidence `0.95` | Immutable derived predictions and mean-response interval |
 | `createDensityData` | `createDensityData({ id: "density", field })` | Source: current dataset; Gaussian/unit density; 100 steps; automatic bandwidth | Immutable KDE rows and density provenance |
 
@@ -39,7 +39,7 @@ The most recently created dataset becomes the default for `createPointMark`,
 `createLineMark`, or `createBarMark`. Creating data records semantic state only
 and produces no graphics.
 
-## `filterData({ id, source?, field, oneOf })`
+## `filterData({ id, source?, field, oneOf | predicate | range })`
 
 Create a named derived dataset without replacing or mutating its source.
 
@@ -58,11 +58,42 @@ const selected = chart()
 | `id` | dataset ID | yes |
 | `source` | existing dataset ID | no; defaults to current dataset |
 | `field` | non-empty string | yes |
-| `oneOf` | non-empty scalar array | yes |
+| `oneOf` | non-empty scalar array | one filter mode required |
+| `predicate` | `{ op, value }` | one filter mode required |
+| `range` | `{ min, max, inclusive? }` | one filter mode required |
 
 The derived dataset stores its source ID, filter transform, and immutable
-materialized values. Rows retain source order. Missing fields and values not in
-`oneOf` are omitted. The new dataset becomes current data for the next mark.
+materialized values. Exactly one of `oneOf`, `predicate`, or `range` is required.
+Rows retain source order, the source remains unchanged, and the new dataset
+becomes current data for the next mark.
+
+Comparison operators are `"eq"`, `"neq"`, `"lt"`, `"lte"`, `"gt"`, and
+`"gte"`. Equality is strict and never coerces values. Ordered comparisons
+require both values to be finite numbers or both to be strings; incompatible or
+missing field values are omitted. String order is lexicographic.
+
+```javascript
+const powerfulCars = chart()
+  .createData({ id: "cars", values: cars })
+  .filterData({
+    id: "powerfulCars",
+    field: "Horsepower",
+    predicate: { op: "gte", value: 150 }
+  });
+```
+
+Range endpoints must be the same type and `min` cannot exceed `max`.
+`inclusive` defaults to `true`; setting it to `false` excludes both endpoints.
+An empty result is valid.
+
+```javascript
+program.filterData({
+  id: "midDisplacementCars",
+  source: "cars",
+  field: "Displacement",
+  range: { min: 100, max: 300, inclusive: true }
+});
+```
 
 ## `createRegressionData({ id, source?, x, y, groupBy?, confidence? })`
 

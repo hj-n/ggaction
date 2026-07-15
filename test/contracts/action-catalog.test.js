@@ -421,8 +421,9 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   assert.match(currentCorpus, /kernel\?: "gaussian" \| "epanechnikov" \| "uniform" \| "triangular"/);
   assert.match(currentCorpus, /normalization\?: "unit" \| "count"/);
   assert.match(currentCorpus, /unit은 group density integral을 1로 맞추고 count는/);
-  assert.match(plannedCorpus, /type FilterComparison =/);
-  assert.match(plannedCorpus, /oneOf.*predicate.*range.*정확히 하나/);
+  assert.match(currentCorpus, /FilterComparison =/);
+  assert.match(currentCorpus, /oneOf.*predicate.*range.*정확히 하나/);
+  assert.doesNotMatch(plannedCorpus, /filter predicate modes/);
   assert.match(plannedCorpus, /type RowSelectionMode = "min" \| "max"/);
   assert.match(plannedCorpus, /selectRows\(\{/);
   assert.match(plannedCorpus, /Extreme value tie는 source order에서 먼저 등장한 row/);

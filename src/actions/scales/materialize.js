@@ -297,6 +297,14 @@ export const rematerializeScale = action(
 
     for (const { consumer, values } of valuesByConsumer) {
       if (
+        consumer.layer.mark?.type === "point" &&
+        ["x", "y"].includes(channel) &&
+        next.graphicSpec.objects[consumer.layer.id]?.type === "collection"
+      ) {
+        next = next.rematerializePointMark({ id: consumer.layer.id });
+        continue;
+      }
+      if (
         ["line", "bar", "area"].includes(consumer.layer.mark?.type) ||
         (consumer.layer.mark?.type === "point" &&
           ["x", "y"].includes(channel) && isOrdinalPosition) ||

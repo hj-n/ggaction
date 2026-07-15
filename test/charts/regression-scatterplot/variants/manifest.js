@@ -1,6 +1,8 @@
 import {
   createCarsRegressionScatterplot,
-  createComponentEditCarsRegressionScatterplot
+  createComparisonFilterCarsRegressionScatterplot,
+  createComponentEditCarsRegressionScatterplot,
+  createRangeFilterCarsRegressionScatterplot
 } from
   "../../../../examples/cars-regression-scatterplot/program.js";
 import { loadCars } from "../../../support/data.js";
@@ -110,7 +112,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
     field: "Horsepower",
     predicate: { op: "gte", value: 150 }
   })`),
-  primitive: createComparisonFilterPrimitives(cars)
+  primitive: createComparisonFilterPrimitives(cars),
+  userFacing: createComparisonFilterCarsRegressionScatterplot(cars)
 }), defineVisualVariant({
   ...shared,
   variant: "range-filter",
@@ -121,5 +124,6 @@ export const visualVariants = Object.freeze([defineVisualVariant({
     field: "Displacement",
     range: { min: 100, max: 300, inclusive: true }
   })`),
-  primitive: createRangeFilterPrimitives(cars)
+  primitive: createRangeFilterPrimitives(cars),
+  userFacing: createRangeFilterCarsRegressionScatterplot(cars)
 })]);

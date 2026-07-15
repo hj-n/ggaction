@@ -134,3 +134,160 @@ test("matches the regression scatterplot primitive filter contract", () => {
 
   assert.deepEqual(program.semanticSpec.datasets[1].values, expected);
 });
+
+test("supports every strict comparison operator without type coercion", () => {
+  const mixed = [
+    { id: "one", value: 1 },
+    { id: "two", value: 2 },
+    { id: "three", value: 3 },
+    { id: "string", value: "2" },
+    { id: "null", value: null },
+    { id: "missing" },
+    { id: "nan", value: Number.NaN }
+  ];
+  const expected = {
+    eq: ["two"],
+    neq: ["one", "three", "string", "null", "missing", "nan"],
+    lt: ["one"],
+    lte: ["one", "two"],
+    gt: ["three"],
+    gte: ["two", "three"]
+  };
+
+  for (const [op, ids] of Object.entries(expected)) {
+    const program = chart()
+      .createData({ id: "rows", values: mixed })
+      .filterData({
+        id: "selected",
+        field: "value",
+        predicate: { op, value: 2 }
+      });
+    assert.deepEqual(
+      program.semanticSpec.datasets[1].values.map(row => row.id),
+      ids
+    );
+  }
+});
+
+test("orders strings and excludes sparse or incompatible ordered values", () => {
+  const values = [
+    { id: 1, value: "alpha" },
+    { id: 2, value: 10 },
+    { id: 3, value: "beta" },
+    { id: 4 },
+    { id: 5, value: "gamma" }
+  ];
+  const program = chart()
+    .createData({ id: "rows", values })
+    .filterData({
+      id: "selected",
+      field: "value",
+      predicate: { op: "gte", value: "beta" }
+    });
+
+  assert.deepEqual(
+    program.semanticSpec.datasets[1].values.map(row => row.id),
+    [3, 5]
+  );
+});
+
+test("resolves inclusive and exclusive range endpoints", () => {
+  const values = [
+    { id: 1, value: 1 },
+    { id: 2, value: 2 },
+    { id: 3, value: 3 },
+    { id: 4, value: "2" },
+    { id: 5 }
+  ];
+  const base = chart().createData({ id: "rows", values });
+  const inclusive = base.filterData({
+    id: "inclusive",
+    field: "value",
+    range: { min: 1, max: 3 }
+  });
+  const exclusive = base.filterData({
+    id: "exclusive",
+    field: "value",
+    range: { min: 1, max: 3, inclusive: false }
+  });
+  const empty = base.filterData({
+    id: "empty",
+    field: "value",
+    range: { min: 2, max: 2, inclusive: false }
+  });
+
+  assert.deepEqual(inclusive.semanticSpec.datasets[1].transform[0].range, {
+    min: 1,
+    max: 3,
+    inclusive: true
+  });
+  assert.deepEqual(
+    inclusive.semanticSpec.datasets[1].values.map(row => row.id),
+    [1, 2, 3]
+  );
+  assert.deepEqual(
+    exclusive.semanticSpec.datasets[1].values.map(row => row.id),
+    [2]
+  );
+  assert.deepEqual(empty.semanticSpec.datasets[1].values, []);
+});
+
+test("owns predicate and range provenance", () => {
+  const predicate = { op: "gte", value: 2 };
+  const range = { min: 1, max: 3 };
+  const base = chart().createData({ id: "rows", values: rows });
+  const compared = base.filterData({
+    id: "compared",
+    field: "value",
+    predicate
+  });
+  const ranged = base.filterData({
+    id: "ranged",
+    field: "value",
+    range
+  });
+
+  predicate.value = 99;
+  range.min = 99;
+  assert.deepEqual(compared.semanticSpec.datasets[1].transform[0].predicate, {
+    op: "gte",
+    value: 2
+  });
+  assert.deepEqual(ranged.semanticSpec.datasets[1].transform[0].range, {
+    min: 1,
+    max: 3,
+    inclusive: true
+  });
+});
+
+test("validates filter mode exclusivity and ordered operands", () => {
+  const base = chart().createData({ id: "rows", values: rows });
+  const invalid = [{}, {
+    oneOf: [1],
+    predicate: { op: "eq", value: 1 }
+  }, {
+    predicate: { op: "near", value: 1 }
+  }, {
+    predicate: { op: "gte", value: true }
+  }, {
+    predicate: { op: "gte" }
+  }, {
+    range: { min: 3, max: 1 }
+  }, {
+    range: { min: 1, max: "3" }
+  }, {
+    range: { min: 1, max: 3, inclusive: "yes" }
+  }];
+
+  for (const options of invalid) {
+    assert.throws(
+      () => base.filterData({
+        id: "selected",
+        field: "value",
+        ...options
+      }),
+      /filter|comparison|predicate|range|exactly/i
+    );
+  }
+  assert.deepEqual(base.semanticSpec.datasets, [{ id: "rows", values: rows }]);
+});
