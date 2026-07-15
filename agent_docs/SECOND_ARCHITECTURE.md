@@ -692,8 +692,9 @@ action이며, explicit materialization 순서와 계층을 `trace`에 남긴다.
 domain action을 호출한다.
 
 동일한 public facade 아래에서 같은 역할을 분담하는 component는 공개 경계를 대칭적으로
-유지한다. Legend에서는 `createLegend`만 public이고 `createCategoricalLegend`와
-`createSizeLegend`는 trace에 보이는 internal wrapped component다.
+유지한다. Legend에서는 `createLegend`와 stable-resource `editLegend`가 public이고
+`createCategoricalLegend`, `createSizeLegend`, `rematerialize*Legend`는 trace에 보이는 internal
+wrapped component다.
 
 ### Action Authoring Primitives
 
@@ -1017,6 +1018,11 @@ Encoding reassignment는 existing categorical legend의 inferred field/title/dom
 
 Chart-independent legend default는 right다. Top/bottom, horizontal/vertical direction,
 columns, alignment, title position, border 등은 explicit option이다.
+Categorical/composite/size의 left side layout은 item 내부 symbol→label 순서와 resolved domain
+순서를 보존하고 multiple blocks를 top-to-bottom으로 쌓는다. Categorical과 size가 같은 target이면
+하나의 occupied bounds와 border를 공유하며 y-axis guide와 left margin 충돌을 함께 검증한다.
+`editLegend`는 channel/scale binding을 바꾸지 않고 nested appearance/layout config만 부분 merge한 뒤
+kind별 wrapped rematerialization을 호출한다.
 
 ### Title
 

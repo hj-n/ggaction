@@ -1,6 +1,7 @@
 import { action } from "../../../../core/action.js";
 import {
   activeConfig,
+  graphic,
   layerFor,
   noOptions,
   resolveAppearance,
@@ -126,6 +127,9 @@ function makeCreateSymbol(type, edit) {
         .createGraphics({
           id,
           type: graphicType,
+          ...(this.graphicSpec.objects[graphic(config, "Labels")] === undefined
+            ? {}
+            : { before: graphic(config, "Labels") }),
           ...(graphicType === "collection"
             ? {}
             : { length: config.domain.length })

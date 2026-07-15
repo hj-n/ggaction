@@ -61,6 +61,8 @@ or LOESS regression scatterplots with optional mean/prediction bands, and groupe
 Cartesian guides support bottom/top x axes, left/right y axes, and closed
 numeric or UTC label-format tokens. Existing horizontal and vertical grids can
 be edited independently without changing their scale or coordinate binding.
+Categorical, composite point/size, gradient, and opacity legends have stable
+layout/appearance edits; categorical side layouts support right and left.
 It renders through browser Canvas and Node PNG. It is not published to npm yet.
 
 Do not assume facets, program composition, SVG rendering, animation, automatic

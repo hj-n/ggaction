@@ -4,6 +4,8 @@ import { mapLinearValues } from "../../../grammar/scales.js";
 import { resolveGraphicBounds } from "../../../layout/canvas.js";
 import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from
   "../../../theme/defaults.js";
+import { resolveLayout as resolveCategoricalLayout } from
+  "./categorical/layout.js";
 
 const SIZE_OPTIONS = Object.freeze(["target", "count"]);
 
@@ -50,16 +52,22 @@ function bounds(program) {
   return value;
 }
 
-function styleText(program, id, { title = false } = {}) {
+function styleText(program, id, { title = false, style } = {}) {
+  const resolved = style ?? {
+    color: title ? DEFAULT_COLORS.strongText : DEFAULT_COLORS.text,
+    fontSize: title ? 13 : 12,
+    fontFamily: DEFAULT_FONT_FAMILY,
+    fontWeight: title ? 600 : "normal"
+  };
   return program
     .editGraphics({
       target: id,
       property: "fill",
-      value: title ? DEFAULT_COLORS.strongText : DEFAULT_COLORS.text
+      value: resolved.color
     })
-    .editGraphics({ target: id, property: "fontSize", value: title ? 13 : 12 })
-    .editGraphics({ target: id, property: "fontFamily", value: DEFAULT_FONT_FAMILY })
-    .editGraphics({ target: id, property: "fontWeight", value: title ? 600 : "normal" })
+    .editGraphics({ target: id, property: "fontSize", value: resolved.fontSize })
+    .editGraphics({ target: id, property: "fontFamily", value: resolved.fontFamily })
+    .editGraphics({ target: id, property: "fontWeight", value: resolved.fontWeight })
     .editGraphics({ target: id, property: "textAlign", value: "left" })
     .editGraphics({ target: id, property: "textBaseline", value: "middle" });
 }
@@ -87,9 +95,14 @@ export const rematerializeSizeLegend = action(
       domain: scale.domain
     };
     const plot = bounds(this);
-    const originX = plot.x + plot.width + 30;
-    const seriesCount = this.guideConfigs.legend?.series?.domain.length ?? 0;
-    const titleY = plot.y + 56 + seriesCount * 34 + 22;
+    const categorical = this.guideConfigs.legend?.series ??
+      this.guideConfigs.legend?.color;
+    const leftLayout = categorical?.position === "left"
+      ? resolveCategoricalLayout(this, categorical).size
+      : undefined;
+    const originX = leftLayout?.titleX ?? plot.x + plot.width + 30;
+    const seriesCount = categorical?.domain.length ?? 0;
+    const titleY = leftLayout?.titleY ?? plot.y + 56 + seriesCount * 34 + 22;
     const values = Array.from(
       { length: currentConfig.count },
       (_, index) => scale.domain[0] +
@@ -98,13 +111,16 @@ export const rematerializeSizeLegend = action(
     const areas = mapLinearValues(values, scale.domain, scale.range, {
       clamp: scale.clamp ?? false
     });
-    const itemY = values.map((_, index) => titleY + 34 + index * 40);
+    const itemY = leftLayout?.itemY ??
+      values.map((_, index) => titleY + 34 + index * 40);
+    const symbolX = leftLayout?.symbolX ?? values.map(() => originX + 16);
+    const labelX = leftLayout?.labelX ?? values.map(() => originX + 44);
     let next = this
       .editSemantic({ property: "guide.legend.size.scale", value: encoding.scale })
       .editSemantic({ property: "guide.legend.size.title", value: title })
       ._withLegendConfig("size", currentConfig)
       .editGraphics({ target: "sizeLegendSymbols", property: "length", value: values.length })
-      .editGraphics({ target: "sizeLegendSymbols", property: "x", value: originX + 16 })
+      .editGraphics({ target: "sizeLegendSymbols", property: "x", value: symbolX })
       .editGraphics({ target: "sizeLegendSymbols", property: "y", value: itemY })
       .editGraphics({
         target: "sizeLegendSymbols",
@@ -118,7 +134,7 @@ export const rematerializeSizeLegend = action(
       })
       .editGraphics({ target: "sizeLegendSymbols", property: "opacity", value: 0.7 })
       .editGraphics({ target: "sizeLegendLabels", property: "length", value: values.length })
-      .editGraphics({ target: "sizeLegendLabels", property: "x", value: originX + 44 })
+      .editGraphics({ target: "sizeLegendLabels", property: "x", value: labelX })
       .editGraphics({ target: "sizeLegendLabels", property: "y", value: itemY })
       .editGraphics({
         target: "sizeLegendLabels",
@@ -128,8 +144,17 @@ export const rematerializeSizeLegend = action(
       .editGraphics({ target: "sizeLegendTitle", property: "x", value: originX })
       .editGraphics({ target: "sizeLegendTitle", property: "y", value: titleY })
       .editGraphics({ target: "sizeLegendTitle", property: "text", value: title });
-    next = styleText(next, "sizeLegendLabels");
-    return styleText(next, "sizeLegendTitle", { title: true });
+    next = styleText(next, "sizeLegendLabels", {
+      style: currentConfig.inheritAppearance === true
+        ? categorical.labels
+        : undefined
+    });
+    return styleText(next, "sizeLegendTitle", {
+      title: true,
+      style: currentConfig.inheritAppearance === true
+        ? categorical.titleStyle
+        : undefined
+    });
   }
 );
 
@@ -139,7 +164,7 @@ export const createSizeLegend = action(
     description: "Create a quantitative equal-area point-size legend."
   },
   function (args = {}) {
-    validateKeys(args, SIZE_OPTIONS, "createSizeLegend");
+    validateKeys(args, [...SIZE_OPTIONS, "inheritAppearance"], "createSizeLegend");
     const layer = resolvePoint(this, args.target);
     const encoding = layer.encoding?.size;
     if (encoding?.scale === undefined) {
@@ -159,7 +184,8 @@ export const createSizeLegend = action(
         title: encoding.field,
         inferredTitle: true,
         domain: scale.domain,
-        count
+        count,
+        inheritAppearance: args.inheritAppearance === true
       })
       .createGraphics({ id: "sizeLegendSymbols", type: "circle", length: count })
       .createGraphics({ id: "sizeLegendLabels", type: "text", length: count })

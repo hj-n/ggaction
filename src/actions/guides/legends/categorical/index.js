@@ -22,9 +22,11 @@ import {
   editLegendSymbolSwatches,
   editLegendSymbols
 } from "./symbols.js";
+import { editLegend } from "../edit.js";
 
 export function registerCategoricalLegendActions(ProgramClass) {
   ProgramClass.prototype.createLegend = createLegend;
+  ProgramClass.prototype.editLegend = editLegend;
   ProgramClass.prototype.createCategoricalLegend = createCategoricalLegend;
   ProgramClass.prototype.removeCategoricalLegend = removeCategoricalLegend;
   ProgramClass.prototype.createLegendBackground = createLegendBackground;

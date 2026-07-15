@@ -580,6 +580,11 @@ export interface LegendOptions {
   border?: boolean | LegendBorderOptions;
 }
 
+export interface EditLegendOptions
+  extends Omit<LegendOptions, "channels" | "title"> {
+  title?: string | "auto" | false;
+}
+
 export class ChartProgram {
   constructor(state?: ActionOptions);
   readonly semanticSpec: SemanticSpec;
@@ -675,6 +680,7 @@ export class ChartProgram {
   editHorizontalGrid(options: EditGridOptions): ChartProgram;
   editVerticalGrid(options: EditGridOptions): ChartProgram;
   createLegend(options?: LegendOptions): ChartProgram;
+  editLegend(options: EditLegendOptions): ChartProgram;
   createGuides(options?: ActionOptions): ChartProgram;
   createTitle(options: ActionOptions & { text: string; subtitle?: string }): ChartProgram;
 

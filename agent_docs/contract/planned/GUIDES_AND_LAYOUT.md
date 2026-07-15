@@ -2,23 +2,6 @@
 
 These contracts are accepted or pending future API work; they are not current public behavior.
 
-## left legend position
-
-- `createLegend.position`과 Planned `editLegend.position`은 existing `"right" | "bottom" | "top"`에
-  `"left"`를 추가한다. chart-independent default는 계속 `"right"`다.
-- left는 right-side block geometry를 mirror하고 plot left edge에서 `offset`만큼 바깥에 둔다.
-  item 내부 symbol→label order와 domain order는 유지하며 multiple legend block은 deterministic
-  top-to-bottom order를 사용한다.
-- categorical, point composite와 quantitative size block을 지원한다. 첫 left contract는 side-layout
-  parity를 위해 `align: "center"`, vertical flow만 허용한다. Top/bottom composite layout은 아래의
-  별도 accepted contract가 소유한다.
-- titlePosition, symbol recipes, labels/titleStyle, itemGap, border와 count는 기존 계약을 그대로 사용한다.
-  left margin의 actual occupied bounds를 검증하고 title/chart/다른 legend와 겹치면 오류다.
-- Canvas resize, scale/domain, symbol recipe 또는 position edit은 legend와 size block을 rematerialize한다.
-  semantic channels, scale binding과 item order는 유지한다.
-- Status: Planned, NOT IMPLEMENTED. categorical/composite/size parity, position edits, border/title variants,
-  multiple blocks, insufficient margin와 Canvas rematerialization coverage가 필요하다.
-
 ## continuous color gradient legend
 
 ```typescript

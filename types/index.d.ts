@@ -37,6 +37,7 @@ export type {
   GridDirectionOptions,
   HistogramEncodingOptions,
   LegendOptions,
+  EditLegendOptions,
   ContinuousColorInterpolation,
   ContinuousColorScaleOptions,
   OpacityEncodingOptions,

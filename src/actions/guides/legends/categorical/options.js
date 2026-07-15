@@ -117,11 +117,13 @@ export function normalizeOptions(args, kind) {
   };
   const position = args.position ?? defaults.position;
   const align = args.align ?? defaults.align;
-  const direction = args.direction ?? "horizontal";
+  const direction = args.direction ?? (position === "left" ? "vertical" : "horizontal");
   const columns = args.columns;
   const offset = args.offset ?? 8;
   const titlePosition = args.titlePosition ?? "top";
-  const itemGap = args.itemGap ?? (position === "right" ? 28 : position === "top" ? 24 : 20);
+  const itemGap = args.itemGap ?? (["right", "left"].includes(position)
+    ? 28
+    : position === "top" ? 24 : 20);
   const bottomGrid = position !== "bottom" || [
     "columns",
     "direction",
@@ -130,17 +132,23 @@ export function normalizeOptions(args, kind) {
     "itemGap"
   ].some(key => Object.hasOwn(args, key));
 
-  if (!["right", "bottom", "top"].includes(position)) {
+  if (!["right", "left", "bottom", "top"].includes(position)) {
     throw new Error(`Unsupported legend position "${position}".`);
   }
   if (!["left", "center", "right"].includes(align)) {
     throw new Error(`Unsupported legend alignment "${align}".`);
   }
-  if (position === "right" && align !== "center") {
-    throw new Error("Right legends currently require center alignment.");
+  if (["right", "left"].includes(position) && align !== "center") {
+    throw new Error("Side legends currently require center alignment.");
   }
   if (!["horizontal", "vertical"].includes(direction)) {
     throw new Error(`Unsupported legend direction "${direction}".`);
+  }
+  if (position === "left" && direction !== "vertical") {
+    throw new Error("Left legends currently require vertical direction.");
+  }
+  if (position === "left" && columns !== undefined) {
+    throw new Error("Left legends do not accept columns.");
   }
   if (columns !== undefined && (!Number.isInteger(columns) || columns <= 0)) {
     throw new RangeError("Legend columns must be a positive integer.");

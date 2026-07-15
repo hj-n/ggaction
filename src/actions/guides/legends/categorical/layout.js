@@ -47,6 +47,142 @@ function symbolHeight(config) {
   }));
 }
 
+function textWidth(value) {
+  return String(value).length * 7;
+}
+
+function leftGuideBoundary(program, bounds) {
+  const candidates = [bounds.x];
+  const line = program.graphicSpec.objects.yAxisLine;
+  if (line?.type === "line") {
+    candidates.push(line.properties.x1, line.properties.x2);
+  }
+  const ticks = program.graphicSpec.objects.yAxisTicks;
+  if (ticks?.type === "line") {
+    for (const tick of ticks.children) {
+      candidates.push(tick.properties.x1, tick.properties.x2);
+    }
+  }
+  const labels = program.graphicSpec.objects.yAxisLabels;
+  if (labels?.type === "text") {
+    for (const label of labels.children) {
+      candidates.push(
+        label.properties.x - textWidth(label.properties.text)
+      );
+    }
+  }
+  const title = program.graphicSpec.objects.yAxisTitle;
+  if (title?.type === "text") {
+    candidates.push(title.properties.x - title.properties.fontSize / 2);
+  }
+  return Math.min(...candidates.filter(Number.isFinite));
+}
+
+function resolveLeftSizeMetrics(program, sizeConfig) {
+  if (sizeConfig === undefined) return undefined;
+  const scale = program.resolvedScales[sizeConfig.scale];
+  if (scale?.type !== "linear") {
+    throw new Error(`Legend requires resolved linear scale "${sizeConfig.scale}".`);
+  }
+  const values = Array.from(
+    { length: sizeConfig.count },
+    (_, index) => scale.domain[0] +
+      index / (sizeConfig.count - 1) * (scale.domain[1] - scale.domain[0])
+  );
+  const labels = values.map(value => String(+value.toPrecision(3)));
+  const maximumRadius = Math.sqrt(Math.max(...scale.range) / Math.PI);
+  return { scale, values, labels, maximumRadius };
+}
+
+function resolveLeftLayout(program, bounds, canvas, config, width, count) {
+  const sizeConfig = program.guideConfigs.legend?.size;
+  const size = resolveLeftSizeMetrics(program, sizeConfig);
+  const padding = config.border === false ? 0 : config.border.padding;
+  const categoricalWidth = Math.max(
+    config.titleVisible === false ? 0 : String(config.title).length * 6,
+    ...config.domain.map(value => width + config.labels.offset + textWidth(value))
+  );
+  const sizeWidth = size === undefined
+    ? 0
+    : Math.max(
+        String(sizeConfig.title).length * 6,
+        ...size.labels.map(label => 44 + textWidth(label))
+      );
+  const contentWidth = Math.max(categoricalWidth, sizeWidth);
+  const occupiedRight = bounds.x - config.offset;
+  const contentRight = occupiedRight - padding;
+  const start = contentRight - contentWidth;
+  if (start < padding) {
+    throw new Error("Legend layout requires more left-margin space.");
+  }
+  if (occupiedRight >= leftGuideBoundary(program, bounds)) {
+    throw new Error("Left legend and y-axis guides require more left-margin space.");
+  }
+  const symbolX = Array(count).fill(start);
+  const itemY = Array.from(
+    { length: count },
+    (_, index) => bounds.y + 52 + index * config.itemGap
+  );
+  const labelX = symbolX.map(value => value + width + config.labels.offset);
+  const titleX = start;
+  const titleY = bounds.y + 20;
+  const sizeTitleY = bounds.y + 56 + count * 34 + 22;
+  const sizeItemY = size?.values.map((_, index) => sizeTitleY + 34 + index * 40);
+  const sizeSymbolX = size?.values.map(() => start + 16);
+  const sizeLabelX = size?.values.map(() => start + 44);
+  const categoricalTop = config.titleVisible === false
+    ? itemY[0] - Math.max(config.labels.fontSize, symbolHeight(config)) / 2
+    : titleY - config.titleStyle.fontSize / 2;
+  const sizeBottom = size === undefined
+    ? -Infinity
+    : sizeItemY.at(-1) + Math.max(size.maximumRadius, config.labels.fontSize / 2);
+  const categoricalBottom = itemY.at(-1) +
+    Math.max(config.labels.fontSize, symbolHeight(config)) / 2;
+  const blockTop = Math.min(categoricalTop, sizeTitleY - config.titleStyle.fontSize / 2);
+  const blockBottom = Math.max(categoricalBottom, sizeBottom);
+  if (blockTop < 0 || blockBottom > canvas.properties.height) {
+    throw new Error("Legend layout requires more vertical Canvas space.");
+  }
+  let background;
+  if (config.border !== false) {
+    const backgroundTop = Math.floor(
+      blockTop - config.border.padding - config.border.lineWidth
+    );
+    const backgroundBottom = Math.ceil(blockBottom + config.border.padding);
+    background = {
+      x: start - config.border.padding,
+      y: backgroundTop,
+      width: occupiedRight - (start - config.border.padding),
+      height: backgroundBottom - backgroundTop
+    };
+    if (
+      background.x < 0 || background.y < 0 ||
+      background.x + background.width > canvas.properties.width ||
+      background.y + background.height > canvas.properties.height
+    ) {
+      throw new Error("Legend background requires more left-margin space.");
+    }
+  }
+  return {
+    symbolX,
+    itemY,
+    labelX,
+    titleX,
+    titleY,
+    background,
+    blockTop,
+    blockBottom,
+    size: size === undefined ? undefined : {
+      ...size,
+      titleX: start,
+      titleY: sizeTitleY,
+      itemY: sizeItemY,
+      symbolX: sizeSymbolX,
+      labelX: sizeLabelX
+    }
+  };
+}
+
 function resolveGrid(config, width, count) {
   const labels = config.domain.map(String);
   const itemWidths = labels.map(
@@ -327,6 +463,10 @@ export function resolveLayout(program, config) {
       background = { x, y, width: backgroundWidth, height };
     }
     return { symbolX, itemY, labelX, titleX, titleY, background };
+  }
+
+  if (config.position === "left") {
+    return resolveLeftLayout(program, bounds, canvas, config, width, count);
   }
 
   if (config.position === "top") {

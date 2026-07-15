@@ -2,49 +2,6 @@
 
 These contracts are accepted or pending future API work; they are not current public behavior.
 
-## editLegend
-
-```typescript
-editLegend({
-  target?: UserId;
-  position?: "right" | "bottom" | "top" | "left";
-  align?: "left" | "center" | "right";
-  direction?: "horizontal" | "vertical";
-  columns?: PositiveInteger;
-  offset?: NonNegativeFinite;
-  titlePosition?: "top" | "left";
-  title?: NonEmptyString | "auto" | false;
-  symbol?: "auto" | LegendSymbolLayer | { layers: readonly LegendSymbolLayer[] };
-  labels?: TextStyle;
-  titleStyle?: TextStyle;
-  itemGap?: PositiveFinite;
-  border?: LegendBorder;
-  count?: IntegerAtLeast2;
-  gradient?: {
-    length?: PositiveFinite;
-    thickness?: PositiveFinite;
-  };
-}): ChartProgram;
-```
-
-- `target`은 existing legend selector이며 수정 property가 아니다. eligible legend가 유일하면
-  생략할 수 있고 여러 개면 explicit target이 필요하다. target 외 최소 한 변경값을 요구한다.
-- `channels`는 semantic binding이므로 edit parameter에 포함하지 않는다. layout과 appearance만
-  부분 수정하며 nested text style은 전달된 leaf를 기존 stored style에 merge한다.
-- title 생략은 기존 값을 유지하고, string은 custom title, `"auto"`는 encoding provenance 기반
-  inference 복원, `false`는 title graphic을 숨긴다.
-- position과 layout 값은 기존 legend kind가 지원해야 한다. Planned left position은 categorical,
-  point composite와 size legend를 지원하고 right-side layout을 mirror한다. Accepted top/bottom
-  point-composite contract는 existing top/bottom item grid 안에서 같은 symbol recipe를 유지한다.
-- Sequential color legend에서 `gradient`와 `count`는 concrete block geometry와 tick labels를 갱신한다.
-  Categorical-only symbol/grid options과 gradient options를 섞으면 오류다.
-- Field-driven opacity legend에서 `count`는 sample values를 다시 만들고 `symbol`은 single-point recipe만
-  허용한다. Constant-opacity target 또는 incompatible channel mix는 오류다.
-- action은 내부 wrapped `rematerializeLegend`를 호출한다. compatible point size block에서
-  `count`가 바뀌면 stored count를 갱신하고 `rematerializeSizeLegend`도 호출한다.
-- overlap, margin 부족, incompatible option과 없는/ambiguous target은 명확한 오류다.
-- Status: Planned, NOT IMPLEMENTED. 실행 가능한 coverage는 구현 단계에서 추가한다.
-
 ## editTitle
 
 ```typescript

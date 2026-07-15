@@ -29,9 +29,9 @@ type LegendBorder = false | true | {
   point block을 선택한다. Opacity는 단독 channel만 지원한다.
 - Point의 explicit color-only selection은 color swatch legend를 만들고, shape 또는 composite channel
   선택은 typed point series legend를 만든다.
-- `position`: categorical은 `"right" | "bottom" | "top"`; continuous color/opacity는 left를 포함한
-  네 방향을 지원한다. chart-independent default는 `"right"`다.
-- `align`: `"left" | "center" | "right"`, 기본 center. right와 Planned left side position은
+- `position`: categorical과 continuous color/opacity는 left를 포함한 네 방향을 지원한다.
+  combined point-size legend는 right/left side position을 사용한다. chart-independent default는 `"right"`다.
+- `align`: `"left" | "center" | "right"`, 기본 center. right와 left side position은
   첫 계약에서 center만 허용한다.
 - `direction`: `"horizontal" | "vertical"`; top/bottom item-grid fill order를 결정하며 기본 horizontal이다.
 - `columns`: positive integer; top/bottom grid의 최대 열 수. 생략하면 한 row에 가능한 item을 둔다.
@@ -54,13 +54,13 @@ type LegendBorder = false | true | {
   declared layer order determines rendering order in right, top, and bottom layouts.
 - Coverage: series/histogram/grouped-bar/top/bottom/regression legend tests가 주요 layouts, recipes,
   borders, rematerialization과 invalid values를 검증한다. 모든 symbol-layer parameter pair는 부분적이다.
-- Planned: left categorical/point-composite/size side layout.
+- Left categorical/point-composite/size는 vertical block order와 symbol→label/domain order를 유지한다.
 - Proposed: —
 
 ### Formal values — `createLegend`
 
 - Implemented: `createLegend({ target?: UserId; channels?: readonly ("color" | "strokeDash" | "shape" | "opacity")[]; position?: LegendPosition; align?: LegendAlign; direction?: LegendDirection; columns?: PositiveInteger; offset?: NonNegativeFinite; titlePosition?: "top" | "left"; title?: NonEmptyString; symbol?: "auto" | LegendSymbolLayer | { layers: readonly LegendSymbolLayer[] }; labels?: TextStyle; titleStyle?: TextStyle; itemGap?: PositiveFinite; border?: LegendBorder; count?: IntegerAtLeast2; gradient?: { length?: PositiveFinite; thickness?: PositiveFinite } } = {})`
-- Planned (NOT IMPLEMENTED): left categorical/point-composite/size layout.
+- Planned (NOT IMPLEMENTED): —
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createLegend`
@@ -73,7 +73,7 @@ type LegendBorder = false | true | {
   - ✅ Covered: opacity as one continuous guide channel; constant opacity and incompatible mixes rejected.
 - `position`
   - ✅ Covered: omission→`"right"`, `"right"`, `"bottom"`, `"top"`, invalid value.
-  - ✅ Covered: `"left"` for gradient and opacity; 🟡 Planned for categorical/point-composite/size.
+  - ✅ Covered: `"left"` for categorical, point-composite/size, gradient and opacity.
 - `align`
   - ✅ Covered: top/bottom `"left" | "center" | "right"`, right center-only and invalid combinations.
 - `direction`
@@ -104,8 +104,41 @@ type LegendBorder = false | true | {
   - ✅ Covered: gradient tick-label and opacity sample count with the same boundary contract.
 - `gradient`
   - ✅ Covered: positive length/thickness, four position-derived orientations and categorical-option conflicts.
-- 🟡 Planned: left point-composite/size side layout.
+- ✅ Covered: left point-composite/size side layout and occupied-bounds failure.
 - Evidence: series, histogram, grouped-bar, top categorical, Phase 2 composite and regression legend tests.
+
+## `editLegend`
+
+- Signature: `editLegend({ target?, position?, align?, direction?, columns?, offset?, titlePosition?, title?, symbol?, labels?, titleStyle?, itemGap?, border?, count?, gradient? })`.
+- `target` selects an existing logical legend by mark ID. It may be omitted only when exactly one target owns all
+  active blocks; independent targets are ambiguous.
+- At least one non-target change is required. Semantic `channels` and scale binding are intentionally not editable.
+- Omitted values remain unchanged. Nested `labels`, `titleStyle`, `border`, and `gradient` objects merge supplied
+  leaves. `title` accepts a custom non-empty string, `"auto"` for field inference, or `false` to hide its graphic.
+- Categorical and combined point-size legends accept left/right side layout; the first left contract requires
+  center alignment and vertical flow. `count` rematerializes an existing size block.
+- Gradient edits own `count` and `gradient`; opacity edits own `count`, `itemGap`, and a single point symbol recipe.
+  Kind-incompatible options fail before the prior program changes.
+- Effect: stores graphical config immutably and invokes the corresponding wrapped rematerialization action.
+  Categorical symbol recipe changes reconcile concrete graphic types without leaving stale objects.
+- Errors: missing/ambiguous target, empty/unknown edit, invalid title mode, incompatible options, invalid count/style,
+  insufficient margin, and overlap with left y-axis guides.
+
+### Formal values — `editLegend`
+
+- Implemented: the signature above with `title?: NonEmptyString | "auto" | false` and without `channels`.
+- Planned (NOT IMPLEMENTED): —
+- Proposed (NOT IMPLEMENTED): —
+
+### Value coverage — `editLegend`
+
+- ✅ Covered: inferred/explicit target and ambiguity/missing-target errors.
+- ✅ Covered: left combined categorical/size position, partial nested style/border/count edits, and exact primitive
+  equivalence.
+- ✅ Covered: custom/hidden/auto title transitions and symbol recipe reconciliation.
+- ✅ Covered: gradient count/extent and opacity count/gap/symbol edits with incompatible-kind rejection.
+- ✅ Covered: Canvas/edit action-order convergence, insufficient margin, immutability, trace, browser/PNG parity.
+- Evidence: `test/unit/actions/guides/legend-edit-actions.test.js` and regression-scatterplot left-legend variant.
 
 ## `createGuides`
 
@@ -121,7 +154,7 @@ type LegendBorder = false | true | {
 ### Formal values — `createGuides`
 
 - Implemented: `createGuides({ axes?: false | Parameters<ChartProgram["createAxes"]>[0]; grid?: false | Parameters<ChartProgram["createGrid"]>[0]; legend?: false | Parameters<ChartProgram["createLegend"]>[0] } = {})`
-- Planned (NOT IMPLEMENTED): nested axes가 top/right positions와 categorical left layout을 전달한다.
+- Planned (NOT IMPLEMENTED): —
 - Proposed (NOT IMPLEMENTED): —; new guide type requires an approved child action first.
 
 ### Value coverage — `createGuides`
@@ -131,7 +164,7 @@ type LegendBorder = false | true | {
   - ✅ Covered: unsupported/non-object values, no selected guide and ambiguous child errors.
   - ⚠️ Partial: explicit selection of all three with every nested option family simultaneously.
 - ✅ Covered: automatic continuous-color/opacity selection and nested continuous legend options.
-- 🟡 Planned: nested top/right axes and categorical left legend forwarding.
+  - ✅ Covered: nested top/right axes and categorical left legend forwarding.
 - No proposal: title remains intentionally separate. New guide types should be added only with a concrete domain action.
 - Evidence: `test/unit/actions/guides/guide-collection-actions.test.js` and density/regression guide tests.
 

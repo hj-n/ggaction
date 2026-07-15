@@ -249,7 +249,9 @@ export const rematerializeGradientLegend = action(
       "colorGradientLabels",
       config.labels,
       { align: layout.labels[0].align }
-    )
+    );
+    if (config.titleVisible === false) return next;
+    next = next
       .editGraphics({
         target: "colorGradientTitle",
         property: "x",
@@ -300,6 +302,7 @@ export const createGradientLegend = action(
       length: args.gradient?.length ?? 120,
       thickness: args.gradient?.thickness ?? 12
     };
+    config.titleVisible = true;
     validatePositive(config.gradient.length, "Gradient length");
     validatePositive(config.gradient.thickness, "Gradient thickness");
     const resolved = resolveGradientConfig(this, config);

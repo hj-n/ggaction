@@ -1086,9 +1086,9 @@
       "layer": "user-facing",
       "domain": "legend_and_title",
       "status": "implemented",
-      "lifecycle": "Stable resource, edit gap",
-      "update": "Internal rematerialization only",
-      "audit": "`editLegend` — Planned",
+      "lifecycle": "Mutable resource",
+      "update": "`editLegend`",
+      "audit": "Complete",
       "coverage": {
         "contract": "complete",
         "effects": "complete",
@@ -1097,6 +1097,24 @@
       "contract": {
         "file": "agent_docs/contract/current/LEGEND_AND_TITLE.md",
         "anchor": "createlegend"
+      }
+    },
+    {
+      "name": "editLegend",
+      "layer": "user-facing",
+      "domain": "legend_and_title",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Edits one stable legend",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/LEGEND_AND_TITLE.md",
+        "anchor": "editlegend"
       }
     },
     {
@@ -1399,15 +1417,6 @@
       }
     },
     {
-      "name": "editLegend",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/EDITING.md",
-        "anchor": "editlegend"
-      }
-    },
-    {
       "name": "editTitle",
       "status": "planned",
       "readiness": "accepted",
@@ -1533,17 +1542,6 @@
       "contract": {
         "file": "agent_docs/contract/planned/SCALES.md",
         "anchor": "scale-mapping-policies"
-      }
-    },
-    {
-      "id": "left-legend-position",
-      "kind": "parameter",
-      "name": "Left legend position",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/GUIDES_AND_LAYOUT.md",
-        "anchor": "left-legend-position"
       }
     },
     {

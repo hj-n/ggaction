@@ -70,8 +70,8 @@ export const rematerializeLegend = action(
       if (config.border !== false) next = next.editLegendBackground();
       next = next
         .editLegendSymbols()
-        .editLegendLabels()
-        .editLegendTitle();
+        .editLegendLabels();
+      if (config.titleVisible !== false) next = next.editLegendTitle();
     }
     if (this.guideConfigs.legend?.size !== undefined) {
       next = next.rematerializeSizeLegend();
@@ -119,7 +119,8 @@ export const createCategoricalLegend = action(
       titleStyle: options.titleStyle,
       itemGap: options.itemGap,
       bottomGrid: options.bottomGrid,
-      border: options.border
+      border: options.border,
+      titleVisible: true
     };
     resolveLayout(this, config);
     let next = this;
@@ -214,10 +215,10 @@ export const createLegend = action(
       if (
         requestedPoint.encoding?.size?.scale !== undefined &&
         categoricalArgs.position !== undefined &&
-        categoricalArgs.position !== "right"
+        !["right", "left"].includes(categoricalArgs.position)
       ) {
         throw new Error(
-          "Combined point series and size legends currently require right position."
+          "Combined point series and size legends currently require a side position."
         );
       }
       const hasMatchingLine = this.semanticSpec.layers.some(candidate =>
@@ -250,8 +251,13 @@ export const createLegend = action(
       if (requestedPoint.encoding?.size?.scale !== undefined) {
         next = next.createSizeLegend({
           target: requestedPoint.id,
-          ...(count === undefined ? {} : { count })
+          ...(count === undefined ? {} : { count }),
+          inheritAppearance:
+            categoricalArgs.position === "left" ||
+            categoricalArgs.labels !== undefined ||
+            categoricalArgs.titleStyle !== undefined
         });
+        next = next.rematerializeLegend();
       }
       return next;
     }

@@ -67,7 +67,8 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | user-facing | [`createVerticalGrid`](current/GRID.md#createverticalgrid) | grid | Mutable resource | Complete | ✅ / ✅ / ⚠️ |
 | user-facing | [`editHorizontalGrid`](current/GRID.md#edithorizontalgrid) | grid | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editVerticalGrid`](current/GRID.md#editverticalgrid) | grid | Mutable resource | Complete | ✅ / ✅ / ⚠️ |
-| user-facing | [`createLegend`](current/LEGEND_AND_TITLE.md#createlegend) | legend_and_title | Stable resource, edit gap | `editLegend` — Planned | ✅ / ✅ / ⚠️ |
+| user-facing | [`createLegend`](current/LEGEND_AND_TITLE.md#createlegend) | legend_and_title | Mutable resource | Complete | ✅ / ✅ / ⚠️ |
+| user-facing | [`editLegend`](current/LEGEND_AND_TITLE.md#editlegend) | legend_and_title | Mutable resource | Complete | ✅ / ✅ / ⚠️ |
 | user-facing | [`createGuides`](current/LEGEND_AND_TITLE.md#createguides) | legend_and_title | Aggregate create-only | Intentional; child edit gaps remain | ✅ / ✅ / ⚠️ |
 | user-facing | [`createTitle`](current/LEGEND_AND_TITLE.md#createtitle) | legend_and_title | Stable resource, edit gap | `editTitle` — Planned | ✅ / ✅ / ✅ |
 | user-facing | [`createCoordinate`](current/CORE.md#createcoordinate) | core | Structural create-only | Intentional | ✅ / ✅ / ✅ |
@@ -93,7 +94,6 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | `createErrorBar` | accepted | [Open](planned/COMPOSITE_MARKS.md#createerrorbar) |
 | `createErrorBand` | accepted | [Open](planned/COMPOSITE_MARKS.md#createerrorband) |
 | `createBoxPlot` | accepted | [Open](planned/COMPOSITE_MARKS.md#createboxplot) |
-| `editLegend` | accepted | [Open](planned/EDITING.md#editlegend) |
 | `editTitle` | accepted | [Open](planned/EDITING.md#edittitle) |
 | `encodeX2` | accepted | [Open](planned/ENCODINGS.md#horizontal-ranged-position) |
 | `encodeXRange` | accepted | [Open](planned/ENCODINGS.md#horizontal-ranged-position) |
@@ -111,7 +111,6 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | parameter | Continuous color bar consumer | accepted | [Open](planned/ENCODINGS.md#continuous-color-bar-consumer) |
 | parameter | Scale type vocabulary | accepted | [Open](planned/SCALES.md#scale-type-vocabulary) |
 | parameter | Scale mapping policies | accepted | [Open](planned/SCALES.md#scale-mapping-policies) |
-| parameter | Left legend position | accepted | [Open](planned/GUIDES_AND_LAYOUT.md#left-legend-position) |
 | parameter | Chart title positions | accepted | [Open](planned/GUIDES_AND_LAYOUT.md#chart-title-positions) |
 | parameter | Title wrapping and measurement | accepted | [Open](planned/GUIDES_AND_LAYOUT.md#title-wrapping-and-measurement) |
 | parameter | Graphic parent attachment | accepted | [Open](planned/PRIMITIVES.md#graphic-parent-attachment) |

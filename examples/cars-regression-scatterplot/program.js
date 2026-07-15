@@ -12,13 +12,15 @@ function createCarsRegressionScatterplotWithFilter(
     confidence: 0.95,
     band: { color: "#111111", opacity: 0.18 },
     line: { strokeWidth: 3 }
-  }
+  },
+  { canvas = {}, guides = {} } = {}
 ) {
   return chart()
     .createCanvas({
       width: 760,
       height: 480,
-      margin: { top: 40, right: 190, bottom: 70, left: 80 }
+      margin: { top: 40, right: 190, bottom: 70, left: 80 },
+      ...canvas
     })
     .createData({ id: "cars", values: cars })
     .createPointMark({ id: "points" })
@@ -39,7 +41,7 @@ function createCarsRegressionScatterplotWithFilter(
     .encodeOpacity({ value: 0.27 })
     .filterMark(filter)
     .createRegression(regression)
-    .createGuides();
+    .createGuides(guides);
 }
 
 export function createCarsRegressionScatterplot(cars) {
@@ -94,4 +96,43 @@ export function createComponentEditCarsRegressionScatterplot(cars) {
       target: "pointsRegressionLines",
       strokeWidth: 5
     });
+}
+
+export function createLeftLegendCarsRegressionScatterplot(cars) {
+  return createCarsRegressionScatterplotWithFilter(
+    cars,
+    originFilter,
+    {
+      confidence: 0.95,
+      band: { color: "#111111", opacity: 0.18 },
+      line: { strokeWidth: 3 }
+    },
+    {
+      canvas: {
+        margin: { top: 40, right: 80, bottom: 70, left: 190 }
+      },
+      guides: {
+        legend: {
+          position: "left",
+          align: "center",
+          direction: "vertical",
+          offset: 80,
+          titlePosition: "top",
+          labels: { color: "#475569", fontSize: 12 },
+          titleStyle: {
+            color: "#0f172a",
+            fontSize: 14,
+            fontWeight: 700
+          },
+          border: {
+            color: "#94a3b8",
+            lineWidth: 1,
+            padding: 10,
+            background: "#f8fafc"
+          },
+          count: 5
+        }
+      }
+    }
+  );
 }

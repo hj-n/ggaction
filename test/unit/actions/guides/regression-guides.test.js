@@ -122,6 +122,6 @@ test("supports an explicit quantitative symbol count and validates point legends
   );
   assert.throws(
     () => regressionProgram().createLegend({ position: "bottom" }),
-    /require right position/
+    /require a side position/
   );
 });

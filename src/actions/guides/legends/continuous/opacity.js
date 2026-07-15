@@ -22,7 +22,7 @@ const SYMBOL_OPTIONS = Object.freeze([
   "type", "radius", "fill", "stroke", "strokeWidth"
 ]);
 
-function normalizeOpacitySymbol(value) {
+export function normalizeOpacitySymbol(value) {
   if (value === undefined) {
     return { type: "point", radius: 7, fill: DEFAULT_COLORS.mark };
   }
@@ -258,7 +258,9 @@ export const rematerializeOpacityLegend = action(
       "opacityLegendLabels",
       config.labels,
       { align: layout.labels[0].align }
-    )
+    );
+    if (config.titleVisible === false) return next;
+    next = next
       .editGraphics({
         target: "opacityLegendTitle",
         property: "x",
@@ -298,6 +300,7 @@ export const createOpacityLegend = action(
       throw new Error('Opacity legend requires channels: ["opacity"].');
     }
     config.symbol = normalizeOpacitySymbol(args.symbol);
+    config.titleVisible = true;
     const resolved = resolveOpacityConfig(this, config);
     resolveOpacityLayout(this, resolved.config, resolved.scale);
     if (this.graphicSpec.objects.opacityLegendSymbols !== undefined) {

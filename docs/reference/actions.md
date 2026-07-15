@@ -399,8 +399,21 @@ createLegend({
 
 Create categorical, point-size, continuous-color gradient, or field-opacity
 sample legends. Continuous legends support right, left, top, and bottom
-placement. Categorical top and bottom layouts support deterministic item grids
-and layered line/point/swatch symbol recipes.
+placement. Categorical legends also support left side placement; composite
+point and size blocks remain in deterministic vertical order.
+[Legends](../api/legends.md)
+
+### `editLegend`
+
+```javascript
+editLegend({
+  target?, position?, align?, direction?, columns?, offset?, titlePosition?,
+  title?, symbol?, labels?, titleStyle?, itemGap?, border?, count?, gradient?
+})
+```
+
+Partially edit one existing legend. `title` accepts a non-empty string,
+`"auto"`, or `false`; semantic channel bindings cannot be edited.
 [Legends](../api/legends.md)
 
 ### `createTitle`

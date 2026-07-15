@@ -396,7 +396,7 @@ test("validates combined fields, domains, targets, and appearance options", () =
     /non-empty unique/
   );
   assert.throws(
-    () => createSeriesLine().createLegend({ position: "left" }),
+    () => createSeriesLine().createLegend({ position: "middle" }),
     /Unsupported legend position/
   );
   assert.throws(

@@ -6,14 +6,16 @@ Gate B target과 stable legend layout/appearance edits를 `createLegend`/`editLe
 
 ## 진행 상태
 
-- [ ] Categorical/composite/size/gradient left layout
-- [ ] Legend target selector와 ambiguity contract
-- [ ] Position/layout/title/symbol/style/border/count partial edits
-- [ ] Nested style merge와 auto/custom/hidden title transitions
-- [ ] Incompatible kind options, overlap와 insufficient-margin failures
-- [ ] Scale/domain/Canvas/edit rematerialization
-- [ ] Primitive/public exact equivalence와 user-facing PNG
-- [ ] Types, docs, contracts, commit와 push
+- [x] Categorical/composite/size/gradient left layout
+- [x] Legend target selector와 ambiguity contract
+- [x] Position/layout/title/symbol/style/border/count partial edits
+- [x] Nested style merge와 auto/custom/hidden title transitions
+- [x] Incompatible kind options, overlap와 insufficient-margin failures
+- [x] Scale/domain/Canvas/edit rematerialization
+- [x] Primitive/public exact equivalence와 user-facing PNG
+- [x] Types, docs와 contracts
+- [x] Full verification
+- [x] Commit와 push
 
 ## 완료 조건
 

@@ -10,6 +10,7 @@ title: Legends
 | Action | Shortest call | Inference/defaults | Result |
 | --- | --- | --- | --- |
 | `createLegend` | `createLegend()` | Current/unique compatible mark; right position | Categorical, size, gradient, or opacity guide |
+| `editLegend` | `editLegend({ position: "left" })` | Unique existing legend; omitted properties retained | Rematerialized layout and appearance |
 
 ## `createLegend(options?)`
 
@@ -39,7 +40,7 @@ Every categorical legend uses the same right-side default:
 | --- | --- | --- |
 | `target` | compatible mark ID | current or unique compatible mark |
 | `channels` | compatible channel array; continuous guides use one `color` or `opacity` | compatible encoded channels |
-| `position` | categorical: `right/bottom/top`; continuous: `right/left/bottom/top` | `"right"` |
+| `position` | `right/left/bottom/top`; combined point-size guides use a side | `"right"` |
 | `align` | `"left"`, `"center"`, or `"right"` | `"center"` |
 | `direction` | `"horizontal"` or `"vertical"` | `"horizontal"` |
 | `columns` | positive integer | all items in one row at top |
@@ -49,14 +50,16 @@ Every categorical legend uses the same right-side default:
 | `symbol` | `"auto"`, shorthand object, or layered recipe | inferred from mark |
 | `labels` | label style object | default sans-serif label style |
 | `titleStyle` | title style object | default sans-serif title style |
-| `itemGap` | positive number | `28` at right, `20` at bottom |
+| `itemGap` | positive number | `28` at either side, `20` at top/bottom |
 | `border` | boolean or border style object | `false` |
 | `count` | size-legend symbol count of at least `2` | `5` for point legends |
 | `gradient` | `{ length?, thickness? }` with positive values | `{ length: 120, thickness: 12 }` |
 
 Pass `position: "bottom"` explicitly to place the legend below the plot.
 Bottom legends use the same item grid as top legends and can use left, center,
-or right alignment; right legends require center alignment.
+or right alignment; side legends require center alignment. Left categorical,
+composite point, and size blocks use vertical flow and preserve symbol-to-label
+and resolved-domain order.
 
 For compatibility, `createLegend({ position: "bottom" })` keeps the compact
 single-row layout anchored near the Canvas bottom edge. Supplying any grid
@@ -202,6 +205,27 @@ The background is rendered before every symbol layer, label, and title.
 
 ## Updates and trace
 
+`editLegend()` updates one existing stable legend. Omit `target` when exactly
+one legend target exists; otherwise pass its mark ID. It accepts layout and
+appearance options from `createLegend` except semantic `channels`.
+
+~~~javascript
+program.editLegend({
+  target: "points",
+  position: "left",
+  offset: 80,
+  count: 4,
+  labels: { fontSize: 11 },
+  border: { color: "#94a3b8" }
+});
+~~~
+
+Nested label, title, border, and gradient objects merge only the supplied
+leaves. A string title becomes explicit, `title: "auto"` restores field-name
+inference, and `title: false` hides the concrete title without discarding the
+stored semantic title. Gradient and opacity legends accept only their
+kind-compatible options.
+
 Canvas changes and relevant encoding actions explicitly rematerialize the
 legend from the latest ordinal domains and ranges. The renderer still reads
 only concrete `graphicSpec` values.
@@ -211,6 +235,12 @@ createLegend
 ├─ createCategoricalLegend | createGradientLegend | createOpacityLegend
 │  └─ concrete background?, symbols/strips, labels, and title
 └─ createSizeLegend?
+~~~
+
+~~~text
+editLegend
+└─ rematerializeLegend | rematerializeGradientLegend | rematerializeOpacityLegend
+   └─ concrete background?, symbols/strips, labels, title?, and size block
 ~~~
 
 The component actions shown above are internal wrapped actions. Chart and
@@ -226,8 +256,9 @@ Pass `createGuides({ legend: false })` to opt out.
 
 Continuous color is currently limited to point marks, and field opacity is
 limited to quantitative point fields. Interactive legends are unsupported.
-Combined point-series and quantitative-size legends currently require right
-position so both blocks remain in one vertical stack.
+Combined point-series and quantitative-size legends require a right or left
+side position so both blocks remain in one vertical stack. A left block must
+fit outside any left y-axis guides; use sufficient margin and offset.
 Right-side layout requires sufficient right margin; bottom layout requires
 sufficient bottom margin; top layout requires enough top margin for its title,
 item grid, offset, and optional border. The library reports a layout error

@@ -3,6 +3,7 @@ import {
   createComparisonFilterCarsRegressionScatterplot,
   createComponentEditCarsRegressionScatterplot,
   createLoessCarsRegressionScatterplot,
+  createLeftLegendCarsRegressionScatterplot,
   createPolynomialCarsRegressionScatterplot,
   createPredictionIntervalCarsRegressionScatterplot,
   createRangeFilterCarsRegressionScatterplot
@@ -226,6 +227,7 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   title: "Left Composite and Size Legends",
   callChain: leftLegendCallChain,
   primitive: createLeftLegendPrimitives(cars),
+  userFacing: createLeftLegendCarsRegressionScatterplot(cars),
   regions: [Object.freeze({
     name: "legend",
     x: 10,

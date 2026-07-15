@@ -223,7 +223,6 @@ test("keeps planned direct actions and reassignment gaps explicit", () => {
     "createErrorBar",
     "createIntervalData",
     "createRuleMark",
-    "editLegend",
     "editTitle",
     "encodeStroke",
     "encodeStrokeWidth",
@@ -438,10 +437,10 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   assert.match(currentCorpus, /"\.0f" \| "\.1f" \| "\.2f"/);
   assert.doesNotMatch(plannedCorpus, /## mirrored Cartesian axis positions/);
   assert.doesNotMatch(plannedCorpus, /## axis label format strings/);
-  assert.match(plannedCorpus, /point composite와 quantitative size block을 지원/);
+  assert.match(currentCorpus, /combined point-size legend는 right\/left side position을 사용/);
   assert.match(currentCorpus, /point-composite symbols in top\/bottom item grids/);
   assert.match(currentCorpus, /Composite layers share one item-local origin/);
-  assert.match(plannedCorpus, /"top" \| "bottom" \| "left" \| "right"/);
+  assert.match(currentCorpus, /type LegendPosition = "right" \| "bottom" \| "top" \| "left"/);
   assert.match(plannedCorpus, /type PlannedTitleWrapping =/);
   assert.match(plannedCorpus, /maxWidth\?: PositiveFinite/);
   assert.match(plannedCorpus, /wrap\?: "word" \| "character"/);

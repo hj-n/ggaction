@@ -131,7 +131,7 @@ test("validates histogram targets, channels, layout, and recipes", () => {
     /only the color channel/
   );
   assert.throws(
-    () => program.createLegend({ position: "left" }),
+    () => program.createLegend({ position: "middle" }),
     /Unsupported legend position/
   );
   assert.throws(
