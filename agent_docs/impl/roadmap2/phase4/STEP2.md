@@ -13,8 +13,8 @@ primitive로 고정한다.
 - [x] Semantic binding 불변과 concrete appearance 검증
 - [x] Expanded target call-chain metadata
 - [x] Roadmap 2 gallery와 2× primitive PNG 생성
-- [ ] Gate A 사용자 visual confirmation
-- [ ] Feedback 반영과 primitive 재확인
+- [x] Gate A 사용자 visual confirmation
+- [x] Feedback 반영과 primitive 재확인 (수정 없이 승인)
 - [x] STEP status, conceptual commit와 push
 
 ## Gate A 대상
