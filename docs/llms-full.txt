@@ -995,6 +995,36 @@ create and bind an immutable revised estimate while preserving the source.
 sets its maximum column count. `titlePosition: "left"` places `Origin` beside
 the three items without changing the chart-wide right-side legend default.
 
+## Move and wrap the title
+
+The title is an independently editable resource. This optional continuation
+uses the `program` created above and returns a new program without changing it:
+
+```javascript
+const bottomTitleProgram = program
+  .editCanvas({
+    height: 620,
+    margin: { top: 130, right: 40, bottom: 190, left: 80 }
+  })
+  .editTitle({
+    text: "Distribution of Acceleration Across Vehicle Origins",
+    subtitle: "Kernel density estimates for acceleration, grouped by origin in the cars dataset",
+    position: "bottom",
+    align: "center",
+    offset: 60,
+    gap: 12,
+    maxWidth: 270,
+    wrap: "word",
+    lineHeight: 26
+  });
+
+render(bottomTitleProgram, document.querySelector("#chart").getContext("2d"));
+```
+
+The title action resolves deterministic lines before rendering. See
+[Titles](../api/titles.md) for all four positions, character wrapping, style
+editing, and subtitle removal.
+
 ## Key action trace
 
 The atomic encoding exposes every reusable action it delegates to.

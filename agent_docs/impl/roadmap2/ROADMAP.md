@@ -17,7 +17,7 @@ encoding reassignment의 선행 조건으로 Phase 1의 첫 implementation slice
 - [x] Phase 2 — 기존 line-chart variants
 - [x] Phase 3 — 기존 histogram/grouped-bar variants
 - [x] Phase 4 — 기존 density/regression variants
-- [ ] Phase 5 — 기존 guide/layout variants
+- [x] Phase 5 — 기존 guide/layout variants
 - [ ] Phase 6 — 신규 error-bar chart
 - [ ] Phase 7 — 신규 error-band chart와 regression delegation
 - [ ] Phase 8 — 신규 box-plot chart
@@ -170,6 +170,11 @@ explicit consumer rebind와 complete rematerialization trace를 검증한다.
 ## Phase 5 — Existing guide and layout variants
 
 기존 모든 chart의 approved public program을 사용해 shared guide/layout editing을 구현한다.
+
+- Phase goal: [`phase5/GOAL.md`](phase5/GOAL.md)
+- Scatterplot variant contract: [`chart/cars-scatterplot-variants.md`](chart/cars-scatterplot-variants.md)
+- Regression variant contract: [`chart/cars-regression-scatterplot-variants.md`](chart/cars-regression-scatterplot-variants.md)
+- Density variant contract: [`chart/cars-density-area-variants.md`](chart/cars-density-area-variants.md)
 
 - Direct action: `editHorizontalGrid`
 - Direct action: `editVerticalGrid`
