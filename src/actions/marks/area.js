@@ -15,15 +15,19 @@ import {
 import { DEFAULT_COLORS } from "../../theme/defaults.js";
 import { findDataset } from "../../selectors/datasets.js";
 import { findLayer } from "../../selectors/layers.js";
+import {
+  buildAreaCurvePathCommands,
+  validateCurveInterpolation
+} from "../../grammar/curveCommands.js";
 import { buildLinearPathCommands } from "../../grammar/pathCommands.js";
 import { resolveEligibleLayer } from "../../selectors/layers.js";
 import { canMaterializeArea } from "../../materialization/marks.js";
 
 const CREATE_OPTIONS = Object.freeze([
-  "id", "data", "fill", "opacity", "stroke", "strokeWidth"
+  "id", "data", "fill", "opacity", "stroke", "strokeWidth", "curve"
 ]);
 const EDIT_OPTIONS = Object.freeze([
-  "target", "fill", "opacity", "stroke", "strokeWidth"
+  "target", "fill", "opacity", "stroke", "strokeWidth", "curve"
 ]);
 const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);
 
@@ -73,6 +77,7 @@ const createAreaMark = action(
     const { data } = resolveMarkData(this, args);
     const fill = validateAreaFill(args.fill ?? DEFAULT_COLORS.mark);
     const opacity = validateAreaOpacity(args.opacity ?? 0.2);
+    const curve = validateCurveInterpolation(args.curve ?? "linear");
     if (Object.hasOwn(args, "strokeWidth") && !Object.hasOwn(args, "stroke")) {
       throw new Error("createAreaMark strokeWidth requires stroke.");
     }
@@ -90,6 +95,7 @@ const createAreaMark = action(
       ._withMarkConfig(id, {
         fill,
         opacity,
+        ...(Object.hasOwn(args, "curve") ? { curve } : {}),
         ...(stroke === undefined ? {} : { stroke, strokeWidth })
       });
   }
@@ -156,6 +162,7 @@ const rematerializeAreaMark = action(
       throw new Error(`Density area mark "${id}" requires a scale domain containing zero.`);
     }
     const paths = derived.series.map(series => {
+      const curve = this.markConfigs[id]?.curve ?? "linear";
       if (densityTransform === undefined && derived.orientation === "horizontal") {
         const y = mapLinearValues(
           series.values.map(value => value.y),
@@ -175,13 +182,45 @@ const rematerializeAreaMark = action(
           xScale.range,
           { clamp: xScale.clamp ?? false }
         );
-        return buildLinearPathCommands([
-          ...y.map((value, index) => ({ x: lower[index], y: value })),
-          ...[...y].reverse().map((value, reverseIndex) => ({
-            x: upper[upper.length - reverseIndex - 1],
-            y: value
-          }))
-        ], { close: true });
+        return buildAreaCurvePathCommands(
+          y.map((value, index) => ({ x: lower[index], y: value })),
+          y.map((value, index) => ({ x: upper[index], y: value })),
+          curve,
+          { independentAxis: "y" }
+        );
+      }
+      if (densityTransform !== undefined && derived.mode === "x-density") {
+        const y = mapLinearValues(
+          series.values.map(value => value.y),
+          yScale.domain,
+          yScale.range,
+          { clamp: yScale.clamp ?? false }
+        );
+        const upper = mapLinearValues(
+          series.values.map(value => value.x),
+          xScale.domain,
+          xScale.range,
+          { clamp: xScale.clamp ?? false }
+        );
+        const baseline = mapLinearValues(
+          [0],
+          densityScale.domain,
+          densityScale.range,
+          { clamp: densityScale.clamp ?? false }
+        )[0];
+        if (curve === "linear") {
+          return buildLinearPathCommands([
+            { x: baseline, y: y[0] },
+            ...y.map((value, index) => ({ x: upper[index], y: value })),
+            { x: baseline, y: y.at(-1) }
+          ], { close: true });
+        }
+        return buildAreaCurvePathCommands(
+          y.map(value => ({ x: baseline, y: value })),
+          y.map((value, index) => ({ x: upper[index], y: value })),
+          curve,
+          { independentAxis: "y" }
+        );
       }
       const x = mapLinearValues(
         series.values.map(value => value.x),
@@ -200,20 +239,6 @@ const rematerializeAreaMark = action(
         yScale.range,
         { clamp: yScale.clamp ?? false }
       );
-      if (densityTransform !== undefined && derived.mode === "x-density") {
-        const baseline = mapLinearValues(
-          [0],
-          densityScale.domain,
-          densityScale.range,
-          { clamp: densityScale.clamp ?? false }
-        )[0];
-        const points = [
-          { x: baseline, y: lower[0] },
-          ...x.map((value, index) => ({ x: value, y: lower[index] })),
-          { x: baseline, y: lower.at(-1) }
-        ];
-        return buildLinearPathCommands(points, { close: true });
-      }
       const upperValues = densityTransform === undefined
         ? series.values.map(value => value.y2)
         : series.values.map(value => value.upper);
@@ -230,19 +255,24 @@ const rematerializeAreaMark = action(
           yScale.range,
           { clamp: yScale.clamp ?? false }
         )[0];
-        return buildLinearPathCommands([
-          { x: x[0], y: baseline },
-          ...x.map((value, index) => ({ x: value, y: upper[index] })),
-          { x: x.at(-1), y: baseline }
-        ], { close: true });
+        if (curve === "linear") {
+          return buildLinearPathCommands([
+            { x: x[0], y: baseline },
+            ...x.map((value, index) => ({ x: value, y: upper[index] })),
+            { x: x.at(-1), y: baseline }
+          ], { close: true });
+        }
+        return buildAreaCurvePathCommands(
+          x.map(value => ({ x: value, y: baseline })),
+          x.map((value, index) => ({ x: value, y: upper[index] })),
+          curve
+        );
       }
-      return buildLinearPathCommands([
-        ...x.map((value, index) => ({ x: value, y: lower[index] })),
-        ...[...x].reverse().map((value, reverseIndex) => ({
-          x: value,
-          y: upper[upper.length - reverseIndex - 1]
-        }))
-      ], { close: true });
+      return buildAreaCurvePathCommands(
+        x.map((value, index) => ({ x: value, y: lower[index] })),
+        x.map((value, index) => ({ x: value, y: upper[index] })),
+        curve
+      );
     });
     const config = this.markConfigs[id];
     const fills = colorEncoding?.scale === undefined
@@ -281,14 +311,14 @@ const rematerializeAreaMark = action(
 const editAreaMark = action(
   {
     op: "editAreaMark",
-    description: "Edit constant area fill, opacity, and outline."
+    description: "Edit area curve and constant appearance."
   },
   function (args = {}) {
     validateMarkOptions(args, EDIT_OPTIONS, "editAreaMark");
-    const changes = ["fill", "opacity", "stroke", "strokeWidth"];
+    const changes = ["fill", "opacity", "stroke", "strokeWidth", "curve"];
     if (!changes.some(key => Object.hasOwn(args, key))) {
       throw new Error(
-        "editAreaMark requires fill, opacity, stroke, or strokeWidth."
+        "editAreaMark requires fill, opacity, stroke, strokeWidth, or curve."
       );
     }
     const target = Object.hasOwn(args, "target")
@@ -314,6 +344,9 @@ const editAreaMark = action(
     }
     if (Object.hasOwn(args, "opacity")) {
       config.opacity = validateAreaOpacity(args.opacity);
+    }
+    if (Object.hasOwn(args, "curve")) {
+      config.curve = validateCurveInterpolation(args.curve);
     }
     if (Object.hasOwn(args, "stroke")) {
       if (args.stroke === false) {

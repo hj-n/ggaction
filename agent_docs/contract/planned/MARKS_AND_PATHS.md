@@ -54,9 +54,8 @@ type ConcretePathCommand =
   | { op: "Z" };
 ```
 
-- `createLineMark.curve`와 `editLineMark.curve`는 구현되어 current mark contract가 소유한다.
-  `createAreaMark.curve`는 같은 shared closed vocabulary를 사용할 Planned parameter이며 default는
-  `"linear"`다. Curve is graphical mark materialization config: it does not change fields, grouping,
+- `createLineMark.curve`, `editLineMark.curve`, `createAreaMark.curve`, `editAreaMark.curve`는 구현되어
+  current mark contract가 소유한다. Default는 `"linear"`다. Curve is graphical mark materialization config: it does not change fields, grouping,
   coordinates or scale semantics.
 - `"linear"` emits `M` followed by `L` commands. For each pair `(x0, y0)`→`(x1, y1)`, `"step"` emits
   horizontal/vertical segments at midpoint `(x0 + x1) / 2`; `"step-before"` changes y at `x0`, and
@@ -67,8 +66,8 @@ type ConcretePathCommand =
 - Curves that require three or more distinct ordered points fall back to linear for shorter input.
   `monotone` requires strictly increasing finite x after existing series ordering and grain resolution;
   duplicate or decreasing x is a materialization error rather than silently reordered curve input.
-- Area materialization starts the upper boundary with `M`, interpolates it in forward order, connects to the
-  lower/baseline endpoint with `L`, interpolates that boundary in reverse order without a new `M`, then emits
+- Area materialization starts the lower boundary with `M`, interpolates it in forward order, connects to the
+  upper endpoint with `L`, reverses the independently interpolated upper boundary without a new `M`, then emits
   `Z`. It never smooths across the upper-to-lower connector. Line paths never emit `Z`.
 - Path materialization resolves curve tokens into `ConcretePathCommand[]` before writing `graphicSpec`.
   Renderers execute commands only and do not know curve names or calculate control points. Implementation
@@ -77,6 +76,6 @@ type ConcretePathCommand =
   grammar. Browser and Node use the same command list, and invalid input leaves the previous program unchanged.
 - Regression line/band actions forward their curve options to the corresponding line/area mark actions.
   Density and ranged-area charts reuse `createAreaMark.curve` without a density-specific interpolation API.
-- Status: Partially implemented for line marks. Line은 every token exact fixtures, short-series fallback,
-  monotone validation, edit/rematerialization trace, renderer parity, declarations와 approved visual pair를 가진다.
-  Area boundary interpolation, reversed-area cases, `createAreaMark.curve`, regression band forwarding은 Planned다.
+- Status: Implemented for line and area marks. Both own every token, exact fixtures, short-series fallback,
+  monotone validation, edit/rematerialization, renderer parity and declarations. Regression band forwarding만
+  regression delegation work와 함께 Planned다.

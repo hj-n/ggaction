@@ -30,12 +30,11 @@ These types are reused below by the remaining planned interval composites. The c
 `createErrorBar` contract, including horizontal and explicit intervals, lives in
 [`../current/STATISTICS.md`](../current/STATISTICS.md#createerrorbar).
 
-## createErrorBand
+## createErrorBand — implemented compatibility note
 
-Vertical/horizontal statistical and explicit intervals, grouping, fill/opacity, source inference, ordinary area
-composition and basic linear boundary stroke/width are Current in
-[`../current/STATISTICS.md`](../current/STATISTICS.md#createerrorband). This section owns only the accepted curve
-and advanced boundary remainder.
+The complete current contract, including area curve, boundary curve inheritance/override, dash and opacity, lives
+in [`../current/STATISTICS.md`](../current/STATISTICS.md#createerrorband). Independent lower/upper appearance
+objects are not accepted; edit the deterministic ordinary child line layers after creation when needed.
 
 ```typescript
 createErrorBand({
@@ -72,15 +71,14 @@ createErrorBand({
   `encodeYRange` or `encodeXRange` for the interval bounds. It forwards one shared coordinate,
   scales, grouping and curve decision to every child.
 - `boundaries` defaults to `false`. Current behavior adds deterministic lower and upper ordinary line children,
-  supports shared `stroke`/`strokeWidth`, and renders band first then boundaries. Planned work adds dash/opacity,
-  band-curve inheritance and an explicit boundary-curve override.
+  supports shared stroke/width/dash/opacity, and renders band first then boundaries. Boundary curve inherits the
+  band curve unless explicitly overridden.
 - Field-driven fill is intentionally not duplicated in this aggregate. Call existing `encodeColor` on the
   representative area after creation; `groupBy` controls path segmentation independently of visible color.
 - The aggregate is create-only. Band appearance changes use the owned area/encoding actions and boundary
   changes use the owned line/encoding actions; no `editErrorBand` action is introduced.
-- Status: Partially implemented. Both orientations, computed/explicit bounds, grouped paths, scale sharing,
-  basic boundaries, rematerialization, trace and renderer parity are Current. Curve forwarding and advanced
-  boundary style/override variants remain Planned, NOT IMPLEMENTED.
+- Status: Implemented. Both orientations, computed/explicit bounds, grouped paths, scale sharing, curves,
+  advanced shared boundary appearance, rematerialization, trace and renderer parity are Current.
 
 ## regression band delegation
 

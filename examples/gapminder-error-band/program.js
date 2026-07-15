@@ -45,3 +45,45 @@ export function createCarsHorizontalErrorBand(cars) {
       subtitle: "Mean and 95% confidence interval across cars"
     });
 }
+
+function createCurvedBoundaryErrorBand(gapminder, boundaryCurve) {
+  return chart()
+    .createCanvas({
+      width: 760,
+      height: 480,
+      margin: { top: 90, right: 150, bottom: 70, left: 80 }
+    })
+    .createData({ values: gapminder })
+    .createErrorBand({
+      x: { field: "year", fieldType: "temporal" },
+      y: { field: "life_expect" },
+      groupBy: "cluster",
+      curve: "cardinal",
+      boundaries: {
+        stroke: "#25364d",
+        strokeWidth: 1.4,
+        strokeDash: [6, 3],
+        opacity: 0.8,
+        ...(boundaryCurve === undefined ? {} : { curve: boundaryCurve })
+      }
+    })
+    .encodeColor({
+      target: "errorBand",
+      field: "cluster",
+      fieldType: "nominal",
+      scale: { palette: "tableau10" }
+    })
+    .createGuides()
+    .createTitle({
+      text: "Life Expectancy by Cluster",
+      subtitle: "Mean and 95% confidence interval"
+    });
+}
+
+export function createGapminderCurvedBoundaryErrorBand(gapminder) {
+  return createCurvedBoundaryErrorBand(gapminder);
+}
+
+export function createGapminderBoundaryOverrideErrorBand(gapminder) {
+  return createCurvedBoundaryErrorBand(gapminder, "step");
+}

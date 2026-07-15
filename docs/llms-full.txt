@@ -1987,13 +1987,18 @@ triangles, `plus`, `cross`, `star`, `hexagon`, and `wye`. All recipes preserve
 the same logical target area. A constant edit is rejected when the mark already
 has a field-driven shape encoding.
 
-## `createAreaMark({ id?, data?, fill?, opacity?, stroke?, strokeWidth? } = {})`
+## `createAreaMark({ id?, data?, fill?, opacity?, stroke?, strokeWidth?, curve? } = {})`
 
 Create a semantic area mark backed by an initially empty path collection.
 `data` defaults to current data, `fill` defaults to `"#4c78a8"`, and opacity
 defaults to `0.2`. The fixed fill and opacity are graphical appearance.
 `stroke` adds a constant path outline; its width defaults to `1`. A width without
 a stroke is rejected.
+
+`curve` uses the same `linear`, `step`, `step-before`, `step-after`, `basis`,
+`cardinal`, `monotone`, and `natural` vocabulary as line marks. It defaults to
+`linear`. The lower and upper edges are interpolated independently before the
+path is connected and closed, so the connector is never smoothed as data.
 
 An area becomes renderable after exactly one ranged orientation exists:
 quantitative or temporal x with quantitative `encodeYRange`, or quantitative
@@ -2003,7 +2008,7 @@ instead use value/density x and y encodings: the density axis is closed against
 zero, while the value axis determines sample order. Both horizontal-density and
 vertical-density orientations are supported.
 
-## `editAreaMark({ target?, fill?, opacity?, stroke?, strokeWidth? })`
+## `editAreaMark({ target?, fill?, opacity?, stroke?, strokeWidth?, curve? })`
 
 Edit constant area appearance without changing data, fields, grouping, scales,
 or coordinates:
@@ -2013,7 +2018,8 @@ const outlined = program.editAreaMark({
   target: "densities",
   opacity: 0.35,
   stroke: "#334155",
-  strokeWidth: 1.5
+  strokeWidth: 1.5,
+  curve: "cardinal"
 });
 ```
 
@@ -2022,6 +2028,8 @@ The current or only compatible area is inferred when `target` is omitted.
 requires an active outline. Constant `fill` cannot replace a field-driven color
 encoding, while opacity and outline remain independently editable. Complete
 areas rematerialize immediately; incomplete areas retain the graphical config.
+Changing `curve` preserves the area's data, fields, scales, grouping, and
+appearance while replacing its concrete path commands.
 
 ## `createLineMark({ id?, data?, strokeWidth?, curve? } = {})`
 
@@ -2690,9 +2698,13 @@ createErrorBand({
   coordinate?: string;
   fill?: string;
   opacity?: number;
+  curve?: CurveInterpolation;
   boundaries?: false | {
     stroke?: string;
     strokeWidth?: number;
+    strokeDash?: DashStyle | readonly number[];
+    opacity?: number;
+    curve?: CurveInterpolation;
   };
 } = {})
 ```
@@ -2761,15 +2773,34 @@ the matching atomic position-range action, and grouping children.
 explicit `encodeColor` call so color, grouping, and legend ownership stay
 separate.
 
+`curve` defaults to `"linear"` and accepts the shared eight-value line/area
+curve vocabulary.
+
 `boundaries` defaults to `false`. An object adds deterministic lower and upper
-ordinary line layers after the filled band. Its stroke defaults to the shared
-mark color and its width defaults to `1`.
+ordinary line layers after the filled band. Stroke, width, dash, and opacity
+default to the shared mark color, `1`, solid, and `1`. Boundary paths inherit
+the band curve unless `boundaries.curve` explicitly overrides it:
 
-## Current boundary
+```javascript
+program.createErrorBand({
+  x: { field: "year", fieldType: "temporal" },
+  y: { field: "life_expect" },
+  groupBy: "cluster",
+  curve: "cardinal",
+  boundaries: {
+    stroke: "#25364d",
+    strokeWidth: 1.4,
+    strokeDash: [6, 3],
+    opacity: 0.8,
+    curve: "step"
+  }
+});
+```
 
-Curved area edges and advanced boundary dash, opacity, curve, or independent
-lower/upper overrides are not implemented yet. Supplying unsupported options
-is rejected instead of being silently ignored.
+The two boundary IDs are `${id}LowerBoundary` and `${id}UpperBoundary`. They
+remain ordinary line layers and can be targeted by line or encoding actions.
+The aggregate intentionally does not accept separate lower and upper style
+objects.
 
 <!-- Source: /api/guides/ -->
 
@@ -4868,7 +4899,7 @@ chart-authoring API does not support that combination.
 | Position | quantitative x/y | temporal x, aggregate y | binned x, count y | ordinal x, aggregate y | shared quantitative x/y | value + density x/y | categorical/temporal position on x or y; interval on the other axis | quantitative/temporal independent position; quantitative x/x2 or y/y2 interval |
 | Nominal color | point fill | series stroke | five bar layouts | five bar layouts | point fill + fit stroke | overlay/stack/fill/diverging area | — | grouped area fill |
 | Stroke dash | — | nominal or constant; 4 named styles | — | — | — | — | 4 named styles or custom pattern | — |
-| Constant appearance | radius | stroke width, 8 curves | — | band or logical-pixel width | opacity, band fill, line width | opacity | stroke, width, dash, opacity, optional fixed-size caps | fill, opacity, optional basic boundaries |
+| Constant appearance | radius | stroke width, 8 curves | — | band or logical-pixel width | opacity, band fill, line width | opacity, 8 curves | stroke, width, dash, opacity, optional fixed-size caps | fill, opacity, 8 curves, styled boundaries |
 | Automatic axes | linear | UTC time and linear | bin-aligned and linear | ordinal and linear | shared linear | source value + density | categorical/temporal position and linear interval axis | temporal or linear independent axis; linear interval axis |
 | Automatic grid | horizontal | horizontal | horizontal | horizontal | shared horizontal | horizontal; vertical optional | perpendicular to the interval axis | perpendicular to the interval axis |
 | Legend | point color + shape | categorical | categorical | categorical | composite color/shape/line + size | categorical top/right/bottom | — | categorical |
@@ -4889,7 +4920,7 @@ chart-authoring API does not support that combination.
 | Guides | Automatic bottom/top x axes, left/right y axes, closed numeric/UTC label formats, independently editable horizontal/vertical Cartesian grids, and editable four-edge continuous/left-right categorical legends |
 | Titles | One four-edge title with an optional subtitle, deterministic word/character wrapping, and partial editing |
 | Rendering | Browser Canvas and Node PNG |
-| Graphics | Concrete canvas, circle, line, rect, text, `M/L/C/Z` command paths, 8 line curves, and heterogeneous drawable collections |
+| Graphics | Concrete canvas, circle, line, rect, text, `M/L/C/Z` command paths, shared 8-value line/area curves, and heterogeneous drawable collections |
 
 ## Current limitations
 
@@ -4901,8 +4932,9 @@ support right and left side layouts.
 Error bars support vertical and horizontal statistical intervals, existing
 center/lower/upper fields, optional caps, and constant rule appearance.
 Error bands support vertical and horizontal statistical or explicit ranges and
-optional basic lower/upper boundary lines. Curved edges and advanced boundary
-dash, opacity, and independent overrides are not implemented yet.
+optional lower/upper boundary lines with shared stroke, width, dash, opacity,
+and inherited or overridden curve. Independent lower/upper style objects are
+not implemented.
 
 <!-- Source: /reference/actions/ -->
 
@@ -5061,17 +5093,18 @@ Create a semantic bar mark and empty rect collection. [Marks](../api/marks.md)
 ### `createAreaMark`
 
 ```javascript
-createAreaMark({ id?, data?, fill?, opacity?, stroke?, strokeWidth? } = {})
+createAreaMark({ id?, data?, fill?, opacity?, stroke?, strokeWidth?, curve? } = {})
 ```
 
 Create a semantic area mark and empty path collection. Fixed fill defaults to
 `"#4c78a8"`; opacity defaults to `0.2`. Optional outlines default to width `1`.
+Curve defaults to `"linear"` and accepts the shared eight-value vocabulary.
 [Marks](../api/marks.md)
 
 ### `editAreaMark`
 
 ```javascript
-editAreaMark({ target?, fill?, opacity?, stroke?, strokeWidth? })
+editAreaMark({ target?, fill?, opacity?, stroke?, strokeWidth?, curve? })
 ```
 
 Edit constant area appearance. `stroke: false` removes an existing outline.
@@ -5345,15 +5378,16 @@ coordinate, and scales.
 ```javascript
 createErrorBand({
   id?, target?, data?, x?, y?, groupBy?, coordinate?, fill?, opacity?,
-  boundaries?
+  curve?, boundaries?
 } = {})
 ```
 
 Create a vertical or horizontal statistical or explicit interval ribbon. The
 action can infer one encoded source layer and reuses `createIntervalData`, an
 ordinary area, the matching atomic range action, and grouping actions.
-`boundaries: { stroke?, strokeWidth? }` adds basic lower and upper line layers;
-curves and advanced boundary styles are not implemented yet.
+`boundaries: { stroke?, strokeWidth?, strokeDash?, opacity?, curve? }` adds
+lower and upper line layers. Boundary curve inherits the area curve unless it
+is overridden.
 [Error bands](../api/error-bands.md)
 
 ### `createGuides`

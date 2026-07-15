@@ -16,7 +16,7 @@ chart-authoring API does not support that combination.
 | Position | quantitative x/y | temporal x, aggregate y | binned x, count y | ordinal x, aggregate y | shared quantitative x/y | value + density x/y | categorical/temporal position on x or y; interval on the other axis | quantitative/temporal independent position; quantitative x/x2 or y/y2 interval |
 | Nominal color | point fill | series stroke | five bar layouts | five bar layouts | point fill + fit stroke | overlay/stack/fill/diverging area | — | grouped area fill |
 | Stroke dash | — | nominal or constant; 4 named styles | — | — | — | — | 4 named styles or custom pattern | — |
-| Constant appearance | radius | stroke width, 8 curves | — | band or logical-pixel width | opacity, band fill, line width | opacity | stroke, width, dash, opacity, optional fixed-size caps | fill, opacity, optional basic boundaries |
+| Constant appearance | radius | stroke width, 8 curves | — | band or logical-pixel width | opacity, band fill, line width | opacity, 8 curves | stroke, width, dash, opacity, optional fixed-size caps | fill, opacity, 8 curves, styled boundaries |
 | Automatic axes | linear | UTC time and linear | bin-aligned and linear | ordinal and linear | shared linear | source value + density | categorical/temporal position and linear interval axis | temporal or linear independent axis; linear interval axis |
 | Automatic grid | horizontal | horizontal | horizontal | horizontal | shared horizontal | horizontal; vertical optional | perpendicular to the interval axis | perpendicular to the interval axis |
 | Legend | point color + shape | categorical | categorical | categorical | composite color/shape/line + size | categorical top/right/bottom | — | categorical |
@@ -37,7 +37,7 @@ chart-authoring API does not support that combination.
 | Guides | Automatic bottom/top x axes, left/right y axes, closed numeric/UTC label formats, independently editable horizontal/vertical Cartesian grids, and editable four-edge continuous/left-right categorical legends |
 | Titles | One four-edge title with an optional subtitle, deterministic word/character wrapping, and partial editing |
 | Rendering | Browser Canvas and Node PNG |
-| Graphics | Concrete canvas, circle, line, rect, text, `M/L/C/Z` command paths, 8 line curves, and heterogeneous drawable collections |
+| Graphics | Concrete canvas, circle, line, rect, text, `M/L/C/Z` command paths, shared 8-value line/area curves, and heterogeneous drawable collections |
 
 ## Current limitations
 
@@ -49,5 +49,6 @@ support right and left side layouts.
 Error bars support vertical and horizontal statistical intervals, existing
 center/lower/upper fields, optional caps, and constant rule appearance.
 Error bands support vertical and horizontal statistical or explicit ranges and
-optional basic lower/upper boundary lines. Curved edges and advanced boundary
-dash, opacity, and independent overrides are not implemented yet.
+optional lower/upper boundary lines with shared stroke, width, dash, opacity,
+and inherited or overridden curve. Independent lower/upper style objects are
+not implemented.

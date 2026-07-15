@@ -282,3 +282,75 @@ export function buildCurvePathCommands(points, curve = "linear") {
   }
   return buildNaturalCommands(validatedPoints);
 }
+
+function reverseOpenPathCommands(commands) {
+  const endpoints = commands.map(command => ({ x: command.x, y: command.y }));
+  const reversed = [
+    { op: "M", x: endpoints.at(-1).x, y: endpoints.at(-1).y }
+  ];
+  for (let index = commands.length - 1; index > 0; index -= 1) {
+    const command = commands[index];
+    const endpoint = endpoints[index - 1];
+    if (command.op === "C") {
+      reversed.push({
+        op: "C",
+        x1: command.x2,
+        y1: command.y2,
+        x2: command.x1,
+        y2: command.y1,
+        x: endpoint.x,
+        y: endpoint.y
+      });
+    } else {
+      reversed.push({ op: "L", x: endpoint.x, y: endpoint.y });
+    }
+  }
+  return reversed;
+}
+
+function transposeCommands(commands) {
+  return commands.map(command => command.op === "C"
+    ? {
+        op: "C",
+        x1: command.y1,
+        y1: command.x1,
+        x2: command.y2,
+        y2: command.x2,
+        x: command.y,
+        y: command.x
+      }
+    : command.op === "Z"
+      ? command
+      : { op: command.op, x: command.y, y: command.x });
+}
+
+function buildOrientedCurvePathCommands(points, curve, independentAxis) {
+  if (independentAxis === "x") return buildCurvePathCommands(points, curve);
+  if (independentAxis !== "y") {
+    throw new Error(`Unsupported curve independent axis "${independentAxis}".`);
+  }
+  const transposed = points.map(point => ({ x: point.y, y: point.x }));
+  return ownCommands(transposeCommands(buildCurvePathCommands(transposed, curve)));
+}
+
+export function buildAreaCurvePathCommands(
+  lowerPoints,
+  upperPoints,
+  curve = "linear",
+  { independentAxis = "x" } = {}
+) {
+  const lower = buildOrientedCurvePathCommands(
+    lowerPoints,
+    curve,
+    independentAxis
+  );
+  const upper = reverseOpenPathCommands(
+    buildOrientedCurvePathCommands(upperPoints, curve, independentAxis)
+  );
+  return ownCommands([
+    ...lower,
+    { op: "L", x: upper[0].x, y: upper[0].y },
+    ...upper.slice(1),
+    { op: "Z" }
+  ]);
+}

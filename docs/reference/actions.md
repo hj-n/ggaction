@@ -158,17 +158,18 @@ Create a semantic bar mark and empty rect collection. [Marks](../api/marks.md)
 ### `createAreaMark`
 
 ```javascript
-createAreaMark({ id?, data?, fill?, opacity?, stroke?, strokeWidth? } = {})
+createAreaMark({ id?, data?, fill?, opacity?, stroke?, strokeWidth?, curve? } = {})
 ```
 
 Create a semantic area mark and empty path collection. Fixed fill defaults to
 `"#4c78a8"`; opacity defaults to `0.2`. Optional outlines default to width `1`.
+Curve defaults to `"linear"` and accepts the shared eight-value vocabulary.
 [Marks](../api/marks.md)
 
 ### `editAreaMark`
 
 ```javascript
-editAreaMark({ target?, fill?, opacity?, stroke?, strokeWidth? })
+editAreaMark({ target?, fill?, opacity?, stroke?, strokeWidth?, curve? })
 ```
 
 Edit constant area appearance. `stroke: false` removes an existing outline.
@@ -442,15 +443,16 @@ coordinate, and scales.
 ```javascript
 createErrorBand({
   id?, target?, data?, x?, y?, groupBy?, coordinate?, fill?, opacity?,
-  boundaries?
+  curve?, boundaries?
 } = {})
 ```
 
 Create a vertical or horizontal statistical or explicit interval ribbon. The
 action can infer one encoded source layer and reuses `createIntervalData`, an
 ordinary area, the matching atomic range action, and grouping actions.
-`boundaries: { stroke?, strokeWidth? }` adds basic lower and upper line layers;
-curves and advanced boundary styles are not implemented yet.
+`boundaries: { stroke?, strokeWidth?, strokeDash?, opacity?, curve? }` adds
+lower and upper line layers. Boundary curve inherits the area curve unless it
+is overridden.
 [Error bands](../api/error-bands.md)
 
 ### `createGuides`

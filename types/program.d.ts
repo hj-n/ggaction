@@ -476,9 +476,13 @@ export interface ErrorBandOptions {
   coordinate?: string;
   fill?: string;
   opacity?: number;
+  curve?: CurveInterpolation;
   boundaries?: false | {
     stroke?: string;
     strokeWidth?: number;
+    strokeDash?: DashStyle | DashPattern;
+    opacity?: number;
+    curve?: CurveInterpolation;
   };
 }
 
@@ -776,6 +780,7 @@ export class ChartProgram {
     opacity?: number;
     stroke?: string;
     strokeWidth?: number;
+    curve?: CurveInterpolation;
   }): ChartProgram;
   createRuleMark(options?: { id?: string; data?: string }): ChartProgram;
   editAreaMark(options: {
@@ -784,6 +789,7 @@ export class ChartProgram {
     opacity?: number;
     stroke?: string | false;
     strokeWidth?: number;
+    curve?: CurveInterpolation;
   }): ChartProgram;
 
   encodeX(options: PositionEncodingOptions | RulePositionEncodingOptions): ChartProgram;

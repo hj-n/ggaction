@@ -14,7 +14,7 @@ Gapminder data로 curved area와 lower/upper boundary 조합을 raw primitives�
 - [x] Band-before-lower-before-upper drawing order
 - [x] Variant manifest and exact future call chain
 - [x] `gapminder-curved-boundaries/primitive.png`, override primitive and Canvas checks
-- [ ] Gate C user confirmation
+- [x] Gate C user confirmation
 - [x] STEP status, conceptual commit and push
 
 ## Gate C

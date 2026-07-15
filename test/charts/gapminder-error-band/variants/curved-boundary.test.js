@@ -1,17 +1,17 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { render } from "../../../src/index.js";
-import { createMockCanvasContext } from "../../support/canvas.js";
-import { loadGapminder } from "../../support/data.js";
+import { render } from "../../../../src/index.js";
+import { createMockCanvasContext } from "../../../support/canvas.js";
+import { loadGapminder } from "../../../support/data.js";
 import { createGapminderCurvedBoundaryPrimitives } from
-  "./primitive.program.js";
+  "./curved-boundary.primitive.program.js";
 import {
   CURVED_BOUNDARY_STYLE,
   createCardinalReferenceCommands,
   createCurvedBoundaryReferenceValues,
   createStepReferenceCommands
-} from "./reference-values.js";
+} from "./curved-boundary.reference-values.js";
 
 function flattenActions(node) {
   return [node, ...(node.children ?? []).flatMap(flattenActions)];

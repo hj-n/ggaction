@@ -62,13 +62,18 @@ triangles, `plus`, `cross`, `star`, `hexagon`, and `wye`. All recipes preserve
 the same logical target area. A constant edit is rejected when the mark already
 has a field-driven shape encoding.
 
-## `createAreaMark({ id?, data?, fill?, opacity?, stroke?, strokeWidth? } = {})`
+## `createAreaMark({ id?, data?, fill?, opacity?, stroke?, strokeWidth?, curve? } = {})`
 
 Create a semantic area mark backed by an initially empty path collection.
 `data` defaults to current data, `fill` defaults to `"#4c78a8"`, and opacity
 defaults to `0.2`. The fixed fill and opacity are graphical appearance.
 `stroke` adds a constant path outline; its width defaults to `1`. A width without
 a stroke is rejected.
+
+`curve` uses the same `linear`, `step`, `step-before`, `step-after`, `basis`,
+`cardinal`, `monotone`, and `natural` vocabulary as line marks. It defaults to
+`linear`. The lower and upper edges are interpolated independently before the
+path is connected and closed, so the connector is never smoothed as data.
 
 An area becomes renderable after exactly one ranged orientation exists:
 quantitative or temporal x with quantitative `encodeYRange`, or quantitative
@@ -78,7 +83,7 @@ instead use value/density x and y encodings: the density axis is closed against
 zero, while the value axis determines sample order. Both horizontal-density and
 vertical-density orientations are supported.
 
-## `editAreaMark({ target?, fill?, opacity?, stroke?, strokeWidth? })`
+## `editAreaMark({ target?, fill?, opacity?, stroke?, strokeWidth?, curve? })`
 
 Edit constant area appearance without changing data, fields, grouping, scales,
 or coordinates:
@@ -88,7 +93,8 @@ const outlined = program.editAreaMark({
   target: "densities",
   opacity: 0.35,
   stroke: "#334155",
-  strokeWidth: 1.5
+  strokeWidth: 1.5,
+  curve: "cardinal"
 });
 ```
 
@@ -97,6 +103,8 @@ The current or only compatible area is inferred when `target` is omitted.
 requires an active outline. Constant `fill` cannot replace a field-driven color
 encoding, while opacity and outline remain independently editable. Complete
 areas rematerialize immediately; incomplete areas retain the graphical config.
+Changing `curve` preserves the area's data, fields, scales, grouping, and
+appearance while replacing its concrete path commands.
 
 ## `createLineMark({ id?, data?, strokeWidth?, curve? } = {})`
 

@@ -2,6 +2,8 @@ import { action } from "../../core/action.js";
 import { isPlainObject } from "../../core/immutable.js";
 import { validateKeys } from "../../core/validation.js";
 import { DEFAULT_COLORS } from "../../theme/defaults.js";
+import { validateCurveInterpolation } from "../../grammar/curveCommands.js";
+import { normalizeStrokeDashPattern } from "../../grammar/scales.js";
 import { resolveErrorBand } from "./resolve.js";
 
 const OPTIONS = Object.freeze([
@@ -14,11 +16,14 @@ const OPTIONS = Object.freeze([
   "coordinate",
   "fill",
   "opacity",
+  "curve",
   "boundaries"
 ]);
-const BOUNDARY_OPTIONS = Object.freeze(["stroke", "strokeWidth"]);
+const BOUNDARY_OPTIONS = Object.freeze([
+  "stroke", "strokeWidth", "strokeDash", "opacity", "curve"
+]);
 
-function resolveBoundaries(value) {
+function resolveBoundaries(value, areaCurve) {
   if (value === undefined || value === false) return undefined;
   if (!isPlainObject(value)) {
     throw new TypeError("createErrorBand boundaries must be false or a plain object.");
@@ -26,6 +31,9 @@ function resolveBoundaries(value) {
   validateKeys(value, BOUNDARY_OPTIONS, "createErrorBand boundaries");
   const stroke = value.stroke ?? DEFAULT_COLORS.mark;
   const strokeWidth = value.strokeWidth ?? 1;
+  const strokeDash = value.strokeDash ?? "solid";
+  const opacity = value.opacity ?? 1;
+  const curve = validateCurveInterpolation(value.curve ?? areaCurve);
   if (typeof stroke !== "string" || stroke.length === 0) {
     throw new TypeError("Error-band boundary stroke must be a non-empty string.");
   }
@@ -34,7 +42,17 @@ function resolveBoundaries(value) {
       "Error-band boundary strokeWidth must be a non-negative finite number."
     );
   }
-  return { stroke, strokeWidth };
+  const resolvedStrokeDash = normalizeStrokeDashPattern(strokeDash);
+  if (!Number.isFinite(opacity) || opacity < 0 || opacity > 1) {
+    throw new RangeError("Error-band boundary opacity must be from 0 to 1.");
+  }
+  return {
+    stroke,
+    strokeWidth,
+    strokeDash: resolvedStrokeDash,
+    opacity,
+    curve
+  };
 }
 
 function positionArgs(resolved) {
@@ -66,7 +84,8 @@ export const createErrorBand = action(
   function (args = {}) {
     validateKeys(args, OPTIONS, "createErrorBand");
     const resolved = resolveErrorBand(this, args);
-    const boundaries = resolveBoundaries(args.boundaries);
+    const curve = validateCurveInterpolation(args.curve ?? "linear");
+    const boundaries = resolveBoundaries(args.boundaries, curve);
     let next = this;
 
     if (resolved.interval.mode === "statistical") {
@@ -86,7 +105,8 @@ export const createErrorBand = action(
       id: resolved.id,
       data: resolved.dataId,
       ...(args.fill === undefined ? {} : { fill: args.fill }),
-      ...(args.opacity === undefined ? {} : { opacity: args.opacity })
+      ...(args.opacity === undefined ? {} : { opacity: args.opacity }),
+      ...(Object.hasOwn(args, "curve") ? { curve } : {})
     });
     next = resolved.orientation === "vertical"
       ? next

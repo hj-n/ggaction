@@ -5,6 +5,8 @@ import { chart } from "../../../../src/ChartProgram.js";
 import { createCarsDensityArea } from
   "../../../../examples/cars-density-area/program.js";
 import { loadCars } from "../../../support/data.js";
+import { CURVE_INTERPOLATIONS } from
+  "../../../../src/grammar/curveCommands.js";
 
 const cars = loadCars();
 
@@ -104,5 +106,41 @@ test("validates area appearance, targeting, and encoded fill conflicts", () => {
       .createData({ id: "rows", values: [] })
       .createAreaMark({ id: "area", strokeWidth: 2 }),
     /strokeWidth requires stroke/
+  );
+});
+
+test("creates and edits every area curve without mutating earlier programs", () => {
+  const base = chart()
+    .createCanvas({ width: 200, height: 160, margin: 20 })
+    .createData({ values: [
+      { x: 0, low: 1, high: 3 },
+      { x: 1, low: 2, high: 5 },
+      { x: 2, low: 1, high: 4 }
+    ] })
+    .createAreaMark({ id: "band" })
+    .encodeX({ target: "band", field: "x" })
+    .encodeYRange({ target: "band", lower: "low", upper: "high" });
+
+  for (const curve of CURVE_INTERPOLATIONS) {
+    const edited = base.editAreaMark({ target: "band", curve });
+    assert.equal(edited.markConfigs.band.curve, curve);
+    assert.equal(
+      edited.graphicSpec.objects.band.children[0].properties.commands.at(-1).op,
+      "Z"
+    );
+    if (["basis", "cardinal", "monotone", "natural"].includes(curve)) {
+      assert.equal(
+        edited.graphicSpec.objects.band.children[0].properties.commands.some(
+          command => command.op === "C"
+        ),
+        true
+      );
+    }
+  }
+
+  assert.equal(base.markConfigs.band.curve, undefined);
+  assert.throws(
+    () => base.editAreaMark({ target: "band", curve: "smooth" }),
+    /Unsupported curve interpolation/
   );
 });

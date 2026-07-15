@@ -26,9 +26,12 @@ export const createErrorBandBoundary = action(
     positionScale,
     groupBy,
     stroke,
-    strokeWidth
+    strokeWidth,
+    strokeDash,
+    opacity,
+    curve
   } = {}) {
-    let next = this.createLineMark({ id, data, strokeWidth });
+    let next = this.createLineMark({ id, data, strokeWidth, curve });
     if (orientation === "vertical") {
       next = next
         .encodeY(positionOptions({
@@ -65,8 +68,14 @@ export const createErrorBandBoundary = action(
     if (groupBy !== undefined) {
       next = next.encodeGroup({ target: id, field: groupBy });
     }
-    return next
+    next = next
       .editGraphics({ target: id, property: "stroke", value: stroke })
-      .editGraphics({ target: id, property: "opacity", value: 1 });
+      .editGraphics({
+        target: id,
+        property: "strokeDash",
+        value: next.graphicSpec.objects[id].children.map(() => strokeDash)
+      })
+      .editGraphics({ target: id, property: "opacity", value: opacity });
+    return next;
   }
 );

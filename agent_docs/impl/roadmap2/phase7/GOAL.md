@@ -20,7 +20,7 @@ Complete chart contract:
 - [x] STEP1–STEP9와 three visual approval Gates 설계
 - [x] Gapminder vertical primitive 승인과 vertical ranged-area implementation
 - [x] Cars horizontal primitive 승인과 horizontal ranged-area implementation
-- [ ] Curved boundary primitive 승인과 full option/rematerialization implementation
+- [x] Curved boundary primitive 승인과 full option/rematerialization implementation
 - [ ] Regression band delegation compatibility
 - [ ] Public docs, contract promotion, gallery와 Phase closeout
 

@@ -79,7 +79,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 
 ## `createErrorBand`
 
-- Current signature: `createErrorBand({ id?, target?, data?, x?, y?, groupBy?, coordinate?, fill?, opacity?, boundaries? } = {})`.
+- Current signature: `createErrorBand({ id?, target?, data?, x?, y?, groupBy?, coordinate?, fill?, opacity?, curve?, boundaries? } = {})`.
 - Exactly one of x/y is a quantitative statistical or explicit interval; the other is a quantitative or temporal
   independent position. Vertical uses y/y2 and horizontal uses x/x2 on ordinary area layers.
 - A statistical interval accepts `{ field, center?, extent?, level?, scale? }` and defaults to
@@ -99,15 +99,15 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   `encodeColor` supports grouped ranged areas with inferred overlay layout and rematerializes concrete fills.
 - The result is an ordinary area layer and immutable derived dataset, not a composite registry. Canvas and
   compatible scale changes rematerialize the same namespaced closed paths.
+- `curve` uses the shared area curve vocabulary and defaults to `"linear"`.
 - `boundaries` defaults to false. `{}` creates deterministic lower/upper ordinary line layers after the band;
-  `stroke` defaults to the shared mark color and `strokeWidth` defaults to `1`. Current boundaries are linear,
-  solid and fully opaque.
+  `stroke`, `strokeWidth`, `strokeDash`, and `opacity` default to the shared mark color, `1`, solid, and `1`.
+  Boundary curve inherits the band curve unless an explicit boundary `curve` overrides it.
 
 ### Formal values — `createErrorBand`
 
-- Implemented: `createErrorBand({ id?: UserId; target?: UserId; data?: UserId; x?: PositionChannel | StatisticalIntervalChannel | ExplicitIntervalChannel; y?: PositionChannel | StatisticalIntervalChannel | ExplicitIntervalChannel; groupBy?: FieldName; coordinate?: UserId; fill?: NonEmptyString; opacity?: UnitInterval; boundaries?: false | { stroke?: NonEmptyString; strokeWidth?: NonNegativeFinite } } = {})`.
-- Planned (NOT IMPLEMENTED): area/boundary curve, dash, boundary opacity and independent lower/upper overrides.
-  These remain in `planned/COMPOSITE_MARKS.md`.
+- Implemented: `createErrorBand({ id?: UserId; target?: UserId; data?: UserId; x?: PositionChannel | StatisticalIntervalChannel | ExplicitIntervalChannel; y?: PositionChannel | StatisticalIntervalChannel | ExplicitIntervalChannel; groupBy?: FieldName; coordinate?: UserId; fill?: NonEmptyString; opacity?: UnitInterval; curve?: CurveInterpolation; boundaries?: false | { stroke?: NonEmptyString; strokeWidth?: NonNegativeFinite; strokeDash?: DashPattern; opacity?: UnitInterval; curve?: CurveInterpolation } } = {})`.
+- Planned (NOT IMPLEMENTED): independent lower/upper boundary overrides.
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createErrorBand`
@@ -118,7 +118,9 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   rows, deterministic ID ownership and ambiguous quantitative roles.
 - ✅ Covered: atomic y/y2 and x/x2 reassignment, temporal area materialization, lower/upper boundary order,
   basic stroke/width defaults and overrides, Canvas rematerialization, validation failure and immutability.
-- 🟡 Planned: curve interpolation, advanced boundary styles/overrides and regression delegation.
+- ✅ Covered: all area curve values, inherited/overridden boundary curves, dash/opacity/style validation,
+  deterministic child order, Canvas/scale rematerialization, and approved primitive/public/pixel variants.
+- 🟡 Planned: independent lower/upper overrides and regression delegation.
 - Evidence: `test/unit/actions/error-bands/create-error-band.test.js` and
   `test/charts/gapminder-error-band/public.test.js`.
 

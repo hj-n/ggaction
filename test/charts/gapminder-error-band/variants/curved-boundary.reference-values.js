@@ -1,5 +1,5 @@
 import { createGapminderErrorBandReferenceValues } from
-  "../../charts/gapminder-error-band/reference-values.js";
+  "../reference-values.js";
 
 export const CURVED_BOUNDARY_STYLE = Object.freeze({
   bandCurve: "cardinal",

@@ -710,11 +710,11 @@
       "status": "implemented",
       "lifecycle": "Aggregate create-only",
       "update": "Owned interval-data, area, range, group, and appearance children",
-      "audit": "Intentional; curve and advanced boundary capabilities remain Planned",
+      "audit": "Intentional create-only aggregate with editable ordinary child marks",
       "coverage": {
         "contract": "complete",
         "effects": "complete",
-        "tests": "partial"
+        "tests": "complete"
       },
       "contract": {
         "file": "agent_docs/contract/current/STATISTICS.md",
@@ -1555,28 +1555,6 @@
       "contract": {
         "file": "agent_docs/contract/planned/COMPOSITE_MARKS.md",
         "anchor": "composite-ownership-and-storage"
-      }
-    },
-    {
-      "id": "error-band-curve-and-advanced-boundaries",
-      "kind": "parameter",
-      "name": "Error-band curve and advanced boundaries",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/COMPOSITE_MARKS.md",
-        "anchor": "createerrorband"
-      }
-    },
-    {
-      "id": "curve-interpolation-and-concrete-path-commands",
-      "kind": "parameter",
-      "name": "Curve interpolation and concrete path commands",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/MARKS_AND_PATHS.md",
-        "anchor": "curve-interpolation-and-concrete-path-commands"
       }
     },
     {

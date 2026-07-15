@@ -1,9 +1,10 @@
 import { createGapminderErrorBandPrimitives } from
-  "../../charts/gapminder-error-band/primitive.program.js";
+  "../primitive.program.js";
 import {
   ERROR_BAND_FIELDS
-} from "../../charts/gapminder-error-band/reference-values.js";
-import { createCurvedBoundaryReferenceValues } from "./reference-values.js";
+} from "../reference-values.js";
+import { createCurvedBoundaryReferenceValues } from
+  "./curved-boundary.reference-values.js";
 
 function addBoundaryLayer(program, { id, field }) {
   return program

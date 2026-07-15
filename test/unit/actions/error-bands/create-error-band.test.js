@@ -303,6 +303,57 @@ test("rematerializes horizontal bands and boundaries after Canvas and scale edit
   );
 });
 
+test("inherits area curves into styled boundaries and permits an override", () => {
+  const inherited = chart()
+    .createCanvas(canvas)
+    .createData({ values: loadGapminder() })
+    .createErrorBand({
+      x: { field: "year", fieldType: "temporal" },
+      y: { field: "life_expect" },
+      groupBy: "cluster",
+      curve: "cardinal",
+      boundaries: {
+        stroke: "#25364d",
+        strokeWidth: 1.4,
+        strokeDash: [6, 3],
+        opacity: 0.8
+      }
+    });
+  const overridden = chart()
+    .createCanvas(canvas)
+    .createData({ values: loadGapminder() })
+    .createErrorBand({
+      x: { field: "year", fieldType: "temporal" },
+      y: { field: "life_expect" },
+      groupBy: "cluster",
+      curve: "cardinal",
+      boundaries: { curve: "step" }
+    });
+
+  assert.equal(inherited.markConfigs.errorBand.curve, "cardinal");
+  assert.equal(
+    inherited.markConfigs.errorBandLowerBoundary.curve,
+    "cardinal"
+  );
+  assert.equal(overridden.markConfigs.errorBand.curve, "cardinal");
+  assert.equal(overridden.markConfigs.errorBandLowerBoundary.curve, "step");
+  for (const id of [
+    "errorBandLowerBoundary",
+    "errorBandUpperBoundary"
+  ]) {
+    const properties = inherited.graphicSpec.objects[id].children[0].properties;
+    assert.equal(properties.stroke, "#25364d");
+    assert.equal(properties.strokeWidth, 1.4);
+    assert.deepEqual(properties.strokeDash, [6, 3]);
+    assert.equal(properties.opacity, 0.8);
+  }
+  assert.deepEqual(inherited.graphicSpec.order.slice(1, 4), [
+    "errorBand",
+    "errorBandLowerBoundary",
+    "errorBandUpperBoundary"
+  ]);
+});
+
 test("rejects ambiguous roles, occupied defaults, and invalid options", () => {
   const quantitative = chart()
     .createCanvas(canvas)
@@ -335,8 +386,24 @@ test("rejects ambiguous roles, occupied defaults, and invalid options", () => {
     .createErrorBand({
       x: { field: "year", fieldType: "temporal" },
       y: { field: "life_expect" },
-      boundaries: { curve: "step" }
-    }), /Unknown createErrorBand boundaries option/);
+      boundaries: { curve: "smooth" }
+    }), /Unsupported curve interpolation/);
+  assert.throws(() => chart()
+    .createCanvas(canvas)
+    .createData({ values: loadGapminder() })
+    .createErrorBand({
+      x: { field: "year", fieldType: "temporal" },
+      y: { field: "life_expect" },
+      boundaries: { strokeDash: [4] }
+    }), /even-length array/);
+  assert.throws(() => chart()
+    .createCanvas(canvas)
+    .createData({ values: loadGapminder() })
+    .createErrorBand({
+      x: { field: "year", fieldType: "temporal" },
+      y: { field: "life_expect" },
+      boundaries: { opacity: 2 }
+    }), /from 0 to 1/);
   assert.throws(() => chart()
     .createCanvas(canvas)
     .createData({ values: loadGapminder() })

@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   CURVE_INTERPOLATIONS,
+  buildAreaCurvePathCommands,
   buildCurvePathCommands,
   validateCurveInterpolation
 } from "../../../src/grammar/curveCommands.js";
@@ -121,4 +122,44 @@ test("owns every generated command without retaining caller points", () => {
   assert.equal(commands[0].x, 0);
   assert.equal(Object.isFrozen(commands), true);
   assert.equal(commands.every(Object.isFrozen), true);
+});
+
+test("builds closed areas from two independently interpolated boundaries", () => {
+  const lower = points;
+  const upper = points.map(point => ({ x: point.x, y: point.y + 4 }));
+
+  for (const curve of CURVE_INTERPOLATIONS) {
+    const commands = buildAreaCurvePathCommands(lower, upper, curve);
+    assert.equal(commands[0].op, "M");
+    assert.equal(commands.at(-1).op, "Z");
+    assert.equal(commands.filter(command => command.op === "M").length, 1);
+    assert.deepEqual(
+      commands.slice(0, buildCurvePathCommands(lower, curve).length),
+      buildCurvePathCommands(lower, curve)
+    );
+  }
+
+  assert.deepEqual(buildAreaCurvePathCommands(lower, upper), [
+    { op: "M", x: 0, y: 0 },
+    { op: "L", x: 3, y: 3 },
+    { op: "L", x: 6, y: 0 },
+    { op: "L", x: 6, y: 4 },
+    { op: "L", x: 3, y: 7 },
+    { op: "L", x: 0, y: 4 },
+    { op: "Z" }
+  ]);
+});
+
+test("orients monotone area interpolation along a vertical independent axis", () => {
+  const lower = points.map(point => ({ x: point.y, y: point.x }));
+  const upper = lower.map(point => ({ x: point.x + 4, y: point.y }));
+  const commands = buildAreaCurvePathCommands(
+    lower,
+    upper,
+    "monotone",
+    { independentAxis: "y" }
+  );
+
+  assert.equal(commands.some(command => command.op === "C"), true);
+  assert.equal(commands.at(-1).op, "Z");
 });

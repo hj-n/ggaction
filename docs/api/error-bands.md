@@ -48,9 +48,13 @@ createErrorBand({
   coordinate?: string;
   fill?: string;
   opacity?: number;
+  curve?: CurveInterpolation;
   boundaries?: false | {
     stroke?: string;
     strokeWidth?: number;
+    strokeDash?: DashStyle | readonly number[];
+    opacity?: number;
+    curve?: CurveInterpolation;
   };
 } = {})
 ```
@@ -119,12 +123,31 @@ the matching atomic position-range action, and grouping children.
 explicit `encodeColor` call so color, grouping, and legend ownership stay
 separate.
 
+`curve` defaults to `"linear"` and accepts the shared eight-value line/area
+curve vocabulary.
+
 `boundaries` defaults to `false`. An object adds deterministic lower and upper
-ordinary line layers after the filled band. Its stroke defaults to the shared
-mark color and its width defaults to `1`.
+ordinary line layers after the filled band. Stroke, width, dash, and opacity
+default to the shared mark color, `1`, solid, and `1`. Boundary paths inherit
+the band curve unless `boundaries.curve` explicitly overrides it:
 
-## Current boundary
+```javascript
+program.createErrorBand({
+  x: { field: "year", fieldType: "temporal" },
+  y: { field: "life_expect" },
+  groupBy: "cluster",
+  curve: "cardinal",
+  boundaries: {
+    stroke: "#25364d",
+    strokeWidth: 1.4,
+    strokeDash: [6, 3],
+    opacity: 0.8,
+    curve: "step"
+  }
+});
+```
 
-Curved area edges and advanced boundary dash, opacity, curve, or independent
-lower/upper overrides are not implemented yet. Supplying unsupported options
-is rejected instead of being silently ignored.
+The two boundary IDs are `${id}LowerBoundary` and `${id}UpperBoundary`. They
+remain ordinary line layers and can be targeted by line or encoding actions.
+The aggregate intentionally does not accept separate lower and upper style
+objects.

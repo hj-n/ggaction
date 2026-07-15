@@ -1,4 +1,6 @@
 export {
+  createGapminderBoundaryOverrideErrorBand,
+  createGapminderCurvedBoundaryErrorBand,
   createCarsHorizontalErrorBand,
   createGapminderErrorBand
 } from

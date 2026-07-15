@@ -5,9 +5,13 @@ import { createCarsHorizontalErrorBandPrimitives } from
   "../cars-horizontal.primitive.program.js";
 import { createGapminderErrorBandPrimitives } from "../primitive.program.js";
 import {
+  createGapminderBoundaryOverrideErrorBand,
+  createGapminderCurvedBoundaryErrorBand,
   createCarsHorizontalErrorBand,
   createGapminderErrorBand
 } from "../public.program.js";
+import { createGapminderCurvedBoundaryPrimitives } from
+  "./curved-boundary.primitive.program.js";
 import {
   CARS_HORIZONTAL_LAYOUT,
   CARS_HORIZONTAL_STYLE
@@ -59,6 +63,42 @@ const horizontalTargetCallChain = `chart()
     subtitle: "Mean and 95% confidence interval across cars"
   });`;
 
+const curvedTargetCallChain = `chart()
+  .createCanvas({
+    width: 760,
+    height: 480,
+    margin: { top: 90, right: 150, bottom: 70, left: 80 }
+  })
+  .createData({ values: gapminder })
+  .createErrorBand({
+    x: { field: "year", fieldType: "temporal" },
+    y: { field: "life_expect" },
+    groupBy: "cluster",
+    curve: "cardinal",
+    boundaries: {
+      stroke: "#25364d",
+      strokeWidth: 1.4,
+      strokeDash: [6, 3],
+      opacity: 0.8
+    }
+  })
+  .encodeColor({
+    target: "errorBand",
+    field: "cluster",
+    fieldType: "nominal",
+    scale: { palette: "tableau10" }
+  })
+  .createGuides()
+  .createTitle({
+    text: "Life Expectancy by Cluster",
+    subtitle: "Mean and 95% confidence interval"
+  });`;
+
+const overrideTargetCallChain = curvedTargetCallChain.replace(
+  "opacity: 0.8\n    }",
+  "opacity: 0.8,\n      curve: \"step\"\n    }"
+);
+
 export const visualVariants = Object.freeze([
   defineVisualVariant({
     chart: "gapminder-error-band",
@@ -86,6 +126,36 @@ export const visualVariants = Object.freeze([
     colors: [CARS_HORIZONTAL_STYLE.boundaryStroke],
     regions: [
       { name: "plot", x: 80, y: 90, width: 630, height: 320 }
+    ]
+  }),
+  defineVisualVariant({
+    chart: "gapminder-error-band",
+    variant: "gapminder-curved-boundaries",
+    title: "Cardinal Error Band with Inherited Boundaries",
+    callChain: curvedTargetCallChain,
+    primitive: createGapminderCurvedBoundaryPrimitives(loadGapminder()),
+    userFacing: createGapminderCurvedBoundaryErrorBand(loadGapminder()),
+    width: ERROR_BAND_LAYOUT.width,
+    height: ERROR_BAND_LAYOUT.height,
+    colors: ["#334155"],
+    regions: [
+      { name: "plot", x: 80, y: 90, width: 530, height: 320 }
+    ]
+  }),
+  defineVisualVariant({
+    chart: "gapminder-error-band",
+    variant: "gapminder-boundary-override",
+    title: "Cardinal Error Band with Step Boundary Override",
+    callChain: overrideTargetCallChain,
+    primitive: createGapminderCurvedBoundaryPrimitives(loadGapminder(), {
+      boundaryCurve: "step"
+    }),
+    userFacing: createGapminderBoundaryOverrideErrorBand(loadGapminder()),
+    width: ERROR_BAND_LAYOUT.width,
+    height: ERROR_BAND_LAYOUT.height,
+    colors: ["#334155"],
+    regions: [
+      { name: "plot", x: 80, y: 90, width: 530, height: 320 }
     ]
   })
 ]);
