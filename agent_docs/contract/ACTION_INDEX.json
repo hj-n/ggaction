@@ -1476,17 +1476,6 @@
       }
     },
     {
-      "id": "color-layout-vocabulary",
-      "kind": "parameter",
-      "name": "Color layout vocabulary",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/ENCODINGS.md",
-        "anchor": "color-layout-vocabulary"
-      }
-    },
-    {
       "id": "continuous-color-bar-consumer",
       "kind": "parameter",
       "name": "Continuous color bar consumer",
@@ -1528,17 +1517,6 @@
       "contract": {
         "file": "agent_docs/contract/planned/ENCODINGS.md",
         "anchor": "position-field-type-compatibility"
-      }
-    },
-    {
-      "id": "normalized-stack-mode",
-      "kind": "parameter",
-      "name": "Normalized stack mode",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/ENCODINGS.md",
-        "anchor": "normalized-stack-mode"
       }
     },
     {

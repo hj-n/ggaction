@@ -76,6 +76,13 @@ intervals. These options are mutually exclusive. Calling `encodeHistogram`
 again replaces the complete bin/count assignment and refreshes inferred axes
 and grids while preserving compatible color grouping and legends.
 
+To compare proportions instead of absolute counts, set the color layout to
+`"fill"`. It invokes normalized y stacking and produces a `[0, 1]` axis:
+
+```javascript
+program.encodeColor({ field: "Origin", layout: "fill" });
+```
+
 Legends default to the right for every supported chart. This example passes
 `position: "bottom"` because its horizontal layout is intentional.
 

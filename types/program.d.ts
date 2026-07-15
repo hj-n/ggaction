@@ -32,6 +32,13 @@ export type CurveInterpolation =
 export type DashStyle = "solid" | "dashed" | "dotted" | "dashdot";
 export type DashPattern = readonly number[];
 export type ScaleType = "linear" | "time" | "ordinal";
+export type StackMode = "zero" | "normalize" | null;
+export type ColorLayout =
+  | "stack"
+  | "fill"
+  | "group"
+  | "overlay"
+  | "diverging";
 export type ScalarAggregateOperation =
   | "count" | "sum" | "mean" | "median" | "min" | "max"
   | "distinct" | "valid" | "missing"
@@ -176,14 +183,14 @@ export interface PositionEncodingOptions {
         step?: never;
         boundaries: readonly [number, number, ...number[]];
       };
-  stack?: "zero" | null;
+  stack?: StackMode;
 }
 
 export type HistogramEncodingOptions = {
   field: string;
   target?: string;
   coordinate?: string;
-  stack?: "zero";
+  stack?: StackMode;
   xScale?: ScaleOptions;
   yScale?: ScaleOptions;
 } & (
@@ -201,7 +208,7 @@ export interface CategoricalEncodingOptions {
   target?: string;
   fieldType?: "nominal";
   scale?: ScaleOptions;
-  layout?: "stack" | "group";
+  layout?: ColorLayout;
 }
 
 export interface DashScaleOptions {

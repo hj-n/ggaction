@@ -1,11 +1,22 @@
 import { deriveBarAggregates } from "../../grammar/bars/aggregate.js";
-import { BAR_GRAINS, resolveBarGrain } from "../../grammar/bars/policy.js";
-import { countHistogramBins, resolveHistogramBins } from "../../grammar/histogram.js";
+import {
+  BAR_GRAINS,
+  resolveBarColorLayout,
+  resolveBarGrain
+} from "../../grammar/bars/policy.js";
+import {
+  countHistogramBins,
+  findHistogramBinIndex,
+  resolveHistogramBins
+} from "../../grammar/histogram.js";
+import { deriveDensityAreaSeries } from "../../grammar/areaSeries.js";
 import { deriveLineSeries } from "../../grammar/lineSeries.js";
+import { resolveSeriesLayoutDomainValues } from "../../grammar/seriesLayout.js";
 import {
   readNominalField,
   readQuantitativeField,
-  readTemporalField
+  readTemporalField,
+  resolveOrdinalDomain
 } from "../../grammar/scales.js";
 import { findDataset } from "../../selectors/datasets.js";
 import { requireSemanticScale } from "../../selectors/scales.js";
@@ -106,4 +117,113 @@ export function resolveHistogramCountValues(program, consumer) {
     zero: xScale.zero ?? false
   });
   return countHistogramBins(xValues, bins.boundaries);
+}
+
+function resolveHistogramPartitions(program, consumer) {
+  const layer = consumer.layer;
+  const dataset = findDataset(program, layer.data);
+  const xEncoding = layer.encoding.x;
+  const xScale = findScale(program, xEncoding.scale);
+  const xValues = readQuantitativeField(dataset.values, xEncoding.field);
+  const bins = resolveHistogramBins({
+    values: xValues,
+    bin: xEncoding.bin,
+    domain: xScale.domain,
+    nice: xScale.nice ?? true,
+    zero: xScale.zero ?? false
+  });
+  const colorEncoding = layer.encoding?.color;
+  if (colorEncoding?.scale === undefined) {
+    return countHistogramBins(xValues, bins.boundaries).map(value => [value]);
+  }
+
+  const colorScale = findScale(program, colorEncoding.scale);
+  const colorValues = readNominalField(dataset.values, colorEncoding.field);
+  const colorDomain = resolveOrdinalDomain(colorScale.domain, colorValues);
+  const colorIndex = new Map(colorDomain.map((value, index) => [value, index]));
+  const partitions = bins.boundaries.slice(0, -1).map(() =>
+    colorDomain.map(() => 0)
+  );
+  for (let index = 0; index < xValues.length; index += 1) {
+    const bin = findHistogramBinIndex(xValues[index], bins.boundaries);
+    const color = colorIndex.get(colorValues[index]);
+    if (bin !== -1 && color !== undefined) partitions[bin][color] += 1;
+  }
+  return partitions;
+}
+
+function resolveAggregatePartitions(program, consumer) {
+  const layer = consumer.layer;
+  const dataset = findDataset(program, layer.data);
+  const derived = deriveBarAggregates(dataset.values, layer);
+  const xScale = findScale(program, layer.encoding.x.scale);
+  const xDomain = resolveOrdinalDomain(xScale.domain, derived.xValues);
+  const colorEncoding = layer.encoding?.color;
+  if (colorEncoding?.scale === undefined) {
+    const byX = new Map(derived.values.map(value => [value.x, value.y]));
+    return xDomain.map(value => [byX.get(value) ?? 0]);
+  }
+
+  const colorScale = findScale(program, colorEncoding.scale);
+  const colorValues = readNominalField(dataset.values, colorEncoding.field);
+  const colorDomain = resolveOrdinalDomain(colorScale.domain, colorValues);
+  const cells = new Map(derived.values.map(value => [
+    JSON.stringify([value.x, value.color]),
+    value.y
+  ]));
+  return xDomain.map(x => colorDomain.map(color =>
+    cells.get(JSON.stringify([x, color])) ?? 0
+  ));
+}
+
+function resolveAreaPartitions(program, consumer) {
+  const layer = consumer.layer;
+  const dataset = findDataset(program, layer.data);
+  const transform = dataset?.transform?.length === 1 &&
+    dataset.transform[0].type === "density"
+    ? dataset.transform[0]
+    : undefined;
+  if (transform === undefined) return undefined;
+  const derived = deriveDensityAreaSeries(dataset.values, layer, transform);
+  if (derived.mode !== "y-density") return undefined;
+  const sampleCount = derived.series[0].values.length;
+  if (derived.series.some(series => series.values.length !== sampleCount)) {
+    throw new Error(`Area mark "${layer.id}" requires aligned layout samples.`);
+  }
+  return Array.from({ length: sampleCount }, (_, index) =>
+    derived.series.map(series => series.values[index].y)
+  );
+}
+
+export function resolveSeriesLayoutScaleValues(program, consumer) {
+  if (consumer.channel !== "y") return undefined;
+  if (consumer.layer.mark?.type === "bar") {
+    const grain = resolveBarGrain(consumer.layer);
+    const partitions = grain === BAR_GRAINS.histogram
+      ? resolveHistogramPartitions(program, consumer)
+      : grain === BAR_GRAINS.aggregate
+        ? resolveAggregatePartitions(program, consumer)
+        : undefined;
+    if (partitions === undefined) return undefined;
+    const layout = resolveBarColorLayout(consumer.layer);
+    return {
+      layout,
+      values: resolveSeriesLayoutDomainValues(partitions, layout)
+    };
+  }
+  if (consumer.layer.mark?.type === "area") {
+    const layout = consumer.layer.encoding?.color?.layout;
+    if (layout === undefined || layout === "overlay") return undefined;
+    const partitions = resolveAreaPartitions(program, consumer);
+    if (partitions === undefined) {
+      throw new Error(
+        `Area layout "${layout}" currently requires vertical density series.`
+      );
+    }
+    return {
+      layout,
+      values: resolveSeriesLayoutDomainValues(partitions, layout)
+    };
+  }
+  return undefined;
 }

@@ -9,7 +9,7 @@ const HISTOGRAM_OPTIONS = Object.freeze([
 const encodeHistogram = action(
   {
     op: "encodeHistogram",
-    description: "Encode a binned count/zero-stack histogram."
+    description: "Encode a binned count histogram with a configurable layout stack."
   },
   function (args = {}) {
     validateOptions(args, HISTOGRAM_OPTIONS, "encodeHistogram");
@@ -30,7 +30,9 @@ const encodeHistogram = action(
       field: args.field,
       bin
     };
-    const y = { stack: args.stack ?? "zero" };
+    const y = {
+      stack: Object.hasOwn(args, "stack") ? args.stack : "zero"
+    };
 
     for (const key of ["target", "coordinate"]) {
       if (Object.hasOwn(args, key)) x[key] = args[key];

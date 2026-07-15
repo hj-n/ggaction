@@ -1,7 +1,7 @@
 import { action } from "../../../core/action.js";
 import { validateUserId } from "../../../core/identifiers.js";
 import { validateMarkOptions } from "../shared.js";
-import { deriveGroupedRectangles } from "../../../materialization/bars/grouped.js";
+import { deriveAggregateRectangles } from "../../../materialization/bars/aggregate.js";
 import { deriveHistogramRectangles } from "../../../materialization/bars/histogram.js";
 import { requireCompleteBar } from "../../../materialization/bars/resolve.js";
 
@@ -85,7 +85,7 @@ export const rematerializeBarMark = action(
       return editRectangles(
         resolved,
         id,
-        deriveGroupedRectangles(required, resolved, band)
+        deriveAggregateRectangles(required, resolved, band)
       );
     }
 

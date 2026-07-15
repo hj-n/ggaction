@@ -51,7 +51,8 @@ test("authors and renders the complete primitive cars histogram", () => {
         color: {
           field: "Origin",
           fieldType: "nominal",
-          scale: "color"
+          scale: "color",
+          layout: "stack"
         }
       }
     }

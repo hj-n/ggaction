@@ -32,7 +32,8 @@ test("encodes bar color and materializes zero-stacked category rects", () => {
   assert.deepEqual(program.semanticSpec.layers[0].encoding.color, {
     field: "Origin",
     fieldType: "nominal",
-    scale: "color"
+    scale: "color",
+    layout: "stack"
   });
   assert.deepEqual(program.semanticSpec.scales[2], {
     id: "color",
@@ -65,7 +66,9 @@ test("encodes bar color and materializes zero-stacked category rects", () => {
     "editSemantic",
     "editSemantic",
     "editSemantic",
+    "editSemantic",
     "createScale",
+    "encodeY",
     "rematerializeBarMark"
   ]);
   assert.deepEqual(node.children.at(-1).children.slice(0, 3).map(

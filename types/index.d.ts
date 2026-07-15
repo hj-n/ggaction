@@ -4,6 +4,7 @@ export type {
   ActionOptions,
   CanvasOptions,
   CategoricalEncodingOptions,
+  ColorLayout,
   ColorEncodingOptions,
   ChartProgram,
   ConcretePathCommand,
@@ -18,6 +19,7 @@ export type {
   GraphicObject,
   GraphicSpec,
   GraphicType,
+  HistogramEncodingOptions,
   LegendOptions,
   ContinuousColorInterpolation,
   ContinuousColorScaleOptions,
@@ -31,6 +33,7 @@ export type {
   ScaleRange,
   ScaleOptions,
   ScaleType,
+  StackMode,
   SemanticSpec,
   StrokeDashEncodingOptions,
   TraceNode

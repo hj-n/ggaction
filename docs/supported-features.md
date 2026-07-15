@@ -14,7 +14,7 @@ chart-authoring API does not support that combination.
 | --- | --- | --- | --- | --- | --- | --- |
 | Semantic mark | point | line | bar | bar | point + area + line | area |
 | Position | quantitative x/y | temporal x, aggregate y | binned x, count y | ordinal x, aggregate y | shared quantitative x/y | value + density x/y |
-| Nominal color | point fill | series stroke | zero-stacked fill | grouped fill and xOffset | point fill + fit stroke | grouped area fill |
+| Nominal color | point fill | series stroke | five bar layouts | five bar layouts | point fill + fit stroke | overlay/stack/fill/diverging area |
 | Stroke dash | — | nominal or constant; 4 named styles | — | — | — | — |
 | Constant appearance | radius | stroke width, 8 curves | — | band width | opacity, band fill, line width | opacity |
 | Automatic axes | linear | UTC time and linear | bin-aligned and linear | ordinal and linear | shared linear | source value + density |

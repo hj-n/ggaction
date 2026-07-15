@@ -9,6 +9,8 @@ import {
   readNominalField,
   readQuantitativeField
 } from "../../grammar/scales.js";
+import { resolveBarColorLayout } from "../../grammar/bars/policy.js";
+import { layoutSeriesPartition } from "../../grammar/seriesLayout.js";
 import {
   DEFAULT_BAR_FILL,
   DEFAULT_BAR_STROKE,
@@ -31,17 +33,20 @@ function deriveSegments({
     zero: xScale.zero ?? false
   });
   const colorEncoding = layer.encoding?.color;
+  const layout = resolveBarColorLayout(layer);
 
   if (colorEncoding?.scale === undefined) {
-    return countHistogramBins(xValues, bins.boundaries)
-      .map((count, index) => ({
-        bin: index,
-        start: bins.boundaries[index],
-        end: bins.boundaries[index + 1],
-        stackStart: 0,
-        stackEnd: count
+    return countHistogramBins(xValues, bins.boundaries).flatMap((count, bin) =>
+      layoutSeriesPartition([count], layout).map(segment => ({
+        bin,
+        start: bins.boundaries[bin],
+        end: bins.boundaries[bin + 1],
+        category: segment.index,
+        categoryCount: 1,
+        stackStart: segment.start,
+        stackEnd: segment.end
       }))
-      .filter(segment => segment.stackEnd > 0);
+    );
   }
 
   const colorScale = resolvedScales[colorEncoding.scale];
@@ -67,24 +72,23 @@ function deriveSegments({
 
   const segments = [];
   for (let bin = 0; bin < counts.length; bin += 1) {
-    let stackStart = 0;
-    for (let category = 0; category < counts[bin].length; category += 1) {
-      const count = counts[bin][category];
-      if (count === 0) continue;
-      const stackEnd = stackStart + count;
+    const partition = layoutSeriesPartition(counts[bin], layout);
+    for (const segment of partition) {
+      const category = segment.index;
       segments.push({
         bin,
         start: bins.boundaries[bin],
         end: bins.boundaries[bin + 1],
-        stackStart,
-        stackEnd,
+        category,
+        categoryCount: counts[bin].length,
+        stackStart: segment.start,
+        stackEnd: segment.end,
         color: mapOrdinalValues(
           [colorScale.domain[category]],
           colorScale.domain,
           colorScale.range
         )[0]
       });
-      stackStart = stackEnd;
     }
   }
   return segments;
@@ -98,6 +102,7 @@ export function deriveHistogramRectangles(required, resolved) {
     resolvedScales: resolved.resolvedScales
   });
   const existing = resolved.graphicSpec.objects[required.layer.id].children;
+  const layout = resolveBarColorLayout(required.layer);
 
   return segments.map((segment, index) => {
     const [x1, x2] = mapLinearValues(
@@ -112,10 +117,18 @@ export function deriveHistogramRectangles(required, resolved) {
       yScale.range,
       { clamp: yScale.clamp ?? false }
     );
+    const binStart = Math.min(x1, x2);
+    const binWidth = Math.abs(x2 - x1);
+    const groupedWidth = layout === "group"
+      ? binWidth / segment.categoryCount
+      : binWidth;
+    const groupedX = layout === "group"
+      ? binStart + groupedWidth * segment.category
+      : binStart;
     return {
-      x: Math.min(x1, x2),
+      x: groupedX,
       y: Math.min(y1, y2),
-      width: Math.abs(x2 - x1),
+      width: groupedWidth,
       height: Math.abs(y2 - y1),
       fill:
         segment.color ??

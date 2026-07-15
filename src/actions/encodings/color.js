@@ -10,6 +10,7 @@ import {
   inferBarColorLayout,
   resolveBarGrain
 } from "../../grammar/bars/policy.js";
+import { validateColorLayout } from "../../grammar/seriesLayout.js";
 import {
   resolveColorScaleDefinition,
   resolveSequentialColorScaleDefinition
@@ -27,6 +28,75 @@ import { planEncodingRematerialization } from "../../materialization/encodings.j
 const COLOR_ENCODING_OPTIONS = Object.freeze([
   "field", "target", "fieldType", "scale", "layout"
 ]);
+
+function resolveColorLayout(layer, requested, barGrain) {
+  const existing = layer.encoding?.color === undefined
+    ? undefined
+    : layer.encoding.color.layout ?? (
+        layer.mark.type === "bar"
+          ? inferBarColorLayout(layer)
+          : layer.mark.type === "area"
+            ? "overlay"
+            : undefined
+      );
+  if (requested !== undefined) validateColorLayout(requested);
+  if (existing !== undefined && requested !== undefined && requested !== existing) {
+    throw new Error(
+      `Color layout transition from "${existing}" to "${requested}" is not supported.`
+    );
+  }
+  const layout = requested ?? existing ?? (
+    layer.mark.type === "bar"
+      ? barGrain === BAR_GRAINS.histogram ? "stack" : "group"
+      : layer.mark.type === "area"
+        ? "overlay"
+        : undefined
+  );
+
+  if (["point", "line"].includes(layer.mark.type) && layout !== undefined) {
+    throw new Error(`Color layout is not supported for ${layer.mark.type} marks.`);
+  }
+  if (layer.mark.type === "area" && layout === "group") {
+    throw new Error('Area color layout does not support "group".');
+  }
+  return layout;
+}
+
+function applyColorLayoutCompanion(
+  program,
+  { target, layer, layout, scale, field }
+) {
+  if (layout === undefined) return program;
+  const y = layer.encoding?.y;
+  if (y?.field === undefined || y.scale === undefined) {
+    throw new Error(`Color layout on mark "${target}" requires a y encoding.`);
+  }
+  const stack = layout === "fill"
+    ? "normalize"
+    : layout === "overlay" || layout === "group"
+      ? null
+      : "zero";
+  let next = program.encodeY({
+    target,
+    field: y.field,
+    fieldType: y.fieldType,
+    ...(y.aggregate === undefined ? {} : { aggregate: y.aggregate }),
+    stack
+  });
+  if (layout === "group") {
+    next = next.encodeXOffset({
+      field,
+      target,
+      scale: {
+        ...(layer.encoding?.xOffset?.scale === undefined
+          ? {}
+          : { id: layer.encoding.xOffset.scale }),
+        domain: scale.domain
+      }
+    });
+  }
+  return next;
+}
 
 function encodeContinuousColor(program, args) {
   if (!["quantitative", "temporal"].includes(args.fieldType)) {
@@ -101,16 +171,6 @@ const encodeColor = action(
       "color mark"
     );
     if (
-      args.layout !== undefined &&
-      args.layout !== "group" &&
-      args.layout !== "stack"
-    ) {
-      throw new Error(`Unsupported color layout "${args.layout}".`);
-    }
-    if (layer.mark.type !== "bar" && args.layout !== undefined) {
-      throw new Error("Color layout is supported only for bar marks.");
-    }
-    if (
       layer.mark.type === "area" &&
       (layer.encoding?.group?.field === undefined ||
         layer.encoding.group.field !== args.field)
@@ -122,27 +182,12 @@ const encodeColor = action(
     validateLineSeriesCompatibility(layer, "color", args.field);
 
     const barGrain = resolveBarGrain(layer);
-    const isHistogram = barGrain === BAR_GRAINS.histogram;
-    const isOrdinalAggregate = barGrain === BAR_GRAINS.aggregate;
-    const layout = args.layout ?? (
-      layer.encoding?.color === undefined
-        ? undefined
-        : inferBarColorLayout(layer)
-    );
-
-    if (layer.mark.type === "bar") {
-      if (isHistogram && layout !== undefined && layout !== "stack") {
-        throw new Error('Histogram color layout must be "stack".');
-      }
-      if (isOrdinalAggregate && layout !== "group") {
-        throw new Error('Ordinal aggregate bar color layout must be "group".');
-      }
-      if (!isHistogram && !isOrdinalAggregate) {
-        throw new Error(
-          "Bar color encoding requires a complete histogram encoding or a complete ordinal aggregate encoding."
-        );
-      }
+    if (layer.mark.type === "bar" && barGrain === undefined) {
+      throw new Error(
+        "Bar color encoding requires a complete histogram encoding or a complete ordinal aggregate encoding."
+      );
     }
+    const layout = resolveColorLayout(layer, args.layout, barGrain);
     readNominalField(dataset.values, args.field);
     const requestedScale = resolveReassignmentScaleOptions(
       layer.encoding?.color,
@@ -163,27 +208,22 @@ const encodeColor = action(
         property: `layer[${target}].encoding.color.scale`,
         value: scale.id
       });
+    if (layout !== undefined) {
+      next = next.editSemantic({
+        property: `layer[${target}].encoding.color.layout`,
+        value: layout
+      });
+    }
     next = applyEncodingScale(next, scale, requestedScale, {
       reassignment: layer.encoding?.color?.scale === scale.id
     });
-
-    if (isOrdinalAggregate) {
-      next = next
-        .editSemantic({
-          property: `layer[${target}].encoding.y.stack`,
-          value: null
-        })
-        .encodeXOffset({
-          field: args.field,
-          target,
-          scale: {
-            ...(layer.encoding?.xOffset?.scale === undefined
-              ? {}
-              : { id: layer.encoding.xOffset.scale }),
-            domain: scale.domain
-          }
-        });
-    }
+    next = applyColorLayoutCompanion(next, {
+      target,
+      layer,
+      layout,
+      scale,
+      field: args.field
+    });
 
     return applyMaterializationPlan(
       next,

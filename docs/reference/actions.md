@@ -152,10 +152,11 @@ materialize rects until their remaining layout semantics exist.
 encodeY({ field?, target?, fieldType?, aggregate?, stack?, coordinate?, scale? })
 ```
 
-Create or compatibly replace a quantitative point, aggregate line, or inferred count/zero-stack bar
+Create or compatibly replace a quantitative point, aggregate line, or inferred count bar
 y encoding. With ordinal bar x, it also creates an aggregate/non-stacked y encoding
 and resolves its scale while waiting for grouping semantics before rect
-materialization. Aggregate values may be scalar names or parameterized quantile
+materialization. Bar stack accepts `"zero"`, `"normalize"`, or `null`.
+Aggregate values may be scalar names or parameterized quantile
 and ordered first/last objects. A complete histogram x/y pair materializes concrete rects.
 [Position encodings](../api/position-encodings.md)
 
@@ -205,9 +206,10 @@ encodeHistogram({
 })
 ```
 
-Compose binned bar `encodeX` and count/zero-stack `encodeY` as one atomic
+Compose binned bar `encodeX` and count `encodeY` as one atomic
 histogram action. Choose at most one of `maxBins`, `binStep`, and
 `binBoundaries`. `maxBins` defaults to `10`; `stack` defaults to `"zero"`.
+Use `stack: "normalize"` for a unit-height partition.
 [Encodings](../api/encodings.md)
 
 ### `encodeDensity`
@@ -231,9 +233,10 @@ encodeColor({ field, target?, fieldType?, layout?, scale? })
 ```
 
 Create or compatibly replace point fill, line-series color, grouped area fill,
-stacked histogram color, or grouped ordinal-bar color. Quantitative and temporal
+or bar color. Nominal bar layout accepts `stack`, `fill`, `group`, `overlay`,
+and `diverging`; area accepts all except `group`. Quantitative and temporal
 point fields use a sequential scale with concrete interpolated colors. Nominal
-grouped bars require `layout: "group"` and record `encodeXOffset` as a child.
+grouped bars record `encodeXOffset` as a child.
 [Series encodings](../api/series-encodings.md)
 
 ### `encodeStrokeDash`
@@ -294,7 +297,7 @@ replace each other through the same action.
 encodeBarWidth({ band?, target? })
 ```
 
-Set grouped-bar slot occupancy and materialize concrete rectangles. `band`
+Set aggregate-bar band or group-slot occupancy and materialize concrete rectangles. `band`
 defaults to `0.72` and must be greater than `0` and at most `1`.
 [Constant appearance](../api/appearance.md)
 

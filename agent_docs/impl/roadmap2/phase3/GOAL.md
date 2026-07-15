@@ -16,7 +16,7 @@ compatibility를 구현한다.
 - [x] Phase 3 범위, variant와 approval gate 확정
 - [x] 두 canonical baseline audit와 gallery pair
 - [x] Histogram bin/reassignment primitive 승인과 public implementation
-- [ ] Normalized stack/color layout primitive 승인과 public implementation
+- [x] Normalized stack/color layout primitive 승인과 public implementation
 - [ ] Bar width/padding/reassignment primitive 승인과 public implementation
 - [ ] Position compatibility primitive 승인과 public implementation
 - [ ] Full parameter, failure, immutability와 rematerialization matrix

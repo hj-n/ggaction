@@ -1,4 +1,8 @@
-import { createJobsGroupedBar } from
+import {
+  createJobsDivergingBar,
+  createJobsGroupedBar,
+  createJobsOverlayBar
+} from
   "../../../../examples/jobs-grouped-bar/program.js";
 import { loadJobs } from "../../../support/data.js";
 import { defineVisualVariant } from "../../../support/visual-variants.js";
@@ -81,7 +85,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   })
   .encodeBarWidth({ band: 0.72 })
   .createGuides();`,
-  primitive: createOverlayLayoutPrimitives(jobs)
+  primitive: createOverlayLayoutPrimitives(jobs),
+  userFacing: createJobsOverlayBar(jobs)
 }), defineVisualVariant({
   ...shared,
   variant: "diverging-layout",
@@ -107,5 +112,6 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   })
   .encodeBarWidth({ band: 0.72 })
   .createGuides();`,
-  primitive: createDivergingLayoutPrimitives(signedJobs)
+  primitive: createDivergingLayoutPrimitives(signedJobs),
+  userFacing: createJobsDivergingBar(signedJobs)
 })]);

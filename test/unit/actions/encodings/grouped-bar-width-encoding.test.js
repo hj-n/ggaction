@@ -161,7 +161,7 @@ test("validates grouped bar width options and prerequisites", () => {
     .encodeY({ field: "perc" });
   assert.throws(
     () => incomplete.encodeBarWidth(),
-    /requires complete grouped bar/
+    /requires complete aggregate bar/
   );
   assert.deepEqual(program.markConfigs, {});
 });

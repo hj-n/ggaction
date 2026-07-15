@@ -26,7 +26,7 @@ import {
   findScale,
   findScaleConsumers,
   resolveConsumerValues,
-  resolveHistogramCountValues
+  resolveSeriesLayoutScaleValues
 } from "./consumers.js";
 import {
   applyMaterializationPlan,
@@ -78,12 +78,8 @@ export const rematerializeScale = action(
         consumer.layer.mark?.type === "bar" &&
         consumer.encoding.bin !== undefined
     );
-    const countBars = valuesByConsumer.filter(
-      ({ consumer }) =>
-        consumer.layer.mark?.type === "bar" &&
-        consumer.channel === "y" &&
-        consumer.encoding.aggregate === "count" &&
-        consumer.encoding.stack === "zero"
+    const seriesLayouts = valuesByConsumer.map(({ consumer }) =>
+      resolveSeriesLayoutScaleValues(this, consumer)
     );
     let domain;
 
@@ -108,21 +104,28 @@ export const rematerializeScale = action(
         nice: scale.nice ?? true,
         zero: scale.zero ?? false
       }).domain;
-    } else if (countBars.length > 0) {
-      if (channel !== "y" || countBars.length !== valuesByConsumer.length) {
+    } else if (seriesLayouts.some(Boolean)) {
+      if (channel !== "y" || seriesLayouts.some(item => item === undefined)) {
         throw new Error(
-          `Histogram count scale "${id}" cannot be shared with another policy.`
+          `Series layout scale "${id}" cannot be shared with another policy.`
         );
       }
-      const counts = countBars.flatMap(({ consumer }) =>
-        resolveHistogramCountValues(this, consumer)
-      );
+      const layouts = new Set(seriesLayouts.map(item => item.layout));
+      if (layouts.size !== 1) {
+        throw new Error(`Series layout scale "${id}" requires one layout policy.`);
+      }
+      const layout = seriesLayouts[0].layout;
+      const values = seriesLayouts.flatMap(item => item.values);
       domain = resolveContinuousDomain({
         domain: scale.domain,
-        values: counts,
+        values,
         type: scale.type,
-        nice: scale.nice,
-        zero: scale.zero
+        nice: layout === "fill" && scale.domain === "auto"
+          ? false
+          : scale.nice,
+        zero: layout === "fill" && scale.domain === "auto"
+          ? false
+          : scale.zero
       });
     } else {
       domain = isOrdinalAppearance || isOrdinalOffset || isOrdinalPosition
@@ -167,6 +170,7 @@ export const rematerializeScale = action(
           range: scale.range,
           parentBandwidth: (() => {
             const bandwidths = consumers.map(consumer => {
+              if (consumer.layer.encoding?.x?.bin !== undefined) return 1;
               const xScaleId = consumer.layer.encoding?.x?.scale;
               return this.resolvedScales[xScaleId]?.bandwidth;
             });

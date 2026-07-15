@@ -153,9 +153,10 @@ meaning and resolve its scale. `encodeY()` then infers count/zero-stack meaning
 and resolves its scale, then materializes one concrete rectangle per non-empty
 bin.
 
-`encodeColor({ field })` can then split each non-empty bin into category rects.
-The color scale domain controls stack and fill order, while the y scale remains
-based on total bin counts.
+`encodeColor({ field, layout? })` can then split each non-empty bin into category
+rects. The color scale domain controls series order. Stack uses total bin counts,
+fill normalizes to one, group creates within-bin slots, overlay shares a baseline,
+and diverging separates positive and negative accumulation.
 
 ## Errors and limitations
 

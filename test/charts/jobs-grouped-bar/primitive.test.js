@@ -42,7 +42,12 @@ test("authors and renders the complete primitive jobs grouped bar chart", () => 
         stack: null,
         scale: "y"
       },
-      color: { field: "sex", fieldType: "nominal", scale: "color" },
+      color: {
+        field: "sex",
+        fieldType: "nominal",
+        scale: "color",
+        layout: "group"
+      },
       xOffset: {
         field: "sex",
         fieldType: "nominal",

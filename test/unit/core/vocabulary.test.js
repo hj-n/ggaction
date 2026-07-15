@@ -3,11 +3,13 @@ import test from "node:test";
 
 import {
   CATEGORICAL_LEGEND_CHANNELS,
+  COLOR_LAYOUTS,
   ENCODING_CHANNELS,
   LEGEND_CONFIG_KINDS,
   MARK_TYPES,
   POSITION_CHANNELS,
-  SCALED_ENCODING_CHANNELS
+  SCALED_ENCODING_CHANNELS,
+  STACK_MODES
 } from "../../../src/core/vocabulary.js";
 
 test("owns the implemented semantic and legend vocabularies in one module", () => {
@@ -19,6 +21,10 @@ test("owns the implemented semantic and legend vocabularies in one module", () =
   assert.deepEqual(LEGEND_CONFIG_KINDS, [
     "series", "color", "size", "gradient", "opacity"
   ]);
+  assert.deepEqual(COLOR_LAYOUTS, [
+    "stack", "fill", "group", "overlay", "diverging"
+  ]);
+  assert.deepEqual(STACK_MODES, ["zero", "normalize"]);
   assert.equal(ENCODING_CHANNELS.includes("group"), true);
   assert.equal(SCALED_ENCODING_CHANNELS.includes("group"), false);
   for (const vocabulary of [
@@ -27,7 +33,9 @@ test("owns the implemented semantic and legend vocabularies in one module", () =
     CATEGORICAL_LEGEND_CHANNELS,
     LEGEND_CONFIG_KINDS,
     ENCODING_CHANNELS,
-    SCALED_ENCODING_CHANNELS
+    SCALED_ENCODING_CHANNELS,
+    COLOR_LAYOUTS,
+    STACK_MODES
   ]) {
     assert.equal(Object.isFrozen(vocabulary), true);
   }

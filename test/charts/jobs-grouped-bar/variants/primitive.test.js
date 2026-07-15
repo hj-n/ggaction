@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+import {
+  createJobsDivergingBar,
+  createJobsOverlayBar
+} from "../../../../examples/jobs-grouped-bar/program.js";
+import { assertChartProgramsEquivalent } from
+  "../../../support/chart-equivalence.js";
 import { loadJobs } from "../../../support/data.js";
 import { createJobsGroupedBarValues } from "../reference-values.js";
 import { signedJobs } from "./manifest.js";
@@ -94,7 +100,7 @@ test("locks diverging bars to separate positive and negative accumulation", () =
   assert.deepEqual(graphicProperties(program), expectedProperties(values));
 });
 
-test("keeps future layout actions out of Gate B primitive traces", () => {
+test("keeps Gate B primitive traces independent of public layout actions", () => {
   for (const program of [
     createOverlayLayoutPrimitives(jobs),
     createDivergingLayoutPrimitives(signedJobs)
@@ -123,4 +129,39 @@ test("omits missing cells and zero diverging graphics", () => {
     values.rects.map(rect => [rect.year, rect.sex]),
     [[2000, "men"], [2000, "women"]]
   );
+});
+
+test("matches approved layout primitives with public action flows", () => {
+  for (const [primitiveProgram, publicProgram] of [
+    [createOverlayLayoutPrimitives(jobs), createJobsOverlayBar(jobs)],
+    [
+      createDivergingLayoutPrimitives(signedJobs),
+      createJobsDivergingBar(signedJobs)
+    ]
+  ]) {
+    assertChartProgramsEquivalent({ publicProgram, primitiveProgram });
+  }
+});
+
+test("rematerializes approved public layouts after Canvas resize", () => {
+  for (const program of [
+    createJobsOverlayBar(jobs),
+    createJobsDivergingBar(signedJobs)
+  ]) {
+    const edited = program.editCanvas({ width: 760, height: 500 });
+    assert.equal(edited.graphicSpec.objects.canvas.properties.width, 760);
+    assert.notEqual(
+      edited.graphicSpec.objects.bars.children[0].properties.width,
+      program.graphicSpec.objects.bars.children[0].properties.width
+    );
+    assert.notEqual(
+      edited.graphicSpec.objects.horizontalGridLines.children[0].properties.x2,
+      program.graphicSpec.objects.horizontalGridLines.children[0].properties.x2
+    );
+    assert.equal(
+      edited.semanticSpec.layers[0].encoding.color.layout,
+      program.semanticSpec.layers[0].encoding.color.layout
+    );
+    assert.equal(program.graphicSpec.objects.canvas.properties.width, 720);
+  }
 });

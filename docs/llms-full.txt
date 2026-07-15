@@ -647,6 +647,13 @@ intervals. These options are mutually exclusive. Calling `encodeHistogram`
 again replaces the complete bin/count assignment and refreshes inferred axes
 and grids while preserving compatible color grouping and legends.
 
+To compare proportions instead of absolute counts, set the color layout to
+`"fill"`. It invokes normalized y stacking and produces a `[0, 1]` axis:
+
+```javascript
+program.encodeColor({ field: "Origin", layout: "fill" });
+```
+
 Legends default to the right for every supported chart. This example passes
 `position: "bottom"` because its horizontal layout is intentional.
 
@@ -1124,11 +1131,14 @@ const program = chart()
 
 - Quantitative field to bin
 - Optional `maxBins`
-- Optional nominal color field for zero-stacked categories
+- Optional nominal color field and series layout
 
 ```javascript
 program.encodeColor({ field: "group", layout: "stack" });
 ```
+
+Choose `fill`, `group`, `overlay`, or `diverging` when their partition meaning
+matches the chart.
 
 ## The library infers
 
@@ -1182,8 +1192,9 @@ const program = chart()
 - A `0.72` bar-band fraction
 - Ordinal/linear axes, horizontal grid, and right-side legend
 
-Missing x/group combinations are omitted. The current API does not synthesize
-zero bars, support horizontal bars, or materialize negative-value baselines.
+Missing x/group combinations are omitted. Change `layout` to `stack`, `fill`,
+`overlay`, or `diverging` to use the other supported series arrangements.
+The current API does not synthesize zero bars or support horizontal bars.
 
 ## Continue
 
@@ -1744,9 +1755,10 @@ meaning and resolve its scale. `encodeY()` then infers count/zero-stack meaning
 and resolves its scale, then materializes one concrete rectangle per non-empty
 bin.
 
-`encodeColor({ field })` can then split each non-empty bin into category rects.
-The color scale domain controls stack and fill order, while the y scale remains
-based on total bin counts.
+`encodeColor({ field, layout? })` can then split each non-empty bin into category
+rects. The color scale domain controls series order. Stack uses total bin counts,
+fill normalizes to one, group creates within-bin slots, overlay shares a baseline,
+and diverging separates positive and negative accumulation.
 
 ## Errors and limitations
 
@@ -1831,7 +1843,7 @@ scale or guide.
 ## Atomic histogram
 
 `encodeHistogram` is the concise equivalent of binned bar `encodeX` followed
-by count/zero-stack `encodeY`.
+by count `encodeY`.
 
 ```javascript
 program.encodeHistogram({
@@ -1842,7 +1854,9 @@ program.encodeHistogram({
 
 Choose one of inferred `maxBins`, exact `binStep`, or explicit irregular
 `binBoundaries`. The action also accepts optional `target`, `coordinate`,
-`stack`, `xScale`, and `yScale` options. It directly records `encodeX` and
+`stack`, `xScale`, and `yScale` options. Stack accepts `"zero"`, `"normalize"`,
+or `null`; normalized partitions use an automatic `[0, 1]` y domain. The action
+directly records `encodeX` and
 `encodeY` as its children; it does not duplicate binning, scale, count, or
 rect materialization logic. Calling it again on the same bar atomically
 replaces both histogram fields and rematerializes connected guides.
@@ -1880,11 +1894,11 @@ becomes one baseline-closed command path ending in `Z`.
 [`encodeColor` and `encodeStrokeDash`](./series-encodings.md) create nominal
 series identity and concrete colors or dash patterns. On line marks they can
 split one aggregate path into multiple series. On complete histograms,
-`encodeColor` splits every bin into category-stacked rects.
-On ordinal aggregate bars, `encodeColor({ layout: "group" })` records non-stacked
-color meaning and invokes `encodeXOffset` for the same field. Rectangles remain
-empty until `encodeBarWidth({ band? })` authors slot occupancy and materializes
-concrete grouped rectangles.
+`encodeColor` arranges each color partition with `stack`, `fill`, `group`,
+`overlay`, or `diverging`. On bars, group invokes `encodeXOffset`; aggregate
+bars remain empty until `encodeBarWidth({ band? })` authors their width.
+Area marks accept every layout except group and require color to match the
+existing semantic group field.
 On area marks, color fills an already grouped path collection and must use the
 same nominal field as `encodeGroup` or `encodeDensity({ groupBy })`.
 
@@ -2590,7 +2604,7 @@ The rect collection remains empty until y is encoded.
 | `field` | binned x field | inferred from x |
 | `target` | bar mark ID | current mark |
 | `aggregate` | `"count"` | `"count"` |
-| `stack` | `"zero"` | `"zero"` |
+| `stack` | `"zero"`, `"normalize"`, or `null` | `"zero"` |
 | `scale.id` | scale ID | `"y"` |
 | `scale.type` | `"linear"` | `"linear"` |
 | `scale.domain` | `"auto"` or two finite numbers | `"auto"` |
@@ -2598,9 +2612,10 @@ The rect collection remains empty until y is encoded.
 | `scale.nice` | boolean | `true` |
 | `scale.zero` | boolean | `true` |
 
-The automatic y domain uses total bin counts. The action materializes one
-concrete rectangle per non-empty bin; a later color encoding can split each bin
-into zero-stacked category segments.
+The automatic y domain uses total bin counts for zero stack, individual series
+counts for unstacked layouts, and `[0, 1]` for normalize. The action materializes
+one concrete rectangle per non-empty bin; a later color encoding can split each
+bin according to its layout.
 
 ## Errors and limitations
 
@@ -2609,7 +2624,8 @@ Explicit fields must match the binned x field. `maxBins`, `binStep`, and
 contain the data and use zero-anchored step multiples. Explicit boundaries
 must contain the complete data extent; a separate domain must match their
 first and last values. Empty intervals remain meaningful but do not create
-zero-height rectangles. Grouped histograms are unsupported.
+zero-height rectangles. Grouped histograms require nominal color with
+`layout: "group"`; the color action creates the matching xOffset companion.
 
 ## Related
 
@@ -2683,7 +2699,7 @@ policy. Area color must match an existing `encodeGroup` field.
 | `field` | non-empty string | required |
 | `target` | point, line, area, or bar mark ID | current mark |
 | `fieldType` | `"nominal"` | `"nominal"` |
-| `layout` | `"group"` or `"stack"`; bar only | mark policy |
+| `layout` | `"stack"`, `"fill"`, `"group"`, `"overlay"`, or `"diverging"` | mark policy |
 | `scale.id` | scale ID | `"color"` |
 | `scale.type` | `"ordinal"` | `"ordinal"` |
 | `scale.domain` | `"auto"` or category array | `"auto"` |
@@ -2721,7 +2737,7 @@ program.encodeColor({
 
 See [Scale options](./scales.md#named-palettes) for the complete vocabulary.
 
-For an ordinal-x mean bar, `layout: "group"` is required. It keeps
+For an ordinal-x mean bar, `layout: "group"` is the default. It keeps
 `y.stack = null`, invokes `encodeXOffset` with the same field, and recomputes
 the y domain from one mean per x/color cell. Color and xOffset scales are fully
 resolved, while concrete rects wait for bar width.
@@ -2750,9 +2766,16 @@ histogram.encodeColor({
 });
 ```
 
-Histogram color keeps its existing stack behavior when `layout` is omitted;
-`layout: "stack"` makes that policy explicit. Grouped histograms and stacked
-ordinal-mean bars are not supported in the current scope.
+Histogram color defaults to `stack`. `fill` normalizes every non-negative bin
+partition to one and uses `[0, 1]` as the automatic y domain. `group` places
+series side by side within each bin, `overlay` draws them in color-domain order
+without changing opacity, and `diverging` accumulates positive and negative
+values independently around zero. Ordinal aggregate bars support the same five
+values; call `encodeBarWidth` after color.
+
+```javascript
+histogram.encodeColor({ field: "Origin", layout: "fill" });
+```
 
 On an area mark, color never creates grouping implicitly. Author grouping
 directly or through `encodeDensity({ groupBy })`, then encode that same field:
@@ -2760,13 +2783,18 @@ directly or through `encodeDensity({ groupBy })`, then encode that same field:
 ```javascript
 densityArea.encodeColor({
   field: "Origin",
+  layout: "overlay",
   scale: { palette: "tableau10" }
 });
 ```
 
-Each existing path receives the resolved color for its group. Path order,
+Area layouts support `stack`, `fill`, `overlay`, and `diverging`; `group` is
+bar-only. Each existing path receives the resolved color for its group. Path order,
 color domain order, and later legend order share the same ordered categories;
 Canvas and shared-scale changes rematerialize every affected area fill.
+Once a color layout exists, changing it to another layout is rejected until a
+future companion-cleanup contract is implemented; the earlier program remains
+unchanged.
 
 ## `encodeStrokeDash(options)`
 
@@ -2850,7 +2878,7 @@ Combined line legends also require matching ordered domains.
 | `encodeShape` | `encodeShape({ field: "Origin" })` | Current point; 12-value ordinal shape range | Semantic shape and mixed concrete symbols |
 | `encodeOpacity` | `encodeOpacity({ value: 0.27 })` | Current point mark | Constant concrete opacity |
 | `encodeOpacity` | `encodeOpacity({ field: "Acceleration" })` | Current point; linear scale; range `[0.2, 1]` | Semantic field opacity and concrete values |
-| `encodeBarWidth` | `encodeBarWidth()` | Current grouped bar; band `0.72` | Concrete grouped rectangles |
+| `encodeBarWidth` | `encodeBarWidth()` | Current aggregate bar; band `0.72` | Concrete rectangles |
 
 ## `encodeRadius({ value, target? })`
 
@@ -2908,8 +2936,8 @@ titles and styles remain unchanged.
 
 ## `encodeBarWidth({ band?, target? })`
 
-Set the fraction of each resolved xOffset slot occupied by a grouped bar and
-materialize concrete rectangles.
+Set the fraction of each resolved x band—or xOffset slot for group layout—used
+by an aggregate bar and materialize concrete rectangles.
 
 ```javascript
 program.encodeBarWidth({ band: 0.72 });
@@ -2918,12 +2946,12 @@ program.encodeBarWidth({ band: 0.72 });
 | Option | Type | Default |
 | --- | --- | --- |
 | `band` | finite number greater than `0` and at most `1` | `0.72` |
-| `target` | grouped bar mark ID | current mark |
+| `target` | aggregate bar mark ID | current mark |
 
-The action requires ordinal x, aggregate/non-stacked y, grouped color, and matching
-xOffset semantics. Concrete width is `xOffset.bandwidth * band`; each bar is
-centered in its slot. Missing x/color cells are omitted rather than represented
-by placeholder rects.
+The action requires ordinal x, aggregate y, and nominal color. Group layout also
+requires matching xOffset semantics. Width is the outer x bandwidth times `band`
+for stack, fill, overlay, and diverging, or xOffset bandwidth times `band` for
+group. Each bar is centered in its band; missing cells are omitted.
 
 `band` is graphical layout rather than chart meaning, so it is not added to
 `semanticSpec`. The action stores immutable materialization config and writes
@@ -2936,7 +2964,8 @@ Radius, constant opacity, and bar band are graphical constants. Field opacity
 is a semantic encoding.
 Size cannot be combined with a constant radius. A constant `editPointMark`
 shape cannot be combined with field-driven `encodeShape`. Bar width
-requires complete ordinal x, aggregate y, color, and xOffset semantics.
+requires complete ordinal x, aggregate y, and color semantics; group additionally
+requires matching xOffset semantics.
 
 ## Related
 
@@ -3866,7 +3895,7 @@ chart-authoring API does not support that combination.
 | --- | --- | --- | --- | --- | --- | --- |
 | Semantic mark | point | line | bar | bar | point + area + line | area |
 | Position | quantitative x/y | temporal x, aggregate y | binned x, count y | ordinal x, aggregate y | shared quantitative x/y | value + density x/y |
-| Nominal color | point fill | series stroke | zero-stacked fill | grouped fill and xOffset | point fill + fit stroke | grouped area fill |
+| Nominal color | point fill | series stroke | five bar layouts | five bar layouts | point fill + fit stroke | overlay/stack/fill/diverging area |
 | Stroke dash | — | nominal or constant; 4 named styles | — | — | — | — |
 | Constant appearance | radius | stroke width, 8 curves | — | band width | opacity, band fill, line width | opacity |
 | Automatic axes | linear | UTC time and linear | bin-aligned and linear | ordinal and linear | shared linear | source value + density |
@@ -4050,10 +4079,11 @@ materialize rects until their remaining layout semantics exist.
 encodeY({ field?, target?, fieldType?, aggregate?, stack?, coordinate?, scale? })
 ```
 
-Create or compatibly replace a quantitative point, aggregate line, or inferred count/zero-stack bar
+Create or compatibly replace a quantitative point, aggregate line, or inferred count bar
 y encoding. With ordinal bar x, it also creates an aggregate/non-stacked y encoding
 and resolves its scale while waiting for grouping semantics before rect
-materialization. Aggregate values may be scalar names or parameterized quantile
+materialization. Bar stack accepts `"zero"`, `"normalize"`, or `null`.
+Aggregate values may be scalar names or parameterized quantile
 and ordered first/last objects. A complete histogram x/y pair materializes concrete rects.
 [Position encodings](../api/position-encodings.md)
 
@@ -4103,9 +4133,10 @@ encodeHistogram({
 })
 ```
 
-Compose binned bar `encodeX` and count/zero-stack `encodeY` as one atomic
+Compose binned bar `encodeX` and count `encodeY` as one atomic
 histogram action. Choose at most one of `maxBins`, `binStep`, and
 `binBoundaries`. `maxBins` defaults to `10`; `stack` defaults to `"zero"`.
+Use `stack: "normalize"` for a unit-height partition.
 [Encodings](../api/encodings.md)
 
 ### `encodeDensity`
@@ -4129,9 +4160,10 @@ encodeColor({ field, target?, fieldType?, layout?, scale? })
 ```
 
 Create or compatibly replace point fill, line-series color, grouped area fill,
-stacked histogram color, or grouped ordinal-bar color. Quantitative and temporal
+or bar color. Nominal bar layout accepts `stack`, `fill`, `group`, `overlay`,
+and `diverging`; area accepts all except `group`. Quantitative and temporal
 point fields use a sequential scale with concrete interpolated colors. Nominal
-grouped bars require `layout: "group"` and record `encodeXOffset` as a child.
+grouped bars record `encodeXOffset` as a child.
 [Series encodings](../api/series-encodings.md)
 
 ### `encodeStrokeDash`
@@ -4192,7 +4224,7 @@ replace each other through the same action.
 encodeBarWidth({ band?, target? })
 ```
 
-Set grouped-bar slot occupancy and materialize concrete rectangles. `band`
+Set aggregate-bar band or group-slot occupancy and materialize concrete rectangles. `band`
 defaults to `0.72` and must be greater than `0` and at most `1`.
 [Constant appearance](../api/appearance.md)
 

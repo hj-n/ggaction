@@ -2,7 +2,8 @@ import { action } from "../../core/action.js";
 import { validateUserId } from "../../core/identifiers.js";
 import {
   deriveAreaSeries,
-  deriveDensityAreaSeries
+  deriveDensityAreaSeries,
+  layoutDensityAreaSeries
 } from "../../grammar/areaSeries.js";
 import { mapLinearValues, mapOrdinalValues } from "../../grammar/scales.js";
 import {
@@ -77,18 +78,31 @@ const rematerializeAreaMark = action(
           : `Density area mark "${id}" requires x and y scales.`
       );
     }
-    const derived = densityTransform === undefined
+    const rawDerived = densityTransform === undefined
       ? deriveAreaSeries(dataset.values, layer)
       : deriveDensityAreaSeries(dataset.values, layer, densityTransform);
+    const colorEncoding = layer.encoding?.color;
+    const layout = colorEncoding?.layout ?? "overlay";
+    const derived = densityTransform === undefined
+      ? rawDerived
+      : layoutDensityAreaSeries(rawDerived, layout);
     let resolved = this
       .rematerializeScale({ id: xScaleId })
       .rematerializeScale({ id: yScaleId });
-    const colorEncoding = layer.encoding?.color;
     if (colorEncoding?.scale !== undefined) {
       resolved = resolved.rematerializeScale({ id: colorEncoding.scale });
     }
     const xScale = resolved.resolvedScales[xScaleId];
     const yScale = resolved.resolvedScales[yScaleId];
+    const densityScale = densityTransform === undefined
+      ? undefined
+      : derived.mode === "y-density" ? yScale : xScale;
+    if (
+      densityScale !== undefined &&
+      (densityScale.domain[0] > 0 || densityScale.domain[1] < 0)
+    ) {
+      throw new Error(`Density area mark "${id}" requires a scale domain containing zero.`);
+    }
     const paths = derived.series.map(series => {
       const x = mapLinearValues(
         series.values.map(value => value.x),
@@ -96,42 +110,53 @@ const rematerializeAreaMark = action(
         xScale.range,
         { clamp: xScale.clamp ?? false }
       );
+      const lowerValues = densityTransform === undefined
+        ? series.values.map(value => value.y)
+        : derived.mode === "y-density"
+          ? series.values.map(value => value.lower)
+          : series.values.map(value => value.y);
       const lower = mapLinearValues(
-        series.values.map(value => value.y),
+        lowerValues,
         yScale.domain,
         yScale.range,
         { clamp: yScale.clamp ?? false }
       );
-      if (densityTransform !== undefined) {
-        const densityScale = derived.mode === "y-density" ? yScale : xScale;
-        if (densityScale.domain[0] > 0 || densityScale.domain[1] < 0) {
-          throw new Error(`Density area mark "${id}" requires a scale domain containing zero.`);
-        }
+      if (densityTransform !== undefined && derived.mode === "x-density") {
         const baseline = mapLinearValues(
           [0],
           densityScale.domain,
           densityScale.range,
           { clamp: densityScale.clamp ?? false }
         )[0];
-        const points = derived.mode === "y-density"
-          ? [
-              { x: x[0], y: baseline },
-              ...x.map((value, index) => ({ x: value, y: lower[index] })),
-              { x: x.at(-1), y: baseline }
-            ]
-          : [
-              { x: baseline, y: lower[0] },
-              ...x.map((value, index) => ({ x: value, y: lower[index] })),
-              { x: baseline, y: lower.at(-1) }
-            ];
+        const points = [
+          { x: baseline, y: lower[0] },
+          ...x.map((value, index) => ({ x: value, y: lower[index] })),
+          { x: baseline, y: lower.at(-1) }
+        ];
         return buildLinearPathCommands(points, { close: true });
       }
+      const upperValues = densityTransform === undefined
+        ? series.values.map(value => value.y2)
+        : series.values.map(value => value.upper);
       const upper = mapLinearValues(
-        series.values.map(value => value.y2),
+        upperValues,
         yScale.domain,
         yScale.range,
         { clamp: yScale.clamp ?? false }
       );
+      if (densityTransform !== undefined && layout === "overlay") {
+        const baseline = mapLinearValues(
+          [0],
+          yScale.domain,
+          yScale.range,
+          { clamp: yScale.clamp ?? false }
+        )[0];
+        return buildLinearPathCommands([
+          { x: x[0], y: baseline },
+          ...x.map((value, index) => ({ x: value, y: upper[index] })),
+          { x: x.at(-1), y: baseline }
+        ], { close: true });
+      }
       return buildLinearPathCommands([
         ...x.map((value, index) => ({ x: value, y: lower[index] })),
         ...[...x].reverse().map((value, reverseIndex) => ({

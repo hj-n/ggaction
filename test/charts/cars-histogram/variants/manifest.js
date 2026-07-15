@@ -2,7 +2,8 @@ import {
   createBinBoundariesCarsHistogram,
   createBinStepCarsHistogram,
   createCarsHistogram,
-  createFieldReassignmentCarsHistogram
+  createFieldReassignmentCarsHistogram,
+  createNormalizedStackCarsHistogram
 } from "../../../../examples/cars-histogram/program.js";
 import { loadCars } from "../../../support/data.js";
 import { defineVisualVariant } from "../../../support/visual-variants.js";
@@ -171,5 +172,6 @@ export const visualVariants = Object.freeze([defineVisualVariant({
     subtitle: "by country",
     align: "center"
   });`,
-  primitive: createNormalizedStackPrimitives(cars)
+  primitive: createNormalizedStackPrimitives(cars),
+  userFacing: createNormalizedStackCarsHistogram(cars)
 })]);

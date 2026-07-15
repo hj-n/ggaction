@@ -58,12 +58,10 @@ export function createJobsGroupedBarPrimitives(
       value: "color"
     });
 
-  if (layout !== "group") {
-    program = program.editSemantic({
-      property: "layer[bars].encoding.color.layout",
-      value: layout
-    });
-  }
+  program = program.editSemantic({
+    property: "layer[bars].encoding.color.layout",
+    value: layout
+  });
 
   if (layout === "group") {
     program = program

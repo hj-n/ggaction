@@ -6,18 +6,18 @@ Gate B를 재현하는 low-level normalized stack과 accepted bar/area color lay
 
 ## 진행 상태
 
-- [ ] `encodeY({ stack: "normalize" })`
-- [ ] `encodeColor({ layout: "fill" })` wrapped hierarchy
-- [ ] Bar `overlay`와 `diverging` materialization
-- [ ] Area `stack | fill | overlay | diverging` compatibility
-- [ ] Point/line/incompatible mark rejection
-- [ ] Positive/negative/zero/missing partition fixtures
-- [ ] Domain, render order와 legend order preservation
-- [ ] Y scale/bar-or-area/axes/grid/legend rematerialization
-- [ ] Unsupported layout transition atomic rejection
-- [ ] Action-order convergence와 Canvas resize
-- [ ] Three approved primitive/public pairs와 PNG
-- [ ] Types/docs/current contract/catalog, commits와 push
+- [x] `encodeY({ stack: "normalize" })`
+- [x] `encodeColor({ layout: "fill" })` wrapped hierarchy
+- [x] Bar `overlay`와 `diverging` materialization
+- [x] Area `stack | fill | overlay | diverging` compatibility
+- [x] Point/line/incompatible mark rejection
+- [x] Positive/negative/zero/missing partition fixtures
+- [x] Domain, render order와 legend order preservation
+- [x] Y scale/bar-or-area/axes/grid/legend rematerialization
+- [x] Unsupported layout transition atomic rejection
+- [x] Action-order convergence와 Canvas resize
+- [x] Three approved primitive/public pairs와 PNG
+- [x] Types/docs/current contract/catalog, commits와 push
 
 ## 구현 원칙
 
@@ -29,3 +29,11 @@ Gate B를 재현하는 low-level normalized stack과 accepted bar/area color lay
 ## 완료 조건
 
 Accepted layout matrix, 세 approved pair와 complete failure/rematerialization coverage가 통과한다.
+
+## 구현 결과
+
+- `encodeColor.layout`의 다섯 layout과 bar/area compatibility matrix를 구현했다.
+- Normalized histogram, overlay bar와 diverging bar의 primitive/public 결과가 semantic, graphic,
+  order와 Canvas call까지 일치한다.
+- 독립 reference fixture, action-order convergence, resize, atomic rejection, full test와 render suite가
+  통과한다.

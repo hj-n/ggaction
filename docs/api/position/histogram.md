@@ -54,7 +54,7 @@ The rect collection remains empty until y is encoded.
 | `field` | binned x field | inferred from x |
 | `target` | bar mark ID | current mark |
 | `aggregate` | `"count"` | `"count"` |
-| `stack` | `"zero"` | `"zero"` |
+| `stack` | `"zero"`, `"normalize"`, or `null` | `"zero"` |
 | `scale.id` | scale ID | `"y"` |
 | `scale.type` | `"linear"` | `"linear"` |
 | `scale.domain` | `"auto"` or two finite numbers | `"auto"` |
@@ -62,9 +62,10 @@ The rect collection remains empty until y is encoded.
 | `scale.nice` | boolean | `true` |
 | `scale.zero` | boolean | `true` |
 
-The automatic y domain uses total bin counts. The action materializes one
-concrete rectangle per non-empty bin; a later color encoding can split each bin
-into zero-stacked category segments.
+The automatic y domain uses total bin counts for zero stack, individual series
+counts for unstacked layouts, and `[0, 1]` for normalize. The action materializes
+one concrete rectangle per non-empty bin; a later color encoding can split each
+bin according to its layout.
 
 ## Errors and limitations
 
@@ -73,7 +74,8 @@ Explicit fields must match the binned x field. `maxBins`, `binStep`, and
 contain the data and use zero-anchored step multiples. Explicit boundaries
 must contain the complete data extent; a separate domain must match their
 first and last values. Empty intervals remain meaningful but do not create
-zero-height rectangles. Grouped histograms are unsupported.
+zero-height rectangles. Grouped histograms require nominal color with
+`layout: "group"`; the color action creates the matching xOffset companion.
 
 ## Related
 

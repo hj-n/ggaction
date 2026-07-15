@@ -20,11 +20,14 @@ const program = chart()
 
 - Quantitative field to bin
 - Optional `maxBins`
-- Optional nominal color field for zero-stacked categories
+- Optional nominal color field and series layout
 
 ```javascript
 program.encodeColor({ field: "group", layout: "stack" });
 ```
+
+Choose `fill`, `group`, `overlay`, or `diverging` when their partition meaning
+matches the chart.
 
 ## The library infers
 

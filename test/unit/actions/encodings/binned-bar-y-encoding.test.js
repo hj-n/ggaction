@@ -102,6 +102,25 @@ test("accepts explicit equivalent semantics and scale bounds", () => {
   });
 });
 
+test("normalizes histogram partitions through the direct y encoding", () => {
+  const program = histogramProgram().encodeY({ stack: "normalize" });
+
+  assert.equal(program.semanticSpec.layers[0].encoding.y.stack, "normalize");
+  assert.deepEqual(program.resolvedScales.y.domain, [0, 1]);
+  assert.equal(program.graphicSpec.objects.bars.children.length, 9);
+});
+
+test("converges when normalize is authored before or through fill color", () => {
+  const base = histogramProgram().encodeY();
+  const direct = base
+    .encodeY({ stack: "normalize" })
+    .encodeColor({ field: "Origin", layout: "fill" });
+  const compound = base.encodeColor({ field: "Origin", layout: "fill" });
+
+  assert.deepEqual(direct.semanticSpec, compound.semanticSpec);
+  assert.deepEqual(direct.graphicSpec, compound.graphicSpec);
+});
+
 test("rematerializes histogram scales and rects after Canvas edits", () => {
   const program = histogramProgram().encodeY();
   const edited = program.editCanvas({ width: 500, height: 500 });
@@ -141,10 +160,7 @@ test("validates histogram y prerequisites and policies", () => {
     () => program.encodeY({ aggregate: "mean" }),
     /aggregate must be "count"/
   );
-  assert.throws(
-    () => program.encodeY({ stack: "normalize" }),
-    /stack must be "zero"/
-  );
+  assert.throws(() => program.encodeY({ stack: "middle" }), /unsupported stack/);
   assert.throws(
     () => program.encodeY({ bin: {} }),
     /does not support bin/

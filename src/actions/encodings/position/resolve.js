@@ -1,4 +1,5 @@
 import { validateUserId } from "../../../core/identifiers.js";
+import { STACK_MODES } from "../../../core/vocabulary.js";
 import { getPositionCoordinateDefaults } from "../../../grammar/coordinates.js";
 import { normalizeHistogramBin } from "../../../grammar/histogram.js";
 import {
@@ -47,6 +48,13 @@ function resolveBin(bin) {
   return normalizeHistogramBin(bin);
 }
 
+function validateStack(stack, label) {
+  if (stack !== null && !STACK_MODES.includes(stack)) {
+    throw new Error(`${label} has unsupported stack "${stack}".`);
+  }
+  return stack;
+}
+
 function validateMarkPolicy(layer, dataset, channel, args, fieldType, field) {
   let bin;
   let aggregate;
@@ -62,8 +70,17 @@ function validateMarkPolicy(layer, dataset, channel, args, fieldType, field) {
     if (args.stack !== undefined) throw new Error("Point position encoding does not support stack.");
   } else if (layer.mark.type === "area") {
     if (fieldType !== "quantitative") throw new Error("Area position encoding requires quantitative fields.");
-    if (args.aggregate !== undefined || args.bin !== undefined || args.stack !== undefined) {
-      throw new Error("Area position encoding does not support aggregate, bin, or stack.");
+    if (args.aggregate !== undefined || args.bin !== undefined) {
+      throw new Error("Area position encoding does not support aggregate or bin.");
+    }
+    if (args.stack !== undefined) {
+      if (
+        channel !== "y" ||
+        !dataset.transform?.some(transform => transform.type === "density")
+      ) {
+        throw new Error("Area stack currently requires a density y encoding.");
+      }
+      stack = validateStack(args.stack, "Area y encoding");
     }
   } else if (layer.mark.type === "line" && channel === "x") {
     const regression = dataset.transform?.some(item => item.type === "regression");
@@ -111,15 +128,15 @@ function validateMarkPolicy(layer, dataset, channel, args, fieldType, field) {
     if (xEncoding.bin !== undefined) {
       if (field !== xEncoding.field) throw new Error("Bar y field must match the binned x field.");
       aggregate = args.aggregate ?? "count";
-      stack = args.stack ?? "zero";
+      stack = Object.hasOwn(args, "stack") ? args.stack : "zero";
       if (aggregate !== "count") throw new Error('Histogram bar y aggregate must be "count".');
-      if (stack !== "zero") throw new Error('Histogram bar y stack must be "zero".');
+      stack = validateStack(stack, "Histogram bar y encoding");
     } else if (xEncoding.fieldType === "ordinal") {
       aggregate = args.aggregate ?? "mean";
       stack = Object.hasOwn(args, "stack") ? args.stack : null;
       aggregate = validateAggregate(aggregate);
       validateAggregateFieldType(aggregate, fieldType);
-      if (stack !== null) throw new Error("Ordinal bar y stack must be null.");
+      stack = validateStack(stack, "Ordinal bar y encoding");
     } else {
       throw new Error("Bar y encoding requires a binned quantitative or ordinal x encoding.");
     }

@@ -105,10 +105,12 @@ test("delegates validation to aggregate and child actions", () => {
     () => program.encodeHistogram({ field: "Displacement", maxBins: 0 }),
     /positive integer/
   );
-  assert.throws(
-    () => program.encodeHistogram({ field: "Displacement", stack: "normalize" }),
-    /stack must be "zero"/
-  );
+  const normalized = program.encodeHistogram({
+    field: "Displacement",
+    stack: "normalize"
+  });
+  assert.equal(normalized.semanticSpec.layers[0].encoding.y.stack, "normalize");
+  assert.deepEqual(normalized.resolvedScales.y.domain, [0, 1]);
   assert.throws(
     () => program.encodeHistogram({ field: "missing" }),
     /finite number/
@@ -180,7 +182,8 @@ test("atomically reassigns histogram fields and inferred guides", () => {
   assert.deepEqual(after.semanticSpec.layers[0].encoding.color, {
     field: "Origin",
     fieldType: "nominal",
-    scale: "color"
+    scale: "color",
+    layout: "stack"
   });
   assert.equal(after.semanticSpec.guides.axis.x.title, "Horsepower");
   assert.equal(after.semanticSpec.guides.axis.y.title, "count(Horsepower)");

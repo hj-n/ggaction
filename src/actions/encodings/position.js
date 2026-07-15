@@ -72,6 +72,13 @@ function encodePosition(program, channel, args, operation) {
       });
   }
 
+  if (layer.mark.type === "area" && channel === "y" && stack !== undefined) {
+    next = next.editSemantic({
+      property: `layer[${target}].encoding.y.stack`,
+      value: stack
+    });
+  }
+
   next = next.editSemantic({
       property: `layer[${target}].encoding.${channel}.scale`,
       value: scale.id

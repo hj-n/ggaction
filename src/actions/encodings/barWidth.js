@@ -1,13 +1,17 @@
 import { action } from "../../core/action.js";
 import { resolveTarget, validateOptions } from "./shared.js";
-import { BAR_GRAINS, resolveBarGrain } from "../../grammar/bars/policy.js";
+import {
+  BAR_GRAINS,
+  resolveBarColorLayout,
+  resolveBarGrain
+} from "../../grammar/bars/policy.js";
 
 const OPTIONS = Object.freeze(["band", "target"]);
 
 const encodeBarWidth = action(
   {
     op: "encodeBarWidth",
-    description: "Set grouped bar width within each xOffset slot."
+    description: "Set aggregate bar width within each x band or xOffset slot."
   },
   function (args = {}) {
     validateOptions(args, OPTIONS, "encodeBarWidth");
@@ -22,13 +26,17 @@ const encodeBarWidth = action(
       ["bar"],
       "bar mark"
     );
+    const layout = resolveBarColorLayout(layer);
+    const grouped = layout === "group";
     if (
       resolveBarGrain(layer) !== BAR_GRAINS.aggregate ||
       layer.encoding?.color?.field === undefined ||
-      layer.encoding?.xOffset?.field !== layer.encoding.color.field
+      (grouped && layer.encoding?.xOffset?.field !== layer.encoding.color.field)
     ) {
       throw new Error(
-        "encodeBarWidth requires complete grouped bar x, y, color, and xOffset encodings."
+        grouped
+          ? "encodeBarWidth requires complete grouped bar x, y, color, and xOffset encodings."
+          : "encodeBarWidth requires complete aggregate bar x, y, and color encodings."
       );
     }
 

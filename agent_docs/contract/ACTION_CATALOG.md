@@ -111,12 +111,10 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | parameter | Area outline | accepted | [Open](planned/ENCODINGS.md#area-outline) |
 | parameter | Bar width modes | accepted | [Open](planned/ENCODINGS.md#bar-width-modes) |
 | parameter | Offset padding controls | accepted | [Open](planned/ENCODINGS.md#offset-padding-controls) |
-| parameter | Color layout vocabulary | accepted | [Open](planned/ENCODINGS.md#color-layout-vocabulary) |
 | parameter | Continuous color bar consumer | accepted | [Open](planned/ENCODINGS.md#continuous-color-bar-consumer) |
 | parameter | Scale type vocabulary | accepted | [Open](planned/SCALES.md#scale-type-vocabulary) |
 | parameter | Scale mapping policies | accepted | [Open](planned/SCALES.md#scale-mapping-policies) |
 | parameter | Position field-type compatibility | accepted | [Open](planned/ENCODINGS.md#position-field-type-compatibility) |
-| parameter | Normalized stack mode | accepted | [Open](planned/ENCODINGS.md#normalized-stack-mode) |
 | parameter | Density kernel vocabulary | accepted | [Open](planned/DATA_AND_STATISTICS.md#density-kernel-vocabulary) |
 | parameter | Density normalization modes | accepted | [Open](planned/DATA_AND_STATISTICS.md#density-normalization-modes) |
 | parameter | Filter predicate modes | accepted | [Open](planned/DATA_AND_STATISTICS.md#filter-predicate-modes) |

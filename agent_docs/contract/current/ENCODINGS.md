@@ -120,8 +120,9 @@ type AggregateOperation =
   source order fallback으로 정렬한 뒤 encoded finite quantitative value를 선택한다. `order`는
   `"ascending"`으로 normalize되어 semantic state에 저장된다. 유효한 candidate가 없거나 order-key
   type이 한 group 안에서 섞이면 해당 group을 생략한다.
-- `stack`: Implemented values `"zero" | null`. histogram color series는 zero stack, grouped ordinal
-  bar는 `null`이다.
+- `stack`: Implemented values `"zero" | "normalize" | null`. `"normalize"`은 각 non-negative
+  partition을 합계 1로 정규화하고 automatic y domain을 `[0, 1]`로 고정한다. 합계가 0인 partition은
+  graphic을 만들지 않는다.
 - `bin`: 현재 y에서는 지원되지 않는다.
 - Effect: y semantic, scale, final bar/line aggregate grain을 저장하고 mark geometry와
   existing guides를 rematerialize한다.
@@ -133,8 +134,8 @@ type AggregateOperation =
 
 ### Formal values — `encodeY`
 
-- Implemented: `encodeY({ field?: FieldName; target?: UserId; fieldType?: "quantitative" | "nominal"; scale?: PositionScale; coordinate?: UserId; aggregate?: AggregateOperation; stack?: "zero" | null })`; parameterized aggregate는 quantitative output field만 허용하며 mark/x policy와 aggregate compatibility가 조합을 제한한다.
-- Planned (NOT IMPLEMENTED): `{ fieldType?: "temporal" | "ordinal"; stack?: "normalize"; scale?: { type?: "log" | "pow" | "sqrt" | "symlog" | "utc" | "band" | "point"; base?: PositiveFiniteExceptOne; exponent?: PositiveFinite; constant?: PositiveFinite; clamp?: boolean; reverse?: boolean; unknown?: unknown } }`
+- Implemented: `encodeY({ field?: FieldName; target?: UserId; fieldType?: "quantitative" | "nominal"; scale?: PositionScale; coordinate?: UserId; aggregate?: AggregateOperation; stack?: "zero" | "normalize" | null })`; parameterized aggregate는 quantitative output field만 허용하며 mark/x policy와 aggregate compatibility가 조합을 제한한다.
+- Planned (NOT IMPLEMENTED): `{ fieldType?: "temporal" | "ordinal"; scale?: { type?: "log" | "pow" | "sqrt" | "symlog" | "utc" | "band" | "point"; base?: PositiveFiniteExceptOne; exponent?: PositiveFinite; constant?: PositiveFinite; clamp?: boolean; reverse?: boolean; unknown?: unknown } }`
 - Proposed (NOT IMPLEMENTED): `{ stack?: "center" }`; extreme-row selection은 Planned `selectRows`가 소유한다.
 
 ### Value coverage — `encodeY`
@@ -151,8 +152,8 @@ type AggregateOperation =
     candidates, final grain, inferred title, rematerialization과 caller-owned object isolation.
   - 🟡 Planned: full-row min/max selection은 scalar aggregate가 아닌 `selectRows` transform으로 제공한다.
 - `stack`
-  - ✅ Covered: `"zero"`, `null`, incompatible policy rejection.
-  - 🟡 Planned: `"normalize"`; non-negative partition과 auto `[0, 1]` domain을 사용한다.
+  - ✅ Covered: `"zero"`, `"normalize"`, `null`, positive/zero partition, auto `[0, 1]` domain과
+    incompatible policy rejection.
   - 🟣 Proposed: `"center"`; streamgraph baseline contract가 필요하다.
 - `scale`
   - ✅ Covered: auto/explicit domain/range, nice/zero precedence, shared consumer conflicts.
@@ -163,7 +164,7 @@ type AggregateOperation =
 ## `encodeXOffset`
 
 - Signature: `encodeXOffset({ field, target?, fieldType?, scale? })`
-- `field`: Implemented, nominal grouping field. ordinal x/scalar aggregate y/non-stacked bar에만 허용된다.
+- `field`: Implemented nominal grouping field. complete histogram 또는 ordinal aggregate bar에 허용된다.
 - `target`: optional eligible bar ID.
 - `fieldType`: Implemented, 유일한 값 `"nominal"`, 기본값도 nominal이다.
 - `scale`: ordinal scale contract; 기본 ID `xOffset`, domain은 grouping order, range는 parent x band다.
@@ -275,14 +276,14 @@ type AggregateOperation =
 - `field`, `target`, `coordinate`: binned x에 전달되는 field와 optional target/coordinate다.
 - `maxBins`: positive integer, 기본값 `10`; `encodeX.bin.maxBins`로 전달된다.
 - `binStep`, `binBoundaries`: exact-width/explicit-boundary modes이며 maxBins와 mutually exclusive다.
-- `stack`: `"zero" | null`, 기본값 `"zero"`; `encodeY`로 전달된다.
+- `stack`: `"zero" | "normalize" | null`, 기본값 `"zero"`; `encodeY`로 전달된다.
 - `xScale`, `yScale`: optional scale objects이며 각각 child x/y action에 전달된다.
 - Effect: wrapped `encodeX`와 `encodeY`를 원자적으로 결합해 bin/count semantics와 concrete rects를 만든다.
 - Coverage: histogram unit/chart tests가 defaults, stack, bin boundaries, scale rules와 trace hierarchy를 검증한다.
 
 ### Formal values — `encodeHistogram`
 
-- Implemented: `encodeHistogram({ field: FieldName; target?: UserId; coordinate?: UserId; maxBins?: PositiveInteger; binStep?: PositiveFinite; binBoundaries?: readonly [Finite, Finite, ...Finite[]]; stack?: "zero"; xScale?: PositionScale; yScale?: PositionScale })`; 세 bin option은 mutually exclusive다.
+- Implemented: `encodeHistogram({ field: FieldName; target?: UserId; coordinate?: UserId; maxBins?: PositiveInteger; binStep?: PositiveFinite; binBoundaries?: readonly [Finite, Finite, ...Finite[]]; stack?: "zero" | "normalize" | null; xScale?: PositionScale; yScale?: PositionScale })`; 세 bin option은 mutually exclusive다.
 - Planned (NOT IMPLEMENTED): —
 - Proposed (NOT IMPLEMENTED): —
 
@@ -294,7 +295,7 @@ type AggregateOperation =
   - ✅ Covered: omission→`10`, representative explicit values, invalid through child `encodeX`.
   - ⚠️ Partial: minimum/large values와 sparse/constant data pair.
 - `stack`
-  - ✅ Covered: omission→`"zero"`, explicit `"zero"`와 `null` forwarding/rejection by supported semantics.
+  - ✅ Covered: omission→`"zero"`, explicit `"zero"`, `"normalize"`, `null`, unit domain과 invalid vocabulary.
 - `xScale`, `yScale`
   - ✅ Covered: explicit objects, default policies, domain/range precedence.
   - ⚠️ Partial: independent scale IDs and all policy combinations.
@@ -354,26 +355,27 @@ type AggregateOperation =
 - `field`: 필수 field. nominal은 모든 current mark contract에, quantitative/temporal은 point에 사용한다.
 - `target`: point, line, bar 또는 area ID; current/unique inference를 지원한다.
 - `fieldType`: `"nominal" | "quantitative" | "temporal"`; 기본값은 nominal이다.
-- `layout`: 현재 bar에서 `"stack" | "group"`; histogram default는 stack이고 ordinal grouped bar는
-  group이다. Planned vocabulary는 bar/area별 `"fill" | "overlay" | "diverging"` compatibility를
-  추가한다. `"center"` streamgraph는 Proposed이며 다른 mark에서는 layout을 생략해야 한다.
+- `layout`: bar는 `"stack" | "fill" | "group" | "overlay" | "diverging"`, area는 group을 제외한
+  네 layout을 지원한다. Histogram default는 stack, ordinal aggregate bar default는 group, area default는
+  overlay다. Point/line과 continuous color는 layout을 거부하며 `"center"`는 Proposed다.
 - `scale`: nominal은 ordinal, continuous point color는 internal sequential scale이다. `palette` 또는
   explicit `range` 중 하나를 사용할 수 있다. Palette는
   [`PALETTES.md`](PALETTES.md)의 frozen 68-name vocabulary와 `{ name, count?, extent? }` object를 받는다.
 - Continuous color는 default `viridis`, eight interpolation tokens, `clamp`, `reverse`, quantitative/temporal
   auto domain을 지원하며 layout을 거부한다. General `createScale` vocabulary에는 sequential을 노출하지 않는다.
-- Effect: color semantic과 scale을 저장한다. point fill, line stroke, bar fill, area fill로 materialize한다.
-  group layout은 wrapped `encodeXOffset`, stack layout은 zero-stack bar geometry를 사용한다.
+- Effect: color semantic, resolved layout과 scale을 저장한다. `group`은 wrapped `encodeXOffset`, `fill`은
+  wrapped `encodeY({ stack: "normalize" })`, overlay는 non-stacked y, stack/diverging은 zero-stack y를
+  사용한다. Bar는 rect, area는 closed path로 concrete materialize한다.
 - Reassignment: 같은 target의 nominal color field를 교체한다. omitted scale ID는 current color scale을
   재사용하고 explicit new ID는 새 scale을 만든다. Existing compatible legend의 domain, symbols,
   labels와 inferred title을 갱신하며 custom title/layout/style은 보존한다.
-- Coverage: 모든 대표 chart와 legend tests가 mark별 materialization을 검증한다. palette vocabulary,
-  explicit ranges와 layout 오류의 전체 matrix는 부분적이다.
+- Coverage: 모든 대표 chart와 legend tests가 mark별 materialization을 검증한다. Five-layout bar matrix,
+  four-layout area matrix, normalized/signed domains, primitive/public equivalence와 transition rejection을 포함한다.
 
 ### Formal values — `encodeColor`
 
-- Implemented: `encodeColor({ field: FieldName; target?: UserId; fieldType?: "nominal"; layout?: "stack" | "group"; scale?: ColorScale } | { field: FieldName; target?: UserId; fieldType: "quantitative" | "temporal"; scale?: SequentialColorScale })`
-- Planned (NOT IMPLEMENTED): `{ layout?: "fill" | "overlay" | "diverging" }` and continuous bar consumers; continuous fields reject layout.
+- Implemented: `encodeColor({ field: FieldName; target?: UserId; fieldType?: "nominal"; layout?: "stack" | "fill" | "group" | "overlay" | "diverging"; scale?: ColorScale } | { field: FieldName; target?: UserId; fieldType: "quantitative" | "temporal"; scale?: SequentialColorScale })`; mark compatibility narrows the nominal layout set.
+- Planned (NOT IMPLEMENTED): continuous bar consumers; continuous fields reject layout.
 - Proposed (NOT IMPLEMENTED): `{ layout?: "center" }`.
 
 ### Value coverage — `encodeColor`
@@ -383,9 +385,8 @@ type AggregateOperation =
 - `fieldType`
   - ✅ Covered: nominal, quantitative/temporal point color와 invalid alternatives.
 - `layout`
-  - ✅ Covered: omission, `"stack"`, `"group"`, incompatible mark/layout rejection.
-  - 🟡 Planned: `"fill" | "overlay" | "diverging"` with mark compatibility, normalized and signed
-    baseline policies; `encodeGroup`과 distinct ownership을 유지한다.
+  - ✅ Covered: omission, all five values, bar/area compatibility, normalized and signed baseline policies,
+    no-auto-opacity overlay, invalid transition atomicity와 `encodeGroup`과의 distinct ownership.
   - 🟣 Proposed: `"center"` streamgraph layout.
 - `scale.id/type/domain`
   - ✅ Covered: ordinal default, explicit ID/order, incomplete explicit domain rejection.
@@ -555,10 +556,11 @@ type AggregateOperation =
 - `band`: `(0, 1]` finite number, 기본값 `0.72`. 각 xOffset slot 중 rect가 차지하는 비율이다.
 - `pixels`: Planned fixed logical-pixel width이며 band와 mutually exclusive다. Group slot spacing은
   `encodeXOffset`이 소유한다.
-- `target`: optional complete grouped bar ID.
+- `target`: optional complete ordinal aggregate bar ID. Group layout은 matching xOffset를 추가로 요구한다.
 - Effect: graphical mark config에 band fraction을 저장하고 rect x/width를 rematerialize한다.
   같은 target에 다시 호출하면 기존 band fraction을 교체한다.
-- 오류: ordinal x, scalar aggregate/non-stacked y, matching color/xOffset가 완성되지 않으면 거부한다.
+- 오류: ordinal x, scalar aggregate y와 color가 완성되지 않으면 거부한다. Group layout은 matching
+  color/xOffset가 완성되지 않으면 거부한다.
 - Coverage: grouped-bar semantic/reference tests가 default, explicit value, invalid range와 geometry를 검증한다.
 
 ### Formal values — `encodeBarWidth`

@@ -33,6 +33,9 @@ export function createCarsHistogramPrimitiveProgram(
   const yTickPositions = yAxis.ticks.map(tick => tick.position);
   const horizontalGrid = values.grid.horizontal;
   const legendItems = values.legend.items;
+  const resolvedColorLayout = colorLayout ?? (
+    stack === "normalize" ? "fill" : "stack"
+  );
 
   let program = chart()
     .createCanvas({ width, height, margin, background: "white" })
@@ -98,12 +101,10 @@ export function createCarsHistogramPrimitiveProgram(
       value: "color"
     });
 
-  if (colorLayout !== undefined) {
-    program = program.editSemantic({
-      property: "layer[bars].encoding.color.layout",
-      value: colorLayout
-    });
-  }
+  program = program.editSemantic({
+    property: "layer[bars].encoding.color.layout",
+    value: resolvedColorLayout
+  });
 
   return program
     .editSemantic({ property: "scale[x].type", value: "linear" })

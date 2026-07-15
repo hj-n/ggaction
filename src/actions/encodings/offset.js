@@ -5,7 +5,7 @@ import {
 } from "../../grammar/scales.js";
 import { resolveOffsetScaleDefinition } from "../scales/definitions.js";
 import { resolveTarget, validateOptions } from "./shared.js";
-import { BAR_GRAINS, resolveBarGrain } from "../../grammar/bars/policy.js";
+import { resolveBarGrain } from "../../grammar/bars/policy.js";
 
 const ENCODING_OPTIONS = Object.freeze(["field", "target", "fieldType", "scale"]);
 const encodeXOffset = action(
@@ -24,11 +24,11 @@ const encodeXOffset = action(
     );
 
     if (
-      resolveBarGrain(layer) !== BAR_GRAINS.aggregate ||
+      resolveBarGrain(layer) === undefined ||
       layer.encoding.x.scale === undefined
     ) {
       throw new Error(
-        "encodeXOffset requires an ordinal x and aggregate/non-stacked y bar encoding."
+        "encodeXOffset requires a complete bar x/y encoding."
       );
     }
 

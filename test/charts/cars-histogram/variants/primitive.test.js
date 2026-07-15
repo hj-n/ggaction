@@ -4,7 +4,8 @@ import test from "node:test";
 import {
   createBinBoundariesCarsHistogram,
   createBinStepCarsHistogram,
-  createFieldReassignmentCarsHistogram
+  createFieldReassignmentCarsHistogram,
+  createNormalizedStackCarsHistogram
 } from "../../../../examples/cars-histogram/program.js";
 import { assertChartProgramsEquivalent } from "../../../support/chart-equivalence.js";
 import { loadCars } from "../../../support/data.js";
@@ -108,7 +109,8 @@ test("locks complete histogram field reassignment while preserving grouping", ()
   assert.deepEqual(encoding.color, {
     field: "Origin",
     fieldType: "nominal",
-    scale: "color"
+    scale: "color",
+    layout: "stack"
   });
   assert.deepEqual(program.semanticSpec.guides.axis, {
     x: { scale: "x", coordinate: "main", title: "Horsepower" },
@@ -206,6 +208,7 @@ test("matches approved histogram primitives with public action flows", () => {
   const pairs = [
     [createBinStepPrimitives(cars), createBinStepCarsHistogram(cars)],
     [createBinBoundariesPrimitives(cars), createBinBoundariesCarsHistogram(cars)],
+    [createNormalizedStackPrimitives(cars), createNormalizedStackCarsHistogram(cars)],
     [
       createFieldReassignmentPrimitives(cars),
       createFieldReassignmentCarsHistogram(cars)
@@ -216,7 +219,7 @@ test("matches approved histogram primitives with public action flows", () => {
     assertChartProgramsEquivalent({ publicProgram, primitiveProgram });
   }
   assert.deepEqual(
-    pairs[2][1].trace.children.map(node => node.op),
+    pairs[3][1].trace.children.map(node => node.op),
     [
       "createCanvas",
       "createData",

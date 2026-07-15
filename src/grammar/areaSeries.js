@@ -1,5 +1,9 @@
 import { cloneAndFreeze } from "../core/immutable.js";
 import { readNominalField, readQuantitativeField } from "./scales.js";
+import {
+  layoutSeriesPartition,
+  validateColorLayout
+} from "./seriesLayout.js";
 
 export function deriveAreaSeries(rows, layer) {
   if (layer?.mark?.type !== "area") {
@@ -129,4 +133,57 @@ export function deriveDensityAreaSeries(rows, layer, transform) {
     return { key: item.key, values };
   });
   return cloneAndFreeze({ mode, series });
+}
+
+export function layoutDensityAreaSeries(derived, layout = "overlay") {
+  validateColorLayout(layout);
+  if (layout === "group") {
+    throw new Error('Density area series do not support "group" layout.');
+  }
+  if (derived?.mode !== "y-density") {
+    if (layout === "overlay") return derived;
+    throw new Error(
+      `Area layout "${layout}" currently requires vertical density series.`
+    );
+  }
+  const sampleCount = derived.series[0]?.values.length ?? 0;
+  if (
+    sampleCount === 0 ||
+    derived.series.some(series => series.values.length !== sampleCount)
+  ) {
+    throw new Error("Density area layout requires aligned non-empty samples.");
+  }
+
+  const valuesBySeries = derived.series.map(() => []);
+  for (let sample = 0; sample < sampleCount; sample += 1) {
+    const x = derived.series[0].values[sample].x;
+    const densities = derived.series.map(series => {
+      if (series.values[sample].x !== x) {
+        throw new Error("Density area layout requires one shared sample grid.");
+      }
+      return series.values[sample].y;
+    });
+    const segments = new Map(
+      layoutSeriesPartition(densities, layout).map(segment => [
+        segment.index,
+        segment
+      ])
+    );
+    for (let index = 0; index < derived.series.length; index += 1) {
+      const segment = segments.get(index);
+      valuesBySeries[index].push({
+        x,
+        lower: segment?.start ?? 0,
+        upper: segment?.end ?? 0
+      });
+    }
+  }
+
+  return cloneAndFreeze({
+    mode: derived.mode,
+    series: derived.series.map((series, index) => ({
+      key: series.key,
+      values: valuesBySeries[index]
+    }))
+  });
 }

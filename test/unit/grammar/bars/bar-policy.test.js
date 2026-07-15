@@ -31,5 +31,5 @@ test("classifies supported bar grains and their current color layouts", () => {
   assert.equal(resolveBarGrain({
     ...aggregate,
     encoding: { ...aggregate.encoding, y: { ...aggregate.encoding.y, stack: "zero" } }
-  }), undefined);
+  }), BAR_GRAINS.aggregate);
 });

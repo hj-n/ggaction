@@ -1,10 +1,10 @@
 import { chart } from "../../src/index.js";
 
-export function createJobsGroupedBar(jobs) {
+function createJobsBar(jobs, { field = "perc", layout = "group" } = {}) {
   const rows = jobs.filter(
     row =>
       Number.isFinite(row.year) &&
-      Number.isFinite(row.perc) &&
+      Number.isFinite(row[field]) &&
       typeof row.sex === "string" &&
       row.sex.length > 0
   );
@@ -19,15 +19,27 @@ export function createJobsGroupedBar(jobs) {
     .createBarMark({ id: "bars" })
     .encodeX({ field: "year", fieldType: "ordinal" })
     .encodeY({
-      field: "perc",
+      field,
       aggregate: "mean",
       scale: { nice: true, zero: false }
     })
     .encodeColor({
       field: "sex",
-      layout: "group",
+      layout,
       scale: { palette: "tableau10" }
     })
     .encodeBarWidth({ band: 0.72 })
     .createGuides();
+}
+
+export function createJobsGroupedBar(jobs) {
+  return createJobsBar(jobs);
+}
+
+export function createJobsOverlayBar(jobs) {
+  return createJobsBar(jobs, { layout: "overlay" });
+}
+
+export function createJobsDivergingBar(jobs) {
+  return createJobsBar(jobs, { field: "signedPerc", layout: "diverging" });
 }

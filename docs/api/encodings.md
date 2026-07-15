@@ -74,7 +74,7 @@ scale or guide.
 ## Atomic histogram
 
 `encodeHistogram` is the concise equivalent of binned bar `encodeX` followed
-by count/zero-stack `encodeY`.
+by count `encodeY`.
 
 ```javascript
 program.encodeHistogram({
@@ -85,7 +85,9 @@ program.encodeHistogram({
 
 Choose one of inferred `maxBins`, exact `binStep`, or explicit irregular
 `binBoundaries`. The action also accepts optional `target`, `coordinate`,
-`stack`, `xScale`, and `yScale` options. It directly records `encodeX` and
+`stack`, `xScale`, and `yScale` options. Stack accepts `"zero"`, `"normalize"`,
+or `null`; normalized partitions use an automatic `[0, 1]` y domain. The action
+directly records `encodeX` and
 `encodeY` as its children; it does not duplicate binning, scale, count, or
 rect materialization logic. Calling it again on the same bar atomically
 replaces both histogram fields and rematerializes connected guides.
@@ -123,11 +125,11 @@ becomes one baseline-closed command path ending in `Z`.
 [`encodeColor` and `encodeStrokeDash`](./series-encodings.md) create nominal
 series identity and concrete colors or dash patterns. On line marks they can
 split one aggregate path into multiple series. On complete histograms,
-`encodeColor` splits every bin into category-stacked rects.
-On ordinal aggregate bars, `encodeColor({ layout: "group" })` records non-stacked
-color meaning and invokes `encodeXOffset` for the same field. Rectangles remain
-empty until `encodeBarWidth({ band? })` authors slot occupancy and materializes
-concrete grouped rectangles.
+`encodeColor` arranges each color partition with `stack`, `fill`, `group`,
+`overlay`, or `diverging`. On bars, group invokes `encodeXOffset`; aggregate
+bars remain empty until `encodeBarWidth({ band? })` authors their width.
+Area marks accept every layout except group and require color to match the
+existing semantic group field.
 On area marks, color fills an already grouped path collection and must use the
 same nominal field as `encodeGroup` or `encodeDensity({ groupBy })`.
 

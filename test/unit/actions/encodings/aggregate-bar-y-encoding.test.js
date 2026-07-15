@@ -129,8 +129,8 @@ test("validates aggregate ordinal bar y requirements", () => {
 
   assert.throws(() => program.encodeY(), /field must be a non-empty string/i);
   assert.throws(
-    () => program.encodeY({ field: "perc", stack: "zero" }),
-    /stack must be null/
+    () => program.encodeY({ field: "perc", stack: "middle" }),
+    /unsupported stack/
   );
   assert.throws(
     () => program.encodeY({ field: "perc", fieldType: "temporal" }),

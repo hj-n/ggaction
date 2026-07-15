@@ -14,7 +14,7 @@ title: Appearance Encodings
 | `encodeShape` | `encodeShape({ field: "Origin" })` | Current point; 12-value ordinal shape range | Semantic shape and mixed concrete symbols |
 | `encodeOpacity` | `encodeOpacity({ value: 0.27 })` | Current point mark | Constant concrete opacity |
 | `encodeOpacity` | `encodeOpacity({ field: "Acceleration" })` | Current point; linear scale; range `[0.2, 1]` | Semantic field opacity and concrete values |
-| `encodeBarWidth` | `encodeBarWidth()` | Current grouped bar; band `0.72` | Concrete grouped rectangles |
+| `encodeBarWidth` | `encodeBarWidth()` | Current aggregate bar; band `0.72` | Concrete rectangles |
 
 ## `encodeRadius({ value, target? })`
 
@@ -72,8 +72,8 @@ titles and styles remain unchanged.
 
 ## `encodeBarWidth({ band?, target? })`
 
-Set the fraction of each resolved xOffset slot occupied by a grouped bar and
-materialize concrete rectangles.
+Set the fraction of each resolved x band—or xOffset slot for group layout—used
+by an aggregate bar and materialize concrete rectangles.
 
 ```javascript
 program.encodeBarWidth({ band: 0.72 });
@@ -82,12 +82,12 @@ program.encodeBarWidth({ band: 0.72 });
 | Option | Type | Default |
 | --- | --- | --- |
 | `band` | finite number greater than `0` and at most `1` | `0.72` |
-| `target` | grouped bar mark ID | current mark |
+| `target` | aggregate bar mark ID | current mark |
 
-The action requires ordinal x, aggregate/non-stacked y, grouped color, and matching
-xOffset semantics. Concrete width is `xOffset.bandwidth * band`; each bar is
-centered in its slot. Missing x/color cells are omitted rather than represented
-by placeholder rects.
+The action requires ordinal x, aggregate y, and nominal color. Group layout also
+requires matching xOffset semantics. Width is the outer x bandwidth times `band`
+for stack, fill, overlay, and diverging, or xOffset bandwidth times `band` for
+group. Each bar is centered in its band; missing cells are omitted.
 
 `band` is graphical layout rather than chart meaning, so it is not added to
 `semanticSpec`. The action stores immutable materialization config and writes
@@ -100,7 +100,8 @@ Radius, constant opacity, and bar band are graphical constants. Field opacity
 is a semantic encoding.
 Size cannot be combined with a constant radius. A constant `editPointMark`
 shape cannot be combined with field-driven `encodeShape`. Bar width
-requires complete ordinal x, aggregate y, color, and xOffset semantics.
+requires complete ordinal x, aggregate y, and color semantics; group additionally
+requires matching xOffset semantics.
 
 ## Related
 

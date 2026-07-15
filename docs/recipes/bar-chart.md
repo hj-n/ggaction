@@ -36,8 +36,9 @@ const program = chart()
 - A `0.72` bar-band fraction
 - Ordinal/linear axes, horizontal grid, and right-side legend
 
-Missing x/group combinations are omitted. The current API does not synthesize
-zero bars, support horizontal bars, or materialize negative-value baselines.
+Missing x/group combinations are omitted. Change `layout` to `stack`, `fill`,
+`overlay`, or `diverging` to use the other supported series arrangements.
+The current API does not synthesize zero bars or support horizontal bars.
 
 ## Continue
 

@@ -33,8 +33,10 @@ test("colors density paths in the group domain order", () => {
   assert.deepEqual(program.semanticSpec.layers[0].encoding.color, {
     field: "Origin",
     fieldType: "nominal",
-    scale: "color"
+    scale: "color",
+    layout: "overlay"
   });
+  assert.equal(program.semanticSpec.layers[0].encoding.y.stack, null);
   assert.deepEqual(program.resolvedScales.color.domain, expected.groupDomain);
   assert.deepEqual(
     program.graphicSpec.objects.densities.children.map(child => child.properties.fill),
@@ -59,6 +61,39 @@ test("supports explicit area color domains and ranges", () => {
     program.graphicSpec.objects.densities.children.map(child => child.properties.fill),
     ["blue", "green", "red"]
   );
+});
+
+test("materializes stacked and normalized vertical density areas", () => {
+  const stacked = densityArea().encodeColor({
+    field: "Origin",
+    layout: "stack"
+  });
+  const filled = densityArea().encodeColor({
+    field: "Origin",
+    layout: "fill"
+  });
+
+  assert.equal(stacked.semanticSpec.layers[0].encoding.y.stack, "zero");
+  assert.equal(stacked.resolvedScales.y.domain[1] > 0.25, true);
+  assert.equal(filled.semanticSpec.layers[0].encoding.y.stack, "normalize");
+  assert.deepEqual(filled.resolvedScales.y.domain, [0, 1]);
+  assert.equal(stacked.graphicSpec.objects.densities.children.length, 3);
+  assert.equal(filled.graphicSpec.objects.densities.children.length, 3);
+});
+
+test("rejects unsupported area layouts and layout transitions atomically", () => {
+  const before = densityArea();
+  assert.throws(
+    () => before.encodeColor({ field: "Origin", layout: "group" }),
+    /does not support "group"/
+  );
+  const overlay = before.encodeColor({ field: "Origin" });
+  assert.throws(
+    () => overlay.encodeColor({ field: "Origin", layout: "stack" }),
+    /transition from "overlay" to "stack"/
+  );
+  assert.equal(before.semanticSpec.layers[0].encoding.color, undefined);
+  assert.equal(overlay.semanticSpec.layers[0].encoding.color.layout, "overlay");
 });
 
 test("rematerializes colored area paths after Canvas edits", () => {

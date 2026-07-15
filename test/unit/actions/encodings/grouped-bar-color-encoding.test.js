@@ -32,7 +32,8 @@ test("encodes grouped bar color through a nested xOffset action", () => {
   assert.deepEqual(program.semanticSpec.layers[0].encoding.color, {
     field: "sex",
     fieldType: "nominal",
-    scale: "color"
+    scale: "color",
+    layout: "group"
   });
   assert.deepEqual(program.semanticSpec.layers[0].encoding.xOffset, {
     field: "sex",
@@ -51,8 +52,9 @@ test("encodes grouped bar color through a nested xOffset action", () => {
     "editSemantic",
     "editSemantic",
     "editSemantic",
-    "createScale",
     "editSemantic",
+    "createScale",
+    "encodeY",
     "encodeXOffset",
     "rematerializeBarMark"
   ]);
@@ -82,20 +84,17 @@ test("supports explicit grouped color order and palette", () => {
   ]);
 });
 
-test("validates color layout against the bar policy", () => {
+test("supports the complete bar layout vocabulary and rejects transitions", () => {
   const program = aggregateBarProgram();
 
+  for (const layout of ["group", "stack", "fill", "overlay", "diverging"]) {
+    const encoded = program.encodeColor({ field: "sex", layout });
+    assert.equal(encoded.semanticSpec.layers[0].encoding.color.layout, layout);
+  }
+  const grouped = program.encodeColor({ field: "sex", layout: "group" });
   assert.throws(
-    () => program.encodeColor({ field: "sex" }),
-    /layout must be "group"/
-  );
-  assert.throws(
-    () => program.encodeColor({ field: "sex", layout: "stack" }),
-    /layout must be "group"/
-  );
-  assert.throws(
-    () => program.encodeColor({ field: "sex", layout: "overlay" }),
-    /Unsupported color layout/
+    () => grouped.encodeColor({ field: "sex", layout: "stack" }),
+    /transition from "group" to "stack"/
   );
 
   const point = chart()
@@ -103,7 +102,7 @@ test("validates color layout against the bar policy", () => {
     .createPointMark({ id: "points" });
   assert.throws(
     () => point.encodeColor({ field: "sex", layout: "group" }),
-    /only for bar marks/
+    /not supported for point marks/
   );
 
   const histogram = chart()
@@ -115,8 +114,7 @@ test("validates color layout against the bar policy", () => {
   assert.doesNotThrow(() =>
     histogram.encodeColor({ field: "group", layout: "stack" })
   );
-  assert.throws(
-    () => histogram.encodeColor({ field: "group", layout: "group" }),
-    /layout must be "stack"/
+  assert.doesNotThrow(() =>
+    histogram.encodeColor({ field: "group", layout: "group" })
   );
 });

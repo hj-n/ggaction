@@ -103,15 +103,15 @@ encodeBarWidth({
 - Status: Planned, NOT IMPLEMENTED. mode switching, padding boundaries, Canvas resize와 overlap
   coverage가 필요하다.
 
-## color layout vocabulary
+## Implemented color layout compatibility note
 
 ```typescript
 type ColorLayout =
   | "stack" | "fill" | "group" | "overlay" | "diverging";
 ```
 
-- `encodeColor.layout`이 color series의 graphical arrangement를 소유한다. 기존 `"stack"`과
-  `"group"`은 Implemented이며 나머지 세 값이 이 Planned extension의 구현 대상이다.
+- `encodeColor.layout`이 color series의 graphical arrangement를 소유한다. 다섯 값 모두
+  Implemented이며 canonical parameter와 coverage는 Current contract가 소유한다.
 - `"stack"`은 각 x/category에서 series의 absolute quantitative value를 zero baseline부터
   누적한다. `"fill"`은 같은 stack partition의 non-negative values를 합계 1로 정규화해 누적하며
   auto y domain은 `[0, 1]`이다. partition 합계가 0인 위치에는 graphic을 합성하지 않는다.
@@ -130,8 +130,8 @@ type ColorLayout =
   axes와 grids를 deterministic plan으로 rematerialize하고 color scale과 legend domain order는 유지한다.
 - 기존 layout에서 다른 layout으로 재할당하는 전환은 companion 제거, y policy cleanup과 scale
   conflict를 원자적으로 처리하는 별도 reassignment contract가 구현될 때까지 지원하지 않는다.
-- Status: Planned, NOT IMPLEMENTED. mark compatibility, positive/negative/zero partitions, deterministic
-  overlap order, normalized/diverging domains와 rejected layout-transition coverage가 필요하다.
+- Status: Implemented. Canonical behavior and coverage moved to
+  [`../current/ENCODINGS.md`](../current/ENCODINGS.md#encodecolor).
 
 ## Implemented named palette baseline
 
@@ -255,7 +255,7 @@ type PlannedPositionFieldType = "quantitative" | "temporal" | "ordinal";
 - Status: Planned, NOT IMPLEMENTED. 전체 mark × channel × fieldType compatibility matrix와
   orientation, shared-scale conflict, guide inference coverage가 필요하다.
 
-## Normalized stack mode
+## Implemented normalized stack compatibility note
 
 ```typescript
 type PlannedStackMode = "normalize";
@@ -269,8 +269,8 @@ type PlannedStackMode = "normalize";
   `normalize`는 각각 high-level series layout과 low-level y stack vocabulary다.
 - Stack change는 y scale, mark geometry, axes와 horizontal grid를 atomic하게 rematerialize한다.
 - Centered/silhouette stack과 `encodeColor.layout: "center"`는 streamgraph 계약까지 Proposed다.
-- Status: Planned, NOT IMPLEMENTED. positive/zero/negative partitions, shared scales, guide domains,
-  fill hierarchy와 reassignment coverage가 필요하다.
+- Status: Implemented. Canonical behavior and coverage moved to
+  [`../current/ENCODINGS.md`](../current/ENCODINGS.md#encodey).
 
 ## Offset padding controls
 

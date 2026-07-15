@@ -59,10 +59,16 @@ test("authors and renders the complete primitive density area chart", () => {
       y: {
         field: "Acceleration_density",
         fieldType: "quantitative",
-        scale: "y"
+        scale: "y",
+        stack: null
       },
       group: { field: "Origin", fieldType: "nominal" },
-      color: { field: "Origin", fieldType: "nominal", scale: "color" }
+      color: {
+        field: "Origin",
+        fieldType: "nominal",
+        scale: "color",
+        layout: "overlay"
+      }
     }
   }]);
   assert.deepEqual(program.semanticSpec.scales, [

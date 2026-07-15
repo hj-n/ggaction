@@ -23,7 +23,7 @@ policy. Area color must match an existing `encodeGroup` field.
 | `field` | non-empty string | required |
 | `target` | point, line, area, or bar mark ID | current mark |
 | `fieldType` | `"nominal"` | `"nominal"` |
-| `layout` | `"group"` or `"stack"`; bar only | mark policy |
+| `layout` | `"stack"`, `"fill"`, `"group"`, `"overlay"`, or `"diverging"` | mark policy |
 | `scale.id` | scale ID | `"color"` |
 | `scale.type` | `"ordinal"` | `"ordinal"` |
 | `scale.domain` | `"auto"` or category array | `"auto"` |
@@ -61,7 +61,7 @@ program.encodeColor({
 
 See [Scale options](./scales.md#named-palettes) for the complete vocabulary.
 
-For an ordinal-x mean bar, `layout: "group"` is required. It keeps
+For an ordinal-x mean bar, `layout: "group"` is the default. It keeps
 `y.stack = null`, invokes `encodeXOffset` with the same field, and recomputes
 the y domain from one mean per x/color cell. Color and xOffset scales are fully
 resolved, while concrete rects wait for bar width.
@@ -90,9 +90,16 @@ histogram.encodeColor({
 });
 ```
 
-Histogram color keeps its existing stack behavior when `layout` is omitted;
-`layout: "stack"` makes that policy explicit. Grouped histograms and stacked
-ordinal-mean bars are not supported in the current scope.
+Histogram color defaults to `stack`. `fill` normalizes every non-negative bin
+partition to one and uses `[0, 1]` as the automatic y domain. `group` places
+series side by side within each bin, `overlay` draws them in color-domain order
+without changing opacity, and `diverging` accumulates positive and negative
+values independently around zero. Ordinal aggregate bars support the same five
+values; call `encodeBarWidth` after color.
+
+```javascript
+histogram.encodeColor({ field: "Origin", layout: "fill" });
+```
 
 On an area mark, color never creates grouping implicitly. Author grouping
 directly or through `encodeDensity({ groupBy })`, then encode that same field:
@@ -100,13 +107,18 @@ directly or through `encodeDensity({ groupBy })`, then encode that same field:
 ```javascript
 densityArea.encodeColor({
   field: "Origin",
+  layout: "overlay",
   scale: { palette: "tableau10" }
 });
 ```
 
-Each existing path receives the resolved color for its group. Path order,
+Area layouts support `stack`, `fill`, `overlay`, and `diverging`; `group` is
+bar-only. Each existing path receives the resolved color for its group. Path order,
 color domain order, and later legend order share the same ordered categories;
 Canvas and shared-scale changes rematerialize every affected area fill.
+Once a color layout exists, changing it to another layout is rejected until a
+future companion-cleanup contract is implemented; the earlier program remains
+unchanged.
 
 ## `encodeStrokeDash(options)`
 
