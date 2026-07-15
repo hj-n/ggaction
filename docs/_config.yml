@@ -7,3 +7,4 @@ markdown: kramdown
 permalink: pretty
 exclude:
   - README.md
+  - AGENTS.md

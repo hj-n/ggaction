@@ -27,6 +27,10 @@ function read(relative) {
   return readFileSync(path.join(root, relative), "utf8");
 }
 
+function isDocumentationMarkdown(file) {
+  return file.endsWith(".md") && path.basename(file) !== "AGENTS.md";
+}
+
 function prettyUrl(file) {
   const relative = path.relative(docsRoot, file).replaceAll(path.sep, "/");
   if (relative === "index.md") return "/";
@@ -95,7 +99,7 @@ function documentedCalls(markdown) {
 test("keeps every local Markdown link and anchor valid", async () => {
   const markdownFiles = [
     path.join(root, "README.md"),
-    ...(await files(docsRoot)).filter(file => file.endsWith(".md"))
+    ...(await files(docsRoot)).filter(isDocumentationMarkdown)
   ];
 
   for (const file of markdownFiles) {
@@ -118,7 +122,7 @@ test("keeps every local Markdown link and anchor valid", async () => {
 });
 
 test("keeps navigation and page order complete", async () => {
-  const pages = (await files(docsRoot)).filter(file => file.endsWith(".md"));
+  const pages = (await files(docsRoot)).filter(isDocumentationMarkdown);
   const pageUrls = new Set(pages.map(prettyUrl));
   const navigation = dataUrls("docs/_data/navigation.yml");
   const order = dataUrls("docs/_data/page_order.yml");
@@ -139,7 +143,7 @@ test("keeps navigation and page order complete", async () => {
 });
 
 test("keeps every Markdown page structurally readable", async () => {
-  const pages = (await files(docsRoot)).filter(file => file.endsWith(".md"));
+  const pages = (await files(docsRoot)).filter(isDocumentationMarkdown);
   for (const file of pages) {
     const markdown = readFileSync(file, "utf8");
     const frontMatter = markdown.match(/^---\n([\s\S]*?)\n---\n/);
@@ -159,7 +163,7 @@ test("keeps every Markdown page structurally readable", async () => {
 });
 
 test("keeps repository source links and raw images verifiable", async () => {
-  const pages = (await files(docsRoot)).filter(file => file.endsWith(".md"));
+  const pages = (await files(docsRoot)).filter(isDocumentationMarkdown);
   for (const file of pages) {
     const markdown = readFileSync(file, "utf8");
     for (const match of markdown.matchAll(

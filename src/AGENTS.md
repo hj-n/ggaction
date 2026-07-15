@@ -1,0 +1,93 @@
+# Source Instructions
+
+Apply these instructions to library source, public package entry points, and source-facing declarations in addition to the repository root instructions.
+
+## Source Ownership and Module Boundaries
+
+- Organize directories by stable responsibility and reusable capability rather than by the chart example or implementation phase that first required the code.
+- Give each cross-cutting contract one canonical owner. Shared defaults, closed vocabularies, resource lookup rules, validation rules, and dispatch tables must be defined once and consumed by actions rather than re-declared in multiple feature modules.
+- Route ID-based lookup, existence checks, and required-resource errors for named semantic datasets, layers, scales, and coordinates through shared selectors. Keep capability queries local only when they select by semantic behavior rather than by resource identity.
+- Use one shared concrete-graphic schema for graphical editing and rendering. Renderers may add completeness checks required to draw a node, but they must not redefine a conflicting property or value contract.
+- Namespace every repeatable generated internal dataset, layer, scale, guide, and graphic ID from its owning user-defined resource ID and semantic role. Stable system IDs are reserved for structurally singular slots such as the canvas or one supported guide per channel; do not use global generated IDs where the same aggregate action can create more than one resource.
+- Store each piece of program state in one canonical representation. Convenience aliases must be derived read-only accessors, and internal counters or bookkeeping must remain non-enumerable or private rather than becoming duplicate serialized state.
+- Organize source code by reusable semantic capability and separate wrapped action orchestration from pure grammar, resolution, layout, and materialization calculations. Pure modules must not mutate a program or create trace nodes; meaningful authoring steps must remain wrapped actions.
+- Keep semantic computation, concrete graphical materialization, and renderer execution as explicit boundaries. Do not let renderers infer chart semantics or let pure semantic modules author backend operations.
+- Extract logic shared by multiple actions into the smallest responsible capability module instead of duplicating it or creating a chart-specific utility bucket.
+- Express cross-cutting rematerialization as deterministic plans of wrapped action calls, deduplicate equivalent plan steps while preserving order, and register new consumers with the responsible materialization policy instead of scattering ad hoc rematerialization calls across unrelated actions.
+- Keep every public JavaScript entry point synchronized with its TypeScript declaration, package export-map entry, and package-boundary tests. Keep Node-only adapters out of browser-safe entry points.
+- Respect package boundaries in internal imports as well as public exports. Cross-package consumers must use the owning package's supported entry point rather than reaching through to private implementation files.
+
+## User-Facing API Design
+
+- Maintain three clear layers: the default Chart Authoring API, the public Action Authoring API, and private library internals.
+- Assign every public action an explicit lifecycle in the action catalog: immutable create-only, mutable resource, assignment, aggregate create-only, stable resource with an edit gap, or primitive. Do not infer that every `create*` action mechanically requires an `edit*` counterpart.
+- A stable independently addressable resource must either have a supported edit path or an explicit cataloged gap. Define editable properties, rematerialization ownership, and conflict behavior before adding its edit action; aggregate actions remain create-only and delegate updates to child actions.
+- Treat resources whose type or attachment changes invalidate multiple semantic and graphical dependencies as structural create-only resources. Create a new resource and explicitly rebind its consumers instead of offering a misleading partial edit action.
+- Keep sibling component actions behind the same public facade unless a distinct direct authoring use case justifies exposing one. Internal wrapped components remain visible in traces, but do not expose one sibling merely because implementation staging made it convenient.
+- The default `ggaction` entry point serves chart authors through domain-specific actions and rendering.
+- The `ggaction/extension` entry point serves action authors through `ChartProgram`, `action()`, primitive actions, and trace inspection.
+- The Node-only `ggaction/png` entry point exports completed programs without adding Node dependencies to the browser entry point.
+- Encourage extension authors to subclass `ChartProgram` instead of modifying the shared base prototype, so independently authored extensions do not collide.
+- Do not expose private path-parsing, structural-copy, validation, or rendering-dispatch helpers through public entry points.
+- Do not expose raw graphical IDs or raw graphical property paths when a meaningful domain action can represent the operation.
+- Name chart-authoring actions after semantic concepts such as `createPointMark`; keep concrete realizations such as `circle` inside action implementations and `graphicSpec`.
+- Public actions accept meaningful option objects, such as `editXAxisLine({ lineWidth: 3 })`.
+- Every public action accepts one parameter object and returns a new `ChartProgram`.
+- Require only inputs that the user must decide and that cannot be inferred safely. User-facing actions should infer or default the remaining options whenever the stored program state determines them unambiguously.
+- Resolve omitted options in this order: an explicit option, a unique inference from stored semantic state, a documented library default, then an error when no safe decision remains. Never choose arbitrarily among multiple candidates.
+- Treat documented defaults and inference behavior as part of the public API contract. Cover them in user documentation and tests, and persist inferred semantic decisions in `semanticSpec`.
+- Use omission, an empty object, and `false` consistently in aggregate APIs: omission requests automatic applicability and inference, `{}` explicitly selects the component with inferred details, and `false` explicitly disables it.
+- Keep create and edit contracts consistent. A create action requires a missing resource, may treat an equivalent repeated definition as idempotent when explicitly intended, and must reject conflicting definitions. An edit action requires an existing resource and must reject an empty edit.
+- Validate library-defined closed vocabularies such as channels and types.
+- Treat user-defined IDs as names: validate their basic form, uniqueness when creating, and existence when referencing rather than checking them against a library vocabulary.
+- Infer layout coordinates from Canvas or plot bounds when possible instead of requiring raw x/y values. Do not make non-overlap a global invariant; individual actions and explicit user options may intentionally produce overlapping graphics.
+- Do not create placeholder semantic or graphical components for omitted optional content. Create optional subtitles, borders, backgrounds, and similar components only when they are actually requested or inferred as present.
+
+## Actions and Trace
+
+- Define every authoring action through the shared `action()` wrapper.
+- Treat every `materialize*` and `rematerialize*` method as an internal wrapped action, not as a public direct-call API or an authoring primitive. The public domain action that owns the affected semantic resource must invoke it, and the resulting operation must remain visible in the trace.
+- Provide an atomic domain action when multiple semantic operations are interdependent and separately authoring them would leave an incomplete or misleading chart state.
+- When one public encoding choice requires a companion encoding, let the representative domain action create that companion through a wrapped child action. Keep the companion action available only as an advanced API when ordinary chart authors should not need to coordinate the pair manually.
+- Implement an atomic action by orchestrating the existing wrapped child actions that own the relevant validation, inference, and materialization; do not duplicate their behavior inside the aggregate.
+- Component actions invoked by higher-level actions must also be wrapped actions when they represent meaningful authoring steps.
+- Aggregate actions must orchestrate wrapped child actions instead of duplicating their behavior or hiding meaningful authoring steps inside untraced helpers.
+- Keep aggregate actions thin: they may decide child applicability and call order, but inference and validation owned by a child action must remain in that child rather than being reimplemented by the aggregate.
+- Do not hide meaningful action decomposition inside untraced helpers.
+- Every trace has a virtual `program` root, and nested wrapped calls form its action hierarchy.
+- Context updates are part of successful immutable state transitions; they are not separate actions or trace nodes.
+- Treat context only as transient convenience for interpreting the next action. Completed semantic meaning and renderable output must be persisted in `semanticSpec` or `graphicSpec`, never only in context.
+- Update context through a private immutable helper rather than a public or wrapped `setContext` action.
+- When `editSemantic` can infer the current semantic resource from its validated path, high-level actions must rely on that transition instead of duplicating it with `_withContext`.
+- Keep trace arguments lightweight. Do not copy large datasets or fully materialized value arrays into the trace.
+- When a transform creates a derived dataset for a mark, rebind that mark through an explicit wrapped semantic action so the dependency is visible in the trace. Do not make consumers switch datasets implicitly through context or untraced mutation.
+
+## Semantic and Graphical Boundary
+
+- `semanticSpec` records what the chart means; `graphicSpec` records the concrete graphical result.
+- The action that first introduces a semantic concept owns its inference, validation, and storage. Downstream actions must read the stored decision rather than silently creating, repairing, or re-inferring missing semantic state.
+- Persist every inferred semantic decision, including resolved resource IDs and types, in `semanticSpec`; do not leave a resolved decision only in context or an implementation-local value.
+- A semantic point mark may be realized by a graphical `circle` primitive.
+- Compute aggregate scale domains at the final visual grouping grain. For example, grouped bars use one aggregate per x/category cell rather than an earlier aggregate that ignores the grouping field.
+- A constant point shape is graphical appearance, while a field-driven shape is semantic encoding that must be explicitly materialized.
+- User-specified scale domains and ranges are semantic. Resolved primitive values such as x, y, radius, and color are graphical.
+- Dataset values are immutable after creation; filtering, aggregation, and other data changes must create transforms or derived datasets rather than replace source values.
+- Editing a stored transform parameter must create a new deterministic namespaced derived-dataset revision and explicitly rebind its consumers; never overwrite an existing dataset's values. An unreferenced old derived revision may be released from the new program through a visible internal wrapped action, while earlier programs retain it unchanged.
+- Canvas properties, themes, fonts, strokes, and other appearance-only values are graphical.
+- Keep appearance-only materialization settings such as a grouped-bar band fraction outside `semanticSpec`; store them in immutable graphical configuration and materialize their concrete results into `graphicSpec`.
+- Output density such as PNG `pixelRatio` is a renderer option and must not rewrite logical values in `graphicSpec`.
+- When a semantic change affects existing concrete output, the responsible domain action must explicitly rematerialize every affected graphical consumer.
+- Positional encoding actions own coordinate inference and layer attachment. Guide actions read stored coordinates and must not create or repair them.
+- Once scale consumers exist, canvas width, height, or margin edits must explicitly invoke wrapped rematerialization actions for every affected scale, mark, and guide; never leave stale concrete coordinates or rely on automatic compilation.
+- Treat concrete rendering order as explicit graphical state rather than an accidental consequence of action call order. Use graphic placement to preserve relationships such as grids behind marks and axes or legends above them.
+- Do not synthesize missing categorical combinations as zero values or placeholder graphics unless an explicit semantic completion policy requests them. Materialize only observed groups by default.
+- Use one resolved ordinal domain order and its band geometry as the shared source of truth for marks, offsets, ticks, labels, and other positional consumers.
+- Design shared guides around their semantic role, such as a categorical legend, and express mark-specific symbols through graphical recipes instead of forking the complete guide implementation by mark type.
+- Give each guide type one chart-independent documented default, such as a right-side legend. Alternate placement must come from an explicit public option rather than a different hidden default for each chart type.
+- Generic aggregate actions must select only semantic combinations that their child actions currently support. Determine applicability from persisted mark, encoding, scale, and coordinate state rather than from resource presence alone.
+- Statistical transforms must record enough provenance to reproduce and interpret their results: the source dataset, transform type, input and output fields, grouping, method, and every resolved parameter or default that affects the derived values.
+- Derived-data output order must be deterministic and documented. Unless a transform defines another semantic order, preserve group order by first appearance in the source and use a stable, explicit order within each group.
+- Keep statistical computation, semantic data authoring, and graphical materialization separate. Pure grammar modules compute derived values, data actions own transform provenance and derived datasets, and mark actions turn those values into concrete graphics.
+- User-facing guide text must not expose generated internal field names when transform provenance can recover the original meaning. Infer titles from source fields and semantic roles such as `Density` rather than names such as `Acceleration_density`.
+- Layers that jointly express one visual relationship, such as points, fitted lines, confidence bands, density curves, and their baselines, must use compatible coordinates and shared scales. Convert baselines and bounds through those scales rather than treating semantic values as raw graphical coordinates.
+- Layout actions that share reserved space must compute and validate their actual occupied bounds. When the requested title, legend, or similar block does not fit, report a clear layout error instead of silently expanding the Canvas or changing the user's margins.
