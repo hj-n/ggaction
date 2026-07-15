@@ -10,8 +10,8 @@ title: Density Area Recipe
 ```javascript
 const program = chart()
   .createCanvas({ margin: { top: 100, right: 140 } })
-  .createData({ id: "data", values })
-  .createAreaMark({ id: "density" })
+  .createData({ values })
+  .createAreaMark()
   .encodeDensity({ field: "value", groupBy: "group" })
   .encodeColor({ field: "group" })
   .createGuides();

@@ -10,8 +10,8 @@ title: Scatterplot Recipe
 ```javascript
 const program = chart()
   .createCanvas()
-  .createData({ id: "data", values })
-  .createPointMark({ id: "points" })
+  .createData({ values })
+  .createPointMark()
   .encodeX({ field: "x" })
   .encodeY({ field: "y" })
   .encodeRadius({ value: 3 })
@@ -20,8 +20,7 @@ const program = chart()
 
 ## You must decide
 
-- Dataset values and ID
-- Point mark ID
+- Dataset values
 - Quantitative x and y fields
 
 Radius is optional, but points need a concrete radius before they are visible.
@@ -30,6 +29,7 @@ Add `encodeColor({ field })` for nominal fill.
 ## The library infers
 
 - Current dataset and mark for later actions
+- Stable internal role IDs for the first dataset and point mark
 - Quantitative linear scales named `x` and `y`
 - The `main` Cartesian coordinate
 - Plot-bound ranges, axes, and horizontal grid

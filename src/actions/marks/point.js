@@ -16,6 +16,7 @@ import {
 } from "../../grammar/scales.js";
 import {
   assertMarkAvailable,
+  resolveMarkId,
   resolveMarkData,
   validateMarkOptions
 } from "./shared.js";
@@ -36,7 +37,12 @@ const createPointMark = action(
   },
   function (args = {}) {
     validateMarkOptions(args, POINT_MARK_OPTIONS, "createPointMark");
-    const id = validateUserId(args.id, "Point mark id");
+    const id = resolveMarkId(this, args.id, {
+      defaultId: "point",
+      label: "Point mark id",
+      markType: "point",
+      operation: "createPointMark"
+    });
     const { data, dataset } = resolveMarkData(this, args);
     const shape = Object.hasOwn(args, "shape") ? args.shape : "circle";
     validatePointShape(shape);

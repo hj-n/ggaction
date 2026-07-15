@@ -48,7 +48,7 @@ Edit Canvas properties and rematerialize connected consumers.
 ### `createData`
 
 ```javascript
-createData({ id, values })
+createData({ id?, values })
 ```
 
 Create one immutable named dataset. [Data](../api/data.md)
@@ -103,7 +103,7 @@ kernel to `"gaussian"`, and normalization to `"unit"`.
 ### `createPointMark`
 
 ```javascript
-createPointMark({ id, data?, shape? })
+createPointMark({ id?, data?, shape? } = {})
 ```
 
 Create a semantic point mark with one of 12 equal-area shape realizations. [Marks](../api/marks.md)
@@ -119,7 +119,7 @@ Change constant point shape and rematerialize its concrete children. [Marks](../
 ### `createLineMark`
 
 ```javascript
-createLineMark({ id, data?, strokeWidth?, curve? })
+createLineMark({ id?, data?, strokeWidth?, curve? } = {})
 ```
 
 Create a semantic line mark and empty path collection. Curve defaults to
@@ -138,7 +138,7 @@ semantic encodings. [Marks](../api/marks.md)
 ### `createBarMark`
 
 ```javascript
-createBarMark({ id, data? })
+createBarMark({ id?, data? } = {})
 ```
 
 Create a semantic bar mark and empty rect collection. [Marks](../api/marks.md)
@@ -146,7 +146,7 @@ Create a semantic bar mark and empty rect collection. [Marks](../api/marks.md)
 ### `createAreaMark`
 
 ```javascript
-createAreaMark({ id, data?, fill?, opacity?, stroke?, strokeWidth? })
+createAreaMark({ id?, data?, fill?, opacity?, stroke?, strokeWidth? } = {})
 ```
 
 Create a semantic area mark and empty path collection. Fixed fill defaults to

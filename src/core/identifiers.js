@@ -11,3 +11,18 @@ export function validateUserId(id, label = "ID") {
 
   return id;
 }
+
+export function resolveOptionalUserId(id, {
+  defaultId,
+  label = "ID",
+  operation,
+  ambiguous = false
+}) {
+  if (id !== undefined) return validateUserId(id, label);
+  if (ambiguous) {
+    throw new Error(
+      `${operation} requires an explicit ${label.toLowerCase()} because its default is ambiguous.`
+    );
+  }
+  return validateUserId(defaultId, label);
+}

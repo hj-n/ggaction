@@ -4,6 +4,7 @@ import { mapLinearValues, mapOrdinalValues } from "../../grammar/scales.js";
 import { validateUserId } from "../../core/identifiers.js";
 import {
   assertMarkAvailable,
+  resolveMarkId,
   resolveMarkData,
   validateMarkOptions
 } from "./shared.js";
@@ -37,7 +38,12 @@ const createLineMark = action(
   },
   function (args = {}) {
     validateMarkOptions(args, CREATE_OPTIONS, "createLineMark");
-    const id = validateUserId(args.id, "Line mark id");
+    const id = resolveMarkId(this, args.id, {
+      defaultId: "line",
+      label: "Line mark id",
+      markType: "line",
+      operation: "createLineMark"
+    });
     const { data } = resolveMarkData(this, args);
     const strokeWidth = validateStrokeWidth(
       args.strokeWidth ?? DEFAULT_LINE_WIDTH

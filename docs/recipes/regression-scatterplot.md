@@ -17,8 +17,8 @@ const program = chart()
     height: 480,
     margin: { top: 40, right: 190, bottom: 70, left: 80 }
   })
-  .createData({ id: "cars", values: cars })
-  .createPointMark({ id: "points" })
+  .createData({ values: cars })
+  .createPointMark()
   .encodeX({ field: "Displacement", scale: { nice: true, zero: false } })
   .encodeY({ field: "Acceleration", scale: { nice: true, zero: false } })
   .encodeColor({ field: "Origin", scale: { palette: "tableau10" } })

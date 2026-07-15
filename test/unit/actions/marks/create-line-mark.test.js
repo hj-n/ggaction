@@ -12,19 +12,19 @@ function dataProgram() {
 
 test("creates a semantic line mark and empty path collection", () => {
   const before = dataProgram();
-  const program = before.createLineMark({ id: "trends" });
+  const program = before.createLineMark();
 
   assert.deepEqual(program.semanticSpec.layers, [
-    { id: "trends", mark: { type: "line" }, data: "cars" }
+    { id: "line", mark: { type: "line" }, data: "cars" }
   ]);
-  assert.deepEqual(program.graphicSpec.objects.trends, {
+  assert.deepEqual(program.graphicSpec.objects.line, {
     type: "path",
     children: []
   });
   assert.equal(program.context.currentData, "cars");
-  assert.equal(program.context.currentMark, "trends");
+  assert.equal(program.context.currentMark, "line");
   assert.deepEqual(before.semanticSpec.layers, []);
-  assert.equal(before.graphicSpec.objects.trends, undefined);
+  assert.equal(before.graphicSpec.objects.line, undefined);
 
   const node = program.trace.children.at(-1);
   assert.equal(node.op, "createLineMark");
@@ -34,10 +34,11 @@ test("creates a semantic line mark and empty path collection", () => {
     "createGraphics"
   ]);
   assert.deepEqual(node.children[2].args, {
-    id: "trends",
+    id: "line",
     type: "path",
     length: 0
   });
+  assert.deepEqual(node.args, {});
 });
 
 test("uses an explicit dataset without changing currentData", () => {
@@ -94,6 +95,10 @@ test("validates line mark options, ids, data, and conflicts", () => {
   );
 
   const created = program.createLineMark({ id: "trends" });
+  assert.throws(
+    () => created.createLineMark(),
+    /requires an explicit line mark id because its default is ambiguous/
+  );
   assert.throws(
     () => created.createLineMark({ id: "trends" }),
     /already exists/

@@ -58,8 +58,8 @@ const program = chart()
     height: 400,
     margin: { top: 30, right: 30, bottom: 60, left: 70 }
   })
-  .createData({ id: "cars", values: cars })
-  .createPointMark({ id: "points" })
+  .createData({ values: cars })
+  .createPointMark()
   .encodeX({ field: "horsepower" })
   .encodeY({ field: "mpg" })
   .encodeColor({ field: "origin" })
@@ -74,7 +74,9 @@ const program = chart()
 
 `createPointMark` uses the most recently created dataset. Encoding actions use
 the most recently created mark. Pass `data` or `target` explicitly when a
-program contains more than one candidate. `createGuides` infers the applicable
+program contains more than one candidate. The first omitted dataset and point
+IDs are stored as `"data"` and `"point"`; name them explicitly only when a
+later multi-resource flow needs that identity. `createGuides` infers the applicable
 axes and horizontal grid from these point encodings. A nominal point color
 encoding can produce a composite categorical legend when a matching shape
 encoding is also present.

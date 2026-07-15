@@ -34,6 +34,7 @@ Apply these instructions to library source, public package entry points, and sou
 - Public actions accept meaningful option objects, such as `editXAxisLine({ lineWidth: 3 })`.
 - Every public action accepts one parameter object and returns a new `ChartProgram`.
 - Require only inputs that the user must decide and that cannot be inferred safely. User-facing actions should infer or default the remaining options whenever the stored program state determines them unambiguously.
+- Ordinary chart-authoring create actions may omit a user resource ID only when one documented deterministic role ID is unambiguous. Persist that resolved ID in semantic state, never invent numbered public-resource IDs, and require an explicit ID when the same role already exists. Advanced resource-assembly actions keep explicit IDs unless their own approved contract says otherwise.
 - Resolve omitted options in this order: an explicit option, a unique inference from stored semantic state, a documented library default, then an error when no safe decision remains. Never choose arbitrarily among multiple candidates.
 - Treat documented defaults and inference behavior as part of the public API contract. Cover them in user documentation and tests, and persist inferred semantic decisions in `semanticSpec`.
 - Use omission, an empty object, and `false` consistently in aggregate APIs: omission requests automatic applicability and inference, `{}` explicitly selects the component with inferred details, and `false` explicitly disables it.

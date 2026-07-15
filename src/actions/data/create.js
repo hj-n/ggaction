@@ -1,5 +1,5 @@
 import { action } from "../../core/action.js";
-import { validateUserId } from "../../core/identifiers.js";
+import { resolveOptionalUserId } from "../../core/identifiers.js";
 import { isPlainObject } from "../../core/immutable.js";
 import { validateKeys } from "../../core/validation.js";
 import { hasDataset } from "../../selectors/index.js";
@@ -10,7 +10,12 @@ export const createData = action(
   { op: "createData", description: "Create an immutable named dataset." },
   function (args = {}) {
     validateKeys(args, OPTIONS, "createData");
-    const id = validateUserId(args.id, "Dataset id");
+    const id = resolveOptionalUserId(args.id, {
+      defaultId: "data",
+      label: "Dataset id",
+      operation: "createData",
+      ambiguous: this.semanticSpec.datasets.length > 0
+    });
     if (!Array.isArray(args.values)) {
       throw new TypeError("createData requires values to be an array.");
     }

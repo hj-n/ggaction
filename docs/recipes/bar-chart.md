@@ -13,8 +13,8 @@ choice inside the bar chart, not a separate top-level chart type.
 ```javascript
 const program = chart()
   .createCanvas({ margin: { right: 140 } })
-  .createData({ id: "data", values })
-  .createBarMark({ id: "bars" })
+  .createData({ values })
+  .createBarMark()
   .encodeX({ field: "category", fieldType: "ordinal" })
   .encodeY({ field: "value", aggregate: "mean" })
   .encodeColor({ field: "group", layout: "group" })

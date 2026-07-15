@@ -624,16 +624,16 @@ export class ChartProgram {
 
   createCanvas(options?: CanvasOptions): ChartProgram;
   editCanvas(options: CanvasOptions): ChartProgram;
-  createData(options: { id: string; values: readonly unknown[] }): ChartProgram;
+  createData(options: { id?: string; values: readonly unknown[] }): ChartProgram;
   filterData(options: FilterDataOptions): ChartProgram;
   filterMark(options: FilterMarkOptions): ChartProgram;
   createDensityData(options: DensityDataOptions): ChartProgram;
   createRegressionData(options: RegressionDataOptions): ChartProgram;
 
-  createPointMark(options: { id: string; data?: string; shape?: PointShape }): ChartProgram;
+  createPointMark(options?: { id?: string; data?: string; shape?: PointShape }): ChartProgram;
   editPointMark(options: { target?: string; shape: PointShape }): ChartProgram;
-  createLineMark(options: {
-    id: string;
+  createLineMark(options?: {
+    id?: string;
     data?: string;
     strokeWidth?: number;
     curve?: CurveInterpolation;
@@ -643,9 +643,9 @@ export class ChartProgram {
     strokeWidth?: number;
     curve?: CurveInterpolation;
   }): ChartProgram;
-  createBarMark(options: { id: string; data?: string }): ChartProgram;
-  createAreaMark(options: {
-    id: string;
+  createBarMark(options?: { id?: string; data?: string }): ChartProgram;
+  createAreaMark(options?: {
+    id?: string;
     data?: string;
     fill?: string;
     opacity?: number;

@@ -12,8 +12,8 @@ const program = chart()
     height: 400,
     margin: { top: 30, right: 30, bottom: 60, left: 70 }
   })
-  .createData({ id: "cars", values: cars })
-  .createPointMark({ id: "points" })
+  .createData({ values: cars })
+  .createPointMark()
   .encodeX({ field: "Horsepower" })
   .encodeY({ field: "Miles_per_Gallon" })
   .encodeColor({ field: "Origin" })

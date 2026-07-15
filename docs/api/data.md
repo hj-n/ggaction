@@ -9,22 +9,21 @@ title: Data
 
 | Action | Shortest call | Inference/defaults | Result |
 | --- | --- | --- | --- |
-| `createData` | `createData({ id: "rows", values })` | No ID or value inference | Immutable semantic dataset and current-data context |
+| `createData` | `createData({ values })` | First dataset ID: `"data"`; values are required | Immutable semantic dataset and current-data context |
 | `filterData` | `filterData({ id: "selected", field, oneOf })` | Source: current dataset | Immutable derived dataset using one membership, comparison, or range filter |
 | `filterMark` | `filterMark({ field, oneOf })` | Target: current or unique mark; source and derived ID from target | Immutable derived dataset, mark rebind, and concrete rematerialization |
 | `createRegressionData` | `createRegressionData({ id: "fit", x, y })` | Source: current dataset; linear OLS; confidence `0.95` | Immutable derived predictions and mean-response interval |
 | `createDensityData` | `createDensityData({ id: "density", field })` | Source: current dataset; Gaussian/unit density; 100 steps; automatic bandwidth | Immutable KDE rows and density provenance |
 
-## `createData({ id, values })`
+## `createData({ id?, values })`
 
 | Option | Type | Required |
 | --- | --- | --- |
-| `id` | string containing letters, numbers, `_`, or `-` | yes |
+| `id` | string containing letters, numbers, `_`, or `-` | no; first dataset defaults to `"data"` |
 | `values` | array of plain row objects | yes |
 
 ```javascript
 const program = chart().createData({
-  id: "cars",
   values: [
     { horsepower: 130, mpg: 18 },
     { horsepower: 165, mpg: 15 }
@@ -34,7 +33,10 @@ const program = chart().createData({
 
 Empty arrays are valid, and row properties may contain nested arrays or
 objects. The action copies and freezes the supplied data. A dataset ID cannot
-be created twice, and source values cannot be replaced after creation.
+be created twice, and source values cannot be replaced after creation. The
+first omitted ID is stored as `"data"`. Once any dataset exists, another
+`createData` call must provide an explicit ID; the library does not invent
+`data2`-style names.
 
 The most recently created dataset becomes the default for `createPointMark`,
 `createLineMark`, or `createBarMark`. Creating data records semantic state only

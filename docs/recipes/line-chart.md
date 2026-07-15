@@ -10,8 +10,8 @@ title: Line Chart Recipe
 ```javascript
 const program = chart()
   .createCanvas({ margin: { right: 140 } })
-  .createData({ id: "data", values })
-  .createLineMark({ id: "lines" })
+  .createData({ values })
+  .createLineMark()
   .encodeX({ field: "date", fieldType: "temporal" })
   .encodeY({ field: "value", aggregate: "mean" })
   .createGuides();

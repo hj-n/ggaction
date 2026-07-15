@@ -1,4 +1,7 @@
-import { validateUserId } from "../../core/identifiers.js";
+import {
+  resolveOptionalUserId,
+  validateUserId
+} from "../../core/identifiers.js";
 import { findDataset } from "../../selectors/datasets.js";
 import { hasLayer } from "../../selectors/layers.js";
 
@@ -26,6 +29,25 @@ export function resolveMarkData(program, requested) {
   }
 
   return { data, dataset };
+}
+
+export function resolveMarkId(program, requested, {
+  defaultId,
+  label,
+  markType,
+  operation
+}) {
+  const sameRoleExists = program.semanticSpec.layers.some(
+    layer => layer.mark?.type === markType
+  );
+  const defaultUnavailable = hasLayer(program, defaultId) ||
+    program.graphicSpec.objects[defaultId] !== undefined;
+  return resolveOptionalUserId(requested, {
+    defaultId,
+    label,
+    operation,
+    ambiguous: sameRoleExists || defaultUnavailable
+  });
 }
 
 export function assertMarkAvailable(program, id) {

@@ -10,8 +10,8 @@ title: Histogram Recipe
 ```javascript
 const program = chart()
   .createCanvas({ margin: { right: 140 } })
-  .createData({ id: "data", values })
-  .createBarMark({ id: "bars" })
+  .createData({ values })
+  .createBarMark()
   .encodeHistogram({ field: "value" })
   .createGuides();
 ```

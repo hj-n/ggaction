@@ -8,21 +8,22 @@ test("creates a point mark from currentData with default circle shape", () => {
     id: "cars",
     values: [{ x: 1 }, { x: 2 }]
   });
-  const program = withData.createPointMark({ id: "points" });
+  const program = withData.createPointMark();
 
   assert.deepEqual(withData.semanticSpec.layers, []);
   assert.deepEqual(program.semanticSpec.layers, [
-    { id: "points", mark: { type: "point" }, data: "cars" }
+    { id: "point", mark: { type: "point" }, data: "cars" }
   ]);
-  assert.deepEqual(program.graphicSpec.objects.points, {
+  assert.deepEqual(program.graphicSpec.objects.point, {
     type: "circle",
     children: [
-      { id: "points:0", properties: {} },
-      { id: "points:1", properties: {} }
+      { id: "point:0", properties: {} },
+      { id: "point:1", properties: {} }
     ]
   });
   assert.equal(program.context.currentData, "cars");
-  assert.equal(program.context.currentMark, "points");
+  assert.equal(program.context.currentMark, "point");
+  assert.deepEqual(program.trace.children.at(-1).args, {});
 });
 
 test("uses an explicit dataset without changing currentData", () => {
@@ -114,6 +115,10 @@ test("rejects invalid options and semantic or graphical duplicates", () => {
   );
 
   const withMark = withData.createPointMark({ id: "points" });
+  assert.throws(
+    () => withMark.createPointMark(),
+    /requires an explicit point mark id because its default is ambiguous/
+  );
   assert.throws(
     () => withMark.createPointMark({ id: "points" }),
     /Mark "points" already exists/

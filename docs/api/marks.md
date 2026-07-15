@@ -9,25 +9,25 @@ title: Marks
 
 | Action | Shortest call | Inference/defaults | Initial graphic |
 | --- | --- | --- | --- |
-| `createPointMark` | `createPointMark({ id: "points" })` | Current dataset; circle shape | Empty/concrete point collection |
+| `createPointMark` | `createPointMark()` | ID `"point"`; current dataset; circle shape | Empty/concrete point collection |
 | `editPointMark` | `editPointMark({ shape: "diamond" })` | Current or unique point mark | Rematerialized equal-area symbols |
-| `createLineMark` | `createLineMark({ id: "lines" })` | Current dataset; linear curve | Empty path collection |
+| `createLineMark` | `createLineMark()` | ID `"line"`; current dataset; linear curve | Empty path collection |
 | `editLineMark` | `editLineMark({ curve: "monotone" })` | Current or unique line mark | Rematerialized path commands |
-| `createBarMark` | `createBarMark({ id: "bars" })` | Current dataset | Empty rect collection |
-| `createAreaMark` | `createAreaMark({ id: "band" })` | Current dataset; blue fill; opacity `0.2` | Empty path collection |
+| `createBarMark` | `createBarMark()` | ID `"bar"`; current dataset | Empty rect collection |
+| `createAreaMark` | `createAreaMark()` | ID `"area"`; current dataset; blue fill; opacity `0.2` | Empty path collection |
 
-## `createPointMark({ id, data?, shape? })`
+## `createPointMark({ id?, data?, shape? } = {})`
 
 | Option | Type | Default |
 | --- | --- | --- |
-| `id` | valid user-defined ID | required |
+| `id` | valid user-defined ID | first point mark defaults to `"point"` |
 | `data` | existing dataset ID | current dataset |
 | `shape` | supported point shape | `"circle"` |
 
 ```javascript
 const program = chart()
-  .createData({ id: "cars", values: cars })
-  .createPointMark({ id: "points" });
+  .createData({ values: cars })
+  .createPointMark();
 ```
 
 The semantic mark type is `point`; a fixed shape is graphical appearance.
@@ -39,6 +39,10 @@ size, and fill properties.
 
 Point creation does not assign a coordinate or scale. Position encodings create
 and attach the appropriate semantic coordinate when needed.
+
+The first omitted mark ID uses its semantic role: `"point"`, `"line"`,
+`"bar"`, or `"area"`. A second mark of the same type requires an explicit ID.
+This keeps simple chains concise without creating hidden numbered resources.
 
 ## `editPointMark({ target?, shape })`
 
@@ -57,7 +61,7 @@ triangles, `plus`, `cross`, `star`, `hexagon`, and `wye`. All recipes preserve
 the same logical target area. A constant edit is rejected when the mark already
 has a field-driven shape encoding.
 
-## `createAreaMark({ id, data?, fill?, opacity?, stroke?, strokeWidth? })`
+## `createAreaMark({ id?, data?, fill?, opacity?, stroke?, strokeWidth? } = {})`
 
 Create a semantic area mark backed by an initially empty path collection.
 `data` defaults to current data, `fill` defaults to `"#4c78a8"`, and opacity
@@ -92,19 +96,19 @@ requires an active outline. Constant `fill` cannot replace a field-driven color
 encoding, while opacity and outline remain independently editable. Complete
 areas rematerialize immediately; incomplete areas retain the graphical config.
 
-## `createLineMark({ id, data?, strokeWidth?, curve? })`
+## `createLineMark({ id?, data?, strokeWidth?, curve? } = {})`
 
 | Option | Type | Default |
 | --- | --- | --- |
-| `id` | valid user-defined ID | required |
+| `id` | valid user-defined ID | first line mark defaults to `"line"` |
 | `data` | existing dataset ID | current dataset |
 | `strokeWidth` | non-negative finite number | materializer default `2` |
 | `curve` | supported curve interpolation | `"linear"` |
 
 ```javascript
 const program = chart()
-  .createData({ id: "cars", values: cars })
-  .createLineMark({ id: "trends" });
+  .createData({ values: cars })
+  .createLineMark();
 ```
 
 The semantic mark type is `line`. Its graphical realization starts as an empty
@@ -112,7 +116,7 @@ The semantic mark type is `line`. Its graphical realization starts as an empty
 encodings rather than raw dataset length.
 
 ```javascript
-program.graphicSpec.objects.trends;
+program.graphicSpec.objects.line;
 // { type: "path", children: [] }
 ```
 
@@ -147,17 +151,17 @@ const smooth = program.editLineMark({
 immediately; an incomplete line retains the choice until its encodings make it
 renderable. Canvas resizing and later series regrouping preserve both settings.
 
-## `createBarMark({ id, data? })`
+## `createBarMark({ id?, data? } = {})`
 
 | Option | Type | Default |
 | --- | --- | --- |
-| `id` | valid user-defined ID | required |
+| `id` | valid user-defined ID | first bar mark defaults to `"bar"` |
 | `data` | existing dataset ID | current dataset |
 
 ```javascript
 const program = chart()
-  .createData({ id: "cars", values: cars })
-  .createBarMark({ id: "bars" });
+  .createData({ values: cars })
+  .createBarMark();
 ```
 
 The semantic mark type is `bar`. Its graphical realization starts as an empty
@@ -165,7 +169,7 @@ The semantic mark type is `bar`. Its graphical realization starts as an empty
 determine the eventual rectangle count.
 
 ```javascript
-program.graphicSpec.objects.bars;
+program.graphicSpec.objects.bar;
 // { type: "rect", children: [] }
 ```
 
@@ -182,8 +186,10 @@ and diverging separates positive and negative accumulation.
 
 ## Errors and limitations
 
-Mark IDs must be unique and the selected dataset must exist. Current semantic
-marks are point, line, bar, and area; additional mark types are not implemented.
+Mark IDs must be unique and the selected dataset must exist. If a mark type
+already exists, another mark of that type requires an explicit ID. Current
+semantic marks are point, line, bar, and area; additional mark types are not
+implemented.
 
 ## Related
 

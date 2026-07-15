@@ -1,7 +1,7 @@
 import { action } from "../../../core/action.js";
-import { validateUserId } from "../../../core/identifiers.js";
 import {
   assertMarkAvailable,
+  resolveMarkId,
   resolveMarkData,
   validateMarkOptions
 } from "../shared.js";
@@ -15,7 +15,12 @@ export const createBarMark = action(
   },
   function (args = {}) {
     validateMarkOptions(args, CREATE_OPTIONS, "createBarMark");
-    const id = validateUserId(args.id, "Bar mark id");
+    const id = resolveMarkId(this, args.id, {
+      defaultId: "bar",
+      label: "Bar mark id",
+      markType: "bar",
+      operation: "createBarMark"
+    });
     const { data } = resolveMarkData(this, args);
 
     assertMarkAvailable(this, id);

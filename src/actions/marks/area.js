@@ -8,6 +8,7 @@ import {
 import { mapLinearValues, mapOrdinalValues } from "../../grammar/scales.js";
 import {
   assertMarkAvailable,
+  resolveMarkId,
   resolveMarkData,
   validateMarkOptions
 } from "./shared.js";
@@ -63,7 +64,12 @@ const createAreaMark = action(
   },
   function (args = {}) {
     validateMarkOptions(args, CREATE_OPTIONS, "createAreaMark");
-    const id = validateUserId(args.id, "Area mark id");
+    const id = resolveMarkId(this, args.id, {
+      defaultId: "area",
+      label: "Area mark id",
+      markType: "area",
+      operation: "createAreaMark"
+    });
     const { data } = resolveMarkData(this, args);
     const fill = validateAreaFill(args.fill ?? DEFAULT_COLORS.mark);
     const opacity = validateAreaOpacity(args.opacity ?? 0.2);

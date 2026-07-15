@@ -32,6 +32,23 @@ test("creates an immutable dataset and updates currentData", () => {
   );
 });
 
+test("infers one stable dataset id and requires a name after that", () => {
+  const first = chart().createData({ values: [{ x: 1 }] });
+
+  assert.equal(first.semanticSpec.datasets[0].id, "data");
+  assert.equal(first.context.currentData, "data");
+  assert.deepEqual(first.trace.children[0].args, { valuesCount: 1 });
+  assert.throws(
+    () => first.createData({ values: [] }),
+    /requires an explicit dataset id because its default is ambiguous/
+  );
+  assert.deepEqual(
+    first.createData({ id: "other", values: [] })
+      .semanticSpec.datasets.map(dataset => dataset.id),
+    ["data", "other"]
+  );
+});
+
 test("records lightweight nested data actions", () => {
   const program = chart().createData({
     id: "cars",

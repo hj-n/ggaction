@@ -79,29 +79,31 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 
 ## `createData`
 
-- Signature: `createData({ id, values })`
+- Signature: `createData({ id?, values })`
 - `id`
-  - Status: Implemented. 필수 user-defined ID다. 지원 문자 규칙을 통과하고 기존 dataset과
-    중복되지 않아야 한다.
+  - Status: Implemented. Optional user-defined ID다. 첫 dataset에서 생략하면 deterministic role ID
+    `"data"`를 사용한다. Dataset이 이미 있으면 생략은 ambiguous하므로 explicit ID가 필요하다.
+    명시한 ID는 지원 문자 규칙을 통과하고 기존 dataset과 중복되지 않아야 한다.
   - Effect: `semanticSpec.datasets`의 key 역할을 하며 성공 후 current data가 된다.
 - `values`
   - Status: Implemented. 필수 array이며 각 row는 plain object여야 한다. 빈 배열, nested array,
     object-valued cell은 허용한다.
   - Effect: caller-owned 값을 deep clone/freeze하여 immutable source dataset으로 저장한다.
     graphic output은 만들지 않는다.
-- 오류: missing/invalid ID, non-array, non-object row와 duplicate dataset을 거부한다.
+- 오류: ambiguous omitted ID, invalid/duplicate ID, non-array와 non-object row를 거부한다.
 - Coverage: `test/unit/actions/data/create-data.test.js`가 empty/multiple data, ownership,
   trace summary, invalid values와 duplicates를 검증한다.
 
 ### Formal values — `createData`
 
-- Implemented: `createData({ id: UserId; values: readonly Record<string, unknown>[] })`
+- Implemented: `createData({ id?: UserId; values: readonly Record<string, unknown>[] })`; 첫 unnamed source는
+  `"data"`를 저장하고 이후 source는 explicit ID가 필요하다.
 - Proposed (NOT IMPLEMENTED): `{ values: AsyncIterable<Record<string, unknown>> | Readonly<Record<FieldName, readonly unknown[]>> }`
 
 ### Value coverage — `createData`
 
 - `id`
-  - ✅ Covered: valid custom ID, empty/malformed ID, duplicate ID.
+  - ✅ Covered: omission→`"data"`, valid custom ID, second unnamed ambiguity, empty/malformed ID, duplicate ID.
   - No proposal: ID vocabulary는 user-defined 상태를 유지한다.
 - `values`
   - ✅ Covered: empty/non-empty array, multiple datasets, plain-object rows, caller ownership/immutability.

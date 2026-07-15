@@ -483,12 +483,18 @@ test("keeps accepted planned capabilities linked and non-public", () => {
 });
 
 test("keeps implemented and planned formal values distinct", () => {
+  const data = owningSection("createData").source;
+  assert.match(data, /id\?: UserId/);
+  assert.match(data, /첫 unnamed source는\s+`"data"`/);
+
   const encodeY = owningSection("encodeY").source;
   assert.match(encodeY, /aggregate\?: AggregateOperation/);
   assert.match(encodeY, /op: "quantile"; probability: UnitInterval/);
   assert.match(encodeY, /op: "first" \| "last";[\s\S]*orderBy: FieldName/);
 
   const point = owningSection("createPointMark").source;
+  assert.match(point, /id\?: UserId/);
+  assert.match(point, /omission→`"point"`/);
   assert.match(point, /shape\?: PointShape/);
   assert.doesNotMatch(point, /shape\?: "circle" \| "square"/);
 });

@@ -52,6 +52,9 @@ are internal operations.
 - Renderers read graphicSpec only.
 - Omitted values are resolved as explicit option, unique inference, documented
   default, then an error when no safe choice exists.
+- The first unnamed source dataset is stored as `"data"`; the first unnamed
+  point, line, bar, or area mark uses its type name. Repeated roles require an
+  explicit ID rather than receiving an automatic numeric suffix.
 
 ## Current scope
 

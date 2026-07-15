@@ -12,19 +12,19 @@ function dataProgram() {
 
 test("creates a semantic bar mark and empty rect collection", () => {
   const before = dataProgram();
-  const program = before.createBarMark({ id: "bars" });
+  const program = before.createBarMark();
 
   assert.deepEqual(program.semanticSpec.layers, [
-    { id: "bars", mark: { type: "bar" }, data: "cars" }
+    { id: "bar", mark: { type: "bar" }, data: "cars" }
   ]);
-  assert.deepEqual(program.graphicSpec.objects.bars, {
+  assert.deepEqual(program.graphicSpec.objects.bar, {
     type: "rect",
     children: []
   });
   assert.equal(program.context.currentData, "cars");
-  assert.equal(program.context.currentMark, "bars");
+  assert.equal(program.context.currentMark, "bar");
   assert.deepEqual(before.semanticSpec.layers, []);
-  assert.equal(before.graphicSpec.objects.bars, undefined);
+  assert.equal(before.graphicSpec.objects.bar, undefined);
 
   const node = program.trace.children.at(-1);
   assert.equal(node.op, "createBarMark");
@@ -34,10 +34,11 @@ test("creates a semantic bar mark and empty rect collection", () => {
     "createGraphics"
   ]);
   assert.deepEqual(node.children[2].args, {
-    id: "bars",
+    id: "bar",
     type: "rect",
     length: 0
   });
+  assert.deepEqual(node.args, {});
 });
 
 test("uses an explicit dataset without changing currentData", () => {
@@ -76,6 +77,10 @@ test("validates bar mark options, ids, data, and conflicts", () => {
   );
 
   const created = program.createBarMark({ id: "bars" });
+  assert.throws(
+    () => created.createBarMark(),
+    /requires an explicit bar mark id because its default is ambiguous/
+  );
   assert.throws(
     () => created.createBarMark({ id: "bars" }),
     /already exists/
