@@ -19,7 +19,7 @@ encoding reassignment의 선행 조건으로 Phase 1의 첫 implementation slice
 - [x] Phase 4 — 기존 density/regression variants
 - [x] Phase 5 — 기존 guide/layout variants
 - [x] Phase 6 — 신규 error-bar chart
-- [ ] Phase 7 — 신규 error-band chart와 regression delegation
+- [x] Phase 7 — 신규 error-band chart와 regression delegation
 - [ ] Phase 8 — 신규 box-plot chart
 - [ ] Phase 9 — 신규 selected-row chart
 - [ ] Phase 10 — 신규 transformed-scale chart

@@ -22,7 +22,7 @@ Complete chart contract:
 - [x] Cars horizontal primitive 승인과 horizontal ranged-area implementation
 - [x] Curved boundary primitive 승인과 full option/rematerialization implementation
 - [x] Regression band delegation compatibility
-- [ ] Public docs, contract promotion, gallery와 Phase closeout
+- [x] Public docs, contract promotion, gallery와 Phase closeout
 
 ## 구현 범위
 
@@ -74,7 +74,8 @@ Gate STEP은 raw primitives, independent target values, executable target call-c
 
 ## 완료 조건
 
-- Three approved primitive/public pairs match semantic state, graphics, order, Canvas calls and decoded pixels.
+- Three visual Gates produced four approved primitive/public pairs that match semantic state, graphics, order,
+  Canvas calls and decoded pixels.
 - Cars and Gapminder independent numeric oracles do not import production interval calculations.
 - Omitted IDs/resources resolve deterministically and every inferred resource is persisted.
 - Range/scale/Canvas/data/style edits rematerialize all area and boundary consumers in stable order.
