@@ -43,6 +43,11 @@ const server = createServer(async (request, response) => {
 await new Promise(resolve => server.listen(0, "127.0.0.1", resolve));
 const { port } = server.address();
 const baseUrl = `http://127.0.0.1:${port}/ggaction/`;
+const imageManifest = JSON.parse(await readFile(
+  path.join(siteRoot, "assets/images/manifest.json"),
+  "utf8"
+));
+const expectedChartCount = Object.keys(imageManifest.charts).length;
 await mkdir(artifactRoot, { recursive: true });
 
 async function files(directory) {
@@ -117,9 +122,18 @@ try {
   const response = await desktop.goto(baseUrl, { waitUntil: "networkidle" });
   assert.equal(response.ok(), true);
   assert.equal(await desktop.locator(".docs-topnav a").count(), 4);
-  assert.equal(await desktop.locator(".docs-chart-gallery article").count(), 6);
-  assert.equal(await desktop.locator(".docs-chart-gallery__image").count(), 6);
-  assert.equal(await desktop.locator(".docs-chart-gallery__title").count(), 6);
+  assert.equal(
+    await desktop.locator(".docs-chart-gallery article").count(),
+    expectedChartCount
+  );
+  assert.equal(
+    await desktop.locator(".docs-chart-gallery__image").count(),
+    expectedChartCount
+  );
+  assert.equal(
+    await desktop.locator(".docs-chart-gallery__title").count(),
+    expectedChartCount
+  );
   assert.equal(
     await desktop.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth),
     false
