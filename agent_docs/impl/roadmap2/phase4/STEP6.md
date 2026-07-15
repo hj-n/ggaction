@@ -13,8 +13,8 @@ primitives로 고정한다.
 - [x] Empty/incompatible row policy target
 - [x] Expanded target call-chain metadata
 - [x] Browser와 2× primitive PNG 생성
-- [ ] Gate C 사용자 visual confirmation
-- [ ] Feedback, status, commit와 push
+- [x] Gate C 사용자 visual confirmation
+- [x] Feedback, status, commit와 push
 
 ## Gate C 대상
 
@@ -25,6 +25,10 @@ primitives로 고정한다.
   field value를 제외한다. Inclusive range는 실제 lower endpoint row를 포함한다.
 - Primitive trace에는 향후 public `filterData` comparison/range call이 없으며, gallery metadata에만 목표
   user-facing chain을 표시한다.
+
+## Gate C 결과
+
+- 두 primitive 모두 수정 없이 승인되었다.
 
 ## 완료 조건
 
