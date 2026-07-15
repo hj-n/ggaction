@@ -14,7 +14,7 @@ compatibility를 구현한다.
 ## 진행 상태
 
 - [x] Phase 3 범위, variant와 approval gate 확정
-- [ ] 두 canonical baseline audit와 gallery pair
+- [x] 두 canonical baseline audit와 gallery pair
 - [ ] Histogram bin/reassignment primitive 승인과 public implementation
 - [ ] Normalized stack/color layout primitive 승인과 public implementation
 - [ ] Bar width/padding/reassignment primitive 승인과 public implementation
