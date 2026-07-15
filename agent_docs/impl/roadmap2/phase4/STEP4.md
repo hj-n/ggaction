@@ -14,8 +14,8 @@ Epanechnikov kernel, count normalization과 density revision의 numeric/graphic 
 - [x] Scale/path/axes/grid rematerialization target
 - [x] Expanded target call-chain metadata
 - [x] Browser와 2× primitive PNG 생성
-- [ ] Gate B 사용자 visual confirmation
-- [ ] Feedback 반영과 gate closeout commit/push
+- [x] Gate B 사용자 visual confirmation
+- [x] Feedback 반영과 gate closeout commit/push
 
 ## 완료 조건
 
@@ -31,4 +31,6 @@ Epanechnikov kernel, count normalization과 density revision의 numeric/graphic 
   포함하지 않는다.
 
 검증은 `npm test` 664개와 `npm run test:render` 196개를 통과했다. Roadmap 2 gallery는 세 target을
-포함한 41개 variant를 desktop/mobile browser에서 확인했으며 Gate B 승인을 기다린다.
+포함한 41개 variant를 desktop/mobile browser에서 확인했다.
+
+Gate B는 세 target 모두 수정 없이 승인되었다.
