@@ -7,6 +7,7 @@ import {
   createDiamondPrimitiveValues,
   createEncodingReassignmentPrimitiveValues,
   createFieldOpacityPrimitiveValues,
+  createMirroredAxesPrimitiveValues,
   createScaleReversePrimitiveValues,
   createShapeVocabularyPrimitiveValues
 } from "./reference-values.js";
@@ -214,6 +215,50 @@ export function createScaleReversePrimitives(cars) {
       property: "x",
       value: values.xTicks
     });
+}
+
+export function createMirroredAxesPrimitives(cars) {
+  const values = createMirroredAxesPrimitiveValues(cars);
+  const { bounds, xTicks, yTicks } = values.baseline;
+
+  return createCarsScatterplotPrimitives(cars)
+    .editSemantic({ property: "scale[x].range", value: [bounds.left, bounds.right] })
+    .editSemantic({ property: "scale[y].range", value: [bounds.bottom, bounds.top] })
+    .editGraphics({ target: "horizontalGridLines", property: "x1", value: bounds.left })
+    .editGraphics({ target: "horizontalGridLines", property: "y1", value: yTicks.positions })
+    .editGraphics({ target: "horizontalGridLines", property: "x2", value: bounds.right })
+    .editGraphics({ target: "horizontalGridLines", property: "y2", value: yTicks.positions })
+    .editGraphics({ target: "points", property: "x", value: values.baseline.x })
+    .editGraphics({ target: "points", property: "y", value: values.baseline.y })
+    .editGraphics({ target: "xAxisLine", property: "x1", value: bounds.left })
+    .editGraphics({ target: "xAxisLine", property: "y1", value: bounds.top })
+    .editGraphics({ target: "xAxisLine", property: "x2", value: bounds.right })
+    .editGraphics({ target: "xAxisLine", property: "y2", value: bounds.top })
+    .editGraphics({ target: "yAxisLine", property: "x1", value: bounds.right })
+    .editGraphics({ target: "yAxisLine", property: "y1", value: bounds.bottom })
+    .editGraphics({ target: "yAxisLine", property: "x2", value: bounds.right })
+    .editGraphics({ target: "yAxisLine", property: "y2", value: bounds.top })
+    .editGraphics({ target: "xAxisTicks", property: "x1", value: xTicks.positions })
+    .editGraphics({ target: "xAxisTicks", property: "y1", value: bounds.top })
+    .editGraphics({ target: "xAxisTicks", property: "x2", value: xTicks.positions })
+    .editGraphics({ target: "xAxisTicks", property: "y2", value: bounds.top - 6 })
+    .editGraphics({ target: "yAxisTicks", property: "x1", value: bounds.right })
+    .editGraphics({ target: "yAxisTicks", property: "y1", value: yTicks.positions })
+    .editGraphics({ target: "yAxisTicks", property: "x2", value: bounds.right + 6 })
+    .editGraphics({ target: "yAxisTicks", property: "y2", value: yTicks.positions })
+    .editGraphics({ target: "xAxisLabels", property: "x", value: xTicks.positions })
+    .editGraphics({ target: "xAxisLabels", property: "y", value: bounds.top - 12 })
+    .editGraphics({ target: "xAxisLabels", property: "text", value: values.xLabels })
+    .editGraphics({ target: "xAxisLabels", property: "textBaseline", value: "bottom" })
+    .editGraphics({ target: "yAxisLabels", property: "x", value: bounds.right + 12 })
+    .editGraphics({ target: "yAxisLabels", property: "y", value: yTicks.positions })
+    .editGraphics({ target: "yAxisLabels", property: "text", value: values.yLabels })
+    .editGraphics({ target: "yAxisLabels", property: "textAlign", value: "left" })
+    .editGraphics({ target: "xAxisTitle", property: "x", value: values.xTitle.x })
+    .editGraphics({ target: "xAxisTitle", property: "y", value: values.xTitle.y })
+    .editGraphics({ target: "yAxisTitle", property: "x", value: values.yTitle.x })
+    .editGraphics({ target: "yAxisTitle", property: "y", value: values.yTitle.y })
+    .editGraphics({ target: "yAxisTitle", property: "rotation", value: Math.PI / 2 });
 }
 
 export function createPointShapeDiamondPrimitives(cars) {

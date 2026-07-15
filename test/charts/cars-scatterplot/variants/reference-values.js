@@ -194,6 +194,34 @@ export function createScaleReversePrimitiveValues(cars) {
   });
 }
 
+export function createMirroredAxesPrimitiveValues(cars) {
+  const layout = Object.freeze({
+    width: 640,
+    height: 400,
+    margin: Object.freeze({ top: 80, right: 90, bottom: 30, left: 30 })
+  });
+  const baseline = createCarsScatterplotPrimitiveValues(cars, layout);
+
+  return Object.freeze({
+    layout,
+    baseline,
+    xLabels: Object.freeze(
+      baseline.xTicks.values.map(value => value.toFixed(1))
+    ),
+    yLabels: Object.freeze(
+      baseline.yTicks.values.map(value => value.toFixed(1))
+    ),
+    xTitle: Object.freeze({
+      x: (baseline.bounds.left + baseline.bounds.right) / 2,
+      y: 18
+    }),
+    yTitle: Object.freeze({
+      x: 620,
+      y: (baseline.bounds.top + baseline.bounds.bottom) / 2
+    })
+  });
+}
+
 export function createDiamondPrimitiveValues(cars) {
   const baseline = createCarsScatterplotPrimitiveValues(cars);
   const area = Math.PI * 3 ** 2;

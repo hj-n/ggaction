@@ -19,6 +19,7 @@ import {
   createContinuousColorPrimitives,
   createEncodingReassignmentPrimitives,
   createFieldOpacityPrimitives,
+  createMirroredAxesPrimitives,
   createPointShapeDiamondPrimitives,
   createScaleReversePrimitives,
   createShapeVocabularyPrimitives
@@ -32,6 +33,7 @@ import {
   createDiamondPrimitiveValues,
   createEncodingReassignmentPrimitiveValues,
   createFieldOpacityPrimitiveValues,
+  createMirroredAxesPrimitiveValues,
   createScaleReversePrimitiveValues,
   createShapeVocabularyPrimitiveValues
 } from "./reference-values.js";
@@ -54,6 +56,33 @@ function graphicArea(graphic) {
   }
   return polygonArea(linearCommandPoints(graphic.properties.commands));
 }
+
+test("authors mirrored axes and fixed-decimal labels as raw primitives", () => {
+  const values = createMirroredAxesPrimitiveValues(cars);
+  const program = createMirroredAxesPrimitives(cars);
+  const { bounds } = values.baseline;
+  const xLine = program.graphicSpec.objects.xAxisLine.properties;
+  const yLine = program.graphicSpec.objects.yAxisLine.properties;
+  const xTicks = program.graphicSpec.objects.xAxisTicks.children;
+  const yTicks = program.graphicSpec.objects.yAxisTicks.children;
+  const xLabels = program.graphicSpec.objects.xAxisLabels.children;
+  const yLabels = program.graphicSpec.objects.yAxisLabels.children;
+
+  assert.deepEqual(bounds, { left: 30, right: 550, top: 80, bottom: 370 });
+  assert.deepEqual([xLine.x1, xLine.y1, xLine.x2, xLine.y2], [30, 80, 550, 80]);
+  assert.deepEqual([yLine.x1, yLine.y1, yLine.x2, yLine.y2], [550, 370, 550, 80]);
+  assert.equal(xTicks.every(tick => tick.properties.y2 < tick.properties.y1), true);
+  assert.equal(yTicks.every(tick => tick.properties.x2 > tick.properties.x1), true);
+  assert.deepEqual(xLabels.map(label => label.properties.text), values.xLabels);
+  assert.deepEqual(yLabels.map(label => label.properties.text), values.yLabels);
+  assert.equal(xLabels.every(label => label.properties.textBaseline === "bottom"), true);
+  assert.equal(yLabels.every(label => label.properties.textAlign === "left"), true);
+  assert.equal(program.graphicSpec.objects.xAxisTitle.properties.rotation, 0);
+  assert.equal(program.graphicSpec.objects.yAxisTitle.properties.rotation, Math.PI / 2);
+  assert.equal(program.trace.children.every(node =>
+    ["editSemantic", "createGraphics", "editGraphics"].includes(node.op)
+  ), true);
+});
 
 test("derives reversed positions without changing the baseline domain", () => {
   const values = createScaleReversePrimitiveValues(cars);

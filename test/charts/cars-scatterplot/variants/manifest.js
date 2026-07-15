@@ -16,6 +16,7 @@ import {
   createContinuousColorPrimitives,
   createEncodingReassignmentPrimitives,
   createFieldOpacityPrimitives,
+  createMirroredAxesPrimitives,
   createPointShapeDiamondPrimitives,
   createScaleReversePrimitives,
   createShapeVocabularyPrimitives
@@ -52,6 +53,44 @@ const baselineArtifact = Object.freeze({
 });
 
 const scatterArtifacts = Object.freeze([
+  Object.freeze({
+    artifact: Object.freeze({
+      roadmap: "roadmap2",
+      chart: "cars-scatterplot",
+      variant: "mirrored-axes-format",
+      title: "Top X and Right Y Axes",
+      userFacingCallChain: `chart()
+  .createCanvas({
+    width: 640,
+    height: 400,
+    margin: { top: 80, right: 90, bottom: 30, left: 30 }
+  })
+  .createData({ id: "cars", values: rows })
+  .createPointMark({ id: "points" })
+  .encodeX({ field: "Horsepower" })
+  .encodeY({ field: "Miles_per_Gallon" })
+  .encodeColor({ field: "Origin" })
+  .encodeRadius({ value: 3 })
+  .createGuides({
+    axes: {
+      x: {
+        position: "top",
+        labels: { format: ".1f" },
+        title: { text: "Horsepower" }
+      },
+      y: {
+        position: "right",
+        labels: { format: ".1f" },
+        title: { text: "Miles per Gallon" }
+      }
+    }
+  });`
+    }),
+    primitive: createMirroredAxesPrimitives(cars),
+    width: 640,
+    height: 400,
+    colors: ["#4c78a8", "#f58518", "#e45756"]
+  }),
   Object.freeze({
     artifact: Object.freeze({
       roadmap: "roadmap2",
@@ -302,6 +341,33 @@ const PLOT_REGION = Object.freeze([Object.freeze({
   minimumInkPixels: 50
 })]);
 
+const MIRRORED_REGIONS = Object.freeze([
+  Object.freeze({
+    name: "plot",
+    x: 30,
+    y: 80,
+    width: 520,
+    height: 290,
+    minimumInkPixels: 50
+  }),
+  Object.freeze({
+    name: "top-axis",
+    x: 20,
+    y: 5,
+    width: 540,
+    height: 75,
+    minimumInkPixels: 20
+  }),
+  Object.freeze({
+    name: "right-axis",
+    x: 550,
+    y: 60,
+    width: 90,
+    height: 310,
+    minimumInkPixels: 20
+  })
+]);
+
 function fromArtifact(entry) {
   return defineVisualVariant({
     chart: "cars-scatterplot",
@@ -313,7 +379,9 @@ function fromArtifact(entry) {
     width: entry.width,
     height: entry.height,
     colors: entry.colors,
-    regions: PLOT_REGION
+    regions: entry.artifact.variant === "mirrored-axes-format"
+      ? MIRRORED_REGIONS
+      : PLOT_REGION
   });
 }
 
