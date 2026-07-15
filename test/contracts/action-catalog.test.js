@@ -197,6 +197,7 @@ test("keeps primitives and internal wrapped actions in separate layers", () => {
     "createSizeLegend"
   ]);
   assert.deepEqual(index.internal.stateTransitions, ["releaseDerivedData"]);
+  assert.deepEqual(index.internal.aggregateComponents, ["createErrorBarCap"]);
   assert.equal(runtime.includes("createLegendSymbols"), true);
   assert.equal(runtime.includes("createCategoricalLegend"), true);
   assert.equal(runtime.includes("createSizeLegend"), true);
@@ -208,6 +209,7 @@ test("keeps primitives and internal wrapped actions in separate layers", () => {
     ...index.internal.materialization,
     ...index.internal.guideComponents,
     ...index.internal.stateTransitions,
+    ...index.internal.aggregateComponents,
     "createLegendSymbols"
   ]) {
     assert.equal(declared.has(name), false, name);
@@ -220,8 +222,6 @@ test("keeps planned direct actions and reassignment gaps explicit", () => {
   assert.deepEqual(new Set(names), new Set([
     "createBoxPlot",
     "createErrorBand",
-    "createErrorBar",
-    "createIntervalData",
     "encodeXRange",
     "selectRows"
   ]));
@@ -331,8 +331,9 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   assert.match(plannedCorpus, /createRuleMark\(\{/);
   assert.match(plannedCorpus, /별도 `encodeRule`\/`editRuleMark`가 아니라/);
   assert.match(plannedCorpus, /encodeStroke\(\{ target\?: UserId; value: NonEmptyString \}\)/);
-  assert.match(plannedCorpus, /createIntervalData\(\{/);
-  assert.match(plannedCorpus, /createErrorBar\(\{/);
+  assert.match(currentCorpus, /createIntervalData\(\{/);
+  assert.match(currentCorpus, /createErrorBar\(\{/);
+  assert.match(plannedCorpus, /## createErrorBar remaining variants/);
   assert.match(plannedCorpus, /createErrorBand\(\{/);
   assert.match(plannedCorpus, /createBoxPlot\(\{/);
   assert.match(plannedCorpus, /createRegressionBand[\s\S]*createErrorBand \(explicit interval mode\)/);

@@ -57,8 +57,12 @@ export function canMaterializeBar(program, layer) {
   );
 }
 
-export function canMaterializeRule(_program, layer) {
-  return layer.mark?.type === "rule" && resolveRuleMode(layer) !== undefined;
+export function canMaterializeRule(program, layer) {
+  const fixedSpan = program.markConfigs[layer.id]?.fixedSpan;
+  return layer.mark?.type === "rule" && (
+    resolveRuleMode(layer) !== undefined ||
+    (fixedSpan !== undefined && hasPositionScales(layer))
+  );
 }
 
 const MARK_MATERIALIZATION_POLICIES = Object.freeze({

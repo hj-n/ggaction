@@ -18,7 +18,7 @@ Complete chart contract:
 - [x] Existing primitive/action/contract baseline audit
 - [x] Rule geometry primitive 승인과 public implementation
 - [x] Canonical vertical error-bar primitive 승인
-- [ ] Encoded-layer inference primitive 승인과 vertical public implementation
+- [x] Encoded-layer inference primitive 승인과 vertical public implementation
 - [ ] Horizontal/explicit/style primitive 승인과 public implementation
 - [ ] Full numeric, parameter, error, immutability와 rematerialization coverage
 - [ ] Public example/docs, contract promotion과 Phase closeout

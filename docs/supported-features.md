@@ -10,19 +10,19 @@ chart-authoring API does not support that combination.
 
 ## Complete chart support
 
-| Capability | Scatterplot | Line chart | Histogram | Bar chart | Regression scatterplot | Density area |
-| --- | --- | --- | --- | --- | --- | --- |
-| Semantic mark | point | line | bar | bar | point + area + line | area |
-| Position | quantitative x/y | temporal x, aggregate y | binned x, count y | ordinal x, aggregate y | shared quantitative x/y | value + density x/y |
-| Nominal color | point fill | series stroke | five bar layouts | five bar layouts | point fill + fit stroke | overlay/stack/fill/diverging area |
-| Stroke dash | — | nominal or constant; 4 named styles | — | — | — | — |
-| Constant appearance | radius | stroke width, 8 curves | — | band or logical-pixel width | opacity, band fill, line width | opacity |
-| Automatic axes | linear | UTC time and linear | bin-aligned and linear | ordinal and linear | shared linear | source value + density |
-| Automatic grid | horizontal | horizontal | horizontal | horizontal | shared horizontal | horizontal; vertical optional |
-| Legend | point color + shape | categorical | categorical | categorical | composite color/shape/line + size | categorical top/right/bottom |
-| Chart title | optional | optional | optional | optional | optional | optional |
-| Browser Canvas | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Node PNG | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Capability | Scatterplot | Line chart | Histogram | Bar chart | Regression scatterplot | Density area | Error bar |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Semantic mark | point | line | bar | bar | point + area + line | area | rule |
+| Position | quantitative x/y | temporal x, aggregate y | binned x, count y | ordinal x, aggregate y | shared quantitative x/y | value + density x/y | categorical/temporal x, interval y |
+| Nominal color | point fill | series stroke | five bar layouts | five bar layouts | point fill + fit stroke | overlay/stack/fill/diverging area | — |
+| Stroke dash | — | nominal or constant; 4 named styles | — | — | — | — | fixed solid |
+| Constant appearance | radius | stroke width, 8 curves | — | band or logical-pixel width | opacity, band fill, line width | opacity | fixed rule and 8px caps |
+| Automatic axes | linear | UTC time and linear | bin-aligned and linear | ordinal and linear | shared linear | source value + density | categorical/temporal x and linear y |
+| Automatic grid | horizontal | horizontal | horizontal | horizontal | shared horizontal | horizontal; vertical optional | horizontal |
+| Legend | point color + shape | categorical | categorical | categorical | composite color/shape/line + size | categorical top/right/bottom | — |
+| Chart title | optional | optional | optional | optional | optional | optional | optional |
+| Browser Canvas | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Node PNG | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ## Shared foundations
 
@@ -30,7 +30,7 @@ chart-authoring API does not support that combination.
 | --- | --- |
 | Program model | Immutable `ChartProgram`, hierarchical action trace |
 | Canvas | Create/edit width, height, background, margin |
-| Data | Immutable arrays of plain row objects, named filters, grouped linear/polynomial/LOESS regression, and grouped kernel-density derivations |
+| Data | Immutable arrays of plain row objects, named filters, grouped interval summaries, grouped linear/polynomial/LOESS regression, and grouped kernel-density derivations |
 | Coordinates | Named Cartesian and Polar semantic resources; x/y use Cartesian |
 | Scales | Linear, UTC time, ordinal position, color, named/direct stroke dash, and padded band-local xOffset |
 | Aggregates | count, sum, mean, median, min/max, distinct/valid/missing, sample/population dispersion, quartiles, standard error, normal 95% mean endpoints, parameterized quantile, and ordered first/last |
@@ -46,3 +46,5 @@ and density derivations, facets, interactive legends, and program composition
 are not implemented.
 Categorical legends support all four edges; point composite and size legends
 support right and left side layouts.
+Error bars currently support vertical statistical intervals only; horizontal,
+explicit-field, cap-removal, and custom-style variants are not implemented.

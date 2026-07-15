@@ -15,6 +15,7 @@ Build complete charts before exploring individual API options.
 | Bar chart | bar | ordinal `encodeX`, aggregate `encodeY`, grouped `encodeColor` | Side-by-side aggregate bars |
 | Regression scatterplot | point + area + line | `filterData`, appearance encodings, `createRegression` | Grouped fits and confidence bands |
 | Density area | area | `encodeDensity`, grouped `encodeColor` | Overlaid probability densities |
+| Error bar | rule | `createErrorBar` | Grouped mean confidence intervals |
 
 Choose the chart whose semantic relationship matches the question you want to
 answer. The bar tutorial uses grouped bars as its current example; grouping is
@@ -61,3 +62,10 @@ Derive grouped kernel-density values and overlay translucent,
 zero-baseline areas with a top multi-column legend.
 
 [Build the cars density area chart](./density-area.md)
+
+## Error-bar chart
+
+Derive grouped mean confidence intervals and materialize vertical rules with
+fixed-width caps.
+
+[Build the cars error-bar chart](./error-bar.md)

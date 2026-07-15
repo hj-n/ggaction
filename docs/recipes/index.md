@@ -17,6 +17,7 @@ required author decisions from library inference.
 | Bar chart | ordinal x, quantitative y | mean y and band geometry | [Bar chart](./bar-chart.md) |
 | Regression scatterplot | point x/y and optional group | grouped OLS, confidence bands, shared guides | [Regression scatterplot](./regression-scatterplot.md) |
 | Density area | quantitative value and optional group | KDE data, scales, closed paths | [Density area](./density-area.md) |
+| Error bar | independent x and quantitative y | mean 95% CI, rules, caps, guides | [Error bar](./error-bar.md) |
 
 Every flow begins with `createCanvas`, `createData`, and a semantic mark. Add
 explicit IDs only when the current program state contains multiple compatible

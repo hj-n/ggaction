@@ -69,6 +69,12 @@ The main, extension, and PNG entry points include TypeScript declarations.
     </a>
     <a class="docs-chart-gallery__title" href="./tutorials/density-area/">Density area</a>
   </article>
+  <article>
+    <a class="docs-chart-gallery__image" href="./assets/images/cars-error-bar.png" aria-label="Open the full-size error-bar chart">
+      <img src="./assets/images/cars-error-bar.png" alt="Mean acceleration by origin with 95% confidence intervals" width="1440" height="920" loading="lazy">
+    </a>
+    <a class="docs-chart-gallery__title" href="./tutorials/error-bar/">Error bar</a>
+  </article>
 </div>
 
 ## Go deeper

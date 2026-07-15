@@ -34,6 +34,7 @@ are internal operations.
 - Bar chart: ./recipes/bar-chart.md | ./tutorials/grouped-bar.md
 - Regression scatterplot: ./recipes/regression-scatterplot.md | ./tutorials/regression-scatterplot.md
 - Density area: ./recipes/density-area.md | ./tutorials/density-area.md
+- Error bar: ./recipes/error-bar.md | ./tutorials/error-bar.md
 
 ## Core concepts
 
@@ -60,7 +61,8 @@ are internal operations.
 
 The development build supports Cartesian scatterplots, temporal mean line
 charts, stacked histograms, ordinal grouped bars, grouped linear, polynomial,
-or LOESS regression scatterplots with optional mean/prediction bands, and grouped density areas.
+or LOESS regression scatterplots with optional mean/prediction bands, grouped density areas,
+and vertical grouped statistical error bars with encoded-layer inference.
 Cartesian guides support bottom/top x axes, left/right y axes, and closed
 numeric or UTC label-format tokens. Existing horizontal and vertical grids can
 be edited independently without changing their scale or coordinate binding.

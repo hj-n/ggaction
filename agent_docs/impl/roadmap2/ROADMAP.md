@@ -203,6 +203,8 @@ resize가 semantic meaning을 바꾸지 않는지 확인한다.
 - Direct action: `createIntervalData`
 - Direct action: `createErrorBar`
 - Direct action: `encodeX2`
+- Capability: `error-bar-horizontal-and-explicit`
+- Capability: `error-bar-cap-and-style-options`
 
 Rule full-span/endpoints, field/datum assignment와 constant appearance를 먼저 primitive로 그린다. 이후
 interval summary, main rule, optional caps의 action hierarchy를 구현한다. Vertical/horizontal,

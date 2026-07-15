@@ -380,6 +380,50 @@ export interface DensityEncodingOptions
   densityScale?: ScaleOptions;
 }
 
+export type IntervalCenter = "mean" | "median";
+export type IntervalExtent = "stderr" | "stdev" | "ci" | "iqr";
+
+export interface IntervalOutputFields {
+  center: string;
+  lower: string;
+  upper: string;
+}
+
+export interface IntervalDataOptions {
+  id: string;
+  source?: string;
+  field: string;
+  groupBy?: string | readonly string[];
+  center?: IntervalCenter;
+  extent?: IntervalExtent;
+  level?: number;
+  as?: IntervalOutputFields;
+}
+
+export interface ErrorBarPositionChannel {
+  field?: string;
+  fieldType?: "nominal" | "ordinal" | "temporal";
+  scale?: ScaleOptions;
+}
+
+export interface ErrorBarIntervalChannel {
+  field?: string;
+  center?: IntervalCenter;
+  extent?: IntervalExtent;
+  level?: number;
+  scale?: ScaleOptions;
+}
+
+export interface ErrorBarOptions {
+  id?: string;
+  target?: string;
+  data?: string;
+  x?: ErrorBarPositionChannel;
+  y?: ErrorBarIntervalChannel;
+  groupBy?: string;
+  coordinate?: string;
+}
+
 export interface EditDensityOptions {
   target?: string;
   bandwidth?: "auto" | number;
@@ -651,6 +695,7 @@ export class ChartProgram {
   filterMark(options: FilterMarkOptions): ChartProgram;
   createDensityData(options: DensityDataOptions): ChartProgram;
   createRegressionData(options: RegressionDataOptions): ChartProgram;
+  createIntervalData(options: IntervalDataOptions): ChartProgram;
 
   createPointMark(options?: { id?: string; data?: string; shape?: PointShape }): ChartProgram;
   editPointMark(options: { target?: string; shape: PointShape }): ChartProgram;
@@ -704,6 +749,7 @@ export class ChartProgram {
   encodeStrokeWidth(options: { target?: string; value: number }): ChartProgram;
 
   createRegression(options?: RegressionOptions): ChartProgram;
+  createErrorBar(options?: ErrorBarOptions): ChartProgram;
   createAxes(options?: CreateAxesOptions): ChartProgram;
   createXAxis(options?: CompleteAxisOptions<XAxisPosition>): ChartProgram;
   createYAxis(options?: CompleteAxisOptions<YAxisPosition>): ChartProgram;

@@ -20,6 +20,7 @@ import {
 
 const CREATE_OPTIONS = Object.freeze(["id", "data"]);
 const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);
+const SPAN_OPTIONS = Object.freeze(["id", "orientation", "size"]);
 const DEFAULT_RULE_CONFIG = Object.freeze({
   stroke: DEFAULT_COLORS.mark,
   strokeWidth: 2,
@@ -100,7 +101,13 @@ const rematerializeRuleMark = action(
     const id = validateUserId(args.id, "Rule mark id");
     const { dataset, graphic, layer } = requireRule(this, id);
     validateEndpointBindings(layer);
-    const mode = resolveRuleMode(layer);
+    const config = this.markConfigs[id] ?? DEFAULT_RULE_CONFIG;
+    const fixedSpan = config.fixedSpan;
+    const mode = fixedSpan !== undefined &&
+      layer.encoding?.x?.scale !== undefined &&
+      layer.encoding?.y?.scale !== undefined
+      ? "fixed-span"
+      : resolveRuleMode(layer);
     if (mode === undefined) {
       return graphic.children.length === 0
         ? this
@@ -153,6 +160,18 @@ const rematerializeRuleMark = action(
         y1.push(mapped.y[index]);
         x2.push(mapped.x2[index]);
         y2.push(mapped.y[index]);
+      } else if (mode === "fixed-span") {
+        if (fixedSpan.orientation === "horizontal") {
+          x1.push(mapped.x[index] - fixedSpan.size / 2);
+          y1.push(mapped.y[index]);
+          x2.push(mapped.x[index] + fixedSpan.size / 2);
+          y2.push(mapped.y[index]);
+        } else {
+          x1.push(mapped.x[index]);
+          y1.push(mapped.y[index] - fixedSpan.size / 2);
+          x2.push(mapped.x[index]);
+          y2.push(mapped.y[index] + fixedSpan.size / 2);
+        }
       } else {
         x1.push(mapped.x[index]);
         y1.push(mapped.y[index]);
@@ -161,14 +180,14 @@ const rematerializeRuleMark = action(
       }
     }
 
-    const config = resolved.markConfigs[id] ?? DEFAULT_RULE_CONFIG;
+    const resolvedConfig = resolved.markConfigs[id] ?? DEFAULT_RULE_CONFIG;
     const dashEncoding = layer.encoding?.strokeDash;
     const opacityEncoding = layer.encoding?.opacity;
     const strokeDash = dashEncoding?.scale === undefined
       ? Array.from(
           { length: derived.length },
           () => normalizeStrokeDashPattern(
-            dashEncoding?.datum ?? config.strokeDash
+            dashEncoding?.datum ?? resolvedConfig.strokeDash
           )
         )
       : mapOrdinalValues(
@@ -177,7 +196,7 @@ const rematerializeRuleMark = action(
           resolved.resolvedScales[dashEncoding.scale].range
         );
     const opacity = opacityEncoding?.scale === undefined
-      ? config.opacity
+      ? resolvedConfig.opacity
       : mapLinearValues(
           derived.values.opacity,
           resolved.resolvedScales[opacityEncoding.scale].domain,
@@ -191,18 +210,45 @@ const rematerializeRuleMark = action(
       .editGraphics({ target: id, property: "y1", value: y1 })
       .editGraphics({ target: id, property: "x2", value: x2 })
       .editGraphics({ target: id, property: "y2", value: y2 })
-      .editGraphics({ target: id, property: "stroke", value: config.stroke })
+      .editGraphics({ target: id, property: "stroke", value: resolvedConfig.stroke })
       .editGraphics({
         target: id,
         property: "strokeWidth",
-        value: config.strokeWidth
+        value: resolvedConfig.strokeWidth
       })
       .editGraphics({ target: id, property: "strokeDash", value: strokeDash })
       .editGraphics({ target: id, property: "opacity", value: opacity });
   }
 );
 
+export const materializeRuleSpan = action(
+  {
+    op: "materializeRuleSpan",
+    description: "Materialize a fixed-pixel span around a rule anchor."
+  },
+  function (args = {}) {
+    validateMarkOptions(args, SPAN_OPTIONS, "materializeRuleSpan");
+    const id = validateUserId(args.id, "Rule mark id");
+    requireRule(this, id);
+    if (!["horizontal", "vertical"].includes(args.orientation)) {
+      throw new Error(
+        `Unsupported rule span orientation "${args.orientation}".`
+      );
+    }
+    if (!Number.isFinite(args.size) || args.size <= 0) {
+      throw new RangeError("Rule span size must be a positive finite number.");
+    }
+    return this
+      ._withMarkConfig(id, {
+        ...this.markConfigs[id],
+        fixedSpan: { orientation: args.orientation, size: args.size }
+      })
+      .rematerializeRuleMark({ id });
+  }
+);
+
 export function registerRuleMarkActions(ProgramClass) {
   ProgramClass.prototype.createRuleMark = createRuleMark;
   ProgramClass.prototype.rematerializeRuleMark = rematerializeRuleMark;
+  ProgramClass.prototype.materializeRuleSpan = materializeRuleSpan;
 }

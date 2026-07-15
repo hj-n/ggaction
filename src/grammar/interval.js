@@ -1,4 +1,5 @@
-import { isPlainObject } from "../core/immutable.js";
+import { cloneAndFreeze, isPlainObject } from "../core/immutable.js";
+import { aggregateScalarValues } from "./aggregate.js";
 
 const CENTER_VALUES = Object.freeze(["mean", "median"]);
 const EXTENT_VALUES = Object.freeze(["stderr", "stdev", "ci", "iqr"]);
@@ -22,12 +23,11 @@ function nonEmptyString(value, label) {
 function validateGrouping(groupBy) {
   if (
     !Array.isArray(groupBy) ||
-    groupBy.length === 0 ||
     !groupBy.every(field => typeof field === "string" && field.length > 0) ||
     new Set(groupBy).size !== groupBy.length
   ) {
     throw new TypeError(
-      "Interval groupBy must contain unique non-empty field names."
+      "Interval groupBy must contain unique field names."
     );
   }
 }
@@ -56,6 +56,9 @@ function validateOutputs(as, occupied) {
 }
 
 export function validateIntervalTransform(transform) {
+  if (!isPlainObject(transform)) {
+    throw new TypeError("Interval transform must be a plain object.");
+  }
   const unknown = Object.keys(transform).find(
     key => !TRANSFORM_KEYS.includes(key)
   );
@@ -93,4 +96,248 @@ export function validateIntervalTransform(transform) {
     transform.as,
     new Set([transform.field, ...transform.groupBy])
   );
+}
+
+function normalizeGrouping(groupBy) {
+  const values = groupBy === undefined
+    ? []
+    : Array.isArray(groupBy) ? [...groupBy] : [groupBy];
+  validateGrouping(values);
+  return values;
+}
+
+export function normalizeIntervalParameters({
+  center = "mean",
+  extent = "ci",
+  level
+} = {}) {
+  const resolvedLevel = extent === "ci" ? level ?? 0.95 : level;
+  const candidate = {
+    type: "interval",
+    field: "__interval_input",
+    groupBy: [],
+    center,
+    extent,
+    ...(resolvedLevel === undefined ? {} : { level: resolvedLevel }),
+    as: {
+      center: "__interval_center",
+      lower: "__interval_lower",
+      upper: "__interval_upper"
+    }
+  };
+  validateIntervalTransform(candidate);
+  return cloneAndFreeze({
+    center,
+    extent,
+    ...(resolvedLevel === undefined ? {} : { level: resolvedLevel })
+  });
+}
+
+const LANCZOS = Object.freeze([
+  676.5203681218851,
+  -1259.1392167224028,
+  771.3234287776531,
+  -176.6150291621406,
+  12.507343278686905,
+  -0.13857109526572012,
+  9.984369578019572e-6,
+  1.5056327351493116e-7
+]);
+
+function logGamma(value) {
+  if (value < 0.5) {
+    return Math.log(Math.PI) - Math.log(Math.sin(Math.PI * value)) -
+      logGamma(1 - value);
+  }
+  const shifted = value - 1;
+  let sum = 0.9999999999998099;
+  for (const [index, coefficient] of LANCZOS.entries()) {
+    sum += coefficient / (shifted + index + 1);
+  }
+  const t = shifted + LANCZOS.length - 0.5;
+  return 0.5 * Math.log(2 * Math.PI) +
+    (shifted + 0.5) * Math.log(t) - t + Math.log(sum);
+}
+
+function betaFraction(a, b, x) {
+  const maximumIterations = 200;
+  const epsilon = 3e-14;
+  const floor = 1e-300;
+  const sum = a + b;
+  let c = 1;
+  let d = 1 - sum * x / (a + 1);
+  if (Math.abs(d) < floor) d = floor;
+  d = 1 / d;
+  let result = d;
+
+  for (let iteration = 1; iteration <= maximumIterations; iteration += 1) {
+    const even = 2 * iteration;
+    let coefficient = iteration * (b - iteration) * x /
+      ((a + even - 1) * (a + even));
+    d = 1 + coefficient * d;
+    if (Math.abs(d) < floor) d = floor;
+    c = 1 + coefficient / c;
+    if (Math.abs(c) < floor) c = floor;
+    d = 1 / d;
+    result *= d * c;
+
+    coefficient = -(a + iteration) * (sum + iteration) * x /
+      ((a + even) * (a + even + 1));
+    d = 1 + coefficient * d;
+    if (Math.abs(d) < floor) d = floor;
+    c = 1 + coefficient / c;
+    if (Math.abs(c) < floor) c = floor;
+    d = 1 / d;
+    const delta = d * c;
+    result *= delta;
+    if (Math.abs(delta - 1) <= epsilon) return result;
+  }
+  throw new Error("Student-t calculation did not converge.");
+}
+
+function regularizedBeta(x, a, b) {
+  if (x <= 0) return 0;
+  if (x >= 1) return 1;
+  const front = Math.exp(
+    logGamma(a + b) - logGamma(a) - logGamma(b) +
+    a * Math.log(x) + b * Math.log1p(-x)
+  );
+  return x < (a + 1) / (a + b + 2)
+    ? front * betaFraction(a, b, x) / a
+    : 1 - front * betaFraction(b, a, 1 - x) / b;
+}
+
+function studentTCdf(value, degreesOfFreedom) {
+  if (value === 0) return 0.5;
+  const x = degreesOfFreedom /
+    (degreesOfFreedom + value * value);
+  const tail = 0.5 * regularizedBeta(
+    x,
+    degreesOfFreedom / 2,
+    0.5
+  );
+  return value > 0 ? 1 - tail : tail;
+}
+
+export function studentTCritical(degreesOfFreedom, level) {
+  if (!Number.isInteger(degreesOfFreedom) || degreesOfFreedom < 1) {
+    throw new RangeError("Student-t degreesOfFreedom must be a positive integer.");
+  }
+  if (!Number.isFinite(level) || level <= 0 || level >= 1) {
+    throw new RangeError("Student-t level must be between 0 and 1.");
+  }
+  const target = 0.5 + level / 2;
+  let low = 0;
+  let high = 1;
+  while (studentTCdf(high, degreesOfFreedom) < target) high *= 2;
+  for (let iteration = 0; iteration < 100; iteration += 1) {
+    const midpoint = (low + high) / 2;
+    if (studentTCdf(midpoint, degreesOfFreedom) < target) low = midpoint;
+    else high = midpoint;
+  }
+  return (low + high) / 2;
+}
+
+function isMissing(value) {
+  return value === undefined || value === null ||
+    (typeof value === "number" && Number.isNaN(value));
+}
+
+function isGroupValue(value) {
+  return typeof value === "string" || typeof value === "boolean" ||
+    (typeof value === "number" && Number.isFinite(value));
+}
+
+function stableNumber(value) {
+  return Number(value.toFixed(12));
+}
+
+function deriveGroup(values, transform) {
+  if (transform.center === "median") {
+    if (values.length === 0) return undefined;
+    return {
+      center: aggregateScalarValues(values, "median"),
+      lower: aggregateScalarValues(values, "q1"),
+      upper: aggregateScalarValues(values, "q3")
+    };
+  }
+  if (values.length < 2) return undefined;
+  const center = aggregateScalarValues(values, "mean");
+  const spread = transform.extent === "stdev"
+    ? aggregateScalarValues(values, "stdev")
+    : transform.extent === "stderr"
+      ? aggregateScalarValues(values, "stderr")
+      : studentTCritical(values.length - 1, transform.level) *
+        aggregateScalarValues(values, "stderr");
+  return { center, lower: center - spread, upper: center + spread };
+}
+
+export function deriveInterval(rows, transform) {
+  if (!Array.isArray(rows)) {
+    throw new TypeError("Interval rows must be an array.");
+  }
+  validateIntervalTransform(transform);
+  const groups = new Map();
+  for (const row of rows) {
+    if (!isPlainObject(row)) continue;
+    const value = row[transform.field];
+    if (isMissing(value) || !Number.isFinite(value)) {
+      if (value !== undefined && value !== null && typeof value !== "number") {
+        throw new TypeError(
+          `Interval field "${transform.field}" must contain numeric or missing values.`
+        );
+      }
+      continue;
+    }
+    const groupValues = transform.groupBy.map(field => row[field]);
+    if (groupValues.some(isMissing)) continue;
+    if (!groupValues.every(isGroupValue)) {
+      throw new TypeError("Interval grouping fields must contain nominal values.");
+    }
+    const key = JSON.stringify(groupValues);
+    if (!groups.has(key)) {
+      groups.set(key, {
+        fields: Object.fromEntries(
+          transform.groupBy.map((field, index) => [field, groupValues[index]])
+        ),
+        values: []
+      });
+    }
+    groups.get(key).values.push(value);
+  }
+
+  const output = [];
+  for (const group of groups.values()) {
+    const result = deriveGroup(group.values, transform);
+    if (result === undefined) continue;
+    output.push({
+      ...group.fields,
+      [transform.as.center]: stableNumber(result.center),
+      [transform.as.lower]: stableNumber(result.lower),
+      [transform.as.upper]: stableNumber(result.upper)
+    });
+  }
+  return cloneAndFreeze(output);
+}
+
+export function normalizeIntervalTransform({
+  field,
+  groupBy,
+  center,
+  extent,
+  level,
+  as
+}) {
+  nonEmptyString(field, "Interval field");
+  const grouping = normalizeGrouping(groupBy);
+  const parameters = normalizeIntervalParameters({ center, extent, level });
+  const transform = {
+    type: "interval",
+    field,
+    groupBy: grouping,
+    ...parameters,
+    as
+  };
+  validateIntervalTransform(transform);
+  return cloneAndFreeze(transform);
 }

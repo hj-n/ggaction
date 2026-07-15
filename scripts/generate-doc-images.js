@@ -6,6 +6,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { renderToPNG } from "ggaction/png";
 
 import { createCarsDensityArea } from "../examples/cars-density-area/program.js";
+import { createCarsErrorBar } from "../examples/cars-error-bar/program.js";
 import { createCarsHistogram } from "../examples/cars-histogram/program.js";
 import { createCarsLineChart } from "../examples/cars-line-chart/program.js";
 import { createCarsRegressionScatterplot } from
@@ -71,6 +72,14 @@ export const chartImages = [
     programFile: new URL("../examples/cars-density-area/program.js", import.meta.url),
     dataFile: new URL("../data/cars.json", import.meta.url),
     createProgram: () => createCarsDensityArea(cars)
+  },
+  {
+    id: "cars-error-bar",
+    width: 720,
+    height: 460,
+    programFile: new URL("../examples/cars-error-bar/program.js", import.meta.url),
+    dataFile: new URL("../data/cars.json", import.meta.url),
+    createProgram: () => createCarsErrorBar(cars)
   }
 ];
 

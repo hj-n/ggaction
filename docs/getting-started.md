@@ -29,6 +29,7 @@ Open one of the runnable repository examples:
 - `http://localhost:4173/examples/jobs-grouped-bar/`
 - `http://localhost:4173/examples/cars-regression-scatterplot/`
 - `http://localhost:4173/examples/cars-density-area/`
+- `http://localhost:4173/examples/cars-error-bar/`
 
 Those browser examples import `../../src/index.js` directly. The code below is
 the complete module used by `examples/getting-started/`, so it runs immediately
@@ -106,6 +107,8 @@ actions. It does not compile `semanticSpec` during rendering.
   [jobs grouped bar tutorial](./tutorials/grouped-bar.md).
 - Layer grouped linear fits and confidence bands in the
   [regression scatterplot tutorial](./tutorials/regression-scatterplot.md).
+- Summarize grouped means and confidence intervals in the
+  [error-bar tutorial](./tutorials/error-bar.md).
 - Check the [action index](./reference/actions.md) for signatures and defaults.
 - Copy a minimal flow from the [chart recipes](./recipes/index.md).
 - Resolve common inference and layout errors with

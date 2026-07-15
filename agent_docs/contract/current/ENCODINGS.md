@@ -274,7 +274,7 @@ encodeX2(options: RulePositionAssignment): ChartProgram;
 - ✅ Covered: field/datum exclusivity, quantitative/nominal position, full span, bounded and diagonal geometry,
   shared endpoint scale, endpoint reassignment and invalid/incomplete prerequisites.
 - Evidence: `test/unit/actions/encodings/rule-position-encodings.test.js`,
-  `test/gates/cars-error-bar/primitive.test.js`.
+  `test/charts/cars-error-bar/primitive.test.js`.
 
 ## `encodeStroke`
 
@@ -293,7 +293,7 @@ encodeX2(options: RulePositionAssignment): ChartProgram;
 
 - ✅ Covered: inferred/explicit target, replacement, non-empty validation, immutable failure and primitive/public parity.
 - Evidence: `test/unit/actions/encodings/rule-appearance-encodings.test.js` and
-  `test/gates/cars-error-bar/primitive.test.js`.
+  `test/charts/cars-error-bar/primitive.test.js`.
 
 ## `encodeStrokeWidth`
 
@@ -315,7 +315,7 @@ encodeX2(options: RulePositionAssignment): ChartProgram;
 - ✅ Covered: zero/positive replacement, negative/non-finite rejection, dash/opacity interoperability,
   Canvas rematerialization and primitive/public parity.
 - Evidence: `test/unit/actions/encodings/rule-appearance-encodings.test.js` and
-  `test/gates/cars-error-bar/primitive.test.js`.
+  `test/charts/cars-error-bar/primitive.test.js`.
 
 ## `encodeYRange`
 

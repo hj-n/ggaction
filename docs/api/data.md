@@ -14,6 +14,7 @@ title: Data
 | `filterMark` | `filterMark({ field, oneOf })` | Target: current or unique mark; source and derived ID from target | Immutable derived dataset, mark rebind, and concrete rematerialization |
 | `createRegressionData` | `createRegressionData({ id: "fit", x, y })` | Source: current dataset; linear OLS; confidence `0.95` | Immutable derived predictions and mean-response interval |
 | `createDensityData` | `createDensityData({ id: "density", field })` | Source: current dataset; Gaussian/unit density; 100 steps; automatic bandwidth | Immutable KDE rows and density provenance |
+| `createIntervalData` | `createIntervalData({ id: "summary", field })` | Source: current dataset; ungrouped mean 95% CI | Immutable center/lower/upper rows and interval provenance |
 
 ## `createData({ id?, values })`
 
@@ -163,6 +164,36 @@ and observed unique x order. Linear and polynomial output includes fixed
 `__regression_ci_lower` / `__regression_ci_upper` fields; LOESS is line-only.
 Source values remain unchanged.
 
+## `createIntervalData({ id, source?, field, groupBy?, center?, extent?, level?, as? })`
+
+Create immutable grouped interval-summary rows independently from an error-bar
+mark.
+
+```javascript
+program.createIntervalData({
+  id: "accelerationIntervals",
+  field: "Acceleration",
+  groupBy: "Origin"
+});
+```
+
+| Option | Type | Default |
+| --- | --- | --- |
+| `id` | new dataset ID | required |
+| `source` | existing dataset ID | current dataset |
+| `field` | quantitative field name | required |
+| `groupBy` | field name or array of field names | one ungrouped interval |
+| `center` | `"mean"` or `"median"` | `"mean"` |
+| `extent` | `"stderr"`, `"stdev"`, `"ci"`, or `"iqr"` | `"ci"` |
+| `level` | number strictly between `0` and `1` | `0.95` for CI |
+| `as` | `{ center, lower, upper }` distinct field names | ID-namespaced fields |
+
+Mean supports standard error, sample standard deviation, and two-sided
+Student-t confidence intervals. Median requires interquartile range, and IQR
+requires median. Group order follows first appearance. Missing group values,
+non-finite measures, and undersized mean groups are omitted; valid source rows
+and the source dataset remain unchanged.
+
 ## `createDensityData({ id, source?, field, groupBy?, bandwidth?, extent?, steps?, kernel?, normalization?, as? })`
 
 Create an immutable kernel-density dataset. This is an advanced data
@@ -204,6 +235,8 @@ and does not permit an empty `oneOf` list. Regression rejects missing or
 non-finite fields, method-specific undersized groups, and constant-x groups.
 Density rejects empty valid input, non-positive bandwidth, degenerate automatic
 extent or bandwidth, invalid output fields, and fewer than two sample steps.
+Intervals reject incompatible center/extent pairs, invalid confidence levels,
+duplicate grouping fields, and colliding output field names.
 
 ## Related
 

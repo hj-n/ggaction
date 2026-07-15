@@ -2,7 +2,7 @@
 
 These accepted contracts define future aggregate mark APIs. They are not current public behavior.
 
-## createErrorBar
+## createErrorBar remaining variants
 
 ```typescript
 type IntervalChannel =
@@ -25,13 +25,7 @@ type PositionChannel = {
 };
 
 createErrorBar({
-  id?: UserId;
-  target?: UserId;
-  data?: UserId;
-  x?: PositionChannel | IntervalChannel;
-  y?: PositionChannel | IntervalChannel;
-  groupBy?: FieldName;
-  coordinate?: UserId;
+  // Current vertical statistical parameters remain available.
   caps?: boolean;
   capSize?: PositiveFinite;
   stroke?: NonEmptyString;
@@ -41,6 +35,8 @@ createErrorBar({
 }): ChartProgram;
 ```
 
+- Vertical statistical intervals, encoded-layer inference, default caps, immutable interval data and fixed-span
+  rematerialization are Current. This section owns only the remaining horizontal, explicit and appearance variants.
 - `target` identifies an already encoded source layer. When either x or y is omitted, the action resolves the
   source in this order: explicit `target`, current eligible layer, unique eligible layer, then error. Eligibility
   depends on persisted data, coordinate and complete field-based x/y encodings, not on the source mark type.
@@ -72,8 +68,8 @@ createErrorBar({
   scale changes rematerialize the cap endpoints into concrete `line` coordinates.
 - IDs for derived data, main rule and cap rules are deterministically namespaced from `id`. The aggregate is
   create-only, and its complete child hierarchy remains visible in trace.
-- Status: Planned, NOT IMPLEMENTED. vertical/horizontal, computed/explicit intervals, caps on/off and size,
-  style assignment, grouping, empty/invalid groups, deterministic IDs, trace and renderer parity가 필요하다.
+- Status: Planned, NOT IMPLEMENTED. Horizontal computed orientation, explicit interval rows, caps on/off and
+  size, and custom style assignment require Gate C approval and public parity.
 
 ## createErrorBand
 

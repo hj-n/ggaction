@@ -61,22 +61,26 @@ createErrorBar({
   id?: UserId;
   target?: UserId;
   data?: UserId;
-  x?: PositionChannel | IntervalChannel;
-  y?: PositionChannel | IntervalChannel;
+  x?: {
+    field?: FieldName;
+    fieldType?: "nominal" | "ordinal" | "temporal";
+    scale?: PositionScale;
+  };
+  y?: {
+    field?: FieldName;
+    center?: "mean" | "median";
+    extent?: "stderr" | "stdev" | "ci" | "iqr";
+    level?: UnitIntervalExclusive;
+    scale?: PositionScale;
+  };
   groupBy?: FieldName;
   coordinate?: UserId;
-  caps?: boolean;
-  capSize?: PositiveFinite;
-  stroke?: NonEmptyString;
-  strokeWidth?: NonNegativeFinite;
-  strokeDash?: DashPattern;
-  opacity?: UnitInterval;
 }): ChartProgram;
 ```
 
-Exactly one of `x` and `y` is an interval channel. Statistical interval mode uses `{ field, center?, extent?,
-level? }`; explicit mode uses `{ center, lower, upper }`. The other channel is an ordinary positional field.
-The independent position field is always included in interval grouping; optional `groupBy` adds another field.
+Current behavior is a vertical statistical interval. x is nominal, ordinal, or temporal; y is quantitative and
+uses `{ field, center?, extent?, level? }`. The independent x field is always included in interval grouping;
+optional `groupBy` adds another field.
 
 When x or y is omitted, `target` selects an existing encoded source layer. Without `target`, the current eligible
 layer is preferred, followed by one unique eligible layer. The source must persist data, coordinate and complete
@@ -84,9 +88,9 @@ field-based x/y encodings. This is a semantic-capability rule shared by point, l
 compatible marks; it is not a point-only special case. Omitted resources reuse the source data, coordinate and
 scale IDs. A source `group` encoding is retained as statistical grouping, while color alone is not.
 
-One inferred axis must be quantitative and the other categorical, ordinal or temporal. Two quantitative axes do
-not identify the interval orientation, so the caller must explicitly identify the interval channel. Explicit
-channel options override only their corresponding inferred channel; incompatible overrides fail atomically.
+The inferred pair must contain a categorical, ordinal, or temporal x and quantitative y. Two quantitative axes
+are rejected in the current vertical-only contract. Explicit channel options override only their corresponding
+inferred channel; incompatible overrides fail atomically.
 
 Defaults are:
 
@@ -97,12 +101,8 @@ center      mean
 extent      ci
 level       0.95
 coordinate  main Cartesian
-caps        true
-capSize     8
-stroke      #4c78a8
-strokeWidth 2
-strokeDash  solid
-opacity     1
+cap geometry  two 8px logical-pixel caps
+appearance    #4c78a8, width 2, solid, opacity 1
 ```
 
 ## Important action hierarchy
@@ -122,13 +122,13 @@ createErrorBar
 ├─ encodeStrokeWidth(errorBar)
 ├─ encodeStrokeDash(errorBar)
 ├─ encodeOpacity(errorBar)
-├─ createErrorBarCap(lower)?
+├─ createErrorBarCap(lower)
 │  ├─ createRuleMark(errorBarLowerCap)
 │  ├─ encodeX(anchor)
 │  ├─ encodeY(interval lower)
 │  ├─ encodeStroke / encodeStrokeWidth / encodeStrokeDash / encodeOpacity
 │  └─ materializeRuleSpan(horizontal, 8px)
-└─ createErrorBarCap(upper)?
+└─ createErrorBarCap(upper)
    ├─ createRuleMark(errorBarUpperCap)
    ├─ encodeX(anchor)
    ├─ encodeY(interval upper)
@@ -136,20 +136,17 @@ createErrorBar
    └─ materializeRuleSpan(horizontal, 8px)
 ```
 
-Cap creation is conditional on `caps !== false`. The cap layers have ordinary semantic rule identity and
-data-space anchors; their perpendicular `capSize` is graphical materialization intent. The aggregate invokes
+The cap layers have ordinary semantic rule identity and data-space anchors; their perpendicular fixed span is
+graphical materialization intent. The aggregate invokes
 the real wrapped assignment actions rather than writing their semantic or graphical results directly.
 
-### Explicit interval mode
+### Planned Gate C variants
 
-Explicit mode uses an existing dataset containing center/lower/upper fields and omits `createIntervalData`.
-All remaining rule, endpoint, appearance and cap actions are identical.
+Explicit mode will use an existing dataset containing center/lower/upper fields and omit `createIntervalData`.
+All remaining rule, endpoint, appearance and cap actions will be identical.
 
-### Horizontal orientation
-
-If x is the interval channel and y is the independent position, the main rule uses `y + x + x2`. Caps are
-vertical fixed-pixel spans. Orientation is inferred from which channel owns the interval and is never passed as
-a separate option.
+Horizontal orientation, caps off/custom cap size, and custom stroke/width/dash/opacity remain Planned and are
+not accepted by the current public action.
 
 ## Stored-result contract
 
@@ -191,9 +188,9 @@ Generated child IDs are deterministic implementation details. Explicit owner IDs
 | `rule-geometry` | rule mark and endpoint assignments | full-span vertical/horizontal and diagonal concrete rules |
 | `baseline` | computed vertical error bar | Origin mean Acceleration with default 95% CI and caps |
 | `encoded-layer-inference` | omitted source and x/y | point observations with an inferred error-bar overlay |
-| `horizontal` | x/x2 interval orientation | Origin별 mean Horsepower horizontal intervals |
-| `explicit-interval` | existing summary fields | no derived data and `caps: false` |
-| `styled-caps` | cap/style parameter coverage | custom cap size, stroke, width, dash and opacity |
+| `horizontal` (Planned) | x/x2 interval orientation | Origin별 mean Horsepower horizontal intervals |
+| `explicit-interval` (Planned) | existing summary fields | no derived data and `caps: false` |
+| `styled-caps` (Planned) | cap/style parameter coverage | custom cap size, stroke, width, dash and opacity |
 
 Each variant keeps independent primitive and user-facing programs. Only `primitive.png` is produced before its
 visual Gate; the public action and `user-facing.png` follow approval.

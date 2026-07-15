@@ -6,19 +6,19 @@ Approved baseline을 immutable interval summary와 composite `createErrorBar` pu
 
 ## 진행 상태
 
-- [ ] Pure interval grammar for mean/median and stderr/stdev/CI/IQR
-- [ ] Independent numeric fixtures, missing/sample-size and ordering coverage
-- [ ] Interval transform schema, provenance and owned concrete rows
-- [ ] `createIntervalData` wrapped create/materialize hierarchy
-- [ ] Default/inferred `createErrorBar` owner, source, grouping and orientation
-- [ ] Explicit target, current eligible layer and unique eligible layer source resolution
-- [ ] Omitted x/y/data/coordinate/scale reuse from any compatible encoded mark
-- [ ] Ambiguous source and ambiguous two-quantitative-axis rejection
-- [ ] Main rule and fixed-span cap child hierarchy
-- [ ] Default appearance assignments and guide-title inference
-- [ ] Canvas/scale rematerialization and atomic failure
-- [ ] Baseline primitive/public exact equivalence and `user-facing.png`
-- [ ] Types, contracts, conceptual commit and push
+- [x] Pure interval grammar for mean/median and stderr/stdev/CI/IQR
+- [x] Independent numeric fixtures, missing/sample-size and ordering coverage
+- [x] Interval transform schema, provenance and owned concrete rows
+- [x] `createIntervalData` wrapped create/materialize hierarchy
+- [x] Default/inferred `createErrorBar` owner, source, grouping and orientation
+- [x] Explicit target, current eligible layer and unique eligible layer source resolution
+- [x] Omitted x/y/data/coordinate/scale reuse from any compatible encoded mark
+- [x] Ambiguous source and ambiguous two-quantitative-axis rejection
+- [x] Main rule and fixed-span cap child hierarchy
+- [x] Default appearance assignments and guide-title inference
+- [x] Canvas/scale rematerialization and atomic failure
+- [x] Baseline primitive/public exact equivalence and `user-facing.png`
+- [x] Types, contracts, conceptual commit and push
 
 ## Important hierarchy
 

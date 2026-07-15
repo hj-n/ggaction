@@ -100,6 +100,18 @@ to current data, steps to `100`, bandwidth to an automatic Scott-rule estimate,
 kernel to `"gaussian"`, and normalization to `"unit"`.
 [Data](../api/data.md)
 
+### `createIntervalData`
+
+```javascript
+createIntervalData({
+  id, source?, field, groupBy?, center?, extent?, level?, as?
+})
+```
+
+Create immutable grouped center/lower/upper summary rows. Mean supports
+standard error, sample standard deviation, and Student-t confidence intervals;
+median supports interquartile range. [Data](../api/data.md)
+
 ### `createPointMark`
 
 ```javascript
@@ -401,6 +413,16 @@ Infer an eligible point layer and create immutable fitted data, optional grouped
 interval-band paths, and grouped line paths. Method defaults to `"linear"`;
 polynomial degree to `2`; LOESS span to `0.75`.
 [Regression](../api/regression.md)
+
+### `createErrorBar`
+
+```javascript
+createErrorBar({ id?, target?, data?, x?, y?, groupBy?, coordinate? } = {})
+```
+
+Create vertical grouped statistical intervals. With one eligible encoded
+layer, the shortest call infers its fields, data, coordinate, and scales.
+[Error bars](../api/error-bars.md)
 
 ### `createGuides`
 

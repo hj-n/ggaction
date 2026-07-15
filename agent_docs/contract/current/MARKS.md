@@ -235,4 +235,4 @@ validation and uniqueness contract.
   ambiguity, invalid ID/data/options와 graphic/layer conflict.
 - ✅ Covered: empty line collection, default appearance config, immutable earlier program과 wrapped trace.
 - Evidence: `test/unit/actions/marks/create-rule-mark.test.js` and
-  `test/gates/cars-error-bar/primitive.test.js`.
+  `test/charts/cars-error-bar/primitive.test.js`.

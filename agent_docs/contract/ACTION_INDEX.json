@@ -146,6 +146,24 @@
       }
     },
     {
+      "name": "createIntervalData",
+      "layer": "user-facing",
+      "domain": "statistics",
+      "status": "implemented",
+      "lifecycle": "Immutable create-only",
+      "update": "Create a new derived dataset ID",
+      "audit": "Intentional",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/STATISTICS.md",
+        "anchor": "createintervaldata"
+      }
+    },
+    {
       "name": "createPointMark",
       "layer": "user-facing",
       "domain": "marks",
@@ -647,6 +665,24 @@
       "contract": {
         "file": "agent_docs/contract/current/STATISTICS.md",
         "anchor": "createregression"
+      }
+    },
+    {
+      "name": "createErrorBar",
+      "layer": "user-facing",
+      "domain": "statistics",
+      "status": "implemented",
+      "lifecycle": "Aggregate create-only",
+      "update": "Owned interval-data, rule, endpoint, and appearance children",
+      "audit": "Intentional",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/STATISTICS.md",
+        "anchor": "createerrorbar"
       }
     },
     {
@@ -1444,24 +1480,6 @@
   ],
   "plannedActions": [
     {
-      "name": "createIntervalData",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/DATA_AND_STATISTICS.md",
-        "anchor": "interval-summary-data"
-      }
-    },
-    {
-      "name": "createErrorBar",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/COMPOSITE_MARKS.md",
-        "anchor": "createerrorbar"
-      }
-    },
-    {
       "name": "createErrorBand",
       "status": "planned",
       "readiness": "accepted",
@@ -1499,6 +1517,28 @@
     }
   ],
   "plannedCapabilities": [
+    {
+      "id": "error-bar-horizontal-and-explicit",
+      "kind": "composition",
+      "name": "Horizontal and explicit error-bar intervals",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/COMPOSITE_MARKS.md",
+        "anchor": "createerrorbar-remaining-variants"
+      }
+    },
+    {
+      "id": "error-bar-cap-and-style-options",
+      "kind": "parameter",
+      "name": "Error-bar cap and appearance options",
+      "status": "planned",
+      "readiness": "accepted",
+      "contract": {
+        "file": "agent_docs/contract/planned/COMPOSITE_MARKS.md",
+        "anchor": "createerrorbar-remaining-variants"
+      }
+    },
     {
       "id": "regression-error-band-delegation",
       "kind": "composition",
@@ -1593,7 +1633,9 @@
     "materialization": [
       "materializeDensityData",
       "materializeFilteredData",
+      "materializeIntervalData",
       "materializeRegressionData",
+      "materializeRuleSpan",
       "rematerializeAreaMark",
       "rematerializeBarMark",
       "rematerializeGradientLegend",
@@ -1619,6 +1661,9 @@
     ],
     "stateTransitions": [
       "releaseDerivedData"
+    ],
+    "aggregateComponents": [
+      "createErrorBarCap"
     ],
     "contract": "agent_docs/contract/internal/ACTIONS.md"
   }

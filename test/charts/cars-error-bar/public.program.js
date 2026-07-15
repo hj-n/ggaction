@@ -1,5 +1,12 @@
 import { chart } from "../../../src/index.js";
-import { createRuleGeometryReferenceValues } from "./reference-values.js";
+import {
+  createRuleGeometryReferenceValues
+} from "./reference-values.js";
+
+export {
+  createCarsErrorBar as createErrorBarProgram,
+  createCarsErrorBarOverlay as createEncodedLayerInferenceProgram
+} from "../../../examples/cars-error-bar/program.js";
 
 export function createRuleGeometryProgram() {
   const { rows: ruleRows } = createRuleGeometryReferenceValues();

@@ -17,7 +17,7 @@ Cars `Origin`별 mean `Acceleration` 95% CI chart를 independent interval values
 - [x] Mark-independent encoded-layer inference contract
 - [x] `encoded-layer-inference` target chain and primitive overlay
 - [x] `encoded-layer-inference` metadata and 2× `primitive.png`
-- [ ] Gate B.1 user visual confirmation
+- [x] Gate B.1 user visual confirmation
 - [x] STEP status, conceptual commit and push
 
 ## Gate B

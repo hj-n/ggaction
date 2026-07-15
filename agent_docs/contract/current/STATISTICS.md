@@ -2,6 +2,74 @@
 
 Current direct-action contracts for this domain. Shared notation and lifecycle rules live in [`../README.md`](../README.md).
 
+## `createIntervalData`
+
+- Signature: `createIntervalData({ id, source?, field, groupBy?, center?, extent?, level?, as? })`.
+- `id`: required new immutable derived-dataset ID. `source` defaults to current data.
+- `field`: finite quantitative input field. Missing and non-finite rows are omitted.
+- `groupBy`: one field, a unique field array, or omission for one ungrouped summary. Group output follows
+  source first appearance.
+- Defaults: `center: "mean"`, `extent: "ci"`, `level: 0.95`. Mean supports `stderr`, sample `stdev`, and
+  two-sided Student-t `ci`; median supports only `iqr` and does not accept `level`.
+- `as`: optional distinct `{ center, lower, upper }` output fields. Omission namespaces all three from `id`.
+- Effect: wrapped `createDerivedData` records complete interval provenance and wrapped
+  `materializeIntervalData` stores owned concrete rows rounded to a deterministic 12-decimal boundary.
+  It creates no graphics and never changes source values.
+
+### Formal values — `createIntervalData`
+
+- Implemented: `createIntervalData({ id: UserId; source?: UserId; field: FieldName; groupBy?: FieldName | readonly FieldName[]; center?: "mean" | "median"; extent?: "stderr" | "stdev" | "ci" | "iqr"; level?: UnitIntervalExclusive; as?: { center: FieldName; lower: FieldName; upper: FieldName } })`.
+- Planned (NOT IMPLEMENTED): —
+- Proposed (NOT IMPLEMENTED): —
+
+### Value coverage — `createIntervalData`
+
+- ✅ Covered: grouped/ungrouped output, first-appearance order, default mean/CI/0.95, stderr, sample stdev,
+  IQR, custom output fields, missing values, undersized groups, ownership, trace and invalid combinations.
+- ✅ Covered: independent cars Student-t fixtures and interval containment invariants.
+- Evidence: `test/unit/actions/data/interval-data.test.js`,
+  `test/unit/grammar/transforms/interval.test.js`, and
+  `test/unit/grammar/transforms/interval-reference.test.js`.
+
+## `createErrorBar`
+
+- Current signature: `createErrorBar({ id?, target?, data?, x?, y?, groupBy?, coordinate? } = {})`.
+- Current implementation creates one vertical statistical error bar: x is nominal, ordinal, or temporal;
+  y is quantitative. Statistical defaults are mean/Student-t CI/0.95.
+- With explicit x/y, `data` defaults to current or unique data, `coordinate` to `"main"`, x scale to `"x"`,
+  and y scale to `"y"` with `nice: true, zero: false`.
+- With an omitted channel, source selection is explicit `target` → current eligible encoded layer → unique
+  eligible encoded layer → error. It reuses persisted data, coordinate and compatible x/y scale IDs by
+  semantic capability, independently of source mark type.
+- The independent x field is always statistical grouping. A persisted `group` encoding adds its field;
+  color is appearance and never silently becomes grouping. Two quantitative axes or multiple source layers
+  require explicit disambiguation.
+- Omitted `id` resolves once to `"errorBar"`; child data and rules are namespaced as
+  `errorBarIntervalData`, `errorBarLowerCap`, and `errorBarUpperCap`.
+- Effect: wrapped `createIntervalData`, main `createRuleMark`, endpoint/style assignments and two wrapped
+  `createErrorBarCap` components produce concrete lines. Current caps are always enabled, 8 logical pixels,
+  `#4c78a8`, width `2`, solid and opacity `1`. Their fixed span is graphical config and remains 8px through
+  Canvas/scale rematerialization. Interval provenance restores `mean(field)` axis titles; a point source keeps
+  its primary field title.
+
+### Formal values — `createErrorBar`
+
+- Implemented: `createErrorBar({ id?: UserId; target?: UserId; data?: UserId; x?: { field?: FieldName; fieldType?: "nominal" | "ordinal" | "temporal"; scale?: PositionScale }; y?: { field?: FieldName; center?: "mean" | "median"; extent?: "stderr" | "stdev" | "ci" | "iqr"; level?: UnitIntervalExclusive; scale?: PositionScale }; groupBy?: FieldName; coordinate?: UserId } = {})` for vertical statistical intervals.
+- Planned (NOT IMPLEMENTED): horizontal orientation, explicit center/lower/upper fields, caps off, cap size,
+  stroke, width, dash and opacity parameters.
+- Proposed (NOT IMPLEMENTED): —
+
+### Value coverage — `createErrorBar`
+
+- ✅ Covered: explicit canonical call, zero-option current-layer inference, explicit target, unique/ambiguous
+  sources, two-quantitative-axis rejection, point and line source marks, semantic group reuse and color exclusion.
+- ✅ Covered: deterministic namespacing, complete child trace, fixed cap span, Canvas rematerialization,
+  primitive/public semantic-graphic-Canvas equivalence and atomic failure.
+- ⚠️ Partial: current custom center/extent/level forwarding is covered by interval child tests rather than a
+  visual variant for every statistic.
+- Evidence: `test/unit/actions/error-bars/create-error-bar.test.js` and
+  `test/charts/cars-error-bar/primitive.test.js`, `test/charts/cars-error-bar/public.test.js`.
+
 ## `createRegression`
 
 - Signature: `createRegression({ target?, x?, y?, groupBy?, method?, degree?, span?, confidence?, interval?, band?, line? })`

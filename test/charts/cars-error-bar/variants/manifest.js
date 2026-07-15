@@ -5,7 +5,11 @@ import {
   createErrorBarBaselinePrimitives,
   createRuleGeometryPrimitives
 } from "../primitive.program.js";
-import { createRuleGeometryProgram } from "../public.program.js";
+import {
+  createEncodedLayerInferenceProgram,
+  createErrorBarProgram,
+  createRuleGeometryProgram
+} from "../public.program.js";
 import {
   ERROR_BAR_COLOR,
   ERROR_BAR_LAYOUT,
@@ -125,6 +129,7 @@ export const visualVariants = Object.freeze([
     title: "Mean Acceleration Error Bars",
     callChain: baselineCallChain,
     primitive: createErrorBarBaselinePrimitives(loadCars()),
+    userFacing: createErrorBarProgram(loadCars()),
     width: ERROR_BAR_LAYOUT.width,
     height: ERROR_BAR_LAYOUT.height,
     colors: [ERROR_BAR_COLOR],
@@ -138,6 +143,7 @@ export const visualVariants = Object.freeze([
     title: "Encoded Layer Error-Bar Inference",
     callChain: encodedLayerInferenceCallChain,
     primitive: createEncodedLayerInferencePrimitives(loadCars()),
+    userFacing: createEncodedLayerInferenceProgram(loadCars()),
     width: ERROR_BAR_LAYOUT.width,
     height: ERROR_BAR_LAYOUT.height,
     colors: [ERROR_BAR_COLOR],

@@ -76,6 +76,12 @@ The main, extension, and PNG entry points include TypeScript declarations.
     </a>
     <a class="docs-chart-gallery__title" href="./tutorials/density-area/">Density area</a>
   </article>
+  <article>
+    <a class="docs-chart-gallery__image" href="./assets/images/cars-error-bar.png" aria-label="Open the full-size error-bar chart">
+      <img src="./assets/images/cars-error-bar.png" alt="Mean acceleration by origin with 95% confidence intervals" width="1440" height="920" loading="lazy">
+    </a>
+    <a class="docs-chart-gallery__title" href="./tutorials/error-bar/">Error bar</a>
+  </article>
 </div>
 
 ## Go deeper
@@ -121,6 +127,7 @@ Open one of the runnable repository examples:
 - `http://localhost:4173/examples/jobs-grouped-bar/`
 - `http://localhost:4173/examples/cars-regression-scatterplot/`
 - `http://localhost:4173/examples/cars-density-area/`
+- `http://localhost:4173/examples/cars-error-bar/`
 
 Those browser examples import `../../src/index.js` directly. The code below is
 the complete module used by `examples/getting-started/`, so it runs immediately
@@ -198,6 +205,8 @@ actions. It does not compile `semanticSpec` during rendering.
   [jobs grouped bar tutorial](./tutorials/grouped-bar.md).
 - Layer grouped linear fits and confidence bands in the
   [regression scatterplot tutorial](./tutorials/regression-scatterplot.md).
+- Summarize grouped means and confidence intervals in the
+  [error-bar tutorial](./tutorials/error-bar.md).
 - Check the [action index](./reference/actions.md) for signatures and defaults.
 - Copy a minimal flow from the [chart recipes](./recipes/index.md).
 - Resolve common inference and layout errors with
@@ -218,6 +227,7 @@ Build complete charts before exploring individual API options.
 | Bar chart | bar | ordinal `encodeX`, aggregate `encodeY`, grouped `encodeColor` | Side-by-side aggregate bars |
 | Regression scatterplot | point + area + line | `filterData`, appearance encodings, `createRegression` | Grouped fits and confidence bands |
 | Density area | area | `encodeDensity`, grouped `encodeColor` | Overlaid probability densities |
+| Error bar | rule | `createErrorBar` | Grouped mean confidence intervals |
 
 Choose the chart whose semantic relationship matches the question you want to
 answer. The bar tutorial uses grouped bars as its current example; grouping is
@@ -264,6 +274,13 @@ Derive grouped kernel-density values and overlay translucent,
 zero-baseline areas with a top multi-column legend.
 
 [Build the cars density area chart](./density-area.md)
+
+## Error-bar chart
+
+Derive grouped mean confidence intervals and materialize vertical rules with
+fixed-width caps.
+
+[Build the cars error-bar chart](./error-bar.md)
 
 <!-- Source: /tutorials/scatterplot/ -->
 
@@ -1057,6 +1074,97 @@ program
 - Continue with [Encodings](../api/encodings.md),
   [Legends](../api/legends.md), and [Scale options](../api/scales.md).
 
+<!-- Source: /tutorials/error-bar/ -->
+
+# Error-Bar Chart Tutorial
+
+![Mean acceleration by origin with 95% confidence intervals](../assets/images/cars-error-bar.png)
+
+This chart summarizes car acceleration by Origin. `createErrorBar` derives one
+mean and two-sided 95% Student-t confidence interval per group, then creates
+concrete vertical rules and fixed-width caps. The source rows remain immutable.
+The repository contains a
+[runnable browser example](https://github.com/hj-n/ggaction/tree/main/examples/cars-error-bar)
+and its [complete program](https://github.com/hj-n/ggaction/blob/main/examples/cars-error-bar/program.js).
+
+```javascript
+import { chart, render } from "../../src/index.js";
+
+const response = await fetch("../../data/cars.json");
+if (!response.ok) throw new Error(`Failed to load cars: ${response.status}`);
+const cars = await response.json();
+
+const program = chart()
+  .createCanvas({
+    width: 720,
+    height: 460,
+    margin: { top: 90, right: 40, bottom: 70, left: 80 }
+  })
+  .createData({ values: cars })
+  .createErrorBar({
+    x: { field: "Origin", fieldType: "nominal" },
+    y: { field: "Acceleration" }
+  })
+  .createGuides()
+  .createTitle({
+    text: "Mean Acceleration by Origin",
+    subtitle: "95% confidence intervals"
+  });
+
+render(program, document.querySelector("#chart").getContext("2d"));
+```
+
+## What the actions establish
+
+| Stage | Semantic result | Graphical result |
+| --- | --- | --- |
+| `createErrorBar` | Immutable grouped interval rows and three rule layers | Main intervals and two 8px caps per Origin |
+| `createGuides` | Ordinal x, quantitative y, axes, horizontal grid | Grid behind rules and axes above them |
+| `createTitle` | Title and subtitle | Plot-aligned text above the chart |
+
+The first dataset ID, error-bar ID, source, coordinate, grouping, statistic,
+and appearance are all inferred. The explicit x and y fields are the only
+decisions needed when no encoded source layer exists.
+
+## Add intervals to an existing layer
+
+If a compatible layer already has x and y encodings, the shortest call is
+`createErrorBar()`:
+
+```javascript
+const overlay = chart()
+  .createCanvas()
+  .createData({ values: cars })
+  .createPointMark()
+  .encodeX({ field: "Origin", fieldType: "ordinal" })
+  .encodeY({ field: "Acceleration" })
+  .createErrorBar();
+```
+
+The interval reuses that layer's data, coordinate, and position scales. This
+works by encoded-layer capability rather than by a point-specific rule.
+
+## Key action trace
+
+```text
+program
+├─ createErrorBar
+│  ├─ createIntervalData
+│  ├─ createRuleMark
+│  ├─ encodeX / encodeY / encodeY2
+│  ├─ appearance encodings
+│  ├─ createErrorBarCap
+│  └─ createErrorBarCap
+├─ createGuides
+└─ createTitle
+```
+
+## Run and continue
+
+- Serve the repository root and open `examples/cars-error-bar/`.
+- Read the exact [error-bar options](../api/error-bars.md).
+- Use [Data](../api/data.md) when interval rows are needed independently.
+
 <!-- Source: /recipes/ -->
 
 # Chart Recipes
@@ -1073,6 +1181,7 @@ required author decisions from library inference.
 | Bar chart | ordinal x, quantitative y | mean y and band geometry | [Bar chart](./bar-chart.md) |
 | Regression scatterplot | point x/y and optional group | grouped OLS, confidence bands, shared guides | [Regression scatterplot](./regression-scatterplot.md) |
 | Density area | quantitative value and optional group | KDE data, scales, closed paths | [Density area](./density-area.md) |
+| Error bar | independent x and quantitative y | mean 95% CI, rules, caps, guides | [Error bar](./error-bar.md) |
 
 Every flow begins with `createCanvas`, `createData`, and a semantic mark. Add
 explicit IDs only when the current program state contains multiple compatible
@@ -1367,6 +1476,44 @@ options only when that composition is intentional.
 [Encodings](../api/encodings.md#atomic-density) ·
 [Legends](../api/legends.md)
 
+<!-- Source: /recipes/error-bar/ -->
+
+# Error-Bar Recipe
+
+## Minimal flow
+
+```javascript
+const program = chart()
+  .createCanvas()
+  .createData({ values })
+  .createErrorBar({
+    x: { field: "group", fieldType: "nominal" },
+    y: { field: "value" }
+  })
+  .createGuides();
+```
+
+## You must decide
+
+- Independent nominal, ordinal, or temporal x field
+- Quantitative y field
+
+## The library infers
+
+- Current dataset and Cartesian coordinate
+- Mean with a two-sided 95% Student-t confidence interval
+- One immutable summary row per first-appearance group
+- Vertical main rules, 8px caps, ordinal/temporal x, and quantitative y
+- Axes, horizontal grid, and statistical axis title
+
+When one compatible layer is already encoded, call `createErrorBar()` without
+options to reuse its fields, data, coordinate, and scales.
+
+## Continue
+
+[Error-bar tutorial](../tutorials/error-bar.md) ·
+[Error-bar API](../api/error-bars.md)
+
 <!-- Source: /troubleshooting/ -->
 
 # Troubleshooting
@@ -1551,6 +1698,7 @@ margins must leave positive plot bounds.
 | `filterMark` | `filterMark({ field, oneOf })` | Target: current or unique mark; source and derived ID from target | Immutable derived dataset, mark rebind, and concrete rematerialization |
 | `createRegressionData` | `createRegressionData({ id: "fit", x, y })` | Source: current dataset; linear OLS; confidence `0.95` | Immutable derived predictions and mean-response interval |
 | `createDensityData` | `createDensityData({ id: "density", field })` | Source: current dataset; Gaussian/unit density; 100 steps; automatic bandwidth | Immutable KDE rows and density provenance |
+| `createIntervalData` | `createIntervalData({ id: "summary", field })` | Source: current dataset; ungrouped mean 95% CI | Immutable center/lower/upper rows and interval provenance |
 
 ## `createData({ id?, values })`
 
@@ -1700,6 +1848,36 @@ and observed unique x order. Linear and polynomial output includes fixed
 `__regression_ci_lower` / `__regression_ci_upper` fields; LOESS is line-only.
 Source values remain unchanged.
 
+## `createIntervalData({ id, source?, field, groupBy?, center?, extent?, level?, as? })`
+
+Create immutable grouped interval-summary rows independently from an error-bar
+mark.
+
+```javascript
+program.createIntervalData({
+  id: "accelerationIntervals",
+  field: "Acceleration",
+  groupBy: "Origin"
+});
+```
+
+| Option | Type | Default |
+| --- | --- | --- |
+| `id` | new dataset ID | required |
+| `source` | existing dataset ID | current dataset |
+| `field` | quantitative field name | required |
+| `groupBy` | field name or array of field names | one ungrouped interval |
+| `center` | `"mean"` or `"median"` | `"mean"` |
+| `extent` | `"stderr"`, `"stdev"`, `"ci"`, or `"iqr"` | `"ci"` |
+| `level` | number strictly between `0` and `1` | `0.95` for CI |
+| `as` | `{ center, lower, upper }` distinct field names | ID-namespaced fields |
+
+Mean supports standard error, sample standard deviation, and two-sided
+Student-t confidence intervals. Median requires interquartile range, and IQR
+requires median. Group order follows first appearance. Missing group values,
+non-finite measures, and undersized mean groups are omitted; valid source rows
+and the source dataset remain unchanged.
+
 ## `createDensityData({ id, source?, field, groupBy?, bandwidth?, extent?, steps?, kernel?, normalization?, as? })`
 
 Create an immutable kernel-density dataset. This is an advanced data
@@ -1741,6 +1919,8 @@ and does not permit an empty `oneOf` list. Regression rejects missing or
 non-finite fields, method-specific undersized groups, and constant-x groups.
 Density rejects empty valid input, non-positive bandwidth, degenerate automatic
 extent or bandwidth, invalid output fields, and fewer than two sample steps.
+Intervals reject incompatible center/extent pairs, invalid confidence levels,
+duplicate grouping fields, and colliding output field names.
 
 ## Related
 
@@ -2263,6 +2443,115 @@ Failed calls leave the earlier immutable program unchanged.
 [Regression scatterplot tutorial](../tutorials/regression-scatterplot.md) ·
 [Data](./data.md) · [Marks](./marks.md) · [Encodings](./encodings.md) ·
 [Guides](./guides.md)
+
+<!-- Source: /api/error-bars/ -->
+
+# Error Bars
+
+`createErrorBar()` derives grouped statistical intervals and materializes one
+vertical rule with two fixed-width caps per group. It can infer its inputs from
+an already encoded layer or accept the two required fields directly.
+
+## At a glance
+
+| Action | Shortest call | Result |
+| --- | --- | --- |
+| `createErrorBar` | `createErrorBar()` after one eligible encoded layer | Mean 95% confidence intervals sharing that layer's data, coordinate, and scales |
+
+## `createErrorBar(options?)`
+
+```javascript
+const intervals = chart()
+  .createCanvas()
+  .createData({ values })
+  .createErrorBar({
+    x: { field: "group", fieldType: "nominal" },
+    y: { field: "value" }
+  });
+```
+
+```typescript
+createErrorBar({
+  id?: string;
+  target?: string;
+  data?: string;
+  x?: {
+    field?: string;
+    fieldType?: "nominal" | "ordinal" | "temporal";
+    scale?: ScaleOptions;
+  };
+  y?: {
+    field?: string;
+    center?: "mean" | "median";
+    extent?: "stderr" | "stdev" | "ci" | "iqr";
+    level?: number;
+    scale?: ScaleOptions;
+  };
+  groupBy?: string;
+  coordinate?: string;
+} = {})
+```
+
+The current action creates vertical statistical intervals. The x field must be
+nominal, ordinal, or temporal; y must be quantitative. Mean defaults to a
+two-sided `0.95` Student-t confidence interval. Median is supported only with
+`extent: "iqr"`. A supplied `level` is valid only for `extent: "ci"`.
+
+The independent x field is always part of the grouping. `groupBy` can add one
+more grouping field when separate intervals are required at each x position.
+Group order follows first appearance in the source data. Groups without enough
+valid quantitative values are omitted.
+
+## Inference from an encoded layer
+
+```javascript
+const overlay = chart()
+  .createCanvas()
+  .createData({ values })
+  .createPointMark()
+  .encodeX({ field: "group", fieldType: "ordinal" })
+  .encodeY({ field: "value" })
+  .createErrorBar();
+```
+
+With omitted x and y, `target` selects an existing layer. Without `target`, the
+action uses the current eligible layer, then one unique eligible layer. The
+layer may use any compatible mark type; eligibility comes from its complete
+field-based x/y encodings. Data, coordinate, and x/y scale IDs are reused.
+
+A semantic `group` encoding is inferred as statistical grouping. Color remains
+appearance and does not silently change the statistic. Ambiguous eligible
+layers fail instead of selecting one arbitrarily.
+
+## Defaults and graphical result
+
+| Behavior | Default |
+| --- | --- |
+| ID | `"errorBar"` when available |
+| Center and extent | mean, confidence interval |
+| Confidence level | `0.95` |
+| Coordinate | inferred, otherwise `"main"` Cartesian |
+| Main rule and caps | `#4c78a8`, width `2`, solid, opacity `1` |
+| Cap width | `8` logical Canvas pixels |
+
+Caps preserve their logical-pixel width when the Canvas or positional scales
+change. `createGuides()` infers the independent field title and a statistical
+y title such as `mean(value)`.
+
+## Errors and current limitations
+
+The action rejects missing data, incompatible or ambiguous source layers,
+unsupported x/y orientation, invalid statistics, and occupied generated IDs.
+Failed calls leave the earlier immutable program unchanged.
+
+Horizontal intervals, precomputed lower/upper fields, cap removal, custom cap
+size, and custom error-bar appearance are not supported by this action yet.
+
+## Related
+
+[Error-bar tutorial](../tutorials/error-bar.md) ·
+[Interval data](./data.md#createintervaldata-id-source-field-groupby-center-extent-level-as) ·
+[Rule marks](./marks.md) · [Guides](./guides.md)
 
 <!-- Source: /api/guides/ -->
 
@@ -4355,19 +4644,19 @@ chart-authoring API does not support that combination.
 
 ## Complete chart support
 
-| Capability | Scatterplot | Line chart | Histogram | Bar chart | Regression scatterplot | Density area |
-| --- | --- | --- | --- | --- | --- | --- |
-| Semantic mark | point | line | bar | bar | point + area + line | area |
-| Position | quantitative x/y | temporal x, aggregate y | binned x, count y | ordinal x, aggregate y | shared quantitative x/y | value + density x/y |
-| Nominal color | point fill | series stroke | five bar layouts | five bar layouts | point fill + fit stroke | overlay/stack/fill/diverging area |
-| Stroke dash | — | nominal or constant; 4 named styles | — | — | — | — |
-| Constant appearance | radius | stroke width, 8 curves | — | band or logical-pixel width | opacity, band fill, line width | opacity |
-| Automatic axes | linear | UTC time and linear | bin-aligned and linear | ordinal and linear | shared linear | source value + density |
-| Automatic grid | horizontal | horizontal | horizontal | horizontal | shared horizontal | horizontal; vertical optional |
-| Legend | point color + shape | categorical | categorical | categorical | composite color/shape/line + size | categorical top/right/bottom |
-| Chart title | optional | optional | optional | optional | optional | optional |
-| Browser Canvas | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Node PNG | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Capability | Scatterplot | Line chart | Histogram | Bar chart | Regression scatterplot | Density area | Error bar |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Semantic mark | point | line | bar | bar | point + area + line | area | rule |
+| Position | quantitative x/y | temporal x, aggregate y | binned x, count y | ordinal x, aggregate y | shared quantitative x/y | value + density x/y | categorical/temporal x, interval y |
+| Nominal color | point fill | series stroke | five bar layouts | five bar layouts | point fill + fit stroke | overlay/stack/fill/diverging area | — |
+| Stroke dash | — | nominal or constant; 4 named styles | — | — | — | — | fixed solid |
+| Constant appearance | radius | stroke width, 8 curves | — | band or logical-pixel width | opacity, band fill, line width | opacity | fixed rule and 8px caps |
+| Automatic axes | linear | UTC time and linear | bin-aligned and linear | ordinal and linear | shared linear | source value + density | categorical/temporal x and linear y |
+| Automatic grid | horizontal | horizontal | horizontal | horizontal | shared horizontal | horizontal; vertical optional | horizontal |
+| Legend | point color + shape | categorical | categorical | categorical | composite color/shape/line + size | categorical top/right/bottom | — |
+| Chart title | optional | optional | optional | optional | optional | optional | optional |
+| Browser Canvas | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Node PNG | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ## Shared foundations
 
@@ -4375,7 +4664,7 @@ chart-authoring API does not support that combination.
 | --- | --- |
 | Program model | Immutable `ChartProgram`, hierarchical action trace |
 | Canvas | Create/edit width, height, background, margin |
-| Data | Immutable arrays of plain row objects, named filters, grouped linear/polynomial/LOESS regression, and grouped kernel-density derivations |
+| Data | Immutable arrays of plain row objects, named filters, grouped interval summaries, grouped linear/polynomial/LOESS regression, and grouped kernel-density derivations |
 | Coordinates | Named Cartesian and Polar semantic resources; x/y use Cartesian |
 | Scales | Linear, UTC time, ordinal position, color, named/direct stroke dash, and padded band-local xOffset |
 | Aggregates | count, sum, mean, median, min/max, distinct/valid/missing, sample/population dispersion, quartiles, standard error, normal 95% mean endpoints, parameterized quantile, and ordered first/last |
@@ -4391,6 +4680,8 @@ and density derivations, facets, interactive legends, and program composition
 are not implemented.
 Categorical legends support all four edges; point composite and size legends
 support right and left side layouts.
+Error bars currently support vertical statistical intervals only; horizontal,
+explicit-field, cap-removal, and custom-style variants are not implemented.
 
 <!-- Source: /reference/actions/ -->
 
@@ -4490,6 +4781,18 @@ Create immutable KDE rows on one shared inclusive sample grid. Source defaults
 to current data, steps to `100`, bandwidth to an automatic Scott-rule estimate,
 kernel to `"gaussian"`, and normalization to `"unit"`.
 [Data](../api/data.md)
+
+### `createIntervalData`
+
+```javascript
+createIntervalData({
+  id, source?, field, groupBy?, center?, extent?, level?, as?
+})
+```
+
+Create immutable grouped center/lower/upper summary rows. Mean supports
+standard error, sample standard deviation, and Student-t confidence intervals;
+median supports interquartile range. [Data](../api/data.md)
 
 ### `createPointMark`
 
@@ -4792,6 +5095,16 @@ Infer an eligible point layer and create immutable fitted data, optional grouped
 interval-band paths, and grouped line paths. Method defaults to `"linear"`;
 polynomial degree to `2`; LOESS span to `0.75`.
 [Regression](../api/regression.md)
+
+### `createErrorBar`
+
+```javascript
+createErrorBar({ id?, target?, data?, x?, y?, groupBy?, coordinate? } = {})
+```
+
+Create vertical grouped statistical intervals. With one eligible encoded
+layer, the shortest call infers its fields, data, coordinate, and scales.
+[Error bars](../api/error-bars.md)
 
 ### `createGuides`
 

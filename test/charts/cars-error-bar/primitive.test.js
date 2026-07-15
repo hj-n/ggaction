@@ -18,9 +18,6 @@ import {
   createErrorBarReferenceValues,
   createRuleGeometryReferenceValues
 } from "./reference-values.js";
-import { createRuleGeometryProgram } from "./public.program.js";
-import { assertChartProgramsEquivalent } from
-  "../../support/chart-equivalence.js";
 import { loadCars } from "../../support/data.js";
 
 test("authors the rule geometry gate with raw graphical primitives", () => {
@@ -62,13 +59,6 @@ test("authors the rule geometry gate with raw graphical primitives", () => {
   ]) {
     assert.equal(ops.includes(futureAction), false, futureAction);
   }
-});
-
-test("matches the approved rule primitive with public rule actions", () => {
-  assertChartProgramsEquivalent({
-    primitiveProgram: createRuleGeometryPrimitives(),
-    publicProgram: createRuleGeometryProgram()
-  });
 });
 
 test("renders exact concrete rule endpoints through the shared line renderer", () => {

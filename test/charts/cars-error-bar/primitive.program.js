@@ -353,6 +353,10 @@ export function createErrorBarBaselinePrimitives(cars) {
     })
     .editSemantic({ property: "layer[errorBar].encoding.y2.scale", value: "y" })
     .editSemantic({
+      property: "layer[errorBar].encoding.strokeDash.datum",
+      value: "solid"
+    })
+    .editSemantic({
       property: "layer[errorBarLowerCap].mark.type",
       value: "rule"
     })
@@ -389,6 +393,10 @@ export function createErrorBarBaselinePrimitives(cars) {
       value: "y"
     })
     .editSemantic({
+      property: "layer[errorBarLowerCap].encoding.strokeDash.datum",
+      value: "solid"
+    })
+    .editSemantic({
       property: "layer[errorBarUpperCap].mark.type",
       value: "rule"
     })
@@ -423,6 +431,10 @@ export function createErrorBarBaselinePrimitives(cars) {
     .editSemantic({
       property: "layer[errorBarUpperCap].encoding.y.scale",
       value: "y"
+    })
+    .editSemantic({
+      property: "layer[errorBarUpperCap].encoding.strokeDash.datum",
+      value: "solid"
     })
     .editSemantic({ property: "guide.axis.x.scale", value: "x" })
     .editSemantic({ property: "guide.axis.x.coordinate", value: "main" })
@@ -675,6 +687,10 @@ export function createEncodedLayerInferencePrimitives(cars) {
     })
     .editSemantic({ property: "layer[errorBar].encoding.y2.scale", value: "y" })
     .editSemantic({
+      property: "layer[errorBar].encoding.strokeDash.datum",
+      value: "solid"
+    })
+    .editSemantic({
       property: "layer[errorBarLowerCap].mark.type",
       value: "rule"
     })
@@ -711,6 +727,10 @@ export function createEncodedLayerInferencePrimitives(cars) {
       value: "y"
     })
     .editSemantic({
+      property: "layer[errorBarLowerCap].encoding.strokeDash.datum",
+      value: "solid"
+    })
+    .editSemantic({
       property: "layer[errorBarUpperCap].mark.type",
       value: "rule"
     })
@@ -745,6 +765,10 @@ export function createEncodedLayerInferencePrimitives(cars) {
     .editSemantic({
       property: "layer[errorBarUpperCap].encoding.y.scale",
       value: "y"
+    })
+    .editSemantic({
+      property: "layer[errorBarUpperCap].encoding.strokeDash.datum",
+      value: "solid"
     })
     .createGraphics({
       id: "errorBar",

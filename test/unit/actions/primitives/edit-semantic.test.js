@@ -307,8 +307,11 @@ test("validates resolved interval provenance needed by primitive authoring", () 
     .editSemantic({ property: "dataset[summary].transform", value: [transform] });
 
   assert.deepEqual(program.semanticSpec.datasets[1].transform, [transform]);
+  assert.doesNotThrow(() => base.editSemantic({
+    property: "dataset[ungrouped].transform",
+    value: [{ ...transform, groupBy: [] }]
+  }));
   for (const invalid of [
-    { ...transform, groupBy: [] },
     { ...transform, center: "median" },
     { ...transform, extent: "stderr", level: 0.95 },
     { ...transform, level: 1 },

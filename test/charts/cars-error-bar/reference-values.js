@@ -127,6 +127,10 @@ function freezeRows(rows) {
   return Object.freeze(rows.map(row => Object.freeze(row)));
 }
 
+function stableNumber(value) {
+  return Number(value.toFixed(12));
+}
+
 export function createErrorBarReferenceValues(cars) {
   const statistics = freezeRows(createMeanConfidenceIntervalReference(cars, {
     field: "Acceleration",
@@ -136,9 +140,9 @@ export function createErrorBarReferenceValues(cars) {
   }));
   const rows = freezeRows(statistics.map(row => ({
     Origin: row.Origin,
-    [ERROR_BAR_FIELDS.center]: row.mean,
-    [ERROR_BAR_FIELDS.lower]: row.lower,
-    [ERROR_BAR_FIELDS.upper]: row.upper
+    [ERROR_BAR_FIELDS.center]: stableNumber(row.mean),
+    [ERROR_BAR_FIELDS.lower]: stableNumber(row.lower),
+    [ERROR_BAR_FIELDS.upper]: stableNumber(row.upper)
   })));
   const transform = Object.freeze({
     type: "interval",

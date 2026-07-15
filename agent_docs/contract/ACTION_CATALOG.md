@@ -15,6 +15,7 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | user-facing | [`filterMark`](current/CORE.md#filtermark) | core | Aggregate create-only | Intentional | ✅ / ✅ / ✅ |
 | user-facing | [`createDensityData`](current/CORE.md#createdensitydata) | core | Immutable create-only | Intentional | ✅ / ✅ / ⚠️ |
 | user-facing | [`createRegressionData`](current/CORE.md#createregressiondata) | core | Immutable create-only | Intentional | ✅ / ✅ / ⚠️ |
+| user-facing | [`createIntervalData`](current/STATISTICS.md#createintervaldata) | statistics | Immutable create-only | Intentional | ✅ / ✅ / ✅ |
 | user-facing | [`createPointMark`](current/MARKS.md#createpointmark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editPointMark`](current/MARKS.md#editpointmark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`createLineMark`](current/MARKS.md#createlinemark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
@@ -43,6 +44,7 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | user-facing | [`editDensity`](current/ENCODINGS.md#editdensity) | encodings | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`encodeBarWidth`](current/ENCODINGS.md#encodebarwidth) | encodings | Assignment | Reassignment — Implemented | ✅ / ✅ / ✅ |
 | user-facing | [`createRegression`](current/STATISTICS.md#createregression) | statistics | Aggregate create-only | Intentional | ✅ / ✅ / ⚠️ |
+| user-facing | [`createErrorBar`](current/STATISTICS.md#createerrorbar) | statistics | Aggregate create-only | Intentional | ✅ / ✅ / ✅ |
 | user-facing | [`createAxes`](current/AXES.md#createaxes) | axes | Aggregate create-only | Intentional | ✅ / ✅ / ⚠️ |
 | user-facing | [`createXAxis`](current/AXES.md#createxaxis) | axes | Aggregate create-only | Intentional | ✅ / ✅ / ⚠️ |
 | user-facing | [`createYAxis`](current/AXES.md#createyaxis) | axes | Aggregate create-only | Intentional | ✅ / ✅ / ✅ |
@@ -92,8 +94,6 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 
 | Action | Readiness | Contract |
 | --- | --- | --- |
-| `createIntervalData` | accepted | [Open](planned/DATA_AND_STATISTICS.md#interval-summary-data) |
-| `createErrorBar` | accepted | [Open](planned/COMPOSITE_MARKS.md#createerrorbar) |
 | `createErrorBand` | accepted | [Open](planned/COMPOSITE_MARKS.md#createerrorband) |
 | `createBoxPlot` | accepted | [Open](planned/COMPOSITE_MARKS.md#createboxplot) |
 | `encodeXRange` | accepted | [Open](planned/ENCODINGS.md#horizontal-ranged-position) |
@@ -103,6 +103,8 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 
 | Kind | Capability | Readiness | Contract |
 | --- | --- | --- | --- |
+| composition | Horizontal and explicit error-bar intervals | accepted | [Open](planned/COMPOSITE_MARKS.md#createerrorbar-remaining-variants) |
+| parameter | Error-bar cap and appearance options | accepted | [Open](planned/COMPOSITE_MARKS.md#createerrorbar-remaining-variants) |
 | composition | Regression band delegation through error band | accepted | [Open](planned/COMPOSITE_MARKS.md#regression-band-delegation) |
 | composition | Composite mark ownership and storage | accepted | [Open](planned/COMPOSITE_MARKS.md#composite-ownership-and-storage) |
 | behavior | encodeYRange reassignment | accepted | [Open](planned/ENCODINGS.md#positional-reassignment) |

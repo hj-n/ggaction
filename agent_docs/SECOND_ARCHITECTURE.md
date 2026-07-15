@@ -576,6 +576,7 @@ size scale은 concrete palette 또는 range를 저장한다.
 - legend layout, symbol recipe, border와 typography
 - title/subtitle layout과 typography
 - Canvas margin
+- rule cap data-space anchor와 fixed logical-pixel span
 
 이 값은 `semanticSpec`에 넣지 않고 `materializationConfigs`에 한 번만 저장한다. 실제
 draw property는 다시 `graphicSpec`에 concrete하게 기록한다.
@@ -681,7 +682,7 @@ createPointMark / createLineMark / createBarMark / createAreaMark / createRuleMa
 encodeX / encodeY / encodeX2 / encodeY2 / encodeStroke / encodeStrokeWidth
 encodeColor / encodeSize / encodeShape / encodeStrokeDash / encodeOpacity
 encodeHistogram / encodeDensity
-createRegression
+createRegression / createErrorBar
 createGuides
 createTitle / editTitle
 ```
@@ -696,7 +697,7 @@ default를 사용한다.
 ```text
 createCoordinate
 createScale
-createDerivedData
+createDerivedData / createIntervalData
 encodeYRange / encodeXOffset / encodeGroup
 createXAxis / createYAxis
 axis line, tick, label, title component actions
@@ -837,6 +838,7 @@ semantic definition을 받아 deterministic result를 반환한다.
 - line/area series grouping과 stable ordering
 - OLS coefficient와 Student-t mean-response confidence interval
 - KDE bandwidth, four kernel formulas, unit/count normalization과 shared sample grid
+- grouped mean/median interval과 Student-t confidence interval
 - Canvas margin normalization과 plot bounds
 
 Action은 이 계산을 호출하고 semantic provenance와 concrete output을 저장한다. 계산을
@@ -937,6 +939,8 @@ planned contract이므로 시각 구현 승인을 받기 전에는 지원하지 
   Endpoint 조합이 완성되면 responsible encoding action이 `rematerializeRuleMark`를 호출한다.
 - Constant stroke/width와 existing dash/opacity assignments는 materialization config에 저장되고 모든
   concrete line child에 적용된다. Renderer는 semantic endpoint나 full-span intent를 추론하지 않는다.
+- Composite cap은 ordinary x/y anchor encoding과 graphical `fixedSpan` config를 결합한다. Canvas 또는
+  scale 변경 시 span을 다시 concrete endpoint로 계산하며 renderer는 cap role이나 pixel span을 모른다.
 
 ### Bar
 
@@ -1149,6 +1153,27 @@ createRegression
 
 Target point mark의 x/y, coordinate, scale, color/shape grouping을 unique하게 infer할 수
 있다. Multiple group candidates가 있으면 `groupBy`를 요구한다.
+
+### Error bar
+
+```text
+createErrorBar
+├─ createIntervalData
+│  ├─ createDerivedData
+│  └─ materializeIntervalData
+├─ createRuleMark + encodeX/encodeY/encodeY2
+├─ appearance encoding actions
+├─ createErrorBarCap
+│  └─ materializeRuleSpan
+└─ createErrorBarCap
+   └─ materializeRuleSpan
+```
+
+현재 public 범위는 categorical/ordinal/temporal x와 quantitative y를 가진 vertical statistical
+interval이다. Existing encoded layer에서 data, coordinate, x/y field와 scale을 추론할 때 mark type이
+아니라 persisted encoding capability를 selector predicate로 검사한다. Color는 appearance이고
+`encoding.group`만 추가 statistical grouping으로 해석한다. Derived interval dataset, main rule과 caps는
+ordinary resource이며 별도 composite registry를 만들지 않는다.
 
 ### Guides
 
@@ -1448,6 +1473,7 @@ interval containment을 deterministic invariant로 검증한다.
 5. Filtered point, size/shape/opacity, grouped OLS line과 confidence band를 가진 regression
    scatterplot
 6. Grouped Gaussian KDE와 baseline-closed area를 가진 density area chart
+7. Grouped mean Student-t interval과 fixed-pixel caps를 가진 cars error-bar chart
 
 이 목록은 chart type별 별도 compiler가 있다는 뜻이 아니다. 같은 data, scale, mark,
 encoding, guide, layout, materialization primitive가 여러 vertical slice에서 재사용된다는
