@@ -547,9 +547,9 @@ createCoordinate({ id?, type?, layers? })
 createDerivedData({ id, source, transform })
 createRegressionBand({
   id, data, x, lower, upper, groupBy?, coordinate, xScale, yScale,
-  color?, opacity?, stroke?, strokeWidth?
+  color?, opacity?, stroke?, strokeWidth?, curve?
 })
-editRegressionBand({ target?, color?, opacity?, stroke?, strokeWidth? })
+editRegressionBand({ target?, color?, opacity?, stroke?, strokeWidth?, curve? })
 createRegressionLine({
   id, data, x, y, groupBy?, coordinate, xScale, yScale,
   colorScale?, strokeWidth?, curve?

@@ -93,12 +93,23 @@ test("records the regression aggregate and component hierarchy", () => {
     "createRegressionLine"
   ]);
   assert.deepEqual(node.children[1].children.map(child => child.op), [
-    "createAreaMark",
-    "encodeX",
-    "encodeYRange",
-    "encodeGroup",
-    "rematerializeAreaMark"
+    "createErrorBand",
+    "editSemantic"
   ]);
+  assert.deepEqual(
+    node.children[1].children[0].children.map(child => child.op),
+    [
+      "createAreaMark",
+      "encodeX",
+      "encodeYRange",
+      "editSemantic",
+      "encodeGroup"
+    ]
+  );
+  assert.equal(
+    program.semanticSpec.layers[1].encoding.y.title,
+    undefined
+  );
   assert.deepEqual(node.children[2].children.map(child => child.op), [
     "createLineMark",
     "encodeX",
@@ -278,6 +289,18 @@ test("requires explicit choices for ambiguous targets and groups", () => {
     /Unknown regression band option/
   );
   assert.throws(
+    () => pointProgram().createRegression({ band: { curve: "smooth" } }),
+    /Unsupported curve interpolation/
+  );
+  assert.throws(
+    () => pointProgram().createRegression({ band: { stroke: false } }),
+    /Area stroke must be a non-empty string/
+  );
+  assert.throws(
+    () => pointProgram().createRegression({ band: { strokeWidth: 2 } }),
+    /createRegressionBand strokeWidth requires stroke/
+  );
+  assert.throws(
     () => chart().createRegression(),
     /eligible quantitative point mark/
   );
@@ -309,4 +332,62 @@ test("requires explicit choices for ambiguous targets and groups", () => {
     () => pointProgram().createRegression({ method: "linear", degree: 2 }),
     /degree requires the polynomial method/
   );
+});
+
+test("rejects regression-band delegation when provenance does not match", () => {
+  const ordinary = chart()
+    .createCanvas({ width: 200, height: 120, margin: 10 })
+    .createData({ id: "rows", values: [
+      { x: 0, y: 1, low: 0, high: 2 },
+      { x: 1, y: 2, low: 1, high: 3 }
+    ] });
+  assert.throws(() => ordinary.createRegressionBand({
+    id: "band",
+    data: "rows",
+    x: "x",
+    lower: "low",
+    upper: "high",
+    coordinate: "main",
+    xScale: "x",
+    yScale: "y"
+  }), /requires a regression dataset with interval bounds/);
+
+  const derived = pointProgram().createRegressionData({
+    id: "fit",
+    source: "selectedCars",
+    x: "Displacement",
+    y: "Acceleration",
+    groupBy: "Origin"
+  });
+  assert.throws(() => derived.createRegressionBand({
+    id: "band",
+    data: "fit",
+    x: "Displacement",
+    lower: "__regression_ci_lower",
+    upper: "__regression_ci_upper",
+    coordinate: "main",
+    xScale: "x",
+    yScale: "y"
+  }), /fields and grouping must match regression provenance/);
+});
+
+test("reuses existing point scales without applying error-band defaults", () => {
+  const source = chart()
+    .createCanvas({ width: 240, height: 160, margin: 20 })
+    .createData({ values: [
+      { x: 0, y: 1 },
+      { x: 1, y: 2.5 },
+      { x: 2, y: 2 },
+      { x: 3, y: 4 },
+      { x: 4, y: 3.5 }
+    ] })
+    .createPointMark()
+    .encodeX({ field: "x" })
+    .encodeY({ field: "y" });
+  const beforeScales = source.semanticSpec.scales;
+  const program = source.createRegression();
+
+  assert.deepEqual(program.semanticSpec.scales, beforeScales);
+  assert.equal(program.semanticSpec.layers[1].encoding.x.scale, "x");
+  assert.equal(program.semanticSpec.layers[1].encoding.y.scale, "y");
 });

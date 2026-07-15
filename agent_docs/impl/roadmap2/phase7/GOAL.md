@@ -21,7 +21,7 @@ Complete chart contract:
 - [x] Gapminder vertical primitive 승인과 vertical ranged-area implementation
 - [x] Cars horizontal primitive 승인과 horizontal ranged-area implementation
 - [x] Curved boundary primitive 승인과 full option/rematerialization implementation
-- [ ] Regression band delegation compatibility
+- [x] Regression band delegation compatibility
 - [ ] Public docs, contract promotion, gallery와 Phase closeout
 
 ## 구현 범위

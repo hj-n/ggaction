@@ -92,6 +92,7 @@ program
 ├─ createRegression
 │  ├─ createRegressionData
 │  ├─ createRegressionBand
+│  │  └─ createErrorBand
 │  └─ createRegressionLine
 └─ createGuides
    ├─ createAxes

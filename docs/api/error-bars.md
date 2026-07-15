@@ -132,6 +132,8 @@ With omitted x and y, `target` selects an existing layer. Without `target`, the
 action uses the current eligible layer, then one unique eligible layer. The
 layer may use any compatible mark type; eligibility comes from its complete
 field-based x/y encodings. Data, coordinate, and x/y scale IDs are reused.
+Passing only an existing scale `id` also preserves that scale's stored domain,
+range, `nice`, and `zero` policy; interval defaults are used only for new scales.
 
 A semantic `group` encoding is inferred as statistical grouping. Color remains
 appearance and does not silently change the statistic. Ambiguous eligible

@@ -80,27 +80,6 @@ createErrorBand({
 - Status: Implemented. Both orientations, computed/explicit bounds, grouped paths, scale sharing, curves,
   advanced shared boundary appearance, rematerialization, trace and renderer parity are Current.
 
-## regression band delegation
-
-```text
-createRegression
-├─ createRegressionData
-├─ createRegressionBand
-│  └─ createErrorBand (explicit interval mode)
-└─ createRegressionLine
-```
-
-- `createRegressionBand` remains the regression-specific advanced action and compatibility boundary. It
-  validates regression result provenance and shared resources, then delegates graphical composition to
-  `createErrorBand` with the existing fitted/lower/upper fields.
-- `createRegression` keeps its current public hierarchy and default inference. Regression-specific naming,
-  confidence/method semantics and style forwarding stay owned by regression actions; generic error-band code
-  does not infer regression.
-- Equivalent regression programs before and after delegation must converge on the same semantic bindings,
-  concrete paths, rendering order, rematerialization consumers and visible trace hierarchy.
-- Status: Planned, NOT IMPLEMENTED. compatibility fixtures, grouped/ungrouped bands, style/curve forwarding,
-  trace nesting, scale sharing and primitive-equivalence coverage가 필요하다.
-
 ## createBoxPlot
 
 ```typescript

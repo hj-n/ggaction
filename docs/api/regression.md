@@ -79,7 +79,9 @@ program. The exact generated IDs are internal and are not required in ordinary
 chart-authoring code.
 
 Its trace records `createRegressionData`, optional `createRegressionBand`, and
-`createRegressionLine` as meaningful children. See
+`createRegressionLine` as meaningful children. The band child validates
+regression provenance and delegates its interval geometry to a nested
+`createErrorBand` call. See
 [Actions and trace trees](../concepts/actions-and-trace.md) when that
 decomposition matters.
 
@@ -91,7 +93,8 @@ const emphasized = program
     color: "#475569",
     opacity: 0.12,
     stroke: "#111827",
-    strokeWidth: 1.5
+    strokeWidth: 1.5,
+    curve: "cardinal"
   })
   .editRegressionLine({ strokeWidth: 5 });
 ```
@@ -99,7 +102,8 @@ const emphasized = program
 Each action infers the only compatible generated component or accepts an
 explicit target. Band edits delegate to `editAreaMark`; line edits delegate to
 `editLineMark`. They preserve fitted data, result fields, grouping, coordinates,
-and scales. `stroke: false` removes a band outline.
+and scales. `stroke: false` removes a band outline. Band curves use the same
+eight-value interpolation vocabulary as area and line marks.
 
 ## Errors and limitations
 

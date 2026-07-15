@@ -15,7 +15,8 @@ test("edits regression components through nested generic mark actions", () => {
       color: "#475569",
       opacity: 0.12,
       stroke: "#111827",
-      strokeWidth: 1.5
+      strokeWidth: 1.5,
+      curve: "step"
     })
     .editRegressionLine({ strokeWidth: 5, curve: "step" });
 
@@ -29,6 +30,7 @@ test("edits regression components through nested generic mark actions", () => {
     child => child.properties.strokeWidth === 5
   ));
   assert.equal(program.markConfigs.pointsRegressionLines.curve, "step");
+  assert.equal(program.markConfigs.pointsRegressionBands.curve, "step");
   assert.deepEqual(
     program.trace.children.at(-2).children.map(child => child.op),
     ["editAreaMark"]
@@ -56,12 +58,18 @@ test("forwards create-time regression component appearance", () => {
     .createRegression({
       target: "other",
       groupBy: undefined,
-      band: { stroke: "#222222", strokeWidth: 2 },
+      band: { stroke: "#222222", strokeWidth: 2, curve: "cardinal" },
       line: { curve: "step" }
     });
 
   assert.equal(extra.markConfigs.otherRegressionBands.stroke, "#222222");
   assert.equal(extra.markConfigs.otherRegressionBands.strokeWidth, 2);
+  assert.equal(extra.markConfigs.otherRegressionBands.curve, "cardinal");
+  assert.equal(
+    extra.graphicSpec.objects.otherRegressionBands.children[0]
+      .properties.commands.some(command => command.op === "C"),
+    true
+  );
   assert.equal(extra.markConfigs.otherRegressionLines.curve, "step");
 });
 

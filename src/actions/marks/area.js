@@ -61,6 +61,21 @@ function validateAreaStrokeWidth(value) {
   return value;
 }
 
+export function validateAreaCreateOutline(args, operation = "createAreaMark") {
+  if (Object.hasOwn(args, "strokeWidth") && !Object.hasOwn(args, "stroke")) {
+    throw new Error(`${operation} strokeWidth requires stroke.`);
+  }
+  const stroke = Object.hasOwn(args, "stroke")
+    ? validateAreaStroke(args.stroke)
+    : undefined;
+  return {
+    stroke,
+    strokeWidth: stroke === undefined
+      ? undefined
+      : validateAreaStrokeWidth(args.strokeWidth ?? 1)
+  };
+}
+
 const createAreaMark = action(
   {
     op: "createAreaMark",
@@ -78,15 +93,7 @@ const createAreaMark = action(
     const fill = validateAreaFill(args.fill ?? DEFAULT_COLORS.mark);
     const opacity = validateAreaOpacity(args.opacity ?? 0.2);
     const curve = validateCurveInterpolation(args.curve ?? "linear");
-    if (Object.hasOwn(args, "strokeWidth") && !Object.hasOwn(args, "stroke")) {
-      throw new Error("createAreaMark strokeWidth requires stroke.");
-    }
-    const stroke = Object.hasOwn(args, "stroke")
-      ? validateAreaStroke(args.stroke)
-      : undefined;
-    const strokeWidth = stroke === undefined
-      ? undefined
-      : validateAreaStrokeWidth(args.strokeWidth ?? 1);
+    const { stroke, strokeWidth } = validateAreaCreateOutline(args);
     assertMarkAvailable(this, id);
     return this
       .editSemantic({ property: `layer[${id}].mark.type`, value: "area" })

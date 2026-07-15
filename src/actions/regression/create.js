@@ -49,7 +49,7 @@ export const createRegression = action(
     if (band !== false) {
       validateKeys(
         band,
-        ["color", "opacity", "stroke", "strokeWidth"],
+        ["color", "opacity", "stroke", "strokeWidth", "curve"],
         "regression band"
       );
     }

@@ -6,6 +6,7 @@ import {
 import { readQuantitativeField } from "../../grammar/scales.js";
 import { findDataset } from "../../selectors/datasets.js";
 import { hasLayer, resolveEligibleLayer } from "../../selectors/layers.js";
+import { findSemanticScale } from "../../selectors/scales.js";
 
 const CHANNEL_OPTIONS = Object.freeze([
   "field", "fieldType", "scale", "center", "extent", "level", "lower", "upper"
@@ -87,12 +88,14 @@ function resolveDataset(program, args, sourceLayer, operation, resourceLabel) {
   return dataset;
 }
 
-function scaleOptions(value, inferredId, defaults = {}) {
+function scaleOptions(program, value, inferredId, defaults = {}) {
   if (value !== undefined && !isPlainObject(value)) {
     throw new TypeError("Interval scale must be a plain object.");
   }
+  const id = value?.id ?? inferredId;
+  const usesExisting = id !== undefined && findSemanticScale(program, id) !== undefined;
   return {
-    ...defaults,
+    ...(usesExisting ? {} : defaults),
     ...(value ?? {}),
     ...(value?.id === undefined && inferredId !== undefined
       ? { id: inferredId }
@@ -151,7 +154,7 @@ function resolveIntervalChannel(channels, sourceLayer, {
   return defaultIntervalChannel;
 }
 
-function resolvePosition(channel, explicit, inferred, {
+function resolvePosition(program, channel, explicit, inferred, {
   operation,
   positionTypes,
   defaultPositionType,
@@ -174,6 +177,7 @@ function resolvePosition(channel, explicit, inferred, {
     ),
     fieldType,
     scale: scaleOptions(
+      program,
       explicit?.scale,
       inferred?.scale,
       inferred === undefined ? scaleDefaults(fieldType) : {}
@@ -181,7 +185,7 @@ function resolvePosition(channel, explicit, inferred, {
   };
 }
 
-function resolveInterval(channel, explicit, inferred, dataset, {
+function resolveInterval(program, channel, explicit, inferred, dataset, {
   operation,
   intervalScaleDefaults
 }) {
@@ -195,6 +199,7 @@ function resolveInterval(channel, explicit, inferred, dataset, {
   const hasUpper = Object.hasOwn(explicit ?? {}, "upper");
   const explicitMode = hasLower || hasUpper;
   const scale = scaleOptions(
+    program,
     explicit?.scale,
     inferred?.scale,
     inferred === undefined ? intervalScaleDefaults : {}
@@ -299,12 +304,14 @@ export function resolveIntervalComposite(program, args, policy) {
   const intervalChannel = resolveIntervalChannel(channels, sourceLayer, policy);
   const positionChannel = intervalChannel === "x" ? "y" : "x";
   const position = resolvePosition(
+    program,
     positionChannel,
     channels[positionChannel],
     sourceLayer?.encoding?.[positionChannel],
     policy
   );
   const interval = resolveInterval(
+    program,
     intervalChannel,
     channels[intervalChannel],
     sourceLayer?.encoding?.[intervalChannel],

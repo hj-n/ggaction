@@ -41,6 +41,8 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   and never create derived data.
 - With explicit x/y, `data` defaults to current or unique data, `coordinate` to `"main"`, position scales to
   their channel ID, and quantitative interval scales use `nice: true, zero: false`.
+- A scale object containing only an existing `id` reuses that stored scale definition exactly; interval defaults
+  apply only when the action must create a new scale.
 - With an omitted channel, source selection is explicit `target` → current eligible encoded layer → unique
   eligible encoded layer → error. It reuses persisted data, coordinate and compatible x/y scale IDs by
   semantic capability, independently of source mark type.
@@ -88,6 +90,8 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   to split one closed path per series. The center field is kept as title/provenance while geometry uses lower/upper.
 - With explicit x/y, `data` uses current or unique data, coordinate defaults to `"main"`, x and y scales default
   to their channel IDs with readable automatic domains, and linear scales exclude zero by default.
+- A scale object containing only an existing `id` reuses its stored definition rather than applying error-band
+  defaults. This preserves layered source scales during regression delegation.
 - With omitted channels, source selection is explicit `target` → current eligible encoded layer → unique eligible
   encoded layer → error. The action reuses that layer's data, coordinate, compatible scales, and explicit `group`
   encoding. Two quantitative source axes are ambiguous until an interval option identifies one axis.
@@ -141,7 +145,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 - `line.strokeWidth`: non-negative finite number, 기본값 `3`.
 - `band.stroke`, `band.strokeWidth`: Implemented area outline contract다.
 - `line.curve`: Implemented shared `CurveInterpolation`이며 line child로 전달된다.
-- `band.curve`: Planned shared area curve contract다.
+- `band.curve`: Implemented shared `CurveInterpolation`이며 area child로 전달된다.
 - Effect: target ID로 namespace한 derived data, area band와 line layer를 만들고 point layer의 coordinate와
   x/y scales를 공유한다. group field가 point color와 같으면 color scale도 공유한다.
 - Coverage: `test/unit/actions/regression/create-regression.test.js`와 regression chart tests가 inference,
@@ -151,7 +155,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 ### Formal values — `createRegression`
 
 - Implemented: `createRegression({ target?: UserId; x?: FieldName; y?: FieldName; groupBy?: FieldName; line?: { strokeWidth?: NonNegativeFinite; curve?: CurveInterpolation } } & ({ method?: "linear"; confidence?: UnitIntervalExclusive; interval?: "mean" | "prediction"; band?: false | RegressionBandOptions } | { method: "polynomial"; degree?: PositiveInteger; confidence?: UnitIntervalExclusive; interval?: "mean" | "prediction"; band?: false | RegressionBandOptions } | { method: "loess"; span?: UnitIntervalExclusiveZero; band?: false }))`
-- Planned (NOT IMPLEMENTED): `{ band?: { curve?: CurveInterpolation } }` only.
+- Planned (NOT IMPLEMENTED): —
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createRegression`
@@ -165,7 +169,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 - `band.color`, `band.opacity`, `line.strokeWidth`
   - ✅ Covered: defaults and representative explicit styles.
   - ⚠️ Partial: color/type and numeric endpoints are mostly child-action validation rather than aggregate direct tests.
-- ✅ Covered: band outline and line curve forwarding through corresponding component actions.
+- ✅ Covered: band outline/curve and line curve forwarding through corresponding component actions.
 - ✅ Covered: polynomial/LOESS method forwarding, linear/polynomial prediction interval, method-specific
   band creation/opt-out와 child trace hierarchy.
 - Evidence: `test/unit/actions/regression/create-regression.test.js` and regression chart tests.
@@ -180,14 +184,17 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 - `color`, `opacity`: `createAreaMark` appearance contract; defaults는 regression band theme와 `0.18`.
 - `stroke`, `strokeWidth`: Implemented optional area outline. Width default는 `1`이며 stroke 없이 width만
   지정할 수 없다.
-- Effect: wrapped area mark, x, y/y2, optional group actions을 호출하고 shared-scale closed paths를 만든다.
+- `curve`: Implemented shared area curve vocabulary이며 기본값은 `"linear"`다.
+- Effect: regression provenance와 fields/grouping을 검증한 뒤 wrapped `createErrorBand` explicit mode에
+  area, x, y/y2, group과 curve materialization을 위임한다. Generic explicit title은 제거해 기존 regression
+  semantic output을 보존하고 optional outline은 wrapped `editAreaMark`로 적용한다.
 - Coverage: regression unit/chart tests가 aggregate child hierarchy와 primitive equivalence를 검증하지만
   이 advanced action의 각 missing resource 오류는 부분적이다.
 
 ### Formal values — `createRegressionBand`
 
-- Implemented: `createRegressionBand({ id: UserId; data: UserId; x: FieldName; lower: FieldName; upper: FieldName; groupBy?: FieldName; coordinate: UserId; xScale: UserId; yScale: UserId; color?: NonEmptyString; opacity?: UnitInterval; stroke?: NonEmptyString; strokeWidth?: NonNegativeFinite })`
-- Planned (NOT IMPLEMENTED): `{ curve?: CurveInterpolation }`
+- Implemented: `createRegressionBand({ id: UserId; data: UserId; x: FieldName; lower: FieldName; upper: FieldName; groupBy?: FieldName; coordinate: UserId; xScale: UserId; yScale: UserId; color?: NonEmptyString; opacity?: UnitInterval; stroke?: NonEmptyString; strokeWidth?: NonNegativeFinite; curve?: CurveInterpolation })`
+- Planned (NOT IMPLEMENTED): —
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createRegressionBand`
@@ -199,8 +206,8 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   - ✅ Covered: present/omitted.
 - `color`, `opacity`
   - ⚠️ Partial: defaults/representative values; endpoints and invalid types rely on area child validation.
-- ✅ Covered: optional outline and aggregate forwarding through shared area appearance validation.
-- 🟡 Planned: area curve forwarding.
+- ✅ Covered: optional outline/curve forwarding and nested `createErrorBand` hierarchy.
+- ✅ Covered: non-regression, LOESS, and mismatched regression provenance rejection.
 - Evidence: regression unit/chart tests.
 
 ## `createRegressionLine`
@@ -235,7 +242,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 
 ## `editRegressionBand`
 
-- Signature: `editRegressionBand({ target?, color?, opacity?, stroke?, strokeWidth? })`.
+- Signature: `editRegressionBand({ target?, color?, opacity?, stroke?, strokeWidth?, curve? })`.
 - Target은 regression-derived area component이며 unique compatible band를 infer할 수 있다.
 - Effect: regression-specific target validation 뒤 wrapped `editAreaMark`를 호출한다. Statistical data,
   result fields, grouping, coordinate와 scales는 유지한다.
@@ -243,13 +250,13 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 
 ### Formal values — `editRegressionBand`
 
-- Implemented: `editRegressionBand({ target?: UserId; color?: NonEmptyString; opacity?: UnitInterval; stroke?: NonEmptyString | false; strokeWidth?: NonNegativeFinite })`.
-- Planned (NOT IMPLEMENTED): `{ curve?: CurveInterpolation }`.
+- Implemented: `editRegressionBand({ target?: UserId; color?: NonEmptyString; opacity?: UnitInterval; stroke?: NonEmptyString | false; strokeWidth?: NonNegativeFinite; curve?: CurveInterpolation })`.
+- Planned (NOT IMPLEMENTED): —
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `editRegressionBand`
 
-- ✅ Covered: inferred/explicit target, color/opacity, outline create/replace/remove와 nested area trace.
+- ✅ Covered: inferred/explicit target, color/opacity/curve, outline create/replace/remove와 nested area trace.
 - ✅ Covered: empty/unknown/non-regression targets, invalid options/appearance and earlier-program immutability.
 - Evidence: `test/unit/actions/regression/edit-components.test.js` and approved component-edit pair.
 

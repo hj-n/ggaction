@@ -114,6 +114,10 @@ reuses that layer's data, coordinate, scales, and explicit group encoding.
 Two quantitative source axes are ambiguous unless an interval option identifies
 the interval axis.
 
+When an explicit channel scale contains only an existing `id`, that stored
+scale definition is reused exactly. Error-band defaults apply only when a new
+scale must be created.
+
 The first omitted ID is `"errorBand"`; statistical rows use
 `"errorBandIntervalData"`. A second band requires an explicit ID. The action
 records one `createErrorBand` trace node with wrapped interval-data, area,

@@ -590,6 +590,7 @@ export interface RegressionBandOptions {
   opacity?: number;
   stroke?: string;
   strokeWidth?: number;
+  curve?: CurveInterpolation;
 }
 
 type RegressionParameterOptions =
@@ -872,6 +873,7 @@ export class ChartProgram {
     id: string;
     stroke?: string;
     strokeWidth?: number;
+    curve?: CurveInterpolation;
   }): ChartProgram;
   editRegressionBand(options: {
     target?: string;
@@ -879,6 +881,7 @@ export class ChartProgram {
     opacity?: number;
     stroke?: string | false;
     strokeWidth?: number;
+    curve?: CurveInterpolation;
   }): ChartProgram;
   createRegressionLine(options: ActionOptions & {
     id: string;
