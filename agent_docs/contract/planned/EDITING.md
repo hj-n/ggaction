@@ -9,6 +9,8 @@ editAreaMark({
   target?: UserId;
   fill?: NonEmptyString;
   opacity?: UnitInterval;
+  stroke?: NonEmptyString | false;
+  strokeWidth?: NonNegativeFinite;
   curve?: CurveInterpolation;
 }): ChartProgram;
 ```
@@ -19,8 +21,9 @@ editAreaMark({
   graphical materialization config만 수정한다. dataset
   binding, field encoding, scale과 coordinate는 변경하지 않는다.
 - `editPointMark`는 구현되어 current mark contract로 이동했다. `editAreaMark.fill`은 field-driven
-  `encodeColor`가 있으면 오류지만 opacity는 독립적으로
-  수정할 수 있다.
+  `encodeColor`가 있으면 오류지만 opacity와 outline은 독립적으로 수정할 수 있다. `stroke` string은
+  outline을 생성하거나 교체하고 `false`는 outline과 stored width를 제거한다. `strokeWidth`만 전달하려면
+  기존 outline이 있어야 한다.
 - Remaining action은 대응하는 내부 wrapped `rematerializeAreaMark`를 호출한다. 기존 legend recipe가 변경된 mark property에서 파생되면
   materialization plan이 `rematerializeLegend`도 호출한다.
 - Area curve edit는 stored fields/scales를 유지하고 upper/lower boundaries를 분리해 보간하며 renderer는
@@ -67,6 +70,8 @@ editRegressionBand({
   target?: UserId;
   color?: NonEmptyString;
   opacity?: UnitInterval;
+  stroke?: NonEmptyString | false;
+  strokeWidth?: NonNegativeFinite;
   curve?: CurveInterpolation;
 }): ChartProgram;
 
@@ -83,11 +88,11 @@ editRegressionLine({
   grouping, coordinate와 scale binding은 변경하지 않는다. 통계적 의미를 바꾸려면 새로운
   regression derivation과 component를 만든다.
 - `editRegressionBand`는 regression-specific validation 뒤 Planned `editAreaMark`를 wrapped
-  child로 호출해 color/fill, opacity와 curve를 갱신한다.
+  child로 호출해 color/fill, opacity, outline과 curve를 갱신한다.
 - `editRegressionLine`은 Planned `editLineMark`를 wrapped child로 호출해 stroke width를
   또는 curve를 갱신한다. generic child가 mark와 dependent legend rematerialization을 소유한다.
-- band border, line color/dash/opacity는 corresponding create contract와 함께 확장하기 전까지
-  accepted parameter가 아니다.
+- line color/dash/opacity는 corresponding create contract와 함께 확장하기 전까지 accepted parameter가
+  아니다.
 - Status: Planned, NOT IMPLEMENTED. 실행 가능한 coverage는 구현 단계에서 추가한다.
 
 ## directional grid edits
