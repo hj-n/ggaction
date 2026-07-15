@@ -1,5 +1,137 @@
 import { createCarsRegressionScatterplotPrimitives } from
   "../primitive.program.js";
+import { linearPathCommands } from "../../../support/path.js";
+import { createLeftLegendPrimitiveValues } from "./reference-values.js";
+
+function editTextStyle(program, target, style) {
+  return program
+    .editGraphics({ target, property: "fill", value: style.fill })
+    .editGraphics({ target, property: "fontSize", value: style.fontSize })
+    .editGraphics({ target, property: "fontFamily", value: style.fontFamily })
+    .editGraphics({ target, property: "fontWeight", value: style.fontWeight });
+}
+
+export function createLeftLegendPrimitives(cars) {
+  const values = createLeftLegendPrimitiveValues(cars);
+  const chart = values.chart;
+  const { origin, size, background, labelStyle, titleStyle } = values.legend;
+  const { x: xAxis, y: yAxis } = chart.axes;
+  const xPositions = xAxis.ticks.map(tick => tick.position);
+  const yPositions = yAxis.ticks.map(tick => tick.position);
+
+  let program = createCarsRegressionScatterplotPrimitives(cars)
+    .editGraphics({
+      target: "horizontalGridLines",
+      property: "x1",
+      value: chart.grid.horizontal.map(line => line.x1)
+    })
+    .editGraphics({
+      target: "horizontalGridLines",
+      property: "x2",
+      value: chart.grid.horizontal.map(line => line.x2)
+    })
+    .editGraphics({
+      target: "points",
+      property: "children",
+      value: chart.pointChildren.map(child => ({
+        type: child.type,
+        properties: child.properties
+      }))
+    })
+    .editGraphics({
+      target: "pointsRegressionBands",
+      property: "commands",
+      value: chart.regressionBands.map(band =>
+        linearPathCommands(band.points, { close: true })
+      )
+    })
+    .editGraphics({
+      target: "pointsRegressionLines",
+      property: "commands",
+      value: chart.regressionLines.map(line => linearPathCommands(line.points))
+    })
+    .editGraphics({ target: "xAxisLine", property: "x1", value: xAxis.line.x1 })
+    .editGraphics({ target: "xAxisLine", property: "x2", value: xAxis.line.x2 })
+    .editGraphics({ target: "xAxisTicks", property: "x1", value: xPositions })
+    .editGraphics({ target: "xAxisTicks", property: "x2", value: xPositions })
+    .editGraphics({ target: "xAxisLabels", property: "x", value: xPositions })
+    .editGraphics({ target: "xAxisTitle", property: "x", value: xAxis.title.x })
+    .editGraphics({ target: "yAxisLine", property: "x1", value: yAxis.line.x1 })
+    .editGraphics({ target: "yAxisLine", property: "x2", value: yAxis.line.x2 })
+    .editGraphics({ target: "yAxisTicks", property: "x1", value: yAxis.line.x1 - 6 })
+    .editGraphics({ target: "yAxisTicks", property: "x2", value: yAxis.line.x1 })
+    .editGraphics({ target: "yAxisLabels", property: "x", value: yAxis.line.x1 - 12 })
+    .editGraphics({ target: "yAxisTitle", property: "x", value: yAxis.title.x })
+    .createGraphics({
+      id: "seriesLegendBackground",
+      type: "rect",
+      before: "seriesLegendSymbolLines"
+    })
+    .editGraphics({ target: "seriesLegendBackground", property: "x", value: background.x })
+    .editGraphics({ target: "seriesLegendBackground", property: "y", value: background.y })
+    .editGraphics({
+      target: "seriesLegendBackground",
+      property: "width",
+      value: background.width
+    })
+    .editGraphics({
+      target: "seriesLegendBackground",
+      property: "height",
+      value: background.height
+    })
+    .editGraphics({
+      target: "seriesLegendBackground",
+      property: "fill",
+      value: background.fill
+    })
+    .editGraphics({
+      target: "seriesLegendBackground",
+      property: "stroke",
+      value: background.stroke
+    })
+    .editGraphics({
+      target: "seriesLegendBackground",
+      property: "strokeWidth",
+      value: background.strokeWidth
+    })
+    .editGraphics({
+      target: "seriesLegendSymbolLines",
+      property: "x1",
+      value: origin.items.map(item => item.line.x1)
+    })
+    .editGraphics({
+      target: "seriesLegendSymbolLines",
+      property: "x2",
+      value: origin.items.map(item => item.line.x2)
+    })
+    .editGraphics({
+      target: "seriesLegendSymbolPoints",
+      property: "children",
+      value: origin.items.map(item => item.symbol)
+    })
+    .editGraphics({
+      target: "seriesLegendLabels",
+      property: "x",
+      value: origin.items.map(item => item.label.x)
+    })
+    .editGraphics({ target: "seriesLegendTitle", property: "x", value: origin.title.x })
+    .editGraphics({
+      target: "sizeLegendSymbols",
+      property: "x",
+      value: size.items.map(item => item.symbol.x)
+    })
+    .editGraphics({
+      target: "sizeLegendLabels",
+      property: "x",
+      value: size.items.map(item => item.label.x)
+    })
+    .editGraphics({ target: "sizeLegendTitle", property: "x", value: size.title.x });
+
+  program = editTextStyle(program, "seriesLegendLabels", labelStyle);
+  program = editTextStyle(program, "sizeLegendLabels", labelStyle);
+  program = editTextStyle(program, "seriesLegendTitle", titleStyle);
+  return editTextStyle(program, "sizeLegendTitle", titleStyle);
+}
 
 export function createComponentEditPrimitives(cars) {
   return createCarsRegressionScatterplotPrimitives(cars)

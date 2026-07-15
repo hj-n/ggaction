@@ -16,6 +16,7 @@ import {
   createComparisonFilterPrimitives,
   createComponentEditPrimitives,
   createLoessRegressionPrimitives,
+  createLeftLegendPrimitives,
   createPolynomialRegressionPrimitives,
   createPredictionIntervalPrimitives,
   createRangeFilterPrimitives
@@ -90,6 +91,57 @@ const baselineRegressionCall = `  .createRegression({
 function withRegressionCall(regressionCall) {
   return baselineCallChain.replace(baselineRegressionCall, regressionCall);
 }
+
+const leftLegendCallChain = `chart()
+  .createCanvas({
+    width: 760,
+    height: 480,
+    margin: { top: 40, right: 80, bottom: 70, left: 190 }
+  })
+  .createData({ id: "cars", values: rows })
+  .createPointMark({ id: "points" })
+  .encodeX({
+    field: "Displacement",
+    scale: { nice: true, zero: false }
+  })
+  .encodeY({
+    field: "Acceleration",
+    scale: { nice: true, zero: false }
+  })
+  .encodeColor({
+    field: "Origin",
+    scale: { palette: "tableau10" }
+  })
+  .encodeSize({ field: "Acceleration" })
+  .encodeShape({ field: "Origin" })
+  .encodeOpacity({ value: 0.27 })
+  .filterMark({
+    field: "Origin",
+    oneOf: ["Japan", "USA"]
+  })
+  .createRegression({
+    confidence: 0.95,
+    band: { color: "#111111", opacity: 0.18 },
+    line: { strokeWidth: 3 }
+  })
+  .createGuides({
+    legend: {
+      position: "left",
+      align: "center",
+      direction: "vertical",
+      offset: 80,
+      titlePosition: "top",
+      labels: { color: "#475569", fontSize: 12 },
+      titleStyle: { color: "#0f172a", fontSize: 14, fontWeight: 700 },
+      border: {
+        color: "#94a3b8",
+        lineWidth: 1,
+        padding: 10,
+        background: "#f8fafc"
+      },
+      count: 5
+    }
+  });`;
 
 export const visualVariants = Object.freeze([defineVisualVariant({
   ...shared,
@@ -168,4 +220,25 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   })`),
   primitive: createPredictionIntervalPrimitives(cars),
   userFacing: createPredictionIntervalCarsRegressionScatterplot(cars)
+}), defineVisualVariant({
+  ...shared,
+  variant: "left-legend",
+  title: "Left Composite and Size Legends",
+  callChain: leftLegendCallChain,
+  primitive: createLeftLegendPrimitives(cars),
+  regions: [Object.freeze({
+    name: "legend",
+    x: 10,
+    y: 40,
+    width: 105,
+    height: 360,
+    minimumInkPixels: 80
+  }), Object.freeze({
+    name: "plot",
+    x: 190,
+    y: 40,
+    width: 490,
+    height: 370,
+    minimumInkPixels: 200
+  })]
 })]);

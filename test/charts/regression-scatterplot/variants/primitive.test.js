@@ -26,10 +26,12 @@ import {
   createComparisonFilterPrimitives,
   createComponentEditPrimitives,
   createLoessRegressionPrimitives,
+  createLeftLegendPrimitives,
   createPolynomialRegressionPrimitives,
   createPredictionIntervalPrimitives,
   createRangeFilterPrimitives
 } from "./primitive-programs.js";
+import { createLeftLegendPrimitiveValues } from "./reference-values.js";
 
 const cars = loadCars();
 
@@ -190,4 +192,41 @@ test("matches regression method primitives with public action flows", () => {
     primitiveProgram: createPredictionIntervalPrimitives(cars),
     publicProgram: createPredictionIntervalCarsRegressionScatterplot(cars)
   });
+});
+
+test("authors the left composite and size legend as raw primitive state", () => {
+  const values = createLeftLegendPrimitiveValues(cars);
+  const program = createLeftLegendPrimitives(cars);
+  const objects = program.graphicSpec.objects;
+  const background = objects.seriesLegendBackground.properties;
+  const seriesLines = objects.seriesLegendSymbolLines.children;
+  const seriesLabels = objects.seriesLegendLabels.children;
+  const sizeSymbols = objects.sizeLegendSymbols.children;
+  const sizeLabels = objects.sizeLegendLabels.children;
+
+  assert.deepEqual(background, values.legend.background);
+  assert.deepEqual(
+    seriesLabels.map(label => label.properties.text),
+    values.legend.origin.items.map(item => item.group)
+  );
+  assert.equal(seriesLines.every((line, index) =>
+    line.properties.x2 < seriesLabels[index].properties.x
+  ), true);
+  assert.equal(sizeSymbols.every((symbol, index) =>
+    symbol.properties.x < sizeLabels[index].properties.x
+  ), true);
+  assert.deepEqual(
+    sizeLabels.map(label => label.properties.text),
+    values.legend.size.items.map(item => String(+item.value.toPrecision(3)))
+  );
+  assert.equal(background.x + background.width < values.chart.axes.y.title.x, true);
+  assert.equal(background.x + background.width < values.chart.bounds.x, true);
+  assert.equal(
+    program.graphicSpec.order.indexOf("seriesLegendBackground") <
+      program.graphicSpec.order.indexOf("seriesLegendSymbolLines"),
+    true
+  );
+  assert.equal(program.trace.children.some(node =>
+    ["createLegend", "editLegend", "createGuides"].includes(node.op)
+  ), false);
 });
