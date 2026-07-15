@@ -6,13 +6,16 @@ These contracts are accepted future API work; they are not current public behavi
 
 ```typescript
 createRuleMark({
-  id: UserId;
+  id?: UserId;
   data?: UserId;
 }): ChartProgram;
 ```
 
 - `createRuleMark`는 semantic `rule` layer와 빈 backend-neutral `line` collection만 만든다.
   `data`를 생략하면 current dataset을 사용하며 안전하게 추론할 수 없으면 오류다.
+- 첫 ordinary rule의 `id`를 생략하면 persisted ID는 `"rule"`이다. 같은 role이 이미 있거나
+  `"rule"` identity가 사용 중이면 numbered suffix를 만들지 않고 explicit ID를 요구한다. Composite
+  action은 항상 owner에서 namespaced한 explicit child ID를 전달한다.
 - Rule의 위치와 appearance는 create parameter나 별도 `encodeRule`/`editRuleMark`가 아니라
   independent assignment actions가 소유한다. `encodeX`, `encodeX2`, `encodeY`, `encodeY2`가
   endpoints를, `encodeStroke`, `encodeStrokeWidth`, `encodeStrokeDash`, `encodeOpacity`가 appearance를

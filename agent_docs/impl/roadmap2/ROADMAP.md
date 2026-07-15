@@ -194,6 +194,9 @@ resize가 semantic meaning을 바꾸지 않는지 확인한다.
 
 첫 신규 chart는 grouped vertical error bar와 horizontal variant를 포함한다.
 
+- Phase goal: [`phase6/GOAL.md`](phase6/GOAL.md)
+- Complete chart contract: [`chart/cars-error-bar.md`](chart/cars-error-bar.md)
+
 - Direct action: `createRuleMark`
 - Direct action: `encodeStroke`
 - Direct action: `encodeStrokeWidth`

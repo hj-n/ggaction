@@ -25,7 +25,7 @@ type PositionChannel = {
 };
 
 createErrorBar({
-  id: UserId;
+  id?: UserId;
   data?: UserId;
   x: PositionChannel | IntervalChannel;
   y: PositionChannel | IntervalChannel;
@@ -43,12 +43,21 @@ createErrorBar({
 - Exactly one of x/y is an interval channel and the other is its positional channel. An interval may request
   a statistic from source rows or reference already materialized center/lower/upper fields. Statistical mode
   calls wrapped `createIntervalData`; explicit mode does not derive data.
+- The independent position field is always part of the statistical grouping. Optional `groupBy` adds one
+  more grouping field and duplicate fields are removed while preserving order. The derived result therefore
+  retains the independent position needed by the rule children without requiring callers to repeat it.
 - The aggregate creates one main `createRuleMark`. Vertical intervals use x/y/y2; horizontal intervals use
   y/x/x2. `caps` defaults to `true`; lower and upper cap rules are namespaced children whose perpendicular
   concrete span is `capSize`, default `8` logical pixels.
+- Omitted `id` resolves to the persisted representative rule ID `"errorBar"` only when that role is unique.
+  A second error bar requires an explicit ID; no numbered public ID is generated. The main rule uses the
+  resolved owner ID and derived data/cap resources are namespaced from it.
 - Appearance is assigned by wrapped `encodeStroke`, `encodeStrokeWidth`, `encodeStrokeDash`, and
   `encodeOpacity`; defaults come from one shared rule theme. There is no `editErrorBar` or `editRuleMark`.
   Reauthor appearance or endpoints through the owned encoding actions.
+- Cap rules keep their data-space anchor in ordinary position encodings. Their fixed perpendicular pixel span
+  is immutable graphical materialization config, not a fabricated data-domain endpoint. Canvas or position
+  scale changes rematerialize the cap endpoints into concrete `line` coordinates.
 - IDs for derived data, main rule and cap rules are deterministically namespaced from `id`. The aggregate is
   create-only, and its complete child hierarchy remains visible in trace.
 - Status: Planned, NOT IMPLEMENTED. vertical/horizontal, computed/explicit intervals, caps on/off and size,
