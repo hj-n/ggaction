@@ -33,7 +33,7 @@ test("authors and renders the complete primitive regression scatterplot", () => 
     [
       { id: "cars", source: undefined, transform: undefined, valueCount: 406 },
       {
-        id: "selectedCars",
+        id: "pointsFilteredData",
         source: "cars",
         transform: [{
           type: "filter",
@@ -44,7 +44,7 @@ test("authors and renders the complete primitive regression scatterplot", () => 
       },
       {
         id: "pointsRegressionData",
-        source: "selectedCars",
+        source: "pointsFilteredData",
         transform: [{
           type: "regression",
           method: "linear",
@@ -62,7 +62,7 @@ test("authors and renders the complete primitive regression scatterplot", () => 
     {
       id: "points",
       mark: { type: "point" },
-      data: "selectedCars",
+      data: "pointsFilteredData",
       coordinate: "main",
       encoding: {
         x: { field: "Displacement", fieldType: "quantitative", scale: "x" },

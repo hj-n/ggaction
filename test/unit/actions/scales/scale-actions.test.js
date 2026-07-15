@@ -91,7 +91,10 @@ test("materializes an automatic scale into concrete graphical values", () => {
   );
   assert.equal(before.graphicSpec.objects.points.children[0].properties.x, undefined);
   assert.equal(node.op, "rematerializeScale");
-  assert.deepEqual(node.children.map(child => child.op), ["editGraphics"]);
+  assert.deepEqual(
+    node.children.map(child => child.op),
+    ["rematerializePointMark"]
+  );
 });
 
 test("combines every consumer of a shared scale", () => {

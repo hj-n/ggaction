@@ -30,6 +30,7 @@ kernel·normalization·immutable reassignment, filter predicate modes, regressio
 - Density normalization: `unit | count`
 - `editDensity` immutable derived-data revision과 consumer rebind
 - `filterData` comparison predicate와 inclusive/exclusive range
+- `filterMark` immutable derivation, mark rebind와 dependency rematerialization
 - Regression methods: `linear | polynomial | loess`
 - Linear/polynomial `mean | prediction` interval과 optional band
 

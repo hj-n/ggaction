@@ -29,11 +29,6 @@ const program = chart()
     margin: { top: 40, right: 190, bottom: 70, left: 80 }
   })
   .createData({ id: "cars", values: cars })
-  .filterData({
-    id: "selectedCars",
-    field: "Origin",
-    oneOf: ["Japan", "USA"]
-  })
   .createPointMark({ id: "points" })
   .encodeX({
     field: "Displacement",
@@ -50,6 +45,10 @@ const program = chart()
   .encodeSize({ field: "Acceleration" })
   .encodeShape({ field: "Origin" })
   .encodeOpacity({ value: 0.27 })
+  .filterMark({
+    field: "Origin",
+    oneOf: ["Japan", "USA"]
+  })
   .createRegression({
     confidence: 0.95,
     band: { color: "#111111", opacity: 0.18 },
@@ -64,7 +63,7 @@ render(program, document.querySelector("#chart").getContext("2d"));
 
 | Stage | Semantic result | Graphical result |
 | --- | --- | --- |
-| `filterData` | A named immutable dataset derived from `cars` | No chart geometry |
+| `filterMark` | A namespaced immutable dataset derived from `cars`; `points` is rebound | Point scales and geometry are rematerialized |
 | point encodings | Shared x/y, color, size, and shape scales | Typed circles and squares with fixed opacity |
 | `createRegression` | Grouped OLS predictions and three linked layers | Two filled bands and two stroked paths |
 | `createGuides` | Shared axes, grid, Origin legend, and size legend | One guide set for all compatible layers |
@@ -82,10 +81,13 @@ inspectable without exposing its internal IDs in the user program.
 
 ```text
 program
-├─ filterData
 ├─ createPointMark
 ├─ encodeSize
 ├─ encodeShape
+├─ filterMark
+│  ├─ filterData
+│  ├─ editSemantic(points.data)
+│  └─ rematerializeScale
 ├─ createRegression
 │  ├─ createRegressionData
 │  ├─ createRegressionBand

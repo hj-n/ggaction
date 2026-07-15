@@ -47,15 +47,19 @@ export type FilterRange = {
   max: number | string;
   inclusive?: boolean;
 };
+export type FilterModeOptions =
+  | { oneOf: readonly unknown[]; predicate?: never; range?: never }
+  | { oneOf?: never; predicate: FilterComparison; range?: never }
+  | { oneOf?: never; predicate?: never; range: FilterRange };
 export type FilterDataOptions = {
   id: string;
   source?: string;
   field: string;
-} & (
-  | { oneOf: readonly unknown[]; predicate?: never; range?: never }
-  | { oneOf?: never; predicate: FilterComparison; range?: never }
-  | { oneOf?: never; predicate?: never; range: FilterRange }
-);
+} & FilterModeOptions;
+export type FilterMarkOptions = {
+  target?: string;
+  field: string;
+} & FilterModeOptions;
 export type ColorLayout =
   | "stack"
   | "fill"
@@ -446,6 +450,7 @@ export class ChartProgram {
   editCanvas(options: CanvasOptions): ChartProgram;
   createData(options: { id: string; values: readonly unknown[] }): ChartProgram;
   filterData(options: FilterDataOptions): ChartProgram;
+  filterMark(options: FilterMarkOptions): ChartProgram;
   createDensityData(options: DensityDataOptions): ChartProgram;
   createRegressionData(options: ActionOptions): ChartProgram;
 

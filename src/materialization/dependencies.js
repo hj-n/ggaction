@@ -83,6 +83,28 @@ export function planScaleGuideRematerialization(program, id) {
   return plan;
 }
 
+export function planLayerDataRematerialization(program, id) {
+  const layer = program.semanticSpec.layers.find(candidate => candidate.id === id);
+  if (layer === undefined) throw new Error(`Layer "${id}" does not exist.`);
+  const scaleIds = [...new Set(
+    Object.values(layer.encoding ?? {})
+      .map(encoding => encoding?.scale)
+      .filter(scale => scale !== undefined)
+  )];
+  if (scaleIds.length > 0) {
+    return scaleIds.map(scale => ({
+      op: "rematerializeScale",
+      args: { id: scale }
+    }));
+  }
+  const markStep = getMarkMaterializationStep(program, layer);
+  if (markStep !== undefined) return [markStep];
+  return layer.mark?.type === "point" &&
+    program.graphicSpec.objects[layer.id] !== undefined
+    ? [{ op: "rematerializePointMark", args: { id: layer.id } }]
+    : [];
+}
+
 export function applyMaterializationPlan(program, plan) {
   let next = program;
   const seen = new Set();

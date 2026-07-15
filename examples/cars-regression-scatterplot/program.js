@@ -8,10 +8,6 @@ function createCarsRegressionScatterplotWithFilter(cars, filter) {
       margin: { top: 40, right: 190, bottom: 70, left: 80 }
     })
     .createData({ id: "cars", values: cars })
-    .filterData({
-      id: "selectedCars",
-      ...filter
-    })
     .createPointMark({ id: "points" })
     .encodeX({
       field: "Displacement",
@@ -28,6 +24,7 @@ function createCarsRegressionScatterplotWithFilter(cars, filter) {
     .encodeSize({ field: "Acceleration" })
     .encodeShape({ field: "Origin" })
     .encodeOpacity({ value: 0.27 })
+    .filterMark(filter)
     .createRegression({
       confidence: 0.95,
       band: { color: "#111111", opacity: 0.18 },

@@ -50,7 +50,7 @@ test("edits regression components through nested generic mark actions", () => {
 test("forwards create-time regression component appearance", () => {
   const points = createCarsRegressionScatterplot(cars);
   const extra = points
-    .createPointMark({ id: "other", data: "selectedCars" })
+    .createPointMark({ id: "other", data: "pointsFilteredData" })
     .encodeX({ target: "other", field: "Displacement" })
     .encodeY({ target: "other", field: "Acceleration" })
     .createRegression({

@@ -12,7 +12,6 @@ import { createCarsRegressionScatterplotPrimitives } from
 const expectedTopLevelActions = [
   "createCanvas",
   "createData",
-  "filterData",
   "createPointMark",
   "encodeX",
   "encodeY",
@@ -20,6 +19,7 @@ const expectedTopLevelActions = [
   "encodeSize",
   "encodeShape",
   "encodeOpacity",
+  "filterMark",
   "createRegression",
   "createGuides"
 ];
@@ -35,7 +35,7 @@ test("builds the final public regression scatterplot contract", () => {
       coordinate: layer.coordinate
     })),
     [
-      { id: "points", mark: "point", data: "selectedCars", coordinate: "main" },
+      { id: "points", mark: "point", data: "pointsFilteredData", coordinate: "main" },
       {
         id: "pointsRegressionBands",
         mark: "area",
@@ -58,8 +58,8 @@ test("builds the final public regression scatterplot contract", () => {
     ]),
     [
       ["cars", undefined, 406],
-      ["selectedCars", "cars", 333],
-      ["pointsRegressionData", "selectedCars", 73]
+      ["pointsFilteredData", "cars", 333],
+      ["pointsRegressionData", "pointsFilteredData", 73]
     ]
   );
   assert.deepEqual(program.trace.children.map(node => node.op), expectedTopLevelActions);

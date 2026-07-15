@@ -196,7 +196,13 @@ const rematerializePointMark = action(
       return this.editGraphics({ target: id, property: "children", value: children });
     }
 
-    let next = this;
+    let next = graphic.children.length === dataset.values.length
+      ? this
+      : this.editGraphics({
+          target: id,
+          property: "length",
+          value: dataset.values.length
+        });
     if (x !== undefined) next = next.editGraphics({ target: id, property: "x", value: x });
     if (y !== undefined) next = next.editGraphics({ target: id, property: "y", value: y });
     if (fill !== undefined) {

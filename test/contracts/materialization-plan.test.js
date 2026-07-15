@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
-  applyMaterializationPlan
+  applyMaterializationPlan,
+  planLayerDataRematerialization
 } from "../../src/materialization/dependencies.js";
 import {
   planEncodingRematerialization
@@ -148,5 +149,32 @@ test("plans the revised density target before every shared-scale mark", () => {
   assert.throws(
     () => planDensityRematerialization(program, "missing"),
     /Unknown density materialization target/
+  );
+});
+
+test("plans each unique scale after one layer changes data", () => {
+  const program = {
+    semanticSpec: {
+      layers: [{
+        id: "points",
+        mark: { type: "point" },
+        encoding: {
+          x: { scale: "x" },
+          y: { scale: "y" },
+          color: { scale: "color" },
+          shape: { scale: "color" }
+        }
+      }]
+    }
+  };
+
+  assert.deepEqual(planLayerDataRematerialization(program, "points"), [
+    { op: "rematerializeScale", args: { id: "x" } },
+    { op: "rematerializeScale", args: { id: "y" } },
+    { op: "rematerializeScale", args: { id: "color" } }
+  ]);
+  assert.throws(
+    () => planLayerDataRematerialization(program, "missing"),
+    /Layer "missing" does not exist/
   );
 });

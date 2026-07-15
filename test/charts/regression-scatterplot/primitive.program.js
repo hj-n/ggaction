@@ -28,18 +28,18 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
   return chart()
     .createCanvas({ width, height, margin, background: "white" })
     .createData({ id: "cars", values: cars })
-    .editSemantic({ property: "dataset[selectedCars].source", value: "cars" })
+    .editSemantic({ property: "dataset[pointsFilteredData].source", value: "cars" })
     .editSemantic({
-      property: "dataset[selectedCars].transform",
+      property: "dataset[pointsFilteredData].transform",
       value: [{ ...filter, type: "filter" }]
     })
     .editSemantic({
-      property: "dataset[selectedCars].values",
+      property: "dataset[pointsFilteredData].values",
       value: values.filteredRows
     })
     .editSemantic({
       property: "dataset[pointsRegressionData].source",
-      value: "selectedCars"
+      value: "pointsFilteredData"
     })
     .editSemantic({
       property: "dataset[pointsRegressionData].transform",
@@ -58,7 +58,7 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
       value: values.regressionRows
     })
     .editSemantic({ property: "layer[points].mark.type", value: "point" })
-    .editSemantic({ property: "layer[points].data", value: "selectedCars" })
+    .editSemantic({ property: "layer[points].data", value: "pointsFilteredData" })
     .editSemantic({ property: "layer[points].coordinate", value: "main" })
     .editSemantic({
       property: "layer[points].encoding.x.field",

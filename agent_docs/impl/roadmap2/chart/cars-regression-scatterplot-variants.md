@@ -46,17 +46,15 @@ createCarsRegressionScatterplot(rows)
 
 ### Filter predicates
 
-The canonical public chain replaces its existing `filterData` call with one of:
+The canonical public chain applies one of these after the point encodings and before `createRegression`:
 
 ```javascript
-.filterData({
-  id: "selectedCars",
+.filterMark({
   field: "Horsepower",
   predicate: { op: "gte", value: 150 }
 });
 
-.filterData({
-  id: "selectedCars",
+.filterMark({
   field: "Displacement",
   range: { min: 100, max: 300, inclusive: true }
 });

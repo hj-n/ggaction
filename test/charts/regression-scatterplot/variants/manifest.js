@@ -39,11 +39,6 @@ const baselineCallChain = `chart()
     margin: { top: 40, right: 190, bottom: 70, left: 80 }
   })
   .createData({ id: "cars", values: rows })
-  .filterData({
-    id: "selectedCars",
-    field: "Origin",
-    oneOf: ["Japan", "USA"]
-  })
   .createPointMark({ id: "points" })
   .encodeX({
     field: "Displacement",
@@ -60,6 +55,10 @@ const baselineCallChain = `chart()
   .encodeSize({ field: "Acceleration" })
   .encodeShape({ field: "Origin" })
   .encodeOpacity({ value: 0.27 })
+  .filterMark({
+    field: "Origin",
+    oneOf: ["Japan", "USA"]
+  })
   .createRegression({
     confidence: 0.95,
     band: { color: "#111111", opacity: 0.18 },
@@ -67,8 +66,7 @@ const baselineCallChain = `chart()
   })
   .createGuides();`;
 
-const baselineFilterCall = `  .filterData({
-    id: "selectedCars",
+const baselineFilterCall = `  .filterMark({
     field: "Origin",
     oneOf: ["Japan", "USA"]
   })`;
@@ -107,8 +105,7 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   variant: "comparison-filter",
   title: "Horsepower at Least 150",
   colors: ["#4c78a8"],
-  callChain: withFilterCall(`  .filterData({
-    id: "selectedCars",
+  callChain: withFilterCall(`  .filterMark({
     field: "Horsepower",
     predicate: { op: "gte", value: 150 }
   })`),
@@ -119,8 +116,7 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   variant: "range-filter",
   title: "Inclusive Displacement Range",
   colors: ["#4c78a8", "#f58518", "#e45756"],
-  callChain: withFilterCall(`  .filterData({
-    id: "selectedCars",
+  callChain: withFilterCall(`  .filterMark({
     field: "Displacement",
     range: { min: 100, max: 300, inclusive: true }
   })`),

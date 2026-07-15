@@ -93,7 +93,7 @@ test("authors comparison and range filter targets with primitive state", () => {
   for (const { program, filter, count, groups } of variants) {
     const expected = createCarsRegressionScatterplotValues(cars, { filter });
     const selected = program.semanticSpec.datasets.find(
-      dataset => dataset.id === "selectedCars"
+      dataset => dataset.id === "pointsFilteredData"
     );
     const regression = program.semanticSpec.datasets.find(
       dataset => dataset.id === "pointsRegressionData"
@@ -120,7 +120,7 @@ test("authors comparison and range filter targets with primitive state", () => {
   }
 });
 
-test("matches filter primitives with public filterData modes", () => {
+test("matches filter primitives with public filterMark modes", () => {
   assertChartProgramsEquivalent({
     primitiveProgram: createComparisonFilterPrimitives(cars),
     publicProgram: createComparisonFilterCarsRegressionScatterplot(cars)

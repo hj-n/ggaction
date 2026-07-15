@@ -18,11 +18,6 @@ const program = chart()
     margin: { top: 40, right: 190, bottom: 70, left: 80 }
   })
   .createData({ id: "cars", values: cars })
-  .filterData({
-    id: "selectedCars",
-    field: "Origin",
-    oneOf: ["Japan", "USA"]
-  })
   .createPointMark({ id: "points" })
   .encodeX({ field: "Displacement", scale: { nice: true, zero: false } })
   .encodeY({ field: "Acceleration", scale: { nice: true, zero: false } })
@@ -30,6 +25,10 @@ const program = chart()
   .encodeSize({ field: "Acceleration" })
   .encodeShape({ field: "Origin" })
   .encodeOpacity({ value: 0.27 })
+  .filterMark({
+    field: "Origin",
+    oneOf: ["Japan", "USA"]
+  })
   .createRegression()
   .createGuides();
 ```

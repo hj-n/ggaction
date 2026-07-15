@@ -11,6 +11,7 @@ title: Data
 | --- | --- | --- | --- |
 | `createData` | `createData({ id: "rows", values })` | No ID or value inference | Immutable semantic dataset and current-data context |
 | `filterData` | `filterData({ id: "selected", field, oneOf })` | Source: current dataset | Immutable derived dataset using one membership, comparison, or range filter |
+| `filterMark` | `filterMark({ field, oneOf })` | Target: current or unique mark; source and derived ID from target | Immutable derived dataset, mark rebind, and concrete rematerialization |
 | `createRegressionData` | `createRegressionData({ id: "fit", x, y })` | Source: current dataset; linear OLS; confidence `0.95` | Immutable derived predictions and mean-response interval |
 | `createDensityData` | `createDensityData({ id: "density", field })` | Source: current dataset; Gaussian/unit density; 100 steps; automatic bandwidth | Immutable KDE rows and density provenance |
 
@@ -94,6 +95,37 @@ program.filterData({
   range: { min: 100, max: 300, inclusive: true }
 });
 ```
+
+## `filterMark({ target?, field, oneOf | predicate | range })`
+
+Filter an existing mark without changing its source dataset. `filterMark`
+infers the current mark when possible, creates a namespaced immutable dataset
+such as `pointsFilteredData`, rebinds only that mark, and rematerializes its
+scales and connected guides.
+
+```javascript
+const filtered = chart()
+  .createData({ id: "cars", values: cars })
+  .createPointMark({ id: "points" })
+  .encodeX({ field: "Displacement" })
+  .encodeY({ field: "Acceleration" })
+  .filterMark({
+    field: "Origin",
+    oneOf: ["Japan", "USA"]
+  });
+```
+
+| Option | Type | Required |
+| --- | --- | --- |
+| `target` | existing mark ID | no; current or unique mark |
+| `field` | non-empty string | yes |
+| `oneOf` | non-empty scalar array | one filter mode required |
+| `predicate` | `{ op, value }` | one filter mode required |
+| `range` | `{ min, max, inclusive? }` | one filter mode required |
+
+The original dataset and earlier program remain unchanged. Apply the filter
+before creating a derived statistical layer when that statistic should use the
+filtered rows; existing independent layers are not silently rebound.
 
 ## `createRegressionData({ id, source?, x, y, groupBy?, confidence? })`
 

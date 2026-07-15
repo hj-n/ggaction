@@ -5,10 +5,18 @@ import {
   deriveFilteredRows,
   normalizeFilterTransform
 } from "../../grammar/filter.js";
+import {
+  applyMaterializationPlan,
+  planLayerDataRematerialization
+} from "../../materialization/dependencies.js";
+import { resolveEligibleLayer } from "../../selectors/index.js";
 import { MATERIALIZE_OPTIONS, requireDerivedDataset } from "./shared.js";
 
 const OPTIONS = Object.freeze([
   "id", "source", "field", "oneOf", "predicate", "range"
+]);
+const MARK_OPTIONS = Object.freeze([
+  "target", "field", "oneOf", "predicate", "range"
 ]);
 
 export const materializeFilteredData = action(
@@ -44,5 +52,41 @@ export const filterData = action(
         transform: [transform]
       })
       .materializeFilteredData({ id });
+  }
+);
+
+export const filterMark = action(
+  {
+    op: "filterMark",
+    description: "Create filtered data, rebind one mark, and rematerialize it."
+  },
+  function (args = {}) {
+    validateKeys(args, MARK_OPTIONS, "filterMark");
+    const target = args.target === undefined
+      ? undefined
+      : validateUserId(args.target, "Filter mark target id");
+    const layer = resolveEligibleLayer(this, {
+      target,
+      label: "filter mark",
+      predicate: candidate => candidate.data !== undefined
+    });
+    const derivedId = `${layer.id}FilteredData`;
+    const next = this
+      .filterData({
+        id: derivedId,
+        source: layer.data,
+        field: args.field,
+        ...(args.oneOf === undefined ? {} : { oneOf: args.oneOf }),
+        ...(args.predicate === undefined ? {} : { predicate: args.predicate }),
+        ...(args.range === undefined ? {} : { range: args.range })
+      })
+      .editSemantic({
+        property: `layer[${layer.id}].data`,
+        value: derivedId
+      });
+    return applyMaterializationPlan(
+      next,
+      planLayerDataRematerialization(next, layer.id)
+    );
   }
 );

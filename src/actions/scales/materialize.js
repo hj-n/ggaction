@@ -298,8 +298,7 @@ export const rematerializeScale = action(
     for (const { consumer, values } of valuesByConsumer) {
       if (
         consumer.layer.mark?.type === "point" &&
-        ["x", "y"].includes(channel) &&
-        next.graphicSpec.objects[consumer.layer.id]?.type === "collection"
+        ["x", "y"].includes(channel)
       ) {
         next = next.rematerializePointMark({ id: consumer.layer.id });
         continue;
@@ -324,19 +323,6 @@ export const rematerializeScale = action(
                 clamp: resolvedScale.clamp ?? false
               })
       });
-    }
-
-    const mixedPointIds = [...new Set(
-      consumers
-        .filter(consumer =>
-          consumer.layer.mark?.type === "point" &&
-          ["x", "y"].includes(channel) &&
-          next.graphicSpec.objects[consumer.layer.id]?.type === "collection"
-        )
-        .map(consumer => consumer.layer.id)
-    )];
-    for (const pointId of mixedPointIds) {
-      next = next.rematerializePointMark({ id: pointId });
     }
 
     return applyMaterializationPlan(
