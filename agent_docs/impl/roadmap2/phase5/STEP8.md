@@ -6,14 +6,14 @@ Four-edge title position, deterministic wrapping/measurement와 stable `editTitl
 
 ## 진행 상태
 
-- [ ] Shared text measurement service와 Unicode-safe wrapping
-- [ ] Four positions, rotation, alignment, offset와 subtitle blocks
-- [ ] Inferred/explicit lineHeight와 maxWidth dependency validation
-- [ ] `editTitle` text/subtitle/layout/style partial updates
-- [ ] Subtitle removal과 nested style merge
-- [ ] Margin/collision failures와 Canvas edit rematerialization
-- [ ] Primitive/public exact equivalence와 user-facing PNG
-- [ ] Types, docs, contracts, commit와 push
+- [x] Shared text measurement service와 Unicode-safe wrapping
+- [x] Four positions, rotation, alignment, offset와 subtitle blocks
+- [x] Inferred/explicit lineHeight와 maxWidth dependency validation
+- [x] `editTitle` text/subtitle/layout/style partial updates
+- [x] Subtitle removal과 nested style merge
+- [x] Margin/collision failures와 Canvas edit rematerialization
+- [x] Primitive/public exact equivalence와 user-facing PNG
+- [x] Types, docs, contracts, commit와 push
 
 ## 완료 조건
 

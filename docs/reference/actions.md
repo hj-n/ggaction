@@ -421,11 +421,25 @@ Partially edit one existing legend. `title` accepts a non-empty string,
 ```javascript
 createTitle({
   text, subtitle?, position?, align?, offset?, gap?,
+  maxWidth?, wrap?, lineHeight?,
   titleStyle?, subtitleStyle?
 })
 ```
 
 Create a chart title and optional subtitle. [Titles](../api/titles.md)
+
+### `editTitle`
+
+```javascript
+editTitle({
+  text?, subtitle?, position?, align?, offset?, gap?,
+  maxWidth?, wrap?, lineHeight?,
+  titleStyle?, subtitleStyle?
+})
+```
+
+Partially edit the existing title. `subtitle: false` removes the subtitle;
+omitted properties remain unchanged. [Titles](../api/titles.md)
 
 ## Advanced Chart API
 

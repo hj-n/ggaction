@@ -1,11 +1,16 @@
 import { chart } from "../../src/index.js";
 
-function createCarsDensityAreaWithDensity(cars, density = {}) {
+function createCarsDensityAreaWithDensity(
+  cars,
+  density = {},
+  { canvas = {}, title = {} } = {}
+) {
   return chart()
     .createCanvas({
       width: 720,
       height: 500,
-      margin: { top: 130, right: 40, bottom: 70, left: 80 }
+      margin: { top: 130, right: 40, bottom: 70, left: 80 },
+      ...canvas
     })
     .createData({ id: "cars", values: cars })
     .createAreaMark({ id: "densities", opacity: 0.5 })
@@ -31,7 +36,8 @@ function createCarsDensityAreaWithDensity(cars, density = {}) {
     })
     .createTitle({
       text: "Distribution of Acceleration",
-      subtitle: "By Origin (cars dataset)"
+      subtitle: "By Origin (cars dataset)",
+      ...title
     });
 }
 
@@ -67,5 +73,25 @@ export function createDensityRevisionCarsDensityArea(cars) {
     bandwidth: 0.9,
     kernel: "triangular",
     normalization: "count"
+  });
+}
+
+export function createWrappedBottomTitleCarsDensityArea(cars) {
+  return createCarsDensityAreaWithDensity(cars, {}, {
+    canvas: {
+      height: 620,
+      margin: { top: 130, right: 40, bottom: 190, left: 80 }
+    },
+    title: {
+      text: "Distribution of Acceleration Across Vehicle Origins",
+      subtitle: "Kernel density estimates for acceleration, grouped by origin in the cars dataset",
+      position: "bottom",
+      align: "center",
+      offset: 60,
+      gap: 12,
+      maxWidth: 270,
+      wrap: "word",
+      lineHeight: 26
+    }
   });
 }

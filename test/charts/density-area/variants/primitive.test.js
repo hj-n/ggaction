@@ -13,7 +13,8 @@ import { createAreaOutlineEditCarsDensityArea } from
 import {
   createCountNormalizationCarsDensityArea,
   createDensityRevisionCarsDensityArea,
-  createEpanechnikovKernelCarsDensityArea
+  createEpanechnikovKernelCarsDensityArea,
+  createWrappedBottomTitleCarsDensityArea
 } from "../../../../examples/cars-density-area/program.js";
 import {
   createCarsDensityAreaPrimitives,
@@ -244,4 +245,11 @@ test("authors a wrapped bottom title as concrete text children", () => {
     [...target.title.lines, ...target.subtitle.lines]
   );
   assert.equal(program.trace.children.some(node => node.op === "editTitle"), false);
+});
+
+test("matches the approved wrapped title primitive with createTitle", () => {
+  assertChartProgramsEquivalent({
+    primitiveProgram: createWrappedBottomTitlePrimitives(cars),
+    publicProgram: createWrappedBottomTitleCarsDensityArea(cars)
+  });
 });

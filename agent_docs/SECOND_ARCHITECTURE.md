@@ -81,7 +81,8 @@ Program execution
 ├─ selectors
 │  └─ named semantic resource lookup
 ├─ layout
-│  └─ Canvas와 plot bounds
+│  ├─ Canvas와 plot bounds
+│  └─ deterministic text measurement와 wrapping
 ├─ materialization
 │  ├─ mark completeness policy
 │  └─ cross-cutting rematerialization plan
@@ -660,7 +661,7 @@ encodeX / encodeY / encodeColor / encodeSize / encodeShape
 encodeHistogram / encodeDensity
 createRegression
 createGuides
-createTitle
+createTitle / editTitle
 ```
 
 필수로 결정해야 하는 값만 요구하고 나머지는 저장 state에서 infer하거나 documented
@@ -1026,8 +1027,19 @@ kind별 wrapped rematerialization을 호출한다.
 
 ### Title
 
-Title은 guide와 별도 action이다. Main title과 optional subtitle을 concrete text node로
-만들며, alignment, position, offset, gap, font는 materialization config가 소유한다.
+Title은 guide와 별도 stable resource다. `createTitle`과 `editTitle`이 main title과 optional
+subtitle을 concrete text node로 만들며 alignment, position, offset, gap, wrapping과 font는
+materialization config가 소유한다.
+
+Top/bottom title은 horizontal block이고 left/right title은 complete reading block을 각각
+`-Math.PI / 2`, `Math.PI / 2`로 회전한다. `maxWidth`가 있으면 shared deterministic text
+metric이 word 또는 Unicode code-point character wrapping을 계산한다. Oversized word는
+character fallback을 사용한다. Resolved line break, line coordinate와 rotation은
+`graphicSpec`의 single text 또는 text collection에 저장되고 renderer는 다시 측정하거나 wrap하지 않는다.
+
+Edit은 omitted property를 유지하고 supplied style leaf만 merge한다. Subtitle removal/restoration과
+single/collection 전환은 stable graphic ID 아래에서 stale child 없이 reconcile한다. Title block은
+actual occupied bounds로 requested margin과 same-edge guide collision을 검증하며 Canvas를 자동 확장하지 않는다.
 
 ### Drawing order
 
@@ -1192,7 +1204,7 @@ src/
 │  └─ vocabulary.js    implemented mark/channel/legend closed vocabulary
 ├─ grammar/            pure Grammar-of-Graphics/statistical/schema calculations
 │  └─ bars/            bar grain policy와 aggregate 계산
-├─ layout/             Canvas state와 plot bounds
+├─ layout/             Canvas/plot bounds와 deterministic text layout
 ├─ materialization/    mark completeness policy와 cross-cutting dependency plan
 │  └─ bars/            bar completeness와 concrete rectangle 계산
 ├─ renderers/          Canvas primitive renderer와 PNG adapter

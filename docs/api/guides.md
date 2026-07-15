@@ -111,8 +111,8 @@ createGuides
 ```
 
 Chart titles are not guides. Create them separately with
-[`createTitle`](./titles.md). A top title and top legend must both fit without
-overlap; neither action silently expands the Canvas margin.
+[`createTitle`](./titles.md). A title and guide reserved on the same edge must
+both fit without overlap; neither action silently expands the Canvas margin.
 
 Call [`createGrid`](./grids.md), [`createAxes`](./axes.md), or
 [`createLegend`](./legends.md) directly when only one focused guide action is

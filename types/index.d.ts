@@ -59,6 +59,9 @@ export type {
   SemanticSpec,
   StrokeDashEncodingOptions,
   TraceNode,
+  TitleOptions,
+  EditTitleOptions,
+  TitleTextStyleOptions,
   XAxisPosition,
   YAxisPosition,
   XOffsetEncodingOptions

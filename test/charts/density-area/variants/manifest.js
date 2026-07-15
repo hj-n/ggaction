@@ -3,7 +3,8 @@ import {
   createCarsDensityArea,
   createCountNormalizationCarsDensityArea,
   createDensityRevisionCarsDensityArea,
-  createEpanechnikovKernelCarsDensityArea
+  createEpanechnikovKernelCarsDensityArea,
+  createWrappedBottomTitleCarsDensityArea
 } from
   "../../../../examples/cars-density-area/program.js";
 import { loadCars } from "../../../support/data.js";
@@ -144,6 +145,7 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   title: "Wrapped Bottom Chart Title",
   callChain: wrappedBottomTitleCallChain,
   primitive: createWrappedBottomTitlePrimitives(cars),
+  userFacing: createWrappedBottomTitleCarsDensityArea(cars),
   width: wrappedBottomTitleTarget.width,
   height: wrappedBottomTitleTarget.height,
   regions: [

@@ -113,6 +113,8 @@ chart()
 - Word mode의 oversized single token은 Unicode code point boundary character fallback을 사용한다.
   Gate C reference token `acceleration-density-estimate`는 70px target에서 빈 줄 없이 3줄로 나뉜다.
 - Renderer는 full semantic text를 wrap하지 않고 concrete text children 네 개를 그대로 그린다.
+- Approved primitive와 public `createTitle` 결과는 semantic/graphic/order/Canvas calls와 decoded pixels가
+  exact하게 일치한다.
 
 ## Numeric contract
 

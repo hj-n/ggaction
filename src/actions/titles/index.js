@@ -2,6 +2,7 @@ import {
   createSubtitleText,
   createTitle,
   createTitleText,
+  editTitle,
   editSubtitleText,
   editTitleText,
   rematerializeTitle
@@ -9,6 +10,7 @@ import {
 
 export function registerTitleActions(ProgramClass) {
   ProgramClass.prototype.createTitle = createTitle;
+  ProgramClass.prototype.editTitle = editTitle;
   ProgramClass.prototype.createTitleText = createTitleText;
   ProgramClass.prototype.editTitleText = editTitleText;
   ProgramClass.prototype.createSubtitleText = createSubtitleText;

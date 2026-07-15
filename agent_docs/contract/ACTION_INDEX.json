@@ -1140,9 +1140,9 @@
       "layer": "user-facing",
       "domain": "legend_and_title",
       "status": "implemented",
-      "lifecycle": "Stable resource, edit gap",
-      "update": "Internal rematerialization only",
-      "audit": "`editTitle` — Planned",
+      "lifecycle": "Mutable resource",
+      "update": "editTitle",
+      "audit": "Complete",
       "coverage": {
         "contract": "complete",
         "effects": "complete",
@@ -1151,6 +1151,24 @@
       "contract": {
         "file": "agent_docs/contract/current/LEGEND_AND_TITLE.md",
         "anchor": "createtitle"
+      }
+    },
+    {
+      "name": "editTitle",
+      "layer": "user-facing",
+      "domain": "legend_and_title",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Self",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/LEGEND_AND_TITLE.md",
+        "anchor": "edittitle"
       }
     },
     {
@@ -1417,15 +1435,6 @@
       }
     },
     {
-      "name": "editTitle",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/EDITING.md",
-        "anchor": "edittitle"
-      }
-    },
-    {
       "name": "encodeX2",
       "status": "planned",
       "readiness": "accepted",
@@ -1542,28 +1551,6 @@
       "contract": {
         "file": "agent_docs/contract/planned/SCALES.md",
         "anchor": "scale-mapping-policies"
-      }
-    },
-    {
-      "id": "chart-title-positions",
-      "kind": "parameter",
-      "name": "Chart title positions",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/GUIDES_AND_LAYOUT.md",
-        "anchor": "chart-title-positions"
-      }
-    },
-    {
-      "id": "title-wrapping-and-measurement",
-      "kind": "parameter",
-      "name": "Title wrapping and measurement",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/GUIDES_AND_LAYOUT.md",
-        "anchor": "title-wrapping-and-measurement"
       }
     },
     {

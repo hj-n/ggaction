@@ -13,7 +13,7 @@ raw primitive로 고정한다.
 - [x] Plot/legend와 same-edge collision-free placement
 - [x] Primitive-only trace와 expanded target chain metadata
 - [x] `primitive.png`와 Gate C browser/PNG confirmation
-- [ ] Feedback 반영과 primitive 재확인
+- [x] Feedback 반영과 primitive 재확인
 - [x] STEP status
 - [x] Conceptual commit와 push
 

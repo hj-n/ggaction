@@ -156,7 +156,7 @@ test("validates title options, layout, duplicates, and component state", () => {
     /subtitle must be a non-empty/
   );
   assert.throws(
-    () => createCanvas().createTitle({ text: "Title", position: "bottom" }),
+    () => createCanvas().createTitle({ text: "Title", position: "middle" }),
     /Unsupported title position/
   );
   assert.throws(
@@ -184,4 +184,221 @@ test("validates title options, layout, duplicates, and component state", () => {
   );
   assert.throws(() => createCanvas().createTitleText(), /configuration/);
   assert.throws(() => createCanvas().rematerializeTitle(), /configuration/);
+});
+
+function createFourEdgeCanvas() {
+  return chart().createCanvas({
+    width: 520,
+    height: 420,
+    margin: { top: 100, right: 120, bottom: 120, left: 120 }
+  });
+}
+
+test("places titles on all four Canvas edges", () => {
+  const top = createFourEdgeCanvas().createTitle({ text: "Top" });
+  const bottom = createFourEdgeCanvas().createTitle({
+    text: "Bottom",
+    position: "bottom"
+  });
+  const left = createFourEdgeCanvas().createTitle({
+    text: "Left",
+    position: "left",
+    align: "center"
+  });
+  const right = createFourEdgeCanvas().createTitle({
+    text: "Right",
+    position: "right",
+    align: "right"
+  });
+
+  assert.equal(top.graphicSpec.objects.chartTitle.properties.rotation, undefined);
+  assert.equal(bottom.graphicSpec.objects.chartTitle.properties.rotation, 0);
+  assert.equal(left.graphicSpec.objects.chartTitle.properties.rotation, -Math.PI / 2);
+  assert.equal(right.graphicSpec.objects.chartTitle.properties.rotation, Math.PI / 2);
+  assert.equal(left.graphicSpec.objects.chartTitle.properties.textAlign, "center");
+  assert.equal(right.graphicSpec.objects.chartTitle.properties.y > 210, true);
+});
+
+test("creates deterministic wrapped title and subtitle collections", () => {
+  const program = chart().createCanvas({
+    width: 720,
+    height: 620,
+    margin: { top: 130, right: 40, bottom: 190, left: 80 }
+  }).createTitle({
+    text: "Distribution of Acceleration Across Vehicle Origins",
+    subtitle: "Kernel density estimates for acceleration, grouped by origin in the cars dataset",
+    position: "bottom",
+    align: "center",
+    offset: 60,
+    gap: 12,
+    maxWidth: 270,
+    wrap: "word",
+    lineHeight: 26
+  });
+
+  assert.deepEqual(
+    program.graphicSpec.objects.chartTitle.children.map(child => child.properties.text),
+    ["Distribution of Acceleration", "Across Vehicle Origins"]
+  );
+  assert.deepEqual(
+    program.graphicSpec.objects.chartSubtitle.children.map(child => child.properties.text),
+    [
+      "Kernel density estimates for acceleration,",
+      "grouped by origin in the cars dataset"
+    ]
+  );
+  assert.deepEqual(
+    program.graphicSpec.objects.chartTitle.children.map(child => child.properties.y),
+    [501, 527]
+  );
+  assert.deepEqual(
+    program.graphicSpec.objects.chartSubtitle.children.map(child => child.properties.y),
+    [557, 583]
+  );
+});
+
+test("partially edits title semantics, layout, styles, and subtitle presence", () => {
+  const before = createFourEdgeCanvas().createTitle({
+    text: "Original",
+    subtitle: "Remove me",
+    titleStyle: { color: "navy", fontFamily: "serif" }
+  });
+  const after = before.editTitle({
+    text: "Edited",
+    subtitle: false,
+    position: "bottom",
+    align: "center",
+    offset: 30,
+    titleStyle: { fontSize: 24 }
+  });
+
+  assert.deepEqual(before.semanticSpec.title, {
+    text: "Original",
+    subtitle: "Remove me"
+  });
+  assert.deepEqual(after.semanticSpec.title, { text: "Edited" });
+  assert.equal(after.graphicSpec.objects.chartSubtitle, undefined);
+  assert.equal(after.graphicSpec.objects.chartTitle.properties.fill, "navy");
+  assert.equal(after.graphicSpec.objects.chartTitle.properties.fontFamily, "serif");
+  assert.equal(after.graphicSpec.objects.chartTitle.properties.fontSize, 24);
+  assert.equal(after.graphicSpec.objects.chartTitle.properties.rotation, 0);
+  assert.deepEqual(after.trace.children.at(-1).children.map(node => node.op), [
+    "editSemantic",
+    "editSemantic",
+    "rematerializeTitle"
+  ]);
+
+  const restored = after.editTitle({ subtitle: "Restored" });
+  assert.equal(restored.semanticSpec.title.subtitle, "Restored");
+  assert.equal(restored.graphicSpec.objects.chartSubtitle.properties.text, "Restored");
+});
+
+test("reconciles wrapped collections and side rotations through edits", () => {
+  const wrapped = createFourEdgeCanvas().createTitle({
+    text: "Acceleration density by vehicle origin",
+    maxWidth: 130,
+    lineHeight: 24
+  });
+  const side = wrapped.editTitle({
+    position: "left",
+    align: "center",
+    offset: 10
+  });
+
+  assert.equal(side.graphicSpec.objects.chartTitle.children.length > 1, true);
+  assert.equal(side.graphicSpec.objects.chartTitle.children.every(child =>
+    child.properties.rotation === -Math.PI / 2
+  ), true);
+  assert.equal(
+    side.graphicSpec.order.filter(id => id === "chartTitle").length,
+    1
+  );
+});
+
+test("validates wrapping, editing, and edge layout atomically", () => {
+  const base = createFourEdgeCanvas();
+  assert.throws(() => base.createTitle({
+    text: "Title",
+    wrap: "word"
+  }), /require maxWidth/);
+  assert.throws(() => base.createTitle({
+    text: "Title",
+    maxWidth: 100,
+    wrap: "line"
+  }), /Unsupported title wrap/);
+  assert.throws(() => base.createTitle({
+    text: "Title",
+    maxWidth: 100,
+    lineHeight: 10
+  }), /cover every visible fontSize/);
+  assert.throws(() => base.createTitle({ text: "Title\nSecond" }), /newlines/);
+  assert.throws(() => base.editTitle({ text: "Missing" }), /existing chart title/);
+
+  const title = base.createTitle({ text: "Stable" });
+  const before = title.graphicSpec;
+  assert.throws(() => title.editTitle(), /at least one change/);
+  assert.throws(() => title.editTitle({ unknown: true }), /Unknown editTitle option/);
+  assert.throws(() => title.editTitle({ subtitle: 3 }), /subtitle/);
+  assert.equal(title.graphicSpec, before);
+  assert.throws(() => createCanvas().createTitle({
+    text: "Bottom",
+    position: "bottom",
+    offset: 5
+  }), /bottom-margin space/);
+});
+
+test("rejects same-edge axis collisions and accepts reserved spacing", () => {
+  const chartWithAxes = chart()
+    .createCanvas({
+      width: 520,
+      height: 420,
+      margin: { top: 80, right: 60, bottom: 120, left: 80 }
+    })
+    .createData({ id: "rows", values: [{ x: 1, y: 2 }, { x: 2, y: 3 }] })
+    .createPointMark({ id: "points" })
+    .encodeX({ field: "x" })
+    .encodeY({ field: "y" })
+    .createAxes();
+
+  assert.throws(() => chartWithAxes.createTitle({
+    text: "Too close",
+    position: "bottom",
+    align: "center",
+    offset: 30
+  }), /bottom guides/);
+  const spaced = chartWithAxes.createTitle({
+    text: "Spaced",
+    position: "bottom",
+    align: "center",
+    offset: 60
+  });
+  assert.equal(spaced.graphicSpec.objects.chartTitle.properties.y, 371);
+});
+
+test("converges across Canvas and title edit order", () => {
+  const start = createFourEdgeCanvas().createTitle({
+    text: "Acceleration density by vehicle origin",
+    maxWidth: 130,
+    lineHeight: 24
+  });
+  const canvasOptions = {
+    width: 560,
+    height: 460,
+    margin: { top: 110, right: 140, bottom: 130, left: 140 }
+  };
+  const titleOptions = {
+    position: "right",
+    align: "center",
+    offset: -10,
+    subtitle: "Cars"
+  };
+  const titleThenCanvas = start
+    .editTitle(titleOptions)
+    .editCanvas(canvasOptions);
+  const canvasThenTitle = start
+    .editCanvas(canvasOptions)
+    .editTitle(titleOptions);
+
+  assert.deepEqual(titleThenCanvas.semanticSpec, canvasThenTitle.semanticSpec);
+  assert.deepEqual(titleThenCanvas.graphicSpec, canvasThenTitle.graphicSpec);
 });

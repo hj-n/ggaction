@@ -10,10 +10,11 @@ title: Titles
 | Action | Shortest call | Inference/defaults | Result |
 | --- | --- | --- | --- |
 | `createTitle` | `createTitle({ text: "Title" })` | Top, plot-left alignment, default styles | Semantic text and concrete title graphics |
+| `editTitle` | `editTitle({ position: "bottom" })` | Preserves omitted text, layout, wrapping, and style | Rematerialized title graphics |
 
 ## `createTitle(options)`
 
-Creates a chart title and an optional subtitle above the plot.
+Creates one chart title and an optional subtitle on any Canvas edge.
 
 ```javascript
 program.createTitle({
@@ -26,10 +27,13 @@ program.createTitle({
 | --- | --- | --- |
 | `text` | non-empty string | required |
 | `subtitle` | non-empty string | omitted |
-| `position` | `"top"` | `"top"` |
+| `position` | `"top"`, `"bottom"`, `"left"`, or `"right"` | `"top"` |
 | `align` | `"left"`, `"center"`, or `"right"` | `"left"` |
 | `offset` | finite number | `0` |
 | `gap` | non-negative number | `8` |
+| `maxWidth` | positive number | omitted; no wrapping |
+| `wrap` | `"word"` or `"character"` | `"word"` when `maxWidth` is set |
+| `lineHeight` | positive number | each font size × `1.2` |
 | `titleStyle` | text style object | default title style |
 | `subtitleStyle` | text style object | default subtitle style |
 
@@ -53,27 +57,57 @@ The defaults are:
 }
 ```
 
-## Layout and stored result
+## Position, alignment, and wrapping
 
 Alignment uses the plot bounds rather than the full Canvas: left aligns with
 the plot's left edge, center with its midpoint, and right with its right edge.
-The title block is placed in the top margin. If that margin cannot contain the
-configured fonts and gap, creation fails instead of overlapping the plot.
-When a top categorical legend exists, the title block must also end above the
-legend block. The same overlap rule applies regardless of whether the title or
-legend was authored first.
+For a left or right title, the same values mean the top, center, and bottom of
+the plot edge. Left titles rotate counter-clockwise and right titles rotate
+clockwise; top and bottom titles remain horizontal.
+
+Set `maxWidth` to wrap text before edge rotation. Word wrapping prefers
+whitespace and falls back to Unicode-safe character wrapping for an oversized
+word. Character wrapping always splits on Unicode code-point boundaries. The
+library uses deterministic text metrics so the same program produces the same
+line breaks in browsers and Node. Renderers draw the concrete lines already in
+`graphicSpec`; they do not wrap text again. Explicit newline characters are
+not accepted.
+
+The requested margin must contain the actual title block. A title must also
+avoid guides reserved on the same edge. Creation fails instead of expanding
+the Canvas, changing margins, or moving the title automatically.
+
+## `editTitle(options)`
+
+Partially edits the existing title. At least one option is required.
+
+```javascript
+const edited = program.editTitle({
+  position: "bottom",
+  align: "center",
+  maxWidth: 280,
+  titleStyle: { fontSize: 20 }
+});
+```
+
+Omitted properties remain unchanged, and style objects merge only the supplied
+leaves. `text` and string `subtitle` replace semantic text. Use
+`subtitle: false` to remove the subtitle; a later string recreates it.
+Wrapping and layout changes rebuild the concrete text lines without changing
+unrelated chart state.
+
+## Stored result
 
 The title and subtitle strings are stored in `semanticSpec`. Alignment,
-spacing, and text appearance are materialized as concrete text graphics.
+spacing, wrapping configuration, and text appearance are graphical state.
+Resolved line breaks, coordinates, and rotations are concrete text graphics.
 Canvas size and margin changes explicitly rematerialize their positions.
-
-The current scope supports one top-positioned chart title, one optional
-single-line subtitle, and no automatic text wrapping or measurement.
 
 ## Errors and limitations
 
-The top margin must contain the requested text block. Additional positions,
-multiple subtitles, wrapping, and measurement are unsupported.
+The library supports one title and one optional subtitle. `wrap` and
+`lineHeight` require `maxWidth`; explicit `lineHeight` must cover every visible
+font size. Missing margin space and same-edge guide collisions are errors.
 
 ## Related
 

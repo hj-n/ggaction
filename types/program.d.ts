@@ -585,6 +585,33 @@ export interface EditLegendOptions
   title?: string | "auto" | false;
 }
 
+export interface TitleTextStyleOptions {
+  color?: string;
+  fontSize?: number;
+  fontFamily?: string;
+  fontWeight?: string | number;
+}
+
+export interface TitleOptions {
+  text: string;
+  subtitle?: string;
+  position?: "top" | "bottom" | "left" | "right";
+  align?: "left" | "center" | "right";
+  offset?: number;
+  gap?: number;
+  maxWidth?: number;
+  wrap?: "word" | "character";
+  lineHeight?: number;
+  titleStyle?: TitleTextStyleOptions;
+  subtitleStyle?: TitleTextStyleOptions;
+}
+
+export interface EditTitleOptions
+  extends Omit<TitleOptions, "text" | "subtitle"> {
+  text?: string;
+  subtitle?: string | false;
+}
+
 export class ChartProgram {
   constructor(state?: ActionOptions);
   readonly semanticSpec: SemanticSpec;
@@ -682,7 +709,8 @@ export class ChartProgram {
   createLegend(options?: LegendOptions): ChartProgram;
   editLegend(options: EditLegendOptions): ChartProgram;
   createGuides(options?: ActionOptions): ChartProgram;
-  createTitle(options: ActionOptions & { text: string; subtitle?: string }): ChartProgram;
+  createTitle(options: TitleOptions): ChartProgram;
+  editTitle(options: EditTitleOptions): ChartProgram;
 
   createCoordinate(options?: ActionOptions): ChartProgram;
   createScale(options: ActionOptions & { id: string }): ChartProgram;

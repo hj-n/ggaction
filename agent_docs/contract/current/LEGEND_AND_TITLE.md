@@ -18,6 +18,8 @@ type LegendBorder = false | true | {
   padding?: NonNegativeFinite;
   background?: NonEmptyString;
 };
+type TitlePosition = "top" | "bottom" | "left" | "right";
+type TitleWrap = "word" | "character";
 ```
 
 ## `createLegend`
@@ -170,24 +172,30 @@ type LegendBorder = false | true | {
 
 ## `createTitle`
 
-- Signature: `createTitle({ text, subtitle?, position?, align?, offset?, gap?, titleStyle?, subtitleStyle? })`.
-- `text`: 필수 non-empty string; `subtitle`은 optional non-empty single-line string.
-- `position`: Implemented `"top"`, Planned `"bottom" | "left" | "right"`; 기본 top.
+- Signature: `createTitle({ text, subtitle?, position?, align?, offset?, gap?, maxWidth?, wrap?, lineHeight?, titleStyle?, subtitleStyle? })`.
+- `text`: 필수 non-empty string; `subtitle`은 optional non-empty single-line string이다. 첫 contract는 explicit newline을 거부한다.
+- `position`: `"top" | "bottom" | "left" | "right"`; 기본 top. top/bottom rotation은 0, left는
+  `-Math.PI / 2`, right는 `Math.PI / 2`다.
 - `align`: `"left" | "center" | "right"`, 기본 left; plot bounds 기준이다.
-- `offset`: finite number, 기본 `0`; top block의 vertical origin을 이동한다.
+- top/bottom align은 plot의 x start/center/end이고 left/right align은 edge 진행 방향의
+  top/center/bottom이다.
+- `offset`: finite number, 기본 `0`; top/bottom은 y, left/right는 x Canvas axis에서 block을 이동한다.
 - `gap`: non-negative finite number, 기본 `8`; title/subtitle 사이 거리다.
+- `maxWidth`: positive finite reading-axis width. 지정하면 wrapping이 활성화되고 `wrap` 기본값은 `"word"`다.
+- `wrap`: `"word" | "character"`; `maxWidth` 없이 지정하면 오류다. word mode의 oversized token은
+  character fallback을 사용하고 character mode는 Unicode code point boundary를 보존한다.
+- `lineHeight`: positive finite number; `maxWidth`가 필요하고 title/subtitle의 resolved fontSize 이상이어야 한다.
+  생략 시 각 style의 fontSize × `1.2`를 사용한다.
 - `titleStyle`, `subtitleStyle`: `{ color?, fontSize?, fontFamily?, fontWeight? }`; positive fontSize,
   non-empty strings와 string/finite weight를 사용한다.
 - Effect: text만 semanticSpec에 저장하고 geometry/style은 concrete text graphics와 title config에 저장한다.
-  top legend와 실제 occupied bounds가 겹치거나 margin에 맞지 않으면 오류다.
-- Coverage: `test/unit/actions/guides/title-actions.test.js`가 optional subtitle, alignment, style,
-  insufficient layout, duplicates와 Canvas rematerialization을 검증한다.
-- Planned: bottom/left/right positions plus wrapping, maxWidth, lineHeight and deterministic text measurement.
+  wrapping은 shared deterministic text metric으로 materialization하고 renderer는 line break를 추론하지 않는다.
+  실제 rotated occupied bounds가 해당 margin에 맞지 않거나 same-edge guide와 겹치면 오류다.
 
 ### Formal values — `createTitle`
 
-- Implemented: `createTitle({ text: NonEmptyString; subtitle?: NonEmptyString; position?: "top"; align?: "left" | "center" | "right"; offset?: Finite; gap?: NonNegativeFinite; titleStyle?: TextStyle; subtitleStyle?: TextStyle })`
-- Planned (NOT IMPLEMENTED): `{ position?: "top" | "bottom" | "left" | "right"; maxWidth?: PositiveFinite; lineHeight?: PositiveFinite; wrap?: "word" | "character" }`
+- Implemented: `createTitle({ text: NonEmptyString; subtitle?: NonEmptyString; position?: TitlePosition; align?: "left" | "center" | "right"; offset?: Finite; gap?: NonNegativeFinite; maxWidth?: PositiveFinite; wrap?: TitleWrap; lineHeight?: PositiveFinite; titleStyle?: TextStyle; subtitleStyle?: TextStyle })`
+- Planned (NOT IMPLEMENTED): —
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `createTitle`
@@ -195,8 +203,7 @@ type LegendBorder = false | true | {
 - `text`, `subtitle`
   - ✅ Covered: required non-empty title, subtitle omitted/present, empty/non-string rejection.
 - `position`
-  - ✅ Covered: omission→`"top"`, explicit top, invalid value.
-  - 🟡 Planned: `"bottom" | "left" | "right"`; occupied bounds, rotation과 guide collision contract.
+  - ✅ Covered: omission→`"top"`, all four positions, rotation, align/offset, invalid value.
 - `align`
   - ✅ Covered: `"left" | "center" | "right"`, default left and invalid value.
 - `offset`
@@ -205,5 +212,33 @@ type LegendBorder = false | true | {
   - ✅ Covered: default `8`, zero/positive, negative/non-finite rejection.
 - `titleStyle`, `subtitleStyle`
   - ✅ Covered: default and explicit color/fontSize/fontFamily/fontWeight, invalid values.
-- 🟡 Planned: word/character wrapping, maxWidth, explicit/inferred lineHeight and deterministic text measurement.
+- ✅ Covered: word/character wrapping, long-token fallback, Unicode, maxWidth dependency, inferred/explicit lineHeight.
+- ✅ Covered: actual occupied-bounds failures, same-edge guide collision, Canvas rematerialization and
+  primitive/public exact equivalence.
 - Evidence: `test/unit/actions/guides/title-actions.test.js`.
+
+## `editTitle`
+
+- Signature: `editTitle({ text?, subtitle?, position?, align?, offset?, gap?, maxWidth?, wrap?, lineHeight?, titleStyle?, subtitleStyle? })`.
+- 기존 chart title이 필수이며 최소 한 option을 요구한다. Omitted property는 기존 값을 유지한다.
+- `text`와 string `subtitle`은 semantic text를 교체하고 `subtitle: false`는 semantic subtitle과 concrete
+  subtitle graphics를 제거한다. 이후 string subtitle로 다시 만들 수 있다.
+- `titleStyle`과 `subtitleStyle`은 제공된 leaf만 기존 graphical config에 merge한다.
+- Layout/wrapping option은 stored complete config와 합친 뒤 `createTitle`과 동일한 contract로 검증한다.
+- Effect: semantic text edit와 graphical config update를 분리하고 wrapped `rematerializeTitle`을 호출한다.
+  single text와 wrapped text collection, subtitle 존재 여부와 edge rotation 변화는 stale graphic 없이 reconcile한다.
+- Errors: missing title, empty/unknown edit, invalid value/dependency, insufficient margin와 same-edge collision.
+
+### Formal values — `editTitle`
+
+- Implemented: `editTitle({ text?: NonEmptyString; subtitle?: NonEmptyString | false; position?: TitlePosition; align?: "left" | "center" | "right"; offset?: Finite; gap?: NonNegativeFinite; maxWidth?: PositiveFinite; wrap?: TitleWrap; lineHeight?: PositiveFinite; titleStyle?: TextStyle; subtitleStyle?: TextStyle })`
+- Planned (NOT IMPLEMENTED): —
+- Proposed (NOT IMPLEMENTED): —
+
+### Value coverage — `editTitle`
+
+- ✅ Covered: text/subtitle replacement, subtitle removal/restoration and empty edit rejection.
+- ✅ Covered: four-edge transition, partial nested style merge and existing wrapping-config merge.
+- ✅ Covered: single/collection reconciliation, rotation-property reconciliation, trace and immutability.
+- ✅ Covered: Canvas/edit action-order convergence, insufficient margin, guide collision and exact variant equivalence.
+- Evidence: `test/unit/actions/guides/title-actions.test.js` and density-area wrapped-title variant tests.

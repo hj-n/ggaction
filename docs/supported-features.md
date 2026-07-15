@@ -35,7 +35,7 @@ chart-authoring API does not support that combination.
 | Scales | Linear, UTC time, ordinal position, color, named/direct stroke dash, and padded band-local xOffset |
 | Aggregates | count, sum, mean, median, min/max, distinct/valid/missing, sample/population dispersion, quartiles, standard error, normal 95% mean endpoints, parameterized quantile, and ordered first/last |
 | Guides | Automatic bottom/top x axes, left/right y axes, closed numeric/UTC label formats, independently editable horizontal/vertical Cartesian grids, and editable four-edge continuous/left-right categorical legends |
-| Titles | One plot-aligned top title with one optional single-line subtitle |
+| Titles | One four-edge title with an optional subtitle, deterministic word/character wrapping, and partial editing |
 | Rendering | Browser Canvas and Node PNG |
 | Graphics | Concrete canvas, circle, line, rect, text, `M/L/C/Z` command paths, 8 line curves, and heterogeneous drawable collections |
 
@@ -44,6 +44,5 @@ chart-authoring API does not support that combination.
 Polar guide graphics, transforms beyond the documented filters, regressions,
 and density derivations, facets, interactive legends, and program composition
 are not implemented.
-Additional title positions, automatic text wrapping, and text measurement are
-also unsupported. Categorical legends support right, bottom, and top placement;
-point composite and size legends currently use the right-side layout.
+Categorical legends support all four edges; point composite and size legends
+support right and left side layouts.

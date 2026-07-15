@@ -63,6 +63,8 @@ numeric or UTC label-format tokens. Existing horizontal and vertical grids can
 be edited independently without changing their scale or coordinate binding.
 Categorical, composite point/size, gradient, and opacity legends have stable
 layout/appearance edits; categorical side layouts support right and left.
+Chart titles support four edges, deterministic word/character wrapping, and
+stable partial edits including subtitle removal.
 It renders through browser Canvas and Node PNG. It is not published to npm yet.
 
 Do not assume facets, program composition, SVG rendering, animation, automatic

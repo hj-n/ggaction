@@ -15,7 +15,7 @@ guide/layout variants의 oracle로 재사용한다.
 - [x] Mirrored axes와 label-format primitive 승인 및 public implementation
 - [x] Directional grid edits
 - [x] Left legend primitive 승인 및 public implementation
-- [ ] Positioned/wrapped title primitive 승인 및 public implementation
+- [x] Positioned/wrapped title primitive 승인 및 public implementation
 - [ ] Full parameter, layout-failure, immutability와 rematerialization matrix
 - [ ] Public docs, contract 승격과 Phase closeout
 

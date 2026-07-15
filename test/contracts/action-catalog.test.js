@@ -223,7 +223,6 @@ test("keeps planned direct actions and reassignment gaps explicit", () => {
     "createErrorBar",
     "createIntervalData",
     "createRuleMark",
-    "editTitle",
     "encodeStroke",
     "encodeStrokeWidth",
     "encodeX2",
@@ -441,9 +440,11 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   assert.match(currentCorpus, /point-composite symbols in top\/bottom item grids/);
   assert.match(currentCorpus, /Composite layers share one item-local origin/);
   assert.match(currentCorpus, /type LegendPosition = "right" \| "bottom" \| "top" \| "left"/);
-  assert.match(plannedCorpus, /type PlannedTitleWrapping =/);
-  assert.match(plannedCorpus, /maxWidth\?: PositiveFinite/);
-  assert.match(plannedCorpus, /wrap\?: "word" \| "character"/);
+  assert.match(currentCorpus, /type TitlePosition = "top" \| "bottom" \| "left" \| "right"/);
+  assert.match(currentCorpus, /maxWidth\?: PositiveFinite/);
+  assert.match(currentCorpus, /wrap\?: TitleWrap/);
+  assert.match(currentCorpus, /## `editTitle`/);
+  assert.doesNotMatch(plannedCorpus, /## chart title positions|## title wrapping and measurement|## editTitle/);
   assert.match(plannedCorpus, /## graphic parent attachment/);
   assert.match(plannedCorpus, /parent\?: UserId/);
   assert.match(plannedCorpus, /같은 parent의 direct sibling/);
