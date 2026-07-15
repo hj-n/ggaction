@@ -80,7 +80,6 @@ function resolveGeometry(program, channel, config) {
   const scale = program.resolvedScales[config.scale];
   const bounds = resolveGraphicBounds(program);
   if (!["linear", "time", "ordinal"].includes(scale?.type) || !bounds) throw new Error("Axis title requires a supported resolved scale and Canvas bounds.");
-  if (scale.type === "ordinal" && channel !== "x") throw new Error("Ordinal axis title currently requires the x channel.");
   let along;
   if (config.at === "start") along = scale.range[0];
   else if (config.at === "center") along = (scale.range[0] + scale.range[1]) / 2;

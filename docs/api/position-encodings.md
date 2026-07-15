@@ -13,9 +13,10 @@ resolve a channel scale, and explicitly materialize the affected graphics.
 
 | Goal | Required state | Actions | Detailed page |
 | --- | --- | --- | --- |
-| Position points | point mark, quantitative fields | `encodeX`, `encodeY` | [Quantitative positions](./position/quantitative.md) |
+| Position points | point mark, quantitative, temporal, or ordinal fields | `encodeX`, `encodeY` | [Quantitative positions](./position/quantitative.md) |
 | Draw an aggregate time series | line mark, temporal x and quantitative y | `encodeX`, `encodeY` | [Temporal lines](./position/temporal.md) |
-| Build aggregate bars | bar mark, ordinal x and quantitative y | `encodeX`, `encodeY` | [Ordinal bars](./position/ordinal-bars.md) |
+| Build vertical aggregate bars | bar mark, ordinal/temporal x and quantitative y | `encodeX`, `encodeY` | [Bar positions](./position/ordinal-bars.md) |
+| Build horizontal aggregate bars | bar mark, quantitative x and ordinal/temporal y | `encodeX`, `encodeY` | [Bar positions](./position/ordinal-bars.md) |
 | Bin and count values | bar mark, quantitative field | `encodeHistogram` or `encodeX` + `encodeY` | [Histograms](./position/histogram.md) |
 | Estimate a distribution | area mark, quantitative field | `encodeDensity` | [Encodings](./encodings.md#atomic-density) |
 | Control within-band grouping | complete ordinal-bar positions | `encodeXOffset` | [Offsets](./position/offsets.md) |
@@ -30,7 +31,10 @@ for the same field.
 - `coordinate` uses the layer coordinate, then the documented `main`
   Cartesian default.
 - Scale IDs default to their channel names: `x`, `y`, and `xOffset`.
-- Automatic positional ranges use current plot bounds; y runs bottom-to-top.
+- Automatic continuous y ranges run bottom-to-top. Ordinal y bands run
+  top-to-bottom so horizontal categories follow domain order.
+- Temporal values accept finite timestamps, four-digit numeric/string years,
+  and valid date strings. Four-digit values are interpreted as UTC years.
 - Ambiguous resources produce an error instead of an arbitrary selection.
 
 ## Related

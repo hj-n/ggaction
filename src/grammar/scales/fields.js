@@ -47,11 +47,35 @@ export function readQuantitativeField(rows, field) {
   }));
 }
 
-function normalizeTemporalValue(value, field, index) {
-  const timestamp = typeof value === "string" ? Date.parse(value) : value;
+function utcDate(year, month = 1, day = 1) {
+  const timestamp = Date.UTC(year, month - 1, day);
+  const date = new Date(timestamp);
+  return date.getUTCFullYear() === year &&
+    date.getUTCMonth() === month - 1 &&
+    date.getUTCDate() === day
+    ? timestamp
+    : undefined;
+}
+
+export function normalizeTemporalValue(value, field = "value", index = 0) {
+  let timestamp;
+  if (typeof value === "number") {
+    timestamp = Number.isInteger(value) && value >= 1000 && value <= 9999
+      ? utcDate(value)
+      : value;
+  } else if (typeof value === "string") {
+    const year = /^(\d{4})$/.exec(value);
+    const date = /^(\d{4})[-/](\d{2})[-/](\d{2})$/.exec(value);
+    timestamp = year !== null
+      ? utcDate(Number(year[1]))
+      : date !== null
+        ? utcDate(Number(date[1]), Number(date[2]), Number(date[3]))
+        : Date.parse(value);
+  }
   if (!Number.isFinite(timestamp)) {
     throw new TypeError(
-      `Field "${field}" must contain a temporal string or finite timestamp at row ${index}.`
+      `Field "${field}" must contain a temporal string or finite timestamp ` +
+      `(including a valid date or four-digit year) at row ${index}.`
     );
   }
   return timestamp;

@@ -195,14 +195,14 @@ export function createTemporalBarReference(rows, layout) {
     },
     axes: {
       x: {
-        line: { x1: bounds.x, y1: bounds.y + bounds.height, x2: bounds.x + bounds.width, y2: bounds.y + bounds.height },
+        line: { x1: timeRange[0], y1: bounds.y + bounds.height, x2: timeRange[1], y2: bounds.y + bounds.height },
         ticks: xTicks,
-        title: { x: bounds.x + bounds.width / 2, y: layout.height - 20, text: "year", rotation: 0 }
+        title: { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height + 42, text: "year", rotation: 0 }
       },
       y: {
-        line: { x1: bounds.x, y1: bounds.y, x2: bounds.x, y2: bounds.y + bounds.height },
+        line: { x1: bounds.x, y1: yRange[0], x2: bounds.x, y2: yRange[1] },
         ticks: yTicks,
-        title: { x: 24, y: bounds.y + bounds.height / 2, text: "mean(perc)", rotation: -Math.PI / 2 }
+        title: { x: bounds.x - 52, y: bounds.y + bounds.height / 2, text: "mean(perc)", rotation: -Math.PI / 2 }
       }
     },
     legend: legend(groups, bounds)
@@ -295,12 +295,12 @@ export function createHorizontalBarReference(rows, layout) {
       x: {
         line: { x1: bounds.x, y1: bounds.y + bounds.height, x2: bounds.x + bounds.width, y2: bounds.y + bounds.height },
         ticks: xTicks,
-        title: { x: bounds.x + bounds.width / 2, y: layout.height - 20, text: "mean(perc)", rotation: 0 }
+        title: { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height + 42, text: "mean(perc)", rotation: 0 }
       },
       y: {
         line: { x1: bounds.x, y1: bounds.y, x2: bounds.x, y2: bounds.y + bounds.height },
         ticks: yTicks,
-        title: { x: 24, y: bounds.y + bounds.height / 2, text: "year", rotation: -Math.PI / 2 }
+        title: { x: bounds.x - 52, y: bounds.y + bounds.height / 2, text: "year", rotation: -Math.PI / 2 }
       }
     },
     legend: legend(groups, bounds)

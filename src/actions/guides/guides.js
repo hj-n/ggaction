@@ -1,5 +1,9 @@
 import { action } from "../../core/action.js";
 import { isPlainObject } from "../../core/immutable.js";
+import {
+  BAR_ORIENTATIONS,
+  resolveBarOrientation
+} from "../../grammar/bars/policy.js";
 
 const OPTIONS = Object.freeze(["axes", "grid", "legend"]);
 
@@ -31,8 +35,22 @@ function hasCartesianEncoding(program) {
 
 function hasGridEncoding(program) {
   return program.semanticSpec.layers.some(
-    layer => layer.encoding?.y?.scale !== undefined
+    layer => layer.encoding?.x?.scale !== undefined ||
+      layer.encoding?.y?.scale !== undefined
   );
+}
+
+function inferGridOptions(program) {
+  const barOrientations = program.semanticSpec.layers
+    .map(resolveBarOrientation)
+    .filter(Boolean);
+  if (
+    barOrientations.length > 0 &&
+    barOrientations.every(value => value === BAR_ORIENTATIONS.horizontal)
+  ) {
+    return { horizontal: false, vertical: true };
+  }
+  return { horizontal: true, vertical: false };
 }
 
 function hasLegendEncoding(program) {
@@ -71,7 +89,9 @@ const createGuides = action(
   function (args = {}) {
     validateOptions(args);
     const axes = selectOption(args.axes, hasCartesianEncoding(this));
-    const grid = selectOption(args.grid, hasGridEncoding(this));
+    const grid = args.grid === undefined && hasGridEncoding(this)
+      ? inferGridOptions(this)
+      : selectOption(args.grid, hasGridEncoding(this));
     const legend = selectOption(
       args.legend,
       hasLegendEncoding(this)

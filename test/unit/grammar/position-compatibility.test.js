@@ -1,0 +1,23 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+import {
+  POSITION_FIELD_COMPATIBILITY,
+  validatePositionFieldCompatibility
+} from "../../../src/grammar/positionCompatibility.js";
+
+test("owns the accepted mark, channel, and field-type matrix", () => {
+  assert.deepEqual(POSITION_FIELD_COMPATIBILITY.point.x, [
+    "quantitative", "temporal", "ordinal"
+  ]);
+  assert.equal(validatePositionFieldCompatibility("bar", "x", "temporal"), "temporal");
+  assert.equal(validatePositionFieldCompatibility("bar", "y", "ordinal"), "ordinal");
+  assert.throws(
+    () => validatePositionFieldCompatibility("area", "x", "temporal"),
+    /does not support field type/
+  );
+  assert.throws(
+    () => validatePositionFieldCompatibility("point", "x", "nominal"),
+    /does not support field type/
+  );
+});

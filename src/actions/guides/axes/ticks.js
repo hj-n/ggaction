@@ -46,7 +46,6 @@ function geometry(program, channel, config) {
   const scale = program.resolvedScales[config.scale];
   const bounds = resolveGraphicBounds(program);
   if (!["linear", "time", "ordinal"].includes(scale?.type) || !bounds) throw new Error("Axis ticks require a supported resolved scale and Canvas bounds.");
-  if (scale.type === "ordinal" && channel !== "x") throw new Error("Ordinal axis ticks currently require the x channel.");
   if (scale.type === "ordinal" && config.mode !== "values") throw new Error("Ordinal axis ticks require explicit or inferred values, not count.");
   const domain = scale.domain;
   const values = valuesFromTickConfig(program, config);

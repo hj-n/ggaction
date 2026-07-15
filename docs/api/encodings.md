@@ -24,7 +24,8 @@ defaults.
 ## Position
 
 [`encodeX` and `encodeY`](./position-encodings.md) create quantitative point
-positions, temporal/aggregate line positions, or a binned quantitative bar x
+positions, temporal/aggregate line positions, or compatible vertical and
+horizontal bar positions including a binned quantitative bar x
 encoding. `encodeX` also supports ordinal bar categories. Position actions
 establish the Cartesian coordinate and the scale used by later marks and axes.
 

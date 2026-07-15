@@ -43,6 +43,11 @@ Automatic ranges use current plot bounds. For automatic linear domains,
 Automatic temporal `nice` expands to UTC calendar boundaries. Time scales
 reject `zero`.
 
+Temporal field values are normalized while resolving the scale, without
+rewriting the source dataset. Finite timestamps are accepted directly;
+four-digit numbers or strings are UTC years, and validated `YYYY-MM-DD` or
+`YYYY/MM/DD` strings are UTC calendar dates.
+
 The precedence is:
 
 ```text

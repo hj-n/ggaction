@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Ordinal Bar Positions
+title: Bar Positions
 ---
 
-# Ordinal Bar Positions
+# Bar Positions
 
 ## At a glance
 
@@ -11,6 +11,8 @@ title: Ordinal Bar Positions
 | --- | --- | --- | --- |
 | ordinal `encodeX` | `encodeX({ field: "category", fieldType: "ordinal" })` | bar mark | Ordered x bands |
 | aggregate `encodeY` | `encodeY({ field: "value" })` | ordinal bar x | Aggregate/non-stacked y scale |
+| temporal `encodeX` | `encodeX({ field: "year", fieldType: "temporal" })` | bar mark | Time-positioned vertical bars |
+| horizontal pair | quantitative aggregate x + ordinal/temporal y | bar mark | Horizontal bars |
 
 ## Ordinal bar `encodeX(options)`
 
@@ -64,11 +66,32 @@ as temporal line y encodings.
 Grouping and `encodeBarWidth` later supply enough information to materialize
 concrete rectangles.
 
+## Temporal and horizontal bars
+
+Bar orientation is inferred from the completed position pair; it is not stored
+as a separate mark option.
+
+```javascript
+program
+  .encodeX({ field: "year", fieldType: "temporal" })
+  .encodeY({ field: "perc", aggregate: "mean" });
+
+program
+  .encodeX({ field: "perc", aggregate: "mean" })
+  .encodeY({ field: "year", fieldType: "ordinal" });
+```
+
+Temporal input normalization happens only while resolving scales and geometry.
+The dataset and semantic field remain unchanged. Numeric or string four-digit
+years map to January 1 UTC; `YYYY-MM-DD`, `YYYY/MM/DD`, and finite timestamps
+are also accepted.
+
 ## Errors and limitations
 
-Ordinal position does not accept `nice` or `zero`. The current bar slice
-supports aggregate y and grouped color layout; negative baselines and
-horizontal bars are unsupported.
+Ordinal position does not accept `nice` or `zero`. Vertical grouped bars use
+`xOffset`; horizontal `layout: "group"` remains unavailable until `yOffset`
+exists. Horizontal stack, overlay, fill, and diverging layouts use the
+quantitative x measure.
 
 ## Related
 

@@ -98,3 +98,53 @@ export function createJobsGroupReassignmentBar(jobs) {
     guides: { legend: { title: "Occupation" } }
   }).encodeColor({ field: "job", layout: "group" });
 }
+
+export function createJobsTemporalXBar(jobs) {
+  const rows = validJobsRows(jobs, "perc");
+  return chart()
+    .createCanvas({
+      width: 720,
+      height: 460,
+      margin: { top: 40, right: 140, bottom: 70, left: 80 }
+    })
+    .createData({ id: "jobs", values: rows })
+    .createBarMark({ id: "bars" })
+    .encodeX({ field: "year", fieldType: "temporal" })
+    .encodeY({
+      field: "perc",
+      aggregate: "mean",
+      scale: { nice: true, zero: false }
+    })
+    .encodeColor({
+      field: "sex",
+      layout: "group",
+      scale: { palette: "tableau10" }
+    })
+    .encodeBarWidth({ band: 0.72 })
+    .createGuides();
+}
+
+export function createJobsHorizontalBar(jobs) {
+  const rows = validJobsRows(jobs, "perc");
+  return chart()
+    .createCanvas({
+      width: 720,
+      height: 460,
+      margin: { top: 40, right: 140, bottom: 70, left: 80 }
+    })
+    .createData({ id: "jobs", values: rows })
+    .createBarMark({ id: "bars" })
+    .encodeX({
+      field: "perc",
+      aggregate: "mean",
+      scale: { nice: true, zero: true }
+    })
+    .encodeY({ field: "year", fieldType: "ordinal" })
+    .encodeColor({
+      field: "sex",
+      layout: "stack",
+      scale: { palette: "tableau10" }
+    })
+    .encodeBarWidth({ band: 0.72 })
+    .createGuides();
+}

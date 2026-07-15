@@ -138,12 +138,12 @@ Create a semantic area mark and empty path collection. Fixed fill defaults to
 ### `encodeX`
 
 ```javascript
-encodeX({ field, target?, fieldType?, coordinate?, bin?, scale? })
+encodeX({ field, target?, fieldType?, aggregate?, stack?, coordinate?, bin?, scale? })
 ```
 
-Create or compatibly replace a quantitative point/area, temporal line, binned quantitative bar, or
-ordinal bar x encoding. Ordinal bars require `fieldType: "ordinal"` and do not
-materialize rects until their remaining layout semantics exist.
+Create or compatibly replace an x encoding. Points accept quantitative,
+temporal, and ordinal fields. Bars accept binned quantitative x, vertical
+ordinal/temporal categories, or a horizontal quantitative aggregate measure.
 [Position encodings](../api/position-encodings.md)
 
 ### `encodeY`
@@ -152,10 +152,11 @@ materialize rects until their remaining layout semantics exist.
 encodeY({ field?, target?, fieldType?, aggregate?, stack?, coordinate?, scale? })
 ```
 
-Create or compatibly replace a quantitative point, aggregate line, or inferred count bar
-y encoding. With ordinal bar x, it also creates an aggregate/non-stacked y encoding
-and resolves its scale while waiting for grouping semantics before rect
-materialization. Bar stack accepts `"zero"`, `"normalize"`, or `null`.
+Create or compatibly replace a y encoding. With bar marks, a quantitative y
+measure plus ordinal/temporal x produces vertical bars; ordinal/temporal y plus
+a quantitative aggregate x produces horizontal bars. Orientation is inferred
+from the complete pair and is not stored separately. Bar stack accepts
+`"zero"`, `"normalize"`, or `null`.
 Aggregate values may be scalar names or parameterized quantile
 and ordered first/last objects. A complete histogram x/y pair materializes concrete rects.
 [Position encodings](../api/position-encodings.md)

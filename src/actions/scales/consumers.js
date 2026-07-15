@@ -1,6 +1,7 @@
 import { deriveBarAggregates } from "../../grammar/bars/aggregate.js";
 import {
   BAR_GRAINS,
+  resolveBarChannels,
   resolveBarColorLayout,
   resolveBarGrain
 } from "../../grammar/bars/policy.js";
@@ -156,23 +157,31 @@ function resolveAggregatePartitions(program, consumer) {
   const layer = consumer.layer;
   const dataset = findDataset(program, layer.data);
   const derived = deriveBarAggregates(dataset.values, layer);
-  const xScale = findScale(program, layer.encoding.x.scale);
-  const xDomain = resolveOrdinalDomain(xScale.domain, derived.xValues);
+  const channels = resolveBarChannels(layer);
+  const categoryEncoding = layer.encoding[channels.category];
+  const categoryScale = findScale(program, categoryEncoding.scale);
+  const categoryValues = channels.category === "x"
+    ? derived.xValues
+    : derived.yValues;
+  const categoryDomain = resolveOrdinalDomain(categoryScale.domain, categoryValues);
   const colorEncoding = layer.encoding?.color;
   if (colorEncoding?.scale === undefined) {
-    const byX = new Map(derived.values.map(value => [value.x, value.y]));
-    return xDomain.map(value => [byX.get(value) ?? 0]);
+    const byCategory = new Map(derived.values.map(value => [
+      value[channels.category],
+      value[channels.measure]
+    ]));
+    return categoryDomain.map(value => [byCategory.get(value) ?? 0]);
   }
 
   const colorScale = findScale(program, colorEncoding.scale);
   const colorValues = readNominalField(dataset.values, colorEncoding.field);
   const colorDomain = resolveOrdinalDomain(colorScale.domain, colorValues);
   const cells = new Map(derived.values.map(value => [
-    JSON.stringify([value.x, value.color]),
-    value.y
+    JSON.stringify([value[channels.category], value.color]),
+    value[channels.measure]
   ]));
-  return xDomain.map(x => colorDomain.map(color =>
-    cells.get(JSON.stringify([x, color])) ?? 0
+  return categoryDomain.map(category => colorDomain.map(color =>
+    cells.get(JSON.stringify([category, color])) ?? 0
   ));
 }
 
@@ -196,9 +205,10 @@ function resolveAreaPartitions(program, consumer) {
 }
 
 export function resolveSeriesLayoutScaleValues(program, consumer) {
-  if (consumer.channel !== "y") return undefined;
   if (consumer.layer.mark?.type === "bar") {
     const grain = resolveBarGrain(consumer.layer);
+    const channels = resolveBarChannels(consumer.layer);
+    if (consumer.channel !== channels?.measure) return undefined;
     const partitions = grain === BAR_GRAINS.histogram
       ? resolveHistogramPartitions(program, consumer)
       : grain === BAR_GRAINS.aggregate
@@ -211,6 +221,7 @@ export function resolveSeriesLayoutScaleValues(program, consumer) {
       values: resolveSeriesLayoutDomainValues(partitions, layout)
     };
   }
+  if (consumer.channel !== "y") return undefined;
   if (consumer.layer.mark?.type === "area") {
     const layout = consumer.layer.encoding?.color?.layout;
     if (layout === undefined || layout === "overlay") return undefined;

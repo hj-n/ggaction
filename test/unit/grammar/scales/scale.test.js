@@ -44,15 +44,31 @@ test("reads finite quantitative field values", () => {
 
 test("normalizes temporal field values to timestamps", () => {
   const values = readTemporalField(
-    [{ value: "1970-01-01" }, { value: Date.UTC(1980, 0, 1) }],
+    [
+      { value: 1970 },
+      { value: "1980" },
+      { value: "1990-08-05" },
+      { value: "1997/08/21" },
+      { value: Date.UTC(2000, 0, 1) }
+    ],
     "value"
   );
 
-  assert.deepEqual(values, [Date.UTC(1970, 0, 1), Date.UTC(1980, 0, 1)]);
+  assert.deepEqual(values, [
+    Date.UTC(1970, 0, 1),
+    Date.UTC(1980, 0, 1),
+    Date.UTC(1990, 7, 5),
+    Date.UTC(1997, 7, 21),
+    Date.UTC(2000, 0, 1)
+  ]);
   assert.equal(Object.isFrozen(values), true);
   assert.throws(
     () => readTemporalField([{ value: "not-a-date" }], "value"),
     /temporal string or finite timestamp/
+  );
+  assert.throws(
+    () => readTemporalField([{ value: "2024-02-31" }], "value"),
+    /valid date/
   );
 });
 

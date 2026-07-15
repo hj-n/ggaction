@@ -8,6 +8,7 @@ import {
 import {
   BAR_GRAINS,
   inferBarColorLayout,
+  resolveBarChannels,
   resolveBarGrain
 } from "../../grammar/bars/policy.js";
 import { validateColorLayout } from "../../grammar/seriesLayout.js";
@@ -67,9 +68,11 @@ function applyColorLayoutCompanion(
   { target, layer, layout, scale, field }
 ) {
   if (layout === undefined) return program;
-  const y = layer.encoding?.y;
-  if (y?.field === undefined || y.scale === undefined) {
-    throw new Error(`Color layout on mark "${target}" requires a y encoding.`);
+  const channels = layer.mark.type === "bar" ? resolveBarChannels(layer) : undefined;
+  const measureChannel = channels?.measure ?? "y";
+  const measure = layer.encoding?.[measureChannel];
+  if (measure?.field === undefined || measure.scale === undefined) {
+    throw new Error(`Color layout on mark "${target}" requires a measure encoding.`);
   }
   const stack = layout === "fill"
     ? "normalize"
@@ -78,6 +81,9 @@ function applyColorLayoutCompanion(
       : "zero";
   let next = program;
   if (layout === "group") {
+    if (channels?.orientation === "horizontal") {
+      throw new Error('Horizontal bars do not support color layout "group" until yOffset is available.');
+    }
     next = next.encodeXOffset({
       field,
       target,
@@ -89,11 +95,11 @@ function applyColorLayoutCompanion(
       }
     });
   }
-  return next.encodeY({
+  return next[measureChannel === "x" ? "encodeX" : "encodeY"]({
     target,
-    field: y.field,
-    fieldType: y.fieldType,
-    ...(y.aggregate === undefined ? {} : { aggregate: y.aggregate }),
+    field: measure.field,
+    fieldType: measure.fieldType,
+    ...(measure.aggregate === undefined ? {} : { aggregate: measure.aggregate }),
     stack
   });
 }

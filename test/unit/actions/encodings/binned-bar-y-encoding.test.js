@@ -145,7 +145,10 @@ test("validates histogram y prerequisites and policies", () => {
     .createData({ id: "cars", values: [{ Displacement: 100 }] })
     .createBarMark({ id: "bars" });
 
-  assert.throws(() => withoutX.encodeY(), /requires a binned x encoding/);
+  assert.throws(
+    () => withoutX.encodeY(),
+    /ordinal x category, temporal x category, or aggregate/
+  );
 
   const program = histogramProgram();
   assert.throws(

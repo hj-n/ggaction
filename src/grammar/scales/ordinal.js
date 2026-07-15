@@ -50,7 +50,9 @@ export function resolveOrdinalPositionScale({
   bounds
 }) {
   const resolvedDomain = resolveOrdinalDomain(domain, values);
-  const resolvedRange = resolveScaleRange(range, channel, bounds);
+  const resolvedRange = range === "auto" && channel === "y"
+    ? cloneAndFreeze([bounds.y, bounds.y + bounds.height])
+    : resolveScaleRange(range, channel, bounds);
   const domainValues = new Set(resolvedDomain);
   for (const value of values) {
     if (!domainValues.has(value)) {

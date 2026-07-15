@@ -236,26 +236,6 @@ type ContinuousColorScale = {
   tokens, policies, gradient legend, rematerialization and renderer parity are Current. This contract now
   contains only the continuous bar consumer and its `unknown` fallback.
 
-## Position field-type compatibility
-
-```typescript
-type PlannedPositionFieldType = "quantitative" | "temporal" | "ordinal";
-```
-
-- Point x/y는 세 field type을 모두 허용한다. Line과 area의 independent axis는 세 type을 모두
-  허용하고 measure 또는 ranged axis는 quantitative를 요구한다.
-- Bar는 vertical `ordinal | temporal x + quantitative y`와 horizontal
-  `quantitative x + ordinal | temporal y` 조합을 지원한다. Orientation은 compatible channel
-  pair에서 추론하며 사용자가 별도 mark orientation을 중복 지정하지 않는다.
-- Temporal은 `time | utc`, ordinal position은 `ordinal | band | point`, quantitative는 compatible
-  continuous scale type을 사용한다. Explicit incompatible field/scale 조합은 오류다.
-- Aggregate, bin, stack, ranged channel과 mark grain이 허용 조합을 더 좁힐 수 있다. Library는
-  unsupported pair를 다른 field type으로 자동 변환하지 않는다.
-- 새 조합은 scale, mark geometry, axes, grids와 existing guides를 같은 materialization plan에서
-  갱신한다.
-- Status: Planned, NOT IMPLEMENTED. 전체 mark × channel × fieldType compatibility matrix와
-  orientation, shared-scale conflict, guide inference coverage가 필요하다.
-
 ## Implemented normalized stack compatibility note
 
 ```typescript

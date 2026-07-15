@@ -22,6 +22,12 @@ import {
   validateAggregateFieldType,
   validateAggregateFieldValues,
 } from "../../../grammar/aggregate.js";
+import {
+  BAR_ORIENTATIONS,
+  resolveBarOrientation
+} from "../../../grammar/bars/policy.js";
+import { validatePositionFieldCompatibility } from
+  "../../../grammar/positionCompatibility.js";
 
 const POSITION_ENCODING_OPTIONS = Object.freeze([
   "field", "target", "fieldType", "scale", "coordinate", "aggregate", "bin", "stack"
@@ -60,10 +66,11 @@ function validateMarkPolicy(layer, dataset, channel, args, fieldType, field) {
   let aggregate;
   let stack;
   const xEncoding = layer.encoding?.x;
+  validatePositionFieldCompatibility(layer.mark.type, channel, fieldType);
 
   if (layer.mark.type === "point") {
-    if (fieldType !== "quantitative") {
-      throw new Error("Point position encoding currently requires quantitative fields.");
+    if (!["quantitative", "temporal", "ordinal"].includes(fieldType)) {
+      throw new Error("Point position encoding requires quantitative fields, temporal fields, or ordinal fields.");
     }
     if (args.aggregate !== undefined) throw new Error("Point position encoding does not support aggregate.");
     if (args.bin !== undefined) throw new Error("Point position encoding does not support bin.");
@@ -108,37 +115,74 @@ function validateMarkPolicy(layer, dataset, channel, args, fieldType, field) {
       validateAggregateFieldType(aggregate, fieldType);
     }
     if (args.stack !== undefined) throw new Error("Line y encoding does not support stack.");
-  } else if (channel === "x") {
-    if (args.aggregate !== undefined) throw new Error("Bar x encoding does not support aggregate.");
-    if (args.stack !== undefined) throw new Error("Bar x encoding does not support stack.");
-    if (fieldType === "ordinal") {
-      if (args.bin !== undefined) throw new Error("Ordinal bar x encoding does not support bin.");
-    } else if (fieldType === "quantitative") {
-      if (args.bin === undefined) throw new Error("Quantitative bar x encoding requires bin.");
-      bin = resolveBin(args.bin);
-    } else {
-      throw new Error("Bar x encoding requires a quantitative field with bin or an ordinal field.");
-    }
   } else {
-    if (xEncoding?.field === undefined || xEncoding.scale === undefined) {
-      throw new Error("Bar y encoding requires a binned x encoding or ordinal x encoding.");
-    }
-    if (fieldType !== "quantitative") throw new Error("Bar y encoding currently requires a quantitative field.");
-    if (args.bin !== undefined) throw new Error("Bar y encoding does not support bin.");
-    if (xEncoding.bin !== undefined) {
+    const opposite = layer.encoding?.[channel === "x" ? "y" : "x"];
+    if (["ordinal", "temporal"].includes(fieldType)) {
+      if (args.aggregate !== undefined || args.bin !== undefined || args.stack !== undefined) {
+      throw new Error(
+        "Categorical bar position does not support bin or aggregate; a binned bar requires a quantitative field."
+      );
+      }
+    } else if (fieldType === "quantitative" && channel === "x" && args.bin !== undefined) {
+      if (args.aggregate !== undefined || args.stack !== undefined) {
+        throw new Error("Binned bar x encoding does not support aggregate or stack.");
+      }
+      bin = resolveBin(args.bin);
+    } else if (
+      fieldType === "quantitative" &&
+      channel === "y" &&
+      xEncoding?.bin !== undefined
+    ) {
+      if (args.bin !== undefined) throw new Error("Histogram bar y encoding does not support bin.");
       if (field !== xEncoding.field) throw new Error("Bar y field must match the binned x field.");
       aggregate = args.aggregate ?? "count";
       stack = Object.hasOwn(args, "stack") ? args.stack : "zero";
       if (aggregate !== "count") throw new Error('Histogram bar y aggregate must be "count".');
       stack = validateStack(stack, "Histogram bar y encoding");
-    } else if (xEncoding.fieldType === "ordinal") {
-      aggregate = args.aggregate ?? "mean";
+    } else if (fieldType === "quantitative") {
+      if (args.bin !== undefined) {
+        throw new Error(
+          channel === "y"
+            ? "Bar y does not support bin; histogram y requires a binned x encoding."
+            : "Quantitative bar measure encoding does not support bin."
+        );
+      }
+      aggregate = args.aggregate ?? (
+        ["ordinal", "temporal"].includes(opposite?.fieldType) ? "mean" : undefined
+      );
+      if (aggregate === undefined) {
+        throw new Error(
+          channel === "x"
+            ? "Quantitative bar x encoding requires bin or aggregate."
+            : "Bar y encoding requires a binned quantitative or ordinal x category, temporal x category, or aggregate."
+        );
+      }
       stack = Object.hasOwn(args, "stack") ? args.stack : null;
       aggregate = validateAggregate(aggregate);
       validateAggregateFieldType(aggregate, fieldType);
-      stack = validateStack(stack, "Ordinal bar y encoding");
+      stack = validateStack(stack, `Bar ${channel} encoding`);
     } else {
-      throw new Error("Bar y encoding requires a binned quantitative or ordinal x encoding.");
+      throw new Error("Bar position requires quantitative, temporal, or ordinal fields.");
+    }
+
+    const candidate = {
+      ...layer,
+      encoding: {
+        ...layer.encoding,
+        [channel]: { field, fieldType, bin, aggregate, stack }
+      }
+    };
+    const orientation = resolveBarOrientation(candidate);
+    if (opposite !== undefined && orientation === undefined) {
+      throw new Error(
+        `Bar ${channel} encoding requires a quantitative field opposite an ordinal or temporal category.`
+      );
+    }
+    if (
+      orientation === BAR_ORIENTATIONS.horizontal &&
+      candidate.encoding?.xOffset !== undefined
+    ) {
+      throw new Error("Horizontal grouped bars require yOffset support, which is not available yet.");
     }
   }
   return { bin, aggregate, stack };
@@ -200,10 +244,14 @@ export function resolvePositionEncoding(program, channel, args, operation) {
     channel,
     aggregateOutput ? "quantitative" : fieldType,
     requestedScale,
-    layer.mark.type === "bar" && fieldType !== "ordinal"
-      ? channel === "x" || policy.stack === null
-        ? { nice: true, zero: false }
-        : { nice: true, zero: true }
+    layer.mark.type === "bar"
+      ? fieldType === "quantitative"
+        ? policy.bin !== undefined || policy.stack === null
+          ? { nice: true, zero: false }
+          : { nice: true, zero: true }
+        : fieldType === "temporal"
+          ? { nice: true }
+          : {}
       : {}
   );
   return {

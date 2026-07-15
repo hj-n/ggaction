@@ -78,6 +78,27 @@ test("records the explicit nested encoding action hierarchy", () => {
   );
 });
 
+test("maps temporal and ordinal point positions without rewriting source data", () => {
+  const values = [
+    { year: 1980, origin: "USA" },
+    { year: "1990-08-05", origin: "Japan" }
+  ];
+  const program = createPointProgram(values)
+    .encodeX({ field: "year", fieldType: "temporal" })
+    .encodeY({ field: "origin", fieldType: "ordinal" });
+
+  assert.deepEqual(program.semanticSpec.datasets[0].values, values);
+  assert.deepEqual(program.resolvedScales.x.domain, [
+    Date.UTC(1980, 0, 1),
+    Date.UTC(1990, 7, 5)
+  ]);
+  assert.deepEqual(program.resolvedScales.y.domain, ["USA", "Japan"]);
+  assert.deepEqual(
+    program.graphicSpec.objects.points.children.map(child => child.properties.y),
+    [50, 110]
+  );
+});
+
 test("supports explicit targets and scale definitions", () => {
   const program = createPointProgram().encodeX({
     field: "horsepower",
@@ -130,7 +151,7 @@ test("validates position encoding inputs before changing the program", () => {
   assert.throws(() => program.encodeX({ field: "missing" }), /finite number/);
   assert.throws(
     () => program.encodeX({ field: "horsepower", fieldType: "nominal" }),
-    /requires quantitative fields/
+    /does not support field type/
   );
   assert.throws(
     () => program.encodeX({ field: "horsepower", scale: { type: "log" } }),

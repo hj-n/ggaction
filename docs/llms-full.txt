@@ -1823,7 +1823,8 @@ defaults.
 ## Position
 
 [`encodeX` and `encodeY`](./position-encodings.md) create quantitative point
-positions, temporal/aggregate line positions, or a binned quantitative bar x
+positions, temporal/aggregate line positions, or compatible vertical and
+horizontal bar positions including a binned quantitative bar x
 encoding. `encodeX` also supports ordinal bar categories. Position actions
 establish the Cartesian coordinate and the scale used by later marks and axes.
 
@@ -2321,9 +2322,10 @@ resolve a channel scale, and explicitly materialize the affected graphics.
 
 | Goal | Required state | Actions | Detailed page |
 | --- | --- | --- | --- |
-| Position points | point mark, quantitative fields | `encodeX`, `encodeY` | [Quantitative positions](./position/quantitative.md) |
+| Position points | point mark, quantitative, temporal, or ordinal fields | `encodeX`, `encodeY` | [Quantitative positions](./position/quantitative.md) |
 | Draw an aggregate time series | line mark, temporal x and quantitative y | `encodeX`, `encodeY` | [Temporal lines](./position/temporal.md) |
-| Build aggregate bars | bar mark, ordinal x and quantitative y | `encodeX`, `encodeY` | [Ordinal bars](./position/ordinal-bars.md) |
+| Build vertical aggregate bars | bar mark, ordinal/temporal x and quantitative y | `encodeX`, `encodeY` | [Bar positions](./position/ordinal-bars.md) |
+| Build horizontal aggregate bars | bar mark, quantitative x and ordinal/temporal y | `encodeX`, `encodeY` | [Bar positions](./position/ordinal-bars.md) |
 | Bin and count values | bar mark, quantitative field | `encodeHistogram` or `encodeX` + `encodeY` | [Histograms](./position/histogram.md) |
 | Estimate a distribution | area mark, quantitative field | `encodeDensity` | [Encodings](./encodings.md#atomic-density) |
 | Control within-band grouping | complete ordinal-bar positions | `encodeXOffset` | [Offsets](./position/offsets.md) |
@@ -2338,7 +2340,10 @@ for the same field.
 - `coordinate` uses the layer coordinate, then the documented `main`
   Cartesian default.
 - Scale IDs default to their channel names: `x`, `y`, and `xOffset`.
-- Automatic positional ranges use current plot bounds; y runs bottom-to-top.
+- Automatic continuous y ranges run bottom-to-top. Ordinal y bands run
+  top-to-bottom so horizontal categories follow domain order.
+- Temporal values accept finite timestamps, four-digit numeric/string years,
+  and valid date strings. Four-digit values are interpreted as UTC years.
 - Ambiguous resources produce an error instead of an arbitrary selection.
 
 ## Related
@@ -2509,7 +2514,7 @@ outputs must be quantitative.
 
 <!-- Source: /api/position/ordinal-bars/ -->
 
-# Ordinal Bar Positions
+# Bar Positions
 
 ## At a glance
 
@@ -2517,6 +2522,8 @@ outputs must be quantitative.
 | --- | --- | --- | --- |
 | ordinal `encodeX` | `encodeX({ field: "category", fieldType: "ordinal" })` | bar mark | Ordered x bands |
 | aggregate `encodeY` | `encodeY({ field: "value" })` | ordinal bar x | Aggregate/non-stacked y scale |
+| temporal `encodeX` | `encodeX({ field: "year", fieldType: "temporal" })` | bar mark | Time-positioned vertical bars |
+| horizontal pair | quantitative aggregate x + ordinal/temporal y | bar mark | Horizontal bars |
 
 ## Ordinal bar `encodeX(options)`
 
@@ -2570,11 +2577,32 @@ as temporal line y encodings.
 Grouping and `encodeBarWidth` later supply enough information to materialize
 concrete rectangles.
 
+## Temporal and horizontal bars
+
+Bar orientation is inferred from the completed position pair; it is not stored
+as a separate mark option.
+
+```javascript
+program
+  .encodeX({ field: "year", fieldType: "temporal" })
+  .encodeY({ field: "perc", aggregate: "mean" });
+
+program
+  .encodeX({ field: "perc", aggregate: "mean" })
+  .encodeY({ field: "year", fieldType: "ordinal" });
+```
+
+Temporal input normalization happens only while resolving scales and geometry.
+The dataset and semantic field remain unchanged. Numeric or string four-digit
+years map to January 1 UTC; `YYYY-MM-DD`, `YYYY/MM/DD`, and finite timestamps
+are also accepted.
+
 ## Errors and limitations
 
-Ordinal position does not accept `nice` or `zero`. The current bar slice
-supports aggregate y and grouped color layout; negative baselines and
-horizontal bars are unsupported.
+Ordinal position does not accept `nice` or `zero`. Vertical grouped bars use
+`xOffset`; horizontal `layout: "group"` remains unavailable until `yOffset`
+exists. Horizontal stack, overlay, fill, and diverging layouts use the
+quantitative x measure.
 
 ## Related
 
@@ -3064,6 +3092,11 @@ Automatic ranges use current plot bounds. For automatic linear domains,
 `zero: true` includes zero and `nice: true` then expands to rounded boundaries.
 Automatic temporal `nice` expands to UTC calendar boundaries. Time scales
 reject `zero`.
+
+Temporal field values are normalized while resolving the scale, without
+rewriting the source dataset. Finite timestamps are accepted directly;
+four-digit numbers or strings are UTC years, and validated `YYYY-MM-DD` or
+`YYYY/MM/DD` strings are UTC calendar dates.
 
 The precedence is:
 
@@ -4116,12 +4149,12 @@ Create a semantic area mark and empty path collection. Fixed fill defaults to
 ### `encodeX`
 
 ```javascript
-encodeX({ field, target?, fieldType?, coordinate?, bin?, scale? })
+encodeX({ field, target?, fieldType?, aggregate?, stack?, coordinate?, bin?, scale? })
 ```
 
-Create or compatibly replace a quantitative point/area, temporal line, binned quantitative bar, or
-ordinal bar x encoding. Ordinal bars require `fieldType: "ordinal"` and do not
-materialize rects until their remaining layout semantics exist.
+Create or compatibly replace an x encoding. Points accept quantitative,
+temporal, and ordinal fields. Bars accept binned quantitative x, vertical
+ordinal/temporal categories, or a horizontal quantitative aggregate measure.
 [Position encodings](../api/position-encodings.md)
 
 ### `encodeY`
@@ -4130,10 +4163,11 @@ materialize rects until their remaining layout semantics exist.
 encodeY({ field?, target?, fieldType?, aggregate?, stack?, coordinate?, scale? })
 ```
 
-Create or compatibly replace a quantitative point, aggregate line, or inferred count bar
-y encoding. With ordinal bar x, it also creates an aggregate/non-stacked y encoding
-and resolves its scale while waiting for grouping semantics before rect
-materialization. Bar stack accepts `"zero"`, `"normalize"`, or `null`.
+Create or compatibly replace a y encoding. With bar marks, a quantitative y
+measure plus ordinal/temporal x produces vertical bars; ordinal/temporal y plus
+a quantitative aggregate x produces horizontal bars. Orientation is inferred
+from the complete pair and is not stored separately. Bar stack accepts
+`"zero"`, `"normalize"`, or `null`.
 Aggregate values may be scalar names or parameterized quantile
 and ordered first/last objects. A complete histogram x/y pair materializes concrete rects.
 [Position encodings](../api/position-encodings.md)

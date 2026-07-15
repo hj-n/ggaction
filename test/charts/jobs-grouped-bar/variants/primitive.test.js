@@ -5,8 +5,10 @@ import {
   createJobsDivergingBar,
   createJobsFixedPixelBar,
   createJobsGroupReassignmentBar,
+  createJobsHorizontalBar,
   createJobsOffsetPaddingBar,
-  createJobsOverlayBar
+  createJobsOverlayBar,
+  createJobsTemporalXBar
 } from "../../../../examples/jobs-grouped-bar/program.js";
 import { assertChartProgramsEquivalent } from
   "../../../support/chart-equivalence.js";
@@ -411,5 +413,14 @@ test("keeps Gate D primitives independent of future position actions", () => {
     ]) {
       assert.equal(operations.includes(operation), false);
     }
+  }
+});
+
+test("matches approved position primitives with public action flows", () => {
+  for (const [primitiveProgram, publicProgram] of [
+    [createTemporalXPrimitives(jobs), createJobsTemporalXBar(jobs)],
+    [createHorizontalBarPrimitives(jobs), createJobsHorizontalBar(jobs)]
+  ]) {
+    assertChartProgramsEquivalent({ publicProgram, primitiveProgram });
   }
 });

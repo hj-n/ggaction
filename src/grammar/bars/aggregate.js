@@ -1,37 +1,40 @@
 import { cloneAndFreeze } from "../../core/immutable.js";
-import { readNominalField } from "../scales.js";
+import { readNominalField, readTemporalField } from "../scales.js";
 import {
   aggregateRows,
   validateAggregateFieldType,
   validateAggregateFieldValues,
 } from "../aggregate.js";
-import { BAR_GRAINS, resolveBarGrain } from "./policy.js";
+import {
+  BAR_GRAINS,
+  resolveBarChannels,
+  resolveBarGrain
+} from "./policy.js";
 
 function requireAggregateBarEncoding(layer) {
   if (layer?.mark?.type !== "bar") {
     throw new Error("Bar aggregate derivation requires a semantic bar mark.");
   }
 
-  const x = layer.encoding?.x;
-  const y = layer.encoding?.y;
-
-  if (x?.fieldType !== "ordinal") {
-    throw new Error(`Bar mark "${layer.id}" requires an ordinal x encoding.`);
-  }
+  const channels = resolveBarChannels(layer);
   if (resolveBarGrain(layer) !== BAR_GRAINS.aggregate) {
     throw new Error(
-      `Bar mark "${layer.id}" requires a supported aggregate/non-stacked y encoding.`
+      `Bar mark "${layer.id}" requires a categorical position and quantitative aggregate measure.`
     );
   }
-  validateAggregateFieldType(y.aggregate, y.fieldType);
+  const category = layer.encoding[channels.category];
+  const measure = layer.encoding[channels.measure];
+  validateAggregateFieldType(measure.aggregate, measure.fieldType);
 
-  return { x, y };
+  return { channels, category, measure };
 }
 
 export function deriveBarAggregates(rows, layer) {
-  const { x, y } = requireAggregateBarEncoding(layer);
-  validateAggregateFieldValues(rows, y.field, y.fieldType);
-  const xValues = readNominalField(rows, x.field);
+  const { channels, category, measure } = requireAggregateBarEncoding(layer);
+  validateAggregateFieldValues(rows, measure.field, measure.fieldType);
+  const categoryValues = category.fieldType === "temporal"
+    ? readTemporalField(rows, category.field)
+    : readNominalField(rows, category.field);
   const color = layer.encoding?.color;
   let colorValues;
 
@@ -44,11 +47,11 @@ export function deriveBarAggregates(rows, layer) {
   const groups = new Map();
 
   for (let index = 0; index < rows.length; index += 1) {
-    const xValue = xValues[index];
+    const categoryValue = categoryValues[index];
     const colorValue = colorValues?.[index];
-    const key = JSON.stringify([xValue, colorValue]);
+    const key = JSON.stringify([categoryValue, colorValue]);
     const group = groups.get(key) ?? {
-      x: xValue,
+      category: categoryValue,
       ...(colorValues === undefined ? {} : { color: colorValue }),
       rows: []
     };
@@ -61,11 +64,11 @@ export function deriveBarAggregates(rows, layer) {
   }
 
   const values = [...groups.values()].flatMap(group => {
-    const value = aggregateRows(group.rows, y.field, y.aggregate);
+    const value = aggregateRows(group.rows, measure.field, measure.aggregate);
     return value === undefined ? [] : [{
-      x: group.x,
+      x: channels.category === "x" ? group.category : value,
+      y: channels.category === "y" ? group.category : value,
       ...(Object.hasOwn(group, "color") ? { color: group.color } : {}),
-      y: value,
       count: group.rows.length
     }];
   });

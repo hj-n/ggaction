@@ -1,0 +1,28 @@
+export const POSITION_FIELD_COMPATIBILITY = Object.freeze({
+  point: Object.freeze({
+    x: Object.freeze(["quantitative", "temporal", "ordinal"]),
+    y: Object.freeze(["quantitative", "temporal", "ordinal"])
+  }),
+  line: Object.freeze({
+    x: Object.freeze(["quantitative", "temporal"]),
+    y: Object.freeze(["quantitative", "temporal", "ordinal", "nominal"])
+  }),
+  area: Object.freeze({
+    x: Object.freeze(["quantitative"]),
+    y: Object.freeze(["quantitative"])
+  }),
+  bar: Object.freeze({
+    x: Object.freeze(["quantitative", "temporal", "ordinal"]),
+    y: Object.freeze(["quantitative", "temporal", "ordinal"])
+  })
+});
+
+export function validatePositionFieldCompatibility(mark, channel, fieldType) {
+  const supported = POSITION_FIELD_COMPATIBILITY[mark]?.[channel];
+  if (supported === undefined || !supported.includes(fieldType)) {
+    throw new Error(
+      `${mark} ${channel} position does not support field type "${fieldType}".`
+    );
+  }
+  return fieldType;
+}

@@ -30,8 +30,8 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 - Signature: `encodeX({ field, target?, fieldType?, scale?, coordinate?, aggregate?, bin?, stack? })`
 - `field`: Implemented, dataset에 존재하는 field. 현재 supported mark grain에 맞는 값 type이 필요하다.
 - `target`: Implemented, mark ID. 생략하면 current mark, 아니면 유일한 eligible mark를 추론한다.
-- `fieldType`: Implemented. point/area는 `quantitative`, line은 `temporal`, bar는 `quantitative`
-  bin 또는 `ordinal`을 지원한다. 생략 시 지원되는 mark별 기본을 사용한다.
+- `fieldType`: Implemented. Point x/y는 quantitative/temporal/ordinal, line과 area는 아래 canonical
+  compatibility matrix, bar는 quantitative/temporal/ordinal을 mark grain에 맞게 지원한다.
 - `scale`: Implemented. 위 shared contract를 사용한다. 기본 ID는 `x`, auto range는 left-to-right plot bounds다.
 - `coordinate`: Implemented, coordinate ID. 생략 시 positional action이 Cartesian `main` coordinate를
   만들거나 existing compatible coordinate를 사용하고 layer에 저장한다.
@@ -39,7 +39,8 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
   `{ step: PositiveFinite }`, `{ boundaries: readonly [Finite, Finite, ...Finite[]] }` 중 하나다.
   생략된 maxBins default는 `10`; 세 mode는 mutually exclusive이며 bin boundaries와 bar x/width를
   결정한다.
-- `aggregate`, `stack`: x의 현재 supported combinations에는 사용되지 않으며 잘못된 combination은 거부된다.
+- `aggregate`, `stack`: Horizontal bar의 quantitative x measure에 사용한다. Binned histogram x와
+  category x에서는 거부된다.
 - Effect: x encoding과 scale을 semantic state에 저장하고 scale 및 compatible mark/guide consumers를
   rematerialize한다.
 - Reassignment: 같은 target에 다시 호출하면 compatible field와 scale binding을 교체한다. scale ID를
@@ -50,8 +51,8 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 
 ### Formal values — `encodeX`
 
-- Implemented: `encodeX({ field: FieldName; target?: UserId; fieldType?: "quantitative" | "temporal" | "ordinal"; scale?: PositionScale; coordinate?: UserId; bin?: { maxBins?: PositiveInteger } | { step: PositiveFinite } | { boundaries: readonly [Finite, Finite, ...Finite[]] } })`; 실제 fieldType/bin 조합은 mark policy가 제한한다.
-- Planned (NOT IMPLEMENTED): broader mark-specific `fieldType?: "quantitative" | "temporal" | "ordinal"` compatibility; `{ scale?: { type?: "log" | "pow" | "sqrt" | "symlog" | "utc" | "band" | "point"; base?: PositiveFiniteExceptOne; exponent?: PositiveFinite; constant?: PositiveFinite; clamp?: boolean; reverse?: boolean; unknown?: unknown } }`
+- Implemented: `encodeX({ field: FieldName; target?: UserId; fieldType?: "quantitative" | "temporal" | "ordinal"; scale?: PositionScale; coordinate?: UserId; aggregate?: AggregateOperation; bin?: BinDefinition; stack?: "zero" | "normalize" | null })`; 실제 조합은 canonical matrix와 mark grain policy가 제한한다.
+- Planned (NOT IMPLEMENTED): `{ scale?: { type?: "log" | "pow" | "sqrt" | "symlog" | "utc" | "band" | "point"; base?: PositiveFiniteExceptOne; exponent?: PositiveFinite; constant?: PositiveFinite; clamp?: boolean; reverse?: boolean; unknown?: unknown } }`
 - Proposed (NOT IMPLEMENTED): Polar positional action.
 
 ### Value coverage — `encodeX`
@@ -59,9 +60,9 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 - `field`, `target`
   - ✅ Covered: inferred/explicit point, line, bar, area targets; missing field, ambiguous/invalid target.
 - `fieldType`
-  - ✅ Covered: point/area `"quantitative"`, line `"temporal"`, bar `"quantitative"` bin과 `"ordinal"`.
+  - ✅ Covered: point quantitative/temporal/ordinal, line/area current matrix, vertical ordinal/temporal bar,
+    horizontal ordinal bar와 unsupported pair rejection.
   - ✅ Covered: unsupported mark/type pairs rejection.
-  - 🟡 Planned: broader raw temporal/ordinal combinations with an explicit mark × channel compatibility matrix.
 - `coordinate`
   - ✅ Covered: omitted Cartesian default, explicit/reused coordinate, incompatible coordinate rejection.
   - 🟣 Proposed: Polar theta/radial mapping; action naming unresolved.
@@ -103,8 +104,8 @@ type AggregateOperation =
 
 - Signature: `encodeY({ field?, target?, fieldType?, scale?, coordinate?, aggregate?, bin?, stack? })`
 - `field`: point/area/line/ordinal-bar에서는 필수 field다. histogram count y는 x field에서 추론한다.
-- `target`, `fieldType`, `scale`, `coordinate`: x와 같은 selection/storage contract이며 auto range는
-  bottom-to-top plot bounds다.
+- `target`, `fieldType`, `scale`, `coordinate`: x와 같은 selection/storage contract이다. Continuous y
+  auto range는 bottom-to-top, ordinal y band는 top-to-bottom이다.
 - `aggregate`: line과 ordinal bar는 `"count" | "sum" | "mean" | "median" | "min" | "max" |
   "distinct" | "valid" | "missing" | "variance" | "varianceP" | "stdev" | "stdevP" | "stderr" |
   "q1" | "q3" | "ciLower" | "ciUpper"`를 지원한다. Histogram은 count를 사용하고 raw quantitative
@@ -134,8 +135,8 @@ type AggregateOperation =
 
 ### Formal values — `encodeY`
 
-- Implemented: `encodeY({ field?: FieldName; target?: UserId; fieldType?: "quantitative" | "nominal"; scale?: PositionScale; coordinate?: UserId; aggregate?: AggregateOperation; stack?: "zero" | "normalize" | null })`; parameterized aggregate는 quantitative output field만 허용하며 mark/x policy와 aggregate compatibility가 조합을 제한한다.
-- Planned (NOT IMPLEMENTED): `{ fieldType?: "temporal" | "ordinal"; scale?: { type?: "log" | "pow" | "sqrt" | "symlog" | "utc" | "band" | "point"; base?: PositiveFiniteExceptOne; exponent?: PositiveFinite; constant?: PositiveFinite; clamp?: boolean; reverse?: boolean; unknown?: unknown } }`
+- Implemented: `encodeY({ field?: FieldName; target?: UserId; fieldType?: "quantitative" | "temporal" | "ordinal" | "nominal"; scale?: PositionScale; coordinate?: UserId; aggregate?: AggregateOperation; stack?: "zero" | "normalize" | null })`; nominal은 compatible count-style aggregate에만 허용되고 mark/pair policy가 조합을 제한한다.
+- Planned (NOT IMPLEMENTED): `{ scale?: { type?: "log" | "pow" | "sqrt" | "symlog" | "utc" | "band" | "point"; base?: PositiveFiniteExceptOne; exponent?: PositiveFinite; constant?: PositiveFinite; clamp?: boolean; reverse?: boolean; unknown?: unknown } }`
 - Proposed (NOT IMPLEMENTED): `{ stack?: "center" }`; extreme-row selection은 Planned `selectRows`가 소유한다.
 
 ### Value coverage — `encodeY`
@@ -143,8 +144,8 @@ type AggregateOperation =
 - `field`, `target`, `coordinate`
   - ✅ Covered: raw quantitative point/area, aggregate line/bar, inferred histogram count and target ambiguity.
 - `fieldType`
-  - ✅ Covered: quantitative combinations, nominal count/distinct/valid/missing와 invalid compatibility.
-  - 🟡 Planned: temporal/ordinal y combinations allowed by the mark × channel compatibility matrix.
+  - ✅ Covered: quantitative combinations, nominal count/distinct/valid/missing, ordinal point/horizontal bar와
+    invalid compatibility.
 - `aggregate`
   - ✅ Covered: full scalar vocabulary, final line/bar grain, missing/sample boundary, inferred/custom title,
     domain/rematerialization과 incompatible aggregate rejection.
@@ -160,6 +161,28 @@ type AggregateOperation =
   - ⚠️ Partial: aggregate/stack/scale option pairwise matrix.
   - 🟡 Planned: compatible transformed/UTC/band/point scale types and clamp/reverse/unknown policies.
 - Evidence: point position, line aggregate, histogram y and ordinal aggregate bar tests.
+
+## Position field-type compatibility
+
+- Canonical owner: `src/grammar/positionCompatibility.js`. Generic mark × channel acceptance는 여기서만
+  정의하고 bar grain narrowing은 `src/grammar/bars/policy.js`가 소유한다.
+- Point x/y: `"quantitative" | "temporal" | "ordinal"`.
+- Line x: `"quantitative" | "temporal"`; line y는 aggregate policy에 따라
+  `"quantitative" | "temporal" | "ordinal" | "nominal"`을 더 좁힌다.
+- Area x/y: 현재 density/range materializer가 지원하는 `"quantitative"`.
+- Bar vertical: `ordinal | temporal x + quantitative aggregate y`.
+- Bar horizontal: `quantitative aggregate x + ordinal | temporal y`.
+- Bar orientation은 complete pair에서 추론하며 semantic mark에 중복 저장하지 않는다. Histogram은
+  binned quantitative x/count y로 vertical을 결정한다.
+- Temporal normalization은 source dataset을 바꾸지 않는다. 1000–9999 정수와 4자리 문자열은 UTC
+  year, `YYYY-MM-DD`/`YYYY/MM/DD`는 검증된 UTC date, 그 밖의 valid string과 finite number는
+  timestamp로 해석한다.
+- Current scale vocabulary는 temporal `time`, ordinal `ordinal`, quantitative `linear`다. `utc`,
+  `band`, `point`와 transformed continuous aliases는 planned scale vocabulary가 소유한다.
+- Horizontal `layout: "group"`은 yOffset이 없으므로 명시적으로 거부한다. Stack/fill/overlay/diverging은
+  quantitative x measure에서 materialize한다.
+- Evidence: `test/unit/grammar/position-compatibility.test.js`, scale temporal normalization tests,
+  point mixed-position tests, jobs `temporal-x`/`horizontal-bar` primitive-public exact pairs.
 
 ## `encodeXOffset`
 

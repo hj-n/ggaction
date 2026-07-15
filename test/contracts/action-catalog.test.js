@@ -392,7 +392,8 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   assert.match(currentCorpus, /gradient\?: \{ length\?: PositiveFinite; thickness\?: PositiveFinite \}/);
   assert.doesNotMatch(currentCorpus, /minArea|maxArea/);
   assert.doesNotMatch(currentCorpus, /unit\?: "radius" \| "area"/);
-  assert.match(plannedCorpus, /type PlannedPositionFieldType =/);
+  assert.match(currentCorpus, /## Position field-type compatibility/);
+  assert.match(currentCorpus, /Canonical owner: `src\/grammar\/positionCompatibility\.js`/);
   assert.match(plannedCorpus, /type PlannedStackMode = "normalize"/);
   assert.match(currentCorpus, /paddingOuter\?: NonNegativeFinite/);
   assert.match(plannedCorpus, /encodeX2\(\{/);

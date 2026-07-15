@@ -7,6 +7,7 @@ import {
 } from "../../grammar/pointShapes.js";
 import {
   mapLinearValues,
+  mapOrdinalPositionValues,
   mapOrdinalValues,
   mapSequentialColors,
   readNominalField,
@@ -71,7 +72,7 @@ function resolveMappedValues(program, layer, dataset, channel) {
       `Point mark "${layer.id}" requires resolved ${channel} scale "${encoding.scale}".`
     );
   }
-  const ordinal = encoding.fieldType === "nominal";
+  const ordinal = ["nominal", "ordinal"].includes(encoding.fieldType);
   const values = ordinal
     ? readNominalField(dataset.values, encoding.field)
     : encoding.fieldType === "temporal"
@@ -84,7 +85,9 @@ function resolveMappedValues(program, layer, dataset, channel) {
     });
   }
   return ordinal
-    ? mapOrdinalValues(values, scale.domain, scale.range)
+    ? ["x", "y"].includes(channel)
+      ? mapOrdinalPositionValues(values, scale)
+      : mapOrdinalValues(values, scale.domain, scale.range)
     : mapLinearValues(values, scale.domain, scale.range, {
         clamp: scale.clamp ?? false
       });

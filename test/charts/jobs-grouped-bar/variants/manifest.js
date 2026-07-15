@@ -3,8 +3,10 @@ import {
   createJobsFixedPixelBar,
   createJobsGroupReassignmentBar,
   createJobsGroupedBar,
+  createJobsHorizontalBar,
   createJobsOffsetPaddingBar,
-  createJobsOverlayBar
+  createJobsOverlayBar,
+  createJobsTemporalXBar
 } from
   "../../../../examples/jobs-grouped-bar/program.js";
 import { loadJobs } from "../../../support/data.js";
@@ -241,7 +243,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   })
   .encodeBarWidth({ band: 0.72 })
   .createGuides();`,
-  primitive: createTemporalXPrimitives(jobs)
+  primitive: createTemporalXPrimitives(jobs),
+  userFacing: createJobsTemporalXBar(jobs)
 }), defineVisualVariant({
   ...shared,
   variant: "horizontal-bar",
@@ -267,5 +270,6 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   })
   .encodeBarWidth({ band: 0.72 })
   .createGuides();`,
-  primitive: createHorizontalBarPrimitives(jobs)
+  primitive: createHorizontalBarPrimitives(jobs),
+  userFacing: createJobsHorizontalBar(jobs)
 })]);

@@ -1,5 +1,9 @@
 import { deriveBarAggregates } from "../../grammar/bars/aggregate.js";
-import { resolveBarColorLayout } from "../../grammar/bars/policy.js";
+import {
+  BAR_ORIENTATIONS,
+  resolveBarChannels,
+  resolveBarColorLayout
+} from "../../grammar/bars/policy.js";
 import { layoutSeriesPartition } from "../../grammar/seriesLayout.js";
 import { mapLinearValues } from "../../grammar/scales.js";
 import {
@@ -19,6 +23,10 @@ export function deriveAggregateRectangles(required, resolved, widthConfig) {
 
   const xScale = resolved.resolvedScales[required.xEncoding.scale];
   const yScale = resolved.resolvedScales[required.yEncoding.scale];
+  const channels = resolveBarChannels(layer);
+  const vertical = channels.orientation === BAR_ORIENTATIONS.vertical;
+  const categoryScale = vertical ? xScale : yScale;
+  const measureScale = vertical ? yScale : xScale;
   const colorEncoding = layer.encoding?.color;
   const colorScale = resolved.resolvedScales[colorEncoding?.scale];
   if (colorEncoding !== undefined && colorScale === undefined) {
@@ -27,7 +35,9 @@ export function deriveAggregateRectangles(required, resolved, widthConfig) {
     );
   }
 
-  const xIndex = new Map(xScale.domain.map((value, index) => [value, index]));
+  const categoryIndex = new Map(
+    categoryScale.domain.map((value, index) => [value, index])
+  );
   const seriesDomain = colorScale?.domain ?? [undefined];
   const seriesIndex = new Map(
     seriesDomain.map((value, index) => [value, index])
@@ -38,47 +48,68 @@ export function deriveAggregateRectangles(required, resolved, widthConfig) {
   ]));
   const cells = deriveBarAggregates(dataset.values, layer).values;
   const cellMap = new Map(cells.map(cell => [
-    JSON.stringify([cell.x, cell.color]),
+    JSON.stringify([cell[channels.category], cell.color]),
     cell
   ]));
-  const width = resolveBarWidth(
+  const thickness = resolveBarWidth(
     widthConfig,
-    Math.abs(xScale.bandwidth ?? xScale.step)
+    Math.abs(categoryScale.bandwidth ?? categoryScale.step)
   );
-  const baseline = layout === "overlay" ? yScale.domain[0] : 0;
+  const baseline = layout === "overlay" ? measureScale.domain[0] : 0;
   const segments = [];
 
-  for (const x of xScale.domain) {
+  for (const category of categoryScale.domain) {
     const partition = seriesDomain.map(color =>
-      cellMap.get(JSON.stringify([x, color]))?.y ?? 0
+      cellMap.get(JSON.stringify([category, color]))?.[channels.measure] ?? 0
     );
     for (const segment of layoutSeriesPartition(partition, layout, { baseline })) {
       const color = seriesDomain[segment.index];
-      const cell = cellMap.get(JSON.stringify([x, color]));
+      const cell = cellMap.get(JSON.stringify([category, color]));
       if (cell === undefined) continue;
-      segments.push({ x, color, ...segment });
+      segments.push({ category, color, ...segment });
     }
   }
 
   const existing = resolved.graphicSpec.objects[layer.id].children;
   return segments.map((segment, index) => {
-    const category = xIndex.get(segment.x);
+    const category = categoryIndex.get(segment.category);
     const color = seriesIndex.get(segment.color);
     if (category === undefined || color === undefined) {
       throw new Error("Bar value is outside a resolved ordinal domain.");
     }
-    const categoryStart = xScale.range[0] + category * xScale.step;
+    const categoryCenter = categoryScale.type === "ordinal"
+      ? categoryScale.range[0] + category * categoryScale.step + categoryScale.step / 2
+      : mapLinearValues(
+          [segment.category],
+          categoryScale.domain,
+          categoryScale.range,
+          { clamp: categoryScale.clamp ?? false }
+        )[0];
     const [start, end] = mapLinearValues(
       [segment.start, segment.end],
-      yScale.domain,
-      yScale.range,
-      { clamp: yScale.clamp ?? false }
+      measureScale.domain,
+      measureScale.range,
+      { clamp: measureScale.clamp ?? false }
     );
+    const categorySlotStart = categoryScale.type === "ordinal"
+      ? Math.min(
+          categoryScale.range[0] + category * categoryScale.step,
+          categoryScale.range[0] + (category + 1) * categoryScale.step
+        )
+      : categoryCenter - thickness / 2;
     return {
-      x: categoryStart + (xScale.step - width) / 2,
-      y: Math.min(start, end),
-      width,
-      height: Math.abs(start - end),
+      x: vertical
+        ? categoryScale.type === "ordinal"
+          ? categorySlotStart + (Math.abs(categoryScale.step) - thickness) / 2
+          : categoryCenter - thickness / 2
+        : Math.min(start, end),
+      y: vertical
+        ? Math.min(start, end)
+        : categoryScale.type === "ordinal"
+          ? categorySlotStart + (Math.abs(categoryScale.step) - thickness) / 2
+          : categoryCenter - thickness / 2,
+      width: vertical ? thickness : Math.abs(start - end),
+      height: vertical ? Math.abs(start - end) : thickness,
       fill: colors.get(segment.color),
       stroke: existing[index]?.properties.stroke ?? DEFAULT_BAR_STROKE,
       strokeWidth:

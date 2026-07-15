@@ -5,6 +5,11 @@ import { resolveHistogramBins } from "../../grammar/histogram.js";
 import { resolveGraphicBounds } from "../../layout/canvas.js";
 import { normalizeOffsetPadding } from "../../grammar/bars/geometry.js";
 import {
+  BAR_GRAINS,
+  resolveBarChannels,
+  resolveBarGrain
+} from "../../grammar/bars/policy.js";
+import {
   mapLinearValues,
   mapSequentialColors,
   mapOrdinalValues,
@@ -35,6 +40,49 @@ import {
 } from "../../materialization/dependencies.js";
 
 const OPTIONS = Object.freeze(["id"]);
+
+function resolveTemporalBarBand(consumers, domain, range, values) {
+  const temporalBars = consumers.filter(consumer => {
+    const channels = resolveBarChannels(consumer.layer);
+    return resolveBarGrain(consumer.layer) === BAR_GRAINS.aggregate &&
+      channels?.category === consumer.channel &&
+      consumer.encoding.fieldType === "temporal";
+  });
+  if (temporalBars.length === 0) return undefined;
+  if (temporalBars.length !== consumers.length) {
+    throw new Error("A temporal bar position scale cannot share a non-bar layout policy.");
+  }
+  const ordered = [...new Set(values)].sort((left, right) => left - right);
+  if (ordered.length < 2) {
+    throw new Error("Temporal bar position requires at least two distinct values.");
+  }
+  const minimumGap = Math.min(
+    ...ordered.slice(1).map((value, index) => value - ordered[index])
+  );
+  const domainSpan = Math.abs(domain[1] - domain[0]);
+  if (!(minimumGap > 0) || !(domainSpan > 0)) {
+    throw new Error("Temporal bar position requires an increasing time domain.");
+  }
+  const direction = Math.sign(range[1] - range[0]) || 1;
+  const estimatedBandwidth = Math.abs(range[1] - range[0]) * minimumGap /
+    (domainSpan + minimumGap);
+  const resolvedRange = [
+    range[0] + direction * estimatedBandwidth / 2,
+    range[1] - direction * estimatedBandwidth / 2
+  ];
+  const positions = ordered.map(value =>
+    resolvedRange[0] +
+      (value - domain[0]) / (domain[1] - domain[0]) *
+      (resolvedRange[1] - resolvedRange[0])
+  );
+  const bandwidth = Math.min(
+    ...positions.slice(1).map((value, index) => Math.abs(value - positions[index]))
+  );
+  return {
+    bandwidth,
+    range: resolvedRange
+  };
+}
 
 function validateOptions(args) {
   validateKeys(args, OPTIONS, "rematerializeScale");
@@ -106,7 +154,7 @@ export const rematerializeScale = action(
         zero: scale.zero ?? false
       }).domain;
     } else if (seriesLayouts.some(Boolean)) {
-      if (channel !== "y" || seriesLayouts.some(item => item === undefined)) {
+      if (seriesLayouts.some(item => item === undefined)) {
         throw new Error(
           `Series layout scale "${id}" cannot be shared with another policy.`
         );
@@ -221,6 +269,21 @@ export const rematerializeScale = action(
             ...(scale.clamp === undefined ? {} : { clamp: scale.clamp }),
             ...(isSequentialColor ? { interpolate: scale.interpolate ?? "rgb" } : {})
           };
+    if (scale.type === "time" && ["x", "y"].includes(channel)) {
+      const temporalBarBand = resolveTemporalBarBand(
+        consumers,
+        domain,
+        range,
+        allValues
+      );
+      if (temporalBarBand !== undefined) {
+        resolvedScale = {
+          ...resolvedScale,
+          range: temporalBarBand.range,
+          bandwidth: temporalBarBand.bandwidth
+        };
+      }
+    }
     if (scale.reverse === true) {
       resolvedScale = {
         ...resolvedScale,
@@ -235,6 +298,8 @@ export const rematerializeScale = action(
     for (const { consumer, values } of valuesByConsumer) {
       if (
         ["line", "bar", "area"].includes(consumer.layer.mark?.type) ||
+        (consumer.layer.mark?.type === "point" &&
+          ["x", "y"].includes(channel) && isOrdinalPosition) ||
         (consumer.layer.mark?.type === "point" && ["size", "shape"].includes(channel))
       ) continue;
       next = next.editGraphics({

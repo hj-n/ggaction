@@ -111,7 +111,6 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | parameter | Continuous color bar consumer | accepted | [Open](planned/ENCODINGS.md#continuous-color-bar-consumer) |
 | parameter | Scale type vocabulary | accepted | [Open](planned/SCALES.md#scale-type-vocabulary) |
 | parameter | Scale mapping policies | accepted | [Open](planned/SCALES.md#scale-mapping-policies) |
-| parameter | Position field-type compatibility | accepted | [Open](planned/ENCODINGS.md#position-field-type-compatibility) |
 | parameter | Density kernel vocabulary | accepted | [Open](planned/DATA_AND_STATISTICS.md#density-kernel-vocabulary) |
 | parameter | Density normalization modes | accepted | [Open](planned/DATA_AND_STATISTICS.md#density-normalization-modes) |
 | parameter | Filter predicate modes | accepted | [Open](planned/DATA_AND_STATISTICS.md#filter-predicate-modes) |

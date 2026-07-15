@@ -1,5 +1,8 @@
 import { action } from "../../core/action.js";
-import { canMaterializeArea } from "../../materialization/marks.js";
+import {
+  canMaterializeArea,
+} from "../../materialization/marks.js";
+import { resolveBarGrain } from "../../grammar/bars/policy.js";
 import { resolvePositionEncoding } from "./position/resolve.js";
 import { findLayer } from "../../selectors/layers.js";
 import {
@@ -60,16 +63,19 @@ function encodePosition(program, channel, args, operation) {
     });
   }
 
-  if (layer.mark.type === "bar" && channel === "y") {
-    next = next
-      .editSemantic({
-        property: `layer[${target}].encoding.y.aggregate`,
+  if (layer.mark.type === "bar") {
+    if (aggregate !== undefined) {
+      next = next.editSemantic({
+        property: `layer[${target}].encoding.${channel}.aggregate`,
         value: aggregate
-      })
-      .editSemantic({
-        property: `layer[${target}].encoding.y.stack`,
+      });
+    }
+    if (stack !== undefined) {
+      next = next.editSemantic({
+        property: `layer[${target}].encoding.${channel}.stack`,
         value: stack
       });
+    }
   }
 
   if (layer.mark.type === "area" && channel === "y" && stack !== undefined) {
@@ -98,8 +104,11 @@ function encodePosition(program, channel, args, operation) {
     return next.rematerializeLineMark({ id: target });
   }
 
-  if (layer.mark.type === "bar" && channel === "y") {
-    return next.rematerializeBarMark({ id: target });
+  if (layer.mark.type === "bar") {
+    const updated = findLayer(next, target);
+    return resolveBarGrain(updated) !== undefined
+      ? next.rematerializeBarMark({ id: target })
+      : next.rematerializeScale({ id: scale.id });
   }
 
   next = next.rematerializeScale({ id: scale.id });

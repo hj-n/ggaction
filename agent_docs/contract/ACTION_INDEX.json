@@ -1475,17 +1475,6 @@
       }
     },
     {
-      "id": "position-field-type-compatibility",
-      "kind": "parameter",
-      "name": "Position field-type compatibility",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/ENCODINGS.md",
-        "anchor": "position-field-type-compatibility"
-      }
-    },
-    {
       "id": "density-kernel-vocabulary",
       "kind": "parameter",
       "name": "Density kernel vocabulary",
