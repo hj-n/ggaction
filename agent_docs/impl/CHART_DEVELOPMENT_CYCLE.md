@@ -158,10 +158,12 @@ Primitive PNG와 browser 결과가 준비되면 user-facing 구현 전에 진행
 public action flow를 구현하고 두 결과의 concrete equivalence를 검증한다. Roadmap 2 artifact
 gallery는 chart → variant → primitive/user-facing 계층을 그대로 보여준다.
 
-Primitive baseline과 해당 test는 `test/charts/<chart>/`에 함께 둔다. Public program은
-`examples/<chart>/program.js`를 유일한 원본으로 유지하고 chart test와 render test가
-이를 import한다. 통계 계산의 expected values가 필요하면 production 계산을 재사용하지
-않는 독립 `reference-values.js`를 같은 directory에 둔다.
+기존 public chart의 새 variant는 primitive baseline과 해당 test를 `test/charts/<chart>/`에 함께 둔다.
+아직 public action이 없어 visual approval 전인 새 chart는 `test/gates/<chart>/`에 executable primitive,
+독립 `reference-values.js`, manifest, normal test와 render test를 staging한다. 승인 후 user-facing
+implementation이 완성되면 complete slice를 `test/charts/<chart>/`로 옮기고 gate directory를 제거한다.
+Skipped/placeholder public test로 chart completeness contract를 우회하지 않는다. Public program은
+`examples/<chart>/program.js`를 유일한 원본으로 유지하고 chart test와 render test가 이를 import한다.
 
 ## 3. Action 의존성 분해
 

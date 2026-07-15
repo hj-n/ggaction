@@ -8,7 +8,13 @@ import { assertCriticalCoverage } from "./coverage-policy.js";
 const repositoryRoot = fileURLToPath(new URL("../", import.meta.url));
 const testRoot = path.join(repositoryRoot, "test");
 
-const NORMAL_SUITES = Object.freeze(["unit", "contracts", "charts", "docs"]);
+const NORMAL_SUITES = Object.freeze([
+  "unit",
+  "contracts",
+  "charts",
+  "gates",
+  "docs"
+]);
 
 function walk(directory) {
   return readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
@@ -20,7 +26,12 @@ function walk(directory) {
 export function classifyTestFile(file, root = testRoot) {
   const relative = path.relative(root, file);
   const [owner] = relative.split(path.sep);
-  if (file.endsWith(".render.js") && owner === "charts") return "render";
+  if (
+    file.endsWith(".render.js") &&
+    (owner === "charts" || owner === "gates")
+  ) {
+    return "render";
+  }
   if (file.endsWith(".test.js") && NORMAL_SUITES.includes(owner)) return owner;
   return undefined;
 }
