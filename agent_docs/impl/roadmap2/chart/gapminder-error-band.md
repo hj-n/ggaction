@@ -258,6 +258,7 @@ fixture-specific해지는 것을 방지한다.
 | A | `gapminder-vertical` | gapminder | grouped statistical y/y2 area, numeric temporal x, default no boundaries |
 | B | `cars-horizontal` | cars | string temporal y, statistical x/x2 area, boundaries |
 | C | `gapminder-curved-boundaries` | gapminder | curve inheritance/override and custom boundary styles |
+| C | `gapminder-boundary-override` | gapminder | shared band curve with explicit boundary curve override |
 
 각 variant는 raw primitive를 먼저 만들고 승인 후 public program을 구현한다. 저장 경로는
 `.artifacts/test/png/roadmap2/gapminder-error-band/<variant>/{primitive,user-facing}.png`이며 manifest가 exact target
