@@ -16,8 +16,8 @@ machine-verifiable하게 종료한다.
 - [x] Phase closeout contract with no stale Phase 6 inventory
 - [x] Full test, coverage, render and built docs/browser verification
 - [x] Desktop/mobile gallery visual verification
-- [ ] GOAL/ROADMAP status, final conceptual commit and push
-- [ ] Remote CI and Pages completion
+- [x] GOAL/ROADMAP status, final conceptual commit and push
+- [x] Remote CI and Pages completion
 
 ## Closeout evidence
 
@@ -36,7 +36,9 @@ machine-verifiable하게 종료한다.
   two-column→single-column layout와 console/page error 검사가 통과했다.
 - Local verification: 818 tests, 275 render tests, line 95.13%, branch 90.93%, function 98.68% coverage.
 - Stored schema와 materialization boundary 변경은 Step 7에서 `SECOND_ARCHITECTURE.md`에 반영했다.
-- Final closeout commit의 remote CI와 Pages evidence는 push 후 기록한다.
+- Remote verification: closeout implementation commit `f7a4f41`의 CI run `29426682504`에서 test,
+  coverage, generated-artifact freshness, Jekyll build, built-document checks, desktop/mobile browser tests와
+  PNG regression이 성공했고 Pages run `29426681220`의 build와 deployment가 성공했다.
 
 ## 완료 조건
 
