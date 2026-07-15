@@ -98,6 +98,8 @@
 - Complete each chart development cycle with one public vertical slice whose browser example, standalone user program, acceptance test, PNG regression, and tutorial use the same chart-authoring API flow.
 - Verify browser Canvas and PNG output separately. Browser checks must cover logical Canvas dimensions and console/page errors; PNG checks must cover `pixelRatio` and physical output dimensions.
 - Establish deterministic numeric fixtures for statistical transforms before relying on graphical or PNG verification. Test quantities such as coefficients, confidence bounds, sample positions, and density values independently from their materialization.
+- Pair fixed numeric fixtures with deterministic mathematical invariants for continuous mappings, bins, densities, intervals, and ordering; examples include monotonicity, mass/count conservation, non-negativity, interval containment, and stable group order.
+- Keep the global source coverage threshold and explicit critical-file floors. Do not let high-coverage modules hide regressions in immutable state, statistical grammar, concrete schemas, renderer dispatch, or the PNG adapter.
 
 ## Semantic and Graphical Boundary
 

@@ -3,6 +3,8 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
+import { assertCriticalCoverage } from "./coverage-policy.js";
+
 const repositoryRoot = fileURLToPath(new URL("../", import.meta.url));
 const testRoot = path.join(repositoryRoot, "test");
 
@@ -51,9 +53,16 @@ function run(suite) {
   args.push(...files);
   const result = spawnSync(process.execPath, args, {
     cwd: repositoryRoot,
-    stdio: "inherit"
+    ...(coverage
+      ? { encoding: "utf8", maxBuffer: 10 * 1024 * 1024 }
+      : { stdio: "inherit" })
   });
   if (result.error) throw result.error;
+  if (coverage) {
+    process.stdout.write(result.stdout);
+    process.stderr.write(result.stderr);
+    if (result.status === 0) assertCriticalCoverage(result.stdout);
+  }
   process.exitCode = result.status ?? 1;
 }
 
