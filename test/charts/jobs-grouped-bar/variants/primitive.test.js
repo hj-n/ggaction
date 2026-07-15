@@ -12,7 +12,7 @@ import { assertChartProgramsEquivalent } from
   "../../../support/chart-equivalence.js";
 import { loadJobs } from "../../../support/data.js";
 import { createJobsGroupedBarValues } from "../reference-values.js";
-import { reassignmentJobs, signedJobs, temporalJobs } from "./manifest.js";
+import { reassignmentJobs, signedJobs } from "./manifest.js";
 import {
   createDivergingLayoutPrimitives,
   createFixedPixelWidthPrimitives,
@@ -324,8 +324,8 @@ test("rematerializes approved public layouts after Canvas resize", () => {
 });
 
 test("locks temporal x spacing and grouped vertical bar geometry", () => {
-  const values = createTemporalBarReference(temporalJobs, layout);
-  const program = createTemporalXPrimitives(temporalJobs);
+  const values = createTemporalBarReference(jobs, layout);
+  const program = createTemporalXPrimitives(jobs);
   const layer = program.semanticSpec.layers[0];
   const years = values.dates.map(value => new Date(value).getUTCFullYear());
 
@@ -353,6 +353,7 @@ test("locks temporal x spacing and grouped vertical bar geometry", () => {
     ),
     true
   );
+  assert.equal(layer.encoding.x.field, "year");
   assert.equal(layer.encoding.x.fieldType, "temporal");
   assert.equal(layer.encoding.y.fieldType, "quantitative");
   assert.equal(layer.encoding.color.layout, "group");
@@ -401,7 +402,7 @@ test("locks horizontal stacked bar geometry and directional guides", () => {
 
 test("keeps Gate D primitives independent of future position actions", () => {
   for (const program of [
-    createTemporalXPrimitives(temporalJobs),
+    createTemporalXPrimitives(jobs),
     createHorizontalBarPrimitives(jobs)
   ]) {
     const operations = program.trace.children.map(node => node.op);

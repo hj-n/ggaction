@@ -100,7 +100,9 @@ export function createTemporalBarReference(rows, layout) {
   const validRows = rows.filter(row =>
     row !== null &&
     typeof row === "object" &&
-    Number.isFinite(row.yearDate) &&
+    Number.isInteger(row.year) &&
+    row.year >= 1000 &&
+    row.year <= 9999 &&
     Number.isFinite(row.perc) &&
     typeof row.sex === "string" &&
     row.sex.length > 0
@@ -108,7 +110,14 @@ export function createTemporalBarReference(rows, layout) {
   if (validRows.length === 0) {
     throw new Error("Temporal bar reference requires valid rows.");
   }
-  const { categories: dates, groups, cells } = aggregate(validRows, "yearDate");
+  const normalizedRows = validRows.map(row => ({
+    ...row,
+    temporalYear: Date.UTC(row.year, 0, 1)
+  }));
+  const { categories: dates, groups, cells } = aggregate(
+    normalizedRows,
+    "temporalYear"
+  );
   const timeDomain = [dates[0], dates.at(-1)];
   const differences = dates.slice(1).map((value, index) => value - dates[index]);
   const minimumDifference = Math.min(...differences);
@@ -188,7 +197,7 @@ export function createTemporalBarReference(rows, layout) {
       x: {
         line: { x1: bounds.x, y1: bounds.y + bounds.height, x2: bounds.x + bounds.width, y2: bounds.y + bounds.height },
         ticks: xTicks,
-        title: { x: bounds.x + bounds.width / 2, y: layout.height - 20, text: "yearDate", rotation: 0 }
+        title: { x: bounds.x + bounds.width / 2, y: layout.height - 20, text: "year", rotation: 0 }
       },
       y: {
         line: { x1: bounds.x, y1: bounds.y, x2: bounds.x, y2: bounds.y + bounds.height },

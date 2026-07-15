@@ -48,7 +48,7 @@ hash가 정확히 같아 이 pair를 canonical oracle로 고정했다.
 | `group-reassignment` | `encodeColor({ field: "job", layout: "group" })` | color+xOffset atomic field replacement |
 | `overlay-layout` | `encodeColor({ field: "sex", layout: "overlay" })` | shared baseline and deterministic draw order |
 | `diverging-layout` | `encodeColor({ field: "sex", layout: "diverging" })` | separate positive/negative accumulation |
-| `temporal-x` | `encodeX({ field: "yearDate", fieldType: "temporal" })` | vertical temporal-position bar |
+| `temporal-x` | `encodeX({ field: "year", fieldType: "temporal" })` | vertical temporal-position bar |
 | `horizontal-bar` | quantitative x + ordinal y | orientation inferred from channel pair |
 
 `group-reassignment`는 시각적으로 읽을 수 있도록 deterministic three-job subset을 사용한다. Public call은
@@ -57,8 +57,8 @@ hash가 정확히 같아 이 pair를 canonical oracle로 고정했다.
 
 `diverging-layout`은 jobs row를 변경하지 않고 별도 fixture가 `signedPerc`를 deterministic하게 추가한다.
 여성 series는 음수, 남성 series는 양수로 두어 positive/negative stack을 모두 보여준다.
-`temporal-x` fixture는 `yearDate` UTC-compatible value를 명시적으로 추가한다. 이 fixture 전처리는 library
-transform을 가장하지 않으며 public program의 dataset input으로만 사용한다.
+`temporal-x`는 원본 numeric `year`를 그대로 사용한다. Temporal auto normalization은 1000–9999 범위의
+정수를 UTC calendar year로 해석하며 semantic field 이름을 바꾸거나 derived dataset을 만들지 않는다.
 `overlay-layout`과 `diverging-layout`은 grouped baseline을 edit하지 않고 fresh program의 첫 color
 assignment에서 final layout을 선택한다.
 

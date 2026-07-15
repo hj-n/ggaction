@@ -31,10 +31,6 @@ const REASSIGNMENT_JOBS = Object.freeze(["Actor", "Agent", "Author"]);
 export const reassignmentJobs = Object.freeze(jobs.filter(row =>
   REASSIGNMENT_JOBS.includes(row.job)
 ));
-export const temporalJobs = Object.freeze(jobs.map(row => Object.freeze({
-  ...row,
-  yearDate: Date.UTC(row.year, 0, 1)
-})));
 
 const shared = Object.freeze({
   chart: "jobs-grouped-bar",
@@ -232,7 +228,7 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   })
   .createData({ id: "jobs", values: rows })
   .createBarMark({ id: "bars" })
-  .encodeX({ field: "yearDate", fieldType: "temporal" })
+  .encodeX({ field: "year", fieldType: "temporal" })
   .encodeY({
     field: "perc",
     aggregate: "mean",
@@ -245,7 +241,7 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   })
   .encodeBarWidth({ band: 0.72 })
   .createGuides();`,
-  primitive: createTemporalXPrimitives(temporalJobs)
+  primitive: createTemporalXPrimitives(jobs)
 }), defineVisualVariant({
   ...shared,
   variant: "horizontal-bar",

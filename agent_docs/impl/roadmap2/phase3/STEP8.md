@@ -16,8 +16,8 @@ rect, axes와 grid geometry를 raw primitive로 승인받는다.
 - [x] Inferred guide title/format target
 - [x] Expanded target chain metadata
 - [x] Browser와 2× primitive PNG 생성
-- [ ] Gate D 사용자 visual confirmation
-- [ ] Feedback 반영과 primitive 재확인
+- [x] Gate D 사용자 visual confirmation
+- [x] Feedback 반영과 primitive 재확인
 - [x] STEP status, conceptual commit와 push
 
 ## Primitive 원칙
@@ -35,7 +35,7 @@ rect, axes와 grid geometry를 raw primitive로 승인받는다.
 
 ### `temporal-x`
 
-- Manifest가 각 jobs row에 UTC `yearDate` timestamp를 추가하고 primitive dataset이 그 값을 소유한다.
+- 원본 numeric `year`를 그대로 저장하고 temporal normalization이 4자리 정수를 UTC 연도 시작으로 해석한다.
 - 15개 observed year와 `men → women`을 집계해 30개 grouped rect를 만든다.
 - Time domain은 1850–2000이고 auto graphical range는 첫/마지막 bar가 plot 안에 들어오도록 inset된다.
 - 1890 tick은 존재하지만 row가 없으므로 bar가 없고, 1880–1900 간격은 실제 시간 간격을 보존한다.
