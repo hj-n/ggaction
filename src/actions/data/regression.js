@@ -34,6 +34,10 @@ export const createRegressionData = action(
   { op: "createRegressionData", description: "Create grouped linear-regression values and confidence bounds." },
   function (args = {}) {
     validateKeys(args, OPTIONS, "createRegressionData");
+    const method = args.method ?? "linear";
+    if (method !== "linear") {
+      throw new Error(`Unsupported regression method "${method}".`);
+    }
     const id = validateUserId(args.id, "Regression dataset id");
     const source = validateUserId(
       args.source ?? this.context.currentData,
@@ -41,7 +45,7 @@ export const createRegressionData = action(
     );
     const transform = {
       type: "regression",
-      method: args.method ?? "linear",
+      method,
       x: args.x,
       y: args.y,
       ...(args.groupBy === undefined ? {} : { groupBy: args.groupBy }),

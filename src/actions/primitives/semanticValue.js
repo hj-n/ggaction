@@ -35,13 +35,14 @@ function nonEmptyString(value, label) {
 
 function validateRegression(transform) {
   const supported = [
-    "type", "method", "x", "y", "groupBy", "confidence", "interval"
+    "type", "method", "x", "y", "groupBy", "confidence", "interval",
+    "degree", "span"
   ];
   const unknown = Object.keys(transform).find(key => !supported.includes(key));
   if (unknown !== undefined) {
     throw new Error(`Unknown regression transform property "${unknown}".`);
   }
-  if (transform.method !== "linear") {
+  if (!["linear", "polynomial", "loess"].includes(transform.method)) {
     throw new Error(`Unsupported regression method "${transform.method}".`);
   }
   nonEmptyString(transform.x, "Regression x field");
@@ -49,14 +50,33 @@ function validateRegression(transform) {
   if (transform.groupBy !== undefined) {
     nonEmptyString(transform.groupBy, "Regression groupBy field");
   }
-  if (
-    !Number.isFinite(transform.confidence) ||
-    transform.confidence <= 0 ||
-    transform.confidence >= 1
-  ) {
+  if (transform.method === "loess") {
+    if (!Number.isFinite(transform.span) || transform.span <= 0 || transform.span > 1) {
+      throw new RangeError("Regression LOESS span must be greater than zero and at most one.");
+    }
+    if (
+      transform.degree !== undefined ||
+      transform.confidence !== undefined ||
+      transform.interval !== undefined
+    ) {
+      throw new Error("LOESS regression does not support degree or intervals.");
+    }
+    return;
+  }
+  if (transform.span !== undefined) {
+    throw new Error("Regression span requires the loess method.");
+  }
+  if (transform.method === "polynomial") {
+    if (!Number.isInteger(transform.degree) || transform.degree < 1) {
+      throw new RangeError("Regression polynomial degree must be a positive integer.");
+    }
+  } else if (transform.degree !== undefined) {
+    throw new Error("Regression degree requires the polynomial method.");
+  }
+  if (!Number.isFinite(transform.confidence) || transform.confidence <= 0 || transform.confidence >= 1) {
     throw new RangeError("Regression confidence must be between 0 and 1.");
   }
-  if (transform.interval !== "mean") {
+  if (!["mean", "prediction"].includes(transform.interval)) {
     throw new Error(`Unsupported regression interval "${transform.interval}".`);
   }
 }

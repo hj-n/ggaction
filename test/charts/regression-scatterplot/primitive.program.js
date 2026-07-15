@@ -8,7 +8,8 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
   filter = {
     field: "Origin",
     oneOf: ["Japan", "USA"]
-  }
+  },
+  regression = {}
 } = {}) {
   const width = 760;
   const height = 480;
@@ -17,7 +18,8 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     width,
     height,
     margin,
-    filter
+    filter,
+    ...regression
   });
   const { x: xAxis, y: yAxis } = values.axes;
   const xTickPositions = xAxis.ticks.map(tick => tick.position);
@@ -25,7 +27,7 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
   const originLegend = values.legends.origin;
   const sizeLegend = values.legends.size;
 
-  return chart()
+  let program = chart()
     .createCanvas({ width, height, margin, background: "white" })
     .createData({ id: "cars", values: cars })
     .editSemantic({ property: "dataset[pointsFilteredData].source", value: "cars" })
@@ -43,15 +45,7 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     })
     .editSemantic({
       property: "dataset[pointsRegressionData].transform",
-      value: [{
-        type: "regression",
-        method: "linear",
-        x: "Displacement",
-        y: "Acceleration",
-        groupBy: "Origin",
-        confidence: 0.95,
-        interval: "mean"
-      }]
+      value: [values.regressionTransform]
     })
     .editSemantic({
       property: "dataset[pointsRegressionData].values",
@@ -113,8 +107,10 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     .editSemantic({
       property: "layer[points].encoding.shape.scale",
       value: "shape"
-    })
-    .editSemantic({
+    });
+
+  if (values.regressionBands.length > 0) {
+    program = program.editSemantic({
       property: "layer[pointsRegressionBands].mark.type",
       value: "area"
     })
@@ -169,8 +165,10 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     .editSemantic({
       property: "layer[pointsRegressionBands].encoding.group.fieldType",
       value: "nominal"
-    })
-    .editSemantic({
+    });
+  }
+
+  program = program.editSemantic({
       property: "layer[pointsRegressionLines].mark.type",
       value: "line"
     })
@@ -322,8 +320,10 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
         type: child.type,
         properties: child.properties
       }))
-    })
-    .createGraphics({
+    });
+
+  if (values.regressionBands.length > 0) {
+    program = program.createGraphics({
       id: "pointsRegressionBands",
       type: "path",
       length: values.regressionBands.length
@@ -344,8 +344,10 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
       target: "pointsRegressionBands",
       property: "opacity",
       value: 0.18
-    })
-    .createGraphics({
+    });
+  }
+
+  return program.createGraphics({
       id: "pointsRegressionLines",
       type: "path",
       length: values.regressionLines.length

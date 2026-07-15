@@ -47,3 +47,21 @@ export function createRangeFilterPrimitives(cars) {
     }
   });
 }
+
+export function createPolynomialRegressionPrimitives(cars) {
+  return createCarsRegressionScatterplotPrimitives(cars, {
+    regression: { method: "polynomial", degree: 2 }
+  });
+}
+
+export function createLoessRegressionPrimitives(cars) {
+  return createCarsRegressionScatterplotPrimitives(cars, {
+    regression: { method: "loess", span: 0.55 }
+  });
+}
+
+export function createPredictionIntervalPrimitives(cars) {
+  return createCarsRegressionScatterplotPrimitives(cars, {
+    regression: { interval: "prediction" }
+  });
+}

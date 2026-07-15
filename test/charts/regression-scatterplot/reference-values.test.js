@@ -261,3 +261,96 @@ test("locks comparison compatibility and range endpoint policies", () => {
     []
   );
 });
+
+test("locks grouped quadratic coefficients and fitted rows independently", () => {
+  const result = createCarsRegressionScatterplotValues(loadCars(), {
+    method: "polynomial",
+    degree: 2
+  });
+  const usa = result.models.find(model => model.group === "USA");
+  const japan = result.models.find(model => model.group === "Japan");
+
+  assert.deepEqual(result.regressionTransform, {
+    type: "regression",
+    method: "polynomial",
+    x: "Displacement",
+    y: "Acceleration",
+    groupBy: "Origin",
+    degree: 2,
+    confidence: 0.95,
+    interval: "mean"
+  });
+  assert.equal(usa.degreesOfFreedom, 251);
+  assert.equal(japan.degreesOfFreedom, 76);
+  [
+    [usa.coefficients[0], 15.405317475393343],
+    [usa.coefficients[1], 0.019406788326317783],
+    [usa.coefficients[2], -0.00007411552096817323],
+    [japan.coefficients[0], 15.670554094000867],
+    [japan.coefficients[1], 0.05021132619046406],
+    [japan.coefficients[2], -0.0004202595614166027],
+    [result.regressionRows[0].Acceleration, 16.519409844135303]
+  ].forEach(([actual, expected]) => assertApproximately(actual, expected));
+});
+
+test("locks LOESS neighbors, source-order ties, and line-only rows", () => {
+  const result = createCarsRegressionScatterplotValues(loadCars(), {
+    method: "loess",
+    span: 0.55
+  });
+  const [usa, japan] = result.models;
+
+  assert.deepEqual(result.regressionTransform, {
+    type: "regression",
+    method: "loess",
+    x: "Displacement",
+    y: "Acceleration",
+    groupBy: "Origin",
+    span: 0.55
+  });
+  assert.deepEqual([usa.neighborCount, japan.neighborCount], [140, 44]);
+  assert.deepEqual(
+    usa.fits[0].neighborIndices.slice(0, 5),
+    [139, 226, 108, 46, 47]
+  );
+  assert.deepEqual(
+    japan.fits[0].neighborIndices.slice(0, 5),
+    [7, 13, 56, 4, 16]
+  );
+  assertApproximately(usa.fits[0].prediction, 16.944925595112526);
+  assertApproximately(japan.fits[0].prediction, 16.32994320035573);
+  assert.equal(result.regressionBands.length, 0);
+  assert.equal(Object.hasOwn(result.regressionRows[0], "__regression_ci_lower"), false);
+});
+
+test("makes prediction intervals contain the matching mean intervals", () => {
+  const mean = createCarsRegressionScatterplotValues(loadCars());
+  const prediction = createCarsRegressionScatterplotValues(loadCars(), {
+    interval: "prediction"
+  });
+
+  assert.deepEqual(prediction.scales.y.domain, [5, 25]);
+  assert.equal(prediction.regressionRows.length, mean.regressionRows.length);
+  for (let index = 0; index < mean.regressionRows.length; index += 1) {
+    assert.equal(
+      prediction.regressionRows[index].Acceleration,
+      mean.regressionRows[index].Acceleration
+    );
+    assert.ok(
+      prediction.regressionRows[index].__regression_ci_lower <=
+      mean.regressionRows[index].__regression_ci_lower
+    );
+    assert.ok(
+      prediction.regressionRows[index].__regression_ci_upper >=
+      mean.regressionRows[index].__regression_ci_upper
+    );
+  }
+  assertApproximately(
+    prediction.regressionRows[0].__regression_ci_lower,
+    13.527526031569437
+  );
+  assertApproximately(
+    prediction.regressionRows[0].__regression_ci_upper,
+    22.190178939573457
+  );
+});

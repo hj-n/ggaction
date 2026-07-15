@@ -282,6 +282,183 @@ function fitLinearRegression(rows, { xField, yField, groupField, confidence }) {
   };
 }
 
+function solveLinearSystem(matrix, vector) {
+  const size = matrix.length;
+  const augmented = matrix.map((row, index) => [...row, vector[index]]);
+  for (let column = 0; column < size; column += 1) {
+    let pivot = column;
+    for (let row = column + 1; row < size; row += 1) {
+      if (Math.abs(augmented[row][column]) > Math.abs(augmented[pivot][column])) {
+        pivot = row;
+      }
+    }
+    if (Math.abs(augmented[pivot][column]) < 1e-12) {
+      throw new Error("Polynomial regression design is singular.");
+    }
+    [augmented[column], augmented[pivot]] = [
+      augmented[pivot], augmented[column]
+    ];
+    const divisor = augmented[column][column];
+    for (let index = column; index <= size; index += 1) {
+      augmented[column][index] /= divisor;
+    }
+    for (let row = 0; row < size; row += 1) {
+      if (row === column) continue;
+      const factor = augmented[row][column];
+      for (let index = column; index <= size; index += 1) {
+        augmented[row][index] -= factor * augmented[column][index];
+      }
+    }
+  }
+  return augmented.map(row => row[size]);
+}
+
+function invertMatrix(matrix) {
+  return matrix.map((_, column) => solveLinearSystem(
+    matrix,
+    matrix.map((__, row) => row === column ? 1 : 0)
+  ));
+}
+
+function dot(left, right) {
+  return left.reduce((sum, value, index) => sum + value * right[index], 0);
+}
+
+function binomial(n, k) {
+  let result = 1;
+  for (let index = 1; index <= k; index += 1) {
+    result *= (n - index + 1) / index;
+  }
+  return result;
+}
+
+function rawPolynomialCoefficients(coefficients, center, scale) {
+  return coefficients.map((_, degree) => coefficients.reduce(
+    (sum, coefficient, power) => power < degree
+      ? sum
+      : sum + coefficient * binomial(power, degree) *
+        (-center) ** (power - degree) / scale ** power,
+    0
+  ));
+}
+
+function fitPolynomialRegression(rows, {
+  xField,
+  yField,
+  groupField,
+  confidence,
+  degree
+}) {
+  const count = rows.length;
+  const parameterCount = degree + 1;
+  const distinctX = new Set(rows.map(row => row[xField])).size;
+  if (count < degree + 2 || distinctX < parameterCount) {
+    throw new Error(
+      `Polynomial group "${rows[0]?.[groupField] ?? "unknown"}" requires degree + 2 rows and degree + 1 distinct x values.`
+    );
+  }
+  const center = rows.reduce((sum, row) => sum + row[xField], 0) / count;
+  const scale = Math.max(...rows.map(row => Math.abs(row[xField] - center)));
+  if (!(scale > 0)) throw new Error("Polynomial regression requires varying x values.");
+  const design = rows.map(row => {
+    const normalized = (row[xField] - center) / scale;
+    return Array.from({ length: parameterCount }, (_, power) => normalized ** power);
+  });
+  const normal = Array.from({ length: parameterCount }, (_, row) =>
+    Array.from({ length: parameterCount }, (_, column) =>
+      design.reduce((sum, basis) => sum + basis[row] * basis[column], 0)
+    )
+  );
+  const response = Array.from({ length: parameterCount }, (_, column) =>
+    design.reduce(
+      (sum, basis, index) => sum + basis[column] * rows[index][yField],
+      0
+    )
+  );
+  const normalizedCoefficients = solveLinearSystem(normal, response);
+  const inverse = invertMatrix(normal);
+  const fitted = design.map(basis => dot(basis, normalizedCoefficients));
+  const residualSumSquares = fitted.reduce((sum, value, index) =>
+    sum + (rows[index][yField] - value) ** 2,
+  0);
+  const degreesOfFreedom = count - parameterCount;
+  const residualVariance = residualSumSquares / degreesOfFreedom;
+  return {
+    count,
+    degreesOfFreedom,
+    degree,
+    coefficients: rawPolynomialCoefficients(
+      normalizedCoefficients,
+      center,
+      scale
+    ),
+    normalizedCoefficients,
+    center,
+    scale,
+    inverse,
+    residualSumSquares,
+    residualStandardError: Math.sqrt(residualVariance),
+    critical: studentTCritical(confidence, degreesOfFreedom)
+  };
+}
+
+function evaluatePolynomial(model, x) {
+  const normalized = (x - model.center) / model.scale;
+  const basis = model.normalizedCoefficients.map((_, power) =>
+    normalized ** power
+  );
+  return {
+    prediction: dot(basis, model.normalizedCoefficients),
+    leverage: dot(basis, model.inverse.map(row => dot(row, basis)))
+  };
+}
+
+function fitLoessRegression(rows, { xField, yField, span }) {
+  if (rows.length < 2 || new Set(rows.map(row => row[xField])).size < 2) {
+    throw new Error("LOESS regression requires two rows and varying x values.");
+  }
+  const neighborCount = Math.max(2, Math.ceil(span * rows.length));
+  const xValues = [...new Set(rows.map(row => row[xField]))]
+    .sort((left, right) => left - right);
+  const fits = xValues.map(x => {
+    const neighbors = rows
+      .map((row, index) => ({ row, index, distance: Math.abs(row[xField] - x) }))
+      .sort((left, right) => left.distance - right.distance || left.index - right.index)
+      .slice(0, neighborCount);
+    const radius = neighbors.at(-1).distance;
+    const weighted = neighbors.map(neighbor => ({
+      ...neighbor,
+      weight: radius === 0
+        ? 1
+        : (1 - (neighbor.distance / radius) ** 3) ** 3
+    }));
+    const totalWeight = weighted.reduce((sum, item) => sum + item.weight, 0);
+    const meanDx = weighted.reduce(
+      (sum, item) => sum + item.weight * (item.row[xField] - x),
+      0
+    ) / totalWeight;
+    const meanY = weighted.reduce(
+      (sum, item) => sum + item.weight * item.row[yField],
+      0
+    ) / totalWeight;
+    let variance = 0;
+    let covariance = 0;
+    for (const item of weighted) {
+      const dx = item.row[xField] - x - meanDx;
+      variance += item.weight * dx ** 2;
+      covariance += item.weight * dx * (item.row[yField] - meanY);
+    }
+    const slope = variance === 0 ? 0 : covariance / variance;
+    return {
+      x,
+      prediction: meanY - slope * meanDx,
+      neighborIndices: weighted.map(item => item.index),
+      weights: weighted.map(item => item.weight)
+    };
+  });
+  return { count: rows.length, span, neighborCount, fits };
+}
+
 function requireLayout({ width, height, margin, sizeRange }) {
   if (!Number.isFinite(width) || width <= 0 || !Number.isFinite(height) || height <= 0) {
     throw new TypeError(
@@ -430,6 +607,10 @@ export function createCarsRegressionScatterplotValues(
     groups = ["Japan", "USA"],
     filter,
     confidence = 0.95,
+    method = "linear",
+    degree = method === "polynomial" ? 2 : undefined,
+    span = method === "loess" ? 0.75 : undefined,
+    interval = method === "loess" ? undefined : "mean",
     xField = "Displacement",
     yField = "Acceleration",
     groupField = "Origin",
@@ -443,6 +624,24 @@ export function createCarsRegressionScatterplotValues(
     throw new TypeError("Cars must be an array.");
   }
   requireOptions({ groups, confidence });
+  if (!["linear", "polynomial", "loess"].includes(method)) {
+    throw new Error(`Unsupported reference regression method "${method}".`);
+  }
+  if (method === "polynomial" && (!Number.isInteger(degree) || degree < 1)) {
+    throw new RangeError("Reference polynomial degree must be a positive integer.");
+  }
+  if (method === "loess" && (!Number.isFinite(span) || span <= 0 || span > 1)) {
+    throw new RangeError("Reference LOESS span must be greater than zero and at most one.");
+  }
+  if (method !== "polynomial" && degree !== undefined) {
+    throw new Error("Reference degree requires polynomial regression.");
+  }
+  if (method !== "loess" && span !== undefined) {
+    throw new Error("Reference span requires LOESS regression.");
+  }
+  if (method === "loess" ? interval !== undefined : !["mean", "prediction"].includes(interval)) {
+    throw new Error("Reference regression interval is incompatible with its method.");
+  }
   const bounds = requireLayout({ width, height, margin, sizeRange });
 
   const resolvedFilter = filter ?? {
@@ -466,29 +665,60 @@ export function createCarsRegressionScatterplotValues(
 
   for (const group of groupDomain) {
     const rows = filteredRows.filter(row => row[groupField] === group);
-    const model = fitLinearRegression(rows, {
-      xField,
-      yField,
-      groupField,
-      confidence
-    });
+    const model = method === "linear"
+      ? fitLinearRegression(rows, {
+          xField,
+          yField,
+          groupField,
+          confidence
+        })
+      : method === "polynomial"
+        ? fitPolynomialRegression(rows, {
+            xField,
+            yField,
+            groupField,
+            confidence,
+            degree
+          })
+        : fitLoessRegression(rows, { xField, yField, span });
     const xValues = [...new Set(rows.map(row => row[xField]))]
       .sort((left, right) => left - right);
 
     models.push({ group, ...model, xValues });
 
     for (const x of xValues) {
-      const prediction = model.intercept + model.slope * x;
-      const standardError = model.residualStandardError * Math.sqrt(
-        1 / model.count + (x - model.meanX) ** 2 / model.sxx
-      );
-      const margin = model.critical * standardError;
+      const loessFit = method === "loess"
+        ? model.fits.find(fit => fit.x === x)
+        : undefined;
+      const evaluated = method === "polynomial"
+        ? evaluatePolynomial(model, x)
+        : undefined;
+      const prediction = method === "linear"
+        ? model.intercept + model.slope * x
+        : method === "polynomial"
+          ? evaluated.prediction
+          : loessFit.prediction;
+      const leverage = method === "linear"
+        ? 1 / model.count + (x - model.meanX) ** 2 / model.sxx
+        : method === "polynomial"
+          ? evaluated.leverage
+          : undefined;
+      const standardError = method === "loess"
+        ? undefined
+        : model.residualStandardError * Math.sqrt(
+            leverage + (interval === "prediction" ? 1 : 0)
+          );
+      const margin = method === "loess"
+        ? undefined
+        : model.critical * standardError;
       regressionRows.push({
         [groupField]: group,
         [xField]: x,
         [yField]: prediction,
-        [LOWER_FIELD]: prediction - margin,
-        [UPPER_FIELD]: prediction + margin
+        ...(method === "loess" ? {} : {
+          [LOWER_FIELD]: prediction - margin,
+          [UPPER_FIELD]: prediction + margin
+        })
       });
     }
   }
@@ -496,8 +726,9 @@ export function createCarsRegressionScatterplotValues(
   const xDomain = niceLinearDomain(filteredRows.map(row => row[xField]));
   const yDomain = niceLinearDomain([
     ...filteredRows.map(row => row[yField]),
-    ...regressionRows.map(row => row[LOWER_FIELD]),
-    ...regressionRows.map(row => row[UPPER_FIELD])
+    ...regressionRows.flatMap(row => method === "loess"
+      ? [row[yField]]
+      : [row[LOWER_FIELD], row[UPPER_FIELD]])
   ]);
   const sizeDomain = [
     Math.min(...filteredRows.map(row => row[yField])),
@@ -538,7 +769,7 @@ export function createCarsRegressionScatterplotValues(
       strokeDash: []
     };
   });
-  const regressionBands = groupDomain.map(group => {
+  const regressionBands = method === "loess" ? [] : groupDomain.map(group => {
     const rows = regressionRows.filter(row => row[groupField] === group);
     const lower = rows.map(row => ({
       x: mapValue(row[xField], xDomain, xRange),
@@ -660,6 +891,19 @@ export function createCarsRegressionScatterplotValues(
 
   return {
     confidence,
+    method,
+    degree,
+    span,
+    interval,
+    regressionTransform: {
+      type: "regression",
+      method,
+      x: xField,
+      y: yField,
+      groupBy: groupField,
+      ...(method === "polynomial" ? { degree } : {}),
+      ...(method === "loess" ? { span } : { confidence, interval })
+    },
     filter: structuredClone(resolvedFilter),
     fields: {
       x: xField,

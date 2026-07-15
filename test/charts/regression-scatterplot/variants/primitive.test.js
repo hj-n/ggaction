@@ -22,6 +22,9 @@ import { createCarsRegressionScatterplotValues } from "../reference-values.js";
 import {
   createComparisonFilterPrimitives,
   createComponentEditPrimitives,
+  createLoessRegressionPrimitives,
+  createPolynomialRegressionPrimitives,
+  createPredictionIntervalPrimitives,
   createRangeFilterPrimitives
 } from "./primitive-programs.js";
 
@@ -129,4 +132,44 @@ test("matches filter primitives with public filterMark modes", () => {
     primitiveProgram: createRangeFilterPrimitives(cars),
     publicProgram: createRangeFilterCarsRegressionScatterplot(cars)
   });
+});
+
+test("authors polynomial, LOESS, and prediction targets as raw primitives", () => {
+  const polynomial = createPolynomialRegressionPrimitives(cars);
+  const loess = createLoessRegressionPrimitives(cars);
+  const prediction = createPredictionIntervalPrimitives(cars);
+
+  assert.deepEqual(
+    polynomial.semanticSpec.datasets[2].transform[0],
+    createCarsRegressionScatterplotValues(cars, {
+      method: "polynomial",
+      degree: 2
+    }).regressionTransform
+  );
+  assert.deepEqual(
+    loess.semanticSpec.datasets[2].transform[0],
+    createCarsRegressionScatterplotValues(cars, {
+      method: "loess",
+      span: 0.55
+    }).regressionTransform
+  );
+  assert.deepEqual(
+    prediction.semanticSpec.datasets[2].transform[0],
+    createCarsRegressionScatterplotValues(cars, {
+      interval: "prediction"
+    }).regressionTransform
+  );
+  assert.ok(polynomial.graphicSpec.objects.pointsRegressionBands);
+  assert.ok(prediction.graphicSpec.objects.pointsRegressionBands);
+  assert.equal(loess.graphicSpec.objects.pointsRegressionBands, undefined);
+  assert.deepEqual(
+    loess.semanticSpec.layers.map(layer => layer.id),
+    ["points", "pointsRegressionLines"]
+  );
+  assert.ok(!loess.trace.children.some(node =>
+    JSON.stringify(node.args).includes("pointsRegressionBands")
+  ));
+  for (const program of [polynomial, loess, prediction]) {
+    assert.ok(!program.trace.children.some(node => node.op === "createRegression"));
+  }
 });

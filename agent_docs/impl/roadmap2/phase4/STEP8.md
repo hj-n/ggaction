@@ -6,13 +6,13 @@ Quadratic polynomial, LOESS line-only와 prediction interval의 independent nume
 
 ## 진행 상태
 
-- [ ] Polynomial coefficients/fitted-row fixture
-- [ ] LOESS neighbor/fitted-row fixture
-- [ ] Mean/prediction interval fixture
-- [ ] Three raw primitive chart variants
-- [ ] Line-only LOESS layer/trace target
-- [ ] Expanded target call-chain metadata
-- [ ] Browser와 2× primitive PNG 생성
+- [x] Polynomial coefficients/fitted-row fixture
+- [x] LOESS neighbor/fitted-row fixture
+- [x] Mean/prediction interval fixture
+- [x] Three raw primitive chart variants
+- [x] Line-only LOESS layer/trace target
+- [x] Expanded target call-chain metadata
+- [x] Browser와 2× primitive PNG 생성
 - [ ] Gate D 사용자 visual confirmation
 - [ ] Feedback, status, commit와 push
 

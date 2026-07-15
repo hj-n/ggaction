@@ -12,6 +12,9 @@ import { createCarsRegressionScatterplotPrimitives } from
 import {
   createComparisonFilterPrimitives,
   createComponentEditPrimitives,
+  createLoessRegressionPrimitives,
+  createPolynomialRegressionPrimitives,
+  createPredictionIntervalPrimitives,
   createRangeFilterPrimitives
 } from "./primitive-programs.js";
 
@@ -75,6 +78,16 @@ function withFilterCall(filterCall) {
   return baselineCallChain.replace(baselineFilterCall, filterCall);
 }
 
+const baselineRegressionCall = `  .createRegression({
+    confidence: 0.95,
+    band: { color: "#111111", opacity: 0.18 },
+    line: { strokeWidth: 3 }
+  })`;
+
+function withRegressionCall(regressionCall) {
+  return baselineCallChain.replace(baselineRegressionCall, regressionCall);
+}
+
 export const visualVariants = Object.freeze([defineVisualVariant({
   ...shared,
   variant: "baseline",
@@ -122,4 +135,31 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   })`),
   primitive: createRangeFilterPrimitives(cars),
   userFacing: createRangeFilterCarsRegressionScatterplot(cars)
+}), defineVisualVariant({
+  ...shared,
+  variant: "polynomial-degree-2",
+  title: "Quadratic Regression",
+  callChain: withRegressionCall(`  .createRegression({
+    method: "polynomial",
+    degree: 2
+  })`),
+  primitive: createPolynomialRegressionPrimitives(cars)
+}), defineVisualVariant({
+  ...shared,
+  variant: "loess-span",
+  title: "LOESS Span 0.55",
+  callChain: withRegressionCall(`  .createRegression({
+    method: "loess",
+    span: 0.55,
+    band: false
+  })`),
+  primitive: createLoessRegressionPrimitives(cars)
+}), defineVisualVariant({
+  ...shared,
+  variant: "prediction-interval",
+  title: "95% Prediction Interval",
+  callChain: withRegressionCall(`  .createRegression({
+    interval: "prediction"
+  })`),
+  primitive: createPredictionIntervalPrimitives(cars)
 })]);
