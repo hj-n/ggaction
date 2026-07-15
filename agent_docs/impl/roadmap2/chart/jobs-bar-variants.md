@@ -33,9 +33,10 @@ chart()
   .createGuides();
 ```
 
-Baseline의 final grain은 `year × sex`, y summary는 mean, group order는 source first appearance다.
-Missing category cells는 합성하지 않는다. Primitive와 public program의 semantic state, concrete band/rect,
-drawing order와 Canvas calls는 Phase 3 Step 1에서 canonical oracle로 다시 고정한다.
+Baseline은 7,650개 valid row를 사용하고 final grain은 15개 year × `men → women`, y summary는 mean이다.
+Observed rect 30개만 만들며 missing category cells는 합성하지 않는다. Phase 3 Step 1 audit에서 primitive와
+public program의 semantic state, concrete band/rect, drawing order, 889개 Canvas calls와 decoded PNG pixel
+hash가 정확히 같아 이 pair를 canonical oracle로 고정했다.
 
 ## Variant 목록
 

@@ -34,9 +34,10 @@ chart()
   });
 ```
 
-Baseline은 finite `Displacement`와 non-empty `Origin`만 사용한다. x는 최대 10개의 nice bin, y는
-Origin별 zero stack count다. Primitive와 public program의 complete semantic state, concrete rect,
-drawing order와 Canvas calls는 Phase 3 Step 1에서 다시 감사해 하나의 canonical oracle로 고정한다.
+Baseline은 finite `Displacement`와 non-empty `Origin` 406개 row를 사용한다. x는 `[50, 500]`의
+50-step 9개 bin, y는 Origin별 zero stack count이며 non-empty rect는 15개다. Phase 3 Step 1 audit에서
+primitive와 public program의 complete semantic state, concrete rect, drawing order, 647개 Canvas calls와
+decoded PNG pixel hash가 정확히 같아 이 pair를 canonical oracle로 고정했다.
 
 ## Variant 목록
 
