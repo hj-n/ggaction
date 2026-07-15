@@ -1219,7 +1219,8 @@ interval role이 유일하지 않으면 추측하지 않는다. `createErrorBand
 `encodeColor`가 소유한다. Optional lower/upper boundaries는 deterministic ordinary line layers이며 band
 뒤에 그린다. Band curve는 area mark config로 concrete commands를 만들고 boundary curve는 기본적으로
 이를 상속하되 명시적으로 override할 수 있다. Shared stroke, width, dash, opacity는 boundary children의
-concrete appearance로 저장된다. Independent lower/upper appearance object만 아직 Planned다.
+concrete appearance로 저장된다. Aggregate는 independent lower/upper appearance object를 받지 않으며,
+서로 다른 style이 필요하면 deterministic ordinary boundary line child를 각자 편집한다.
 
 ### Guides
 

@@ -77,5 +77,5 @@ type ConcretePathCommand =
 - Regression line/band actions forward their curve options to the corresponding line/area mark actions.
   Density and ranged-area charts reuse `createAreaMark.curve` without a density-specific interpolation API.
 - Status: Implemented for line and area marks. Both own every token, exact fixtures, short-series fallback,
-  monotone validation, edit/rematerialization, renderer parity and declarations. Regression band forwarding만
-  regression delegation work와 함께 Planned다.
+  monotone validation, edit/rematerialization, renderer parity and declarations. Regression line and band
+  forwarding are also Current through their ordinary line/area child actions.

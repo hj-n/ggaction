@@ -117,8 +117,12 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 ### Formal values — `createErrorBand`
 
 - Implemented: `createErrorBand({ id?: UserId; target?: UserId; data?: UserId; x?: PositionChannel | StatisticalIntervalChannel | ExplicitIntervalChannel; y?: PositionChannel | StatisticalIntervalChannel | ExplicitIntervalChannel; groupBy?: FieldName; coordinate?: UserId; fill?: NonEmptyString; opacity?: UnitInterval; curve?: CurveInterpolation; boundaries?: false | { stroke?: NonEmptyString; strokeWidth?: NonNegativeFinite; strokeDash?: DashPattern; opacity?: UnitInterval; curve?: CurveInterpolation } } = {})`.
-- Planned (NOT IMPLEMENTED): independent lower/upper boundary overrides.
+- Planned (NOT IMPLEMENTED): —
 - Proposed (NOT IMPLEMENTED): —
+
+Independent lower/upper boundary appearance objects are intentionally outside
+the aggregate contract. Edit the deterministic ordinary child line layers when
+the two boundaries need different styles.
 
 ### Value coverage — `createErrorBand`
 
@@ -132,7 +136,8 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   deterministic child order, Canvas/scale rematerialization, and approved primitive/public/pixel variants.
 - ✅ Covered: regression-band delegation through explicit interval mode with prior semantic, graphic, ordering,
   trace, grouped/ungrouped, method, appearance, and immutability compatibility.
-- 🟡 Planned: independent lower/upper boundary appearance overrides.
+- Current limitation: the aggregate accepts one shared boundary recipe rather
+  than independent lower/upper appearance objects.
 - Evidence: `test/unit/actions/error-bands/create-error-band.test.js` and
   `test/charts/gapminder-error-band/public.test.js`, plus
   `test/unit/actions/regression/create-regression.test.js` for delegation compatibility.
