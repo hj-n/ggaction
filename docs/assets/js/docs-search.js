@@ -161,6 +161,7 @@
   document.addEventListener("keydown", event => {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
       event.preventDefault();
+      document.dispatchEvent(new CustomEvent("docs:open-navigation"));
       input.focus();
       input.select();
     }

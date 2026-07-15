@@ -123,6 +123,8 @@ body {
 .docs-shell {
   display: grid;
   grid-template-columns: var(--docs-sidebar) minmax(0, 1fr);
+  width: 100%;
+  min-width: 0;
   max-width: 90rem;
   min-height: calc(100vh - var(--docs-topbar));
   margin: 0 auto;
@@ -245,6 +247,7 @@ body {
 
 .docs-content {
   width: min(100%, 58rem);
+  min-width: 0;
   margin: 0 auto;
   padding: 3rem clamp(2rem, 6vw, 5.5rem) 5rem;
 }
@@ -271,16 +274,22 @@ body {
 
 .docs-content table {
   display: block;
+  width: 100%;
   max-width: 100%;
   overflow-x: auto;
   white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
 }
 
 .docs-content pre {
+  width: 100%;
+  max-width: 100%;
   padding: 1rem 1.1rem;
+  overflow-x: auto;
   border: 1px solid var(--docs-border);
   border-radius: 0.5rem;
   background: #f8fafc;
+  -webkit-overflow-scrolling: touch;
 }
 
 .docs-content code {
@@ -291,6 +300,24 @@ body {
 .docs-content pre code {
   color: inherit;
   background: transparent;
+}
+
+.docs-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+.docs-content p,
+.docs-content li,
+.docs-content dd,
+.docs-content a,
+.docs-content code {
+  overflow-wrap: anywhere;
+}
+
+.docs-content pre code,
+.docs-content table code {
+  overflow-wrap: normal;
 }
 
 .docs-chart-gallery {
@@ -450,8 +477,13 @@ body {
   }
 
   .nav-toggle-button {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
     margin-left: auto;
+    padding: 0.35rem;
   }
 
   .docs-shell {
@@ -494,6 +526,7 @@ body {
   .docs-sidebar-close {
     display: block;
     width: 100%;
+    min-height: 2.75rem;
     margin-bottom: 0.8rem;
     padding: 0.5rem 0.65rem;
     color: #334155;
@@ -507,11 +540,16 @@ body {
 
   .docs-content {
     width: 100%;
+    min-width: 0;
     padding: 2.2rem 1.25rem 4rem;
   }
 
   .docs-page-navigation {
     grid-template-columns: 1fr;
+  }
+
+  .docs-page-navigation__next {
+    text-align: left;
   }
 
   .docs-chart-gallery {
@@ -525,5 +563,17 @@ body {
   .docs-footer__inner,
   .docs-footer nav {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 420px) {
+  .docs-content h1 {
+    font-size: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docs-sidebar {
+    transition: none;
   }
 }

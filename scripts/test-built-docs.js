@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
-import { mkdir, readFile, stat } from "node:fs/promises";
+import { mkdir, readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 
 import { chromium } from "playwright";
@@ -44,6 +44,67 @@ const { port } = server.address();
 const baseUrl = `http://127.0.0.1:${port}/ggaction/`;
 await mkdir(artifactRoot, { recursive: true });
 
+async function files(directory) {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const nested = await Promise.all(entries.map(entry => {
+    const target = path.join(directory, entry.name);
+    return entry.isDirectory() ? files(target) : [target];
+  }));
+  return nested.flat();
+}
+
+function routeFor(file) {
+  const relative = path.relative(siteRoot, file).replaceAll(path.sep, "/");
+  if (relative === "index.html") return baseUrl;
+  if (relative.endsWith("/index.html")) {
+    return `${baseUrl}${relative.slice(0, -"index.html".length)}`;
+  }
+  return `${baseUrl}${relative}`;
+}
+
+async function assertResponsiveContainment(page, file, width) {
+  const response = await page.goto(routeFor(file), { waitUntil: "networkidle" });
+  assert.equal(response.ok(), true, `${file} at ${width}px`);
+  const result = await page.evaluate(() => {
+    const viewport = document.documentElement.clientWidth;
+    const content = document.querySelector(".docs-content");
+    const contentBounds = content?.getBoundingClientRect();
+    const escaped = [...document.querySelectorAll(
+      ".docs-content pre, .docs-content table, .docs-content img, .docs-page-navigation"
+    )].map(element => {
+      const bounds = element.getBoundingClientRect();
+      return {
+        tag: element.tagName.toLowerCase(),
+        className: element.className,
+        left: bounds.left,
+        right: bounds.right
+      };
+    }).filter(element =>
+      element.left < -1 ||
+      element.right > viewport + 1 ||
+      (contentBounds && element.right > contentBounds.right + 1)
+    );
+    const localScrollFailures = [...document.querySelectorAll(
+      ".docs-content pre, .docs-content table"
+    )].filter(element =>
+      element.scrollWidth > element.clientWidth + 1 &&
+      getComputedStyle(element).overflowX !== "auto"
+    ).map(element => element.tagName.toLowerCase());
+    return {
+      viewport,
+      scrollWidth: document.documentElement.scrollWidth,
+      contentRight: contentBounds?.right,
+      escaped,
+      localScrollFailures
+    };
+  });
+  const label = `${path.relative(siteRoot, file)} at ${width}px`;
+  assert.equal(result.scrollWidth, result.viewport, `${label} expands the document`);
+  assert.equal(result.contentRight <= result.viewport + 1, true, `${label} content escapes`);
+  assert.deepEqual(result.escaped, [], `${label} contains escaped elements`);
+  assert.deepEqual(result.localScrollFailures, [], `${label} lacks local scrolling`);
+}
+
 const browser = await chromium.launch({ headless: true });
 try {
   const desktop = await browser.newPage({ viewport: { width: 1440, height: 900 } });
@@ -75,6 +136,19 @@ try {
   await desktop.screenshot({ path: path.join(artifactRoot, "desktop.png"), fullPage: true });
   await desktop.close();
 
+  const htmlFiles = (await files(siteRoot))
+    .filter(file => file.endsWith(".html"))
+    .filter(file => !file.endsWith("404.html"));
+  assert.equal(htmlFiles.length > 40, true);
+
+  for (const width of [320, 390, 768]) {
+    const responsive = await browser.newPage({ viewport: { width, height: 844 } });
+    for (const file of htmlFiles) {
+      await assertResponsiveContainment(responsive, file, width);
+    }
+    await responsive.close();
+  }
+
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
   const mobileErrors = [];
   mobile.on("console", message => {
@@ -84,9 +158,23 @@ try {
   await mobile.goto(baseUrl, { waitUntil: "networkidle" });
   const toggle = mobile.locator("#nav-toggle-button");
   assert.equal(await toggle.getAttribute("aria-expanded"), "false");
+  assert.equal(await mobile.locator("#docs-sidebar").getAttribute("aria-hidden"), "true");
+  assert.equal(await mobile.locator("#docs-sidebar").getAttribute("inert"), "");
+  const toggleBounds = await toggle.boundingBox();
+  assert.equal(toggleBounds.width >= 44, true);
+  assert.equal(toggleBounds.height >= 44, true);
   await toggle.click();
   assert.equal(await toggle.getAttribute("aria-expanded"), "true");
   assert.equal(await mobile.locator(".docs-sidebar-close").isVisible(), true);
+  assert.equal(await mobile.locator("#docs-sidebar").getAttribute("aria-hidden"), null);
+  assert.equal(await mobile.locator("#docs-sidebar").getAttribute("inert"), null);
+  assert.equal(await mobile.locator("#main-content").getAttribute("inert"), "");
+  assert.equal(
+    await mobile.locator(".docs-sidebar-close").evaluate(element =>
+      element === document.activeElement
+    ),
+    true
+  );
   await mobile.keyboard.press("Escape");
   assert.equal(await toggle.getAttribute("aria-expanded"), "false");
   assert.equal(await toggle.evaluate(element => element === document.activeElement), true);
@@ -94,12 +182,26 @@ try {
     await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth),
     false
   );
+  await mobile.keyboard.press("Control+K");
+  assert.equal(await toggle.getAttribute("aria-expanded"), "true");
+  assert.equal(
+    await mobile.locator("#docs-search-input").evaluate(element =>
+      element === document.activeElement
+    ),
+    true
+  );
   assert.deepEqual(mobileErrors, []);
   await mobile.screenshot({ path: path.join(artifactRoot, "mobile.png"), fullPage: true });
+
+  await mobile.goto(`${baseUrl}reference/actions/`, { waitUntil: "networkidle" });
+  await mobile.screenshot({
+    path: path.join(artifactRoot, "mobile-action-reference.png"),
+    fullPage: false
+  });
   await mobile.close();
 } finally {
   await browser.close();
   await new Promise(resolve => server.close(resolve));
 }
 
-process.stdout.write("verified desktop search and mobile navigation\n");
+process.stdout.write("verified desktop search and all documentation pages at 320px, 390px, and 768px\n");
