@@ -53,3 +53,15 @@ composite legends.
 Open <http://localhost:8000/examples/cars-density-area/>. This chart derives
 Gaussian kernel-density values for acceleration by Origin, overlays three
 translucent area paths, and uses two-direction grids with a top legend.
+
+## Cars error-bar chart
+
+Open <http://localhost:8000/examples/cars-error-bar/>. This chart derives mean
+acceleration and 95% confidence intervals by Origin, then draws vertical rules
+with fixed-width caps.
+
+## Gapminder error-band chart
+
+Open <http://localhost:8000/examples/gapminder-error-band/>. This chart derives
+mean life expectancy and 95% confidence intervals by year and cluster, then
+draws one translucent closed area path per cluster.

@@ -16,6 +16,7 @@ Build complete charts before exploring individual API options.
 | Regression scatterplot | point + area + line | `filterData`, appearance encodings, `createRegression` | Grouped fits and confidence bands |
 | Density area | area | `encodeDensity`, grouped `encodeColor` | Overlaid probability densities |
 | Error bar | rule | `createErrorBar` | Grouped mean confidence intervals |
+| Error band | area | `createErrorBand` | Grouped confidence ribbons over an independent position |
 
 Choose the chart whose semantic relationship matches the question you want to
 answer. The bar tutorial uses grouped bars as its current example; grouping is
@@ -69,3 +70,10 @@ Derive grouped mean confidence intervals and materialize vertical rules with
 fixed-width caps.
 
 [Build the cars error-bar chart](./error-bar.md)
+
+## Error-band chart
+
+Derive grouped confidence intervals over time and materialize one closed area
+path per series.
+
+[Build the Gapminder error-band chart](./error-band.md)

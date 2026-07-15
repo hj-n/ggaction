@@ -44,6 +44,7 @@ state is never automatically compiled during rendering.
 - [Regression scatterplot tutorial](./docs/tutorials/regression-scatterplot.md)
 - [Density area chart tutorial](./docs/tutorials/density-area.md)
 - [Error-bar chart tutorial](./docs/tutorials/error-bar.md)
+- [Error-band chart tutorial](./docs/tutorials/error-band.md)
 - [Chart concepts](./docs/concepts/chart-program.md)
 - [Complete action reference](./docs/reference/actions.md)
 - [Supported features](./docs/supported-features.md)
@@ -57,7 +58,9 @@ cars data and layers grouped fits with confidence bands. The [grouped bar
 chart](./examples/jobs-grouped-bar/) uses `data/jobs.json`. The [density area
 chart](./examples/cars-density-area/) derives grouped Acceleration
 distributions from the cars data. The [error-bar chart](./examples/cars-error-bar/)
-summarizes mean Acceleration with 95% confidence intervals.
+summarizes mean Acceleration with 95% confidence intervals. The
+[error-band chart](./examples/gapminder-error-band/) summarizes grouped
+confidence intervals as closed area paths over time.
 Completed programs can also be exported through
 [`ggaction/png`](./docs/api/rendering.md#png-output).
 

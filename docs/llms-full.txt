@@ -82,6 +82,12 @@ The main, extension, and PNG entry points include TypeScript declarations.
     </a>
     <a class="docs-chart-gallery__title" href="./tutorials/error-bar/">Error bar</a>
   </article>
+  <article>
+    <a class="docs-chart-gallery__image" href="./assets/images/gapminder-error-band.png" aria-label="Open the full-size error-band chart">
+      <img src="./assets/images/gapminder-error-band.png" alt="Mean life expectancy by cluster with 95% confidence bands" width="1520" height="960" loading="lazy">
+    </a>
+    <a class="docs-chart-gallery__title" href="./tutorials/error-band/">Error band</a>
+  </article>
 </div>
 
 ## Go deeper
@@ -128,6 +134,7 @@ Open one of the runnable repository examples:
 - `http://localhost:4173/examples/cars-regression-scatterplot/`
 - `http://localhost:4173/examples/cars-density-area/`
 - `http://localhost:4173/examples/cars-error-bar/`
+- `http://localhost:4173/examples/gapminder-error-band/`
 
 Those browser examples import `../../src/index.js` directly. The code below is
 the complete module used by `examples/getting-started/`, so it runs immediately
@@ -228,6 +235,7 @@ Build complete charts before exploring individual API options.
 | Regression scatterplot | point + area + line | `filterData`, appearance encodings, `createRegression` | Grouped fits and confidence bands |
 | Density area | area | `encodeDensity`, grouped `encodeColor` | Overlaid probability densities |
 | Error bar | rule | `createErrorBar` | Grouped mean confidence intervals |
+| Error band | area | `createErrorBand` | Grouped confidence ribbons over an independent position |
 
 Choose the chart whose semantic relationship matches the question you want to
 answer. The bar tutorial uses grouped bars as its current example; grouping is
@@ -281,6 +289,13 @@ Derive grouped mean confidence intervals and materialize vertical rules with
 fixed-width caps.
 
 [Build the cars error-bar chart](./error-bar.md)
+
+## Error-band chart
+
+Derive grouped confidence intervals over time and materialize one closed area
+path per series.
+
+[Build the Gapminder error-band chart](./error-band.md)
 
 <!-- Source: /tutorials/scatterplot/ -->
 
@@ -1166,6 +1181,107 @@ program
 - Read the exact [error-bar options](../api/error-bars.md).
 - Use [Data](../api/data.md) when interval rows are needed independently.
 
+<!-- Source: /tutorials/error-band/ -->
+
+# Error-Band Chart Tutorial
+
+![Mean life expectancy by cluster with 95% confidence bands](../assets/images/gapminder-error-band.png)
+
+This chart summarizes life expectancy over time for each Gapminder cluster.
+`createErrorBand` derives one mean and two-sided 95% Student-t confidence
+interval per year and cluster, then creates one closed area path per cluster.
+The repository contains a
+[runnable browser example](https://github.com/hj-n/ggaction/tree/main/examples/gapminder-error-band)
+and its [complete program](https://github.com/hj-n/ggaction/blob/main/examples/gapminder-error-band/program.js).
+
+```javascript
+import { chart, render } from "../../src/index.js";
+
+const response = await fetch("../../data/gapminder.json");
+if (!response.ok) throw new Error(`Failed to load gapminder data: ${response.status}`);
+const gapminder = await response.json();
+
+const program = chart()
+  .createCanvas({
+    width: 760,
+    height: 480,
+    margin: { top: 90, right: 150, bottom: 70, left: 80 }
+  })
+  .createData({ values: gapminder })
+  .createErrorBand({
+    x: { field: "year", fieldType: "temporal" },
+    y: { field: "life_expect" },
+    groupBy: "cluster"
+  })
+  .encodeColor({
+    target: "errorBand",
+    field: "cluster",
+    fieldType: "nominal",
+    scale: { palette: "tableau10" }
+  })
+  .createGuides()
+  .createTitle({
+    text: "Life Expectancy by Cluster",
+    subtitle: "Mean and 95% confidence interval"
+  });
+
+render(program, document.querySelector("#chart").getContext("2d"));
+```
+
+## What the actions establish
+
+| Stage | Semantic result | Graphical result |
+| --- | --- | --- |
+| `createErrorBand` | Immutable year × cluster interval rows and one area layer | Six closed confidence-band paths |
+| `encodeColor` | Shared nominal cluster scale | One fill per cluster |
+| `createGuides` | Temporal x, quantitative y, axes, horizontal grid, legend | Grid behind bands and guides above them |
+| `createTitle` | Title and subtitle | Plot-aligned text above the chart |
+
+The dataset ID, error-band ID, coordinate, scales, center, extent, and
+confidence level are inferred. The x field, y field, and grouping field are the
+only chart-specific decisions in this flow.
+
+## Horizontal bands and boundaries
+
+Place the interval definition on x and the independent position on y to create
+a horizontal band. Pass `boundaries: {}` to add lower and upper line paths, or
+provide shared stroke, width, dash, opacity, and curve options:
+
+```javascript
+program.createErrorBand({
+  x: { field: "value", extent: "ci" },
+  y: { field: "date", fieldType: "temporal" },
+  curve: "cardinal",
+  boundaries: {
+    stroke: "#25364d",
+    strokeWidth: 1.4,
+    strokeDash: [6, 3],
+    opacity: 0.8
+  }
+});
+```
+
+## Key action trace
+
+```text
+program
+├─ createErrorBand
+│  ├─ createIntervalData
+│  ├─ createAreaMark
+│  ├─ encodeX
+│  ├─ encodeYRange
+│  └─ encodeGroup
+├─ encodeColor
+├─ createGuides
+└─ createTitle
+```
+
+## Run and continue
+
+- Serve the repository root and open `examples/gapminder-error-band/`.
+- Read the exact [error-band options](../api/error-bands.md).
+- Use [Data](../api/data.md) when interval rows are needed independently.
+
 <!-- Source: /recipes/ -->
 
 # Chart Recipes
@@ -1183,6 +1299,7 @@ required author decisions from library inference.
 | Regression scatterplot | point x/y and optional group | grouped OLS, confidence bands, shared guides | [Regression scatterplot](./regression-scatterplot.md) |
 | Density area | quantitative value and optional group | KDE data, scales, closed paths | [Density area](./density-area.md) |
 | Error bar | independent x and quantitative y | mean 95% CI, rules, caps, guides | [Error bar](./error-bar.md) |
+| Error band | independent position, quantitative interval, optional group | mean 95% CI, ranged area paths, guides | [Error band](./error-band.md) |
 
 Every flow begins with `createCanvas`, `createData`, and a semantic mark. Add
 explicit IDs only when the current program state contains multiple compatible
@@ -1514,6 +1631,48 @@ options to reuse its fields, data, coordinate, and scales.
 
 [Error-bar tutorial](../tutorials/error-bar.md) ·
 [Error-bar API](../api/error-bars.md)
+
+<!-- Source: /recipes/error-band/ -->
+
+# Error-Band Recipe
+
+## Minimal flow
+
+```javascript
+const program = chart()
+  .createCanvas()
+  .createData({ values })
+  .createErrorBand({
+    x: { field: "time", fieldType: "temporal" },
+    y: { field: "value" },
+    groupBy: "series"
+  })
+  .encodeColor({ target: "errorBand", field: "series" })
+  .createGuides();
+```
+
+## You must decide
+
+- Quantitative or temporal independent-position field
+- Quantitative interval field
+- Optional grouping field
+
+## The library infers
+
+- Current dataset and Cartesian coordinate
+- Mean with a two-sided 95% Student-t confidence interval
+- One immutable summary row per independent-position and group cell
+- Vertical y/y2 or horizontal x/x2 area orientation
+- Linear area paths, translucent fill, scales, axes, and applicable grid
+
+When one compatible layer is already encoded, omitted data, coordinate,
+position fields, scales, and explicit grouping are reused when the interval
+axis is unambiguous.
+
+## Continue
+
+[Error-band tutorial](../tutorials/error-band.md) ·
+[Error-band API](../api/error-bands.md)
 
 <!-- Source: /troubleshooting/ -->
 

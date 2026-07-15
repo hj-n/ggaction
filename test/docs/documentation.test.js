@@ -196,7 +196,12 @@ test("keeps tutorial action flows aligned with public examples", () => {
       "return chart()"
     ],
     ["density-area", "examples/cars-density-area/program.js", "return chart()"],
-    ["error-bar", "examples/cars-error-bar/program.js", "return chart()"]
+    ["error-bar", "examples/cars-error-bar/program.js", "return chart()"],
+    [
+      "error-band",
+      "examples/gapminder-error-band/program.js",
+      "return chart()"
+    ]
   ];
 
   for (const [tutorial, example, exampleStart] of cases) {
@@ -223,7 +228,8 @@ test("links every public chart example from entry documentation", () => {
     "jobs-grouped-bar",
     "cars-regression-scatterplot",
     "cars-density-area",
-    "cars-error-bar"
+    "cars-error-bar",
+    "gapminder-error-band"
   ]) {
     assert.match(readme, new RegExp(`examples/${name}`));
     assert.match(gettingStarted, new RegExp(`examples/${name}`));
@@ -235,7 +241,8 @@ test("links every public chart example from entry documentation", () => {
     "grouped-bar",
     "regression-scatterplot",
     "density-area",
-    "error-bar"
+    "error-bar",
+    "error-band"
   ]) {
     assert.match(tutorials, new RegExp(`\\./${name}\\.md`));
   }
@@ -247,7 +254,8 @@ test("links every public chart example from entry documentation", () => {
     "bar-chart",
     "regression-scatterplot",
     "density-area",
-    "error-bar"
+    "error-bar",
+    "error-band"
   ]) {
     assert.match(recipes, new RegExp(`\\./${name}\\.md`));
   }
@@ -263,7 +271,8 @@ test("keeps tutorial modules runnable from a repository checkout", () => {
     "grouped-bar": "jobs",
     "regression-scatterplot": "cars",
     "density-area": "cars",
-    "error-bar": "cars"
+    "error-bar": "cars",
+    "error-band": "gapminder"
   };
 
   for (const [name, dataset] of Object.entries(tutorials)) {
@@ -318,7 +327,7 @@ test("keeps one generated gallery image for every public chart", async () => {
   const index = read("docs/index.md");
   const tutorials = read("docs/tutorials/index.md");
 
-  assert.equal(chartImages.length, 7);
+  assert.equal(chartImages.length, 8);
   for (const { id, width, height } of chartImages) {
     const image = readFileSync(path.join(root, `docs/assets/images/${id}.png`));
     assert.deepEqual([...image.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);

@@ -18,6 +18,8 @@
   url: /tutorials/density-area/
 - title: Error-Bar Tutorial
   url: /tutorials/error-bar/
+- title: Error-Band Tutorial
+  url: /tutorials/error-band/
 - title: Chart Recipes
   url: /recipes/
 - title: Scatterplot Recipe
@@ -34,6 +36,8 @@
   url: /recipes/density-area/
 - title: Error-Bar Recipe
   url: /recipes/error-bar/
+- title: Error-Band Recipe
+  url: /recipes/error-band/
 - title: Troubleshooting
   url: /troubleshooting/
 - title: Canvas

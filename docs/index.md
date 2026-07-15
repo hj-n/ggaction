@@ -75,6 +75,12 @@ The main, extension, and PNG entry points include TypeScript declarations.
     </a>
     <a class="docs-chart-gallery__title" href="./tutorials/error-bar/">Error bar</a>
   </article>
+  <article>
+    <a class="docs-chart-gallery__image" href="./assets/images/gapminder-error-band.png" aria-label="Open the full-size error-band chart">
+      <img src="./assets/images/gapminder-error-band.png" alt="Mean life expectancy by cluster with 95% confidence bands" width="1520" height="960" loading="lazy">
+    </a>
+    <a class="docs-chart-gallery__title" href="./tutorials/error-band/">Error band</a>
+  </article>
 </div>
 
 ## Go deeper

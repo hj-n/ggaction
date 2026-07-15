@@ -36,6 +36,11 @@
       "width": 1440,
       "height": 920,
       "sourceHash": "1eae8585ad69892946a17925a76c99fd6c72b704ee6d3ea8c1f5c374dd1007a3"
+    },
+    "gapminder-error-band": {
+      "width": 1520,
+      "height": 960,
+      "sourceHash": "776185d2b4be820104c0da0b921a841354756d8aa3a25bebe0abb0454df2e109"
     }
   }
 }

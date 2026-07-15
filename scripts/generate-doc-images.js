@@ -13,12 +13,17 @@ import { createCarsRegressionScatterplot } from
   "../examples/cars-regression-scatterplot/program.js";
 import { createCarsScatterplot } from "../examples/cars-scatterplot/program.js";
 import { createJobsGroupedBar } from "../examples/jobs-grouped-bar/program.js";
+import { createGapminderErrorBand } from
+  "../examples/gapminder-error-band/program.js";
 
 const cars = JSON.parse(
   await readFile(new URL("../data/cars.json", import.meta.url), "utf8")
 );
 const jobs = JSON.parse(
   await readFile(new URL("../data/jobs.json", import.meta.url), "utf8")
+);
+const gapminder = JSON.parse(
+  await readFile(new URL("../data/gapminder.json", import.meta.url), "utf8")
 );
 
 export const chartImages = [
@@ -80,6 +85,17 @@ export const chartImages = [
     programFile: new URL("../examples/cars-error-bar/program.js", import.meta.url),
     dataFile: new URL("../data/cars.json", import.meta.url),
     createProgram: () => createCarsErrorBar(cars)
+  },
+  {
+    id: "gapminder-error-band",
+    width: 760,
+    height: 480,
+    programFile: new URL(
+      "../examples/gapminder-error-band/program.js",
+      import.meta.url
+    ),
+    dataFile: new URL("../data/gapminder.json", import.meta.url),
+    createProgram: () => createGapminderErrorBand(gapminder)
   }
 ];
 
