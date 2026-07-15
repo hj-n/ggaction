@@ -4,6 +4,11 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
+import {
+  moduleSpecifiers,
+  resolveLocalModule
+} from "../support/module-imports.js";
+
 const root = fileURLToPath(new URL("../../src", import.meta.url));
 
 function sourceFiles(directory = root) {
@@ -16,12 +21,9 @@ function sourceFiles(directory = root) {
 
 function localImports(file) {
   const source = readFileSync(file, "utf8");
-  return [...source.matchAll(
-    /(?:import|export)\s+(?:[\s\S]*?\s+from\s+)?["'](\.[^"']+)["']/g
-  )].map(match => {
-    const resolved = path.resolve(path.dirname(file), match[1]);
-    return path.extname(resolved) === "" ? `${resolved}.js` : resolved;
-  });
+  return moduleSpecifiers(source)
+    .filter(entry => entry.specifier?.startsWith("."))
+    .map(entry => resolveLocalModule(file, entry.specifier));
 }
 
 function layer(file) {
@@ -55,6 +57,38 @@ test("keeps source imports inside their architectural boundaries", () => {
       );
     }
   }
+});
+
+test("parses static, re-exported, and dynamic module references", () => {
+  assert.deepEqual(moduleSpecifiers(`
+    // import "./ignored-comment.js";
+    import value from "./static.js";
+    export { other } from "./re-export.js";
+    const loaded = import("./dynamic.js");
+    const external = import("node:path");
+  `), [
+    { specifier: "./static.js", dynamic: false },
+    { specifier: "./re-export.js", dynamic: false },
+    { specifier: "./dynamic.js", dynamic: true },
+    { specifier: "node:path", dynamic: true }
+  ]);
+});
+
+test("resolves extensionless files and directory entry points", () => {
+  assert.equal(
+    resolveLocalModule(
+      path.join(root, "actions", "example.js"),
+      "../core/action"
+    ),
+    path.join(root, "core", "action.js")
+  );
+  assert.equal(
+    resolveLocalModule(
+      path.join(root, "actions", "example.js"),
+      "../selectors"
+    ),
+    path.join(root, "selectors", "index.js")
+  );
 });
 
 test("keeps the local source import graph acyclic", () => {

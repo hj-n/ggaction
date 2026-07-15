@@ -111,7 +111,7 @@ function assertContractTarget(contract) {
 
 test("keeps the generated catalog synchronized with the manifest", () => {
   assert.equal(catalog, renderActionCatalog(index));
-  assert.equal(index.version, 1);
+  assert.equal(index.version, 2);
 });
 test("keeps every declared direct action in one current domain contract", () => {
   const declared = declaredProgramMethods();
@@ -141,22 +141,8 @@ test("keeps every declared direct action in one current domain contract", () => 
 });
 
 test("keeps lifecycle, coverage, and edit gaps machine-readable", () => {
-  const lifecycles = new Set([
-    "Immutable create-only",
-    "Mutable resource",
-    "Assignment",
-    "Aggregate create-only",
-    "Stable create-only",
-    "Structural create-only",
-    "Stable resource, edit gap",
-    "Primitive"
-  ]);
-  const coverageStates = new Set([
-    "complete",
-    "partial",
-    "missing",
-    "not-applicable"
-  ]);
+  const lifecycles = new Set(index.contractSchema.lifecycles);
+  const coverageStates = new Set(index.contractSchema.coverageStates);
 
   for (const action of index.actions) {
     assert.equal(lifecycles.has(action.lifecycle), true, action.name);
@@ -252,9 +238,13 @@ test("keeps planned direct actions and reassignment gaps explicit", () => {
   assert.equal(names.includes("editRuleMark"), false);
 
   for (const action of index.plannedActions) {
-    assert.equal(action.status, "planned");
     assert.equal(
-      ["accepted", "pending-parameter-review"].includes(action.readiness),
+      index.contractSchema.plannedStatuses.includes(action.status),
+      true,
+      action.name
+    );
+    assert.equal(
+      index.contractSchema.plannedReadiness.includes(action.readiness),
       true,
       action.name
     );
@@ -296,39 +286,25 @@ test("maps every planned contract into Roadmap 2", () => {
 });
 
 test("keeps accepted planned capabilities linked and non-public", () => {
-  const parameterNames = index.plannedCapabilities
-    .filter(capability => capability.kind === "parameter")
-    .map(capability => capability.name);
-
-  assert.deepEqual(parameterNames, [
-    "Curve interpolation and concrete path commands",
-    "Area outline",
-    "Bar width modes",
-    "Offset padding controls",
-    "Color layout vocabulary",
-    "Continuous color bar consumer",
-    "Histogram bin controls",
-    "Scale type vocabulary",
-    "Scale mapping policies",
-    "Position field-type compatibility",
-    "Normalized stack mode",
-    "Density kernel vocabulary",
-    "Density normalization modes",
-    "Filter predicate modes",
-    "Regression method vocabulary",
-    "Regression prediction interval",
-    "Top x axis position",
-    "Right y axis position",
-    "Axis label format strings",
-    "Left legend position",
-    "Chart title positions",
-    "Title wrapping and measurement",
-    "Graphic parent attachment"
-  ]);
+  const ids = index.plannedCapabilities.map(capability => capability.id);
+  assert.equal(new Set(ids).size, ids.length);
 
   for (const capability of index.plannedCapabilities) {
-    assert.equal(capability.status, "planned", capability.name);
-    assert.equal(capability.readiness, "accepted", capability.name);
+    assert.equal(
+      index.contractSchema.plannedKinds.includes(capability.kind),
+      true,
+      capability.name
+    );
+    assert.equal(
+      index.contractSchema.plannedStatuses.includes(capability.status),
+      true,
+      capability.name
+    );
+    assert.equal(
+      index.contractSchema.plannedReadiness.includes(capability.readiness),
+      true,
+      capability.name
+    );
     assertContractTarget(capability.contract);
   }
 

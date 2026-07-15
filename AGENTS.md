@@ -168,6 +168,7 @@
 ## Action Contract Catalog
 
 - Keep `agent_docs/contract/ACTION_INDEX.json` as the canonical machine-readable inventory for every direct user-facing action, public primitive, planned direct action, planned capability, and internal wrapped-action inventory.
+- Keep allowed lifecycle, layer, status, readiness, planned-kind, and coverage vocabularies in `ACTION_INDEX.json.contractSchema`; contract tests must consume that schema rather than repeat closed lists in test code.
 - Keep current action contracts under `agent_docs/contract/current/`, planned contracts under `agent_docs/contract/planned/`, and internal inventories under `agent_docs/contract/internal/`. Every implemented direct action must have exactly one owning current contract.
 - Treat `agent_docs/contract/ACTION_CATALOG.md` as a generated compact index. Regenerate it with `npm run contracts:catalog`; do not maintain duplicate status tables by hand.
 - Keep the lifecycle audit exhaustive: every declared direct action must appear exactly once in the manifest, and every stable resource without an edit path must remain visibly marked Planned or Proposed.

@@ -1,5 +1,23 @@
 {
-  "version": 1,
+  "version": 2,
+  "contractSchema": {
+    "actionStatuses": ["implemented"],
+    "plannedStatuses": ["planned"],
+    "layers": ["user-facing", "advanced", "primitive"],
+    "lifecycles": [
+      "Immutable create-only",
+      "Mutable resource",
+      "Assignment",
+      "Aggregate create-only",
+      "Stable create-only",
+      "Structural create-only",
+      "Stable resource, edit gap",
+      "Primitive"
+    ],
+    "coverageStates": ["complete", "partial", "missing", "not-applicable"],
+    "plannedKinds": ["composition", "behavior", "parameter"],
+    "plannedReadiness": ["accepted", "pending-parameter-review"]
+  },
   "actions": [
     {
       "name": "createCanvas",

@@ -1247,6 +1247,12 @@ Selector, package boundary, shared validation, materialization plan처럼 기계
 수 있는 아키텍처 규칙은 prose 문서만으로 유지하지 않는다. 각각 focused contract test로
 고정하고 구조 리팩토링에서도 계속 실행한다.
 
+Source dependency contract는 regular expression으로 import 문장을 추측하지 않고 module
+lexer로 static import, re-export, literal dynamic import를 읽는다. Extensionless file과
+directory `index.js`도 실제 target으로 resolve한 뒤 layer boundary와 cycle을 검사한다.
+Action inventory의 lifecycle, layer, status, readiness, planned kind, coverage vocabulary는
+`ACTION_INDEX.json.contractSchema`가 소유하며 test가 같은 closed list를 재선언하지 않는다.
+
 ### Chart vertical slice
 
 지원 차트마다 low-level primitive baseline과 high-level public action program을 비교한다.
