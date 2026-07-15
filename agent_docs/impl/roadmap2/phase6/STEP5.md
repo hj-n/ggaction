@@ -11,6 +11,9 @@ Approved baseline을 immutable interval summary와 composite `createErrorBar` pu
 - [ ] Interval transform schema, provenance and owned concrete rows
 - [ ] `createIntervalData` wrapped create/materialize hierarchy
 - [ ] Default/inferred `createErrorBar` owner, source, grouping and orientation
+- [ ] Explicit target, current eligible layer and unique eligible layer source resolution
+- [ ] Omitted x/y/data/coordinate/scale reuse from any compatible encoded mark
+- [ ] Ambiguous source and ambiguous two-quantitative-axis rejection
 - [ ] Main rule and fixed-span cap child hierarchy
 - [ ] Default appearance assignments and guide-title inference
 - [ ] Canvas/scale rematerialization and atomic failure
@@ -25,4 +28,5 @@ final semantic/graphic branches directly.
 
 ## 완료 조건
 
-The shortest canonical chain without ID/data/group/statistic/style options exactly matches Gate B.
+The shortest canonical chain without ID/data/group/statistic/style options exactly matches Gate B. The no-option
+layered chain after an eligible x/y-encoded mark exactly matches Gate B.1.

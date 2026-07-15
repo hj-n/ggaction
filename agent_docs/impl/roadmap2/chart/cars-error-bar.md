@@ -59,9 +59,10 @@ enabled 8px caps and the shared rule appearance defaults. A second error bar mus
 ```typescript
 createErrorBar({
   id?: UserId;
+  target?: UserId;
   data?: UserId;
-  x: PositionChannel | IntervalChannel;
-  y: PositionChannel | IntervalChannel;
+  x?: PositionChannel | IntervalChannel;
+  y?: PositionChannel | IntervalChannel;
   groupBy?: FieldName;
   coordinate?: UserId;
   caps?: boolean;
@@ -76,6 +77,16 @@ createErrorBar({
 Exactly one of `x` and `y` is an interval channel. Statistical interval mode uses `{ field, center?, extent?,
 level? }`; explicit mode uses `{ center, lower, upper }`. The other channel is an ordinary positional field.
 The independent position field is always included in interval grouping; optional `groupBy` adds another field.
+
+When x or y is omitted, `target` selects an existing encoded source layer. Without `target`, the current eligible
+layer is preferred, followed by one unique eligible layer. The source must persist data, coordinate and complete
+field-based x/y encodings. This is a semantic-capability rule shared by point, line, area, bar, rule and later
+compatible marks; it is not a point-only special case. Omitted resources reuse the source data, coordinate and
+scale IDs. A source `group` encoding is retained as statistical grouping, while color alone is not.
+
+One inferred axis must be quantitative and the other categorical, ordinal or temporal. Two quantitative axes do
+not identify the interval orientation, so the caller must explicitly identify the interval channel. Explicit
+channel options override only their corresponding inferred channel; incompatible overrides fail atomically.
 
 Defaults are:
 
@@ -179,12 +190,37 @@ Generated child IDs are deterministic implementation details. Explicit owner IDs
 | --- | --- | --- |
 | `rule-geometry` | rule mark and endpoint assignments | full-span vertical/horizontal and diagonal concrete rules |
 | `baseline` | computed vertical error bar | Origin mean Acceleration with default 95% CI and caps |
+| `encoded-layer-inference` | omitted source and x/y | point observations with an inferred error-bar overlay |
 | `horizontal` | x/x2 interval orientation | Origin별 mean Horsepower horizontal intervals |
 | `explicit-interval` | existing summary fields | no derived data and `caps: false` |
 | `styled-caps` | cap/style parameter coverage | custom cap size, stroke, width, dash and opacity |
 
 Each variant keeps independent primitive and user-facing programs. Only `primitive.png` is produced before its
 visual Gate; the public action and `user-facing.png` follow approval.
+
+### Encoded-layer inference target chain
+
+```javascript
+chart()
+  .createCanvas({
+    width: 720,
+    height: 460,
+    margin: { top: 90, right: 40, bottom: 70, left: 80 }
+  })
+  .createData({ values: cars })
+  .createPointMark()
+  .encodeX({ field: "Origin", fieldType: "ordinal" })
+  .encodeY({ field: "Acceleration" })
+  .encodeColor({ field: "Origin" })
+  .encodeRadius({ value: 3 })
+  .encodeOpacity({ value: 0.18 })
+  .createErrorBar()
+  .createGuides()
+  .createTitle({
+    text: "Acceleration by Origin",
+    subtitle: "Observations and 95% mean confidence intervals"
+  });
+```
 
 ### Horizontal target chain
 

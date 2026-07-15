@@ -5,6 +5,7 @@ import { loadCars } from "../../support/data.js";
 import {
   ERROR_BAR_LAYOUT,
   RULE_GEOMETRY_LAYOUT,
+  createEncodedLayerInferenceReferenceValues,
   createErrorBarReferenceValues,
   createRuleGeometryReferenceValues
 } from "./reference-values.js";
@@ -114,4 +115,28 @@ test("maps vertical intervals and fixed eight-pixel caps independently", () => {
     assert.equal(cap.x2 - cap.x1, ERROR_BAR_LAYOUT.capSize);
     assert.equal(cap.y1, values.mainRules[index].y2);
   }
+});
+
+test("maps the encoded point layer and inferred interval through shared scales", () => {
+  const values = createEncodedLayerInferenceReferenceValues(loadCars());
+
+  assert.deepEqual(values.xDomain, ["USA", "Europe", "Japan"]);
+  assert.deepEqual(values.yDomain, [8, 24.8]);
+  assert.deepEqual(values.pointX.slice(0, 3), [180, 180, 180]);
+  assert.deepEqual(
+    values.pointY.slice(0, 3).map(value => Number(value.toFixed(10))),
+    [318.5714285714, 327.5, 336.4285714286]
+  );
+  assert.deepEqual(
+    values.mainRules.map(rule =>
+      [rule.x1, rule.y1, rule.x2, rule.y2].map(value =>
+        Number(value.toFixed(10))
+      )
+    ),
+    [
+      [180, 272.2149669799, 180, 259.8379014115],
+      [380, 245.0103788511, 380, 219.9211279982],
+      [580, 251.8880379901, 580, 236.2493941979]
+    ]
+  );
 });

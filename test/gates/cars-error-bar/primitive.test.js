@@ -6,6 +6,7 @@ import {
   findCanvasCalls
 } from "../../support/canvas.js";
 import {
+  createEncodedLayerInferencePrimitives,
   createErrorBarBaselinePrimitives,
   createRuleGeometryPrimitives,
   renderErrorBarBaselinePrimitives,
@@ -13,6 +14,7 @@ import {
 } from "./primitive.program.js";
 import {
   ERROR_BAR_COLOR,
+  createEncodedLayerInferenceReferenceValues,
   createErrorBarReferenceValues,
   createRuleGeometryReferenceValues
 } from "./reference-values.js";
@@ -190,4 +192,68 @@ test("renders grid, main intervals, and caps before the axes", () => {
     findCanvasCalls(context, "lineTo").slice(0, lines.length).map(call => call.args),
     lines.map(line => [line.x2, line.y2])
   );
+});
+
+test("authors an inferred error-bar overlay from an encoded point layer", () => {
+  const cars = loadCars();
+  const values = createEncodedLayerInferenceReferenceValues(cars);
+  const program = createEncodedLayerInferencePrimitives(cars);
+  const [point, main, lowerCap, upperCap] = program.semanticSpec.layers;
+
+  assert.deepEqual(
+    [point, main, lowerCap, upperCap].map(layer => [
+      layer.id,
+      layer.mark.type,
+      layer.coordinate,
+      layer.encoding.x.scale,
+      layer.encoding.y.scale
+    ]),
+    [
+      ["point", "point", "main", "x", "y"],
+      ["errorBar", "rule", "main", "x", "y"],
+      ["errorBarLowerCap", "rule", "main", "x", "y"],
+      ["errorBarUpperCap", "rule", "main", "x", "y"]
+    ]
+  );
+  assert.equal(point.data, "data");
+  assert.equal(main.data, "errorBarIntervalData");
+  assert.deepEqual(program.resolvedScales.x.domain, values.xDomain);
+  assert.deepEqual(program.resolvedScales.y.domain, values.yDomain);
+  assert.deepEqual(program.graphicSpec.order, [
+    "canvas",
+    "horizontalGridLines",
+    "point",
+    "errorBar",
+    "errorBarLowerCap",
+    "errorBarUpperCap",
+    "xAxisLine",
+    "xAxisTicks",
+    "xAxisLabels",
+    "xAxisTitle",
+    "yAxisLine",
+    "yAxisTicks",
+    "yAxisLabels",
+    "yAxisTitle",
+    "chartTitle",
+    "chartSubtitle"
+  ]);
+  for (const [id, expected] of [
+    ["errorBar", values.mainRules],
+    ["errorBarLowerCap", values.lowerCaps],
+    ["errorBarUpperCap", values.upperCaps]
+  ]) {
+    assert.deepEqual(
+      program.graphicSpec.objects[id].children.map(child => child.properties),
+      expected.map(line => ({
+        ...line,
+        stroke: ERROR_BAR_COLOR,
+        strokeWidth: 2,
+        strokeDash: [],
+        opacity: 1
+      }))
+    );
+  }
+  const ops = program.trace.children.map(node => node.op);
+  assert.equal(ops.includes("createIntervalData"), false);
+  assert.equal(ops.includes("createErrorBar"), false);
 });

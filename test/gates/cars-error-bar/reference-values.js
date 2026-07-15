@@ -105,6 +105,8 @@ export const ERROR_BAR_FIELDS = Object.freeze({
 });
 
 export const ERROR_BAR_COLOR = "#4c78a8";
+export const ENCODED_LAYER_POINT_RADIUS = 3;
+export const ENCODED_LAYER_POINT_OPACITY = 0.18;
 
 const T_975 = new Map([
   [253, 1.9693848042198945],
@@ -234,5 +236,63 @@ export function createErrorBarReferenceValues(cars) {
     upperCaps,
     axes,
     horizontalGrid
+  });
+}
+
+export function createEncodedLayerInferenceReferenceValues(cars) {
+  const interval = createErrorBarReferenceValues(cars);
+  const acceleration = cars.map(row => row.Acceleration);
+  if (!acceleration.every(Number.isFinite)) {
+    throw new TypeError("Encoded-layer reference requires finite Acceleration values.");
+  }
+  const origins = cars.map(row => row.Origin);
+  if (!origins.every(value => typeof value === "string" && value.length > 0)) {
+    throw new TypeError("Encoded-layer reference requires non-empty Origin values.");
+  }
+  const xDomain = Object.freeze([...new Set(origins)]);
+  const yDomain = Object.freeze([
+    Math.min(...acceleration),
+    Math.max(...acceleration)
+  ]);
+  const xStep = (interval.bounds.right - interval.bounds.left) / xDomain.length;
+  const xByOrigin = new Map(xDomain.map((origin, index) => [
+    origin,
+    interval.bounds.left + xStep * (index + 0.5)
+  ]));
+  const y = value => map(
+    value,
+    yDomain,
+    [interval.bounds.bottom, interval.bounds.top]
+  );
+  const pointX = Object.freeze(origins.map(origin => xByOrigin.get(origin)));
+  const pointY = Object.freeze(acceleration.map(y));
+  const mainRules = freezeRows(interval.rows.map(row => ({
+    x1: xByOrigin.get(row.Origin),
+    y1: y(row[ERROR_BAR_FIELDS.lower]),
+    x2: xByOrigin.get(row.Origin),
+    y2: y(row[ERROR_BAR_FIELDS.upper])
+  })));
+  const lowerCaps = freezeRows(mainRules.map(rule => ({
+    x1: rule.x1 - ERROR_BAR_LAYOUT.capSize / 2,
+    y1: rule.y1,
+    x2: rule.x1 + ERROR_BAR_LAYOUT.capSize / 2,
+    y2: rule.y1
+  })));
+  const upperCaps = freezeRows(mainRules.map(rule => ({
+    x1: rule.x2 - ERROR_BAR_LAYOUT.capSize / 2,
+    y1: rule.y2,
+    x2: rule.x2 + ERROR_BAR_LAYOUT.capSize / 2,
+    y2: rule.y2
+  })));
+
+  return Object.freeze({
+    ...interval,
+    xDomain,
+    yDomain,
+    pointX,
+    pointY,
+    mainRules,
+    lowerCaps,
+    upperCaps
   });
 }

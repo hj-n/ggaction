@@ -26,9 +26,10 @@ type PositionChannel = {
 
 createErrorBar({
   id?: UserId;
+  target?: UserId;
   data?: UserId;
-  x: PositionChannel | IntervalChannel;
-  y: PositionChannel | IntervalChannel;
+  x?: PositionChannel | IntervalChannel;
+  y?: PositionChannel | IntervalChannel;
   groupBy?: FieldName;
   coordinate?: UserId;
   caps?: boolean;
@@ -40,6 +41,17 @@ createErrorBar({
 }): ChartProgram;
 ```
 
+- `target` identifies an already encoded source layer. When either x or y is omitted, the action resolves the
+  source in this order: explicit `target`, current eligible layer, unique eligible layer, then error. Eligibility
+  depends on persisted data, coordinate and complete field-based x/y encodings, not on the source mark type.
+- Explicit x/y options override the corresponding inferred source encoding. An inferred pair must have exactly
+  one quantitative axis and one positional categorical/ordinal/temporal axis; two quantitative axes are
+  ambiguous unless the caller explicitly identifies the interval channel. Missing or multiple eligible sources
+  fail rather than choosing a layer or orientation arbitrarily.
+- Omitted data, coordinate and position scale IDs reuse the selected layer's persisted resources. A persisted
+  nominal `group` encoding, when present, contributes its field to interval grouping. Appearance encodings such
+  as color do not silently become statistical grouping. These rules apply consistently when the source is a
+  point, line, area, bar, rule, or a later compatible semantic mark.
 - Exactly one of x/y is an interval channel and the other is its positional channel. An interval may request
   a statistic from source rows or reference already materialized center/lower/upper fields. Statistical mode
   calls wrapped `createIntervalData`; explicit mode does not derive data.

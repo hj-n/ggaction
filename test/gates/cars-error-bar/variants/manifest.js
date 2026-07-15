@@ -1,6 +1,7 @@
 import { defineVisualVariant } from "../../../support/visual-variants.js";
 import { loadCars } from "../../../support/data.js";
 import {
+  createEncodedLayerInferencePrimitives,
   createErrorBarBaselinePrimitives,
   createRuleGeometryPrimitives
 } from "../primitive.program.js";
@@ -83,6 +84,26 @@ const baselineCallChain = `chart()
     subtitle: "95% confidence intervals"
   });`;
 
+const encodedLayerInferenceCallChain = `chart()
+  .createCanvas({
+    width: 720,
+    height: 460,
+    margin: { top: 90, right: 40, bottom: 70, left: 80 }
+  })
+  .createData({ values: cars })
+  .createPointMark()
+  .encodeX({ field: "Origin", fieldType: "ordinal" })
+  .encodeY({ field: "Acceleration" })
+  .encodeColor({ field: "Origin" })
+  .encodeRadius({ value: 3 })
+  .encodeOpacity({ value: 0.18 })
+  .createErrorBar()
+  .createGuides()
+  .createTitle({
+    text: "Acceleration by Origin",
+    subtitle: "Observations and 95% mean confidence intervals"
+  });`;
+
 export const visualVariants = Object.freeze([
   defineVisualVariant({
     chart: "cars-error-bar",
@@ -104,6 +125,19 @@ export const visualVariants = Object.freeze([
     title: "Mean Acceleration Error Bars",
     callChain: baselineCallChain,
     primitive: createErrorBarBaselinePrimitives(loadCars()),
+    width: ERROR_BAR_LAYOUT.width,
+    height: ERROR_BAR_LAYOUT.height,
+    colors: [ERROR_BAR_COLOR],
+    regions: [
+      { name: "plot", x: 80, y: 90, width: 600, height: 300 }
+    ]
+  }),
+  defineVisualVariant({
+    chart: "cars-error-bar",
+    variant: "encoded-layer-inference",
+    title: "Encoded Layer Error-Bar Inference",
+    callChain: encodedLayerInferenceCallChain,
+    primitive: createEncodedLayerInferencePrimitives(loadCars()),
     width: ERROR_BAR_LAYOUT.width,
     height: ERROR_BAR_LAYOUT.height,
     colors: [ERROR_BAR_COLOR],
