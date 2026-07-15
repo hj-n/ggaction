@@ -254,6 +254,24 @@
       }
     },
     {
+      "name": "createRuleMark",
+      "layer": "user-facing",
+      "domain": "marks",
+      "status": "implemented",
+      "lifecycle": "Immutable create-only",
+      "update": "Endpoint and appearance assignments reauthor the existing rule",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/MARKS.md",
+        "anchor": "createrulemark"
+      }
+    },
+    {
       "name": "editAreaMark",
       "layer": "user-facing",
       "domain": "marks",
@@ -308,6 +326,24 @@
       }
     },
     {
+      "name": "encodeX2",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Same action replaces the compatible secondary x endpoint",
+      "audit": "Reassignment — Implemented",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "encodex2"
+      }
+    },
+    {
       "name": "encodeColor",
       "layer": "user-facing",
       "domain": "encodings",
@@ -341,6 +377,42 @@
       "contract": {
         "file": "agent_docs/contract/current/ENCODINGS.md",
         "anchor": "encodestrokedash"
+      }
+    },
+    {
+      "name": "encodeStroke",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Same action replaces the constant rule stroke",
+      "audit": "Reassignment — Implemented",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "encodestroke"
+      }
+    },
+    {
+      "name": "encodeStrokeWidth",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Same action replaces the constant rule stroke width",
+      "audit": "Reassignment — Implemented",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "encodestrokewidth"
       }
     },
     {
@@ -439,8 +511,8 @@
       "domain": "encodings",
       "status": "implemented",
       "lifecycle": "Assignment",
-      "update": "Same action will replace a compatible upper field",
-      "audit": "Reassignment — Planned",
+      "update": "Same action replaces a compatible secondary y endpoint",
+      "audit": "Reassignment — Implemented",
       "coverage": {
         "contract": "complete",
         "effects": "complete",
@@ -1372,33 +1444,6 @@
   ],
   "plannedActions": [
     {
-      "name": "createRuleMark",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/MARKS_AND_PATHS.md",
-        "anchor": "rule-mark-geometry"
-      }
-    },
-    {
-      "name": "encodeStroke",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/ENCODINGS.md",
-        "anchor": "rule-position-and-appearance-assignments"
-      }
-    },
-    {
-      "name": "encodeStrokeWidth",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/ENCODINGS.md",
-        "anchor": "rule-position-and-appearance-assignments"
-      }
-    },
-    {
       "name": "createIntervalData",
       "status": "planned",
       "readiness": "accepted",
@@ -1432,15 +1477,6 @@
       "contract": {
         "file": "agent_docs/contract/planned/COMPOSITE_MARKS.md",
         "anchor": "createboxplot"
-      }
-    },
-    {
-      "name": "encodeX2",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/ENCODINGS.md",
-        "anchor": "horizontal-ranged-position"
       }
     },
     {
@@ -1483,18 +1519,6 @@
       "contract": {
         "file": "agent_docs/contract/planned/COMPOSITE_MARKS.md",
         "anchor": "composite-ownership-and-storage"
-      }
-    },
-    {
-      "id": "encodeY2-reassignment",
-      "kind": "behavior",
-      "action": "encodeY2",
-      "name": "encodeY2 reassignment",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/ENCODINGS.md",
-        "anchor": "positional-reassignment"
       }
     },
     {
@@ -1578,7 +1602,8 @@
       "rematerializeLegend",
       "rematerializeLineMark",
       "rematerializeOpacityLegend",
-      "rematerializePointMark",
+    "rematerializePointMark",
+    "rematerializeRuleMark",
       "rematerializeScale",
       "rematerializeSizeLegend",
       "rematerializeTitle",

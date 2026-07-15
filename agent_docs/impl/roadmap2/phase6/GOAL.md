@@ -16,7 +16,7 @@ Complete chart contract:
 - [x] Rule/error-bar action hierarchy와 stored-result contract 설계
 - [x] STEP1–STEP8 및 three visual approval Gates 설계
 - [x] Existing primitive/action/contract baseline audit
-- [ ] Rule geometry primitive 승인과 public implementation
+- [x] Rule geometry primitive 승인과 public implementation
 - [ ] Canonical vertical error-bar primitive 승인과 public implementation
 - [ ] Horizontal/explicit/style primitive 승인과 public implementation
 - [ ] Full numeric, parameter, error, immutability와 rematerialization coverage

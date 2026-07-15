@@ -222,10 +222,6 @@ test("keeps planned direct actions and reassignment gaps explicit", () => {
     "createErrorBand",
     "createErrorBar",
     "createIntervalData",
-    "createRuleMark",
-    "encodeStroke",
-    "encodeStrokeWidth",
-    "encodeX2",
     "encodeXRange",
     "selectRows"
   ]));

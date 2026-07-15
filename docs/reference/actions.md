@@ -162,21 +162,33 @@ editAreaMark({ target?, fill?, opacity?, stroke?, strokeWidth? })
 Edit constant area appearance. `stroke: false` removes an existing outline.
 [Marks](../api/marks.md)
 
+### `createRuleMark`
+
+```javascript
+createRuleMark({ id?, data? } = {})
+```
+
+Create a semantic rule mark and empty line collection. The first omitted ID is
+`"rule"`; data defaults to current data. [Marks](../api/marks.md)
+
 ### `encodeX`
 
 ```javascript
 encodeX({ field, target?, fieldType?, aggregate?, stack?, coordinate?, bin?, scale? })
+encodeX({ datum, target?, fieldType, coordinate?, scale? }) // rule
 ```
 
 Create or compatibly replace an x encoding. Points accept quantitative,
 temporal, and ordinal fields. Bars accept binned quantitative x, vertical
 ordinal/temporal categories, or a horizontal quantitative aggregate measure.
+Rules accept exactly one field or datum and an explicit field type.
 [Position encodings](../api/position-encodings.md)
 
 ### `encodeY`
 
 ```javascript
 encodeY({ field?, target?, fieldType?, aggregate?, stack?, coordinate?, scale? })
+encodeY({ datum, target?, fieldType, coordinate?, scale? }) // rule
 ```
 
 Create or compatibly replace a y encoding. With bar marks, a quantitative y
@@ -186,16 +198,28 @@ from the complete pair and is not stored separately. Bar stack accepts
 `"zero"`, `"normalize"`, or `null`.
 Aggregate values may be scalar names or parameterized quantile
 and ordered first/last objects. A complete histogram x/y pair materializes concrete rects.
+Rules accept exactly one field or datum and an explicit field type.
 [Position encodings](../api/position-encodings.md)
 
 ### `encodeY2`
 
 ```javascript
-encodeY2({ field, target?, fieldType?, scale? })
+encodeY2({ field, target?, fieldType, scale?, coordinate? })
+encodeY2({ datum, target?, fieldType, scale?, coordinate? }) // rule
 ```
 
-Advanced upper-edge area encoding. It requires an existing quantitative y and
-shares that exact scale. [Encodings](../api/encodings.md)
+Assign an area upper edge or a rule secondary y endpoint. It requires an
+existing y and shares its scale and coordinate. [Position encodings](../api/position-encodings.md)
+
+### `encodeX2`
+
+```javascript
+encodeX2({ field, target?, fieldType, scale?, coordinate? })
+encodeX2({ datum, target?, fieldType, scale?, coordinate? })
+```
+
+Assign a rule secondary x endpoint. It requires an existing x and shares its
+scale and coordinate. [Position encodings](../api/position-encodings.md)
 
 ### `encodeYRange`
 
@@ -292,8 +316,8 @@ encodeStrokeDash(
 )
 ```
 
-Create or replace nominal line-series dash patterns, or apply one constant
-named/direct pattern. Named styles are `solid`, `dashed`, `dotted`, and
+Create or replace nominal line-series or rule dash patterns, or apply one
+constant named/direct pattern. Named styles are `solid`, `dashed`, `dotted`, and
 `dashdot`.
 [Series encodings](../api/series-encodings.md)
 
@@ -330,9 +354,27 @@ encodeOpacity({ value, target? })
 encodeOpacity({ field, target?, fieldType?, scale? })
 ```
 
-Apply a constant point opacity from `0` to `1`, or map a quantitative field
+Apply a constant point/rule opacity from `0` to `1`, or map a quantitative field
 through a linear opacity scale. The two modes are mutually exclusive and may
 replace each other through the same action.
+[Appearance encodings](../api/appearance.md)
+
+### `encodeStroke`
+
+```javascript
+encodeStroke({ value, target? })
+```
+
+Assign a constant non-empty stroke string to a rule mark.
+[Appearance encodings](../api/appearance.md)
+
+### `encodeStrokeWidth`
+
+```javascript
+encodeStrokeWidth({ value, target? })
+```
+
+Assign a non-negative finite logical Canvas width to a rule mark.
 [Appearance encodings](../api/appearance.md)
 
 ### `encodeBarWidth`

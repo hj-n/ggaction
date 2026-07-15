@@ -13,7 +13,7 @@ Public rule actions 전에 raw semantic/graphic primitives로 final rule endpoin
 - [x] Diagonal field/datum endpoint primitive
 - [x] Concrete line completeness, order and renderer calls
 - [x] `rule-geometry` metadata and 2× `primitive.png`
-- [ ] Gate A user visual confirmation
+- [x] Gate A user visual confirmation
 - [x] STEP status, conceptual commit and push
 
 ## Gate A
@@ -30,6 +30,7 @@ primitive trace.
 - Diagonal field endpoints: `(xStart, yStart) = (60, 92)`, `(xEnd, yEnd) = (92, 58)`
 - All five objects are complete backend-neutral `line` graphics with explicit style properties.
 - The primitive trace contains none of the future rule-facing actions.
+- User approved Gate A before the public rule implementation began.
 
 ## 완료 조건
 

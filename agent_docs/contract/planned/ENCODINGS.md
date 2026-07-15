@@ -2,7 +2,7 @@
 
 These contracts are accepted or pending future API work; they are not current public behavior.
 
-## rule position and appearance assignments
+## rule position and appearance assignments — implemented compatibility note
 
 ```typescript
 type RulePositionAssignment =
@@ -41,17 +41,18 @@ encodeStrokeWidth({ target?: UserId; value: NonNegativeFinite }): ChartProgram;
   guide contract를 따른다.
 - Rule create action은 position/style을 받지 않으며 `editRuleMark`도 만들지 않는다. 위치 또는 style
   변경은 owning encode action의 reassignment다.
-- Status: Planned, NOT IMPLEMENTED. field/datum exclusivity, constant style boundaries, endpoint
-  reassignment, shared scale/coordinate errors, existing appearance action reuse와 rematerialization coverage가 필요하다.
+- Status: Implemented. The canonical contract moved to
+  [`../current/ENCODINGS.md`](../current/ENCODINGS.md#encodex2).
 
 ## positional reassignment
 
-- `encodeY2` 재호출은 ranged area의 upper field만 교체하며 existing lower y와 같은 scale,
+- `encodeY2` 재호출은 ranged area 또는 rule의 upper endpoint만 교체하며 existing lower y와 같은 scale,
   coordinate를 요구한다. `encodeYRange`는 lower/upper를 함께 요구하고 wrapped `encodeY`와
   `encodeY2`를 한 atomic hierarchy에서 호출한다.
 - validation 또는 downstream materialization이 실패하면 어느 semantic/graphic branch도
   바뀌지 않는다. 별도 positional edit action은 만들지 않는다.
-- Status: Planned, NOT IMPLEMENTED. 구현은 `editScale` parameter contract가 Accepted된 뒤 진행한다.
+- Status: Partially implemented. `encodeY2` reassignment는 Current이고 `encodeYRange` aggregate
+  reassignment의 추가 parameter coverage는 Planned다.
 
 ## Implemented named palette baseline
 
@@ -175,7 +176,8 @@ encodeXRange({
 }): ChartProgram;
 ```
 
-- `encodeX2`는 existing x와 같은 scale 및 coordinate를 공유하는 upper horizontal bound다.
+- `encodeX2`는 rule mark에서 Implemented이며 existing x와 같은 scale 및 coordinate를 공유하는
+  horizontal endpoint다.
   독립 scale 생성이나 incompatible field type은 허용하지 않는다.
 - `encodeXRange`는 wrapped `encodeX`와 `encodeX2`를 순서대로 호출하는 atomic action이다.
   중간 incomplete area 상태를 public workflow에 노출하지 않는다.
@@ -183,5 +185,5 @@ encodeXRange({
   Horizontal interval, confidence band와 density/ribbon 표현이 이 contract를 재사용한다.
 - Scale, area path, x axis와 vertical grid consumer를 deterministic plan으로 rematerialize하며
   validation 실패 시 이전 program을 그대로 유지한다.
-- Status: Planned, NOT IMPLEMENTED. direct child actions, semantic x2 path validation, horizontal path
-  geometry, shared scale, Canvas edit와 renderer parity coverage가 필요하다.
+- Status: Partially implemented. Rule `encodeX2`의 field/datum, reassignment, shared scale, Canvas edit와
+  renderer parity는 Current다. `encodeXRange`와 horizontal ranged area path geometry는 Planned다.

@@ -26,7 +26,11 @@ test("locks every accepted rule endpoint geometry class", () => {
     ]
   );
   assert.deepEqual(
-    values.rules.map(rule => [rule.x1, rule.y1, rule.x2, rule.y2]),
+    values.rules.map(rule =>
+      [rule.x1, rule.y1, rule.x2, rule.y2].map(value =>
+        Number(value.toFixed(10))
+      )
+    ),
     [
       [170, 90, 170, 410],
       [80, 147.6, 680, 147.6],

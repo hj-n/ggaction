@@ -14,6 +14,8 @@ title: Appearance Encodings
 | `encodeShape` | `encodeShape({ field: "Origin" })` | Current point; 12-value ordinal shape range | Semantic shape and mixed concrete symbols |
 | `encodeOpacity` | `encodeOpacity({ value: 0.27 })` | Current point mark | Constant concrete opacity |
 | `encodeOpacity` | `encodeOpacity({ field: "Acceleration" })` | Current point; linear scale; range `[0.2, 1]` | Semantic field opacity and concrete values |
+| `encodeStroke` | `encodeStroke({ value: "#334155" })` | Current rule mark | Constant concrete line color |
+| `encodeStrokeWidth` | `encodeStrokeWidth({ value: 3 })` | Current rule mark | Constant concrete line width |
 | `encodeBarWidth` | `encodeBarWidth()` | Current aggregate bar; first assignment uses band `0.72` | Concrete rectangles |
 
 ## `encodeRadius({ value, target? })`
@@ -70,6 +72,18 @@ providing a new ID retains the previous named scale. Existing legends are
 recomputed, inferred legend titles follow the new field, and explicit legend
 titles and styles remain unchanged.
 
+## Rule appearance
+
+`encodeStroke({ value, target? })` assigns a required non-empty constant color
+string to a rule. `encodeStrokeWidth({ value, target? })` assigns a
+non-negative finite logical Canvas width. Both infer the current or only rule,
+create no scale or legend, and rematerialize every concrete line child.
+
+Rules also reuse `encodeStrokeDash` in constant or nominal-field mode and
+`encodeOpacity` in constant or quantitative-field mode. Field modes produce
+one concrete value per rule line; constant modes remain scale-free. Recalling
+an owning action replaces that appearance assignment immutably.
+
 ## `encodeBarWidth({ band?, pixels?, target? })`
 
 Set the fraction of each resolved x band—or xOffset slot for group layout—used
@@ -102,7 +116,7 @@ Canvas geometry changes explicitly rematerialize the scales and rectangles.
 
 ## Errors and limitations
 
-Radius, constant opacity, and both bar width modes are graphical constants. Field opacity
+Radius, rule stroke/width, constant opacity, and both bar width modes are graphical constants. Field opacity
 is a semantic encoding.
 Size cannot be combined with a constant radius. A constant `editPointMark`
 shape cannot be combined with field-driven `encodeShape`. Bar width

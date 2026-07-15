@@ -22,6 +22,7 @@ domain action을 통해서만 실행한다.
 | `rematerializeLineMark` | line mark and encoding actions |
 | `rematerializeOpacityLegend` | field-opacity legend, scale, and Canvas actions |
 | `rematerializePointMark` | point mark and encoding actions |
+| `rematerializeRuleMark` | rule mark, endpoint, appearance, scale, and Canvas actions |
 | `rematerializeScale` | scale-owning encoding and Canvas actions |
 | `rematerializeSizeLegend` | point size legend, scale, and Canvas actions |
 | `rematerializeTitle` | title and Canvas actions |

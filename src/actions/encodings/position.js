@@ -17,6 +17,8 @@ function encodePosition(program, channel, args, operation) {
     previous,
     requestedScale,
     field,
+    datum,
+    hasField,
     fieldType,
     scale,
     coordinate,
@@ -30,10 +32,20 @@ function encodePosition(program, channel, args, operation) {
       id: coordinate.id,
       type: coordinate.type,
       layers: [target]
-    })
+    });
+  if (previous !== undefined) {
+    const alternate = hasField ? "datum" : "field";
+    if (Object.hasOwn(previous, alternate)) {
+      next = next.editSemantic({
+        property: `layer[${target}].encoding.${channel}.${alternate}`,
+        remove: true
+      });
+    }
+  }
+  next = next
     .editSemantic({
-      property: `layer[${target}].encoding.${channel}.field`,
-      value: field
+      property: `layer[${target}].encoding.${channel}.${hasField ? "field" : "datum"}`,
+      value: hasField ? field : datum
     })
     .editSemantic({
       property: `layer[${target}].encoding.${channel}.fieldType`,
@@ -102,6 +114,10 @@ function encodePosition(program, channel, args, operation) {
 
   if (layer.mark.type === "line" && channel === "y") {
     return next.rematerializeLineMark({ id: target });
+  }
+
+  if (layer.mark.type === "rule") {
+    return next.rematerializeRuleMark({ id: target });
   }
 
   if (layer.mark.type === "bar") {

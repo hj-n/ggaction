@@ -15,7 +15,7 @@ export const RULE_GEOMETRY_COLORS = Object.freeze([
 
 function map(value, [domainStart, domainEnd], [rangeStart, rangeEnd]) {
   const ratio = (value - domainStart) / (domainEnd - domainStart);
-  return Number((rangeStart + ratio * (rangeEnd - rangeStart)).toFixed(10));
+  return rangeStart + ratio * (rangeEnd - rangeStart);
 }
 
 export function createRuleGeometryReferenceValues() {

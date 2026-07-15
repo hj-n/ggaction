@@ -1,5 +1,6 @@
 import { defineVisualVariant } from "../../../support/visual-variants.js";
 import { createRuleGeometryPrimitives } from "../primitive.program.js";
+import { createRuleGeometryProgram } from "../public.program.js";
 import {
   RULE_GEOMETRY_COLORS,
   RULE_GEOMETRY_LAYOUT
@@ -61,7 +62,7 @@ export const visualVariants = Object.freeze([
     title: "Rule Geometry",
     callChain: ruleGeometryCallChain,
     primitive: createRuleGeometryPrimitives(),
-    userFacing: undefined,
+    userFacing: createRuleGeometryProgram(),
     width: RULE_GEOMETRY_LAYOUT.width,
     height: RULE_GEOMETRY_LAYOUT.height,
     colors: RULE_GEOMETRY_COLORS,

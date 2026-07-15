@@ -1,6 +1,7 @@
 import { findDataset } from "../selectors/datasets.js";
 import { isAggregate } from "../grammar/aggregate.js";
 import { BAR_GRAINS, resolveBarGrain } from "../grammar/bars/policy.js";
+import { resolveRuleMode } from "../grammar/rules.js";
 
 function hasPositionScales(layer) {
   return (
@@ -56,6 +57,10 @@ export function canMaterializeBar(program, layer) {
   );
 }
 
+export function canMaterializeRule(_program, layer) {
+  return layer.mark?.type === "rule" && resolveRuleMode(layer) !== undefined;
+}
+
 const MARK_MATERIALIZATION_POLICIES = Object.freeze({
   point: Object.freeze({
     canMaterialize: canMaterializePoint,
@@ -72,6 +77,10 @@ const MARK_MATERIALIZATION_POLICIES = Object.freeze({
   bar: Object.freeze({
     canMaterialize: canMaterializeBar,
     op: "rematerializeBarMark"
+  }),
+  rule: Object.freeze({
+    canMaterialize: canMaterializeRule,
+    op: "rematerializeRuleMark"
   })
 });
 

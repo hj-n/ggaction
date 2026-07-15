@@ -222,17 +222,18 @@ type AggregateOperation =
 
 ## `encodeY2`
 
-- Signature: `encodeY2({ field, target?, fieldType?, scale? })`
-- `field`: 필수 quantitative upper-bound field.
-- `target`: optional area ID.
-- `fieldType`: 유일한 값 `"quantitative"`, 기본값도 quantitative다.
-- `scale`: 생략 또는 `{ id: existingYScale }`만 허용하며 y와 다른 scale을 만들 수 없다.
-- Effect: semantic y2를 existing y scale에 연결하고 closed area path를 rematerialize한다.
-- Coverage: ranged area/regression tests가 shared scale과 invalid prerequisites를 검증한다.
+- Signature: area는 `encodeY2({ field, target?, fieldType?, scale? })`; rule은
+  `encodeY2({ field | datum, target?, fieldType, scale?, coordinate? })`다.
+- Area `field`는 quantitative upper-bound field다. Rule은 field/datum 중 정확히 하나를 요구하고 primary y의
+  field type, scale과 coordinate를 공유한다.
+- 같은 action 재호출은 area/rule secondary endpoint만 교체하고 dependent graphics를 rematerialize한다.
+- Effect: area는 closed path, rule은 vertical/diagonal concrete line endpoint를 다시 만든다.
+- Coverage: ranged area/regression tests와 rule position tests가 shared scale, reassignment와 invalid
+  prerequisites를 검증한다.
 
 ### Formal values — `encodeY2`
 
-- Implemented: `encodeY2({ field: FieldName; target?: UserId; fieldType?: "quantitative"; scale?: { id?: UserId } })`
+- Implemented: area `encodeY2({ field: FieldName; target?: UserId; fieldType?: "quantitative"; scale?: { id?: UserId } })`; rule `encodeY2(RulePositionAssignment)`.
 - Proposed (NOT IMPLEMENTED): —; y2는 y scale 공유를 유지한다.
 
 ### Value coverage — `encodeY2`
@@ -245,6 +246,76 @@ type AggregateOperation =
   - ✅ Covered: omission/shared y ID, same explicit ID, conflicting ID rejection.
   - No proposal: y2는 y scale 공유가 semantic invariant다.
 - Evidence: ranged-area and regression semantic/materialization tests.
+
+## `encodeX2`
+
+```typescript
+type RulePositionAssignment =
+  | { field: FieldName; datum?: never; target?: UserId; fieldType: FieldType; scale?: PositionScale; coordinate?: UserId }
+  | { field?: never; datum: unknown; target?: UserId; fieldType: FieldType; scale?: PositionScale; coordinate?: UserId };
+
+encodeX2(options: RulePositionAssignment): ChartProgram;
+```
+
+- Rule `encodeX`/`encodeY`와 `encodeX2`/`encodeY2`는 field 또는 datum 중 정확히 하나를 저장한다.
+  Secondary endpoint는 primary channel 없이는 생성할 수 없고 같은 scale, coordinate와 field type을 공유한다.
+- x-only/y-only는 plot-bound full span, `x+y+y2`/`y+x+x2`는 vertical/horizontal interval,
+  `x+y+x2+y2`는 diagonal interval이다. Field mode는 row당 line 하나, datum-only mode는 line 하나다.
+- Endpoint/style reassignment, scale edit와 Canvas edit는 wrapped `rematerializeRuleMark`를 실행한다.
+
+### Formal values — `encodeX2`
+
+- Implemented: `encodeX2(RulePositionAssignment)`.
+- Planned (NOT IMPLEMENTED): `encodeXRange`와 horizontal ranged area geometry.
+- Proposed (NOT IMPLEMENTED): field-driven rule stroke width.
+
+### Value coverage — `encodeX2`
+
+- ✅ Covered: field/datum exclusivity, quantitative/nominal position, full span, bounded and diagonal geometry,
+  shared endpoint scale, endpoint reassignment and invalid/incomplete prerequisites.
+- Evidence: `test/unit/actions/encodings/rule-position-encodings.test.js`,
+  `test/gates/cars-error-bar/primitive.test.js`.
+
+## `encodeStroke`
+
+- Signature: `encodeStroke({ target?, value })`.
+- `target`: current or uniquely eligible rule mark; ambiguity requires an explicit ID.
+- `value`: required non-empty constant graphical stroke string. It creates no scale or legend.
+- Effect: updates immutable rule materialization config and invokes wrapped `rematerializeRuleMark`.
+
+### Formal values — `encodeStroke`
+
+- Implemented: `encodeStroke({ target?: UserId; value: NonEmptyString })`.
+- Planned (NOT IMPLEMENTED): —
+- Proposed (NOT IMPLEMENTED): field-driven stroke color is not part of the current rule contract.
+
+### Value coverage — `encodeStroke`
+
+- ✅ Covered: inferred/explicit target, replacement, non-empty validation, immutable failure and primitive/public parity.
+- Evidence: `test/unit/actions/encodings/rule-appearance-encodings.test.js` and
+  `test/gates/cars-error-bar/primitive.test.js`.
+
+## `encodeStrokeWidth`
+
+- Signature: `encodeStrokeWidth({ target?, value })`.
+- `target`: current or uniquely eligible rule mark; ambiguity requires an explicit ID.
+- `value`: required non-negative finite logical Canvas width. It is graphical and creates no scale or legend.
+- Effect: updates immutable rule materialization config and invokes wrapped `rematerializeRuleMark`.
+- Existing `encodeStrokeDash`와 `encodeOpacity`의 value/field modes also support rule marks; field mode
+  materializes one concrete appearance value per rule child.
+
+### Formal values — `encodeStrokeWidth`
+
+- Implemented: `encodeStrokeWidth({ target?: UserId; value: NonNegativeFinite })`.
+- Planned (NOT IMPLEMENTED): —
+- Proposed (NOT IMPLEMENTED): field-driven rule width remains outside the current contract.
+
+### Value coverage — `encodeStrokeWidth`
+
+- ✅ Covered: zero/positive replacement, negative/non-finite rejection, dash/opacity interoperability,
+  Canvas rematerialization and primitive/public parity.
+- Evidence: `test/unit/actions/encodings/rule-appearance-encodings.test.js` and
+  `test/gates/cars-error-bar/primitive.test.js`.
 
 ## `encodeYRange`
 

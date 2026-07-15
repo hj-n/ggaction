@@ -15,6 +15,7 @@ title: Marks
 | `editLineMark` | `editLineMark({ curve: "monotone" })` | Current or unique line mark | Rematerialized path commands |
 | `createBarMark` | `createBarMark()` | ID `"bar"`; current dataset | Empty rect collection |
 | `createAreaMark` | `createAreaMark()` | ID `"area"`; current dataset; blue fill; opacity `0.2` | Empty path collection |
+| `createRuleMark` | `createRuleMark()` | ID `"rule"`; current dataset | Empty line collection |
 
 ## `createPointMark({ id?, data?, shape? } = {})`
 
@@ -41,7 +42,7 @@ Point creation does not assign a coordinate or scale. Position encodings create
 and attach the appropriate semantic coordinate when needed.
 
 The first omitted mark ID uses its semantic role: `"point"`, `"line"`,
-`"bar"`, or `"area"`. A second mark of the same type requires an explicit ID.
+`"bar"`, `"area"`, or `"rule"`. A second mark of the same type requires an explicit ID.
 This keeps simple chains concise without creating hidden numbered resources.
 
 ## `editPointMark({ target?, shape })`
@@ -184,11 +185,27 @@ rects. The color scale domain controls series order. Stack uses total bin counts
 fill normalizes to one, group creates within-bin slots, overlay shares a baseline,
 and diverging separates positive and negative accumulation.
 
+## `createRuleMark({ id?, data? } = {})`
+
+Create a semantic rule mark backed by an empty backend-neutral `line`
+collection. The first omitted ID is `"rule"`; `data` defaults to current data.
+Creation assigns no position or style.
+
+Use `encodeX` or `encodeY` for a full plot-span rule. Add `encodeY2` for a
+bounded vertical interval, `encodeX2` for a bounded horizontal interval, or
+both secondary endpoints for a diagonal rule. Each endpoint accepts either a
+field or a datum. Constant stroke and width use `encodeStroke` and
+`encodeStrokeWidth`; dash and opacity reuse their existing encoding actions.
+
+Every complete rule is stored as concrete `x1`, `y1`, `x2`, and `y2` values.
+An incomplete intermediate endpoint combination stays empty until a later
+assignment completes it. Canvas and scale edits recompute all endpoints.
+
 ## Errors and limitations
 
 Mark IDs must be unique and the selected dataset must exist. If a mark type
 already exists, another mark of that type requires an explicit ID. Current
-semantic marks are point, line, bar, and area; additional mark types are not
+semantic marks are point, line, bar, area, and rule; additional mark types are not
 implemented.
 
 ## Related

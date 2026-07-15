@@ -5,7 +5,8 @@ function markStep(layer) {
     point: "rematerializePointMark",
     line: "rematerializeLineMark",
     bar: "rematerializeBarMark",
-    area: "rematerializeAreaMark"
+    area: "rematerializeAreaMark",
+    rule: "rematerializeRuleMark"
   }[layer?.mark?.type];
   return op === undefined ? undefined : { op, args: { id: layer.id } };
 }

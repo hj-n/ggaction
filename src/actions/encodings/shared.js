@@ -152,7 +152,8 @@ export function resolveTarget(
     point: ["circle", "rect", "collection"],
     line: "path",
     bar: "rect",
-    area: "path"
+    area: "path",
+    rule: "line"
   }[layer.mark.type];
 
   const graphicType = program.graphicSpec.objects[id]?.type;

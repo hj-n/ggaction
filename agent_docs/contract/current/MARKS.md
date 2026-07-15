@@ -17,7 +17,7 @@ This closed vocabulary is owned by the shared point-shape grammar and reused by 
 shape encoding, concrete materialization, and legend symbols.
 
 Ordinary mark creation may omit `id` for the first mark of that semantic type. The library persists the
-deterministic role ID `"point" | "line" | "bar" | "area"`. A second mark of the same type requires an
+deterministic role ID `"point" | "line" | "bar" | "area" | "rule"`. A second mark of the same type requires an
 explicit user ID; the library never invents numbered public-resource IDs. Explicit IDs retain the existing
 validation and uniqueness contract.
 
@@ -211,3 +211,28 @@ validation and uniqueness contract.
 - ✅ Covered: approved density primitive/public pair and fill → stroke Canvas order.
 - Evidence: `test/unit/actions/marks/edit-area-mark.test.js` and
   `test/charts/density-area/variants/primitive.test.js`.
+
+## `createRuleMark`
+
+- Signature: `createRuleMark({ id?, data? } = {})`.
+- `id`: 첫 unnamed rule은 deterministic `"rule"`을 사용한다. 동일 type의 두 번째 rule은 explicit ID가
+  필요하며 numbered public ID를 만들지 않는다.
+- `data`: existing dataset ID. 생략하면 current dataset을 사용하며 안전한 current source가 없으면 오류다.
+- Effect: semantic `rule` layer와 길이 0의 backend-neutral `line` collection을 만든다. 위치와 appearance는
+  create parameter가 아니라 `encodeX/Y/X2/Y2`, `encodeStroke`, `encodeStrokeWidth`, `encodeStrokeDash`,
+  `encodeOpacity`가 독립적으로 소유한다.
+- Lifecycle: immutable create-only. `editRuleMark`는 없으며 endpoint/style 변경은 owning encode action을
+  다시 호출한다.
+
+### Formal values — `createRuleMark`
+
+- Implemented: `createRuleMark({ id?: UserId; data?: UserId } = {})`.
+- Proposed (NOT IMPLEMENTED): —
+
+### Value coverage — `createRuleMark`
+
+- ✅ Covered: omitted ID→`"rule"`, current/explicit data, empty data, explicit multiple roles, second unnamed
+  ambiguity, invalid ID/data/options와 graphic/layer conflict.
+- ✅ Covered: empty line collection, default appearance config, immutable earlier program과 wrapped trace.
+- Evidence: `test/unit/actions/marks/create-rule-mark.test.js` and
+  `test/gates/cars-error-bar/primitive.test.js`.

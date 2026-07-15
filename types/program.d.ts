@@ -311,6 +311,28 @@ export interface PositionEncodingOptions {
   stack?: StackMode;
 }
 
+type RulePositionValue =
+  | { field: string; datum?: never }
+  | { field?: never; datum: unknown };
+
+export type RulePositionEncodingOptions = RulePositionValue & {
+  target?: string;
+  fieldType: FieldType;
+  scale?: ScaleOptions;
+  coordinate?: string;
+};
+
+export type SecondaryPositionEncodingOptions =
+  | RulePositionEncodingOptions
+  | {
+      field: string;
+      datum?: never;
+      target?: string;
+      fieldType?: "quantitative";
+      scale?: { id?: string };
+      coordinate?: string;
+    };
+
 export type HistogramEncodingOptions = {
   field: string;
   target?: string;
@@ -652,6 +674,7 @@ export class ChartProgram {
     stroke?: string;
     strokeWidth?: number;
   }): ChartProgram;
+  createRuleMark(options?: { id?: string; data?: string }): ChartProgram;
   editAreaMark(options: {
     target?: string;
     fill?: string;
@@ -660,8 +683,9 @@ export class ChartProgram {
     strokeWidth?: number;
   }): ChartProgram;
 
-  encodeX(options: PositionEncodingOptions): ChartProgram;
-  encodeY(options: PositionEncodingOptions): ChartProgram;
+  encodeX(options: PositionEncodingOptions | RulePositionEncodingOptions): ChartProgram;
+  encodeY(options: PositionEncodingOptions | RulePositionEncodingOptions): ChartProgram;
+  encodeX2(options: RulePositionEncodingOptions): ChartProgram;
   encodeColor(options: ColorEncodingOptions): ChartProgram;
   encodeStrokeDash(options: StrokeDashEncodingOptions): ChartProgram;
   encodeSize(options: { field: string; target?: string; fieldType?: "quantitative"; scale?: ScaleOptions }): ChartProgram;
@@ -669,13 +693,15 @@ export class ChartProgram {
   encodeOpacity(options: OpacityEncodingOptions): ChartProgram;
   encodeRadius(options: { value: number; target?: string }): ChartProgram;
   encodeXOffset(options: XOffsetEncodingOptions): ChartProgram;
-  encodeY2(options: ActionOptions): ChartProgram;
+  encodeY2(options: SecondaryPositionEncodingOptions): ChartProgram;
   encodeYRange(options: ActionOptions): ChartProgram;
   encodeGroup(options: { field: string; target?: string; fieldType?: "nominal" }): ChartProgram;
   encodeHistogram(options: HistogramEncodingOptions): ChartProgram;
   encodeDensity(options: DensityEncodingOptions): ChartProgram;
   editDensity(options: EditDensityOptions): ChartProgram;
   encodeBarWidth(options?: BarWidthOptions): ChartProgram;
+  encodeStroke(options: { target?: string; value: string }): ChartProgram;
+  encodeStrokeWidth(options: { target?: string; value: number }): ChartProgram;
 
   createRegression(options?: RegressionOptions): ChartProgram;
   createAxes(options?: CreateAxesOptions): ChartProgram;

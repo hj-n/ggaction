@@ -13,7 +13,7 @@ import {
 } from "../../../src/core/vocabulary.js";
 
 test("owns the implemented semantic and legend vocabularies in one module", () => {
-  assert.deepEqual(MARK_TYPES, ["point", "line", "bar", "area"]);
+  assert.deepEqual(MARK_TYPES, ["point", "line", "bar", "area", "rule"]);
   assert.deepEqual(POSITION_CHANNELS, ["x", "y"]);
   assert.deepEqual(CATEGORICAL_LEGEND_CHANNELS, [
     "color", "strokeDash", "shape"
@@ -26,6 +26,7 @@ test("owns the implemented semantic and legend vocabularies in one module", () =
   ]);
   assert.deepEqual(STACK_MODES, ["zero", "normalize"]);
   assert.equal(ENCODING_CHANNELS.includes("group"), true);
+  assert.equal(ENCODING_CHANNELS.includes("x2"), true);
   assert.equal(SCALED_ENCODING_CHANNELS.includes("group"), false);
   for (const vocabulary of [
     MARK_TYPES,

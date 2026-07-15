@@ -10,7 +10,7 @@ title: Series Encodings
 | Action | Shortest call | Inference/defaults | Result |
 | --- | --- | --- | --- |
 | `encodeColor` | `encodeColor({ field: "group" })` | Current mark, nominal field type, color scale | Semantic grouping and concrete color |
-| `encodeStrokeDash` | `encodeStrokeDash({ field: "group" })` | Current line mark and dash scale | Field-driven or constant concrete dash |
+| `encodeStrokeDash` | `encodeStrokeDash({ field: "group" })` | Current line/rule mark and dash scale | Field-driven or constant concrete dash |
 
 ## `encodeColor(options)`
 
@@ -127,7 +127,7 @@ unchanged.
 
 ## `encodeStrokeDash(options)`
 
-Map a nominal field to line-series dash patterns, or apply one constant pattern
+Map a nominal field to line-series or rule dash patterns, or apply one constant pattern
 to every series.
 
 ```javascript
@@ -140,7 +140,7 @@ program.encodeStrokeDash({ value: "dotted" });
 | --- | --- | --- |
 | `field` | non-empty string; mutually exclusive with `value` | — |
 | `value` | named style or direct dash pattern; mutually exclusive with `field` | — |
-| `target` | line mark ID | current mark |
+| `target` | line or rule mark ID | current mark |
 | `fieldType` | `"nominal"`; field mode only | `"nominal"` |
 | `scale.id` | scale ID | `"strokeDash"` |
 | `scale.type` | `"ordinal"` | `"ordinal"` |

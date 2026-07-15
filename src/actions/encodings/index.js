@@ -7,6 +7,7 @@ import { registerOffsetEncodingAction } from "./offset.js";
 import { registerPositionEncodingActions } from "./position.js";
 import { registerRangedEncodingActions } from "./ranged.js";
 import { registerStrokeDashEncodingActions } from "./strokeDash.js";
+import { registerRuleAppearanceEncodingActions } from "./ruleAppearance.js";
 
 export function registerEncodingActions(ProgramClass) {
   registerPositionEncodingActions(ProgramClass);
@@ -18,4 +19,5 @@ export function registerEncodingActions(ProgramClass) {
   registerColorEncodingAction(ProgramClass);
   registerStrokeDashEncodingActions(ProgramClass);
   registerAppearanceEncodingAction(ProgramClass);
+  registerRuleAppearanceEncodingActions(ProgramClass);
 }

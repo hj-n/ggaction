@@ -148,7 +148,7 @@ const clearOpacityEncoding = action(
 const encodeOpacity = action(
   {
     op: "encodeOpacity",
-    description: "Set a constant graphical opacity on a point mark."
+    description: "Assign constant or field-driven mark opacity."
   },
   function (args = {}) {
     validateOptions(args, OPACITY_OPTIONS, "encodeOpacity");
@@ -160,8 +160,8 @@ const encodeOpacity = action(
     const { id: target, dataset, layer } = resolveTarget(
       this,
       args.target,
-      ["point"],
-      "point mark"
+      ["point", "rule"],
+      "point or rule mark"
     );
     if (hasValue) {
       if (!Number.isFinite(args.value) || args.value < 0 || args.value > 1) {
@@ -172,11 +172,13 @@ const encodeOpacity = action(
       const withoutLegend = this.guideConfigs.legend?.opacity === undefined
         ? this
         : this.removeOpacityLegend();
-      return withoutLegend
+      const next = withoutLegend
         .clearOpacityEncoding({ target })
         ._withoutMaterializationConfig(["marks", target, "opacity"])
-        ._withMarkConfig(target, { ...config, opacity: args.value })
-        .rematerializePointMark({ id: target });
+        ._withMarkConfig(target, { ...config, opacity: args.value });
+      return layer.mark.type === "rule"
+        ? next.rematerializeRuleMark({ id: target })
+        : next.rematerializePointMark({ id: target });
     }
     const fieldType = args.fieldType ?? "quantitative";
     if (fieldType !== "quantitative") {

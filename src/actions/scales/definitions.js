@@ -53,10 +53,12 @@ export function resolvePositionScaleDefinition(
   const existing = findSemanticScale(program, id);
   const expectedType = fieldType === "temporal"
     ? "time"
-    : fieldType === "ordinal" ? "ordinal" : "linear";
+    : ["ordinal", "nominal"].includes(fieldType) ? "ordinal" : "linear";
   const type = options.type ?? existing?.type ?? expectedType;
   if (fieldType === "temporal") validateTimeScaleType(type);
-  else if (fieldType === "ordinal") validateOrdinalScaleType(type);
+  else if (["ordinal", "nominal"].includes(fieldType)) {
+    validateOrdinalScaleType(type);
+  }
   else validateLinearScaleType(type);
   if (options.nice !== undefined && typeof options.nice !== "boolean") {
     throw new TypeError("Scale nice must be a boolean.");
@@ -73,7 +75,7 @@ export function resolvePositionScaleDefinition(
   const scale = {
     id,
     type,
-    domain: fieldType === "ordinal"
+    domain: ["ordinal", "nominal"].includes(fieldType)
       ? validateOrdinalDomain(options.domain ?? existing?.domain ?? "auto")
       : validateScaleDomain(options.domain ?? existing?.domain ?? "auto"),
     range: validateScaleRange(options.range ?? existing?.range ?? "auto")

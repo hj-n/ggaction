@@ -47,6 +47,8 @@ export type {
   Palette,
   PaletteName,
   PositionEncodingOptions,
+  RulePositionEncodingOptions,
+  SecondaryPositionEncodingOptions,
   RegressionBandOptions,
   RegressionDataOptions,
   RegressionInterval,

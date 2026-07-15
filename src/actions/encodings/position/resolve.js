@@ -28,9 +28,11 @@ import {
 } from "../../../grammar/bars/policy.js";
 import { validatePositionFieldCompatibility } from
   "../../../grammar/positionCompatibility.js";
+import { normalizeRuleDatum } from "../../../grammar/rules.js";
 
 const POSITION_ENCODING_OPTIONS = Object.freeze([
-  "field", "target", "fieldType", "scale", "coordinate", "aggregate", "bin", "stack"
+  "field", "datum", "target", "fieldType", "scale", "coordinate",
+  "aggregate", "bin", "stack"
 ]);
 
 function resolveCoordinate(program, channel, layer, requestedId) {
@@ -68,7 +70,20 @@ function validateMarkPolicy(layer, dataset, channel, args, fieldType, field) {
   const xEncoding = layer.encoding?.x;
   validatePositionFieldCompatibility(layer.mark.type, channel, fieldType);
 
-  if (layer.mark.type === "point") {
+  if (layer.mark.type === "rule") {
+    if (!["quantitative", "temporal", "ordinal", "nominal"].includes(fieldType)) {
+      throw new Error("Rule position encoding requires a supported field type.");
+    }
+    if (args.aggregate !== undefined) {
+      throw new Error("Rule position encoding does not support aggregate.");
+    }
+    if (args.bin !== undefined) {
+      throw new Error("Rule position encoding does not support bin.");
+    }
+    if (args.stack !== undefined) {
+      throw new Error("Rule position encoding does not support stack.");
+    }
+  } else if (layer.mark.type === "point") {
     if (!["quantitative", "temporal", "ordinal"].includes(fieldType)) {
       throw new Error("Point position encoding requires quantitative fields, temporal fields, or ordinal fields.");
     }
@@ -194,8 +209,20 @@ export function resolvePositionEncoding(program, channel, args, operation) {
   const { id: target, dataset, layer } = resolveTarget(
     program,
     args.target,
-    ["point", "line", "bar", "area"]
+    ["point", "line", "bar", "area", "rule"]
   );
+  const hasField = Object.hasOwn(args, "field");
+  const hasDatum = Object.hasOwn(args, "datum");
+  if (layer.mark.type === "rule") {
+    if (hasField === hasDatum) {
+      throw new Error(`${operation} requires exactly one of field or datum for a rule mark.`);
+    }
+    if (args.fieldType === undefined) {
+      throw new Error(`${operation} requires fieldType for a rule mark.`);
+    }
+  } else if (hasDatum) {
+    throw new Error(`${operation} does not support datum for a ${layer.mark.type} mark.`);
+  }
   const previous = layer.encoding?.[channel];
   const requestedFieldType =
     args.fieldType ?? previous?.fieldType ?? "quantitative";
@@ -207,6 +234,7 @@ export function resolvePositionEncoding(program, channel, args, operation) {
     xEncoding?.bin !== undefined && args.field === undefined
     ? xEncoding.field
     : args.field;
+  const datum = args.datum;
   const effectiveArgs = { ...args };
   for (const property of ["aggregate", "bin", "stack"]) {
     if (!Object.hasOwn(effectiveArgs, property) && previous !== undefined &&
@@ -222,12 +250,15 @@ export function resolvePositionEncoding(program, channel, args, operation) {
     fieldType,
     field
   );
-  if (typeof field !== "string" || field.length === 0) {
+  const usesField = layer.mark.type !== "rule" || hasField;
+  if (usesField && (typeof field !== "string" || field.length === 0)) {
     throw new TypeError(`${operation} field must be a non-empty string.`);
   }
 
   const aggregateOutput = isAggregate(policy.aggregate);
-  if (aggregateOutput) {
+  if (layer.mark.type === "rule" && hasDatum) {
+    normalizeRuleDatum(datum, fieldType, channel);
+  } else if (aggregateOutput) {
     validateAggregateFieldType(policy.aggregate, fieldType);
     validateAggregateFieldValues(dataset.values, field, fieldType);
   } else if (fieldType === "temporal") readTemporalField(dataset.values, field);
@@ -260,6 +291,8 @@ export function resolvePositionEncoding(program, channel, args, operation) {
     previous,
     requestedScale,
     field,
+    datum,
+    hasField: usesField,
     fieldType,
     scale,
     coordinate: resolveCoordinate(program, channel, layer, args.coordinate),

@@ -1,8 +1,15 @@
-export const MARK_TYPES = Object.freeze(["point", "line", "bar", "area"]);
+export const MARK_TYPES = Object.freeze([
+  "point",
+  "line",
+  "bar",
+  "area",
+  "rule"
+]);
 
 export const ENCODING_CHANNELS = Object.freeze([
   "x",
   "y",
+  "x2",
   "y2",
   "xOffset",
   "theta",

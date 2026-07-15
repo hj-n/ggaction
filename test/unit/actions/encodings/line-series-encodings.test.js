@@ -440,6 +440,6 @@ test("validates line series encoding options and ranges", () => {
       .createData({ id: "data", values: rows })
       .createPointMark({ id: "points" })
       .encodeStrokeDash({ field: "origin" }),
-    /line mark requires an eligible layer/
+    /line or rule mark requires an eligible layer/
   );
 });

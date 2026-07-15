@@ -22,6 +22,7 @@ import {
 import { findDataset } from "../../selectors/datasets.js";
 import { requireSemanticScale } from "../../selectors/scales.js";
 import { isAggregate } from "../../grammar/aggregate.js";
+import { normalizeRuleDatum } from "../../grammar/rules.js";
 
 export function findScale(program, id) {
   return requireSemanticScale(program, id);
@@ -31,7 +32,7 @@ export function findScaleConsumers(program, id) {
   const consumers = [];
   for (const layer of program.semanticSpec.layers) {
     for (const channel of [
-      "x", "y", "y2", "xOffset", "color", "strokeDash", "size", "shape",
+      "x", "y", "x2", "y2", "xOffset", "color", "strokeDash", "size", "shape",
       "opacity"
     ]) {
       const encoding = layer.encoding?.[channel];
@@ -49,15 +50,23 @@ export function resolveConsumerValues(program, consumer) {
     );
   }
 
+  if (Object.hasOwn(consumer.encoding, "datum")) {
+    return [normalizeRuleDatum(
+      consumer.encoding.datum,
+      consumer.encoding.fieldType,
+      consumer.channel
+    )];
+  }
+
   if (
     ["color", "strokeDash", "xOffset", "shape"].includes(consumer.channel) &&
     consumer.encoding.fieldType === "nominal"
   ) {
     if (
       consumer.channel === "strokeDash" &&
-      consumer.layer.mark?.type !== "line"
+      !["line", "rule"].includes(consumer.layer.mark?.type)
     ) {
-      throw new Error("strokeDash scale materialization currently requires a line mark.");
+      throw new Error("strokeDash scale materialization requires a line mark or rule mark.");
     }
     return readNominalField(dataset.values, consumer.encoding.field);
   }
@@ -80,7 +89,13 @@ export function resolveConsumerValues(program, consumer) {
   if (consumer.encoding.fieldType === "temporal") {
     return readTemporalField(dataset.values, consumer.encoding.field);
   }
-  if (consumer.encoding.fieldType === "ordinal") {
+  if (["nominal", "ordinal"].includes(consumer.encoding.fieldType)) {
+    const scale = findScale(program, consumer.encoding.scale);
+    if (scale.type !== "ordinal") {
+      throw new Error(
+        `Scale materialization requires a quantitative encoding on mark "${consumer.layer.id}".`
+      );
+    }
     return readNominalField(dataset.values, consumer.encoding.field);
   }
   if (consumer.encoding.fieldType !== "quantitative") {

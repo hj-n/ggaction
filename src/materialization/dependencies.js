@@ -6,7 +6,7 @@ import {
 
 function usesPositionalScale(program, id) {
   return program.semanticSpec.layers.some(layer =>
-    ["x", "y", "xOffset"].some(
+    ["x", "y", "x2", "y2", "xOffset"].some(
       channel => layer.encoding?.[channel]?.scale === id
     )
   );

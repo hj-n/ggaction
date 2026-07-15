@@ -46,7 +46,7 @@ function resolveScaleId(program, requested) {
 }
 
 function normalizeChannel(channel) {
-  return channel === "y2" ? "y" : channel;
+  return channel === "x2" ? "x" : channel === "y2" ? "y" : channel;
 }
 
 function resolveChannel(consumers, id) {

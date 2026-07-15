@@ -1760,6 +1760,7 @@ extent or bandwidth, invalid output fields, and fewer than two sample steps.
 | `editLineMark` | `editLineMark({ curve: "monotone" })` | Current or unique line mark | Rematerialized path commands |
 | `createBarMark` | `createBarMark()` | ID `"bar"`; current dataset | Empty rect collection |
 | `createAreaMark` | `createAreaMark()` | ID `"area"`; current dataset; blue fill; opacity `0.2` | Empty path collection |
+| `createRuleMark` | `createRuleMark()` | ID `"rule"`; current dataset | Empty line collection |
 
 ## `createPointMark({ id?, data?, shape? } = {})`
 
@@ -1786,7 +1787,7 @@ Point creation does not assign a coordinate or scale. Position encodings create
 and attach the appropriate semantic coordinate when needed.
 
 The first omitted mark ID uses its semantic role: `"point"`, `"line"`,
-`"bar"`, or `"area"`. A second mark of the same type requires an explicit ID.
+`"bar"`, `"area"`, or `"rule"`. A second mark of the same type requires an explicit ID.
 This keeps simple chains concise without creating hidden numbered resources.
 
 ## `editPointMark({ target?, shape })`
@@ -1929,11 +1930,27 @@ rects. The color scale domain controls series order. Stack uses total bin counts
 fill normalizes to one, group creates within-bin slots, overlay shares a baseline,
 and diverging separates positive and negative accumulation.
 
+## `createRuleMark({ id?, data? } = {})`
+
+Create a semantic rule mark backed by an empty backend-neutral `line`
+collection. The first omitted ID is `"rule"`; `data` defaults to current data.
+Creation assigns no position or style.
+
+Use `encodeX` or `encodeY` for a full plot-span rule. Add `encodeY2` for a
+bounded vertical interval, `encodeX2` for a bounded horizontal interval, or
+both secondary endpoints for a diagonal rule. Each endpoint accepts either a
+field or a datum. Constant stroke and width use `encodeStroke` and
+`encodeStrokeWidth`; dash and opacity reuse their existing encoding actions.
+
+Every complete rule is stored as concrete `x1`, `y1`, `x2`, and `y2` values.
+An incomplete intermediate endpoint combination stays empty until a later
+assignment completes it. Canvas and scale edits recompute all endpoints.
+
 ## Errors and limitations
 
 Mark IDs must be unique and the selected dataset must exist. If a mark type
 already exists, another mark of that type requires an explicit ID. Current
-semantic marks are point, line, bar, and area; additional mark types are not
+semantic marks are point, line, bar, area, and rule; additional mark types are not
 implemented.
 
 ## Related
@@ -2572,6 +2589,7 @@ resolve a channel scale, and explicitly materialize the affected graphics.
 | Build horizontal aggregate bars | bar mark, quantitative x and ordinal/temporal y | `encodeX`, `encodeY` | [Bar positions](./position/ordinal-bars.md) |
 | Bin and count values | bar mark, quantitative field | `encodeHistogram` or `encodeX` + `encodeY` | [Histograms](./position/histogram.md) |
 | Estimate a distribution | area mark, quantitative field | `encodeDensity` | [Encodings](./encodings.md#atomic-density) |
+| Draw full-span or bounded rules | rule mark, field or datum endpoints | `encodeX`, `encodeY`, `encodeX2`, `encodeY2` | [Rule endpoints](#rule-endpoints) |
 | Control within-band grouping | complete ordinal-bar positions | `encodeXOffset` | [Offsets](./position/offsets.md) |
 
 For ordinary grouped bar charts, prefer
@@ -2589,6 +2607,25 @@ for the same field.
 - Temporal values accept finite timestamps, four-digit numeric/string years,
   and valid date strings. Four-digit values are interpreted as UTC years.
 - Ambiguous resources produce an error instead of an arbitrary selection.
+
+## Rule endpoints
+
+Rule positions use the same `encodeX` and `encodeY` actions with an explicit
+`fieldType`, but accept exactly one of `field` or `datum`:
+
+```javascript
+program
+  .createRuleMark()
+  .encodeX({ datum: 15, fieldType: "quantitative" })
+  .encodeY({ datum: 20, fieldType: "quantitative" })
+  .encodeY2({ datum: 80, fieldType: "quantitative" });
+```
+
+`encodeX2` and rule `encodeY2` require their corresponding primary endpoint
+and share its scale, coordinate, and field type. `x` alone draws a vertical
+full-span rule; `y` alone draws a horizontal full-span rule. `x+y+y2` and
+`y+x+x2` draw bounded intervals, while all four endpoints draw a diagonal.
+Calling the same action again replaces only that endpoint.
 
 ## Related
 
@@ -2998,7 +3035,7 @@ consumer of one shared xOffset scale must use the same padding policy.
 | Action | Shortest call | Inference/defaults | Result |
 | --- | --- | --- | --- |
 | `encodeColor` | `encodeColor({ field: "group" })` | Current mark, nominal field type, color scale | Semantic grouping and concrete color |
-| `encodeStrokeDash` | `encodeStrokeDash({ field: "group" })` | Current line mark and dash scale | Field-driven or constant concrete dash |
+| `encodeStrokeDash` | `encodeStrokeDash({ field: "group" })` | Current line/rule mark and dash scale | Field-driven or constant concrete dash |
 
 ## `encodeColor(options)`
 
@@ -3115,7 +3152,7 @@ unchanged.
 
 ## `encodeStrokeDash(options)`
 
-Map a nominal field to line-series dash patterns, or apply one constant pattern
+Map a nominal field to line-series or rule dash patterns, or apply one constant pattern
 to every series.
 
 ```javascript
@@ -3128,7 +3165,7 @@ program.encodeStrokeDash({ value: "dotted" });
 | --- | --- | --- |
 | `field` | non-empty string; mutually exclusive with `value` | — |
 | `value` | named style or direct dash pattern; mutually exclusive with `field` | — |
-| `target` | line mark ID | current mark |
+| `target` | line or rule mark ID | current mark |
 | `fieldType` | `"nominal"`; field mode only | `"nominal"` |
 | `scale.id` | scale ID | `"strokeDash"` |
 | `scale.type` | `"ordinal"` | `"ordinal"` |
@@ -3195,6 +3232,8 @@ Combined line legends also require matching ordered domains.
 | `encodeShape` | `encodeShape({ field: "Origin" })` | Current point; 12-value ordinal shape range | Semantic shape and mixed concrete symbols |
 | `encodeOpacity` | `encodeOpacity({ value: 0.27 })` | Current point mark | Constant concrete opacity |
 | `encodeOpacity` | `encodeOpacity({ field: "Acceleration" })` | Current point; linear scale; range `[0.2, 1]` | Semantic field opacity and concrete values |
+| `encodeStroke` | `encodeStroke({ value: "#334155" })` | Current rule mark | Constant concrete line color |
+| `encodeStrokeWidth` | `encodeStrokeWidth({ value: 3 })` | Current rule mark | Constant concrete line width |
 | `encodeBarWidth` | `encodeBarWidth()` | Current aggregate bar; first assignment uses band `0.72` | Concrete rectangles |
 
 ## `encodeRadius({ value, target? })`
@@ -3251,6 +3290,18 @@ providing a new ID retains the previous named scale. Existing legends are
 recomputed, inferred legend titles follow the new field, and explicit legend
 titles and styles remain unchanged.
 
+## Rule appearance
+
+`encodeStroke({ value, target? })` assigns a required non-empty constant color
+string to a rule. `encodeStrokeWidth({ value, target? })` assigns a
+non-negative finite logical Canvas width. Both infer the current or only rule,
+create no scale or legend, and rematerialize every concrete line child.
+
+Rules also reuse `encodeStrokeDash` in constant or nominal-field mode and
+`encodeOpacity` in constant or quantitative-field mode. Field modes produce
+one concrete value per rule line; constant modes remain scale-free. Recalling
+an owning action replaces that appearance assignment immutably.
+
 ## `encodeBarWidth({ band?, pixels?, target? })`
 
 Set the fraction of each resolved x band—or xOffset slot for group layout—used
@@ -3283,7 +3334,7 @@ Canvas geometry changes explicitly rematerialize the scales and rectangles.
 
 ## Errors and limitations
 
-Radius, constant opacity, and both bar width modes are graphical constants. Field opacity
+Radius, rule stroke/width, constant opacity, and both bar width modes are graphical constants. Field opacity
 is a semantic encoding.
 Size cannot be combined with a constant radius. A constant `editPointMark`
 shape cannot be combined with field-driven `encodeShape`. Bar width
@@ -4502,21 +4553,33 @@ editAreaMark({ target?, fill?, opacity?, stroke?, strokeWidth? })
 Edit constant area appearance. `stroke: false` removes an existing outline.
 [Marks](../api/marks.md)
 
+### `createRuleMark`
+
+```javascript
+createRuleMark({ id?, data? } = {})
+```
+
+Create a semantic rule mark and empty line collection. The first omitted ID is
+`"rule"`; data defaults to current data. [Marks](../api/marks.md)
+
 ### `encodeX`
 
 ```javascript
 encodeX({ field, target?, fieldType?, aggregate?, stack?, coordinate?, bin?, scale? })
+encodeX({ datum, target?, fieldType, coordinate?, scale? }) // rule
 ```
 
 Create or compatibly replace an x encoding. Points accept quantitative,
 temporal, and ordinal fields. Bars accept binned quantitative x, vertical
 ordinal/temporal categories, or a horizontal quantitative aggregate measure.
+Rules accept exactly one field or datum and an explicit field type.
 [Position encodings](../api/position-encodings.md)
 
 ### `encodeY`
 
 ```javascript
 encodeY({ field?, target?, fieldType?, aggregate?, stack?, coordinate?, scale? })
+encodeY({ datum, target?, fieldType, coordinate?, scale? }) // rule
 ```
 
 Create or compatibly replace a y encoding. With bar marks, a quantitative y
@@ -4526,16 +4589,28 @@ from the complete pair and is not stored separately. Bar stack accepts
 `"zero"`, `"normalize"`, or `null`.
 Aggregate values may be scalar names or parameterized quantile
 and ordered first/last objects. A complete histogram x/y pair materializes concrete rects.
+Rules accept exactly one field or datum and an explicit field type.
 [Position encodings](../api/position-encodings.md)
 
 ### `encodeY2`
 
 ```javascript
-encodeY2({ field, target?, fieldType?, scale? })
+encodeY2({ field, target?, fieldType, scale?, coordinate? })
+encodeY2({ datum, target?, fieldType, scale?, coordinate? }) // rule
 ```
 
-Advanced upper-edge area encoding. It requires an existing quantitative y and
-shares that exact scale. [Encodings](../api/encodings.md)
+Assign an area upper edge or a rule secondary y endpoint. It requires an
+existing y and shares its scale and coordinate. [Position encodings](../api/position-encodings.md)
+
+### `encodeX2`
+
+```javascript
+encodeX2({ field, target?, fieldType, scale?, coordinate? })
+encodeX2({ datum, target?, fieldType, scale?, coordinate? })
+```
+
+Assign a rule secondary x endpoint. It requires an existing x and shares its
+scale and coordinate. [Position encodings](../api/position-encodings.md)
 
 ### `encodeYRange`
 
@@ -4632,8 +4707,8 @@ encodeStrokeDash(
 )
 ```
 
-Create or replace nominal line-series dash patterns, or apply one constant
-named/direct pattern. Named styles are `solid`, `dashed`, `dotted`, and
+Create or replace nominal line-series or rule dash patterns, or apply one
+constant named/direct pattern. Named styles are `solid`, `dashed`, `dotted`, and
 `dashdot`.
 [Series encodings](../api/series-encodings.md)
 
@@ -4670,9 +4745,27 @@ encodeOpacity({ value, target? })
 encodeOpacity({ field, target?, fieldType?, scale? })
 ```
 
-Apply a constant point opacity from `0` to `1`, or map a quantitative field
+Apply a constant point/rule opacity from `0` to `1`, or map a quantitative field
 through a linear opacity scale. The two modes are mutually exclusive and may
 replace each other through the same action.
+[Appearance encodings](../api/appearance.md)
+
+### `encodeStroke`
+
+```javascript
+encodeStroke({ value, target? })
+```
+
+Assign a constant non-empty stroke string to a rule mark.
+[Appearance encodings](../api/appearance.md)
+
+### `encodeStrokeWidth`
+
+```javascript
+encodeStrokeWidth({ value, target? })
+```
+
+Assign a non-negative finite logical Canvas width to a rule mark.
 [Appearance encodings](../api/appearance.md)
 
 ### `encodeBarWidth`

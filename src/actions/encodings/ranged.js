@@ -1,6 +1,13 @@
 import { action } from "../../core/action.js";
+import { validateUserId } from "../../core/identifiers.js";
 import { isPlainObject } from "../../core/immutable.js";
-import { readNominalField, readQuantitativeField } from "../../grammar/scales.js";
+import {
+  readNominalField,
+  readQuantitativeField,
+  readTemporalField,
+  validateSemanticFieldType
+} from "../../grammar/scales.js";
+import { normalizeRuleDatum } from "../../grammar/rules.js";
 import {
   canMaterializeArea,
   canMaterializeLine
@@ -12,57 +19,137 @@ import {
   validateOptions
 } from "./shared.js";
 
-const Y2_OPTIONS = Object.freeze(["field", "target", "fieldType", "scale"]);
+const SECONDARY_OPTIONS = Object.freeze([
+  "field", "datum", "target", "fieldType", "scale", "coordinate"
+]);
 const Y_RANGE_OPTIONS = Object.freeze([
   "lower", "upper", "target", "fieldType", "coordinate", "scale"
 ]);
 const GROUP_OPTIONS = Object.freeze(["field", "target", "fieldType"]);
 
+function validateSecondaryScale(args, primaryScale, axisLabel) {
+  if (args.scale === undefined) return;
+  if (!isPlainObject(args.scale)) {
+    throw new TypeError("Encoding scale must be a plain object.");
+  }
+  validateOptions(args.scale, ["id"], "scale");
+  if (args.scale.id !== undefined && args.scale.id !== primaryScale) {
+    throw new Error(`${axisLabel} primary and secondary endpoints must share one scale.`);
+  }
+}
+
+function validateSecondaryField(dataset, field, fieldType) {
+  if (["nominal", "ordinal"].includes(fieldType)) {
+    readNominalField(dataset.values, field);
+  } else if (fieldType === "temporal") {
+    readTemporalField(dataset.values, field);
+  } else {
+    readQuantitativeField(dataset.values, field);
+  }
+}
+
+function encodeSecondaryPosition(program, channel, args, operation, types) {
+  validateOptions(args, SECONDARY_OPTIONS, operation);
+  const { id: target, dataset, layer } = resolveTarget(
+    program,
+    args.target,
+    types,
+    types.length === 1 ? `${types[0]} mark` : "ranged mark"
+  );
+  const primaryChannel = channel === "x2" ? "x" : "y";
+  const primary = layer.encoding?.[primaryChannel];
+  if (primary?.scale === undefined) {
+    throw new Error(`${operation} requires an existing ${primaryChannel} encoding.`);
+  }
+  if (args.coordinate !== undefined) {
+    const coordinate = validateUserId(args.coordinate, "Coordinate id");
+    if (coordinate !== layer.coordinate) {
+      throw new Error(
+        `${operation} must use the primary ${primaryChannel} coordinate "${layer.coordinate}".`
+      );
+    }
+  }
+  validateSecondaryScale(args, primary.scale, primaryChannel);
+
+  const rule = layer.mark.type === "rule";
+  const hasField = Object.hasOwn(args, "field");
+  const hasDatum = Object.hasOwn(args, "datum");
+  if (rule && hasField === hasDatum) {
+    throw new Error(`${operation} requires exactly one of field or datum for a rule mark.`);
+  }
+  if (!rule && (!hasField || hasDatum)) {
+    throw new Error(`${operation} requires a field for an area mark.`);
+  }
+  if (rule && args.fieldType === undefined) {
+    throw new Error(`${operation} requires fieldType for a rule mark.`);
+  }
+  const fieldType = rule
+    ? validateSemanticFieldType(args.fieldType)
+    : args.fieldType ?? "quantitative";
+  if (!rule && fieldType !== "quantitative") {
+    throw new Error(`${operation} requires a quantitative field.`);
+  }
+  if (rule && fieldType !== primary.fieldType) {
+    throw new Error(
+      `${operation} fieldType must match the primary ${primaryChannel} fieldType.`
+    );
+  }
+  if (hasField) validateSecondaryField(dataset, args.field, fieldType);
+  else normalizeRuleDatum(args.datum, fieldType, channel);
+
+  const previous = layer.encoding?.[channel];
+  let next = program;
+  if (previous !== undefined) {
+    const alternate = hasField ? "datum" : "field";
+    if (Object.hasOwn(previous, alternate)) {
+      next = next.editSemantic({
+        property: `layer[${target}].encoding.${channel}.${alternate}`,
+        remove: true
+      });
+    }
+  }
+  next = next
+    .editSemantic({
+      property: `layer[${target}].encoding.${channel}.${hasField ? "field" : "datum"}`,
+      value: hasField ? args.field : args.datum
+    })
+    .editSemantic({
+      property: `layer[${target}].encoding.${channel}.fieldType`,
+      value: fieldType
+    })
+    .editSemantic({
+      property: `layer[${target}].encoding.${channel}.scale`,
+      value: primary.scale
+    })
+    .rematerializeScale({ id: primary.scale });
+  return rule
+    ? next.rematerializeRuleMark({ id: target })
+    : next.rematerializeAreaMark({ id: target });
+}
+
+const encodeX2 = action(
+  {
+    op: "encodeX2",
+    description: "Encode the secondary horizontal endpoint of a rule."
+  },
+  function (args = {}) {
+    return encodeSecondaryPosition(this, "x2", args, "encodeX2", ["rule"]);
+  }
+);
+
 const encodeY2 = action(
   {
     op: "encodeY2",
-    description: "Encode the upper edge of a ranged area."
+    description: "Encode a secondary vertical endpoint."
   },
   function (args = {}) {
-    validateOptions(args, Y2_OPTIONS, "encodeY2");
-    const { id: target, dataset, layer } = resolveTarget(
+    return encodeSecondaryPosition(
       this,
-      args.target,
-      ["area"],
-      "area mark"
+      "y2",
+      args,
+      "encodeY2",
+      ["area", "rule"]
     );
-    if ((args.fieldType ?? "quantitative") !== "quantitative") {
-      throw new Error("encodeY2 requires a quantitative field.");
-    }
-    readQuantitativeField(dataset.values, args.field);
-    const yScaleId = layer.encoding?.y?.scale;
-    if (yScaleId === undefined) {
-      throw new Error("encodeY2 requires an existing y encoding.");
-    }
-    if (args.scale !== undefined) {
-      if (!isPlainObject(args.scale)) {
-        throw new TypeError("Encoding scale must be a plain object.");
-      }
-      validateOptions(args.scale, ["id"], "scale");
-      if (args.scale.id !== undefined && args.scale.id !== yScaleId) {
-        throw new Error("Area y and y2 must share one scale.");
-      }
-    }
-    return this
-      .editSemantic({
-        property: `layer[${target}].encoding.y2.field`,
-        value: args.field
-      })
-      .editSemantic({
-        property: `layer[${target}].encoding.y2.fieldType`,
-        value: "quantitative"
-      })
-      .editSemantic({
-        property: `layer[${target}].encoding.y2.scale`,
-        value: yScaleId
-      })
-      .rematerializeScale({ id: yScaleId })
-      .rematerializeAreaMark({ id: target });
   }
 );
 
@@ -141,6 +228,7 @@ const encodeGroup = action(
 );
 
 export function registerRangedEncodingActions(ProgramClass) {
+  ProgramClass.prototype.encodeX2 = encodeX2;
   ProgramClass.prototype.encodeY2 = encodeY2;
   ProgramClass.prototype.encodeYRange = encodeYRange;
   ProgramClass.prototype.encodeGroup = encodeGroup;

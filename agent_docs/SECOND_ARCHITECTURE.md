@@ -561,6 +561,7 @@ size scale은 concrete palette 또는 range를 저장한다.
 - point의 constant radius와 opacity
 - line의 stroke width
 - area의 fixed fill과 opacity
+- rule의 fixed stroke, width, dash와 opacity
 - grouped bar의 band occupancy
 - axis tick, label, title style과 requested values
 - grid appearance
@@ -668,8 +669,9 @@ structural copy로 child를 추가한다. 완료된 public action chain의 stack
 ```text
 createCanvas
 createData
-createPointMark / createLineMark / createBarMark / createAreaMark
-encodeX / encodeY / encodeColor / encodeSize / encodeShape
+createPointMark / createLineMark / createBarMark / createAreaMark / createRuleMark
+encodeX / encodeY / encodeX2 / encodeY2 / encodeStroke / encodeStrokeWidth
+encodeColor / encodeSize / encodeShape / encodeStrokeDash / encodeOpacity
 encodeHistogram / encodeDensity
 createRegression
 createGuides
@@ -687,7 +689,7 @@ default를 사용한다.
 createCoordinate
 createScale
 createDerivedData
-encodeY2 / encodeYRange / encodeXOffset / encodeGroup
+encodeYRange / encodeXOffset / encodeGroup
 createXAxis / createYAxis
 axis line, tick, label, title component actions
 directional grid actions
@@ -915,6 +917,19 @@ planned contract이므로 시각 구현 승인을 받기 전에는 지원하지 
 - density는 scale로 변환된 zero baseline에서 닫는다.
 - color encoding이 있으면 group domain 순서로 fill을 적용한다.
 
+### Rule
+
+- Rule은 semantic `rule` layer 하나와 backend-neutral `line` collection 하나를 가진다.
+- `createRuleMark`는 identity, data binding과 empty collection만 만들고 position/style을 받지 않는다.
+- `encodeX`, `encodeY`, `encodeX2`, `encodeY2`가 field 또는 datum endpoint를 독립적으로 저장하며,
+  secondary endpoint는 corresponding primary와 scale, coordinate, field type을 공유한다.
+- x-only/y-only는 current plot bounds 전체를 지나는 vertical/horizontal line이 된다.
+  `x+y+y2`와 `y+x+x2`는 bounded interval, four-endpoint assignment는 diagonal line이 된다.
+- Fluent chain의 transient incomplete endpoint state는 fabricated geometry 대신 empty collection을 유지한다.
+  Endpoint 조합이 완성되면 responsible encoding action이 `rematerializeRuleMark`를 호출한다.
+- Constant stroke/width와 existing dash/opacity assignments는 materialization config에 저장되고 모든
+  concrete line child에 적용된다. Renderer는 semantic endpoint나 full-span intent를 추론하지 않는다.
+
 ### Bar
 
 - Histogram은 binned x, count y, zero stack이 함께 있어야 한다.
@@ -958,7 +973,7 @@ step을 deduplicate한 뒤 실제 wrapped action을 호출한다.
 - Mark type별 completeness policy에 따른 mark rematerialization
 - Field-driven color/size/shape/opacity/stroke-dash 변경 후 scale, affected mark, legend 갱신
 
-Encoding planner에서 point는 scale → mark, line/bar는 mark, shared-color area는 같은 scale의
+Encoding planner에서 point는 scale → mark, line/bar/rule은 mark, shared-color area는 같은 scale의
 모든 area mark를 declaration order로 계획하고, 존재하는 legend를 마지막에 계획한다.
 
 이 plan은 자동 compiler가 아니다. `editCanvas`, `rematerializeScale` 같은 명시적 action

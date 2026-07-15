@@ -75,8 +75,8 @@ const encodeStrokeDash = action(
     const { id: target, dataset, layer } = resolveTarget(
       this,
       args.target,
-      ["line"],
-      "line mark"
+      ["line", "rule"],
+      "line or rule mark"
     );
     if (hasValue) {
       normalizeStrokeDashPattern(args.value);
@@ -88,7 +88,9 @@ const encodeStrokeDash = action(
         value: args.value
       });
       next = reconcileLegendAfterDashRemoval(next, target);
-      return next.rematerializeLineMark({ id: target });
+      return layer.mark.type === "rule"
+        ? next.rematerializeRuleMark({ id: target })
+        : next.rematerializeLineMark({ id: target });
     }
 
     const fieldType = validateNominalFieldType(args.fieldType ?? "nominal");
