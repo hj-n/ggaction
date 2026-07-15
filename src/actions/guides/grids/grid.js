@@ -3,11 +3,13 @@ import { isPlainObject } from "../../../core/immutable.js";
 import { validateKeys } from "../../../core/validation.js";
 import {
   gridNames,
+  editGridConfig,
   refreshGridConfig,
   resolveGridConfig,
   resolveGridGeometry,
   resolveGridResources,
-  validateGridCreateArgs
+  validateGridCreateArgs,
+  validateGridEditArgs
 } from "./resolve.js";
 
 const AGGREGATE_OPTIONS = Object.freeze(["horizontal", "vertical"]);
@@ -109,6 +111,34 @@ function makeCreate(direction) {
   );
 }
 
+function makeEdit(direction) {
+  const operation = gridNames(direction);
+  const editOperation = `edit${direction === "horizontal" ? "Horizontal" : "Vertical"}Grid`;
+  return action(
+    {
+      op: editOperation,
+      description: `Edit the existing ${direction} grid.`
+    },
+    function (args = {}) {
+      validateGridEditArgs(args, editOperation);
+      const storedConfig = this.guideConfigs.grid?.[direction];
+      const semantic = this.semanticSpec.guides.grid?.[direction];
+      if (
+        storedConfig === undefined ||
+        semantic?.scale !== storedConfig.scale ||
+        semantic.coordinate !== storedConfig.coordinate ||
+        this.graphicSpec.objects[operation.graphic]?.type !== "line"
+      ) {
+        throw new Error(`${editOperation} requires an existing ${direction} grid.`);
+      }
+      const config = editGridConfig(storedConfig, args);
+      return this
+        ._withGridConfig(direction, config)
+        [operation.rematerialize]();
+    }
+  );
+}
+
 function normalizeDirection(value, direction) {
   if (value === false) return undefined;
   if (value === true || value === undefined) return {};
@@ -124,6 +154,8 @@ const rematerializeHorizontalGrid = makeRematerialize("horizontal");
 const rematerializeVerticalGrid = makeRematerialize("vertical");
 const createHorizontalGrid = makeCreate("horizontal");
 const createVerticalGrid = makeCreate("vertical");
+const editHorizontalGrid = makeEdit("horizontal");
+const editVerticalGrid = makeEdit("vertical");
 
 const createGrid = action(
   {
@@ -184,6 +216,8 @@ export function registerGridActions(ProgramClass) {
   ProgramClass.prototype.createGrid = createGrid;
   ProgramClass.prototype.createHorizontalGrid = createHorizontalGrid;
   ProgramClass.prototype.createVerticalGrid = createVerticalGrid;
+  ProgramClass.prototype.editHorizontalGrid = editHorizontalGrid;
+  ProgramClass.prototype.editVerticalGrid = editVerticalGrid;
   ProgramClass.prototype.rematerializeGrid = rematerializeGrid;
   ProgramClass.prototype.rematerializeHorizontalGrid =
     rematerializeHorizontalGrid;

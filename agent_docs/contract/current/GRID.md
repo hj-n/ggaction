@@ -26,6 +26,13 @@ type GridDirectionOptions = {
   lineWidth?: NonNegativeFinite;
   strokeDash?: DashPattern;
 };
+type EditGridOptions = {
+  count?: PositiveInteger;
+  values?: readonly Finite[] | "auto";
+  color?: NonEmptyString;
+  lineWidth?: NonNegativeFinite;
+  strokeDash?: DashPattern;
+};
 ```
 
 ## `createGrid`
@@ -92,3 +99,42 @@ type GridDirectionOptions = {
   - ⚠️ Partial: temporal vertical grid with calendar ticks.
 - No proposal: the current contract remains continuous/time and histogram-bin grid positioning.
 - Evidence: grid and density-guide tests.
+
+## `editHorizontalGrid`
+
+- Signature: `editHorizontalGrid({ count?, values?, color?, lineWidth?, strokeDash? })`.
+- Existing horizontal grid가 필요하며 scale/coordinate binding은 편집할 수 없다.
+- `count`는 explicit values를 제거하고 count mode를 사용한다. Finite `values`는 count를 제거하며,
+  `values: "auto"`는 current axis/scale inference를 복원한다. `count`와 `values`는 mutually exclusive다.
+- Style option은 전달한 property만 바꾸고 wrapped `rematerializeHorizontalGrid`가 concrete lines를
+  완전히 다시 만든다. 최소 한 option이 필요하다.
+
+### Formal values — `editHorizontalGrid`
+
+- Implemented: `editHorizontalGrid(options: EditGridOptions)`.
+- Proposed (NOT IMPLEMENTED): —
+
+### Value coverage — `editHorizontalGrid`
+
+- `count`, `values`: ✅ Covered count/value mode, `"auto"` restoration, conflict, invalid/out-of-domain values.
+- `color`, `lineWidth`, `strokeDash`: ✅ Covered partial merge, representative values and invalid boundaries.
+- Binding/rematerialization: ✅ Covered missing resource, stable semantic binding, wrapped trace, Canvas/scale
+  action-order convergence and primitive/public graphic equivalence.
+- Evidence: `test/unit/actions/guides/grid-edit-actions.test.js`.
+
+## `editVerticalGrid`
+
+- Signature와 behavior는 horizontal edit와 같으며 existing vertical grid와 x scale을 사용한다.
+- Scale/coordinate binding을 유지하고 wrapped `rematerializeVerticalGrid`만 호출한다.
+
+### Formal values — `editVerticalGrid`
+
+- Implemented: `editVerticalGrid(options: EditGridOptions)`.
+- Proposed (NOT IMPLEMENTED): —
+
+### Value coverage — `editVerticalGrid`
+
+- 모든 parameter class와 stable-binding rule은 horizontal과 동일하다.
+- ✅ Covered: explicit values, wrapped trace, missing/unknown option과 shared validation classes.
+- ⚠️ Partial: repeated auto→count→values→auto transition과 temporal vertical grid edit.
+- Evidence: `test/unit/actions/guides/grid-edit-actions.test.js`.

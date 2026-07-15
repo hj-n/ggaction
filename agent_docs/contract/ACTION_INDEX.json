@@ -1014,9 +1014,9 @@
       "layer": "user-facing",
       "domain": "grid",
       "status": "implemented",
-      "lifecycle": "Stable resource, edit gap",
-      "update": "Internal rematerialization only",
-      "audit": "`editHorizontalGrid` — Planned",
+      "lifecycle": "Mutable resource",
+      "update": "`editHorizontalGrid`",
+      "audit": "Complete",
       "coverage": {
         "contract": "complete",
         "effects": "complete",
@@ -1032,9 +1032,9 @@
       "layer": "user-facing",
       "domain": "grid",
       "status": "implemented",
-      "lifecycle": "Stable resource, edit gap",
-      "update": "Internal rematerialization only",
-      "audit": "`editVerticalGrid` — Planned",
+      "lifecycle": "Mutable resource",
+      "update": "`editVerticalGrid`",
+      "audit": "Complete",
       "coverage": {
         "contract": "complete",
         "effects": "complete",
@@ -1043,6 +1043,42 @@
       "contract": {
         "file": "agent_docs/contract/current/GRID.md",
         "anchor": "createverticalgrid"
+      }
+    },
+    {
+      "name": "editHorizontalGrid",
+      "layer": "user-facing",
+      "domain": "grid",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Edits one horizontal grid",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/GRID.md",
+        "anchor": "edithorizontalgrid"
+      }
+    },
+    {
+      "name": "editVerticalGrid",
+      "layer": "user-facing",
+      "domain": "grid",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Edits one vertical grid",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/GRID.md",
+        "anchor": "editverticalgrid"
       }
     },
     {
@@ -1363,15 +1399,6 @@
       }
     },
     {
-      "name": "editHorizontalGrid",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/EDITING.md",
-        "anchor": "directional-grid-edits"
-      }
-    },
-    {
       "name": "editLegend",
       "status": "planned",
       "readiness": "accepted",
@@ -1387,15 +1414,6 @@
       "contract": {
         "file": "agent_docs/contract/planned/EDITING.md",
         "anchor": "edittitle"
-      }
-    },
-    {
-      "name": "editVerticalGrid",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/EDITING.md",
-        "anchor": "directional-grid-edits"
       }
     },
     {

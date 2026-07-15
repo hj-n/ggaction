@@ -3652,6 +3652,25 @@ createGrid
 Use `false` to disable a direction. If scale or coordinate inference is
 ambiguous, provide its ID explicitly.
 
+## Editing one direction
+
+Use the direction-specific edit actions after that grid exists:
+
+```javascript
+program
+  .editHorizontalGrid({ count: 6, color: "#cbd5e1" })
+  .editVerticalGrid({ values: [50, 100, 150], strokeDash: [4, 2] });
+```
+
+Edit options are `count`, `values`, `color`, `lineWidth`, and `strokeDash`.
+Use either `count` or `values`. `values: "auto"` restores current axis/scale
+inference. At least one option is required.
+
+Grid edits preserve the existing scale and coordinate binding. They invoke a
+wrapped directional rematerialization action, replacing only that direction's
+concrete line geometry and appearance. There is intentionally no aggregate
+`editGrid` action.
+
 `createGuides()` selects this default horizontal grid automatically when a y
 encoding is present. Pass `createGuides({ grid: false })` to opt out.
 
@@ -4204,7 +4223,7 @@ chart-authoring API does not support that combination.
 | Coordinates | Named Cartesian and Polar semantic resources; x/y use Cartesian |
 | Scales | Linear, UTC time, ordinal position, color, named/direct stroke dash, and padded band-local xOffset |
 | Aggregates | count, sum, mean, median, min/max, distinct/valid/missing, sample/population dispersion, quartiles, standard error, normal 95% mean endpoints, parameterized quantile, and ordered first/last |
-| Guides | Automatic bottom/top x axes, left/right y axes, closed numeric/UTC label formats, horizontal/vertical Cartesian grids, and categorical legends |
+| Guides | Automatic bottom/top x axes, left/right y axes, closed numeric/UTC label formats, independently editable horizontal/vertical Cartesian grids, and categorical legends |
 | Titles | One plot-aligned top title with one optional single-line subtitle |
 | Rendering | Browser Canvas and Node PNG |
 | Graphics | Concrete canvas, circle, line, rect, text, `M/L/C/Z` command paths, 8 line curves, and heterogeneous drawable collections |
@@ -4728,7 +4747,12 @@ editYAxisTitle({
 ```javascript
 createHorizontalGrid({ scale?, coordinate?, count?, values?, color?, lineWidth?, strokeDash? })
 createVerticalGrid({ scale?, coordinate?, count?, values?, color?, lineWidth?, strokeDash? })
+editHorizontalGrid({ count?, values?, color?, lineWidth?, strokeDash? })
+editVerticalGrid({ count?, values?, color?, lineWidth?, strokeDash? })
 ```
+
+Directional grid edits require an existing grid. Their `values` option accepts
+an exact finite array or `"auto"` to restore current axis/scale inference.
 
 See [Coordinates](../api/coordinates.md) and
 [Advanced axis components](../advanced/axis-components.md).

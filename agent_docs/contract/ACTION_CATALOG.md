@@ -63,8 +63,10 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | user-facing | [`editXAxisTitle`](current/AXES.md#editxaxistitle) | axes | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editYAxisTitle`](current/AXES.md#edityaxistitle) | axes | Mutable resource | Complete | ✅ / ✅ / ⚠️ |
 | user-facing | [`createGrid`](current/GRID.md#creategrid) | grid | Aggregate create-only | Intentional; planned child edits | ✅ / ✅ / ✅ |
-| user-facing | [`createHorizontalGrid`](current/GRID.md#createhorizontalgrid) | grid | Stable resource, edit gap | `editHorizontalGrid` — Planned | ✅ / ✅ / ✅ |
-| user-facing | [`createVerticalGrid`](current/GRID.md#createverticalgrid) | grid | Stable resource, edit gap | `editVerticalGrid` — Planned | ✅ / ✅ / ⚠️ |
+| user-facing | [`createHorizontalGrid`](current/GRID.md#createhorizontalgrid) | grid | Mutable resource | Complete | ✅ / ✅ / ✅ |
+| user-facing | [`createVerticalGrid`](current/GRID.md#createverticalgrid) | grid | Mutable resource | Complete | ✅ / ✅ / ⚠️ |
+| user-facing | [`editHorizontalGrid`](current/GRID.md#edithorizontalgrid) | grid | Mutable resource | Complete | ✅ / ✅ / ✅ |
+| user-facing | [`editVerticalGrid`](current/GRID.md#editverticalgrid) | grid | Mutable resource | Complete | ✅ / ✅ / ⚠️ |
 | user-facing | [`createLegend`](current/LEGEND_AND_TITLE.md#createlegend) | legend_and_title | Stable resource, edit gap | `editLegend` — Planned | ✅ / ✅ / ⚠️ |
 | user-facing | [`createGuides`](current/LEGEND_AND_TITLE.md#createguides) | legend_and_title | Aggregate create-only | Intentional; child edit gaps remain | ✅ / ✅ / ⚠️ |
 | user-facing | [`createTitle`](current/LEGEND_AND_TITLE.md#createtitle) | legend_and_title | Stable resource, edit gap | `editTitle` — Planned | ✅ / ✅ / ✅ |
@@ -91,10 +93,8 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | `createErrorBar` | accepted | [Open](planned/COMPOSITE_MARKS.md#createerrorbar) |
 | `createErrorBand` | accepted | [Open](planned/COMPOSITE_MARKS.md#createerrorband) |
 | `createBoxPlot` | accepted | [Open](planned/COMPOSITE_MARKS.md#createboxplot) |
-| `editHorizontalGrid` | accepted | [Open](planned/EDITING.md#directional-grid-edits) |
 | `editLegend` | accepted | [Open](planned/EDITING.md#editlegend) |
 | `editTitle` | accepted | [Open](planned/EDITING.md#edittitle) |
-| `editVerticalGrid` | accepted | [Open](planned/EDITING.md#directional-grid-edits) |
 | `encodeX2` | accepted | [Open](planned/ENCODINGS.md#horizontal-ranged-position) |
 | `encodeXRange` | accepted | [Open](planned/ENCODINGS.md#horizontal-ranged-position) |
 | `selectRows` | accepted | [Open](planned/DATA_AND_STATISTICS.md#selectrows) |

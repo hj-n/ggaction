@@ -13,6 +13,9 @@ import {
 const GRID_OPTIONS = Object.freeze([
   "scale", "coordinate", "count", "values", "color", "lineWidth", "strokeDash"
 ]);
+const GRID_EDIT_OPTIONS = Object.freeze([
+  "count", "values", "color", "lineWidth", "strokeDash"
+]);
 const DEFAULT_STYLE = Object.freeze({
   color: DEFAULT_COLORS.grid,
   lineWidth: 1,
@@ -59,6 +62,44 @@ export function validateGridCreateArgs(args, operation) {
     !args.values.every(Number.isFinite)
   )) {
     throw new TypeError("Grid values must be a non-empty finite number array.");
+  }
+  if (Object.hasOwn(args, "color") && (
+    typeof args.color !== "string" || args.color.length === 0
+  )) {
+    throw new TypeError("Grid color must be a non-empty string.");
+  }
+  if (Object.hasOwn(args, "lineWidth") && (
+    !Number.isFinite(args.lineWidth) || args.lineWidth < 0
+  )) {
+    throw new RangeError("Grid lineWidth must be non-negative.");
+  }
+  if (Object.hasOwn(args, "strokeDash")) validateStrokeDash(args.strokeDash);
+}
+
+export function validateGridEditArgs(args, operation) {
+  if (!isPlainObject(args)) {
+    throw new TypeError(`${operation} options must be a plain object.`);
+  }
+  validateKeys(args, GRID_EDIT_OPTIONS, operation);
+  if (Object.keys(args).length === 0) {
+    throw new TypeError(`${operation} requires at least one option.`);
+  }
+  if (Object.hasOwn(args, "count") && Object.hasOwn(args, "values")) {
+    throw new Error(`${operation} cannot use count and values together.`);
+  }
+  if (Object.hasOwn(args, "count") && (
+    !Number.isInteger(args.count) || args.count <= 0
+  )) {
+    throw new RangeError("Grid count must be a positive integer.");
+  }
+  if (Object.hasOwn(args, "values") && args.values !== "auto" && (
+    !Array.isArray(args.values) ||
+    args.values.length === 0 ||
+    !args.values.every(Number.isFinite)
+  )) {
+    throw new TypeError(
+      'Grid values must be "auto" or a non-empty finite number array.'
+    );
   }
   if (Object.hasOwn(args, "color") && (
     typeof args.color !== "string" || args.color.length === 0
@@ -150,6 +191,29 @@ export function refreshGridConfig(program, config) {
   if (refreshed.mode === "values") delete refreshed.count;
   else delete refreshed.values;
   return refreshed;
+}
+
+export function editGridConfig(previous, args) {
+  const config = {
+    ...previous,
+    ...Object.fromEntries(
+      Object.entries(args).filter(([key]) => !["count", "values"].includes(key))
+    )
+  };
+  if (Object.hasOwn(args, "count")) {
+    config.mode = "count";
+    config.count = args.count;
+    config.inferredValues = false;
+    delete config.values;
+  } else if (Array.isArray(args.values)) {
+    config.mode = "values";
+    config.values = args.values;
+    config.inferredValues = false;
+    delete config.count;
+  } else if (args.values === "auto") {
+    config.inferredValues = true;
+  }
+  return config;
 }
 
 export function resolveGridGeometry(program, config) {

@@ -2,31 +2,6 @@
 
 These contracts are accepted or pending future API work; they are not current public behavior.
 
-## directional grid edits
-
-```typescript
-type EditGridOptions = {
-  count?: PositiveInteger;
-  values?: readonly Finite[] | "auto";
-  color?: NonEmptyString;
-  lineWidth?: NonNegativeFinite;
-  strokeDash?: DashPattern;
-};
-
-editHorizontalGrid(options: EditGridOptions): ChartProgram;
-editVerticalGrid(options: EditGridOptions): ChartProgram;
-```
-
-- 해당 방향의 기존 grid가 필수이며 최소 한 option을 요구한다. `scale`과 `coordinate`는
-  stable binding이므로 edit parameter에 포함하지 않는다.
-- `count`는 explicit `values`를 제거하고 scale에서 새 values를 생성한다. finite `values`
-  array는 stored count를 제거하며, `values: "auto"`는 count와 explicit values를 모두 지우고
-  axis/scale inference를 복원한다. `count`와 `values`를 함께 주면 오류다.
-- style option은 전달된 property만 변경한다. 각 action은 대응하는 내부 wrapped
-  `rematerializeHorizontalGrid` 또는 `rematerializeVerticalGrid`를 호출한다.
-- `createGrid`는 aggregate create-only로 유지하며 별도 `editGrid`는 만들지 않는다.
-- Status: Planned, NOT IMPLEMENTED. 실행 가능한 coverage는 구현 단계에서 추가한다.
-
 ## editLegend
 
 ```typescript

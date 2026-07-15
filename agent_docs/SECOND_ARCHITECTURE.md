@@ -990,7 +990,9 @@ encoding을 수리하지 않는다.
 Grid는 horizontal과 vertical을 독립적으로 켜고 끌 수 있다. `createGuides`의 applicable
 기본은 horizontal grid다. Grid line은 concrete `line` collection이며 mark보다 뒤에
 그려지도록 explicit placement를 사용한다. Axis tick value가 있으면 같은 값을 재사용할
-수 있다.
+수 있다. `editHorizontalGrid`와 `editVerticalGrid`는 existing semantic scale/coordinate
+binding을 유지하면서 direction별 tick policy와 appearance config를 바꾸고, 대응하는
+wrapped `rematerialize*Grid` action으로 concrete collection 전체를 다시 만든다.
 
 ### Legend
 

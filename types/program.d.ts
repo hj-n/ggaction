@@ -252,6 +252,27 @@ export interface AxisLabelOptions<P extends string>
   values?: readonly AxisValue[];
 }
 
+export interface GridDirectionOptions {
+  scale?: string;
+  coordinate?: string;
+  count?: number;
+  values?: readonly number[];
+  color?: string;
+  lineWidth?: number;
+  strokeDash?: readonly number[];
+}
+export interface EditGridOptions {
+  count?: number;
+  values?: readonly number[] | "auto";
+  color?: string;
+  lineWidth?: number;
+  strokeDash?: readonly number[];
+}
+export interface CreateGridOptions {
+  horizontal?: boolean | GridDirectionOptions;
+  vertical?: boolean | GridDirectionOptions;
+}
+
 export interface ScaleOptions {
   id?: string;
   type?: ScaleType;
@@ -648,9 +669,11 @@ export class ChartProgram {
   createYAxisTitle(options?: AxisTitleOptions<YAxisPosition>): ChartProgram;
   editXAxisTitle(options?: Omit<AxisTitleOptions<XAxisPosition>, "scale">): ChartProgram;
   editYAxisTitle(options?: Omit<AxisTitleOptions<YAxisPosition>, "scale">): ChartProgram;
-  createGrid(options?: ActionOptions): ChartProgram;
-  createHorizontalGrid(options?: ActionOptions): ChartProgram;
-  createVerticalGrid(options?: ActionOptions): ChartProgram;
+  createGrid(options?: CreateGridOptions): ChartProgram;
+  createHorizontalGrid(options?: GridDirectionOptions): ChartProgram;
+  createVerticalGrid(options?: GridDirectionOptions): ChartProgram;
+  editHorizontalGrid(options: EditGridOptions): ChartProgram;
+  editVerticalGrid(options: EditGridOptions): ChartProgram;
   createLegend(options?: LegendOptions): ChartProgram;
   createGuides(options?: ActionOptions): ChartProgram;
   createTitle(options: ActionOptions & { text: string; subtitle?: string }): ChartProgram;

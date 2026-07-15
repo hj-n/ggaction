@@ -511,7 +511,12 @@ editYAxisTitle({
 ```javascript
 createHorizontalGrid({ scale?, coordinate?, count?, values?, color?, lineWidth?, strokeDash? })
 createVerticalGrid({ scale?, coordinate?, count?, values?, color?, lineWidth?, strokeDash? })
+editHorizontalGrid({ count?, values?, color?, lineWidth?, strokeDash? })
+editVerticalGrid({ count?, values?, color?, lineWidth?, strokeDash? })
 ```
+
+Directional grid edits require an existing grid. Their `values` option accepts
+an exact finite array or `"auto"` to restore current axis/scale inference.
 
 See [Coordinates](../api/coordinates.md) and
 [Advanced axis components](../advanced/axis-components.md).

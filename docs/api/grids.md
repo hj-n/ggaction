@@ -73,6 +73,25 @@ createGrid
 Use `false` to disable a direction. If scale or coordinate inference is
 ambiguous, provide its ID explicitly.
 
+## Editing one direction
+
+Use the direction-specific edit actions after that grid exists:
+
+```javascript
+program
+  .editHorizontalGrid({ count: 6, color: "#cbd5e1" })
+  .editVerticalGrid({ values: [50, 100, 150], strokeDash: [4, 2] });
+```
+
+Edit options are `count`, `values`, `color`, `lineWidth`, and `strokeDash`.
+Use either `count` or `values`. `values: "auto"` restores current axis/scale
+inference. At least one option is required.
+
+Grid edits preserve the existing scale and coordinate binding. They invoke a
+wrapped directional rematerialization action, replacing only that direction's
+concrete line geometry and appearance. There is intentionally no aggregate
+`editGrid` action.
+
 `createGuides()` selects this default horizontal grid automatically when a y
 encoding is present. Pass `createGuides({ grid: false })` to opt out.
 
