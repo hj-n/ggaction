@@ -14,7 +14,7 @@ raw primitive로 고정한다.
 - [x] Existing plot/guide geometry와 non-overlap verification
 - [x] Primitive-only trace와 expanded target chain metadata
 - [x] `primitive.png`와 Gate B browser/PNG confirmation
-- [ ] Feedback 반영과 primitive 재확인
+- [x] Feedback 반영과 primitive 재확인
 - [x] STEP status, conceptual commit와 push
 
 ## Gate B target
@@ -25,6 +25,7 @@ raw primitive로 고정한다.
 - 각 item은 왼쪽에서도 symbol→label 순서를 유지하고 resolved domain order를 바꾸지 않는다.
 - 하나의 bordered background가 두 block의 occupied bounds를 감싸며 title/label style target도 함께 고정한다.
 - Gallery는 target public chain과 `primitive.png`만 표시하고 approval 전에는 public action을 실행하지 않는다.
+- Gate B target은 사용자 승인을 받아 Step 6 public implementation의 canonical oracle로 확정했다.
 
 ## 완료 조건
 
