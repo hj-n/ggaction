@@ -1,6 +1,6 @@
 const COLORS = ["#4c78a8", "#f58518", "#e45756"];
 
-function requireLayout({ width, height, margin, maxBins }) {
+function requireLayout({ width, height, margin }) {
   if (!Number.isFinite(width) || width <= 0) {
     throw new TypeError("Histogram layout requires a positive finite width.");
   }
@@ -16,10 +16,6 @@ function requireLayout({ width, height, margin, maxBins }) {
   ) {
     throw new TypeError("Histogram layout requires four non-negative margins.");
   }
-  if (!Number.isInteger(maxBins) || maxBins <= 0) {
-    throw new TypeError("Histogram maxBins must be a positive integer.");
-  }
-
   const bounds = {
     x: margin.left,
     y: margin.top,
@@ -32,14 +28,14 @@ function requireLayout({ width, height, margin, maxBins }) {
   return bounds;
 }
 
-function normalizeRows(cars) {
+function normalizeRows(cars, field) {
   if (!Array.isArray(cars)) {
     throw new TypeError("Cars must be an array.");
   }
 
   return cars.filter(
     row =>
-      Number.isFinite(row.Displacement) &&
+      Number.isFinite(row[field]) &&
       typeof row.Origin === "string" &&
       row.Origin.length > 0
   );
@@ -54,7 +50,10 @@ function niceCeilingStep(span, count) {
   return factor * power;
 }
 
-function resolveBins(values, maxBins) {
+function resolveMaxBins(values, maxBins) {
+  if (!Number.isInteger(maxBins) || maxBins <= 0) {
+    throw new TypeError("Histogram maxBins must be a positive integer.");
+  }
   const minimum = Math.min(...values);
   const maximum = Math.max(...values);
   const step = niceCeilingStep(maximum - minimum, maxBins);
@@ -67,12 +66,71 @@ function resolveBins(values, maxBins) {
   }
 
   const count = Math.round((stop - start) / step);
-  const bins = Array.from({ length: count }, (_, index) => ({
-    index,
-    start: start + index * step,
-    end: start + (index + 1) * step
-  }));
-  return { bins, domain: [start, stop], step };
+  const boundaries = Array.from(
+    { length: count + 1 },
+    (_, index) => start + index * step
+  );
+  return { boundaries, domain: [start, stop], step, mode: "maxBins" };
+}
+
+function resolveStepBins(values, step) {
+  if (!Number.isFinite(step) || step <= 0) {
+    throw new TypeError("Histogram binStep must be a positive finite number.");
+  }
+  const minimum = Math.min(...values);
+  const maximum = Math.max(...values);
+  let start = Math.floor(minimum / step) * step;
+  let stop = Math.ceil(maximum / step) * step;
+  if (start === stop) stop = start + step;
+  const count = Math.round((stop - start) / step);
+  return {
+    boundaries: Array.from(
+      { length: count + 1 },
+      (_, index) => start + index * step
+    ),
+    domain: [start, stop],
+    step,
+    mode: "step"
+  };
+}
+
+function resolveBoundaryBins(values, boundaries) {
+  if (
+    !Array.isArray(boundaries) ||
+    boundaries.length < 2 ||
+    !boundaries.every(Number.isFinite) ||
+    boundaries.some((value, index) => index > 0 && value <= boundaries[index - 1])
+  ) {
+    throw new TypeError(
+      "Histogram binBoundaries must contain at least two strictly increasing finite numbers."
+    );
+  }
+  const minimum = Math.min(...values);
+  const maximum = Math.max(...values);
+  if (boundaries[0] > minimum || boundaries.at(-1) < maximum) {
+    throw new RangeError("Histogram binBoundaries must contain the data extent.");
+  }
+  return {
+    boundaries: [...boundaries],
+    domain: [boundaries[0], boundaries.at(-1)],
+    mode: "boundaries"
+  };
+}
+
+function resolveBins(values, { maxBins, binStep, binBoundaries }) {
+  const selected = [maxBins, binStep, binBoundaries].filter(
+    value => value !== undefined
+  );
+  if (selected.length > 1) {
+    throw new Error(
+      "Histogram accepts only one of maxBins, binStep, or binBoundaries."
+    );
+  }
+  if (binStep !== undefined) return resolveStepBins(values, binStep);
+  if (binBoundaries !== undefined) {
+    return resolveBoundaryBins(values, binBoundaries);
+  }
+  return resolveMaxBins(values, maxBins ?? 10);
 }
 
 function niceCountScale(maximum, count = 5) {
@@ -91,29 +149,45 @@ function mapValue(value, domain, range) {
 
 export function createCarsHistogramValues(
   cars,
-  { width, height, margin, maxBins = 10 }
+  {
+    width,
+    height,
+    margin,
+    field = "Displacement",
+    maxBins,
+    binStep,
+    binBoundaries
+  }
 ) {
-  const bounds = requireLayout({ width, height, margin, maxBins });
-  const validCars = normalizeRows(cars);
+  if (typeof field !== "string" || field.length === 0) {
+    throw new TypeError("Histogram field must be a non-empty string.");
+  }
+  const bounds = requireLayout({ width, height, margin });
+  const validCars = normalizeRows(cars, field);
   if (validCars.length === 0) {
     throw new Error("Histogram requires at least one valid car row.");
   }
 
   const origins = [...new Set(validCars.map(row => row.Origin))];
-  const binned = resolveBins(
-    validCars.map(row => row.Displacement),
-    maxBins
-  );
-  const bins = binned.bins.map(bin => ({
-    ...bin,
+  const binned = resolveBins(validCars.map(row => row[field]), {
+    maxBins,
+    binStep,
+    binBoundaries
+  });
+  const bins = binned.boundaries.slice(0, -1).map((start, index) => ({
+    index,
+    start,
+    end: binned.boundaries[index + 1],
     counts: Object.fromEntries(origins.map(origin => [origin, 0]))
   }));
 
   for (const row of validCars) {
-    const rawIndex = Math.floor(
-      (row.Displacement - binned.domain[0]) / binned.step
-    );
-    const index = Math.min(bins.length - 1, Math.max(0, rawIndex));
+    const value = row[field];
+    const located = bins.findIndex(bin => value >= bin.start && value < bin.end);
+    const index = value === binned.domain[1] ? bins.length - 1 : located;
+    if (index < 0) {
+      throw new Error(`Histogram value ${value} was not assigned to a bin.`);
+    }
     bins[index].counts[row.Origin] += 1;
   }
 
@@ -153,10 +227,7 @@ export function createCarsHistogramValues(
     }
   }
 
-  const xTicks = Array.from(
-    { length: bins.length + 1 },
-    (_, index) => binned.domain[0] + index * binned.step
-  ).map(value => ({
+  const xTicks = binned.boundaries.map(value => ({
     value,
     position: mapValue(value, binned.domain, xRange),
     label: String(value)
@@ -200,7 +271,14 @@ export function createCarsHistogramValues(
     bins,
     rects,
     scales: {
-      x: { domain: binned.domain, range: xRange, step: binned.step },
+      x: {
+        domain: binned.domain,
+        range: xRange,
+        ...(binned.step === undefined ? {} : { step: binned.step }),
+        ...(binned.mode === "boundaries"
+          ? { boundaries: binned.boundaries }
+          : {})
+      },
       y: { domain: yScale.domain, range: yRange }
     },
     grid: {
@@ -224,7 +302,7 @@ export function createCarsHistogramValues(
         title: {
           x: bounds.x + bounds.width / 2,
           y: bounds.y + bounds.height + 42,
-          text: "Displacement"
+          text: field
         }
       },
       y: {
@@ -238,7 +316,7 @@ export function createCarsHistogramValues(
         title: {
           x: bounds.x - 52,
           y: bounds.y + bounds.height / 2,
-          text: "count(Displacement)",
+          text: `count(${field})`,
           rotation: -Math.PI / 2
         }
       }

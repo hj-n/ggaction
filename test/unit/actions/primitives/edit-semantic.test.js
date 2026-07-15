@@ -241,3 +241,44 @@ test("validates aggregate semantic values needed by primitive authoring", () => 
     );
   }
 });
+
+test("validates exact histogram bin semantics through the primitive API", () => {
+  const withStep = chart().editSemantic({
+    property: "layer[bars].encoding.x.bin.step",
+    value: 60
+  });
+  const withBoundaries = chart().editSemantic({
+    property: "layer[bars].encoding.x.bin.boundaries",
+    value: [50, 100, 150, 225]
+  });
+
+  assert.equal(withStep.semanticSpec.layers[0].encoding.x.bin.step, 60);
+  assert.deepEqual(
+    withBoundaries.semanticSpec.layers[0].encoding.x.bin.boundaries,
+    [50, 100, 150, 225]
+  );
+
+  for (const value of [0, -1, Number.POSITIVE_INFINITY]) {
+    assert.throws(
+      () => chart().editSemantic({
+        property: "layer[bars].encoding.x.bin.step",
+        value
+      }),
+      /positive finite/
+    );
+  }
+  for (const value of [
+    [0],
+    [0, 0],
+    [1, 0],
+    [0, Number.NaN]
+  ]) {
+    assert.throws(
+      () => chart().editSemantic({
+        property: "layer[bars].encoding.x.bin.boundaries",
+        value
+      }),
+      /strictly increasing finite/
+    );
+  }
+});

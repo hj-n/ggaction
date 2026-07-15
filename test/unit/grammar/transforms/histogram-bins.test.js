@@ -4,7 +4,9 @@ import test from "node:test";
 import {
   countHistogramBins,
   normalizeHistogramBin,
-  resolveHistogramBins
+  resolveHistogramBins,
+  validateHistogramBinBoundaries,
+  validateHistogramBinStep
 } from "../../../../src/grammar/histogram.js";
 
 test("normalizes the current histogram bin policy in one owner", () => {
@@ -18,6 +20,19 @@ test("normalizes the current histogram bin policy in one owner", () => {
   assert.throws(
     () => resolveHistogramBins({ values: [0, 8], bin: {}, maxBins: 4 }),
     /either bin or maxBins/
+  );
+});
+
+test("owns planned exact-bin primitive validation without exposing it to encodeX", () => {
+  assert.equal(validateHistogramBinStep(60), 60);
+  assert.deepEqual(
+    validateHistogramBinBoundaries([50, 100, 225]),
+    [50, 100, 225]
+  );
+  assert.throws(() => validateHistogramBinStep(0), /positive finite/);
+  assert.throws(
+    () => validateHistogramBinBoundaries([0, 0]),
+    /strictly increasing finite/
   );
 });
 

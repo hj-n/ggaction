@@ -14,6 +14,8 @@ const ENCODING_PATHS = Object.freeze([
     `encoding.${channel}.scale`
   ),
   "encoding.x.bin.maxBins",
+  "encoding.x.bin.step",
+  "encoding.x.bin.boundaries",
   "encoding.y.aggregate",
   "encoding.y.stack"
 ]);

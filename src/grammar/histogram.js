@@ -15,6 +15,29 @@ function validateMaxBins(maxBins) {
   return maxBins;
 }
 
+export function validateHistogramBinStep(step) {
+  if (!Number.isFinite(step) || step <= 0) {
+    throw new TypeError("Histogram bin step must be a positive finite number.");
+  }
+  return step;
+}
+
+export function validateHistogramBinBoundaries(boundaries) {
+  if (
+    !Array.isArray(boundaries) ||
+    boundaries.length < 2 ||
+    !boundaries.every(Number.isFinite) ||
+    boundaries.some(
+      (value, index) => index > 0 && value <= boundaries[index - 1]
+    )
+  ) {
+    throw new TypeError(
+      "Histogram bin boundaries must contain at least two strictly increasing finite numbers."
+    );
+  }
+  return boundaries;
+}
+
 export function normalizeHistogramBin(bin = {}) {
   if (!isPlainObject(bin)) {
     throw new TypeError("Histogram bin must be a plain object.");

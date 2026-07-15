@@ -2,7 +2,15 @@ import { chart, render } from "../../../src/index.js";
 
 import { createCarsHistogramValues } from "./reference-values.js";
 
-export function createCarsHistogramPrimitives(cars) {
+export function createCarsHistogramPrimitiveProgram(
+  cars,
+  {
+    field = "Displacement",
+    maxBins = 10,
+    binStep,
+    binBoundaries
+  } = {}
+) {
   const width = 432;
   const height = 460;
   const margin = { top: 80, right: 60, bottom: 130, left: 80 };
@@ -10,7 +18,12 @@ export function createCarsHistogramPrimitives(cars) {
     width,
     height,
     margin,
-    maxBins: 10
+    field,
+    maxBins: binStep === undefined && binBoundaries === undefined
+      ? maxBins
+      : undefined,
+    binStep,
+    binBoundaries
   });
   const { x: xAxis, y: yAxis } = values.axes;
   const xTickPositions = xAxis.ticks.map(tick => tick.position);
@@ -18,7 +31,7 @@ export function createCarsHistogramPrimitives(cars) {
   const horizontalGrid = values.grid.horizontal;
   const legendItems = values.legend.items;
 
-  return chart()
+  let program = chart()
     .createCanvas({ width, height, margin, background: "white" })
     .createData({ id: "cars", values: values.validCars })
     .editSemantic({ property: "layer[bars].mark.type", value: "bar" })
@@ -26,20 +39,35 @@ export function createCarsHistogramPrimitives(cars) {
     .editSemantic({ property: "layer[bars].coordinate", value: "main" })
     .editSemantic({
       property: "layer[bars].encoding.x.field",
-      value: "Displacement"
+      value: field
     })
     .editSemantic({
       property: "layer[bars].encoding.x.fieldType",
       value: "quantitative"
-    })
-    .editSemantic({
+    });
+
+  if (binStep !== undefined) {
+    program = program.editSemantic({
+      property: "layer[bars].encoding.x.bin.step",
+      value: binStep
+    });
+  } else if (binBoundaries !== undefined) {
+    program = program.editSemantic({
+      property: "layer[bars].encoding.x.bin.boundaries",
+      value: binBoundaries
+    });
+  } else {
+    program = program.editSemantic({
       property: "layer[bars].encoding.x.bin.maxBins",
-      value: 10
-    })
+      value: maxBins
+    });
+  }
+
+  return program
     .editSemantic({ property: "layer[bars].encoding.x.scale", value: "x" })
     .editSemantic({
       property: "layer[bars].encoding.y.field",
-      value: "Displacement"
+      value: field
     })
     .editSemantic({
       property: "layer[bars].encoding.y.fieldType",
@@ -85,12 +113,12 @@ export function createCarsHistogramPrimitives(cars) {
     .editSemantic({ property: "coordinate[main].type", value: "cartesian" })
     .editSemantic({ property: "guide.axis.x.scale", value: "x" })
     .editSemantic({ property: "guide.axis.x.coordinate", value: "main" })
-    .editSemantic({ property: "guide.axis.x.title", value: "Displacement" })
+    .editSemantic({ property: "guide.axis.x.title", value: field })
     .editSemantic({ property: "guide.axis.y.scale", value: "y" })
     .editSemantic({ property: "guide.axis.y.coordinate", value: "main" })
     .editSemantic({
       property: "guide.axis.y.title",
-      value: "count(Displacement)"
+      value: `count(${field})`
     })
     .editSemantic({ property: "guide.grid.horizontal.scale", value: "y" })
     .editSemantic({
@@ -334,6 +362,10 @@ export function createCarsHistogramPrimitives(cars) {
       subtitle: values.title.subtitle,
       align: "center"
     });
+}
+
+export function createCarsHistogramPrimitives(cars) {
+  return createCarsHistogramPrimitiveProgram(cars);
 }
 
 export function renderCarsHistogramPrimitives(program, canvasContext) {

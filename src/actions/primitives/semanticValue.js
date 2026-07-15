@@ -7,7 +7,11 @@ import {
 import { validateAggregate } from "../../grammar/aggregate.js";
 import { findSemanticScale, hasDataset } from "../../selectors/index.js";
 import { validateCoordinateType } from "../../grammar/coordinates.js";
-import { normalizeHistogramBin } from "../../grammar/histogram.js";
+import {
+  normalizeHistogramBin,
+  validateHistogramBinBoundaries,
+  validateHistogramBinStep
+} from "../../grammar/histogram.js";
 import {
   validateSemanticFieldType,
   validateContinuousColorInterpolation,
@@ -178,6 +182,10 @@ export function validateSemanticValue(program, parsed, value) {
     if (property.endsWith(".fieldType")) validateSemanticFieldType(value);
     if (property.endsWith(".aggregate")) validateAggregate(value);
     if (property.endsWith(".bin.maxBins")) normalizeHistogramBin({ maxBins: value });
+    if (property.endsWith(".bin.step")) validateHistogramBinStep(value);
+    if (property.endsWith(".bin.boundaries")) {
+      validateHistogramBinBoundaries(value);
+    }
     if (property.endsWith(".stack") && value !== "zero" && value !== null) {
       throw new Error(`Unsupported stack "${value}".`);
     }
