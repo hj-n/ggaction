@@ -27,6 +27,8 @@
       url: /api/regression/
     - title: Error Bars
       url: /api/error-bars/
+    - title: Error Bands
+      url: /api/error-bands/
     - title: Guides
       url: /api/guides/
     - title: Titles

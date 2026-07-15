@@ -6,16 +6,16 @@ Approved Gapminder target를 vertical ranged-area actions와 statistical/explici
 
 ## 진행 상태
 
-- [ ] Area-compatible `encodeY2` assignment/reassignment
-- [ ] Atomic `encodeYRange` validation and wrapped hierarchy
-- [ ] Vertical area materialization and consumer plans
-- [ ] `createErrorBand` ID/source/channel/group inference
-- [ ] Statistical `createIntervalData` composition
-- [ ] Explicit interval mode without derived data
-- [ ] Existing `encodeColor` composition and legend compatibility
-- [ ] Primitive/public state, trace, Canvas-call and pixel equality
-- [ ] Unit/contract/immutability/error/rematerialization coverage
-- [ ] STEP status, conceptual commit and push
+- [x] Area-compatible `encodeY2` assignment/reassignment
+- [x] Atomic `encodeYRange` validation and wrapped hierarchy
+- [x] Vertical area materialization and consumer plans
+- [x] `createErrorBand` ID/source/channel/group inference
+- [x] Statistical `createIntervalData` composition
+- [x] Explicit interval mode without derived data
+- [x] Existing `encodeColor` composition and legend compatibility
+- [x] Primitive/public state, trace, Canvas-call and pixel equality
+- [x] Unit/contract/immutability/error/rematerialization coverage
+- [x] STEP status, conceptual commit and push
 
 ## 핵심 검증
 

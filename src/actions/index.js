@@ -2,6 +2,7 @@ import { registerCanvasActions } from "./canvas/index.js";
 import { registerCoordinateActions } from "./coordinates/index.js";
 import { registerDataActions } from "./data/index.js";
 import { registerEncodingActions } from "./encodings/index.js";
+import { registerErrorBandActions } from "./errorBands/index.js";
 import { registerErrorBarActions } from "./errorBars/index.js";
 import { registerGuideActions } from "./guides/index.js";
 import { registerMarkActions } from "./marks/index.js";
@@ -22,4 +23,5 @@ export function registerActions(ProgramClass) {
   registerTitleActions(ProgramClass);
   registerRegressionActions(ProgramClass);
   registerErrorBarActions(ProgramClass);
+  registerErrorBandActions(ProgramClass);
 }

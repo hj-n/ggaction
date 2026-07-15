@@ -14,7 +14,7 @@ Public error-band actions 없이 raw semantic/graphic primitives로 Gapminder gr
 - [x] Axes, horizontal grid, legend and title composition
 - [x] Variant manifest and exact future call chain
 - [x] `gapminder-vertical/primitive.png` and renderer/browser checks
-- [ ] Gate A user confirmation
+- [x] Gate A user confirmation
 - [x] STEP status, conceptual commit and push
 
 ## Gate A
@@ -34,6 +34,7 @@ public program을 구현하지 않는다.
 - Drawing order: horizontal grid, bands, axes, legend, title
 - Trace exclusions: no `createErrorBand`, `createIntervalData`, or `encodeYRange`
 - Local evidence: 3 Gate tests, 277 render tests and 56-variant gallery verification passed
+- User decision: approved; proceed to the vertical public action slice.
 
 
 ## 완료 조건

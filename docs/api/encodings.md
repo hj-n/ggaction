@@ -55,7 +55,7 @@ defaults to `"mean"` and may also use a parameterized quantile or ordered
 The advanced `encodeXOffset({ field })` action resolves nominal slots within
 each x band; grouped color layout normally calls it on the author's behalf.
 
-Area marks use quantitative x and the atomic ranged action:
+Ranged area marks use quantitative or temporal x and the atomic y-range action:
 
 ```javascript
 area

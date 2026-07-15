@@ -1,5 +1,9 @@
 import { cloneAndFreeze } from "../core/immutable.js";
-import { readNominalField, readQuantitativeField } from "./scales.js";
+import {
+  readNominalField,
+  readQuantitativeField,
+  readTemporalField
+} from "./scales.js";
 import {
   layoutSeriesPartition,
   validateColorLayout
@@ -11,18 +15,20 @@ export function deriveAreaSeries(rows, layer) {
   }
   const { x, y, y2, group } = layer.encoding ?? {};
   if (
-    x?.fieldType !== "quantitative" ||
+    !["quantitative", "temporal"].includes(x?.fieldType) ||
     y?.fieldType !== "quantitative" ||
     y2?.fieldType !== "quantitative"
   ) {
     throw new Error(
-      `Area mark "${layer.id}" requires quantitative x, y, and y2 encodings.`
+      `Area mark "${layer.id}" requires quantitative or temporal x and quantitative y/y2 encodings.`
     );
   }
   if (group !== undefined && group.fieldType !== "nominal") {
     throw new Error(`Area group encoding on mark "${layer.id}" must be nominal.`);
   }
-  const xValues = readQuantitativeField(rows, x.field);
+  const xValues = x.fieldType === "temporal"
+    ? readTemporalField(rows, x.field)
+    : readQuantitativeField(rows, x.field);
   const yValues = readQuantitativeField(rows, y.field);
   const y2Values = readQuantitativeField(rows, y2.field);
   const groupValues = group === undefined

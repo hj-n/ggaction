@@ -12,8 +12,12 @@ test("owns the accepted mark, channel, and field-type matrix", () => {
   ]);
   assert.equal(validatePositionFieldCompatibility("bar", "x", "temporal"), "temporal");
   assert.equal(validatePositionFieldCompatibility("bar", "y", "ordinal"), "ordinal");
+  assert.equal(
+    validatePositionFieldCompatibility("area", "x", "temporal"),
+    "temporal"
+  );
   assert.throws(
-    () => validatePositionFieldCompatibility("area", "x", "temporal"),
+    () => validatePositionFieldCompatibility("area", "y", "temporal"),
     /does not support field type/
   );
   assert.throws(

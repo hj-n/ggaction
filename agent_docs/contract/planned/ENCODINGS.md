@@ -51,8 +51,8 @@ encodeStrokeWidth({ target?: UserId; value: NonNegativeFinite }): ChartProgram;
   `encodeY2`를 한 atomic hierarchy에서 호출한다.
 - validation 또는 downstream materialization이 실패하면 어느 semantic/graphic branch도
   바뀌지 않는다. 별도 positional edit action은 만들지 않는다.
-- Status: Partially implemented. `encodeY2` reassignment는 Current이고 `encodeYRange` aggregate
-  reassignment의 추가 parameter coverage는 Planned다.
+- Status: Implemented. `encodeY2`와 atomic `encodeYRange` reassignment는 Current contract와 executable
+  error-band tests가 소유한다. This compatibility note remains because horizontal `encodeXRange` mirrors it.
 
 ## Implemented named palette baseline
 

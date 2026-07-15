@@ -2,6 +2,7 @@ import { defineVisualVariant } from "../../../support/visual-variants.js";
 import { loadGapminder } from "../../../support/data.js";
 
 import { createGapminderErrorBandPrimitives } from "../primitive.program.js";
+import { createGapminderErrorBand } from "../public.program.js";
 import {
   ERROR_BAND_COLORS,
   ERROR_BAND_LAYOUT
@@ -38,6 +39,7 @@ export const visualVariants = Object.freeze([
     title: "Gapminder Vertical Error Band",
     callChain: targetCallChain,
     primitive: createGapminderErrorBandPrimitives(loadGapminder()),
+    userFacing: createGapminderErrorBand(loadGapminder()),
     width: ERROR_BAND_LAYOUT.width,
     height: ERROR_BAND_LAYOUT.height,
     colors: ERROR_BAND_COLORS,

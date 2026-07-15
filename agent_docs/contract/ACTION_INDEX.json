@@ -547,12 +547,12 @@
       "domain": "encodings",
       "status": "implemented",
       "lifecycle": "Assignment",
-      "update": "Same action will atomically replace lower/upper fields",
-      "audit": "Reassignment — Planned",
+      "update": "Same action atomically replaces lower/upper fields",
+      "audit": "Reassignment — Implemented",
       "coverage": {
         "contract": "complete",
         "effects": "complete",
-        "tests": "partial"
+        "tests": "complete"
       },
       "contract": {
         "file": "agent_docs/contract/current/ENCODINGS.md",
@@ -683,6 +683,24 @@
       "contract": {
         "file": "agent_docs/contract/current/STATISTICS.md",
         "anchor": "createerrorbar"
+      }
+    },
+    {
+      "name": "createErrorBand",
+      "layer": "user-facing",
+      "domain": "statistics",
+      "status": "implemented",
+      "lifecycle": "Aggregate create-only",
+      "update": "Owned interval-data, area, range, group, and appearance children",
+      "audit": "Intentional; horizontal range, curve, and boundary capabilities remain Planned",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/STATISTICS.md",
+        "anchor": "createerrorband"
       }
     },
     {
@@ -1480,15 +1498,6 @@
   ],
   "plannedActions": [
     {
-      "name": "createErrorBand",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/COMPOSITE_MARKS.md",
-        "anchor": "createerrorband"
-      }
-    },
-    {
       "name": "createBoxPlot",
       "status": "planned",
       "readiness": "accepted",
@@ -1540,15 +1549,14 @@
       }
     },
     {
-      "id": "encodeYRange-reassignment",
-      "kind": "behavior",
-      "action": "encodeYRange",
-      "name": "encodeYRange reassignment",
+      "id": "error-band-horizontal-curve-and-boundaries",
+      "kind": "parameter",
+      "name": "Error-band horizontal range, curve, and boundaries",
       "status": "planned",
       "readiness": "accepted",
       "contract": {
-        "file": "agent_docs/contract/planned/ENCODINGS.md",
-        "anchor": "positional-reassignment"
+        "file": "agent_docs/contract/planned/COMPOSITE_MARKS.md",
+        "anchor": "createerrorband"
       }
     },
     {

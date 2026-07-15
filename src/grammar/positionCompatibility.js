@@ -8,7 +8,7 @@ export const POSITION_FIELD_COMPATIBILITY = Object.freeze({
     y: Object.freeze(["quantitative", "temporal", "ordinal", "nominal"])
   }),
   area: Object.freeze({
-    x: Object.freeze(["quantitative"]),
+    x: Object.freeze(["quantitative", "temporal"]),
     y: Object.freeze(["quantitative"])
   }),
   rule: Object.freeze({

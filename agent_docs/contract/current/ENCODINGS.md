@@ -169,7 +169,8 @@ type AggregateOperation =
 - Point x/y: `"quantitative" | "temporal" | "ordinal"`.
 - Line x: `"quantitative" | "temporal"`; line y는 aggregate policy에 따라
   `"quantitative" | "temporal" | "ordinal" | "nominal"`을 더 좁힌다.
-- Area x/y: 현재 density/range materializer가 지원하는 `"quantitative"`.
+- Area x: ranged area는 `"quantitative" | "temporal"`, density area는 `"quantitative"`; area y는
+  `"quantitative"`.
 - Bar vertical: `ordinal | temporal x + quantitative aggregate y`.
 - Bar horizontal: `quantitative aggregate x + ordinal | temporal y`.
 - Bar orientation은 complete pair에서 추론하며 semantic mark에 중복 저장하지 않는다. Histogram은
@@ -324,8 +325,10 @@ encodeX2(options: RulePositionAssignment): ChartProgram;
 - `target`, `fieldType`, `coordinate`, `scale`: `encodeY` 계약을 공유한다.
 - Effect: wrapped `encodeY` 뒤 `encodeY2`를 호출하는 atomic action이다. 중간의 incomplete area
   상태를 public workflow에 노출하지 않는다.
-- Coverage: regression band와 area tests가 hierarchy와 path geometry를 검증하며 explicit scale
-  variations는 부분적이다.
+- Reassignment: 같은 area에 다시 호출하면 wrapped y/y2 assignments가 두 field를 함께 교체하고
+  shared scale, concrete closed paths와 consumers를 rematerialize한다. Earlier programs remain unchanged.
+- Coverage: regression band, ranged area와 vertical error-band tests가 hierarchy, temporal/quantitative path
+  geometry, reassignment and rematerialization을 검증한다.
 
 ### Formal values — `encodeYRange`
 
@@ -340,6 +343,8 @@ encodeX2(options: RulePositionAssignment): ChartProgram;
 - `target`, `fieldType`, `coordinate`, `scale`
   - ✅ Covered: inferred/explicit target와 shared y/y2 child hierarchy.
   - ⚠️ Partial: explicit coordinate/scale option combinations direct test.
+- Reassignment
+  - ✅ Covered: lower/upper 동시 교체, wrapped child order, concrete path change와 earlier-program immutability.
 - 🟡 Planned: `encodeX2`를 wrapped child로 사용하는 horizontal ranged area의 atomic `encodeXRange`.
 - Evidence: ranged-area and regression tests.
 

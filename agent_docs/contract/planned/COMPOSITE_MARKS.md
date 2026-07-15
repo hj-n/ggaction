@@ -32,6 +32,10 @@ These types are reused below by the remaining planned interval composites. The c
 
 ## createErrorBand
 
+Vertical statistical/explicit y intervals, temporal/quantitative x, grouping, fill/opacity, source inference and
+ordinary area composition are Current in [`../current/STATISTICS.md`](../current/STATISTICS.md#createerrorband).
+This section owns only the accepted horizontal, curve, and boundary remainder.
+
 ```typescript
 createErrorBand({
   id?: UserId;
@@ -73,8 +77,9 @@ createErrorBand({
   representative area after creation; `groupBy` controls path segmentation independently of visible color.
 - The aggregate is create-only. Band appearance changes use the owned area/encoding actions and boundary
   changes use the owned line/encoding actions; no `editErrorBand` action is introduced.
-- Status: Planned, NOT IMPLEMENTED. vertical/horizontal computed/explicit bounds, grouped paths, boundary
-  options, curves, scale sharing, render order, rematerialization, trace and renderer parity가 필요하다.
+- Status: Partially implemented. Vertical computed/explicit bounds, grouped paths, scale sharing,
+  rematerialization, trace and renderer parity are Current. Horizontal x/x2 bounds, curve forwarding, boundary
+  options/order and their variants remain Planned, NOT IMPLEMENTED.
 
 ## regression band delegation
 

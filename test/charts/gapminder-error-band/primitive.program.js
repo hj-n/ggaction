@@ -20,10 +20,10 @@ export function createGapminderErrorBandPrimitives(gapminder) {
 
   return chart()
     .createCanvas({ width, height, margin, background: "white" })
-    .createData({ id: "gapminder", values: gapminder })
+    .createData({ values: gapminder })
     .editSemantic({
       property: "dataset[errorBandIntervalData].source",
-      value: "gapminder"
+      value: "data"
     })
     .editSemantic({
       property: "dataset[errorBandIntervalData].transform",
@@ -94,6 +94,10 @@ export function createGapminderErrorBandPrimitives(gapminder) {
     .editSemantic({
       property: "layer[errorBand].encoding.color.scale",
       value: "color"
+    })
+    .editSemantic({
+      property: "layer[errorBand].encoding.color.layout",
+      value: "overlay"
     })
     .editSemantic({ property: "scale[x].type", value: "time" })
     .editSemantic({ property: "scale[x].domain", value: "auto" })
@@ -202,13 +206,6 @@ export function createGapminderErrorBandPrimitives(gapminder) {
     .editGraphics({ target: "xAxisLine", property: "y2", value: xAxis.line.y2 })
     .editGraphics({ target: "xAxisLine", property: "stroke", value: "#334155" })
     .editGraphics({ target: "xAxisLine", property: "strokeWidth", value: 1 })
-    .createGraphics({ id: "yAxisLine", type: "line" })
-    .editGraphics({ target: "yAxisLine", property: "x1", value: yAxis.line.x1 })
-    .editGraphics({ target: "yAxisLine", property: "y1", value: yAxis.line.y1 })
-    .editGraphics({ target: "yAxisLine", property: "x2", value: yAxis.line.x2 })
-    .editGraphics({ target: "yAxisLine", property: "y2", value: yAxis.line.y2 })
-    .editGraphics({ target: "yAxisLine", property: "stroke", value: "#334155" })
-    .editGraphics({ target: "yAxisLine", property: "strokeWidth", value: 1 })
     .createGraphics({
       id: "xAxisTicks",
       type: "line",
@@ -220,17 +217,6 @@ export function createGapminderErrorBandPrimitives(gapminder) {
     .editGraphics({ target: "xAxisTicks", property: "y2", value: xAxis.line.y1 + 6 })
     .editGraphics({ target: "xAxisTicks", property: "stroke", value: "#64748b" })
     .editGraphics({ target: "xAxisTicks", property: "strokeWidth", value: 1 })
-    .createGraphics({
-      id: "yAxisTicks",
-      type: "line",
-      length: yAxis.ticks.length
-    })
-    .editGraphics({ target: "yAxisTicks", property: "x1", value: yAxis.line.x1 - 6 })
-    .editGraphics({ target: "yAxisTicks", property: "y1", value: yTickPositions })
-    .editGraphics({ target: "yAxisTicks", property: "x2", value: yAxis.line.x1 })
-    .editGraphics({ target: "yAxisTicks", property: "y2", value: yTickPositions })
-    .editGraphics({ target: "yAxisTicks", property: "stroke", value: "#64748b" })
-    .editGraphics({ target: "yAxisTicks", property: "strokeWidth", value: 1 })
     .createGraphics({
       id: "xAxisLabels",
       type: "text",
@@ -249,6 +235,35 @@ export function createGapminderErrorBandPrimitives(gapminder) {
     .editGraphics({ target: "xAxisLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "xAxisLabels", property: "textAlign", value: "center" })
     .editGraphics({ target: "xAxisLabels", property: "textBaseline", value: "top" })
+    .createGraphics({ id: "xAxisTitle", type: "text" })
+    .editGraphics({ target: "xAxisTitle", property: "x", value: xAxis.title.x })
+    .editGraphics({ target: "xAxisTitle", property: "y", value: xAxis.title.y })
+    .editGraphics({ target: "xAxisTitle", property: "text", value: xAxis.title.text })
+    .editGraphics({ target: "xAxisTitle", property: "fill", value: "#334155" })
+    .editGraphics({ target: "xAxisTitle", property: "fontSize", value: 13 })
+    .editGraphics({ target: "xAxisTitle", property: "fontFamily", value: "sans-serif" })
+    .editGraphics({ target: "xAxisTitle", property: "fontWeight", value: 600 })
+    .editGraphics({ target: "xAxisTitle", property: "textAlign", value: "center" })
+    .editGraphics({ target: "xAxisTitle", property: "textBaseline", value: "middle" })
+    .editGraphics({ target: "xAxisTitle", property: "rotation", value: 0 })
+    .createGraphics({ id: "yAxisLine", type: "line" })
+    .editGraphics({ target: "yAxisLine", property: "x1", value: yAxis.line.x1 })
+    .editGraphics({ target: "yAxisLine", property: "y1", value: yAxis.line.y1 })
+    .editGraphics({ target: "yAxisLine", property: "x2", value: yAxis.line.x2 })
+    .editGraphics({ target: "yAxisLine", property: "y2", value: yAxis.line.y2 })
+    .editGraphics({ target: "yAxisLine", property: "stroke", value: "#334155" })
+    .editGraphics({ target: "yAxisLine", property: "strokeWidth", value: 1 })
+    .createGraphics({
+      id: "yAxisTicks",
+      type: "line",
+      length: yAxis.ticks.length
+    })
+    .editGraphics({ target: "yAxisTicks", property: "x1", value: yAxis.line.x1 - 6 })
+    .editGraphics({ target: "yAxisTicks", property: "y1", value: yTickPositions })
+    .editGraphics({ target: "yAxisTicks", property: "x2", value: yAxis.line.x1 })
+    .editGraphics({ target: "yAxisTicks", property: "y2", value: yTickPositions })
+    .editGraphics({ target: "yAxisTicks", property: "stroke", value: "#64748b" })
+    .editGraphics({ target: "yAxisTicks", property: "strokeWidth", value: 1 })
     .createGraphics({
       id: "yAxisLabels",
       type: "text",
@@ -267,17 +282,6 @@ export function createGapminderErrorBandPrimitives(gapminder) {
     .editGraphics({ target: "yAxisLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "yAxisLabels", property: "textAlign", value: "right" })
     .editGraphics({ target: "yAxisLabels", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "xAxisTitle", type: "text" })
-    .editGraphics({ target: "xAxisTitle", property: "x", value: xAxis.title.x })
-    .editGraphics({ target: "xAxisTitle", property: "y", value: xAxis.title.y })
-    .editGraphics({ target: "xAxisTitle", property: "text", value: xAxis.title.text })
-    .editGraphics({ target: "xAxisTitle", property: "fill", value: "#334155" })
-    .editGraphics({ target: "xAxisTitle", property: "fontSize", value: 13 })
-    .editGraphics({ target: "xAxisTitle", property: "fontFamily", value: "sans-serif" })
-    .editGraphics({ target: "xAxisTitle", property: "fontWeight", value: 600 })
-    .editGraphics({ target: "xAxisTitle", property: "textAlign", value: "center" })
-    .editGraphics({ target: "xAxisTitle", property: "textBaseline", value: "middle" })
-    .editGraphics({ target: "xAxisTitle", property: "rotation", value: 0 })
     .createGraphics({ id: "yAxisTitle", type: "text" })
     .editGraphics({ target: "yAxisTitle", property: "x", value: yAxis.title.x })
     .editGraphics({ target: "yAxisTitle", property: "y", value: yAxis.title.y })

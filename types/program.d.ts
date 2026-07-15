@@ -441,6 +441,43 @@ export interface ErrorBarOptions {
   opacity?: number;
 }
 
+export interface ErrorBandPositionChannel {
+  field?: string;
+  fieldType?: "quantitative" | "temporal";
+  scale?: ScaleOptions;
+}
+
+export interface ErrorBandStatisticalIntervalChannel {
+  field?: string;
+  center?: IntervalCenter;
+  extent?: IntervalExtent;
+  level?: number;
+  scale?: ScaleOptions;
+}
+
+export interface ErrorBandExplicitIntervalChannel {
+  center: string;
+  lower: string;
+  upper: string;
+  scale?: ScaleOptions;
+}
+
+export type ErrorBandIntervalChannel =
+  | ErrorBandStatisticalIntervalChannel
+  | ErrorBandExplicitIntervalChannel;
+
+export interface ErrorBandOptions {
+  id?: string;
+  target?: string;
+  data?: string;
+  x?: ErrorBandPositionChannel | ErrorBandIntervalChannel;
+  y?: ErrorBandPositionChannel | ErrorBandIntervalChannel;
+  groupBy?: string;
+  coordinate?: string;
+  fill?: string;
+  opacity?: number;
+}
+
 export interface EditDensityOptions {
   target?: string;
   bandwidth?: "auto" | number;
@@ -756,7 +793,14 @@ export class ChartProgram {
   encodeRadius(options: { value: number; target?: string }): ChartProgram;
   encodeXOffset(options: XOffsetEncodingOptions): ChartProgram;
   encodeY2(options: SecondaryPositionEncodingOptions): ChartProgram;
-  encodeYRange(options: ActionOptions): ChartProgram;
+  encodeYRange(options: {
+    lower: string;
+    upper: string;
+    target?: string;
+    fieldType?: "quantitative";
+    coordinate?: string;
+    scale?: ScaleOptions;
+  }): ChartProgram;
   encodeGroup(options: { field: string; target?: string; fieldType?: "nominal" }): ChartProgram;
   encodeHistogram(options: HistogramEncodingOptions): ChartProgram;
   encodeDensity(options: DensityEncodingOptions): ChartProgram;
@@ -767,6 +811,7 @@ export class ChartProgram {
 
   createRegression(options?: RegressionOptions): ChartProgram;
   createErrorBar(options?: ErrorBarOptions): ChartProgram;
+  createErrorBand(options?: ErrorBandOptions): ChartProgram;
   createAxes(options?: CreateAxesOptions): ChartProgram;
   createXAxis(options?: CompleteAxisOptions<XAxisPosition>): ChartProgram;
   createYAxis(options?: CompleteAxisOptions<YAxisPosition>): ChartProgram;

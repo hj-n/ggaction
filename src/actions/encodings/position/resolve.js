@@ -91,7 +91,13 @@ function validateMarkPolicy(layer, dataset, channel, args, fieldType, field) {
     if (args.bin !== undefined) throw new Error("Point position encoding does not support bin.");
     if (args.stack !== undefined) throw new Error("Point position encoding does not support stack.");
   } else if (layer.mark.type === "area") {
-    if (fieldType !== "quantitative") throw new Error("Area position encoding requires quantitative fields.");
+    const validAreaPosition = fieldType === "quantitative" ||
+      (channel === "x" && fieldType === "temporal");
+    if (!validAreaPosition) {
+      throw new Error(
+        "Area position encoding requires quantitative fields or a temporal x field."
+      );
+    }
     if (args.aggregate !== undefined || args.bin !== undefined) {
       throw new Error("Area position encoding does not support aggregate or bin.");
     }

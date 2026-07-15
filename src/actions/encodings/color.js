@@ -60,6 +60,13 @@ function resolveColorLayout(layer, requested, barGrain) {
   if (layer.mark.type === "area" && layout === "group") {
     throw new Error('Area color layout does not support "group".');
   }
+  if (
+    layer.mark.type === "area" &&
+    layer.encoding?.y2 !== undefined &&
+    layout !== "overlay"
+  ) {
+    throw new Error('Ranged area color encoding supports only "overlay" layout.');
+  }
   return layout;
 }
 
@@ -68,6 +75,9 @@ function applyColorLayoutCompanion(
   { target, layer, layout, scale, field }
 ) {
   if (layout === undefined) return program;
+  if (layer.mark.type === "area" && layer.encoding?.y2 !== undefined) {
+    return program;
+  }
   const channels = layer.mark.type === "bar" ? resolveBarChannels(layer) : undefined;
   const measureChannel = channels?.measure ?? "y";
   const measure = layer.encoding?.[measureChannel];

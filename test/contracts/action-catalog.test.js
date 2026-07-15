@@ -221,7 +221,6 @@ test("keeps planned direct actions and reassignment gaps explicit", () => {
   assert.equal(new Set(names).size, names.length);
   assert.deepEqual(new Set(names), new Set([
     "createBoxPlot",
-    "createErrorBand",
     "encodeXRange",
     "selectRows"
   ]));

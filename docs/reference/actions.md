@@ -428,6 +428,20 @@ eligible encoded layer, the shortest call infers its fields, orientation, data,
 coordinate, and scales.
 [Error bars](../api/error-bars.md)
 
+### `createErrorBand`
+
+```javascript
+createErrorBand({
+  id?, target?, data?, x?, y?, groupBy?, coordinate?, fill?, opacity?
+} = {})
+```
+
+Create a vertical statistical or explicit interval ribbon. The action can
+infer one encoded source layer and reuses `createIntervalData`, area, y-range,
+and grouping actions. Horizontal ranges, curves, and boundary lines are not
+implemented yet.
+[Error bands](../api/error-bands.md)
+
 ### `createGuides`
 
 ```javascript
