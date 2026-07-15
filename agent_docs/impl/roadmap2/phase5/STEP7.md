@@ -7,14 +7,15 @@ raw primitive로 고정한다.
 
 ## 진행 상태
 
-- [ ] Bottom-edge alignment/offset와 occupied bounds reference
-- [ ] Word wrapping, long-token character fallback과 lineHeight target
-- [ ] Title/subtitle multi-line concrete text children
-- [ ] Plot/legend와 same-edge collision-free placement
-- [ ] Primitive-only trace와 expanded target chain metadata
-- [ ] `primitive.png`와 Gate C browser/PNG confirmation
+- [x] Bottom-edge alignment/offset와 occupied bounds reference
+- [x] Word wrapping, long-token character fallback과 lineHeight target
+- [x] Title/subtitle multi-line concrete text children
+- [x] Plot/legend와 same-edge collision-free placement
+- [x] Primitive-only trace와 expanded target chain metadata
+- [x] `primitive.png`와 Gate C browser/PNG confirmation
 - [ ] Feedback 반영과 primitive 재확인
-- [ ] STEP status, conceptual commit와 push
+- [x] STEP status
+- [x] Conceptual commit와 push
 
 ## 완료 조건
 

@@ -13,8 +13,10 @@ import {
   createAreaOutlineEditPrimitives,
   createCountNormalizationPrimitives,
   createDensityRevisionPrimitives,
-  createEpanechnikovKernelPrimitives
+  createEpanechnikovKernelPrimitives,
+  createWrappedBottomTitlePrimitives
 } from "./primitive-programs.js";
+import { wrappedBottomTitleTarget } from "./title-reference.js";
 
 const cars = loadCars();
 
@@ -79,6 +81,16 @@ function densityCallChain({ kernel, normalization } = {}) {
   );
 }
 
+const wrappedBottomTitleCallChain = baselineCallChain
+  .replace(
+    "height: 500,\n    margin: { top: 130, right: 40, bottom: 70, left: 80 }",
+    `height: ${wrappedBottomTitleTarget.height},\n    margin: { top: ${wrappedBottomTitleTarget.margin.top}, right: ${wrappedBottomTitleTarget.margin.right}, bottom: ${wrappedBottomTitleTarget.margin.bottom}, left: ${wrappedBottomTitleTarget.margin.left} }`
+  )
+  .replace(
+    `  .createTitle({\n    text: "Distribution of Acceleration",\n    subtitle: "By Origin (cars dataset)"\n  });`,
+    `  .createTitle({\n    text: "${wrappedBottomTitleTarget.options.text}",\n    subtitle: "${wrappedBottomTitleTarget.options.subtitle}",\n    position: "${wrappedBottomTitleTarget.options.position}",\n    align: "${wrappedBottomTitleTarget.options.align}",\n    offset: ${wrappedBottomTitleTarget.options.offset},\n    gap: ${wrappedBottomTitleTarget.options.gap},\n    maxWidth: ${wrappedBottomTitleTarget.options.maxWidth},\n    wrap: "${wrappedBottomTitleTarget.options.wrap}",\n    lineHeight: ${wrappedBottomTitleTarget.options.lineHeight}\n  });`
+  );
+
 export const visualVariants = Object.freeze([defineVisualVariant({
   ...shared,
   variant: "baseline",
@@ -126,4 +138,20 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   });`,
   primitive: createDensityRevisionPrimitives(cars),
   userFacing: createDensityRevisionCarsDensityArea(cars)
+}), defineVisualVariant({
+  ...shared,
+  variant: "wrapped-title-bottom",
+  title: "Wrapped Bottom Chart Title",
+  callChain: wrappedBottomTitleCallChain,
+  primitive: createWrappedBottomTitlePrimitives(cars),
+  width: wrappedBottomTitleTarget.width,
+  height: wrappedBottomTitleTarget.height,
+  regions: [
+    ...shared.regions,
+    Object.freeze({
+      name: "title",
+      ...wrappedBottomTitleTarget.occupiedBounds,
+      minimumInkPixels: 80
+    })
+  ]
 })]);

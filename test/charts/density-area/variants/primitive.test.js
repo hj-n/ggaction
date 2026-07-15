@@ -23,9 +23,11 @@ import { createAreaOutlineEditPrimitives } from "./primitive-programs.js";
 import {
   createCountNormalizationPrimitives,
   createDensityRevisionPrimitives,
-  createEpanechnikovKernelPrimitives
+  createEpanechnikovKernelPrimitives,
+  createWrappedBottomTitlePrimitives
 } from "./primitive-programs.js";
 import { createCarsDensityAreaValues } from "../reference-values.js";
+import { wrappedBottomTitleTarget } from "./title-reference.js";
 
 const cars = loadCars();
 
@@ -177,4 +179,69 @@ test("matches every approved density primitive with its public action flow", () 
   ]) {
     assertChartProgramsEquivalent({ primitiveProgram, publicProgram });
   }
+});
+
+test("authors a wrapped bottom title as concrete text children", () => {
+  const program = createWrappedBottomTitlePrimitives(cars);
+  const target = wrappedBottomTitleTarget;
+  const title = program.graphicSpec.objects.chartTitle;
+  const subtitle = program.graphicSpec.objects.chartSubtitle;
+  const context = createMockCanvasContext();
+
+  renderCarsDensityAreaPrimitives(program, context);
+
+  assert.equal(program.graphicSpec.objects.canvas.properties.height, target.height);
+  assert.deepEqual(program.semanticSpec.title, {
+    text: target.options.text,
+    subtitle: target.options.subtitle
+  });
+  assert.deepEqual(title.children.map(child => child.properties.text),
+    target.title.lines);
+  assert.deepEqual(title.children.map(child => child.properties.y), target.title.y);
+  assert.deepEqual(subtitle.children.map(child => child.properties.text),
+    target.subtitle.lines);
+  assert.deepEqual(subtitle.children.map(child => child.properties.y),
+    target.subtitle.y);
+  assert.deepEqual(
+    target.title.y.slice(1).map((value, index) => value - target.title.y[index]),
+    [target.options.lineHeight]
+  );
+  assert.deepEqual(
+    target.subtitle.y.slice(1).map(
+      (value, index) => value - target.subtitle.y[index]
+    ),
+    [target.options.lineHeight]
+  );
+  assert.equal(
+    target.longTokenFallback.lines.join(""),
+    target.longTokenFallback.text
+  );
+  assert.equal(target.longTokenFallback.lines.every(line => line.length > 0), true);
+  assert.equal(title.children.every(child =>
+    child.properties.x === target.title.x &&
+    child.properties.textAlign === "center" &&
+    child.properties.rotation === 0
+  ), true);
+  assert.equal(subtitle.children.every(child =>
+    child.properties.x === target.subtitle.x &&
+    child.properties.textAlign === "center" &&
+    child.properties.rotation === 0
+  ), true);
+  const xAxisTitle = program.graphicSpec.objects.xAxisTitle.properties;
+  assert.equal(
+    target.occupiedBounds.y > xAxisTitle.y + xAxisTitle.fontSize / 2,
+    true
+  );
+  assert.equal(
+    target.occupiedBounds.y + target.occupiedBounds.height < target.height,
+    true
+  );
+  assert.deepEqual(
+    findCanvasCalls(context, "fillText")
+      .filter(call => [...target.title.lines, ...target.subtitle.lines]
+        .includes(call.args[0]))
+      .map(call => call.args[0]),
+    [...target.title.lines, ...target.subtitle.lines]
+  );
+  assert.equal(program.trace.children.some(node => node.op === "editTitle"), false);
 });

@@ -22,6 +22,7 @@ density reassignment의 target behavior를 고정한다.
 | `epanechnikov-kernel` | density kernel vocabulary | compact-support kernel의 다른 peak/tail geometry |
 | `count-normalization` | density normalization | Origin별 sample count가 반영된 y magnitude |
 | `density-revision` | `editDensity` | 새 derived revision과 triangular/count result |
+| `wrapped-title-bottom` | bottom title position과 wrapping | x-axis 아래의 2-line title/subtitle block |
 
 ## Target user-facing chains
 
@@ -83,6 +84,36 @@ chart()
 });
 ```
 
+### Bottom wrapped title
+
+```javascript
+chart()
+  .createCanvas({
+    width: 720,
+    height: 620,
+    margin: { top: 130, right: 40, bottom: 190, left: 80 }
+  })
+  // canonical density mark, encodings, and guides
+  .createTitle({
+    text: "Distribution of Acceleration Across Vehicle Origins",
+    subtitle: "Kernel density estimates for acceleration, grouped by origin in the cars dataset",
+    position: "bottom",
+    align: "center",
+    offset: 60,
+    gap: 12,
+    maxWidth: 270,
+    wrap: "word",
+    lineHeight: 26
+  });
+```
+
+- Plot bounds는 baseline과 같은 `x=80..680`, `y=130..430`이다.
+- Title line centers는 `y=[501, 527]`, subtitle은 `y=[557, 583]`이며 모두 `x=380`이다.
+- Occupied bounds `x=245, y=490, width=270, height=100`은 x-axis title과 Canvas bottom 사이에 들어간다.
+- Word mode의 oversized single token은 Unicode code point boundary character fallback을 사용한다.
+  Gate C reference token `acceleration-density-estimate`는 70px target에서 빈 줄 없이 3줄로 나뉜다.
+- Renderer는 full semantic text를 wrap하지 않고 concrete text children 네 개를 그대로 그린다.
+
 ## Numeric contract
 
 - Kernel fixture는 production density helper를 import하지 않고 네 kernel의 exact formula를 계산한다.
@@ -92,4 +123,5 @@ chart()
 
 ## 범위 경계
 
-Adaptive bandwidth, per-group bandwidth, cumulative density와 renderer-side statistical inference는 포함하지 않는다.
+Adaptive bandwidth, per-group bandwidth, cumulative density, renderer-side statistical inference와 renderer-side
+text wrapping은 포함하지 않는다.
