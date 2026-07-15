@@ -229,10 +229,13 @@ trace compatibility를 검증한다.
 
 ## Phase 8 — New box-plot chart
 
+- Phase goal: [`phase8/GOAL.md`](phase8/GOAL.md)
+- Complete chart contract: [`chart/cars-box-plot.md`](chart/cars-box-plot.md)
+
 - Direct action: `createBoxPlot`
 
 Tukey/minmax summary, whisker/caps, ranged bar, median rule와 outlier point를 primitive로 먼저 만든다.
-Vertical/horizontal orientation, factor, width, outlier/style parameter와 sparse group ordering을 검증한다.
+Vertical/horizontal orientation, factor, width, outlier/style parameter와 sparse category ordering을 검증한다.
 Box는 generic rule/error-bar/ranged-position actions를 실제 wrapped children으로 재사용한다.
 
 ## Phase 9 — New selected-row chart

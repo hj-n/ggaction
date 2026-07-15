@@ -12,15 +12,15 @@ type BoxWhisker =
 
 - `createBoxPlot` owns two internal wrapped derived-data operations: a box summary and optional outlier
   selection. They remain trace-visible but are not separate direct public actions in the first contract.
-- The summary stores q1, median, q3, lower whisker and upper whisker for each observed group. Tukey is the
+- The summary stores q1, median, q3, lower whisker and upper whisker for each observed category. Tukey is the
   default with `factor: 1.5`; whiskers are the most extreme observed finite values within
   `[q1 - factor × IQR, q3 + factor × IQR]`. `minmax` uses observed finite minimum and maximum.
 - Outliers are original owned row copies strictly outside Tukey whiskers. `minmax` produces no outliers.
-  Group order follows first appearance and rows inside each outlier group retain source order.
-- Provenance records source, category and measure fields, optional grouping, quantile convention, resolved
+  Category order follows first appearance and rows inside each outlier category retain source order.
+- Provenance records source, category and measure fields, quantile convention, resolved
   whisker policy, generated fields and the owning box ID. Source data and old derived revisions are immutable.
 - Status: Planned, NOT IMPLEMENTED. quartile/whisker fixtures, even/odd/duplicate samples, missing values,
-  grouped order, empty/singleton groups, Tukey factor, minmax, outlier ownership and deterministic IDs가 필요하다.
+  category order, empty/singleton categories, Tukey factor, minmax, outlier ownership and deterministic IDs가 필요하다.
 
 ## selectRows
 
