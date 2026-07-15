@@ -19,8 +19,8 @@ kernel·normalization·immutable reassignment, filter predicate modes, regressio
 - [x] Density kernel/normalization primitive 승인과 public implementation
 - [x] Filter predicate primitive 승인과 public implementation
 - [x] Regression method/interval primitive 승인과 public implementation
-- [ ] Full parameter, numeric, failure, immutability와 rematerialization matrix
-- [ ] Public docs, contract 승격과 Phase closeout
+- [x] Full parameter, numeric, failure, immutability와 rematerialization matrix
+- [x] Public docs, contract 승격과 Phase closeout
 
 ## 구현 범위
 
