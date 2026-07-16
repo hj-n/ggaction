@@ -24,6 +24,8 @@ test("authors Gate C as one selected-last complete path", () => {
   const baseChildren = base.graphicSpec.objects.trends.children;
   const children = program.graphicSpec.objects.trends.children;
   const selected = children.at(-1);
+  const legendSymbols = program.graphicSpec.objects.seriesLegendSymbols.children;
+  const legendLabels = program.graphicSpec.objects.seriesLegendLabels.children;
 
   assert.equal(program.graphicSpec.objects.trends.type, "path");
   assert.equal(children.length, baseChildren.length);
@@ -44,12 +46,31 @@ test("authors Gate C as one selected-last complete path", () => {
   assert.equal(selected.properties.strokeWidth, LINE_HIGHLIGHT_TARGET.strokeWidth);
   assert.deepEqual(selected.properties.strokeDash, LINE_HIGHLIGHT_TARGET.strokeDash);
   assert.equal(selected.properties.opacity, LINE_HIGHLIGHT_TARGET.opacity);
+  assert.equal(legendSymbols.slice(0, -1).every(child =>
+    child.properties.opacity === LINE_HIGHLIGHT_TARGET.dimOpacity
+  ), true);
+  assert.equal(legendLabels.slice(0, -1).every(child =>
+    child.properties.opacity === LINE_HIGHLIGHT_TARGET.dimOpacity
+  ), true);
+  assert.equal(legendSymbols.at(-1).properties.stroke, LINE_HIGHLIGHT_TARGET.stroke);
+  assert.equal(legendSymbols.at(-1).properties.strokeWidth,
+    LINE_HIGHLIGHT_TARGET.strokeWidth);
+  assert.deepEqual(legendSymbols.at(-1).properties.strokeDash,
+    LINE_HIGHLIGHT_TARGET.strokeDash);
+  assert.equal(legendLabels.at(-1).properties.opacity, LINE_HIGHLIGHT_TARGET.opacity);
+  const changedGraphics = new Set([
+    "trends", "seriesLegendSymbols", "seriesLegendLabels"
+  ]);
   assert.deepEqual(
     Object.fromEntries(
-      Object.entries(program.graphicSpec.objects).filter(([id]) => id !== "trends")
+      Object.entries(program.graphicSpec.objects).filter(([id]) =>
+        !changedGraphics.has(id)
+      )
     ),
     Object.fromEntries(
-      Object.entries(base.graphicSpec.objects).filter(([id]) => id !== "trends")
+      Object.entries(base.graphicSpec.objects).filter(([id]) =>
+        !changedGraphics.has(id)
+      )
     )
   );
 
@@ -73,6 +94,10 @@ test("renders the selected series with approved path appearance", () => {
     call.op === "setLineWidth" &&
     call.value === LINE_HIGHLIGHT_TARGET.strokeWidth
   ), true);
+  assert.equal(context.calls.some(call =>
+    call.op === "setGlobalAlpha" &&
+    call.value === LINE_HIGHLIGHT_TARGET.dimOpacity
+  ), true);
 });
 
 test("reauthors the same semantic series after Canvas-only resize", () => {
@@ -87,6 +112,11 @@ test("reauthors the same semantic series after Canvas-only resize", () => {
   assert.deepEqual(
     program.graphicSpec.objects.trends.children.at(-1).properties.commands,
     base.graphicSpec.objects.trends.children[target.index].properties.commands
+  );
+  assert.equal(
+    program.graphicSpec.objects.seriesLegendSymbols.children.at(-1)
+      .properties.stroke,
+    LINE_HIGHLIGHT_TARGET.stroke
   );
   assert.equal(target.key, "trends/series/2");
 });

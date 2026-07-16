@@ -10,7 +10,7 @@ Cars Origin line chart에서 Japan series path를 raw primitives로 강조하고
 - [x] Equality selection through one unique path field value
 - [x] Proposed accent stroke, width, dash and opacity target
 - [x] Complement dimming and selected-last path order
-- [x] Legend, axes, grid and title remain consistent
+- [x] Matching legend item highlight/dimming plus unchanged axes, grid and title
 - [x] Primitive program, reference values, manifest and future call chain
 - [x] Browser and `primitive.png` checks
 - [ ] Gate C user confirmation
@@ -29,7 +29,9 @@ the USA and Europe paths retain their geometry but use opacity `0.16`. The selec
 - Selection basis: one unique series-level `Origin` field value; no selector reads a vertex or concrete path command.
 - Appearance: red `#dc2626`, 5px named `"dashed"`, opacity `1`; USA and Europe use opacity `0.16`.
 - The Japan path keeps its original complete `M` + ordered `L` command sequence and moves to the last child.
-- Every non-mark graphic, semantic layer, scale, axis, grid, legend and title remains unchanged.
+- Because the selection is exactly one complete categorical `Origin` series, the matching legend symbol receives the
+  selected stroke/width/dash while the USA/Europe symbols and labels use opacity `0.16`. Legend order stays unchanged.
+- Every non-legend graphic, semantic layer, scale, axis, grid and title remains unchanged.
 - A Canvas-only width change preserves `trends/series/2` and its 12 points while remapping concrete x positions.
 - Browser gallery verification loaded the 1440×920 primitive with no console warnings or errors.
 - Artifact: `.artifacts/test/png/roadmap2/mark-selection/line-series-japan/primitive.png`.

@@ -29,28 +29,63 @@ export function createJapanLineHighlightGatePrimitive(
     properties: child.properties
   }));
   const [selected] = children.splice(target.index, 1);
+  const legendSymbols = base.graphicSpec.objects.seriesLegendSymbols;
+  const legendLabels = base.graphicSpec.objects.seriesLegendLabels;
 
-  return base.editGraphics({
-    target: "trends",
-    property: "children",
-    value: [
-      ...children.map(child => ({
-        type: child.type,
+  return base
+    .editGraphics({
+      target: "trends",
+      property: "children",
+      value: [
+        ...children.map(child => ({
+          type: child.type,
+          properties: {
+            ...child.properties,
+            opacity: LINE_HIGHLIGHT_TARGET.dimOpacity
+          }
+        })),
+        {
+          type: selected.type,
+          properties: {
+            ...selected.properties,
+            stroke: LINE_HIGHLIGHT_TARGET.stroke,
+            strokeWidth: LINE_HIGHLIGHT_TARGET.strokeWidth,
+            strokeDash: LINE_HIGHLIGHT_TARGET.strokeDash,
+            opacity: LINE_HIGHLIGHT_TARGET.opacity
+          }
+        }
+      ]
+    })
+    .editGraphics({
+      target: "seriesLegendSymbols",
+      property: "children",
+      value: legendSymbols.children.map((child, index) => ({
+        type: child.type ?? legendSymbols.type,
+        properties: index === target.index
+          ? {
+              ...child.properties,
+              stroke: LINE_HIGHLIGHT_TARGET.stroke,
+              strokeWidth: LINE_HIGHLIGHT_TARGET.strokeWidth,
+              strokeDash: LINE_HIGHLIGHT_TARGET.strokeDash,
+              opacity: LINE_HIGHLIGHT_TARGET.opacity
+            }
+          : {
+              ...child.properties,
+              opacity: LINE_HIGHLIGHT_TARGET.dimOpacity
+            }
+      }))
+    })
+    .editGraphics({
+      target: "seriesLegendLabels",
+      property: "children",
+      value: legendLabels.children.map((child, index) => ({
+        type: child.type ?? legendLabels.type,
         properties: {
           ...child.properties,
-          opacity: LINE_HIGHLIGHT_TARGET.dimOpacity
+          opacity: index === target.index
+            ? LINE_HIGHLIGHT_TARGET.opacity
+            : LINE_HIGHLIGHT_TARGET.dimOpacity
         }
-      })),
-      {
-        type: selected.type,
-        properties: {
-          ...selected.properties,
-          stroke: LINE_HIGHLIGHT_TARGET.stroke,
-          strokeWidth: LINE_HIGHLIGHT_TARGET.strokeWidth,
-          strokeDash: LINE_HIGHLIGHT_TARGET.strokeDash,
-          opacity: LINE_HIGHLIGHT_TARGET.opacity
-        }
-      }
-    ]
-  });
+      }))
+    });
 }
