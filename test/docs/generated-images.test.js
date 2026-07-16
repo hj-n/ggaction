@@ -52,7 +52,7 @@ test("keeps one generated gallery image for every public chart", async () => {
     "scatterplot", "line-chart", "histogram", "grouped-bar",
     "regression-scatterplot", "density-area", "error-bar"
   ]) {
-    assert.match(tutorials, new RegExp(`\\./${tutorial}\\.md`));
+    assert.match(tutorials, new RegExp(`/tutorials/${tutorial}/`));
   }
 
   const manifest = JSON.parse(read("docs/assets/images/manifest.json"));

@@ -5,6 +5,8 @@ title: Temporal Line Positions
 
 # Temporal Line Positions
 
+{% include chart-example.html id="line" %}
+
 ## At a glance
 
 | Action | Shortest call | Required state | Result |

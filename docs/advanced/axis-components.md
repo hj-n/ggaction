@@ -5,6 +5,8 @@ title: Advanced Axis Components
 
 # Advanced Axis Components
 
+{% include chart-example.html id="scatterplot" %}
+
 Use these actions when a complete `createAxes` call is not sufficient. All
 component actions require a resolved linear, time, or ordinal scale and Canvas
 bounds. x supports `bottom` and `top`; y supports `left` and `right`.

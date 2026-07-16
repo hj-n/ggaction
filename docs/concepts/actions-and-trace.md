@@ -5,6 +5,14 @@ title: Actions and Trace Trees
 
 # Actions and Trace Trees
 
+<div class="docs-concept-flow" role="img" aria-label="A high-level action contains domain actions, which contain primitive semantic and graphical edits">
+  <span>createAxes<strong>high level</strong></span>
+  <b aria-hidden="true">→</b>
+  <span>createXAxis<strong>domain action</strong></span>
+  <b aria-hidden="true">→</b>
+  <span>createGraphics / editGraphics<strong>primitives</strong></span>
+</div>
+
 Every chart-authoring method is an action. Calling a high-level action records
 that action and any wrapped actions it invokes as children.
 

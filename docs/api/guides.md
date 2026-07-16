@@ -5,6 +5,8 @@ title: Guides
 
 # Guides
 
+{% include chart-example.html id="histogram" %}
+
 ## At a glance
 
 | Action | Shortest call | Inference/defaults | Result |

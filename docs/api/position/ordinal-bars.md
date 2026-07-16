@@ -5,6 +5,8 @@ title: Bar Positions
 
 # Bar Positions
 
+{% include chart-example.html id="bar" %}
+
 ## At a glance
 
 | Action | Shortest call | Required state | Result |

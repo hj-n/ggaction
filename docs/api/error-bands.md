@@ -5,6 +5,8 @@ title: Error Bands
 
 # Error Bands
 
+{% include chart-example.html id="error-band" %}
+
 `createErrorBand()` creates a vertical or horizontal confidence or interval
 ribbon as one ordinary area layer. It can derive grouped interval rows or
 consume existing center/lower/upper fields.

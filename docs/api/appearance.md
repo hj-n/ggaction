@@ -5,6 +5,8 @@ title: Appearance Encodings
 
 # Appearance Encodings
 
+{% include chart-example.html id="regression" %}
+
 ## At a glance
 
 | Action | Shortest call | Inference/defaults | Result |

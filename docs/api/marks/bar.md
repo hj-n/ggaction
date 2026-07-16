@@ -5,6 +5,8 @@ title: Bar Marks
 
 # Bar Marks
 
+{% include chart-example.html id="bar" %}
+
 Bar marks represent binned counts, aggregate categories, grouped or stacked
 partitions, and observed quantitative intervals.
 

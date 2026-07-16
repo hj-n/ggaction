@@ -5,6 +5,8 @@ title: Regression Scatterplot Recipe
 
 # Regression Scatterplot Recipe
 
+{% include chart-example.html id="regression" %}
+
 Use this pattern to layer grouped linear fits and mean-response confidence
 bands over a point chart.
 

@@ -1,0 +1,17 @@
+{% assign example = site.data.chart_examples[include.id] %}
+<article>
+  <a class="docs-chart-index__image" href="{{ include.url | relative_url }}">
+    <img
+      src="{{ example.image | relative_url }}"
+      alt="{{ example.alt }}"
+      width="{{ example.width }}"
+      height="{{ example.height }}"
+      loading="lazy"
+    >
+  </a>
+  <div class="docs-chart-index__body">
+    <a class="docs-chart-index__title" href="{{ include.url | relative_url }}">{{ include.title }}</a>
+    <p>{{ include.summary }}</p>
+    <span>{{ include.actions }}</span>
+  </div>
+</article>

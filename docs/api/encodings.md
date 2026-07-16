@@ -5,6 +5,8 @@ title: Encodings
 
 # Encodings
 
+{% include chart-example.html id="regression" %}
+
 Encoding actions connect data fields or constant values to chart channels.
 Only values that cannot be inferred safely are required; most target, scale,
 coordinate, and type options use the current program state or documented

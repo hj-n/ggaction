@@ -5,6 +5,8 @@ title: Line Chart Recipe
 
 # Line Chart Recipe
 
+{% include chart-example.html id="line" %}
+
 ## Minimal flow
 
 ```javascript

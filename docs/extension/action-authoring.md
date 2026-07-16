@@ -5,6 +5,14 @@ title: Action Authoring
 
 # Action Authoring
 
+<div class="docs-concept-flow" role="img" aria-label="An extension action wraps an implementation, calls lower-level actions, and records one trace hierarchy">
+  <span>action(metadata, fn)<strong>define</strong></span>
+  <b aria-hidden="true">→</b>
+  <span>wrapped calls<strong>compose</strong></span>
+  <b aria-hidden="true">→</b>
+  <span>trace subtree<strong>record</strong></span>
+</div>
+
 The extension entry point is for developers adding traceable domain actions.
 
 ```javascript

@@ -41,6 +41,17 @@ function dataUrls(relative) {
     .map(match => match[1]);
 }
 
+function chartExampleCatalog() {
+  const source = read("docs/_data/chart_examples.yml");
+  return new Map([...source.matchAll(/^([a-z][a-z0-9-]*):\n((?: {2}.+\n?)+)/gm)]
+    .map(match => {
+      const values = Object.fromEntries([...match[2].matchAll(
+        /^ {2}([a-z]+):\s*(.+)$/gm
+      )].map(property => [property[1], property[2]]));
+      return [match[1], values];
+    }));
+}
+
 function headingIds(markdown) {
   return new Set([...markdown.matchAll(/^#{1,6}\s+(.+)$/gm)].map(match =>
     match[1]
@@ -180,6 +191,47 @@ test("keeps repository source links and raw images verifiable", async () => {
   }
 });
 
+test("keeps task pages visual and chart figures canonical", async () => {
+  const catalog = chartExampleCatalog();
+  const manifest = JSON.parse(read("docs/assets/images/manifest.json"));
+  assert.equal(catalog.size >= 10, true);
+
+  for (const [id, example] of catalog) {
+    const relativeImage = example.image.replace(/^\//, "docs/");
+    assert.equal(existsSync(path.join(root, relativeImage)), true, id);
+    const imageId = path.basename(example.image, ".png");
+    const generated = manifest.charts[imageId] ?? manifest.tutorials[imageId];
+    assert.notEqual(generated, undefined, `${id} generated image`);
+    assert.equal(Number(example.width), generated.width, `${id} width`);
+    assert.equal(Number(example.height), generated.height, `${id} height`);
+    assert.equal(example.alt.length > 0, true, `${id} alt`);
+    assert.equal(example.caption.length > 0, true, `${id} caption`);
+  }
+
+  const pages = (await files(docsRoot)).filter(isDocumentationMarkdown);
+  const visualPattern = /!\[[^\]]+\]\([^)]+\)|chart-(?:example|card)\.html|docs-concept-flow/;
+  const visualDirectories = [
+    `${path.sep}api${path.sep}`,
+    `${path.sep}recipes${path.sep}`,
+    `${path.sep}tutorials${path.sep}`,
+    `${path.sep}concepts${path.sep}`,
+    `${path.sep}extension${path.sep}`
+  ];
+  const taskPages = pages.filter(file =>
+    file === path.join(docsRoot, "getting-started.md") ||
+    visualDirectories.some(directory => file.includes(directory))
+  );
+  for (const file of taskPages) {
+    const markdown = readFileSync(file, "utf8");
+    assert.match(markdown, visualPattern, `${file} needs a purposeful visual`);
+    for (const match of markdown.matchAll(
+      /chart-(?:example|card)\.html\s+id="([^"]+)"/g
+    )) {
+      assert.equal(catalog.has(match[1]), true, `${file}: ${match[1]}`);
+    }
+  }
+});
+
 test("keeps tutorial action flows aligned with public examples", () => {
   const cases = [
     ["scatterplot", "examples/cars-scatterplot/program.js", "return chart()"],
@@ -247,7 +299,7 @@ test("links every public chart example from entry documentation", () => {
     "error-band",
     "mark-selection"
   ]) {
-    assert.match(tutorials, new RegExp(`\\./${name}\\.md`));
+    assert.match(tutorials, new RegExp(`/tutorials/${name}/`));
   }
   const recipes = read("docs/recipes/index.md");
   for (const name of [
@@ -260,7 +312,7 @@ test("links every public chart example from entry documentation", () => {
     "error-bar",
     "error-band"
   ]) {
-    assert.match(recipes, new RegExp(`\\./${name}\\.md`));
+    assert.match(recipes, new RegExp(`/recipes/${name}/`));
   }
   assert.match(gettingStarted, /point color\s+encoding can produce/);
   assert.match(gettingStarted, /examples\/getting-started/);

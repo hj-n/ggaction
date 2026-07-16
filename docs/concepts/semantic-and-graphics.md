@@ -5,6 +5,16 @@ title: Semantic and Graphical State
 
 # Semantic and Graphical State
 
+<div class="docs-concept-flow" role="img" aria-label="A domain action updates semantic meaning and concrete graphics, then the renderer reads only graphicSpec">
+  <span>semanticSpec<strong>meaning</strong></span>
+  <b aria-hidden="true">→</b>
+  <span>domain action<strong>materializes</strong></span>
+  <b aria-hidden="true">→</b>
+  <span>graphicSpec<strong>concrete nodes</strong></span>
+  <b aria-hidden="true">→</b>
+  <span>renderer<strong>draw only</strong></span>
+</div>
+
 `ggaction` keeps chart meaning separate from its fully resolved graphics.
 
 ```text

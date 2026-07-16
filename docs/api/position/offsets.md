@@ -5,6 +5,8 @@ title: Ordinal Offsets
 
 # Ordinal Offsets
 
+{% include chart-example.html id="bar" %}
+
 ## At a glance
 
 | Action | Shortest call | Required state | Result |

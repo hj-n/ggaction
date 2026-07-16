@@ -5,6 +5,8 @@ title: Point Marks
 
 # Point Marks
 
+{% include chart-example.html id="scatterplot" %}
+
 Point marks represent individual observations or derived items. Their semantic
 type is `point`; circle, square, diamond, and other symbols are graphical
 realizations of that meaning.

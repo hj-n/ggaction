@@ -5,6 +5,8 @@ title: Canvas
 
 # Canvas
 
+{% include chart-example.html id="scatterplot" %}
+
 ## At a glance
 
 | Action | Shortest call | Inference/defaults | Result |

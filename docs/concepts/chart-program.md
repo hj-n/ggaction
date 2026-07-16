@@ -5,6 +5,13 @@ title: ChartProgram and Immutability
 
 # ChartProgram and Immutability
 
+<div class="docs-concept-flow docs-concept-flow--state" role="img" aria-label="ChartProgram contains semantic specification, graphic specification, authoring context, and trace state">
+  <span>semanticSpec<strong>meaning</strong></span>
+  <span>graphicSpec<strong>drawing</strong></span>
+  <span>context<strong>next action</strong></span>
+  <span>trace<strong>history</strong></span>
+</div>
+
 `chart()` returns an empty `ChartProgram`. A program contains the authored chart
 state and the history used to produce it.
 

@@ -5,6 +5,8 @@ title: Regression
 
 # Regression
 
+{% include chart-example.html id="regression" %}
+
 `createRegression()` layers grouped linear, polynomial, or LOESS fits over an
 existing quantitative point mark. Linear and polynomial fits can include mean
 or prediction interval bands; LOESS is line-only.

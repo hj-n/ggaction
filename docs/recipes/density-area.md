@@ -5,6 +5,8 @@ title: Density Area Recipe
 
 # Density Area Recipe
 
+{% include chart-example.html id="density" %}
+
 ## Minimal flow
 
 ```javascript

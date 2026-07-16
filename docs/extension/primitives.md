@@ -5,6 +5,12 @@ title: Primitive Extension API
 
 # Primitive Extension API
 
+<div class="docs-concept-flow" role="img" aria-label="Extension actions compose editSemantic, createGraphics, and editGraphics primitives">
+  <span>editSemantic<strong>meaning</strong></span>
+  <span>createGraphics<strong>identity</strong></span>
+  <span>editGraphics<strong>concrete value</strong></span>
+</div>
+
 These methods are the low-level public extension layer, not the recommended
 chart-authoring API.
 

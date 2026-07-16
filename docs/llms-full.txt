@@ -153,6 +153,8 @@ Source, issues, and development history are available on
 
 # Getting Started
 
+{% include chart-example.html id="scatterplot" %}
+
 This example creates and renders a complete scatterplot from a small inline
 dataset. Every method returns a new `ChartProgram`, so the calls can be chained.
 
@@ -272,86 +274,24 @@ actions. It does not compile `semanticSpec` during rendering.
 
 # Tutorials
 
-Build complete charts before exploring individual API options.
+Tutorials build complete, runnable charts and explain what each action adds.
+Choose the visual relationship that matches the question you want to answer.
 
-| Chart | Semantic mark | Core actions | Example result |
-| --- | --- | --- | --- |
-| Scatterplot | point | `encodeX`, `encodeY`, `encodeColor` | Quantitative points |
-| Line chart | line | temporal `encodeX`, aggregate `encodeY` | Mean series over time |
-| Histogram | bar | `encodeHistogram`, stacked `encodeColor` | Binned counts |
-| Bar chart | bar | ordinal `encodeX`, aggregate `encodeY`, grouped `encodeColor` | Side-by-side aggregate bars |
-| Regression scatterplot | point + area + line | `filterData`, appearance encodings, `createRegression` | Grouped fits and confidence bands |
-| Density area | area | `encodeDensity`, grouped `encodeColor` | Overlaid probability densities |
-| Error bar | rule | `createErrorBar` | Grouped mean confidence intervals |
-| Error band | area | `createErrorBand` | Grouped confidence ribbons over an independent position |
-| Mark selection | point, bar, line | `selectMarks`, `highlightMarks`, `filterMarks` | Selected-item filtering and emphasis |
+<div class="docs-chart-index">
+  {% include chart-card.html id="scatterplot" title="Scatterplot" url="/tutorials/scatterplot/" summary="Quantitative positions, nominal color, radius, and inferred axes." actions="createPointMark · encodeX · encodeY" %}
+  {% include chart-card.html id="line" title="Aggregate line chart" url="/tutorials/line-chart/" summary="Temporal mean series with color, stroke dash, legend, and title." actions="createLineMark · encodeGroup" %}
+  {% include chart-card.html id="histogram" title="Stacked histogram" url="/tutorials/histogram/" summary="Binned counts partitioned and stacked by a nominal field." actions="encodeHistogram · encodeColor" %}
+  {% include chart-card.html id="bar" title="Bar chart" url="/tutorials/grouped-bar/" summary="Ordinal aggregate bars arranged side by side by nominal color." actions="encodeY · encodeColor" %}
+  {% include chart-card.html id="regression" title="Regression scatterplot" url="/tutorials/regression-scatterplot/" summary="Filtered observations, variable symbols, grouped fits, and bands." actions="filterData · createRegression" %}
+  {% include chart-card.html id="density" title="Density area" url="/tutorials/density-area/" summary="Grouped kernel-density data and translucent area paths." actions="encodeDensity · encodeColor" %}
+  {% include chart-card.html id="error-bar" title="Error-bar overlay" url="/tutorials/error-bar/" summary="Observations with grouped mean confidence intervals and caps." actions="createErrorBar" %}
+  {% include chart-card.html id="error-band" title="Bounded error band" url="/tutorials/error-band/" summary="Grouped confidence ribbons with explicit boundary paths." actions="createErrorBand" %}
+  {% include chart-card.html id="selection" title="Mark selection and highlighting" url="/tutorials/mark-selection/" summary="Select, filter, and emphasize final point, bar, and line items." actions="selectMarks · highlightMarks" %}
+</div>
 
-Choose the chart whose semantic relationship matches the question you want to
-answer. The bar tutorial uses grouped bars as its current example; grouping is
-a layout choice, not a separate top-level chart type.
-
-## Scatterplot
-
-Create quantitative x/y positions, nominal color, constant point radius, and
-Cartesian axes from the cars dataset.
-
-[Build the cars scatterplot](./scatterplot.md)
-
-## Aggregate line chart
-
-Create temporal mean-aggregate series, combine color and stroke dash in one
-legend, and add a chart title.
-
-[Build the cars line chart](./line-chart.md)
-
-## Stacked histogram
-
-Bin a quantitative field, count and stack rows by category, infer histogram
-guides, and center a chart title.
-
-[Build the cars histogram](./histogram.md)
-
-## Bar chart
-
-Aggregate an ordinal x category and build a bar chart. The current example uses
-a nominal color field to place groups side by side.
-
-[Build a bar chart with grouped bars](./grouped-bar.md)
-
-## Regression scatterplot
-
-Filter rows, vary point size and shape, and layer grouped linear fits with 95%
-mean-response confidence bands.
-
-[Build the cars regression scatterplot](./regression-scatterplot.md)
-
-## Density area chart
-
-Derive grouped kernel-density values and overlay translucent,
-zero-baseline areas with a top multi-column legend.
-
-[Build the cars density area chart](./density-area.md)
-
-## Error-bar chart
-
-Derive grouped mean confidence intervals and materialize vertical rules with
-fixed-width caps.
-
-[Build the cars error-bar chart](./error-bar.md)
-
-## Error-band chart
-
-Derive grouped confidence intervals over time and materialize one closed area
-path per series.
-
-[Build the Gapminder error-band chart](./error-band.md)
-
-## Mark selection and highlighting
-
-Select grouped point extrema, complete histogram stacks, and categorical line
-series through the same final-item selector grammar.
-
-[Select, filter, and highlight marks](./mark-selection.md)
+The bar tutorial uses grouped bars as one layout of the general bar mark. The
+statistical tutorials compose ordinary data, marks, encodings, and guides rather
+than introducing a separate renderer path.
 
 <!-- Source: /tutorials/scatterplot/ -->
 
@@ -1480,28 +1420,30 @@ data-cardinality changes. It does not store stale item IDs.
 
 # Chart Recipes
 
-Use a recipe when you already know the chart type and want the shortest
-supported action flow. Tutorials explain one complete dataset; recipes separate
-required author decisions from library inference.
+Use a recipe when you know the chart type and want the shortest supported
+action flow. Each recipe separates the decisions you must provide from the
+resources, defaults, and guides that ggaction can infer.
 
-| Chart | Required decisions | Main inference | Recipe |
-| --- | --- | --- | --- |
-| Scatterplot | x field, y field | quantitative scales and Cartesian guides | [Scatterplot](./scatterplot.md) |
-| Line chart | temporal x, quantitative y | mean aggregation, sorted paths, guides | [Line chart](./line-chart.md) |
-| Histogram | quantitative field | bins, count y, zero stack, guides | [Histogram](./histogram.md) |
-| Bar chart | ordinal x, quantitative y | mean y and band geometry | [Bar chart](./bar-chart.md) |
-| Regression scatterplot | point x/y and optional group | grouped OLS, confidence bands, shared guides | [Regression scatterplot](./regression-scatterplot.md) |
-| Density area | quantitative value and optional group | KDE data, scales, closed paths | [Density area](./density-area.md) |
-| Error bar | independent x and quantitative y | mean 95% CI, rules, caps, guides | [Error bar](./error-bar.md) |
-| Error band | independent position, quantitative interval, optional group | mean 95% CI, ranged area paths, guides | [Error band](./error-band.md) |
+<div class="docs-chart-index">
+  {% include chart-card.html id="scatterplot" title="Scatterplot" url="/recipes/scatterplot/" summary="Choose two quantitative fields; infer scales and Cartesian guides." actions="createPointMark · encodeX · encodeY" %}
+  {% include chart-card.html id="line" title="Line chart" url="/recipes/line-chart/" summary="Choose temporal x and quantitative y; infer aggregation and series paths." actions="createLineMark · encodeX · encodeY" %}
+  {% include chart-card.html id="histogram" title="Histogram" url="/recipes/histogram/" summary="Choose one quantitative field; infer bins, count y, and zero baseline." actions="createBarMark · encodeHistogram" %}
+  {% include chart-card.html id="bar" title="Bar chart" url="/recipes/bar-chart/" summary="Choose category and measure fields; infer aggregate band geometry." actions="createBarMark · encodeBarWidth" %}
+  {% include chart-card.html id="regression" title="Regression scatterplot" url="/recipes/regression-scatterplot/" summary="Layer observations, grouped fits, and confidence bands." actions="createPointMark · createRegression" %}
+  {% include chart-card.html id="density" title="Density area" url="/recipes/density-area/" summary="Derive density values and create grouped baseline-closed paths." actions="createAreaMark · encodeDensity" %}
+  {% include chart-card.html id="error-bar" title="Error bar" url="/recipes/error-bar/" summary="Summarize grouped centers and intervals over existing observations." actions="createErrorBar" %}
+  {% include chart-card.html id="error-band" title="Error band" url="/recipes/error-band/" summary="Derive intervals over an independent position and close one ribbon per series." actions="createErrorBand" %}
+</div>
 
-Every flow begins with `createCanvas`, `createData`, and a semantic mark. Add
-explicit IDs only when the current program state contains multiple compatible
-resources.
+Every flow begins with `createCanvas`, `createData`, and a semantic mark or
+composite action. Add explicit IDs only when the current program contains more
+than one compatible resource.
 
 <!-- Source: /recipes/scatterplot/ -->
 
 # Scatterplot Recipe
+
+{% include chart-example.html id="scatterplot" %}
 
 ## Minimal flow
 
@@ -1545,6 +1487,8 @@ scale IDs.
 <!-- Source: /recipes/line-chart/ -->
 
 # Line Chart Recipe
+
+{% include chart-example.html id="line" %}
 
 ## Minimal flow
 
@@ -1602,6 +1546,8 @@ The accepted curve vocabulary is `linear`, `step`, `step-before`, `step-after`,
 
 # Histogram Recipe
 
+{% include chart-example.html id="histogram" %}
+
 ## Minimal flow
 
 ```javascript
@@ -1646,6 +1592,8 @@ used by the public tutorial.
 <!-- Source: /recipes/bar-chart/ -->
 
 # Bar Chart Recipe
+
+{% include chart-example.html id="bar" %}
 
 The current complete bar-chart example uses grouped bars. Grouping is a layout
 choice inside the bar chart, not a separate top-level chart type.
@@ -1695,6 +1643,8 @@ The current API does not synthesize zero bars or support horizontal bars.
 <!-- Source: /recipes/regression-scatterplot/ -->
 
 # Regression Scatterplot Recipe
+
+{% include chart-example.html id="regression" %}
 
 Use this pattern to layer grouped linear fits and mean-response confidence
 bands over a point chart.
@@ -1751,6 +1701,8 @@ Pass `target`, `x`, `y`, or `groupBy` only when inference is ambiguous.
 
 # Density Area Recipe
 
+{% include chart-example.html id="density" %}
+
 ## Minimal flow
 
 ```javascript
@@ -1793,6 +1745,8 @@ options only when that composition is intentional.
 
 # Error-Bar Recipe
 
+{% include chart-example.html id="error-bar" %}
+
 ## Minimal flow
 
 ```javascript
@@ -1830,6 +1784,8 @@ options to reuse its fields, data, coordinate, and scales.
 <!-- Source: /recipes/error-band/ -->
 
 # Error-Band Recipe
+
+{% include chart-example.html id="error-band" %}
 
 ## Minimal flow
 
@@ -1982,6 +1938,8 @@ state. See [Actions and trace trees](./concepts/actions-and-trace.md) and
 
 # Canvas
 
+{% include chart-example.html id="scatterplot" %}
+
 ## At a glance
 
 | Action | Shortest call | Inference/defaults | Result |
@@ -2043,6 +2001,8 @@ margins must leave positive plot bounds.
 <!-- Source: /api/data/ -->
 
 # Data
+
+{% include chart-example.html id="regression" %}
 
 ## At a glance
 
@@ -2300,6 +2260,8 @@ duplicate grouping fields, and colliding output field names.
 
 # Marks
 
+{% include chart-example.html id="scatterplot" %}
+
 Marks define the semantic form of a layer. Create a mark first, then connect it
 to data through position, grouping, and appearance encodings. The first mark of
 each type infers its ID and current dataset when those choices are unambiguous.
@@ -2360,6 +2322,8 @@ those graphics.
 
 # Point Marks
 
+{% include chart-example.html id="scatterplot" %}
+
 Point marks represent individual observations or derived items. Their semantic
 type is `point`; circle, square, diamond, and other symbols are graphical
 realizations of that meaning.
@@ -2418,6 +2382,8 @@ required by `editPointMark`.
 <!-- Source: /api/marks/line-area/ -->
 
 # Line and Area Marks
+
+{% include chart-example.html id="line" %}
 
 Line and area marks materialize ordered backend-neutral paths. Lines connect
 values; areas close two edges or one density edge against a baseline.
@@ -2492,6 +2458,8 @@ configuration until their encodings become renderable.
 
 # Bar Marks
 
+{% include chart-example.html id="bar" %}
+
 Bar marks represent binned counts, aggregate categories, grouped or stacked
 partitions, and observed quantitative intervals.
 
@@ -2548,6 +2516,8 @@ after Canvas or scale rematerialization.
 
 # Rule Marks
 
+{% include chart-example.html id="error-bar" %}
+
 Rule marks represent reference lines and intervals. They use concrete line
 primitives without exposing a renderer-specific path format.
 
@@ -2588,6 +2558,8 @@ it. Canvas and scale changes recompute all endpoints.
 <!-- Source: /api/encodings/ -->
 
 # Encodings
+
+{% include chart-example.html id="regression" %}
 
 Encoding actions connect data fields or constant values to chart channels.
 Only values that cannot be inferred safely are required; most target, scale,
@@ -2797,6 +2769,8 @@ combinations are rejected before partial state is authored.
 
 # Regression
 
+{% include chart-example.html id="regression" %}
+
 `createRegression()` layers grouped linear, polynomial, or LOESS fits over an
 existing quantitative point mark. Linear and polynomial fits can include mean
 or prediction interval bands; LOESS is line-only.
@@ -2914,6 +2888,8 @@ Failed calls leave the earlier immutable program unchanged.
 <!-- Source: /api/error-bars/ -->
 
 # Error Bars
+
+{% include chart-example.html id="error-bar" %}
 
 `createErrorBar()` materializes vertical or horizontal intervals from either
 grouped statistics or existing center/lower/upper fields. It can infer its
@@ -3103,6 +3079,8 @@ the current action.
 
 # Error Bands
 
+{% include chart-example.html id="error-band" %}
+
 `createErrorBand()` creates a vertical or horizontal confidence or interval
 ribbon as one ordinary area layer. It can derive grouped interval rows or
 consume existing center/lower/upper fields.
@@ -3258,6 +3236,8 @@ objects.
 
 # Box Plots
 
+{% include chart-example.html id="box" %}
+
 `createBoxPlot` creates vertical or horizontal box plots from one categorical
 field and one quantitative field. It derives immutable summary data and
 composes ordinary ranged-bar, error-bar, rule, and optional point actions.
@@ -3367,6 +3347,8 @@ are not implemented.
 <!-- Source: /api/guides/ -->
 
 # Guides
+
+{% include chart-example.html id="histogram" %}
 
 ## At a glance
 
@@ -3496,6 +3478,8 @@ be selected.
 
 # Titles
 
+{% include chart-example.html id="line" %}
+
 ## At a glance
 
 | Action | Shortest call | Inference/defaults | Result |
@@ -3609,6 +3593,8 @@ font size. Missing margin space and same-edge guide collisions are errors.
 
 # Rendering
 
+{% include chart-example.html id="scatterplot" %}
+
 ## At a glance
 
 | Target | Shortest call | Density | Result |
@@ -3675,6 +3661,8 @@ concrete, and `pixelRatio` must be a positive finite number.
 
 # Position Encodings
 
+{% include chart-example.html id="scatterplot" %}
+
 Choose the position family from the semantic mark and field relationship. All
 position actions infer the current mark, use or create a Cartesian coordinate,
 resolve a channel scale, and explicitly materialize the affected graphics.
@@ -3736,6 +3724,8 @@ Calling the same action again replaces only that endpoint.
 
 # Quantitative Positions
 
+{% include chart-example.html id="scatterplot" %}
+
 ## At a glance
 
 | Action | Shortest call | Required state | Result |
@@ -3788,6 +3778,8 @@ guide cannot be rebound away from a scale that still has another consumer.
 <!-- Source: /api/position/temporal/ -->
 
 # Temporal Line Positions
+
+{% include chart-example.html id="line" %}
 
 ## At a glance
 
@@ -3897,6 +3889,8 @@ outputs must be quantitative.
 
 # Bar Positions
 
+{% include chart-example.html id="bar" %}
+
 ## At a glance
 
 | Action | Shortest call | Required state | Result |
@@ -3994,6 +3988,8 @@ quantitative x measure.
 
 # Histogram Positions
 
+{% include chart-example.html id="histogram" %}
+
 ## At a glance
 
 | Action | Shortest call | Required state | Result |
@@ -4075,6 +4071,8 @@ zero-height rectangles. Grouped histograms require nominal color with
 
 # Ordinal Offsets
 
+{% include chart-example.html id="bar" %}
+
 ## At a glance
 
 | Action | Shortest call | Required state | Result |
@@ -4129,6 +4127,8 @@ consumer of one shared xOffset scale must use the same padding policy.
 <!-- Source: /api/series-encodings/ -->
 
 # Series Encodings
+
+{% include chart-example.html id="line" %}
 
 ## At a glance
 
@@ -4360,6 +4360,8 @@ Combined line legends also require matching ordered domains.
 <!-- Source: /api/appearance/ -->
 
 # Appearance Encodings
+
+{% include chart-example.html id="regression" %}
 
 ## At a glance
 
@@ -4621,6 +4623,8 @@ selection or appearance state. Highlight appearance currently supports points on
 <!-- Source: /api/scales/ -->
 
 # Scale Options
+
+{% include chart-example.html id="density" %}
 
 ## At a glance
 
@@ -4952,6 +4956,8 @@ color is rejected instead of silently replacing the guide.
 
 # Coordinates
 
+{% include chart-example.html id="scatterplot" %}
+
 ## At a glance
 
 | Action | Shortest call | Inference/defaults | Result |
@@ -5005,6 +5011,8 @@ resources can be stored, but the current rendering slice is Cartesian.
 <!-- Source: /api/axes/ -->
 
 # Axes
+
+{% include chart-example.html id="scatterplot" %}
 
 ## At a glance
 
@@ -5121,6 +5129,8 @@ axes) cannot be created simultaneously. Polar axes are unsupported.
 
 # Grids
 
+{% include chart-example.html id="histogram" %}
+
 ## At a glance
 
 | Action | Shortest call | Inference/defaults | Result |
@@ -5224,6 +5234,8 @@ coordinate. Ambiguous resources require explicit IDs.
 <!-- Source: /api/legends/ -->
 
 # Legends
+
+{% include chart-example.html id="density" %}
 
 ## At a glance
 
@@ -5510,6 +5522,13 @@ instead of resizing the Canvas or dropping symbol layers.
 
 # ChartProgram and Immutability
 
+<div class="docs-concept-flow docs-concept-flow--state" role="img" aria-label="ChartProgram contains semantic specification, graphic specification, authoring context, and trace state">
+  <span>semanticSpec<strong>meaning</strong></span>
+  <span>graphicSpec<strong>drawing</strong></span>
+  <span>context<strong>next action</strong></span>
+  <span>trace<strong>history</strong></span>
+</div>
+
 `chart()` returns an empty `ChartProgram`. A program contains the authored chart
 state and the history used to produce it.
 
@@ -5547,6 +5566,16 @@ boundary between intent and concrete output.
 <!-- Source: /concepts/semantic-and-graphics/ -->
 
 # Semantic and Graphical State
+
+<div class="docs-concept-flow" role="img" aria-label="A domain action updates semantic meaning and concrete graphics, then the renderer reads only graphicSpec">
+  <span>semanticSpec<strong>meaning</strong></span>
+  <b aria-hidden="true">→</b>
+  <span>domain action<strong>materializes</strong></span>
+  <b aria-hidden="true">→</b>
+  <span>graphicSpec<strong>concrete nodes</strong></span>
+  <b aria-hidden="true">→</b>
+  <span>renderer<strong>draw only</strong></span>
+</div>
 
 `ggaction` keeps chart meaning separate from its fully resolved graphics.
 
@@ -5591,6 +5620,14 @@ the values produced by applying them are graphical.
 
 # Actions and Trace Trees
 
+<div class="docs-concept-flow" role="img" aria-label="A high-level action contains domain actions, which contain primitive semantic and graphical edits">
+  <span>createAxes<strong>high level</strong></span>
+  <b aria-hidden="true">→</b>
+  <span>createXAxis<strong>domain action</strong></span>
+  <b aria-hidden="true">→</b>
+  <span>createGraphics / editGraphics<strong>primitives</strong></span>
+</div>
+
 Every chart-authoring method is an action. Calling a high-level action records
 that action and any wrapped actions it invokes as children.
 
@@ -5632,6 +5669,8 @@ Developers can define new wrapped actions with the
 <!-- Source: /advanced/axis-components/ -->
 
 # Advanced Axis Components
+
+{% include chart-example.html id="scatterplot" %}
 
 Use these actions when a complete `createAxes` call is not sufficient. All
 component actions require a resolved linear, time, or ordinal scale and Canvas
@@ -6580,6 +6619,14 @@ Rendering functions are not actions and do not modify the trace.
 
 # Action Authoring
 
+<div class="docs-concept-flow" role="img" aria-label="An extension action wraps an implementation, calls lower-level actions, and records one trace hierarchy">
+  <span>action(metadata, fn)<strong>define</strong></span>
+  <b aria-hidden="true">→</b>
+  <span>wrapped calls<strong>compose</strong></span>
+  <b aria-hidden="true">→</b>
+  <span>trace subtree<strong>record</strong></span>
+</div>
+
 The extension entry point is for developers adding traceable domain actions.
 
 ```javascript
@@ -6627,6 +6674,12 @@ the enclosing action must invoke every required graphical operation.
 <!-- Source: /extension/primitives/ -->
 
 # Primitive Extension API
+
+<div class="docs-concept-flow" role="img" aria-label="Extension actions compose editSemantic, createGraphics, and editGraphics primitives">
+  <span>editSemantic<strong>meaning</strong></span>
+  <span>createGraphics<strong>identity</strong></span>
+  <span>editGraphics<strong>concrete value</strong></span>
+</div>
 
 These methods are the low-level public extension layer, not the recommended
 chart-authoring API.

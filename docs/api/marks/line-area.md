@@ -5,6 +5,8 @@ title: Line and Area Marks
 
 # Line and Area Marks
 
+{% include chart-example.html id="line" %}
+
 Line and area marks materialize ordered backend-neutral paths. Lines connect
 values; areas close two edges or one density edge against a baseline.
 

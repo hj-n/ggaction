@@ -5,6 +5,8 @@ title: Getting Started
 
 # Getting Started
 
+{% include chart-example.html id="scatterplot" %}
+
 This example creates and renders a complete scatterplot from a small inline
 dataset. Every method returns a new `ChartProgram`, so the calls can be chained.
 

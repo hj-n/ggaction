@@ -5,6 +5,8 @@ title: Rendering
 
 # Rendering
 
+{% include chart-example.html id="scatterplot" %}
+
 ## At a glance
 
 | Target | Shortest call | Density | Result |

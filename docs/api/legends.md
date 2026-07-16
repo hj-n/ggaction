@@ -5,6 +5,8 @@ title: Legends
 
 # Legends
 
+{% include chart-example.html id="density" %}
+
 ## At a glance
 
 | Action | Shortest call | Inference/defaults | Result |

@@ -5,6 +5,8 @@ title: Series Encodings
 
 # Series Encodings
 
+{% include chart-example.html id="line" %}
+
 ## At a glance
 
 | Action | Shortest call | Inference/defaults | Result |

@@ -5,6 +5,8 @@ title: Quantitative Positions
 
 # Quantitative Positions
 
+{% include chart-example.html id="scatterplot" %}
+
 ## At a glance
 
 | Action | Shortest call | Required state | Result |

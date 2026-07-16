@@ -5,6 +5,8 @@ title: Error-Band Recipe
 
 # Error-Band Recipe
 
+{% include chart-example.html id="error-band" %}
+
 ## Minimal flow
 
 ```javascript

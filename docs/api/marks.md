@@ -5,6 +5,8 @@ title: Marks
 
 # Marks
 
+{% include chart-example.html id="scatterplot" %}
+
 Marks define the semantic form of a layer. Create a mark first, then connect it
 to data through position, grouping, and appearance encodings. The first mark of
 each type infers its ID and current dataset when those choices are unambiguous.

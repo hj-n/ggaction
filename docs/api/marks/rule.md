@@ -5,6 +5,8 @@ title: Rule Marks
 
 # Rule Marks
 
+{% include chart-example.html id="error-bar" %}
+
 Rule marks represent reference lines and intervals. They use concrete line
 primitives without exposing a renderer-specific path format.
 

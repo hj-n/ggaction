@@ -5,6 +5,8 @@ title: Box Plots
 
 # Box Plots
 
+{% include chart-example.html id="box" %}
+
 `createBoxPlot` creates vertical or horizontal box plots from one categorical
 field and one quantitative field. It derives immutable summary data and
 composes ordinary ranged-bar, error-bar, rule, and optional point actions.

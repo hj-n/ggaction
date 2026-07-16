@@ -1,0 +1,70 @@
+scatterplot:
+  image: /assets/images/cars-scatterplot.png
+  alt: Cars scatterplot of horsepower and fuel economy
+  width: 1280
+  height: 800
+  caption: Quantitative positions with nominal color.
+  url: /tutorials/scatterplot/
+line:
+  image: /assets/images/cars-line-chart.png
+  alt: Aggregate cars line chart grouped by origin
+  width: 1440
+  height: 920
+  caption: Temporal aggregate paths with grouped series.
+  url: /tutorials/line-chart/
+histogram:
+  image: /assets/images/cars-histogram.png
+  alt: Stacked histogram of car displacement
+  width: 864
+  height: 920
+  caption: Binned counts partitioned by a nominal field.
+  url: /tutorials/histogram/
+bar:
+  image: /assets/images/jobs-grouped-bar.png
+  alt: Grouped bar chart of job percentages
+  width: 1440
+  height: 920
+  caption: Aggregate ordinal bars with grouped color layout.
+  url: /tutorials/grouped-bar/
+regression:
+  image: /assets/images/cars-regression-scatterplot.png
+  alt: Cars scatterplot with grouped regression lines and confidence bands
+  width: 1520
+  height: 960
+  caption: Layered points, derived fits, and confidence bands.
+  url: /tutorials/regression-scatterplot/
+density:
+  image: /assets/images/cars-density-area.png
+  alt: Grouped density area chart of car acceleration
+  width: 1440
+  height: 1000
+  caption: Derived density paths with grouped color and guides.
+  url: /tutorials/density-area/
+error-bar:
+  image: /assets/images/cars-error-bar.png
+  alt: Car observations with grouped mean confidence intervals
+  width: 1440
+  height: 920
+  caption: Observation points layered with fixed-pixel error-bar caps.
+  url: /tutorials/error-bar/
+box:
+  image: /assets/images/cars-box-plot.png
+  alt: Tukey box plot of fuel economy by origin
+  width: 720
+  height: 920
+  caption: Quartile boxes, medians, whiskers, and outlier points.
+  url: /api/box-plots/
+error-band:
+  image: /assets/images/gapminder-error-band.png
+  alt: Life expectancy confidence bands with explicit boundaries
+  width: 1520
+  height: 960
+  caption: Grouped confidence ribbons with lower and upper paths.
+  url: /tutorials/error-band/
+selection:
+  image: /assets/images/mark-selection-points.png
+  alt: Grouped maximum points highlighted as red diamonds
+  width: 1520
+  height: 880
+  caption: Final visual items selected and emphasized by their rendered grain.
+  url: /tutorials/mark-selection/

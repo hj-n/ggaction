@@ -5,6 +5,8 @@ title: Position Encodings
 
 # Position Encodings
 
+{% include chart-example.html id="scatterplot" %}
+
 Choose the position family from the semantic mark and field relationship. All
 position actions infer the current mark, use or create a Cartesian coordinate,
 resolve a channel scale, and explicitly materialize the affected graphics.

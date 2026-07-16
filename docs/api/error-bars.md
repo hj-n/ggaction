@@ -5,6 +5,8 @@ title: Error Bars
 
 # Error Bars
 
+{% include chart-example.html id="error-bar" %}
+
 `createErrorBar()` materializes vertical or horizontal intervals from either
 grouped statistics or existing center/lower/upper fields. It can infer its
 inputs from an already encoded layer or accept both channel roles directly.

@@ -5,6 +5,8 @@ title: Scale Options
 
 # Scale Options
 
+{% include chart-example.html id="density" %}
+
 ## At a glance
 
 | Scale family | Default domain | Default range | Common controls |

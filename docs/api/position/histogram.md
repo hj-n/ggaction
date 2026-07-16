@@ -5,6 +5,8 @@ title: Histogram Positions
 
 # Histogram Positions
 
+{% include chart-example.html id="histogram" %}
+
 ## At a glance
 
 | Action | Shortest call | Required state | Result |
