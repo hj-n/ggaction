@@ -5,6 +5,7 @@ import { chart } from "../../../../src/index.js";
 import { resolveStoredSelection } from "../../../../src/materialization/selection/state.js";
 import { createCarsHistogram } from "../../../../examples/cars-histogram/program.js";
 import { createCarsLineChart } from "../../../../examples/cars-line-chart/program.js";
+import { createCarsDensityArea } from "../../../../examples/cars-density-area/program.js";
 import { loadCars } from "../../../support/data.js";
 
 const rows = Object.freeze([
@@ -344,4 +345,82 @@ test("validates bar-specific highlight appearance before creating selection stat
     }), error);
   }
   assert.equal(base.materializationConfigs.selections, undefined);
+});
+
+test("highlights complete area paths and preserves logical offsets after resize", () => {
+  const base = createCarsDensityArea(loadCars());
+  const highlighted = base.highlightMarks({
+    target: "densities",
+    select: { field: "Origin", op: "eq", value: "Japan" },
+    fill: "#dc2626",
+    opacity: 0.8,
+    stroke: "#111111",
+    strokeWidth: 2,
+    offset: { x: 4, y: -3 },
+    dimOthers: true
+  });
+  const original = base.graphicSpec.objects.densities.children[2].properties.commands[0];
+  const selected = highlighted.graphicSpec.objects.densities.children.at(-1);
+
+  assert.equal(selected.properties.fill, "#dc2626");
+  assert.equal(selected.properties.opacity, 0.8);
+  assert.equal(selected.properties.commands[0].x, original.x + 4);
+  assert.equal(selected.properties.commands[0].y, original.y - 3);
+  const resized = highlighted.editCanvas({ width: 760 });
+  const resizedBase = base.editCanvas({ width: 760 });
+  assert.equal(
+    resized.graphicSpec.objects.densities.children.at(-1).properties.commands[0].x,
+    resizedBase.graphicSpec.objects.densities.children[2].properties.commands[0].x + 4
+  );
+});
+
+test("highlights rule items with stroke recipes and translated endpoints", () => {
+  const base = chart()
+    .createCanvas({ width: 240, height: 160, margin: 20 })
+    .createData({ values: [
+      { group: "A", value: 10 },
+      { group: "B", value: 30 }
+    ] })
+    .createRuleMark()
+    .encodeX({ field: "value", fieldType: "quantitative" });
+  const original = base.graphicSpec.objects.rule.children[1].properties;
+  const highlighted = base.highlightMarks({
+    select: { field: "group", op: "eq", value: "B" },
+    stroke: "#dc2626",
+    strokeWidth: 4,
+    strokeDash: "dashdot",
+    offset: { x: 2, y: 3 },
+    dimOthers: { opacity: 0.2 }
+  });
+  const selected = highlighted.graphicSpec.objects.rule.children.at(-1).properties;
+
+  assert.equal(selected.stroke, "#dc2626");
+  assert.equal(selected.strokeWidth, 4);
+  assert.deepEqual(selected.strokeDash, [6, 3, 1, 3]);
+  assert.equal(selected.x1, original.x1 + 2);
+  assert.equal(selected.y1, original.y1 + 3);
+  assert.equal(highlighted.graphicSpec.objects.rule.children[0].properties.opacity, 0.2);
+});
+
+test("rejects mark-incompatible path and rule highlight options atomically", () => {
+  const line = createCarsLineChart(loadCars());
+  const area = createCarsDensityArea(loadCars());
+  assert.throws(
+    () => line.highlightMarks({
+      target: "trends",
+      select: { field: "Origin", op: "eq", value: "Japan" },
+      fill: "red"
+    }),
+    /Line highlight does not support fill/
+  );
+  assert.throws(
+    () => area.highlightMarks({
+      target: "densities",
+      select: { field: "Origin", op: "eq", value: "Japan" },
+      strokeWidth: 2
+    }),
+    /strokeWidth requires stroke/
+  );
+  assert.equal(line.materializationConfigs.selections, undefined);
+  assert.equal(area.materializationConfigs.selections, undefined);
 });

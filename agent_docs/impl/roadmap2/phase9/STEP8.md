@@ -13,7 +13,7 @@ Cars Origin line chart에서 Japan series path를 raw primitives로 강조하고
 - [x] Matching legend item highlight/dimming plus unchanged axes, grid and title
 - [x] Primitive program, reference values, manifest and future call chain
 - [x] Browser and `primitive.png` checks
-- [ ] Gate C user confirmation
+- [x] Gate C user confirmation
 - [x] STEP status, conceptual commit and push
 
 ## Gate C
@@ -36,9 +36,13 @@ the USA and Europe paths retain their geometry but use opacity `0.16`. The selec
 - A Canvas-only width change preserves `trends/series/2` and its 12 points while remapping concrete x positions.
 - Browser gallery verification loaded the 1440×920 primitive with no console warnings or errors.
 - Artifact: `.artifacts/test/png/roadmap2/mark-selection/line-series-japan/primitive.png`.
-- Manifest: `test/gates/mark-selection-lines/variants/manifest.js` stores the exact future
+- Manifest: `test/charts/mark-selection-lines/variants/manifest.js` stores the exact approved
   `highlightMarks({ select: { field: "Origin", op: "eq", value: "Japan" }, ... })` chain.
 
 ## 완료 조건
 
 One path-level semantic selection and its concrete style/order define the future line public result.
+
+## Approval result
+
+Gate C was approved with matching legend-symbol emphasis and unchanged legend labels.

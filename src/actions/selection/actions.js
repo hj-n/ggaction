@@ -3,9 +3,14 @@ import { validateUserId } from "../../core/identifiers.js";
 import { isPlainObject } from "../../core/immutable.js";
 import { validateKeys } from "../../core/validation.js";
 import { validatePointShape } from "../../grammar/pointShapes.js";
+import { normalizeStrokeDashPattern } from "../../grammar/scales.js";
 import { resolveEligibleLayer } from "../../selectors/layers.js";
 import { DEFAULT_COLORS } from "../../theme/defaults.js";
 import { transformPointHighlightChild } from "../../materialization/selection/point.js";
+import {
+  transformPathHighlightProperties,
+  transformRuleHighlightProperties
+} from "../../materialization/selection/path.js";
 import {
   resolveMarkSelection,
   resolveSelectionCreationId,
@@ -173,10 +178,99 @@ function normalizeBarStyle(args) {
   };
 }
 
+function rejectHighlightOptions(args, mark, options) {
+  for (const option of options) {
+    if (args[option] !== undefined) {
+      throw new Error(`${mark} highlight does not support ${option}.`);
+    }
+  }
+}
+
+function normalizeStrokeStyle(args, mark) {
+  rejectHighlightOptions(args, mark, ["fill", "shape", "size"]);
+  if (args.color !== undefined && args.stroke !== undefined) {
+    throw new Error(`${mark} highlight accepts color or stroke, not both.`);
+  }
+  return {
+    stroke: validateColor(
+      args.stroke ?? args.color ?? DEFAULT_COLORS.highlight,
+      `${mark} highlight stroke`
+    ),
+    ...(args.strokeWidth === undefined
+      ? {}
+      : { strokeWidth: validateNonNegative(args.strokeWidth, `${mark} highlight strokeWidth`) }),
+    ...(args.strokeDash === undefined
+      ? {}
+      : { strokeDash: normalizeStrokeDashPattern(args.strokeDash) }),
+    ...(args.opacity === undefined
+      ? {}
+      : { opacity: validateUnitInterval(args.opacity, `${mark} highlight opacity`) }),
+    offset: normalizeOffset(args.offset)
+  };
+}
+
+function normalizeAreaStyle(args) {
+  rejectHighlightOptions(args, "Area", ["shape", "size", "strokeDash"]);
+  if (args.color !== undefined && args.fill !== undefined) {
+    throw new Error("Area highlight accepts color or fill, not both.");
+  }
+  const stroke = args.stroke === undefined
+    ? undefined
+    : validateColor(args.stroke, "Area highlight stroke");
+  const strokeWidth = args.strokeWidth === undefined
+    ? undefined
+    : validateNonNegative(args.strokeWidth, "Area highlight strokeWidth");
+  if (strokeWidth !== undefined && stroke === undefined) {
+    throw new Error("Area highlight strokeWidth requires stroke.");
+  }
+  return {
+    fill: validateColor(
+      args.fill ?? args.color ?? DEFAULT_COLORS.highlight,
+      "Area highlight fill"
+    ),
+    ...(args.opacity === undefined
+      ? {}
+      : { opacity: validateUnitInterval(args.opacity, "Area highlight opacity") }),
+    ...(stroke === undefined ? {} : { stroke }),
+    ...(strokeWidth === undefined ? {} : { strokeWidth }),
+    offset: normalizeOffset(args.offset)
+  };
+}
+
 function normalizeHighlightStyle(args, markType) {
   if (markType === "point") return normalizePointStyle(args);
   if (markType === "bar") return normalizeBarStyle(args);
-  throw new Error("highlightMarks currently supports point and bar marks.");
+  if (markType === "line") return normalizeStrokeStyle(args, "Line");
+  if (markType === "area") return normalizeAreaStyle(args);
+  if (markType === "rule") return normalizeStrokeStyle(args, "Rule");
+  throw new Error(`highlightMarks does not support ${markType} marks.`);
+}
+
+function highlightOperation(markType) {
+  if (markType === "point") return "applyPointHighlight";
+  if (markType === "bar") return "applyBarHighlight";
+  if (markType === "line" || markType === "area") return "applyPathHighlight";
+  if (markType === "rule") return "applyRuleHighlight";
+  throw new Error(`No highlight materializer exists for ${markType} marks.`);
+}
+
+function rematerializeOperation(markType) {
+  return {
+    point: "rematerializePointMark",
+    bar: "rematerializeBarMark",
+    line: "rematerializeLineMark",
+    area: "rematerializeAreaMark",
+    rule: "rematerializeRuleMark"
+  }[markType];
+}
+
+function hasLegendSelection(program, target, selection) {
+  const legend = program.guideConfigs.legend?.series ??
+    program.guideConfigs.legend?.color;
+  const selector = program.materializationConfigs.selections?.[selection]?.selector;
+  return legend?.target === target &&
+    selector?.field !== undefined &&
+    selector.field === legend.field;
 }
 
 function selectedKeys(args, resolved) {
@@ -261,6 +355,63 @@ export const applyBarHighlight = action(
   }
 );
 
+export const applyPathHighlight = action(
+  { op: "applyPathHighlight", description: "Apply selected line or area path appearance and offset." },
+  function (args = {}) {
+    validateKeys(args, INTERNAL_SELECTION_OPTIONS, "applyPathHighlight");
+    const resolved = resolveStoredSelection(this, args.selection);
+    const keys = selectedKeys(args, resolved);
+    const markType = resolved.items[0]?.markType;
+    if (!["line", "area"].includes(markType) && resolved.items.length > 0) {
+      throw new Error("applyPathHighlight requires a line or area selection.");
+    }
+    if (keys.length === 0) return this;
+    const selected = new Set(keys);
+    const graphic = this.graphicSpec.objects[resolved.definition.target];
+    const keyByGraphic = new Map(resolved.items.flatMap(item =>
+      item.graphicIds.map(id => [id, item.key])
+    ));
+    return this.editGraphics({
+      target: resolved.definition.target,
+      property: "children",
+      value: graphic.children.map(child => ({
+        type: child.type ?? graphic.type,
+        properties: selected.has(keyByGraphic.get(child.id))
+          ? transformPathHighlightProperties(child.properties, args.style)
+          : child.properties
+      }))
+    });
+  }
+);
+
+export const applyRuleHighlight = action(
+  { op: "applyRuleHighlight", description: "Apply selected rule appearance and offset." },
+  function (args = {}) {
+    validateKeys(args, INTERNAL_SELECTION_OPTIONS, "applyRuleHighlight");
+    const resolved = resolveStoredSelection(this, args.selection);
+    const keys = selectedKeys(args, resolved);
+    if (resolved.items[0]?.markType !== "rule" && resolved.items.length > 0) {
+      throw new Error("applyRuleHighlight requires a rule selection.");
+    }
+    if (keys.length === 0) return this;
+    const selected = new Set(keys);
+    const graphic = this.graphicSpec.objects[resolved.definition.target];
+    const keyByGraphic = new Map(resolved.items.flatMap(item =>
+      item.graphicIds.map(id => [id, item.key])
+    ));
+    return this.editGraphics({
+      target: resolved.definition.target,
+      property: "children",
+      value: graphic.children.map(child => ({
+        type: child.type ?? graphic.type,
+        properties: selected.has(keyByGraphic.get(child.id))
+          ? transformRuleHighlightProperties(child.properties, args.style)
+          : child.properties
+      }))
+    });
+  }
+);
+
 export const dimUnselectedMarkItems = action(
   { op: "dimUnselectedMarkItems", description: "Dim the complement of one mark selection." },
   function (args = {}) {
@@ -329,17 +480,11 @@ export const rematerializeMarkHighlights = action(
     }));
     let next = this;
     for (const { id, config, keys } of prepared) {
-      next = config.markType === "bar"
-        ? next.applyBarHighlight({
-            selection: config.selection,
-            style: config.style,
-            keys
-          })
-        : next.applyPointHighlight({
-            selection: config.selection,
-            style: config.style,
-            keys
-          });
+      next = next[highlightOperation(config.markType)]({
+        selection: config.selection,
+        style: config.style,
+        keys
+      });
       if (config.dimOthers !== false) {
         next = next.dimUnselectedMarkItems({
           selection: config.selection,
@@ -355,7 +500,11 @@ export const rematerializeMarkHighlights = action(
       }
       next = next._withHighlightConfig(id, config);
     }
-    return next;
+    return prepared.some(({ config }) =>
+      hasLegendSelection(next, config.target, config.selection)
+    )
+      ? next.rematerializeLegendHighlights()
+      : next;
   }
 );
 
@@ -410,13 +559,10 @@ export const highlightMarks = action(
     const existing = next.materializationConfigs.highlights?.[selection];
     if (existing !== undefined) {
       next = next._withoutMaterializationConfig(["highlights", selection]);
-      next = layer.mark.type === "bar"
-        ? next.rematerializeBarMark({ id: resolved.definition.target })
-        : next.rematerializePointMark({ id: resolved.definition.target });
+      const operation = rematerializeOperation(layer.mark.type);
+      next = next[operation]({ id: resolved.definition.target });
     }
-    next = layer.mark.type === "bar"
-      ? next.applyBarHighlight({ selection, style, keys })
-      : next.applyPointHighlight({ selection, style, keys });
+    next = next[highlightOperation(layer.mark.type)]({ selection, style, keys });
     if (dimOthers !== false) {
       next = next.dimUnselectedMarkItems({
         selection,
@@ -427,7 +573,7 @@ export const highlightMarks = action(
     if (bringToFront) {
       next = next.placeSelectedMarkItemsLast({ selection, keys });
     }
-    return next._withHighlightConfig(selection, {
+    next = next._withHighlightConfig(selection, {
       target: resolved.definition.target,
       selection,
       markType: layer.mark.type,
@@ -435,5 +581,8 @@ export const highlightMarks = action(
       dimOthers,
       bringToFront
     });
+    return hasLegendSelection(next, resolved.definition.target, selection)
+      ? next.rematerializeLegendHighlights()
+      : next;
   }
 );

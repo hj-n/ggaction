@@ -20,7 +20,8 @@ import {
   editLegendSymbolLines,
   editLegendSymbolPoints,
   editLegendSymbolSwatches,
-  editLegendSymbols
+  editLegendSymbols,
+  rematerializeLegendHighlights
 } from "./symbols.js";
 import { editLegend } from "../edit.js";
 
@@ -33,6 +34,7 @@ export function registerCategoricalLegendActions(ProgramClass) {
   ProgramClass.prototype.editLegendBackground = editLegendBackground;
   ProgramClass.prototype.createLegendSymbols = createLegendSymbols;
   ProgramClass.prototype.editLegendSymbols = editLegendSymbols;
+  ProgramClass.prototype.rematerializeLegendHighlights = rematerializeLegendHighlights;
   ProgramClass.prototype.createLegendSymbolLines = createLegendSymbolLines;
   ProgramClass.prototype.editLegendSymbolLines = editLegendSymbolLines;
   ProgramClass.prototype.createLegendSymbolPoints = createLegendSymbolPoints;

@@ -78,13 +78,13 @@ and rematerialize its scales and connected guides without changing the source.
 ```javascript
 highlightMarks({
   id?, target?, select?, selection?, color?, opacity?, fill?, stroke?,
-  strokeWidth?, shape?, size?, offset?, dimOthers?, bringToFront?
+  strokeWidth?, strokeDash?, shape?, size?, offset?, dimOthers?, bringToFront?
 })
 ```
 
-Select point or bar items inline or reuse a stored selection, then apply concrete
-emphasis, optional complement dimming, and selected-last order. Logical offset,
-shape, and size are point-only options.
+Select point, bar, line, area, or rule items inline or reuse a stored selection,
+then apply mark-specific concrete emphasis, optional complement dimming, and
+selected-last order.
 [Mark selection and highlighting](../api/appearance.md#mark-selection-and-highlighting)
 
 ### `createRegressionData`

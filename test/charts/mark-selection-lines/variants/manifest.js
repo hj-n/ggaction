@@ -1,6 +1,7 @@
 import { defineVisualVariant } from "../../../support/visual-variants.js";
 import { loadCars } from "../../../support/data.js";
 import { createJapanLineHighlightGatePrimitive } from "../primitive.program.js";
+import { createJapanLineSeriesHighlight } from "../../../../examples/mark-selection/program.js";
 import {
   LINE_HIGHLIGHT_LAYOUT,
   LINE_HIGHLIGHT_TARGET
@@ -54,6 +55,7 @@ export const visualVariants = Object.freeze([
     title: "Japan Line-Series Highlight",
     callChain: lineHighlightCallChain,
     primitive: createJapanLineHighlightGatePrimitive(loadCars()),
+    userFacing: createJapanLineSeriesHighlight(loadCars()),
     width: LINE_HIGHLIGHT_LAYOUT.width,
     height: LINE_HIGHLIGHT_LAYOUT.height,
     colors: [LINE_HIGHLIGHT_TARGET.stroke],

@@ -72,6 +72,10 @@ export const rematerializeLegend = action(
         .editLegendSymbols()
         .editLegendLabels();
       if (config.titleVisible !== false) next = next.editLegendTitle();
+      const hasHighlight = Object.values(
+        next.materializationConfigs.highlights ?? {}
+      ).some(highlight => highlight.target === config.target);
+      if (hasHighlight) next = next.rematerializeLegendHighlights();
     }
     if (this.guideConfigs.legend?.size !== undefined) {
       next = next.rematerializeSizeLegend();

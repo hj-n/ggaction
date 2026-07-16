@@ -1,6 +1,6 @@
 # Mark selection action contracts
 
-Current direct-action contracts for mark-item selection and point/bar highlighting. Shared notation and
+Current direct-action contracts for cross-mark selection and highlighting. Shared notation and
 lifecycle rules live in [`../README.md`](../README.md).
 
 ## Shared selector algebra and mark-item grain
@@ -78,7 +78,7 @@ type MarkSelector =
 - Effects and reevaluation
   - ✅ Covered: selection-only graphic identity, exact point keys, trace, Canvas resize and filtered-cardinality reevaluation.
   - ⚠️ Partial: multiple simultaneous selections through every rematerialization producer.
-- Line/area/rule highlight appearance remains Planned, but cross-mark selection identity is current.
+- Line/area/rule selection and highlight appearance use the same stored selection identity as point/bar.
 - Evidence: `test/unit/grammar/transforms/mark-selection.test.js`,
   `test/unit/selectors/mark-items.test.js`,
   `test/unit/actions/selection/mark-selection.test.js`,
@@ -87,26 +87,30 @@ type MarkSelector =
 
 ## `highlightMarks`
 
-- Signature: `highlightMarks({ id?, target?, select?, selection?, color?, opacity?, fill?, stroke?, strokeWidth?, shape?, size?, offset?, dimOthers?, bringToFront? })`
+- Signature: `highlightMarks({ id?, target?, select?, selection?, color?, opacity?, fill?, stroke?, strokeWidth?, strokeDash?, shape?, size?, offset?, dimOthers?, bringToFront? })`
 - Selection source: inline `select`, explicit `selection`, current unique compatible selection 순으로 resolve한다.
   Inline selection은 real wrapped `selectMarks` child를 호출하며 `select`와 `selection`은 함께 쓸 수 없다.
-- Current mark capability: point and bar. Omitted appearance uses accent `#dc2626`. Point default size is area
+- Current mark capability: point, bar, line, area and rule. Omitted appearance uses accent `#dc2626`. Point default size is area
   multiplier `2`; `shape` accepts the shared 12 point shapes and logical offset is available. Point/bar `color` aliases
-  fill and conflicts with explicit `fill`. Bar rejects shape, size, offset and strokeDash.
-- `opacity` is selected-item opacity. Optional `strokeWidth` requires `stroke`. Logical `offset.x/y` defaults to zero.
-  Point highlight rejects `strokeDash`; line/area/rule-specific styles remain Planned.
+  fill and conflicts with explicit `fill`. Bar rejects shape, size, offset and strokeDash. Area uses fill with optional
+  stroke and rejects shape, size and strokeDash. Line/rule use stroke with optional width and shared named/array dash.
+- `opacity` is selected-item opacity. Area/point optional `strokeWidth` requires `stroke`. Logical `offset.x/y` defaults
+  to zero and translates point geometry, complete path commands, or rule endpoints without changing semantic values.
 - `dimOthers` defaults to `false`; `true` uses opacity `0.25`, or `{ opacity }` supplies an explicit unit interval.
   `bringToFront` defaults to `true` and stores selected collection children last. Empty selection changes no selected
   child and may still dim the full complement when requested.
 - Effect: selected concrete children receive overrides after ordinary encoding appearance. Stack selection applies the
   override to every attached rect. Assignment intent is stored in `materializationConfigs.highlights`; reapplying the
-  same selection immutably replaces it. Point/bar rematerialization rebuilds base children, resolves selected keys once,
+  same selection immutably replaces it. Every owning mark rematerializer rebuilds base children, resolves selected keys once,
   then passes the same key snapshot to highlight, dimming and ordering children.
+- When a categorical selection exactly includes or excludes whole groups matching the target legend field, legend symbols
+  reflect selected appearance and complement opacity. Legend labels remain unchanged. Partial/non-corresponding selections
+  leave the legend untouched.
 
 ### Formal values — `highlightMarks`
 
-- Implemented: `highlightMarks({ id?: UserId; target?: UserId; select?: MarkSelector; selection?: UserId; color?: NonEmptyString; opacity?: UnitInterval; fill?: NonEmptyString; stroke?: NonEmptyString; strokeWidth?: NonNegativeFinite; shape?: PointShape; size?: PositiveFinite; offset?: { x?: Finite; y?: Finite }; dimOthers?: boolean | { opacity?: UnitInterval }; bringToFront?: boolean })` for point and bar marks with mark-specific option applicability.
-- Proposed (NOT IMPLEMENTED): —; line/area/rule recipes plus `strokeDash` applicability are Planned.
+- Implemented: `highlightMarks({ id?: UserId; target?: UserId; select?: MarkSelector; selection?: UserId; color?: NonEmptyString; opacity?: UnitInterval; fill?: NonEmptyString; stroke?: NonEmptyString; strokeWidth?: NonNegativeFinite; strokeDash?: DashStyle | readonly NonNegativeFinite[]; shape?: PointShape; size?: PositiveFinite; offset?: { x?: Finite; y?: Finite }; dimOthers?: boolean | { opacity?: UnitInterval }; bringToFront?: boolean })` for point/bar/line/area/rule with mark-specific option applicability.
+- Proposed (NOT IMPLEMENTED): —.
 
 ### Value coverage — `highlightMarks`
 
@@ -124,8 +128,11 @@ type MarkSelector =
 - Persistence and visual equality
   - ✅ Covered: Canvas resize and filtered cardinality rematerialization; approved primitive/public semantic,
     graphic, renderer-call and same-run pixel equality.
-- Planned: line/rule stroke/dash and area fill recipes remain in
-  [`../planned/MARK_SELECTION.md`](../planned/MARK_SELECTION.md).
+- Path/rule appearance
+  - ✅ Covered: line stroke/width/named dash, area fill/opacity/outline, rule stroke/width/dash, logical offsets,
+    Canvas/mark rematerialization, and mark-specific option rejection.
+  - ✅ Covered: exact categorical legend-symbol reflection without label dimming and approved Gate C equality.
 - Evidence: `test/unit/actions/selection/mark-selection.test.js`,
   `test/charts/mark-selection-points/public.test.js`,
   `test/charts/mark-selection-bars/public.test.js`, and their PNG render tests.
+  Gate C evidence: `test/charts/mark-selection-lines/public.test.js`.

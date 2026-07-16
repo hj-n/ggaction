@@ -205,7 +205,9 @@ test("keeps primitives and internal wrapped actions in separate layers", () => {
     "createErrorBarCap",
     "createErrorBandBoundary",
     "applyBarHighlight",
+    "applyPathHighlight",
     "applyPointHighlight",
+    "applyRuleHighlight",
     "dimUnselectedMarkItems",
     "placeSelectedMarkItemsLast"
   ]);

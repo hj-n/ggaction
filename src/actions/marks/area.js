@@ -116,6 +116,19 @@ const rematerializeAreaMark = action(
   function (args = {}) {
     validateMarkOptions(args, REMATERIALIZE_OPTIONS, "rematerializeAreaMark");
     const id = validateUserId(args.id, "Area mark id");
+    const highlights = Object.entries(
+      this.materializationConfigs.highlights ?? {}
+    ).filter(([, config]) => config.target === id);
+    if (highlights.length > 0) {
+      let baseline = this;
+      for (const [highlightId] of highlights) {
+        baseline = baseline._withoutMaterializationConfig(["highlights", highlightId]);
+      }
+      return baseline
+        .editGraphics({ target: id, property: "length", value: 0 })
+        .rematerializeAreaMark({ id })
+        .rematerializeMarkHighlights({ target: id, highlights });
+    }
     const layer = findLayer(this, id);
     const dataset = findDataset(this, layer?.data);
     if (layer?.mark?.type !== "area" || this.graphicSpec.objects[id]?.type !== "path") {

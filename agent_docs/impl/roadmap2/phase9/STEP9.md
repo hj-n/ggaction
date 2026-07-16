@@ -6,16 +6,16 @@ Approved Gate C를 public flow로 구현하고 line/area/rule selection/highligh
 
 ## 진행 상태
 
-- [ ] Line series field selection and default/explicit highlight recipe
-- [ ] Existing `editLineMark` behavior remains whole-resource and compatible
-- [ ] Area series selection with fill/stroke/opacity overrides
-- [ ] Rule item selection with stroke/width/dash overrides
-- [ ] Unsupported multi-valued path channel reduction errors
-- [ ] Path/rule logical offsets and command/endpoint translation
-- [ ] Curve, group, scale and Canvas rematerialization stability
-- [ ] Primitive/public exact Gate C equivalence
-- [ ] Area/rule focused mechanical coverage
-- [ ] STEP status, conceptual commit and push
+- [x] Line series field selection and default/explicit highlight recipe
+- [x] Existing `editLineMark` behavior remains whole-resource and compatible
+- [x] Area series selection with fill/stroke/opacity overrides
+- [x] Rule item selection with stroke/width/dash overrides
+- [x] Unsupported multi-valued path channel reduction errors
+- [x] Path/rule logical offsets and command/endpoint translation
+- [x] Curve, group, scale and Canvas rematerialization stability
+- [x] Primitive/public exact Gate C equivalence
+- [x] Area/rule focused mechanical coverage
+- [x] STEP status, conceptual commit and push
 
 ## 완료 조건
 

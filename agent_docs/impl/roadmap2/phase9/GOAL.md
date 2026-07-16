@@ -27,7 +27,7 @@ Planned normative action contract:
 - [ ] Pure selector and mark-item resolver foundation
 - [x] Point selection/highlight Gate A and public implementation
 - [x] Histogram tallest-stack Gate B and public implementation
-- [ ] Line-series Gate C and cross-mark integration
+- [x] Line-series Gate C and cross-mark integration
 - [ ] `filterMarks` migration
 - [x] `editBarMark`
 - [ ] Robustness, docs, contract promotion and Phase closeout

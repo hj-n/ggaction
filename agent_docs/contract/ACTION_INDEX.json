@@ -1520,10 +1520,10 @@
       "status": "implemented",
       "lifecycle": "Mutable resource",
       "update": "Reapply for the same selection",
-      "audit": "Complete for point marks; cross-mark recipes Planned",
+      "audit": "Cross-mark recipes complete; exhaustive option matrix partial",
       "coverage": {
         "contract": "complete",
-        "effects": "partial",
+        "effects": "complete",
         "tests": "partial"
       },
       "contract": {
@@ -1659,6 +1659,7 @@
       "rematerializeGrid",
       "rematerializeHorizontalGrid",
       "rematerializeLegend",
+      "rematerializeLegendHighlights",
       "rematerializeLineMark",
       "rematerializeMarkHighlights",
       "rematerializeOpacityLegend",
@@ -1688,7 +1689,9 @@
       "createErrorBarCap",
       "createErrorBandBoundary",
       "applyBarHighlight",
+      "applyPathHighlight",
       "applyPointHighlight",
+      "applyRuleHighlight",
       "dimUnselectedMarkItems",
       "placeSelectedMarkItemsLast"
     ],

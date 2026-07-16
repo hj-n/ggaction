@@ -608,6 +608,12 @@ base bar recipe에 whole-mark appearance를 적용한 뒤, `highlights`의 selec
 rematerialization이 일어나도 whole-mark edit과 selected-item highlight가 각각의
 canonical intent에서 결정적으로 복구된다.
 
+Line/area path와 rule도 같은 stored selection/highlight protocol을 사용한다. Offset은 semantic encoding을
+바꾸지 않고 final path command 또는 rule endpoint를 logical pixel 단위로 이동한다. Categorical selection이
+legend field의 complete group과 정확히 일대일 대응할 때만 legend symbol에 highlight/dim appearance를
+반영하며, legend label text와 item order는 유지한다. Partial group이나 unrelated selector는 legend를
+바꾸지 않는다.
+
 ## Context
 
 Context는 다음 action의 생략된 resource를 편리하게 해석한다.

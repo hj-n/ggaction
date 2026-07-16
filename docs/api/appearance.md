@@ -18,7 +18,7 @@ title: Appearance Encodings
 | `encodeStrokeWidth` | `encodeStrokeWidth({ value: 3 })` | Current rule mark | Constant concrete line width |
 | `encodeBarWidth` | `encodeBarWidth()` | Current aggregate bar; first assignment uses band `0.72` | Concrete rectangles |
 | `selectMarks` | `selectMarks({ field: "Horsepower", op: "max" })` | Current or unique mark; deterministic selection ID | Reusable semantic final-item selection |
-| `highlightMarks` | `highlightMarks({ select: { field: "Horsepower", op: "max" } })` | Current point/bar; red accent; selected-last | Concrete selected-item emphasis |
+| `highlightMarks` | `highlightMarks({ select: { field: "Horsepower", op: "max" } })` | Current point/bar/path/rule; red accent; selected-last | Concrete selected-item emphasis |
 
 ## Mark selection and highlighting
 
@@ -94,18 +94,33 @@ const reused = selected.highlightMarks({
 });
 ```
 
-Current highlighting supports point and bar marks. `color` changes selected
-fill; `opacity`, `fill`, `stroke`, and `strokeWidth` apply to both. Points also
-support `shape`, positive area-multiplier `size`, and finite logical
-`offset.x/y`; bars reject those point-only options. `strokeWidth` requires
-`stroke`, and `color` cannot be combined with `fill`. `dimOthers` defaults to
-`false`; `true` uses opacity `0.25`. `bringToFront` defaults to `true` and keeps
-every rect of a selected stack together at the end of its collection.
+Current highlighting supports point, bar, line, area, and rule marks. Points
+support fill, shape, size, outline, and logical offset. Bars support fill and
+outline. Areas support fill, optional outline, and path offset. Lines and rules
+support stroke, width, named or numeric `strokeDash`, and logical offset. Each
+mark rejects options it cannot represent. `dimOthers` defaults to `false`;
+`true` uses opacity `0.25`. `bringToFront` defaults to `true` and keeps every
+graphic attached to one selected semantic item together.
 
-Selection and highlight intent is immutable and is reapplied after point/bar
+```javascript
+program.highlightMarks({
+  target: "trends",
+  select: { field: "Origin", op: "eq", value: "Japan" },
+  stroke: "#dc2626",
+  strokeWidth: 5,
+  strokeDash: "dashed",
+  dimOthers: { opacity: 0.16 }
+});
+```
+
+When that selection exactly matches complete categories in the mark's legend,
+legend symbols reflect the selected and dimmed appearance. Legend labels stay
+fully readable. Partial or unrelated selections do not alter the legend.
+
+Selection and highlight intent is immutable and is reapplied after owning mark
 rematerialization, including Canvas changes and filtered data cardinality.
 Reapplying `highlightMarks` for the same selection replaces that appearance
-assignment. Line, area, and rule highlighting is not implemented yet.
+assignment.
 
 ## `encodeRadius({ value, target? })`
 

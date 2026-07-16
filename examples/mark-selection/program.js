@@ -1,4 +1,18 @@
 import { chart } from "../../src/index.js";
+import { createCarsLineChart } from "../cars-line-chart/program.js";
+
+export function createJapanLineSeriesHighlight(cars) {
+  return createCarsLineChart(cars).highlightMarks({
+    target: "trends",
+    select: { field: "Origin", op: "eq", value: "Japan" },
+    stroke: "#dc2626",
+    strokeWidth: 5,
+    strokeDash: "dashed",
+    opacity: 1,
+    dimOthers: { opacity: 0.16 },
+    bringToFront: true
+  });
+}
 
 function validCars(cars) {
   return cars.filter(row =>

@@ -100,6 +100,7 @@ export interface HighlightMarksOptions {
   fill?: string;
   stroke?: string;
   strokeWidth?: number;
+  strokeDash?: DashStyle | DashPattern;
   shape?: PointShape;
   size?: number;
   offset?: { x?: number; y?: number };
