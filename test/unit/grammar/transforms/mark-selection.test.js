@@ -1,0 +1,190 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+import {
+  normalizeMarkSelector,
+  selectMarkItemKeys
+} from "../../../../src/grammar/markSelection.js";
+
+function item(key, value, group = "all", channel = value) {
+  return {
+    key,
+    fields: { value, group },
+    channels: { x: channel }
+  };
+}
+
+const numericItems = Object.freeze([
+  item("a", 2, "A", 20),
+  item("b", 7, "A", 70),
+  item("c", 7, "A", 71),
+  item("d", 3, "B", 30),
+  item("e", 9, "B", 90),
+  item("missing", undefined, "B", undefined)
+]);
+
+test("normalizes comparison, set, range, and rank selectors immutably", () => {
+  const values = [2, 7];
+  const oneOf = normalizeMarkSelector({
+    field: "value",
+    op: "oneOf",
+    values
+  });
+  values.push(9);
+  assert.deepEqual(oneOf, {
+    field: "value",
+    op: "oneOf",
+    values: [2, 7]
+  });
+  assert.equal(Object.isFrozen(oneOf.values), true);
+  assert.deepEqual(
+    normalizeMarkSelector({ channel: "x", op: "range", min: 10, max: 20 }),
+    { channel: "x", op: "range", min: 10, max: 20, inclusive: true }
+  );
+  assert.deepEqual(
+    normalizeMarkSelector({ field: "value", op: "max", groupBy: "group" }),
+    {
+      field: "value",
+      op: "max",
+      count: 1,
+      groupBy: ["group"],
+      ties: "first"
+    }
+  );
+});
+
+test("selects every comparison operator without coercion", () => {
+  assert.deepEqual(
+    selectMarkItemKeys(numericItems, { field: "value", op: "eq", value: 7 }),
+    ["b", "c"]
+  );
+  assert.deepEqual(
+    selectMarkItemKeys(numericItems, { field: "value", op: "neq", value: 7 }),
+    ["a", "d", "e"]
+  );
+  assert.deepEqual(
+    selectMarkItemKeys(numericItems, { field: "value", op: "gt", value: 3 }),
+    ["b", "c", "e"]
+  );
+  assert.deepEqual(
+    selectMarkItemKeys(numericItems, { field: "value", op: "gte", value: 7 }),
+    ["b", "c", "e"]
+  );
+  assert.deepEqual(
+    selectMarkItemKeys(numericItems, { field: "value", op: "lt", value: 7 }),
+    ["a", "d"]
+  );
+  assert.deepEqual(
+    selectMarkItemKeys(numericItems, { field: "value", op: "lte", value: 3 }),
+    ["a", "d"]
+  );
+  assert.deepEqual(
+    selectMarkItemKeys(numericItems, { field: "value", op: "eq", value: "7" }),
+    []
+  );
+});
+
+test("selects set and inclusive or exclusive ranges from fields and channels", () => {
+  assert.deepEqual(
+    selectMarkItemKeys(numericItems, {
+      field: "value",
+      op: "oneOf",
+      values: [2, 9]
+    }),
+    ["a", "e"]
+  );
+  assert.deepEqual(
+    selectMarkItemKeys(numericItems, {
+      field: "value",
+      op: "range",
+      min: 3,
+      max: 7
+    }),
+    ["b", "c", "d"]
+  );
+  assert.deepEqual(
+    selectMarkItemKeys(numericItems, {
+      channel: "x",
+      op: "range",
+      min: 20,
+      max: 70,
+      inclusive: false
+    }),
+    ["d"]
+  );
+});
+
+test("ranks deterministically with count, groups, ties, and stable item order", () => {
+  assert.deepEqual(
+    selectMarkItemKeys(numericItems, { field: "value", op: "min", count: 2 }),
+    ["a", "d"]
+  );
+  assert.deepEqual(
+    selectMarkItemKeys(numericItems, { field: "value", op: "max", count: 2 }),
+    ["e", "b"]
+  );
+  assert.deepEqual(
+    selectMarkItemKeys(numericItems, {
+      field: "value",
+      op: "max",
+      groupBy: "group"
+    }),
+    ["b", "e"]
+  );
+  assert.deepEqual(
+    selectMarkItemKeys(numericItems, {
+      field: "value",
+      op: "max",
+      count: 2,
+      groupBy: ["group"],
+      ties: "all"
+    }),
+    ["b", "c", "e", "d"]
+  );
+});
+
+test("supports string ranking and excludes mixed or missing ordered values", () => {
+  const items = [
+    item("first", "beta"),
+    item("second", 99),
+    item("third", "alpha"),
+    item("fourth", undefined)
+  ];
+  assert.deepEqual(
+    selectMarkItemKeys(items, { field: "value", op: "min" }),
+    ["third"]
+  );
+  assert.deepEqual(
+    selectMarkItemKeys([], { field: "value", op: "max" }),
+    []
+  );
+});
+
+test("rejects invalid selectors and item contracts before returning keys", () => {
+  const invalid = [
+    [{ op: "eq", value: 1 }, /exactly one/],
+    [{ field: "value", channel: "x", op: "eq", value: 1 }, /exactly one/],
+    [{ channel: "unknown", op: "eq", value: 1 }, /Unknown selector channel/],
+    [{ field: "value", op: "unknown", value: 1 }, /Unknown mark selector operator/],
+    [{ field: "value", op: "eq" }, /requires value/],
+    [{ field: "value", op: "gt", value: Infinity }, /finite number or string/],
+    [{ field: "value", op: "oneOf", values: "A" }, /must be an array/],
+    [{ field: "value", op: "range", min: 1, max: "2" }, /one type/],
+    [{ field: "value", op: "range", min: 3, max: 2 }, /must not exceed/],
+    [{ field: "value", op: "max", count: 0 }, /positive integer/],
+    [{ field: "value", op: "max", ties: "random" }, /Unknown selector ties/],
+    [{ field: "value", op: "eq", value: 1, count: 2 }, /does not accept/],
+    [{ field: "value", op: "max", groupBy: [] }, /at least one/],
+    [{ field: "value", op: "max", groupBy: ["group", "group"] }, /unique/]
+  ];
+  for (const [selector, error] of invalid) {
+    assert.throws(() => normalizeMarkSelector(selector), error);
+  }
+  assert.throws(
+    () => selectMarkItemKeys([item("same", 1), item("same", 2)], {
+      field: "value",
+      op: "max"
+    }),
+    /Duplicate selectable mark item key/
+  );
+});
