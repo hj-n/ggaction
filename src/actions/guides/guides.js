@@ -83,7 +83,8 @@ function hasLegendEncoding(program) {
         layer.encoding?.color?.scale !== undefined &&
         (layer.encoding?.shape?.scale !== undefined ||
           program.semanticSpec.scales.some(scale =>
-            scale.id === layer.encoding.color.scale && scale.type === "sequential"
+            scale.id === layer.encoding.color.scale &&
+              ["sequential", "quantize", "quantile", "threshold"].includes(scale.type)
           ))) ||
       (layer.mark?.type === "line" &&
         ["color", "strokeDash"].some(

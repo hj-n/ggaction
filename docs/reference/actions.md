@@ -349,7 +349,8 @@ encodeColor({ field, target?, fieldType?, layout?, scale? })
 Create or compatibly replace point fill, line-series color, grouped area fill,
 or bar color. Nominal bar layout accepts `stack`, `fill`, `group`, `overlay`,
 and `diverging`; area accepts all except `group`. Quantitative and temporal
-point fields use a sequential scale with concrete interpolated colors. Nominal
+point fields use a sequential scale; quantitative point fields also accept
+`quantize`, `quantile`, and `threshold` color classes. Nominal
 grouped bars record `encodeXOffset` as a child. Reassigning grouped color also
 atomically reassigns xOffset and rematerializes an existing legend.
 [Series encodings](../api/series-encodings.md)
@@ -532,8 +533,8 @@ createLegend({
 })
 ```
 
-Create categorical, point-size, continuous-color gradient, or field-opacity
-sample legends. Continuous legends support right, left, top, and bottom
+Create categorical, point-size, continuous-color gradient, discretized-color
+interval, or field-opacity sample legends. Continuous legends support right, left, top, and bottom
 placement. Categorical legends also support left side placement; composite
 point and size blocks remain in deterministic vertical order.
 [Legends](../api/legends.md)

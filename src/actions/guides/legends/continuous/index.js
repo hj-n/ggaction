@@ -4,6 +4,7 @@ import {
   rematerializeOpacityLegend,
   removeOpacityLegend
 } from "./opacity.js";
+import { createIntervalLegend, rematerializeIntervalLegend } from "./interval.js";
 
 export { createGradientLegend, rematerializeGradientLegend } from "./gradient.js";
 export {
@@ -11,6 +12,7 @@ export {
   rematerializeOpacityLegend,
   removeOpacityLegend
 } from "./opacity.js";
+export { createIntervalLegend, rematerializeIntervalLegend } from "./interval.js";
 
 export function registerContinuousLegendActions(ProgramClass) {
   ProgramClass.prototype.createGradientLegend = createGradientLegend;
@@ -18,4 +20,6 @@ export function registerContinuousLegendActions(ProgramClass) {
   ProgramClass.prototype.createOpacityLegend = createOpacityLegend;
   ProgramClass.prototype.rematerializeOpacityLegend = rematerializeOpacityLegend;
   ProgramClass.prototype.removeOpacityLegend = removeOpacityLegend;
+  ProgramClass.prototype.createIntervalLegend = createIntervalLegend;
+  ProgramClass.prototype.rematerializeIntervalLegend = rematerializeIntervalLegend;
 }

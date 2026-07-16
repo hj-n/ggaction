@@ -55,6 +55,9 @@ type PlannedScaleOptions = {
   length `n` creates `n` quantile classes.
 - `threshold` takes strictly increasing explicit thresholds. `n` thresholds require exactly
   `n + 1` discrete range values.
+- `sequential | quantize | quantile | threshold` are Implemented when owned internally by point
+  `encodeColor`. Their presence in this Planned vocabulary refers only to direct `createScale`, atomic
+  `editScale` type transitions, additional mark consumers, and the remaining general mapping policy matrix.
 - Position channels accept `linear | log | pow | sqrt | symlog | time | band | point`
   when their field and mark grain are compatible. Appearance channels may use the discretizing types
   only when every resolved range value is valid for that channel.
@@ -67,8 +70,8 @@ type PlannedScaleOptions = {
   rematerialization follow the existing scale contract.
 - `identity` and `bin-ordinal` remain Proposed. Identity bypasses normal mapping, while bin-ordinal
   overlaps the current histogram bin owner.
-- Status: Mixed. Transformed point position and band/point position are Implemented; `sequential | quantize |
-  quantile | threshold`, transformed non-point consumers and `unknown` remain Planned.
+- Status: Mixed. Point position types and all four quantitative point-color types are Implemented through
+  their encoding owners; direct/general scale exposure, transformed non-point consumers and `unknown` remain Planned.
 
 ### Scale type editing
 

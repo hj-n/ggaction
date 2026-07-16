@@ -672,11 +672,38 @@ export interface ContinuousColorScaleOptions {
   reverse?: boolean;
 }
 
+export type DiscretizedColorScaleOptions =
+  | {
+      id?: string;
+      type: "quantize";
+      domain?: "auto" | readonly [number, number];
+      range?: "auto" | readonly [string, string, ...string[]];
+      palette?: PaletteName | { name: PaletteName; count?: number };
+      clamp?: boolean;
+      reverse?: boolean;
+    }
+  | {
+      id?: string;
+      type: "quantile";
+      domain?: "auto" | readonly number[];
+      range?: "auto" | readonly [string, string, ...string[]];
+      palette?: PaletteName | { name: PaletteName; count?: number };
+      reverse?: boolean;
+    }
+  | {
+      id?: string;
+      type: "threshold";
+      domain: readonly number[];
+      range?: "auto" | readonly [string, string, ...string[]];
+      palette?: PaletteName | { name: PaletteName; count?: number };
+      reverse?: boolean;
+    };
+
 export type ColorEncodingOptions = CategoricalEncodingOptions | {
   field: string;
   target?: string;
   fieldType: "quantitative" | "temporal";
-  scale?: ContinuousColorScaleOptions;
+  scale?: ContinuousColorScaleOptions | DiscretizedColorScaleOptions;
   layout?: never;
 };
 

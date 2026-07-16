@@ -1647,6 +1647,7 @@
       "rematerializeAreaMark",
       "rematerializeBarMark",
       "rematerializeGradientLegend",
+      "rematerializeIntervalLegend",
       "rematerializeGrid",
       "rematerializeHorizontalGrid",
       "rematerializeLegend",
@@ -1664,13 +1665,15 @@
     "guideComponents": [
       "createCategoricalLegend",
       "createGradientLegend",
+      "createIntervalLegend",
       "createOpacityLegend",
       "removeCategoricalLegend",
       "removeOpacityLegend",
       "createSizeLegend"
     ],
     "stateTransitions": [
-      "releaseDerivedData"
+      "releaseDerivedData",
+      "setQuantitativeColorScale"
     ],
     "aggregateComponents": [
       "createBoxMedian",

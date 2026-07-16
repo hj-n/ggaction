@@ -1,6 +1,7 @@
 export * from "./appearance.js";
 export * from "./color.js";
 export * from "./continuous.js";
+export * from "./discretized.js";
 export * from "./fields.js";
 export * from "./mapping.js";
 export * from "./ordinal.js";

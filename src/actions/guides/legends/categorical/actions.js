@@ -83,6 +83,9 @@ export const rematerializeLegend = action(
     if (this.guideConfigs.legend?.gradient !== undefined) {
       next = next.rematerializeGradientLegend();
     }
+    if (this.guideConfigs.legend?.interval !== undefined) {
+      next = next.rematerializeIntervalLegend();
+    }
     if (this.guideConfigs.legend?.opacity !== undefined) {
       next = next.rematerializeOpacityLegend();
     }
@@ -204,6 +207,25 @@ export const createLegend = action(
       (channels === undefined && continuousColor)
     ) {
       return this.createGradientLegend(args);
+    }
+    const intervalColorCandidates = this.semanticSpec.layers.filter(layer => {
+      const encoding = layer.mark?.type === "point" ? layer.encoding?.color : undefined;
+      const scale = this.semanticSpec.scales.find(candidate =>
+        candidate.id === encoding?.scale
+      );
+      return ["quantize", "quantile", "threshold"].includes(scale?.type);
+    });
+    const intervalColor = args.target === undefined
+      ? intervalColorCandidates.length === 1
+        ? intervalColorCandidates[0]
+        : undefined
+      : intervalColorCandidates.find(layer => layer.id === args.target);
+    if (
+      (channels?.length === 1 && channels[0] === "color" &&
+        intervalColorCandidates.length > 0) ||
+      (channels === undefined && intervalColorCandidates.length > 0)
+    ) {
+      return this.createIntervalLegend(args);
     }
     const wantsShape = channels?.includes("shape") === true;
     const pointCandidates = this.semanticSpec.layers.filter(layer =>

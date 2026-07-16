@@ -11,9 +11,11 @@ import {
 } from "../../grammar/bars/policy.js";
 import {
   mapContinuousScaleValues,
+  mapDiscretizedColors,
   mapSequentialColors,
   mapOrdinalValues,
   resolveColorRange,
+  resolveDiscretizedColorScale,
   resolveContinuousDomain,
   resolveOrdinalDomain,
   resolveOrdinalOffsetScale,
@@ -129,6 +131,8 @@ export const rematerializeScale = action(
     }));
     const allValues = valuesByConsumer.flatMap(item => item.values);
     const isSequentialColor = channel === "color" && scale.type === "sequential";
+    const isDiscretizedColor = channel === "color" &&
+      ["quantize", "quantile", "threshold"].includes(scale.type);
     const isOrdinalAppearance =
       ["color", "strokeDash", "shape"].includes(channel) &&
       scale.type === "ordinal";
@@ -148,7 +152,16 @@ export const rematerializeScale = action(
     );
     let domain;
 
-    if (binnedBars.length > 0) {
+    let discretizedScale;
+    if (isDiscretizedColor) {
+      discretizedScale = resolveDiscretizedColorScale({
+        type: scale.type,
+        domain: scale.domain,
+        range: scale.range,
+        values: allValues
+      });
+      domain = discretizedScale.domain;
+    } else if (binnedBars.length > 0) {
       if (channel !== "x" || binnedBars.length !== valuesByConsumer.length) {
         throw new Error(
           `Binned scale "${id}" cannot be shared with an unbinned consumer.`
@@ -236,7 +249,9 @@ export const rematerializeScale = action(
 
     let range;
     if (channel === "color") {
-      range = isSequentialColor
+      range = isDiscretizedColor
+        ? discretizedScale.range
+        : isSequentialColor
         ? resolveSequentialColorStops(scale.range)
         : resolveColorRange(scale.range, domain.length);
     }
@@ -258,7 +273,9 @@ export const rematerializeScale = action(
       );
     }
 
-    let resolvedScale = isOrdinalOffset
+    let resolvedScale = isDiscretizedColor
+      ? discretizedScale
+      : isOrdinalOffset
       ? resolveOrdinalOffsetScale({
           domain: scale.domain,
           values: allValues,
@@ -402,7 +419,9 @@ export const rematerializeScale = action(
       next = next.editGraphics({
         target: consumer.layer.id,
         property: channel === "color" ? "fill" : channel,
-        value: isSequentialColor
+        value: isDiscretizedColor
+          ? mapDiscretizedColors(values, resolvedScale)
+          : isSequentialColor
           ? mapSequentialColors(values, resolvedScale.domain, resolvedScale.range, {
               interpolation: resolvedScale.interpolate,
               clamp: resolvedScale.clamp ?? false

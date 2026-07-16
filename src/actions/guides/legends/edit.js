@@ -9,6 +9,7 @@ import {
   validatePositive
 } from "./continuous/common.js";
 import { normalizeOpacitySymbol } from "./continuous/opacity.js";
+import { normalizeIntervalLegend } from "./continuous/interval.js";
 
 const OPTIONS = Object.freeze([
   "target", "position", "align", "direction", "columns", "offset",
@@ -119,6 +120,57 @@ function editContinuous(program, kind, previous, args) {
   return kind === "gradient"
     ? next.rematerializeGradientLegend()
     : next.rematerializeOpacityLegend();
+}
+
+function editInterval(program, previous, args) {
+  for (const key of Object.keys(args)) {
+    if (![
+      "target", "position", "align", "direction", "offset", "title",
+      "symbol", "labels", "titleStyle", "itemGap", "border"
+    ].includes(key)) {
+      throw new Error(`interval legend does not accept ${key}.`);
+    }
+  }
+  const titleMode = args.title;
+  const layer = program.semanticSpec.layers.find(item => item.id === previous.target);
+  const inferredTitle = titleMode === "auto"
+    ? true
+    : typeof titleMode === "string" ? false : previous.inferredTitle;
+  const titleVisible = titleMode === false
+    ? false
+    : titleMode === undefined ? previous.titleVisible !== false : true;
+  const title = titleMode === "auto"
+    ? layer?.encoding?.color?.field
+    : typeof titleMode === "string" ? titleMode : previous.title;
+  const normalized = normalizeIntervalLegend({
+    target: previous.target,
+    position: args.position ?? previous.position,
+    align: args.align ?? previous.align,
+    direction: args.direction ?? previous.direction,
+    offset: args.offset ?? previous.offset,
+    title,
+    symbol: mergeObject(previous.symbol, args.symbol),
+    labels: mergeObject(previous.labels, args.labels),
+    titleStyle: mergeObject(previous.titleStyle, args.titleStyle),
+    itemGap: args.itemGap ?? previous.itemGap,
+    border: mergeBorder(previous.border, args.border)
+  });
+  let next = program._withLegendConfig("interval", {
+    ...previous,
+    ...normalized,
+    inferredTitle,
+    titleVisible
+  });
+  if (titleMode === "auto" || typeof titleMode === "string") {
+    next = next.editSemantic({
+      property: "guide.legend.color.title",
+      value: title
+    });
+  }
+  next = reconcileGraphic(next, "colorLegendTitle", titleVisible, {
+    type: "text"
+  });
+  return next.rematerializeIntervalLegend();
 }
 
 function categoricalSymbolIds(config) {
@@ -241,6 +293,9 @@ export const editLegend = action(
         configs.size?.target === target ? configs.size : undefined,
         args
       );
+    }
+    if (configs.interval?.target === target) {
+      return editInterval(this, configs.interval, args);
     }
     const continuousKind = ["gradient", "opacity"].find(
       kind => configs[kind]?.target === target

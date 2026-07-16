@@ -7,6 +7,7 @@ import {
 } from "../../grammar/pointShapes.js";
 import {
   mapContinuousScaleValues,
+  mapDiscretizedColors,
   mapOrdinalPositionValues,
   mapOrdinalValues,
   mapSequentialColors,
@@ -125,6 +126,12 @@ function resolveMappedValues(program, layer, dataset, channel) {
       interpolation: scale.interpolate,
       clamp: scale.clamp ?? false
     });
+  }
+  if (
+    channel === "color" &&
+    ["quantize", "quantile", "threshold"].includes(scale.type)
+  ) {
+    return mapDiscretizedColors(values, scale);
   }
   return ordinal
     ? ["x", "y"].includes(channel)

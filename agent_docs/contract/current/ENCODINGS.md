@@ -8,8 +8,8 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 
 - `id`: Implemented. user-defined scale ID; 생략하면 channel 이름(`x`, `y`, `color`, `size`,
   `shape`, `strokeDash`, `xOffset`)을 사용한다.
-- `type`: Implemented. quantitative point position은 `linear | log | pow | sqrt | symlog`, temporal position은 `time`, discrete position은 `band | point`; color/shape/dash/offset은
-  `ordinal`, size는 `linear`만 허용한다.
+- `type`: Implemented. quantitative point position은 `linear | log | pow | sqrt | symlog`, temporal position은 `time`, discrete position은 `band | point`; nominal color/shape/dash/offset은
+  `ordinal`, quantitative point color는 `sequential | quantize | quantile | threshold`, size는 `linear`만 허용한다.
 - `domain`: Implemented. `"auto"` 또는 type에 맞는 explicit array. explicit domain은 data inference,
   `zero`, `nice`보다 우선한다.
 - `range`: Implemented. `"auto"` 또는 type/channel에 맞는 explicit array. position auto range는
@@ -22,10 +22,9 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 - `base`, `exponent`, `constant`: Implemented for point position `log`, `pow`, `symlog`; defaults는 `10`, `1`, `1`이다. `sqrt`는 fixed exponent `0.5`다.
 - `clamp`, `reverse`: Implemented for continuous point position mappings.
 - `paddingInner`, `paddingOuter`, `padding`, `align`: Implemented for type-compatible band/point position.
-- Planned: discretizing scale types와
-  clamp/reverse/unknown mapping policies는 `planned/SCALES.md`, named palette vocabulary는
-  이 domain의 planned palette contract가 소유한다. Point quantitative/temporal color의 internal
-  sequential scale, interpolation, clamp/reverse와 continuous gradient legend는 Implemented다.
+- Planned: direct scale vocabulary/type transition과 `unknown` mapping policy는 `planned/SCALES.md`가
+  소유한다. Point quantitative/temporal color의 internal sequential scale과 point quantitative color의
+  quantize/quantile/threshold mapping, reverse, interval legend는 Implemented다.
 - Proposed: —
 
 ## `encodeX`
@@ -540,11 +539,15 @@ encodeX2(options: RulePositionAssignment | AreaSecondaryXAssignment): ChartProgr
 - `layout`: bar는 `"stack" | "fill" | "group" | "overlay" | "diverging"`, area는 group을 제외한
   네 layout을 지원한다. Histogram default는 stack, ordinal aggregate bar default는 group, area default는
   overlay다. Point/line과 continuous color는 layout을 거부하며 `"center"`는 Proposed다.
-- `scale`: nominal은 ordinal, continuous point color는 internal sequential scale이다. `palette` 또는
+- `scale`: nominal은 ordinal, continuous point color는 internal sequential scale이다. Quantitative point는
+  `quantize | quantile | threshold`도 지원한다. `palette` 또는
   explicit `range` 중 하나를 사용할 수 있다. Palette는
   [`PALETTES.md`](PALETTES.md)의 frozen 68-name vocabulary와 `{ name, count?, extent? }` object를 받는다.
 - Continuous color는 default `viridis`, eight interpolation tokens, `clamp`, `reverse`, quantitative/temporal
   auto domain을 지원하며 layout을 거부한다. General `createScale` vocabulary에는 sequential을 노출하지 않는다.
+- Quantize는 auto 또는 explicit pair를 동일 폭으로 나누고, quantile은 auto 또는 explicit sample에서
+  동일 개수에 가까운 class를 만들며, threshold는 strictly increasing explicit domain과 정확히 하나 더
+  많은 color를 요구한다. Boundary equality는 upper class에 포함되고 interval legend도 같은 경계를 읽는다.
 - Effect: color semantic, resolved layout과 scale을 저장한다. `group`은 wrapped `encodeXOffset`, `fill`은
   wrapped `encodeY({ stack: "normalize" })`, overlay는 non-stacked y, stack/diverging은 zero-stack y를
   사용한다. Bar는 rect, area는 closed path로 concrete materialize한다.
@@ -559,7 +562,7 @@ encodeX2(options: RulePositionAssignment | AreaSecondaryXAssignment): ChartProgr
 
 ### Formal values — `encodeColor`
 
-- Implemented: `encodeColor({ field: FieldName; target?: UserId; fieldType?: "nominal"; layout?: "stack" | "fill" | "group" | "overlay" | "diverging"; scale?: ColorScale } | { field: FieldName; target?: UserId; fieldType: "quantitative" | "temporal"; scale?: SequentialColorScale })`; mark compatibility narrows the nominal layout set.
+- Implemented: `encodeColor({ field: FieldName; target?: UserId; fieldType?: "nominal"; layout?: "stack" | "fill" | "group" | "overlay" | "diverging"; scale?: ColorScale } | { field: FieldName; target?: UserId; fieldType: "quantitative" | "temporal"; scale?: SequentialColorScale | DiscretizedColorScale })`; discretized scales require quantitative point color and mark compatibility narrows the nominal layout set.
 - Planned (NOT IMPLEMENTED): continuous bar consumers; continuous fields reject layout.
 - Proposed (NOT IMPLEMENTED): `{ layout?: "center" }`.
 
@@ -580,6 +583,8 @@ encodeX2(options: RulePositionAssignment | AreaSecondaryXAssignment): ChartProgr
   - ✅ Covered: categorical/continuous-family sampling, cycling, reverse and mark/legend parity.
   - ✅ Covered: quantitative/temporal point color, sequential mapping, eight interpolation tokens,
     reverse/extent/clamp and gradient legend parity.
+  - ✅ Covered: quantize/quantile/threshold boundaries, upper-boundary equality, explicit colors, reverse,
+    invalid threshold definitions, interval legend editing, primitive/public and Canvas parity.
 - Evidence: color, palette, line-series, bar-color, area-color, grouped-bar and Phase 1 integration tests.
 
 ## `encodeStrokeDash`

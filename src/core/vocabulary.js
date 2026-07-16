@@ -49,6 +49,7 @@ export const LEGEND_CONFIG_KINDS = Object.freeze([
   "color",
   "size",
   "gradient",
+  "interval",
   "opacity"
 ]);
 

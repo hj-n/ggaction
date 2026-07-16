@@ -12,7 +12,7 @@ class colors와 interval legend를 승인받는다.
 - [x] Discrete interval legend graphics and order
 - [x] Exact future public call chains
 - [x] Browser and PNG verification
-- [ ] Gate C user confirmation
+- [x] Gate C user confirmation
 - [x] STEP status, conceptual commit and push
 
 ## 구현 결과
@@ -25,8 +25,8 @@ class colors와 interval legend를 승인받는다.
 
 ## 검증
 
-- `test/gates/gapminder-discretized-color-scales/primitive.test.js`
-- `test/gates/gapminder-discretized-color-scales/png.render.js`
+- `test/charts/gapminder-discretized-color-scales/primitive.test.js`
+- `test/charts/gapminder-discretized-color-scales/png.render.js`
 - `.artifacts/test/png/roadmap2/gapminder-discretized-color-scales/`
 
 ## 완료 조건

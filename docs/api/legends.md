@@ -9,7 +9,7 @@ title: Legends
 
 | Action | Shortest call | Inference/defaults | Result |
 | --- | --- | --- | --- |
-| `createLegend` | `createLegend()` | Current/unique compatible mark; right position | Categorical, size, gradient, or opacity guide |
+| `createLegend` | `createLegend()` | Current/unique compatible mark; right position | Categorical, size, gradient, interval, or opacity guide |
 | `editLegend` | `editLegend({ position: "left" })` | Unique existing legend; omitted properties retained | Rematerialized layout and appearance |
 
 ## `createLegend(options?)`
@@ -17,6 +17,8 @@ title: Legends
 Creates inferred legend blocks. It supports combined line-series,
 color-stacked histogram, grouped ordinal-bar, grouped area, composite point-series,
 quantitative point-size, continuous-color gradient, and field-opacity legends.
+It also infers interval swatches for quantize, quantile, and threshold point
+color scales.
 
 ~~~javascript
 program.createLegend();
@@ -34,6 +36,7 @@ Every categorical legend uses the same right-side default:
 | point + matching line | `color` + `shape` | `right` | line over typed point |
 | quantitative point size | `size` | `right`, below point series | five equal-area circles |
 | quantitative/temporal point color | `color` | `right` | continuous gradient with five labels |
+| discretized quantitative point color | `color` | `right` | ordered interval swatches |
 | quantitative point opacity | `opacity` | `right` | five constant-size circles with sampled opacity |
 
 | Option | Type | Default |
@@ -110,6 +113,20 @@ program.createLegend({ channels: ["opacity"], position: "left" });
 Gradient legends reject categorical-only `symbol`, `columns`, `direction`, and
 `itemGap`. Opacity legends reject `columns`, `direction`, and `gradient`.
 Both forms require enough requested Canvas margin and never resize the Canvas.
+
+For a `quantize`, `quantile`, or `threshold` point-color scale, the same call
+creates ordered swatches and concrete interval labels. The current interval
+layout is vertical at the right edge; `offset`, `itemGap`, `symbol`, `labels`,
+`titleStyle`, and title editing remain available.
+
+~~~javascript
+program.createLegend({
+  channels: ["color"],
+  position: "right",
+  direction: "vertical",
+  symbol: { width: 14, height: 12 }
+});
+~~~
 
 ## Layered symbols
 

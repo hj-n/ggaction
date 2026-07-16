@@ -17,7 +17,7 @@ Complete chart contract:
 - [x] Shared transformed-scale pure grammar
 - [x] Gate A transformed scatterplot approval and public implementation
 - [x] Gate B temporal/discrete position approval and public implementation
-- [ ] Gate C discretized color approval and public implementation
+- [x] Gate C discretized color approval and public implementation
 - [ ] Gate D continuous-color bar approval and public implementation
 - [ ] Mapping-policy, rematerialization and error matrix
 - [ ] Types, docs, contract promotion and Phase closeout

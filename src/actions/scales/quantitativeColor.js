@@ -12,20 +12,20 @@ const OPTIONS = Object.freeze([
   "reverse"
 ]);
 
-export const setSequentialScale = action(
+export const setQuantitativeColorScale = action(
   {
-    op: "setSequentialScale",
-    description: "Create or update an internal sequential color scale."
+    op: "setQuantitativeColorScale",
+    description: "Create or update an internal quantitative color scale."
   },
   function (args = {}) {
-    validateKeys(args, OPTIONS, "setSequentialScale");
-    if (args.type !== "sequential") {
-      throw new Error('setSequentialScale requires type "sequential".');
+    validateKeys(args, OPTIONS, "setQuantitativeColorScale");
+    if (!["sequential", "quantize", "quantile", "threshold"].includes(args.type)) {
+      throw new Error(`Unsupported quantitative color scale type "${args.type}".`);
     }
     const existing = findSemanticScale(this, args.id);
-    if (existing !== undefined && existing.type !== "sequential") {
+    if (existing !== undefined && existing.type !== args.type) {
       throw new Error(
-        `Scale "${args.id}" cannot change type from "${existing.type}" to "sequential".`
+        `Scale "${args.id}" cannot change type from "${existing.type}" to "${args.type}".`
       );
     }
     let next = this;

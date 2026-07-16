@@ -5,6 +5,8 @@ import {
   DISCRETIZED_COLORS,
   DISCRETIZED_COLOR_TYPES
 } from "../reference-values.js";
+import { GAPMINDER_DISCRETIZED_COLOR_BUILDERS } from
+  "../../../../examples/gapminder-discretized-color-scales/program.js";
 
 const gapminder = loadGapminder();
 const COLOR_RANGE = JSON.stringify(DISCRETIZED_COLORS);
@@ -105,7 +107,7 @@ export const visualVariants = Object.freeze(DISCRETIZED_COLOR_TYPES.map(type =>
     title: `Gapminder ${type[0].toUpperCase()}${type.slice(1)} Color Gate`,
     callChain: discretizedColorTargetCallChains[type],
     primitive: createGapminderDiscretizedColorPrimitives(gapminder, type),
-    userFacing: undefined,
+    userFacing: GAPMINDER_DISCRETIZED_COLOR_BUILDERS[type](gapminder),
     width: 480,
     height: 312,
     colors: DISCRETIZED_COLORS,

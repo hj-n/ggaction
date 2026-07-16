@@ -50,6 +50,8 @@ type TitleWrap = "word" | "character";
   default bordered background를 만든다.
 - `count`: integer `>= 2`; size, gradient tick-label 또는 opacity sample count이며 default `5`.
 - `gradient`: sequential color 전용 `{ length?, thickness? }`, defaults `120`과 `12`.
+- Discretized quantitative color는 right/vertical interval swatches를 추론하고 `offset`, `itemGap`,
+  swatch width/height/stroke, label/title style을 concrete graphics로 materialize한다.
 - Effect: categorical semantics에는 scale/channel/title만 저장하고 placement, recipe, fonts, border는
   graphical config와 concrete collection으로 만든다. resolved domain order를 item order로 사용한다.
 - Composite layers share one item-local origin. Their concrete union bounds determine label placement and
@@ -103,7 +105,8 @@ type TitleWrap = "word" | "character";
   - ✅ Covered: omission/`false`, `true`, explicit color/lineWidth/padding/background and invalid objects.
 - `count`
   - ✅ Covered: omission→5, integer `>=2`, `<2`/non-integer rejection for size block.
-  - ✅ Covered: gradient tick-label and opacity sample count with the same boundary contract.
+- ✅ Covered: gradient tick-label and opacity sample count with the same boundary contract.
+- ✅ Covered: quantize/quantile/threshold interval labels, swatches, reverse와 exact primitive/public parity.
 - `gradient`
   - ✅ Covered: positive length/thickness, four position-derived orientations and categorical-option conflicts.
 - ✅ Covered: left point-composite/size side layout and occupied-bounds failure.
@@ -120,6 +123,7 @@ type TitleWrap = "word" | "character";
 - Categorical and combined point-size legends accept left/right side layout; the first left contract requires
   center alignment and vertical flow. `count` rematerializes an existing size block.
 - Gradient edits own `count` and `gradient`; opacity edits own `count`, `itemGap`, and a single point symbol recipe.
+  Interval edits own right/vertical spacing, swatch recipe, text style와 title visibility.
   Kind-incompatible options fail before the prior program changes.
 - Effect: stores graphical config immutably and invokes the corresponding wrapped rematerialization action.
   Categorical symbol recipe changes reconcile concrete graphic types without leaving stale objects.

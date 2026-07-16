@@ -4513,6 +4513,7 @@ selection or appearance state. Highlight appearance currently supports points on
 | Band/point position | First-appearance order | Plot bounds | padding and alignment |
 | Ordinal appearance/xOffset | First-appearance order | Palette, patterns, or parent band | explicit domain/range |
 | Color/strokeDash | First-appearance order | Built-in palette/patterns | palette or explicit range |
+| Discretized point color | Type-specific numeric boundaries | Five colors | `quantize`, `quantile`, `threshold`, `reverse` |
 
 Encoding actions accept a nested `scale` object. Omitted properties use channel
 defaults and stored program state.
@@ -4712,6 +4713,35 @@ program.encodeColor({
 
 The sequential type is inferred inside `encodeColor`; it is not added to the
 general direct `createScale` vocabulary.
+
+## Discretized point color
+
+Quantitative point color can create concrete color classes instead of a
+continuous gradient:
+
+- `quantize` divides a numeric extent into equal-width intervals.
+- `quantile` derives boundaries that keep observed class counts as even as
+  possible.
+- `threshold` uses an explicit, strictly increasing boundary array. A domain
+  with `n` boundaries requires `n + 1` colors.
+
+```javascript
+program.encodeColor({
+  field: "life_expect",
+  fieldType: "quantitative",
+  scale: {
+    type: "threshold",
+    domain: [60, 70, 75, 80],
+    range: ["#440154", "#3b528b", "#21918c", "#5ec962", "#fde725"]
+  }
+});
+```
+
+An exact boundary belongs to the upper interval. `reverse: true` reverses the
+resolved colors without changing boundaries. `createLegend()` infers an
+interval legend with labels such as `< 60`, `60–70`, and `≥ 80`. These scale
+types are currently owned by quantitative point `encodeColor`; the direct
+`createScale` and type-changing `editScale` contracts do not expose them yet.
 
 ## Errors and limitations
 
@@ -5011,7 +5041,7 @@ coordinate. Ambiguous resources require explicit IDs.
 
 | Action | Shortest call | Inference/defaults | Result |
 | --- | --- | --- | --- |
-| `createLegend` | `createLegend()` | Current/unique compatible mark; right position | Categorical, size, gradient, or opacity guide |
+| `createLegend` | `createLegend()` | Current/unique compatible mark; right position | Categorical, size, gradient, interval, or opacity guide |
 | `editLegend` | `editLegend({ position: "left" })` | Unique existing legend; omitted properties retained | Rematerialized layout and appearance |
 
 ## `createLegend(options?)`
@@ -5019,6 +5049,8 @@ coordinate. Ambiguous resources require explicit IDs.
 Creates inferred legend blocks. It supports combined line-series,
 color-stacked histogram, grouped ordinal-bar, grouped area, composite point-series,
 quantitative point-size, continuous-color gradient, and field-opacity legends.
+It also infers interval swatches for quantize, quantile, and threshold point
+color scales.
 
 ~~~javascript
 program.createLegend();
@@ -5036,6 +5068,7 @@ Every categorical legend uses the same right-side default:
 | point + matching line | `color` + `shape` | `right` | line over typed point |
 | quantitative point size | `size` | `right`, below point series | five equal-area circles |
 | quantitative/temporal point color | `color` | `right` | continuous gradient with five labels |
+| discretized quantitative point color | `color` | `right` | ordered interval swatches |
 | quantitative point opacity | `opacity` | `right` | five constant-size circles with sampled opacity |
 
 | Option | Type | Default |
@@ -5112,6 +5145,20 @@ program.createLegend({ channels: ["opacity"], position: "left" });
 Gradient legends reject categorical-only `symbol`, `columns`, `direction`, and
 `itemGap`. Opacity legends reject `columns`, `direction`, and `gradient`.
 Both forms require enough requested Canvas margin and never resize the Canvas.
+
+For a `quantize`, `quantile`, or `threshold` point-color scale, the same call
+creates ordered swatches and concrete interval labels. The current interval
+layout is vertical at the right edge; `offset`, `itemGap`, `symbol`, `labels`,
+`titleStyle`, and title editing remain available.
+
+~~~javascript
+program.createLegend({
+  channels: ["color"],
+  position: "right",
+  direction: "vertical",
+  symbol: { width: 14, height: 12 }
+});
+~~~
 
 ## Layered symbols
 
@@ -5572,9 +5619,9 @@ chart-authoring API does not support that combination.
 | Canvas | Create/edit width, height, background, margin |
 | Data | Immutable arrays of plain row objects, named filters, grouped interval summaries, grouped linear/polynomial/LOESS regression, and grouped kernel-density derivations |
 | Coordinates | Named Cartesian and Polar semantic resources; x/y use Cartesian |
-| Scales | Linear, UTC time, ordinal position, color, named/direct stroke dash, and padded band-local xOffset |
+| Scales | Linear/log/pow/sqrt/symlog point position, UTC time, band/point position, ordinal and sequential color, quantize/quantile/threshold point color, named/direct stroke dash, and padded band-local xOffset |
 | Aggregates | count, sum, mean, median, min/max, distinct/valid/missing, sample/population dispersion, quartiles, standard error, normal 95% mean endpoints, parameterized quantile, and ordered first/last |
-| Guides | Automatic bottom/top x axes, left/right y axes, closed numeric/UTC label formats, independently editable horizontal/vertical Cartesian grids, and editable four-edge continuous/left-right categorical legends |
+| Guides | Automatic bottom/top x axes, left/right y axes, closed numeric/UTC label formats, independently editable horizontal/vertical Cartesian grids, editable four-edge continuous/left-right categorical legends, and right-side interval legends |
 | Titles | One four-edge title with an optional subtitle, deterministic word/character wrapping, and partial editing |
 | Rendering | Browser Canvas and Node PNG |
 | Graphics | Concrete canvas, circle, line, rect, text, `M/L/C/Z` command paths, shared 8-value line/area curves, and heterogeneous drawable collections |
@@ -5950,7 +5997,8 @@ encodeColor({ field, target?, fieldType?, layout?, scale? })
 Create or compatibly replace point fill, line-series color, grouped area fill,
 or bar color. Nominal bar layout accepts `stack`, `fill`, `group`, `overlay`,
 and `diverging`; area accepts all except `group`. Quantitative and temporal
-point fields use a sequential scale with concrete interpolated colors. Nominal
+point fields use a sequential scale; quantitative point fields also accept
+`quantize`, `quantile`, and `threshold` color classes. Nominal
 grouped bars record `encodeXOffset` as a child. Reassigning grouped color also
 atomically reassigns xOffset and rematerializes an existing legend.
 [Series encodings](../api/series-encodings.md)
@@ -6133,8 +6181,8 @@ createLegend({
 })
 ```
 
-Create categorical, point-size, continuous-color gradient, or field-opacity
-sample legends. Continuous legends support right, left, top, and bottom
+Create categorical, point-size, continuous-color gradient, discretized-color
+interval, or field-opacity sample legends. Continuous legends support right, left, top, and bottom
 placement. Categorical legends also support left side placement; composite
 point and size blocks remain in deterministic vertical order.
 [Legends](../api/legends.md)

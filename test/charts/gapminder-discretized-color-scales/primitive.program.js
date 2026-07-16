@@ -200,7 +200,11 @@ export function createGapminderDiscretizedColorPrimitives(gapminder, type) {
     .editGraphics({ target: "xAxisTitle", property: "textBaseline", value: "middle" })
     .editGraphics({ target: "xAxisTitle", property: "rotation", value: 0 })
     .createGraphics({ id: "yAxisTitle", type: "text" })
-    .editGraphics({ target: "yAxisTitle", property: "x", value: 14.4 })
+    .editGraphics({
+      target: "yAxisTitle",
+      property: "x",
+      value: bounds.left - 36
+    })
     .editGraphics({ target: "yAxisTitle", property: "y", value: (bounds.top + bounds.bottom) / 2 })
     .editGraphics({ target: "yAxisTitle", property: "text", value: "Fertility" })
     .editGraphics({ target: "yAxisTitle", property: "fill", value: AXIS })

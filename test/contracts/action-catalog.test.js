@@ -210,12 +210,16 @@ test("keeps primitives and internal wrapped actions in separate layers", () => {
   assert.deepEqual(index.internal.guideComponents, [
     "createCategoricalLegend",
     "createGradientLegend",
+    "createIntervalLegend",
     "createOpacityLegend",
     "removeCategoricalLegend",
     "removeOpacityLegend",
     "createSizeLegend"
   ]);
-  assert.deepEqual(index.internal.stateTransitions, ["releaseDerivedData"]);
+  assert.deepEqual(index.internal.stateTransitions, [
+    "releaseDerivedData",
+    "setQuantitativeColorScale"
+  ]);
   assert.deepEqual(index.internal.aggregateComponents, [
     "createBoxMedian",
     "createBoxOutlierData",

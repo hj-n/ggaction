@@ -14,7 +14,7 @@ import {
 import { validateColorLayout } from "../../grammar/seriesLayout.js";
 import {
   resolveColorScaleDefinition,
-  resolveSequentialColorScaleDefinition
+  resolveQuantitativeColorScaleDefinition
 } from "../scales/definitions.js";
 import {
   applyEncodingScale,
@@ -137,7 +137,7 @@ function encodeContinuousColor(program, args) {
     layer.encoding?.color,
     args.scale ?? {}
   );
-  const scale = resolveSequentialColorScaleDefinition(
+  const scale = resolveQuantitativeColorScaleDefinition(
     program,
     args.fieldType,
     requestedScale
@@ -155,7 +155,7 @@ function encodeContinuousColor(program, args) {
       property: `layer[${target}].encoding.color.scale`,
       value: scale.id
     })
-    .setSequentialScale(scale);
+    .setQuantitativeColorScale(scale);
   return applyMaterializationPlan(
     next,
     planEncodingRematerialization(next, {

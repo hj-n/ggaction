@@ -14,6 +14,8 @@ import {
   validateSizeRange,
   validateStrokeDashRange,
   validateSequentialColorRange,
+  validateDiscretizedColorDomain,
+  validateDiscretizedColorRange,
   validateTimeScaleType,
   normalizeTransformParameters,
   SCALE_ROLES,
@@ -257,6 +259,60 @@ export function resolveSequentialColorScaleDefinition(
   };
   const clamp = options.clamp ?? existing?.clamp;
   const reverse = options.reverse ?? existing?.reverse;
+  if (clamp !== undefined) scale.clamp = clamp;
+  if (reverse !== undefined) scale.reverse = reverse;
+  return scale;
+}
+
+export function resolveQuantitativeColorScaleDefinition(
+  program,
+  fieldType,
+  options
+) {
+  optionsObject(options);
+  const type = options.type ?? findSemanticScale(
+    program,
+    options.id ?? "color"
+  )?.type ?? "sequential";
+  if (type === "sequential") {
+    return resolveSequentialColorScaleDefinition(program, fieldType, options);
+  }
+  validateKeys(options, [
+    ...COLOR_OPTIONS,
+    "clamp",
+    "reverse"
+  ], "scale");
+  if (fieldType !== "quantitative") {
+    throw new Error(`Scale type "${type}" requires quantitative color.`);
+  }
+  validateScaleTypeForRole(type, SCALE_ROLES.discretizedColor);
+  if (options.palette !== undefined && options.range !== undefined) {
+    throw new Error("Color scale cannot specify both palette and range.");
+  }
+  for (const property of ["clamp", "reverse"]) {
+    if (options[property] !== undefined && typeof options[property] !== "boolean") {
+      throw new TypeError(`Scale ${property} must be a boolean.`);
+    }
+    if (options[property] !== undefined) validateScalePropertyForType(type, property);
+  }
+  const id = validateUserId(options.id ?? "color", "Scale id");
+  const existing = findSemanticScale(program, id);
+  const requestedRange = options.palette === undefined
+    ? options.range
+    : { palette: options.palette };
+  const scale = {
+    id,
+    type,
+    domain: validateDiscretizedColorDomain(
+      type,
+      options.domain ?? (existing?.type === type ? existing.domain : "auto")
+    ),
+    range: validateDiscretizedColorRange(
+      requestedRange ?? (existing?.type === type ? existing.range : { palette: "viridis" })
+    )
+  };
+  const clamp = options.clamp ?? (existing?.type === type ? existing.clamp : undefined);
+  const reverse = options.reverse ?? (existing?.type === type ? existing.reverse : undefined);
   if (clamp !== undefined) scale.clamp = clamp;
   if (reverse !== undefined) scale.reverse = reverse;
   return scale;
