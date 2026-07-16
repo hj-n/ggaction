@@ -3,28 +3,62 @@ import { createCarsHistogram } from "../../../examples/cars-histogram/program.js
 import {
   BAR_HIGHLIGHT_LAYOUT,
   BAR_HIGHLIGHT_TARGET,
-  selectLongestHistogramBar
+  selectTallestHistogramStack,
+  selectTopmostHistogramSegment
 } from "./reference-values.js";
 
-export function createLongestHistogramBarGatePrimitive(
+function baseHistogram(cars, width, height) {
+  const base = createCarsHistogram(cars);
+  return width === BAR_HIGHLIGHT_LAYOUT.width &&
+    height === BAR_HIGHLIGHT_LAYOUT.height
+    ? base
+    : base.editCanvas({ width, height });
+}
+
+export function createTallestHistogramStackGatePrimitive(
   cars,
   {
     width = BAR_HIGHLIGHT_LAYOUT.width,
     height = BAR_HIGHLIGHT_LAYOUT.height
   } = {}
 ) {
-  let base = createCarsHistogram(cars);
-  if (width !== BAR_HIGHLIGHT_LAYOUT.width || height !== BAR_HIGHLIGHT_LAYOUT.height) {
-    base = base.editCanvas({ width, height });
-  }
-  const { target } = selectLongestHistogramBar(cars, { width, height });
+  const base = baseHistogram(cars, width, height);
+  const { target } = selectTallestHistogramStack(cars, { width, height });
+  const graphic = base.graphicSpec.objects.bars;
+  const children = graphic.children.map(child => ({
+    type: child.type ?? graphic.type,
+    properties: child.properties
+  }));
+  const selectedIndices = new Set(target.indices);
+
+  return base.editGraphics({
+    target: "bars",
+    property: "children",
+    value: [
+      ...children.filter((_, index) => !selectedIndices.has(index)),
+      ...children.filter((_, index) => selectedIndices.has(index)).map(selected => ({
+        type: selected.type,
+        properties: { ...selected.properties, ...BAR_HIGHLIGHT_TARGET }
+      }))
+    ]
+  });
+}
+
+export function createTopmostHistogramSegmentGatePrimitive(
+  cars,
+  {
+    width = BAR_HIGHLIGHT_LAYOUT.width,
+    height = BAR_HIGHLIGHT_LAYOUT.height
+  } = {}
+) {
+  const base = baseHistogram(cars, width, height);
+  const { target } = selectTopmostHistogramSegment(cars, { width, height });
   const graphic = base.graphicSpec.objects.bars;
   const children = graphic.children.map(child => ({
     type: child.type ?? graphic.type,
     properties: child.properties
   }));
   const [selected] = children.splice(target.index, 1);
-
   return base.editGraphics({
     target: "bars",
     property: "children",
@@ -32,10 +66,7 @@ export function createLongestHistogramBarGatePrimitive(
       ...children,
       {
         type: selected.type,
-        properties: {
-          ...selected.properties,
-          ...BAR_HIGHLIGHT_TARGET
-        }
+        properties: { ...selected.properties, ...BAR_HIGHLIGHT_TARGET }
       }
     ]
   });

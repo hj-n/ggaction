@@ -4088,15 +4088,41 @@ const selected = program.selectMarks({
 });
 ```
 
-Choose exactly one of `field` or `channel`. Operators are strict
+Choose exactly one value source:
+
+- `field` reads a data value that is unique for the selected visual item.
+- `channel` reads a resolved semantic value before scale mapping.
+- `property` reads a concrete scalar from `graphicSpec`, such as pixel `height`.
+
+Operators are strict
 `eq | neq | gt | gte | lt | lte`, set membership with
 `{ op: "oneOf", values }`, range selection with
 `{ op: "range", min, max, inclusive? }`, or ranked selection with
 `{ op: "min" | "max", count?, groupBy?, ties? }`. `count` defaults to `1`,
 `ties` to `"first"`, and `inclusive` to `true`. Values are semantic data
-values, never rendered pixel positions. Selectable items are one point symbol,
-one final bar rectangle, one line/area series path, or one rule line. A
-multi-row path field or channel must have one unique value at series grain.
+values without coercion. The default `grain: "item"` selects one point symbol,
+one final bar segment/rectangle, one line/area series path, or one rule line.
+Stacked bars additionally accept `grain: "stack"` to treat all segments in one
+bin or category as a single item. A multi-row path field or channel must have
+one unique value at series grain.
+
+Bar channel and graphical property names intentionally mean different things.
+For a vertical bar, semantic `y` is the lower/start endpoint and semantic `y2`
+is the upper/end endpoint. Concrete property `y` is the top pixel and concrete
+property `height` is its pixel length. For example, select the tallest complete
+histogram stack semantically with:
+
+```javascript
+program.selectMarks({
+  target: "bars",
+  grain: "stack",
+  channel: "y2",
+  op: "max"
+});
+```
+
+Use `{ property: "height", op: "max" }` only when the intended comparison is
+the currently rendered pixel height.
 
 `highlightMarks` is the concise chart-authoring facade. It can create the
 selection inline or reuse one:
@@ -5301,7 +5327,9 @@ not implemented.
 Box plots support vertical or horizontal category/measure pairings, default
 or configurable Tukey summaries, min–max whiskers, band width and component
 appearance overrides, and explicit outlier opt-out without placeholder resources.
-Mark selection supports point, final-bar, line/area series, and rule grain.
+Mark selection supports point, final-bar item, stacked-bar group, line/area
+series, and rule grain. Selector values explicitly distinguish data fields,
+pre-scale semantic channels, and concrete graphic properties.
 Highlight appearance currently supports point items only.
 
 <!-- Source: /reference/actions/ -->
@@ -5874,12 +5902,14 @@ Use these actions for explicit semantic resources or focused axis control.
 ### Reusable mark selections
 
 ```javascript
-selectMarks({ id?, target?, field | channel, op, ...operatorOptions })
+selectMarks({ id?, target?, grain?, field | channel | property, op, ...operatorOptions })
 ```
 
 Store a reusable semantic final-item selection without changing graphics.
 Supported operators are `eq`, `neq`, `gt`, `gte`, `lt`, `lte`, `oneOf`,
-`range`, `min`, and `max`.
+`range`, `min`, and `max`. `grain` defaults to `"item"`; stacked bars also
+support `"stack"`. Fields are data values, channels are pre-scale semantic
+values, and properties are concrete graphical values.
 [Mark selection and highlighting](../api/appearance.md#mark-selection-and-highlighting)
 
 ### Semantic resources and regression layers

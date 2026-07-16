@@ -62,5 +62,5 @@ appearance by mark capability:
 - logical offset support for rect, line and path geometry;
 - stable reapplication after each owning mark rematerializer runs.
 
-Representative primitive/public pixel pairs remain Gate B for the longest histogram bar and Gate C for one line
+Representative primitive/public pixel pairs remain Gate B for the tallest complete histogram stack and Gate C for one line
 series. Area and rule receive focused concrete-property and rematerialization evidence.

@@ -40,7 +40,8 @@ Selector, selection storage, highlighting and `filterMark` migration boundaries�
 | Mark | Semantic item grain | Current concrete child identity | Phase 9 resolver source |
 | --- | --- | --- | --- |
 | point | source dataset row | `${layerId}:${rowIndex}` | row plus encoded field/channel values |
-| bar | final histogram/aggregate/grouped/ranged/stacked cell | `${layerId}:${cellIndex}` | concrete rectangle을 만든 final semantic cell |
+| bar item | final histogram/aggregate/grouped/ranged segment/rectangle | `${layerId}:${cellIndex}` | concrete rectangle을 만든 final semantic item |
+| bar stack | same bin/category의 stacked segments | multiple child IDs | semantic start/end와 concrete union bounds를 분리한 group |
 | line | derived series | `${layerId}:${seriesIndex}` | `deriveLineSeries().series` |
 | area | derived series | `${layerId}:${seriesIndex}` | area/density series derivation |
 | rule | derived rule row | `${layerId}:${ruleIndex}` | `deriveRuleValues()` final rule values |
@@ -67,7 +68,7 @@ aggregation, grouping 변경은 resolver를 다시 실행해 현재 item set을 
 | Gate | Test owner | Artifact | Target public call |
 | --- | --- | --- | --- |
 | A | `test/gates/mark-selection-points/` | `.artifacts/test/png/roadmap2/mark-selection/points-grouped-max/primitive.png` | `highlightMarks({ select: { field: "Horsepower", op: "max", groupBy: "Origin" }, ... })` |
-| B | `test/gates/mark-selection-bars/` | `.artifacts/test/png/roadmap2/mark-selection/histogram-longest-bar/primitive.png` | `highlightMarks({ select: { channel: "y", op: "max" }, ... })` |
+| B | `test/gates/mark-selection-bars/` | `.artifacts/test/png/roadmap2/mark-selection/bars-tallest-stack/primitive.png` | `highlightMarks({ select: { grain: "stack", channel: "y2", op: "max" }, ... })` |
 | C | `test/gates/mark-selection-lines/` | `.artifacts/test/png/roadmap2/mark-selection/line-series/primitive.png` | `highlightMarks({ select: { field: "Origin", op: "eq", value: "Japan" }, ... })` |
 
 Gate manifests own the exact expanded call chain. Before approval they contain `primitive` only; the corresponding

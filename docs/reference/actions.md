@@ -571,12 +571,14 @@ Use these actions for explicit semantic resources or focused axis control.
 ### Reusable mark selections
 
 ```javascript
-selectMarks({ id?, target?, field | channel, op, ...operatorOptions })
+selectMarks({ id?, target?, grain?, field | channel | property, op, ...operatorOptions })
 ```
 
 Store a reusable semantic final-item selection without changing graphics.
 Supported operators are `eq`, `neq`, `gt`, `gte`, `lt`, `lte`, `oneOf`,
-`range`, `min`, and `max`.
+`range`, `min`, and `max`. `grain` defaults to `"item"`; stacked bars also
+support `"stack"`. Fields are data values, channels are pre-scale semantic
+values, and properties are concrete graphical values.
 [Mark selection and highlighting](../api/appearance.md#mark-selection-and-highlighting)
 
 ### Semantic resources and regression layers

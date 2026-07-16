@@ -14,6 +14,24 @@ export const MARK_SELECTOR_OPERATORS = Object.freeze([
   "max"
 ]);
 
+export const MARK_SELECTOR_GRAINS = Object.freeze(["item", "stack"]);
+
+export const MARK_GRAPHIC_PROPERTIES = Object.freeze([
+  "x",
+  "y",
+  "width",
+  "height",
+  "radius",
+  "x1",
+  "y1",
+  "x2",
+  "y2",
+  "fill",
+  "stroke",
+  "strokeWidth",
+  "opacity"
+]);
+
 const COMPARISON_OPERATORS = new Set([
   "eq",
   "neq",
@@ -25,8 +43,10 @@ const COMPARISON_OPERATORS = new Set([
 const ORDERED_COMPARISON_OPERATORS = new Set(["gt", "gte", "lt", "lte"]);
 const RANK_OPERATORS = new Set(["min", "max"]);
 const SELECTOR_KEYS = Object.freeze([
+  "grain",
   "field",
   "channel",
+  "property",
   "op",
   "value",
   "values",
@@ -78,16 +98,27 @@ export function normalizeMarkSelector(selector) {
     throw new Error(`Unknown mark selector option "${unknown}".`);
   }
 
-  const sources = ["field", "channel"].filter(key => Object.hasOwn(selector, key));
+  const sources = ["field", "channel", "property"].filter(key =>
+    Object.hasOwn(selector, key)
+  );
   if (sources.length !== 1) {
-    throw new Error("Mark selector requires exactly one of field or channel.");
+    throw new Error(
+      "Mark selector requires exactly one of field, channel, or property."
+    );
   }
   const source = sources[0];
   const sourceValue = source === "field"
     ? validateField(selector.field)
-    : selector.channel;
+    : selector[source];
   if (source === "channel" && !ENCODING_CHANNELS.includes(sourceValue)) {
     throw new Error(`Unknown selector channel "${sourceValue}".`);
+  }
+  if (source === "property" && !MARK_GRAPHIC_PROPERTIES.includes(sourceValue)) {
+    throw new Error(`Unknown selector graphic property "${sourceValue}".`);
+  }
+  const grain = selector.grain ?? "item";
+  if (!MARK_SELECTOR_GRAINS.includes(grain)) {
+    throw new Error(`Unknown mark selector grain "${grain}".`);
   }
 
   if (!MARK_SELECTOR_OPERATORS.includes(selector.op)) {
@@ -95,12 +126,12 @@ export function normalizeMarkSelector(selector) {
   }
   const op = selector.op;
   const allowedByOperation = RANK_OPERATORS.has(op)
-    ? new Set([source, "op", "count", "groupBy", "ties"])
+    ? new Set(["grain", source, "op", "count", "groupBy", "ties"])
     : op === "range"
-      ? new Set([source, "op", "min", "max", "inclusive"])
+      ? new Set(["grain", source, "op", "min", "max", "inclusive"])
       : op === "oneOf"
-        ? new Set([source, "op", "values"])
-        : new Set([source, "op", "value"]);
+        ? new Set(["grain", source, "op", "values"])
+        : new Set(["grain", source, "op", "value"]);
   const incompatible = Object.keys(selector).find(key => !allowedByOperation.has(key));
   if (incompatible !== undefined) {
     throw new Error(
@@ -115,14 +146,14 @@ export function normalizeMarkSelector(selector) {
     if (ORDERED_COMPARISON_OPERATORS.has(op)) {
       validateOrderedValue(selector.value, "Ordered selector value");
     }
-    return cloneAndFreeze({ [source]: sourceValue, op, value: selector.value });
+    return cloneAndFreeze({ grain, [source]: sourceValue, op, value: selector.value });
   }
 
   if (op === "oneOf") {
     if (!Array.isArray(selector.values)) {
       throw new TypeError("Mark selector oneOf values must be an array.");
     }
-    return cloneAndFreeze({ [source]: sourceValue, op, values: selector.values });
+    return cloneAndFreeze({ grain, [source]: sourceValue, op, values: selector.values });
   }
 
   if (op === "range") {
@@ -138,6 +169,7 @@ export function normalizeMarkSelector(selector) {
       throw new TypeError("Selector range inclusive must be a boolean.");
     }
     return cloneAndFreeze({
+      grain,
       [source]: sourceValue,
       op,
       min,
@@ -156,6 +188,7 @@ export function normalizeMarkSelector(selector) {
   }
   const groupBy = normalizeGroupBy(selector.groupBy);
   return cloneAndFreeze({
+    grain,
     [source]: sourceValue,
     op,
     count,
@@ -180,23 +213,31 @@ function validateItems(items) {
       throw new Error(`Duplicate selectable mark item key "${item.key}".`);
     }
     keys.add(item.key);
-    if (!isPlainObject(item.fields) || !isPlainObject(item.channels)) {
+    if (
+      !isPlainObject(item.fields) ||
+      !isPlainObject(item.channels) ||
+      !isPlainObject(item.properties)
+    ) {
       throw new TypeError(
-        `Selectable mark item "${item.key}" requires field and channel value maps.`
+        `Selectable mark item "${item.key}" requires field, channel, and property value maps.`
       );
     }
   }
 }
 
 function selectorValue(item, selector) {
-  return selector.field === undefined
-    ? item.channels[selector.channel]
-    : item.fields[selector.field];
+  if (selector.field !== undefined) return item.fields[selector.field];
+  if (selector.channel !== undefined) return item.channels[selector.channel];
+  return item.properties[selector.property];
 }
 
 function hasSelectorValue(item, selector) {
-  const values = selector.field === undefined ? item.channels : item.fields;
-  const key = selector.field ?? selector.channel;
+  const values = selector.field !== undefined
+    ? item.fields
+    : selector.channel !== undefined
+      ? item.channels
+      : item.properties;
+  const key = selector.field ?? selector.channel ?? selector.property;
   return Object.hasOwn(values, key) && values[key] !== undefined;
 }
 

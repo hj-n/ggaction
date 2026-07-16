@@ -26,7 +26,7 @@ Planned normative action contract:
 - [ ] Contract and current implementation audit
 - [ ] Pure selector and mark-item resolver foundation
 - [x] Point selection/highlight Gate A and public implementation
-- [ ] Histogram longest-bar Gate B and public implementation
+- [ ] Histogram tallest-stack Gate B and public implementation
 - [ ] Line-series Gate C and cross-mark integration
 - [ ] `filterMarks` migration and `editBarMark`
 - [ ] Robustness, docs, contract promotion and Phase closeout
@@ -47,8 +47,9 @@ is not a direct public action. `selectMarks` is advanced authoring; `highlightMa
 
 - Shared selector operations: `eq | neq | gt | gte | lt | lte | oneOf | range | min | max`.
 - `min | max` supports positive `count`, optional `groupBy`, and `ties: "first" | "all"`.
-- Selection value comes from exactly one semantic field or channel. No selector reads concrete pixel length.
-- Native item grain is point symbol, final bar rect, line/area series path or rule line.
+- Selection value comes from exactly one data `field`, semantic `channel`, or concrete graphic `property`.
+- Native item grain is point symbol, final bar segment/rect, line/area series path or rule line. Stacked bars also
+  support a complete bin/category `grain: "stack"` without conflating it with one colored segment.
 - Selection definition and highlight appearance persist outside transient context and are reevaluated after
   rematerialization. Renderer continues to read only final `graphicSpec`.
 - `highlightMarks` supports inferred defaults plus color/fill/stroke/opacity/width/dash/shape/size, complement
@@ -61,10 +62,11 @@ is not a direct public action. `selectMarks` is advanced authoring; `highlightMa
 Select maximum-Horsepower row per Origin, emphasize selected points with accent color/diamond/size/offset, dim the
 remaining points and place selected points last. This approves row grain, grouped rank, point recipe and logical offset.
 
-### Gate B — longest histogram bar
+### Gate B — tallest complete histogram stack
 
-Select the final bar with maximum y/count and emphasize its fill/stroke while retaining every other bar. This approves
-post-bin semantic bar grain, `editBarMark`, front order and non-pixel channel ranking.
+Compare two selectors over the same histogram: item-grain maximum `y2` emphasizes only the topmost rect, while
+stack-grain maximum `y2` emphasizes every rect in the tallest complete bin stack. This approves segment/stack grain
+separation, semantic endpoints, `editBarMark`, and front order.
 
 ### Gate C — one line series
 
@@ -95,7 +97,7 @@ STEP3   mark-item resolver and persistent selection state
 STEP4   point primitive
   ↓ Gate A
 STEP5   selectMarks and point highlight public flow
-STEP6   histogram longest-bar primitive
+STEP6   histogram tallest-stack primitive
   ↓ Gate B
 STEP7   bar resolver, editBarMark and bar highlight public flow
 STEP8   line-series primitive

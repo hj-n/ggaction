@@ -25,6 +25,7 @@ test("resolves one stable semantic item per point row and graphic child", () => 
     candidate.id === layer.data
   );
   const items = resolveMarkItems(program, layer.id);
+  const child = program.graphicSpec.objects[layer.id].children[0];
 
   assert.equal(items.length, dataset.values.length);
   assert.deepEqual(items[0], {
@@ -37,8 +38,14 @@ test("resolves one stable semantic item per point row and graphic child", () => 
       y: dataset.values[0].Miles_per_Gallon,
       color: dataset.values[0].Origin
     },
+    properties: {
+      x: child.properties.x,
+      y: child.properties.y,
+      fill: child.properties.fill,
+      radius: child.properties.radius
+    },
     members: [dataset.values[0]],
-    graphicId: `${layer.id}:0`
+    graphicIds: [`${layer.id}:0`]
   });
   assert.equal(Object.isFrozen(items[0].members), true);
 });
@@ -52,15 +59,32 @@ test("resolves histogram bars at final bin-cell grain without pixel values", () 
 
   assert.equal(items.length, program.graphicSpec.objects[layer.id].children.length);
   assert.equal(items.every(item => item.markType === "bar"), true);
-  assert.equal(items.every(item => Array.isArray(item.channels.x)), true);
+  assert.equal(items.every(item => Number.isFinite(item.channels.x)), true);
+  assert.equal(items.every(item => Number.isFinite(item.channels.x2)), true);
   assert.equal(items.every(item => Number.isFinite(item.channels.y)), true);
+  assert.equal(items.every(item => Number.isFinite(item.channels.y2)), true);
+  assert.equal(items[0].fields.Displacement, undefined);
+  assert.equal(items[0].channels.y, 0);
+  assert.equal(items[0].channels.y2, 18);
+  assert.notEqual(items[0].properties.y, items[0].channels.y);
+  assert.notEqual(items[0].properties.height, items[0].channels.y2);
   assert.equal(
     items.some((item, index) =>
-      item.channels.y === program.graphicSpec.objects[layer.id]
+      item.channels.y2 - item.channels.y === program.graphicSpec.objects[layer.id]
         .children[index].properties.height
     ),
     false
   );
+
+  const stacks = resolveMarkItems(program, layer.id, "stack");
+  assert.deepEqual(stacks.map(item => [item.channels.x, item.channels.x2]), [
+    [50, 100], [100, 150], [150, 200], [200, 250], [250, 300],
+    [300, 350], [350, 400], [400, 450], [450, 500]
+  ]);
+  assert.deepEqual(stacks.map(item => item.channels.y), Array(9).fill(0));
+  assert.deepEqual(stacks.map(item => item.channels.y2), [98, 104, 33, 40, 28, 44, 37, 18, 4]);
+  assert.equal(stacks[1].graphicIds.length, 3);
+  assert.equal(stacks[1].properties.height > items[3].properties.height, true);
   assert.equal(
     items.reduce((sum, item) => sum + item.members.length, 0),
     program.semanticSpec.datasets.find(dataset => dataset.id === layer.data).values.length
@@ -72,8 +96,13 @@ test("resolves grouped aggregate and ranged bars in concrete cell order", () => 
   const groupedItems = resolveMarkItems(grouped, "bars");
   assert.equal(groupedItems.length, grouped.graphicSpec.objects.bars.children.length);
   assert.equal(groupedItems.every(item => Number.isFinite(item.channels.y)), true);
+  assert.equal(groupedItems.every(item => Number.isFinite(item.channels.y2)), true);
   assert.equal(groupedItems.every(item => typeof item.channels.color === "string"), true);
   assert.equal(groupedItems.every(item => item.channels.xOffset === item.channels.color), true);
+  assert.throws(
+    () => resolveMarkItems(grouped, "bars", "stack"),
+    /does not define stacked items/
+  );
 
   const ranged = createCarsBoxPlot(loadCars());
   const rangedItems = resolveMarkItems(ranged, "boxPlot");
@@ -101,7 +130,7 @@ test("resolves line and area paths by unique semantic series", () => {
     areaItems.map(item => item.fields.Origin),
     ["USA", "Europe", "Japan"]
   );
-  assert.equal(areaItems.every(item => item.graphicId.startsWith(`${areaLayer.id}:`)), true);
+  assert.equal(areaItems.every(item => item.graphicIds[0].startsWith(`${areaLayer.id}:`)), true);
 });
 
 test("resolves one rule item per final semantic rule", () => {
@@ -117,7 +146,15 @@ test("resolves one rule item per final semantic rule", () => {
 
   assert.deepEqual(items.map(item => item.fields.group), ["A", "B"]);
   assert.deepEqual(items.map(item => item.channels.x), [10, 30]);
-  assert.deepEqual(items.map(item => item.graphicId), ["rule:0", "rule:1"]);
+  assert.deepEqual(items.map(item => item.graphicIds), [["rule:0"], ["rule:1"]]);
+  assert.deepEqual(items.map(item => item.properties.x1), [
+    program.graphicSpec.objects.rule.children[0].properties.x1,
+    program.graphicSpec.objects.rule.children[1].properties.x1
+  ]);
+  assert.throws(
+    () => resolveMarkItems(program, "rule", "stack"),
+    /does not support stack selection grain/
+  );
 });
 
 test("stores immutable selection intent and reevaluates current mark items", () => {

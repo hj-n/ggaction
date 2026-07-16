@@ -60,9 +60,16 @@ export type FilterMarkOptions = {
   target?: string;
   field: string;
 } & FilterModeOptions;
-export type MarkSelector = (
-  | { field: string; channel?: never }
-  | { channel: "x" | "y" | "x2" | "y2" | "xOffset" | "theta" | "radius" | "color" | "strokeDash" | "size" | "shape" | "group" | "opacity"; field?: never }
+export type MarkGraphicProperty =
+  | "x" | "y" | "width" | "height" | "radius"
+  | "x1" | "y1" | "x2" | "y2"
+  | "fill" | "stroke" | "strokeWidth" | "opacity";
+export type MarkSelector = {
+  grain?: "item" | "stack";
+} & (
+  | { field: string; channel?: never; property?: never }
+  | { channel: "x" | "y" | "x2" | "y2" | "xOffset" | "theta" | "radius" | "color" | "strokeDash" | "size" | "shape" | "group" | "opacity"; field?: never; property?: never }
+  | { property: MarkGraphicProperty; field?: never; channel?: never }
 ) & (
   | { op: "eq" | "neq" | "gt" | "gte" | "lt" | "lte"; value: unknown }
   | { op: "oneOf"; values: readonly unknown[] }

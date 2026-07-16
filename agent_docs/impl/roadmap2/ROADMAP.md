@@ -244,8 +244,8 @@ Box는 generic rule/error-bar/ranged-position actions를 실제 wrapped children
 - Direct actions: `filterMarks`, `selectMarks`, `highlightMarks`, `editBarMark`
 - Capability: `mark-item-selection-grammar`
 
-Point symbol, final bar rectangle, line/area series path와 rule line을 backend pixels가 아닌 semantic item grain에서
-선택한다. Shared comparison/set/range/rank grammar, top/bottom N과 ties, mark filtering, persistent selection,
+Point symbol, final bar segment/stack, line/area series path와 rule line을 explicit data-field, pre-scale semantic-channel,
+concrete-property namespace에서 선택한다. Shared comparison/set/range/rank grammar, top/bottom N과 ties, mark filtering, persistent selection,
 mark-specific highlighting, dimming, front order와 logical offset을 Cars point/histogram/line visual Gates로 검증한다.
 Current `filterMark`는 plural `filterMarks`로 완전히 교체하며 compatibility alias를 남기지 않는다.
 

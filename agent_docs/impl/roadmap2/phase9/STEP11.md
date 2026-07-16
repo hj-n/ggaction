@@ -6,7 +6,7 @@ All selector actions, mark types and highlight options의 interaction matrix와 
 
 ## 진행 상태
 
-- [ ] Every operator × applicable field/channel representative
+- [ ] Every operator × applicable field/channel/property representative and item/stack grain
 - [ ] Count/group/ties, empty/missing/mixed/duplicate and deterministic order
 - [ ] Explicit/current/unique/ambiguous target and selection resolution
 - [ ] Default recipe and every explicit style option/application error

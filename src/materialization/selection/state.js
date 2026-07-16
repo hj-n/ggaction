@@ -4,13 +4,22 @@ import { resolveMarkItems } from "./items.js";
 
 export function resolveMarkSelection(program, target, selector) {
   const normalized = normalizeMarkSelector(selector);
-  const items = resolveMarkItems(program, target);
+  const items = resolveMarkItems(program, target, normalized.grain);
   if (items.length > 0) {
-    const source = normalized.field === undefined ? "channels" : "fields";
-    const key = normalized.field ?? normalized.channel;
+    const source = normalized.field !== undefined
+      ? "fields"
+      : normalized.channel !== undefined
+        ? "channels"
+        : "properties";
+    const kind = normalized.field !== undefined
+      ? "field"
+      : normalized.channel !== undefined
+        ? "channel"
+        : "graphic property";
+    const key = normalized.field ?? normalized.channel ?? normalized.property;
     if (!items.some(item => Object.hasOwn(item[source], key))) {
       throw new Error(
-        `Selection ${normalized.field === undefined ? "channel" : "field"} "${key}" is not uniquely defined at the target item grain.`
+        `Selection ${kind} "${key}" is not uniquely defined at the target ${normalized.grain} grain.`
       );
     }
   }

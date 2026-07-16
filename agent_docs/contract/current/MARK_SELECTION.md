@@ -7,7 +7,12 @@ lifecycle rules live in [`../README.md`](../README.md).
 
 ```typescript
 type MarkSelector =
-  & ({ field: FieldName; channel?: never } | { channel: Channel; field?: never })
+  & { grain?: "item" | "stack" }
+  & (
+    | { field: FieldName; channel?: never; property?: never }
+    | { channel: Channel; field?: never; property?: never }
+    | { property: GraphicProperty; field?: never; channel?: never }
+  )
   & (
     | { op: "eq" | "neq" | "gt" | "gte" | "lt" | "lte"; value: unknown }
     | { op: "oneOf"; values: readonly unknown[] }
@@ -21,15 +26,22 @@ type MarkSelector =
   );
 ```
 
-- `field`와 `channel` 중 정확히 하나를 사용한다. 값 비교는 strict하며 coercion하지 않는다.
+- `field`, `channel`, `property` 중 정확히 하나를 사용한다. `field`는 member data에서 item 전체에 unique한
+  값, `channel`은 scale 적용 전 resolved semantic encoding 값, `property`는 final `graphicSpec`의 concrete
+  scalar 값만 읽는다. 값 비교는 strict하며 coercion하지 않는다.
 - `range`의 `inclusive` 기본값은 `true`다. Ordered comparison은 같은 type의 finite number 또는 string만
   비교하고 missing/incompatible item은 제외한다.
 - `min | max`의 `count` 기본값은 `1`, `ties` 기본값은 `"first"`다. `"first"`는 stable source order로
   정확히 count개를 고르고 `"all"`은 boundary tie를 모두 포함할 수 있다. `groupBy`는 extrema에만 유효하다.
-- 현재 selectable grain은 point symbol, final bar rectangle, line/area series path, rule line이다. Stable key는
-  semantic item identity에서 만들며 Canvas pixel geometry나 collection child 순서를 selector 값으로 사용하지 않는다.
+- `grain` 기본값은 `"item"`이다. Item grain은 point symbol, final bar segment/rectangle, line/area series path,
+  rule line이다. Bar의 `grain: "stack"`은 stack/fill/diverging layout에서 같은 bin/category의 모든 segment를
+  한 item으로 묶는다. Group/overlay/ranged bar와 non-bar mark는 stack grain을 거부한다.
+- Bar semantic geometry는 start endpoint `x`/`y`와 end endpoint `x2`/`y2`를 사용한다. Concrete rect는
+  property `x`/`y`(top-left), `width`/`height`를 사용한다. 예를 들어 vertical zero-based stack의 전체 높이는
+  `channel: "y2"`, concrete pixel 높이는 `property: "height"`로 선택한다.
+- Stable key는 semantic item identity에서 만들며 collection child order를 selector identity로 사용하지 않는다.
   Multi-row path의 field/channel은 series grain에서 값이 하나로 unique할 때만 selectable하다.
-- Empty selection은 성공이다. Ambiguous field/channel, target 또는 incompatible selector는 state와 trace를
+- Empty selection은 성공이다. Ambiguous field/channel/property, target 또는 incompatible selector는 state와 trace를
   만들기 전에 실패한다.
 
 ## `selectMarks`
@@ -46,8 +58,9 @@ type MarkSelector =
 
 ### Formal values — `selectMarks`
 
-- Implemented: `selectMarks({ id?: UserId; target?: UserId } & MarkSelector)` for point/bar/line/area/rule item grain and every
-  comparison, set, range and grouped/ungrouped extrema mode above.
+- Implemented: `selectMarks({ id?: UserId; target?: UserId } & MarkSelector)` for point/bar/line/area/rule item grain,
+  stacked bar grain, the three explicit value sources, and every comparison, set, range and grouped/ungrouped extrema
+  mode above.
 - Proposed (NOT IMPLEMENTED): —.
 
 ### Value coverage — `selectMarks`
@@ -57,6 +70,9 @@ type MarkSelector =
 - Predicate/set/range
   - ✅ Covered: strict comparison operators, `oneOf`, inclusive/exclusive range, numeric/string compatibility,
     missing values and empty result in selector grammar tests.
+- Value source and grain
+  - ✅ Covered: data field, semantic channel, concrete property, item/stack distinction, semantic bar endpoints,
+    stack attachment IDs and Canvas-dependent concrete bounds.
 - Extrema
   - ✅ Covered: min/max, count, grouped extrema, stable ties and both tie policies in selector grammar tests.
 - Effects and reevaluation

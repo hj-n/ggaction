@@ -19,4 +19,4 @@ Approved Gate B를 bar item resolver, whole-mark `editBarMark`와 bar highlight 
 
 ## 완료 조건
 
-Longest-bar highlighting and whole-bar editing share canonical bar appearance/materialization without raw paths.
+Tallest-stack highlighting and whole-bar editing share canonical bar appearance/materialization without raw paths.

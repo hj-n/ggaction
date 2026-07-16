@@ -33,6 +33,7 @@ test("creates a reusable selection without changing graphics", () => {
     pointSelection: {
       target: "point",
       selector: {
+        grain: "item",
         field: "x",
         op: "max",
         count: 1,
@@ -69,11 +70,33 @@ test("selects final bar and series items without changing their graphics", () =>
   const histogram = createCarsHistogram(cars);
   const selectedBar = histogram.selectMarks({
     target: "bars",
-    channel: "y",
+    grain: "stack",
+    channel: "y2",
     op: "max"
   });
   assert.equal(resolveStoredSelection(selectedBar).keys.length, 1);
+  assert.deepEqual(resolveStoredSelection(selectedBar).keys, ["bars/stack/1"]);
   assert.equal(selectedBar.graphicSpec, histogram.graphicSpec);
+  const resizedBar = selectedBar.editCanvas({ height: 520 });
+  assert.deepEqual(resolveStoredSelection(resizedBar).keys, ["bars/stack/1"]);
+  assert.equal(
+    resolveStoredSelection(resizedBar).items[1].channels.y2,
+    resolveStoredSelection(selectedBar).items[1].channels.y2
+  );
+  assert.notEqual(
+    resolveStoredSelection(resizedBar).items[1].properties.height,
+    resolveStoredSelection(selectedBar).items[1].properties.height
+  );
+
+  const tallestSegment = histogram.selectMarks({
+    id: "tallestSegment",
+    target: "bars",
+    property: "height",
+    op: "max"
+  });
+  assert.deepEqual(resolveStoredSelection(tallestSegment).keys, [
+    "bars/histogram/2"
+  ]);
 
   const line = createCarsLineChart(cars);
   const selectedSeries = line.selectMarks({

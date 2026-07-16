@@ -10,7 +10,8 @@ function item(key, value, group = "all", channel = value) {
   return {
     key,
     fields: { value, group },
-    channels: { x: channel }
+    channels: { x: channel },
+    properties: { height: channel / 2 }
   };
 }
 
@@ -32,6 +33,7 @@ test("normalizes comparison, set, range, and rank selectors immutably", () => {
   });
   values.push(9);
   assert.deepEqual(oneOf, {
+    grain: "item",
     field: "value",
     op: "oneOf",
     values: [2, 7]
@@ -39,11 +41,12 @@ test("normalizes comparison, set, range, and rank selectors immutably", () => {
   assert.equal(Object.isFrozen(oneOf.values), true);
   assert.deepEqual(
     normalizeMarkSelector({ channel: "x", op: "range", min: 10, max: 20 }),
-    { channel: "x", op: "range", min: 10, max: 20, inclusive: true }
+    { grain: "item", channel: "x", op: "range", min: 10, max: 20, inclusive: true }
   );
   assert.deepEqual(
     normalizeMarkSelector({ field: "value", op: "max", groupBy: "group" }),
     {
+      grain: "item",
       field: "value",
       op: "max",
       count: 1,
@@ -112,6 +115,13 @@ test("selects set and inclusive or exclusive ranges from fields and channels", (
     }),
     ["d"]
   );
+  assert.deepEqual(
+    selectMarkItemKeys(numericItems, {
+      property: "height",
+      op: "max"
+    }),
+    ["e"]
+  );
 });
 
 test("ranks deterministically with count, groups, ties, and stable item order", () => {
@@ -164,7 +174,10 @@ test("rejects invalid selectors and item contracts before returning keys", () =>
   const invalid = [
     [{ op: "eq", value: 1 }, /exactly one/],
     [{ field: "value", channel: "x", op: "eq", value: 1 }, /exactly one/],
+    [{ field: "value", property: "height", op: "eq", value: 1 }, /exactly one/],
     [{ channel: "unknown", op: "eq", value: 1 }, /Unknown selector channel/],
+    [{ property: "length", op: "eq", value: 1 }, /Unknown selector graphic property/],
+    [{ grain: "row", field: "value", op: "eq", value: 1 }, /Unknown mark selector grain/],
     [{ field: "value", op: "unknown", value: 1 }, /Unknown mark selector operator/],
     [{ field: "value", op: "eq" }, /requires value/],
     [{ field: "value", op: "gt", value: Infinity }, /finite number or string/],

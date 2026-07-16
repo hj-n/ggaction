@@ -5,19 +5,69 @@ import { render } from "../../../src/index.js";
 import { createCarsHistogram } from "../../../examples/cars-histogram/program.js";
 import { createMockCanvasContext } from "../../support/canvas.js";
 import { loadCars } from "../../support/data.js";
-import { createLongestHistogramBarGatePrimitive } from "./primitive.program.js";
+import {
+  createTallestHistogramStackGatePrimitive,
+  createTopmostHistogramSegmentGatePrimitive
+} from "./primitive.program.js";
 import {
   BAR_HIGHLIGHT_LAYOUT,
   BAR_HIGHLIGHT_TARGET,
-  selectLongestHistogramBar
+  selectTallestHistogramStack,
+  selectTopmostHistogramSegment
 } from "./reference-values.js";
 
 function assertPrimitiveTarget(program, base, target) {
   const baseChildren = base.graphicSpec.objects.bars.children;
   const children = program.graphicSpec.objects.bars.children;
-  const selected = children.at(-1);
+  const selected = children.slice(-target.indices.length);
+  const selectedIndices = new Set(target.indices);
 
   assert.deepEqual(program.semanticSpec, base.semanticSpec);
+  assert.deepEqual(
+    children.slice(0, -target.indices.length).map(child => child.properties),
+    baseChildren
+      .filter((_, index) => !selectedIndices.has(index))
+      .map(child => child.properties)
+  );
+  assert.deepEqual(
+    selected.map(child => ({
+      x: child.properties.x,
+      y: child.properties.y,
+      width: child.properties.width,
+      height: child.properties.height
+    })),
+    target.indices.map(index => {
+      const properties = baseChildren[index].properties;
+      return {
+        x: properties.x,
+        y: properties.y,
+        width: properties.width,
+        height: properties.height
+      };
+    })
+  );
+  assert.equal(selected.every(child =>
+    child.properties.fill === BAR_HIGHLIGHT_TARGET.fill &&
+    child.properties.stroke === BAR_HIGHLIGHT_TARGET.stroke &&
+    child.properties.strokeWidth === BAR_HIGHLIGHT_TARGET.strokeWidth &&
+    child.properties.opacity === BAR_HIGHLIGHT_TARGET.opacity
+  ), true);
+
+  const left = Math.min(...selected.map(child => child.properties.x));
+  const top = Math.min(...selected.map(child => child.properties.y));
+  const right = Math.max(...selected.map(child =>
+    child.properties.x + child.properties.width
+  ));
+  const bottom = Math.max(...selected.map(child =>
+    child.properties.y + child.properties.height
+  ));
+  assert.deepEqual({ x: left, y: top, width: right - left, height: bottom - top }, target.concrete);
+}
+
+function assertSegmentTarget(program, base, target) {
+  const baseChildren = base.graphicSpec.objects.bars.children;
+  const children = program.graphicSpec.objects.bars.children;
+  const selected = children.at(-1);
   assert.deepEqual(
     children.slice(0, -1).map(child => child.properties),
     baseChildren
@@ -36,14 +86,13 @@ function assertPrimitiveTarget(program, base, target) {
   assert.equal(selected.properties.fill, BAR_HIGHLIGHT_TARGET.fill);
   assert.equal(selected.properties.stroke, BAR_HIGHLIGHT_TARGET.stroke);
   assert.equal(selected.properties.strokeWidth, BAR_HIGHLIGHT_TARGET.strokeWidth);
-  assert.equal(selected.properties.opacity, BAR_HIGHLIGHT_TARGET.opacity);
 }
 
-test("authors Gate B with one selected-last raw rect edit", () => {
+test("authors Gate B with one selected-last raw stack edit", () => {
   const cars = loadCars();
   const base = createCarsHistogram(cars);
-  const program = createLongestHistogramBarGatePrimitive(cars);
-  const { target } = selectLongestHistogramBar(cars);
+  const program = createTallestHistogramStackGatePrimitive(cars);
+  const { target } = selectTallestHistogramStack(cars);
 
   assertPrimitiveTarget(program, base, target);
   assert.deepEqual(
@@ -76,10 +125,24 @@ test("reauthors the same semantic target after a Canvas-only resize", () => {
   const cars = loadCars();
   const height = BAR_HIGHLIGHT_LAYOUT.height + 120;
   const base = createCarsHistogram(cars).editCanvas({ height });
-  const program = createLongestHistogramBarGatePrimitive(cars, { height });
-  const { target } = selectLongestHistogramBar(cars, { height });
+  const program = createTallestHistogramStackGatePrimitive(cars, { height });
+  const { target } = selectTallestHistogramStack(cars, { height });
 
   assertPrimitiveTarget(program, base, target);
-  assert.equal(target.key, "bars/histogram/2");
-  assert.equal(target.count, 47);
+  assert.equal(target.key, "bars/stack/1");
+  assert.equal(target.total, 104);
+});
+
+test("authors the maximum-y2 item as one selected-last rect", () => {
+  const cars = loadCars();
+  const base = createCarsHistogram(cars);
+  const program = createTopmostHistogramSegmentGatePrimitive(cars);
+  const { target } = selectTopmostHistogramSegment(cars);
+
+  assertSegmentTarget(program, base, target);
+  assert.equal(target.key, "bars/histogram/5");
+  assert.equal(target.start, 76);
+  assert.equal(target.end, 104);
+  assert.equal(target.count, 28);
+  assert.equal(program.trace.children.at(-1).op, "editGraphics");
 });

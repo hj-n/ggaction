@@ -46,6 +46,7 @@ export type {
   OffsetScaleOptions,
   PointShape,
   MarkSelector,
+  MarkGraphicProperty,
   Palette,
   PaletteName,
   PositionEncodingOptions,

@@ -198,10 +198,15 @@ materializationConfigs = {
 아니라 이 canonical object에서 값을 읽는 getter다. `_actionSequence`처럼 serialization
 대상이 아닌 bookkeeping은 enumerable state가 아니다.
 
-`selections`는 target mark와 normalized semantic item selector intent를 저장하고 selected key 자체는 저장하지
-않는다. Item resolver가 현재 semantic/materialization 계산에서 point row, final bar cell, line/area series 또는
-rule row를 다시 만든 뒤 selection을 평가한다. `highlights`는 그 selection에 적용할 graphical override intent의
-owner다. 따라서 Canvas와 scale range 변경 뒤 stale concrete child ID를 authoritative state로 사용하지 않는다.
+`selections`는 target mark와 normalized mark-item selector intent를 저장하고 selected key 자체는 저장하지
+않는다. Selector source는 서로 겹치지 않는 세 namespace다. `field`는 item member data의 unique 값,
+`channel`은 scale 적용 전 resolved semantic encoding 값, `property`는 final `graphicSpec`의 concrete 값만 읽는다.
+Item resolver가 현재 semantic/materialization 계산에서 point row, final bar segment/stack, line/area series 또는
+rule row를 다시 만든 뒤 selection을 평가한다. Bar의 semantic position은 start `x`/`y`와 end `x2`/`y2`로
+표현하고, concrete rect의 top-left `x`/`y`와 `width`/`height`는 property namespace에만 둔다. `grain: "stack"`은
+stack/fill/diverging bar의 같은 category/bin rect들을 하나의 item으로 묶어 모든 attachment ID와 union concrete
+bounds를 가진다. `highlights`는 그 selection에 적용할 graphical override intent의 owner다. 따라서 Canvas와
+scale range 변경 뒤 stale concrete child ID를 authoritative state로 사용하지 않는다.
 
 현재 program-level child composition state는 구현되어 있지 않다. 초기 설계에 있던
 `children`, `hconcat`, `vconcat`, `facet`은 아직 현재 `ChartProgram` schema와 public

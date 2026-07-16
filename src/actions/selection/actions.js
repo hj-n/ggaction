@@ -13,7 +13,7 @@ import {
 } from "../../materialization/selection/state.js";
 
 const SELECTOR_KEYS = Object.freeze([
-  "field", "channel", "op", "value", "values", "min", "max",
+  "grain", "field", "channel", "property", "op", "value", "values", "min", "max",
   "inclusive", "count", "groupBy", "ties"
 ]);
 const SELECT_OPTIONS = Object.freeze(["id", "target", ...SELECTOR_KEYS]);
@@ -164,7 +164,9 @@ export const applyPointHighlight = action(
     if (resolved.keys.length === 0) return this;
     const selected = new Set(resolved.keys);
     const graphic = this.graphicSpec.objects[resolved.definition.target];
-    const keyByGraphic = new Map(resolved.items.map(item => [item.graphicId, item.key]));
+    const keyByGraphic = new Map(resolved.items.flatMap(item =>
+      item.graphicIds.map(id => [id, item.key])
+    ));
     const children = graphic.children.map(child =>
       selected.has(keyByGraphic.get(child.id))
         ? transformPointHighlightChild({
@@ -189,7 +191,9 @@ export const dimUnselectedMarkItems = action(
     const resolved = resolveStoredSelection(this, args.selection);
     const selected = new Set(resolved.keys);
     const graphic = this.graphicSpec.objects[resolved.definition.target];
-    const keyByGraphic = new Map(resolved.items.map(item => [item.graphicId, item.key]));
+    const keyByGraphic = new Map(resolved.items.flatMap(item =>
+      item.graphicIds.map(id => [id, item.key])
+    ));
     return this.editGraphics({
       target: resolved.definition.target,
       property: "children",
@@ -213,7 +217,9 @@ export const placeSelectedMarkItemsLast = action(
     }
     const selected = new Set(resolved.keys);
     const graphic = this.graphicSpec.objects[resolved.definition.target];
-    const keyByGraphic = new Map(resolved.items.map(item => [item.graphicId, item.key]));
+    const keyByGraphic = new Map(resolved.items.flatMap(item =>
+      item.graphicIds.map(id => [id, item.key])
+    ));
     const children = graphic.children.map(child => ({
       key: keyByGraphic.get(child.id),
       child: { type: child.type ?? graphic.type, properties: child.properties }
