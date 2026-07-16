@@ -157,6 +157,21 @@ test("resolves one rule item per final semantic rule", () => {
   );
 });
 
+test("resolves one datum rule whose item represents the complete dataset", () => {
+  const rows = [{ group: "A" }, { group: "B" }];
+  const program = chart()
+    .createCanvas({ width: 240, height: 160, margin: 20 })
+    .createData({ values: rows })
+    .createRuleMark()
+    .encodeX({ datum: 20, fieldType: "quantitative" });
+  const [item] = resolveMarkItems(program, "rule");
+
+  assert.equal(item.channels.x, 20);
+  assert.deepEqual(item.fields, {});
+  assert.deepEqual(item.members, rows);
+  assert.deepEqual(item.graphicIds, ["rule:0"]);
+});
+
 test("stores immutable selection intent and reevaluates current mark items", () => {
   const base = createCarsScatterplot(loadCars());
   const selectorInput = {
