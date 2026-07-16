@@ -955,6 +955,12 @@ Consumer resolution은 mark policy를 고려한다.
 Binned consumer와 unbinned consumer, histogram count consumer와 다른 y policy처럼 한
 scale에서 의미가 충돌하는 조합은 공유하지 못한다.
 
+Position encoding resolution은 공통 orchestration과 mark-specific policy를 분리한다. 공통
+resolver는 target/data/field/coordinate/scale과 field values를 검증한다. `point`, `line`,
+`bar`, `area`, `rule` policy는 각각 허용하는 aggregate/bin/stack 조합과 mark 고유의
+completeness 제약만 소유한다. 새 mark를 지원할 때 공통 resolver에 조건문을 추가하지 않고
+해당 policy를 등록하며, policy는 semantic 결정을 반환하고 graphic state를 직접 수정하지 않는다.
+
 ## Mark materialization policy
 
 각 semantic mark type은 자신이 concrete output을 만들 준비가 되었는지를 mark

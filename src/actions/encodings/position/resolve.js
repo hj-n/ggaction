@@ -1,7 +1,5 @@
 import { validateUserId } from "../../../core/identifiers.js";
-import { STACK_MODES } from "../../../core/vocabulary.js";
 import { getPositionCoordinateDefaults } from "../../../grammar/coordinates.js";
-import { normalizeHistogramBin } from "../../../grammar/histogram.js";
 import {
   readNominalField,
   readQuantitativeField,
@@ -19,17 +17,11 @@ import {
 } from "../shared.js";
 import {
   isAggregate,
-  validateAggregate,
   validateAggregateFieldType,
   validateAggregateFieldValues,
 } from "../../../grammar/aggregate.js";
-import {
-  BAR_ORIENTATIONS,
-  resolveBarOrientation
-} from "../../../grammar/bars/policy.js";
-import { validatePositionFieldCompatibility } from
-  "../../../grammar/positionCompatibility.js";
 import { normalizeRuleDatum } from "../../../grammar/rules.js";
+import { resolveMarkPositionPolicy } from "./policies/index.js";
 
 const POSITION_ENCODING_OPTIONS = Object.freeze([
   "field", "datum", "target", "fieldType", "scale", "coordinate",
@@ -51,199 +43,6 @@ function resolveCoordinate(program, channel, layer, requestedId) {
     );
   }
   return { id, type: defaults.type };
-}
-
-function resolveBin(bin) {
-  return normalizeHistogramBin(bin);
-}
-
-function validateStack(stack, label) {
-  if (stack !== null && !STACK_MODES.includes(stack)) {
-    throw new Error(`${label} has unsupported stack "${stack}".`);
-  }
-  return stack;
-}
-
-function validateMarkPolicy(program, layer, dataset, channel, args, fieldType, field) {
-  let bin;
-  let aggregate;
-  let stack;
-  const xEncoding = layer.encoding?.x;
-  validatePositionFieldCompatibility(layer.mark.type, channel, fieldType);
-
-  if (layer.mark.type === "rule") {
-    if (!["quantitative", "temporal", "ordinal", "nominal"].includes(fieldType)) {
-      throw new Error("Rule position encoding requires a supported field type.");
-    }
-    if (args.aggregate !== undefined) {
-      throw new Error("Rule position encoding does not support aggregate.");
-    }
-    if (args.bin !== undefined) {
-      throw new Error("Rule position encoding does not support bin.");
-    }
-    if (args.stack !== undefined) {
-      throw new Error("Rule position encoding does not support stack.");
-    }
-  } else if (layer.mark.type === "point") {
-    if (!["quantitative", "temporal", "ordinal", "nominal"].includes(fieldType)) {
-      throw new Error("Point position encoding requires quantitative, temporal, ordinal, or nominal fields.");
-    }
-    if (args.aggregate !== undefined) throw new Error("Point position encoding does not support aggregate.");
-    if (args.bin !== undefined) throw new Error("Point position encoding does not support bin.");
-    if (args.stack !== undefined) throw new Error("Point position encoding does not support stack.");
-  } else if (layer.mark.type === "area") {
-    const validAreaPosition = fieldType === "quantitative" ||
-      fieldType === "temporal";
-    if (!validAreaPosition) {
-      throw new Error(
-        "Area position encoding requires quantitative or temporal fields."
-      );
-    }
-    if (args.aggregate !== undefined || args.bin !== undefined) {
-      throw new Error("Area position encoding does not support aggregate or bin.");
-    }
-    if (args.stack !== undefined) {
-      if (
-        channel !== "y" ||
-        !dataset.transform?.some(transform => transform.type === "density")
-      ) {
-        throw new Error("Area stack currently requires a density y encoding.");
-      }
-      stack = validateStack(args.stack, "Area y encoding");
-    }
-  } else if (layer.mark.type === "line" && channel === "x") {
-    const regression = dataset.transform?.some(item => item.type === "regression");
-    const interval = dataset.transform?.some(item => item.type === "interval");
-    const horizontalDirect =
-      layer.encoding?.y?.fieldType === "temporal" &&
-      fieldType === "quantitative";
-    if (
-      fieldType !== "temporal" &&
-      !((regression || interval || horizontalDirect) &&
-        fieldType === "quantitative")
-    ) {
-      throw new Error(
-        "Line x encoding requires a temporal field or a compatible derived quantitative field."
-      );
-    }
-    if (args.aggregate !== undefined) throw new Error("Line x encoding does not support aggregate.");
-    if (args.bin !== undefined) throw new Error("Line x encoding does not support bin.");
-    if (args.stack !== undefined) throw new Error("Line x encoding does not support stack.");
-  } else if (layer.mark.type === "line") {
-    if (args.bin !== undefined) throw new Error("Line y encoding does not support bin.");
-    const regression = dataset.transform?.some(item => item.type === "regression");
-    const interval = dataset.transform?.some(item => item.type === "interval");
-    const prospectiveDirect =
-      args.aggregate === undefined &&
-      (fieldType === "temporal" ||
-        (fieldType === "quantitative" && layer.encoding?.x === undefined));
-    if (interval || prospectiveDirect) {
-      if (!["quantitative", "temporal"].includes(fieldType)) {
-        throw new Error(
-          "Direct line y encoding requires a quantitative or temporal field."
-        );
-      }
-      if (args.aggregate !== undefined) {
-        throw new Error("Direct line y encoding does not support aggregate.");
-      }
-      if (args.stack !== undefined) {
-        throw new Error("Line y encoding does not support stack.");
-      }
-      return { bin, aggregate, stack };
-    }
-    if (regression && fieldType !== "quantitative") {
-      throw new Error(regression
-        ? "Regression line y encoding requires a quantitative field."
-        : "Line y encoding requires a supported aggregate field type.");
-    }
-    if (regression && args.aggregate !== undefined) {
-      throw new Error(regression
-        ? "Regression line y encoding does not support aggregate."
-        : "Line y encoding requires a supported aggregate.");
-    }
-    if (!regression) {
-      aggregate = validateAggregate(args.aggregate);
-      validateAggregateFieldType(aggregate, fieldType);
-    }
-    if (args.stack !== undefined) throw new Error("Line y encoding does not support stack.");
-  } else {
-    const opposite = layer.encoding?.[channel === "x" ? "y" : "x"];
-    const pendingBoxRange = program.markConfigs[layer.id]?.boxPlot !== undefined;
-    if (["nominal", "ordinal", "temporal"].includes(fieldType)) {
-      if (args.aggregate !== undefined || args.bin !== undefined || args.stack !== undefined) {
-      throw new Error(
-        "Categorical bar position does not support bin or aggregate; a binned bar requires a quantitative field."
-      );
-      }
-    } else if (fieldType === "quantitative" && channel === "x" && args.bin !== undefined) {
-      if (args.aggregate !== undefined || args.stack !== undefined) {
-        throw new Error("Binned bar x encoding does not support aggregate or stack.");
-      }
-      bin = resolveBin(args.bin);
-    } else if (
-      fieldType === "quantitative" &&
-      channel === "y" &&
-      xEncoding?.bin !== undefined
-    ) {
-      if (args.bin !== undefined) throw new Error("Histogram bar y encoding does not support bin.");
-      if (field !== xEncoding.field) throw new Error("Bar y field must match the binned x field.");
-      aggregate = args.aggregate ?? "count";
-      stack = Object.hasOwn(args, "stack") ? args.stack : "zero";
-      if (aggregate !== "count") throw new Error('Histogram bar y aggregate must be "count".');
-      stack = validateStack(stack, "Histogram bar y encoding");
-    } else if (fieldType === "quantitative") {
-      if (args.bin !== undefined) {
-        throw new Error(
-          channel === "y"
-            ? "Bar y does not support bin; histogram y requires a binned x encoding."
-            : "Quantitative bar measure encoding does not support bin."
-        );
-      }
-      aggregate = args.aggregate ?? (
-        ["nominal", "ordinal", "temporal"].includes(opposite?.fieldType) &&
-        !pendingBoxRange
-          ? "mean"
-          : undefined
-      );
-      if (pendingBoxRange && args.aggregate === undefined) {
-        return { bin, aggregate, stack };
-      }
-      if (aggregate === undefined) {
-        throw new Error(
-          channel === "x"
-            ? "Quantitative bar x encoding requires bin or aggregate."
-            : "Bar y encoding requires a binned quantitative or ordinal x category, temporal x category, or aggregate."
-        );
-      }
-      stack = Object.hasOwn(args, "stack") ? args.stack : null;
-      aggregate = validateAggregate(aggregate);
-      validateAggregateFieldType(aggregate, fieldType);
-      stack = validateStack(stack, `Bar ${channel} encoding`);
-    } else {
-      throw new Error("Bar position requires quantitative, temporal, ordinal, or nominal fields.");
-    }
-
-    const candidate = {
-      ...layer,
-      encoding: {
-        ...layer.encoding,
-        [channel]: { field, fieldType, bin, aggregate, stack }
-      }
-    };
-    const orientation = resolveBarOrientation(candidate);
-    if (opposite !== undefined && orientation === undefined && !pendingBoxRange) {
-      throw new Error(
-        `Bar ${channel} encoding requires a quantitative field opposite a categorical position.`
-      );
-    }
-    if (
-      orientation === BAR_ORIENTATIONS.horizontal &&
-      candidate.encoding?.xOffset !== undefined
-    ) {
-      throw new Error("Horizontal grouped bars require yOffset support, which is not available yet.");
-    }
-  }
-  return { bin, aggregate, stack };
 }
 
 export function resolvePositionEncoding(program, channel, args, operation) {
@@ -285,15 +84,15 @@ export function resolvePositionEncoding(program, channel, args, operation) {
       effectiveArgs[property] = previous[property];
     }
   }
-  const policy = validateMarkPolicy(
+  const policy = resolveMarkPositionPolicy({
     program,
     layer,
     dataset,
     channel,
-    effectiveArgs,
+    args: effectiveArgs,
     fieldType,
     field
-  );
+  });
   const usesField = layer.mark.type !== "rule" || hasField;
   if (usesField && (typeof field !== "string" || field.length === 0)) {
     throw new TypeError(`${operation} field must be a non-empty string.`);
