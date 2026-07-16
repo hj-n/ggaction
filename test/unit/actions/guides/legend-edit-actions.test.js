@@ -7,7 +7,7 @@ import {
   createLeftLegendCarsRegressionScatterplot
 } from "../../../../examples/cars-regression-scatterplot/program.js";
 import { createLeftLegendPrimitives } from
-  "../../../charts/regression-scatterplot/variants/primitive-programs.js";
+  "../../../charts/cars-regression-scatterplot/variants/primitive-programs.js";
 import { assertChartProgramsEquivalent } from
   "../../../support/chart-equivalence.js";
 import { loadCars } from "../../../support/data.js";

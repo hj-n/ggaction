@@ -15,6 +15,7 @@ const NORMAL_SUITES = Object.freeze([
   "gates",
   "docs"
 ]);
+const SPECIAL_SUITES = Object.freeze(["browser", "render"]);
 
 function walk(directory) {
   return readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
@@ -32,6 +33,7 @@ export function classifyTestFile(file, root = testRoot) {
   ) {
     return "render";
   }
+  if (file.endsWith(".browser.js") && owner === "browser") return "browser";
   if (file.endsWith(".test.js") && NORMAL_SUITES.includes(owner)) return owner;
   return undefined;
 }
@@ -82,7 +84,12 @@ if (
   fileURLToPath(import.meta.url) === path.resolve(process.argv[1])
 ) {
   const suite = process.argv[2] ?? "all";
-  const accepted = new Set([...NORMAL_SUITES, "all", "coverage", "render"]);
+  const accepted = new Set([
+    ...NORMAL_SUITES,
+    ...SPECIAL_SUITES,
+    "all",
+    "coverage"
+  ]);
   if (!accepted.has(suite)) {
     throw new Error(`Unknown test suite "${suite}".`);
   }

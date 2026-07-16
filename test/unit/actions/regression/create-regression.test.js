@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { chart } from "../../../../src/ChartProgram.js";
 import { createCarsRegressionScatterplotValues } from
-  "../../../charts/regression-scatterplot/reference-values.js";
+  "../../../charts/cars-regression-scatterplot/reference-values.js";
 import { loadCars } from "../../../support/data.js";
 import { linearPathCommands } from "../../../support/path.js";
 

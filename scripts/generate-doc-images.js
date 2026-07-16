@@ -4,141 +4,32 @@ import { relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { renderToPNG } from "ggaction/png";
+import { publicCharts } from "../examples/registry.js";
 
-import { createCarsDensityArea } from "../examples/cars-density-area/program.js";
-import { createCarsErrorBar } from "../examples/cars-error-bar/program.js";
-import { createCarsBoxPlot } from "../examples/cars-box-plot/program.js";
-import { createCarsHistogram } from "../examples/cars-histogram/program.js";
-import { createCarsLineChart } from "../examples/cars-line-chart/program.js";
-import { createCarsRegressionScatterplot } from
-  "../examples/cars-regression-scatterplot/program.js";
-import { createCarsScatterplot } from "../examples/cars-scatterplot/program.js";
-import { createJobsGroupedBar } from "../examples/jobs-grouped-bar/program.js";
-import { createGapminderErrorBand } from
-  "../examples/gapminder-error-band/program.js";
-import {
-  createGroupedMaximumPointHighlight,
-  createJapanLineSeriesHighlight,
-  createTallestHistogramStackHighlight
-} from "../examples/mark-selection/program.js";
+const dataFiles = Object.freeze({
+  cars: new URL("../data/cars.json", import.meta.url),
+  jobs: new URL("../data/jobs.json", import.meta.url),
+  gapminder: new URL("../data/gapminder.json", import.meta.url)
+});
+const data = Object.fromEntries(await Promise.all(
+  Object.entries(dataFiles).map(async ([id, file]) => [
+    id,
+    JSON.parse(await readFile(file, "utf8"))
+  ])
+));
 
-const cars = JSON.parse(
-  await readFile(new URL("../data/cars.json", import.meta.url), "utf8")
-);
-const jobs = JSON.parse(
-  await readFile(new URL("../data/jobs.json", import.meta.url), "utf8")
-);
-const gapminder = JSON.parse(
-  await readFile(new URL("../data/gapminder.json", import.meta.url), "utf8")
-);
+function imageDefinition(chart) {
+  return {
+    ...chart,
+    dataFile: dataFiles[chart.data],
+    createProgram: () => chart.createProgram(structuredClone(data[chart.data]))
+  };
+}
 
-export const chartImages = [
-  {
-    id: "cars-scatterplot",
-    width: 640,
-    height: 400,
-    programFile: new URL("../examples/cars-scatterplot/program.js", import.meta.url),
-    dataFile: new URL("../data/cars.json", import.meta.url),
-    createProgram: () => createCarsScatterplot(cars)
-  },
-  {
-    id: "cars-line-chart",
-    width: 720,
-    height: 460,
-    programFile: new URL("../examples/cars-line-chart/program.js", import.meta.url),
-    dataFile: new URL("../data/cars.json", import.meta.url),
-    createProgram: () => createCarsLineChart(cars)
-  },
-  {
-    id: "cars-histogram",
-    width: 432,
-    height: 460,
-    programFile: new URL("../examples/cars-histogram/program.js", import.meta.url),
-    dataFile: new URL("../data/cars.json", import.meta.url),
-    createProgram: () => createCarsHistogram(cars)
-  },
-  {
-    id: "jobs-grouped-bar",
-    width: 720,
-    height: 460,
-    programFile: new URL("../examples/jobs-grouped-bar/program.js", import.meta.url),
-    dataFile: new URL("../data/jobs.json", import.meta.url),
-    createProgram: () => createJobsGroupedBar(jobs)
-  },
-  {
-    id: "cars-regression-scatterplot",
-    width: 760,
-    height: 480,
-    programFile: new URL(
-      "../examples/cars-regression-scatterplot/program.js",
-      import.meta.url
-    ),
-    dataFile: new URL("../data/cars.json", import.meta.url),
-    createProgram: () => createCarsRegressionScatterplot(cars)
-  },
-  {
-    id: "cars-density-area",
-    width: 720,
-    height: 500,
-    programFile: new URL("../examples/cars-density-area/program.js", import.meta.url),
-    dataFile: new URL("../data/cars.json", import.meta.url),
-    createProgram: () => createCarsDensityArea(cars)
-  },
-  {
-    id: "cars-error-bar",
-    width: 720,
-    height: 460,
-    programFile: new URL("../examples/cars-error-bar/program.js", import.meta.url),
-    dataFile: new URL("../data/cars.json", import.meta.url),
-    createProgram: () => createCarsErrorBar(cars)
-  },
-  {
-    id: "cars-box-plot",
-    width: 360,
-    height: 460,
-    programFile: new URL("../examples/cars-box-plot/program.js", import.meta.url),
-    dataFile: new URL("../data/cars.json", import.meta.url),
-    createProgram: () => createCarsBoxPlot(cars)
-  },
-  {
-    id: "gapminder-error-band",
-    width: 760,
-    height: 480,
-    programFile: new URL(
-      "../examples/gapminder-error-band/program.js",
-      import.meta.url
-    ),
-    dataFile: new URL("../data/gapminder.json", import.meta.url),
-    createProgram: () => createGapminderErrorBand(gapminder)
-  }
-];
-
-export const tutorialImages = [
-  {
-    id: "mark-selection-points",
-    width: 760,
-    height: 440,
-    programFile: new URL("../examples/mark-selection/program.js", import.meta.url),
-    dataFile: new URL("../data/cars.json", import.meta.url),
-    createProgram: () => createGroupedMaximumPointHighlight(cars)
-  },
-  {
-    id: "mark-selection-bars",
-    width: 432,
-    height: 460,
-    programFile: new URL("../examples/mark-selection/program.js", import.meta.url),
-    dataFile: new URL("../data/cars.json", import.meta.url),
-    createProgram: () => createTallestHistogramStackHighlight(cars)
-  },
-  {
-    id: "mark-selection-lines",
-    width: 720,
-    height: 460,
-    programFile: new URL("../examples/mark-selection/program.js", import.meta.url),
-    dataFile: new URL("../data/cars.json", import.meta.url),
-    createProgram: () => createJapanLineSeriesHighlight(cars)
-  }
-];
+export const chartImages = publicCharts({ docsGroup: "charts" })
+  .map(imageDefinition);
+export const tutorialImages = publicCharts({ docsGroup: "tutorials" })
+  .map(imageDefinition);
 
 const allImages = [...chartImages, ...tutorialImages];
 

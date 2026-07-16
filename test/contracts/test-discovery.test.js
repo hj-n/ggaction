@@ -18,13 +18,16 @@ function walk(directory) {
   });
 }
 
-test("discovers every normal and render test recursively exactly once", () => {
+test("discovers every normal, render, and browser test recursively exactly once", () => {
   const candidates = walk(testRoot).filter(file =>
-    file.endsWith(".test.js") || file.endsWith(".render.js")
+    file.endsWith(".test.js") ||
+    file.endsWith(".render.js") ||
+    file.endsWith(".browser.js")
   );
   const discovered = [
     ...collectTestFiles("all", testRoot),
-    ...collectTestFiles("render", testRoot)
+    ...collectTestFiles("render", testRoot),
+    ...collectTestFiles("browser", testRoot)
   ];
 
   assert.deepEqual(new Set(discovered), new Set(candidates));
@@ -40,7 +43,11 @@ test("discovers every normal and render test recursively exactly once", () => {
 
 test("does not discover programs or support modules as tests", () => {
   for (const file of walk(testRoot)) {
-    if (file.endsWith(".test.js") || file.endsWith(".render.js")) continue;
+    if (
+      file.endsWith(".test.js") ||
+      file.endsWith(".render.js") ||
+      file.endsWith(".browser.js")
+    ) continue;
     assert.equal(classifyTestFile(file, testRoot), undefined);
   }
 });

@@ -4,17 +4,26 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
+import { PUBLIC_CHARTS } from "../../examples/registry.js";
+
 const chartRoot = fileURLToPath(new URL("../charts/", import.meta.url));
 
-test("keeps every chart vertical slice structurally complete", () => {
+test("keeps the public chart registry and vertical slices synchronized", () => {
   const charts = readdirSync(chartRoot, { withFileTypes: true })
     .filter(entry => entry.isDirectory())
     .map(entry => entry.name)
     .sort();
+  const registeredDirectories = PUBLIC_CHARTS
+    .map(chart => chart.testDirectory)
+    .sort();
 
-  assert.equal(charts.length > 0, true);
-  for (const chart of charts) {
-    const directory = path.join(chartRoot, chart);
+  assert.deepEqual(charts, registeredDirectories);
+  assert.equal(new Set(PUBLIC_CHARTS.map(chart => chart.id)).size, PUBLIC_CHARTS.length);
+  assert.equal(new Set(registeredDirectories).size, PUBLIC_CHARTS.length);
+
+  for (const chart of PUBLIC_CHARTS) {
+    const directory = path.join(chartRoot, chart.testDirectory);
+    assert.equal(existsSync(fileURLToPath(chart.programFile)), true);
     for (const file of [
       "primitive.program.js",
       "primitive.test.js",
@@ -24,7 +33,7 @@ test("keeps every chart vertical slice structurally complete", () => {
       assert.equal(
         existsSync(path.join(directory, file)),
         true,
-        `${chart} is missing ${file}`
+        `${chart.id} is missing ${file}`
       );
     }
 
@@ -35,7 +44,7 @@ test("keeps every chart vertical slice structurally complete", () => {
     assert.match(
       publicTest,
       /assertChartProgramsEquivalent\s*\(/,
-      `${chart} must enforce complete primitive/public equivalence`
+      `${chart.id} must enforce complete primitive/public equivalence`
     );
   }
 });

@@ -4,7 +4,7 @@ import test from "node:test";
 
 import { chart } from "../../../../src/ChartProgram.js";
 import { createCarsRegressionScatterplotValues } from
-  "../../../charts/regression-scatterplot/reference-values.js";
+  "../../../charts/cars-regression-scatterplot/reference-values.js";
 
 const values = [
   { x: 0, y: 2, group: "A", amount: 4 },

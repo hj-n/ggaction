@@ -175,7 +175,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   LOESS는 source-order tie를 가진 tricube local-linear neighbors를 사용한다. Linear/polynomial은
   lower/upper를 만들고 LOESS는 fitted y만 만든다. graphic은 직접 만들지 않는다.
 - Coverage: `test/unit/actions/data/regression-data.test.js`와
-  `test/charts/regression-scatterplot/reference-values.test.js`가 grouped/ungrouped 값,
+  `test/charts/cars-regression-scatterplot/reference-values.test.js`가 grouped/ungrouped 값,
   confidence bounds와 invalid/degenerate groups를 검증한다. 여러 confidence 대표값 coverage는 부분적이다.
 
 ### Formal values — `createRegressionData`
@@ -197,7 +197,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   - ✅ Covered: `"mean"`과 unknown value rejection.
   - ✅ Covered: `"prediction"` for linear/polynomial with residual variance and Student-t bounds.
 - Evidence: `test/unit/actions/data/regression-data.test.js`,
-  `test/charts/regression-scatterplot/reference-values.test.js`.
+  `test/charts/cars-regression-scatterplot/reference-values.test.js`.
 
 ## `createDensityData`
 
@@ -229,7 +229,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 - Effect: grouped KDE provenance와 deterministic values를 저장한다. Resolved kernel과 normalization은
   항상 provenance에 기록한다.
 - Coverage: `test/unit/actions/data/density-data.test.js`와
-  `test/charts/density-area/reference-values.test.js`가 auto/explicit bandwidth, extent,
+  `test/charts/cars-density-area/reference-values.test.js`가 auto/explicit bandwidth, extent,
   grouped/ungrouped, ownership과 오류를 검증한다. steps의 여러 경계/대표 조합은 부분적이다.
 
 ### Formal values — `createDensityData`
@@ -258,7 +258,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 - `normalization`
   - ✅ Covered: unit/count formulas, unit default, group-local scaling, invalid value와 provenance.
 - Evidence: `test/unit/actions/data/density-data.test.js`,
-  `test/charts/density-area/reference-values.test.js`.
+  `test/charts/cars-density-area/reference-values.test.js`.
 
 ## `createDerivedData`
 
@@ -269,7 +269,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   semantic validation이 가능하며 값 materialization은 해당 전용 action이 담당한다.
 - Effect: source와 transform provenance만 저장하고 values는 만들지 않는다.
 - 오류: duplicate ID, unknown source, invalid/empty transform schema를 거부한다.
-- Coverage: transform schema는 data action 및 `test/charts/regression-scatterplot/semantic.test.js`에서
+- Coverage: transform schema는 data action 및 `test/charts/cars-regression-scatterplot/semantic.test.js`에서
   검증되지만 각 transform을 이 low-level action으로 직접 호출하는 조합은 부분적이다.
 
 ### Formal values — `createDerivedData`
@@ -286,7 +286,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   - ✅ Covered: filter/regression/density schema through their public parent actions.
   - ⚠️ Partial: direct low-level call의 각 schema와 multi-entry array rejection/acceptance boundary.
   - No proposal: one-transform provenance resource라는 현재 역할을 유지한다.
-- Evidence: data action tests와 `test/charts/regression-scatterplot/semantic.test.js`.
+- Evidence: data action tests와 `test/charts/cars-regression-scatterplot/semantic.test.js`.
 
 ## `createCoordinate`
 

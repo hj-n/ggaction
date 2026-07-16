@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { chart } from "../../../../src/ChartProgram.js";
 import { createCarsDensityAreaValues } from
-  "../../../charts/density-area/reference-values.js";
+  "../../../charts/cars-density-area/reference-values.js";
 import { loadCars } from "../../../support/data.js";
 import {
   linearCommandPoints,

@@ -7,7 +7,7 @@ import {
   estimateDensityBandwidth
 } from "../../../../src/grammar/density.js";
 import { createCarsDensityAreaValues } from
-  "../../../charts/density-area/reference-values.js";
+  "../../../charts/cars-density-area/reference-values.js";
 import { loadCars } from "../../../support/data.js";
 
 test("derives grouped Gaussian KDE on one shared sample grid", () => {

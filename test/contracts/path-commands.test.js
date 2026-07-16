@@ -9,13 +9,13 @@ import { createCarsRegressionScatterplot } from
 import { createCarsScatterplot } from "../../examples/cars-scatterplot/program.js";
 import { createJobsGroupedBar } from "../../examples/jobs-grouped-bar/program.js";
 import { createCarsDensityAreaPrimitives } from
-  "../charts/density-area/primitive.program.js";
+  "../charts/cars-density-area/primitive.program.js";
 import { createCarsHistogramPrimitives } from
   "../charts/cars-histogram/primitive.program.js";
 import { createCarsLineChartPrimitives } from
   "../charts/cars-line-chart/primitive.program.js";
 import { createCarsRegressionScatterplotPrimitives } from
-  "../charts/regression-scatterplot/primitive.program.js";
+  "../charts/cars-regression-scatterplot/primitive.program.js";
 import { createCarsScatterplotPrimitives } from
   "../charts/cars-scatterplot/primitive.program.js";
 import { createJobsGroupedBarPrimitives } from

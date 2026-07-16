@@ -248,7 +248,7 @@ validation and uniqueness contract.
 - ✅ Covered: approved density primitive/public pair and fill → stroke Canvas order.
 - ✅ Covered: every curve token, invalid curve failure, earlier-program immutability and concrete closed commands.
 - Evidence: `test/unit/actions/marks/edit-area-mark.test.js` and
-  `test/charts/density-area/variants/primitive.test.js`.
+  `test/charts/cars-density-area/variants/primitive.test.js`.
 
 ## `createRuleMark`
 

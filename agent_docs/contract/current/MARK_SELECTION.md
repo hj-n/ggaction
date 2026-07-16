@@ -82,7 +82,7 @@ type MarkSelector =
   density provenance, rule endpoints and categorical legend convergence.
 - ✅ Covered: regression scatterplot primitive/public equivalence when filtering before statistical layers.
 - Evidence: `test/unit/actions/data/filter-marks.test.js`,
-  `test/charts/regression-scatterplot/variants/primitive.test.js`.
+  `test/charts/cars-regression-scatterplot/variants/primitive.test.js`.
 
 ## `selectMarks`
 

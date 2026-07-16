@@ -165,7 +165,7 @@ It explicitly authors semantic line state, paths, axes, a combined legend, and
 title graphics without chart-level convenience actions.
 
 The regression scatterplot baseline in
-[`primitive.program.js`](https://github.com/hj-n/ggaction/blob/main/test/charts/regression-scatterplot/primitive.program.js)
+[`primitive.program.js`](https://github.com/hj-n/ggaction/blob/main/test/charts/cars-regression-scatterplot/primitive.program.js)
 uses a heterogeneous point collection, grouped filled confidence-band paths,
 grouped line paths, and two concrete legends.
 
