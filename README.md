@@ -31,45 +31,45 @@ render(program, document.querySelector("#chart").getContext("2d"));
 The renderer reads only fully materialized, backend-neutral graphics. Semantic
 state is never automatically compiled during rendering.
 
-> **Status:** the documented API is `0.0.0-dev`. The package is not published
-> to npm yet; use the repository build while the API is under development.
+> **Status:** `0.0.1` is the first public release candidate. The package is not
+> published to npm until the release checks and approval gate complete.
 
 ## Documentation
 
-- [Getting started](./docs/getting-started.md)
-- [Cars scatterplot tutorial](./docs/tutorials/scatterplot.md)
-- [Cars line chart tutorial](./docs/tutorials/line-chart.md)
-- [Cars histogram tutorial](./docs/tutorials/histogram.md)
-- [Bar chart tutorial](./docs/tutorials/grouped-bar.md)
-- [Regression scatterplot tutorial](./docs/tutorials/regression-scatterplot.md)
-- [Density area chart tutorial](./docs/tutorials/density-area.md)
-- [Error-bar chart tutorial](./docs/tutorials/error-bar.md)
-- [Error-band chart tutorial](./docs/tutorials/error-band.md)
-- [Mark selection and highlighting tutorial](./docs/tutorials/mark-selection.md)
-- [Box-plot API](./docs/api/box-plots.md)
-- [Chart concepts](./docs/concepts/chart-program.md)
-- [Complete action reference](./docs/reference/actions.md)
-- [Supported features](./docs/supported-features.md)
-- [Documentation index](./docs/index.md)
+- [Getting started](https://hyeonword.com/ggaction/getting-started/)
+- [Cars scatterplot tutorial](https://hyeonword.com/ggaction/tutorials/scatterplot/)
+- [Cars line chart tutorial](https://hyeonword.com/ggaction/tutorials/line-chart/)
+- [Cars histogram tutorial](https://hyeonword.com/ggaction/tutorials/histogram/)
+- [Bar chart tutorial](https://hyeonword.com/ggaction/tutorials/grouped-bar/)
+- [Regression scatterplot tutorial](https://hyeonword.com/ggaction/tutorials/regression-scatterplot/)
+- [Density area chart tutorial](https://hyeonword.com/ggaction/tutorials/density-area/)
+- [Error-bar chart tutorial](https://hyeonword.com/ggaction/tutorials/error-bar/)
+- [Error-band chart tutorial](https://hyeonword.com/ggaction/tutorials/error-band/)
+- [Mark selection and highlighting tutorial](https://hyeonword.com/ggaction/tutorials/mark-selection/)
+- [Box-plot API](https://hyeonword.com/ggaction/api/box-plots/)
+- [Chart concepts](https://hyeonword.com/ggaction/concepts/chart-program/)
+- [Complete action reference](https://hyeonword.com/ggaction/reference/actions/)
+- [Supported features](https://hyeonword.com/ggaction/supported-features/)
+- [Documentation index](https://hyeonword.com/ggaction/)
 
-The runnable [cars scatterplot](./examples/cars-scatterplot/),
-[aggregate line chart](./examples/cars-line-chart/), and
-[stacked histogram](./examples/cars-histogram/) use `data/cars.json`. The
-[regression scatterplot](./examples/cars-regression-scatterplot/) also uses the
+The runnable [cars scatterplot](https://github.com/hj-n/ggaction/tree/main/examples/cars-scatterplot/),
+[aggregate line chart](https://github.com/hj-n/ggaction/tree/main/examples/cars-line-chart/), and
+[stacked histogram](https://github.com/hj-n/ggaction/tree/main/examples/cars-histogram/) use `data/cars.json`. The
+[regression scatterplot](https://github.com/hj-n/ggaction/tree/main/examples/cars-regression-scatterplot/) also uses the
 cars data and layers grouped fits with confidence bands. The [grouped bar
-chart](./examples/jobs-grouped-bar/) uses `data/jobs.json`. The [density area
-chart](./examples/cars-density-area/) derives grouped Acceleration
-distributions from the cars data. The [error-bar chart](./examples/cars-error-bar/)
+chart](https://github.com/hj-n/ggaction/tree/main/examples/jobs-grouped-bar/) uses `data/jobs.json`. The [density area
+chart](https://github.com/hj-n/ggaction/tree/main/examples/cars-density-area/) derives grouped Acceleration
+distributions from the cars data. The [error-bar chart](https://github.com/hj-n/ggaction/tree/main/examples/cars-error-bar/)
 summarizes mean Acceleration with 95% confidence intervals. The
-[error-band chart](./examples/gapminder-error-band/) summarizes grouped
+[error-band chart](https://github.com/hj-n/ggaction/tree/main/examples/gapminder-error-band/) summarizes grouped
 confidence intervals as closed area paths over time.
-The [box plot](./examples/cars-box-plot/) supports vertical or horizontal
+The [box plot](https://github.com/hj-n/ggaction/tree/main/examples/cars-box-plot/) supports vertical or horizontal
 Tukey/min–max ranges, configurable factor and component appearance, and
 optional outlier rendering from categorical and quantitative field pairs.
-The [mark-selection example](./examples/mark-selection/) compares grouped point,
+The [mark-selection example](https://github.com/hj-n/ggaction/tree/main/examples/mark-selection/) compares grouped point,
 complete stacked-bar, and line-series highlighting through one selector grammar.
 Completed programs can also be exported through
-[`ggaction/png`](./docs/api/rendering.md#png-output).
+[`ggaction/png`](https://hyeonword.com/ggaction/api/rendering/#png-output).
 
 ## Development
 

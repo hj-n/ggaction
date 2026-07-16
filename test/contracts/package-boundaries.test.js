@@ -25,6 +25,38 @@ test("maps every public entry point to a declaration file", () => {
   );
 });
 
+test("keeps the public release identity and legal metadata consistent", () => {
+  const packageJson = JSON.parse(readFileSync(
+    new URL("../../package.json", import.meta.url),
+    "utf8"
+  ));
+  const lockfile = JSON.parse(readFileSync(
+    new URL("../../package-lock.json", import.meta.url),
+    "utf8"
+  ));
+  const license = readFileSync(new URL("../../LICENSE", import.meta.url), "utf8");
+
+  assert.equal(packageJson.name, "ggaction");
+  assert.equal(packageJson.version, "0.0.1");
+  assert.equal(lockfile.version, packageJson.version);
+  assert.equal(lockfile.packages[""].version, packageJson.version);
+  assert.equal(packageJson.license, "MIT");
+  assert.equal(lockfile.packages[""].license, packageJson.license);
+  assert.deepEqual(packageJson.repository, {
+    type: "git",
+    url: "git+https://github.com/hj-n/ggaction.git"
+  });
+  assert.equal(packageJson.homepage, "https://hyeonword.com/ggaction/");
+  assert.equal(packageJson.bugs.url, "https://github.com/hj-n/ggaction/issues");
+  assert.deepEqual(packageJson.publishConfig, {
+    access: "public",
+    registry: "https://registry.npmjs.org/",
+    tag: "latest"
+  });
+  assert.match(license, /^MIT License/m);
+  assert.match(license, /Copyright \(c\) 2026 Hyeon Jeon/);
+});
+
 const TEXT_EXTENSIONS = new Set([
   ".css", ".html", ".js", ".json", ".md", ".scss", ".ts", ".yaml", ".yml"
 ]);

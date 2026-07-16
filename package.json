@@ -1,7 +1,24 @@
 {
   "name": "ggaction",
-  "version": "0.0.0",
-  "description": "A chart-authoring action library.",
+  "version": "0.0.1",
+  "description": "Build charts through immutable, traceable graphical actions.",
+  "license": "MIT",
+  "author": "Hyeon Jeon",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hj-n/ggaction.git"
+  },
+  "homepage": "https://hyeonword.com/ggaction/",
+  "bugs": {
+    "url": "https://github.com/hj-n/ggaction/issues"
+  },
+  "keywords": [
+    "visualization",
+    "charts",
+    "graphics",
+    "canvas",
+    "data-visualization"
+  ],
   "type": "module",
   "types": "./types/index.d.ts",
   "exports": {
@@ -39,6 +56,11 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/",
+    "tag": "latest"
   },
   "dependencies": {
     "@napi-rs/canvas": "^1.0.2"
