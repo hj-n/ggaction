@@ -20,6 +20,12 @@
     "data-visualization"
   ],
   "type": "module",
+  "files": [
+    "src/",
+    "types/",
+    "README.md",
+    "LICENSE"
+  ],
   "types": "./types/index.d.ts",
   "exports": {
     ".": {
@@ -52,7 +58,9 @@
     "docs:images": "node scripts/generate-doc-images.js",
     "docs:llms": "node scripts/generate-llm-docs.js",
     "contracts:catalog": "node scripts/generate-action-catalog.js",
-    "contracts:catalog:check": "node scripts/generate-action-catalog.js --check"
+    "contracts:catalog:check": "node scripts/generate-action-catalog.js --check",
+    "package:check": "node scripts/package-artifact.js --check",
+    "package:pack": "node scripts/package-artifact.js --pack"
   },
   "engines": {
     "node": ">=20"
