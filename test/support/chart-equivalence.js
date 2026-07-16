@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 
 import { render } from "../../src/index.js";
 import { createMockCanvasContext } from "./canvas.js";
+import { graphicTreeSnapshot } from "./graphic-tree.js";
 
 export function assertChartProgramsEquivalent({
   publicProgram,
@@ -15,6 +16,10 @@ export function assertChartProgramsEquivalent({
 
   assert.deepEqual(publicProgram.semanticSpec, primitiveProgram.semanticSpec);
   assert.deepEqual(publicProgram.graphicSpec, primitiveProgram.graphicSpec);
+  assert.deepEqual(
+    graphicTreeSnapshot(publicProgram),
+    graphicTreeSnapshot(primitiveProgram)
+  );
   assert.deepEqual(
     publicProgram.graphicSpec.order,
     primitiveProgram.graphicSpec.order
