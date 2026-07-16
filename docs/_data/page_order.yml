@@ -48,6 +48,14 @@
   url: /api/data/
 - title: Marks
   url: /api/marks/
+- title: Point Marks
+  url: /api/marks/point/
+- title: Line and Area Marks
+  url: /api/marks/line-area/
+- title: Bar Marks
+  url: /api/marks/bar/
+- title: Rule Marks
+  url: /api/marks/rule/
 - title: Encodings
   url: /api/encodings/
 - title: Regression

@@ -507,6 +507,10 @@ summary:focus-visible {
   margin: 1rem 0 2rem;
 }
 
+.docs-entry-grid--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .docs-entry-grid a {
   display: flex;
   flex-direction: column;

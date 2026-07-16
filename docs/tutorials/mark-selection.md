@@ -122,4 +122,4 @@ data-cardinality changes. It does not store stale item IDs.
 - Serve the repository root and open `examples/mark-selection/`.
 - Read the complete [selector and appearance tables](../api/appearance.md#mark-selection-and-highlighting).
 - Use [`filterMarks`](../api/data.md#filtermarks-target-selector) when matching items should replace the target mark's data.
-- Use [`editBarMark`](../api/marks.md#editbarmark-target-fill-opacity-stroke-strokewidth) for whole-bar appearance rather than selected items.
+- Use [`editBarMark`](../api/marks/bar.md#editbarmark-target-fill-opacity-stroke-strokewidth) for whole-bar appearance rather than selected items.
