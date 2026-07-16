@@ -14,14 +14,7 @@ import {
   validateHistogramBinBoundaries,
   validateHistogramBinStep
 } from "../../grammar/histogram.js";
-import {
-  validateDensityKernel,
-  validateDensityNormalization
-} from "../../grammar/density.js";
-import { validateFilterTransform } from "../../grammar/filter.js";
-import { validateIntervalTransform } from "../../grammar/interval.js";
-import { validateBoxTransform } from "../../grammar/boxPlot.js";
-import { validateMarkFilterTransform } from "../../grammar/markFilter.js";
+import { validateDatasetTransforms } from "../../grammar/transforms.js";
 import {
   validateSemanticFieldType,
   validateContinuousColorInterpolation,
@@ -34,124 +27,6 @@ import {
 function nonEmptyString(value, label) {
   if (typeof value !== "string" || value.length === 0) {
     throw new TypeError(`${label} must be a non-empty string.`);
-  }
-}
-
-function validateRegression(transform) {
-  const supported = [
-    "type", "method", "x", "y", "groupBy", "confidence", "interval",
-    "degree", "span"
-  ];
-  const unknown = Object.keys(transform).find(key => !supported.includes(key));
-  if (unknown !== undefined) {
-    throw new Error(`Unknown regression transform property "${unknown}".`);
-  }
-  if (!["linear", "polynomial", "loess"].includes(transform.method)) {
-    throw new Error(`Unsupported regression method "${transform.method}".`);
-  }
-  nonEmptyString(transform.x, "Regression x field");
-  nonEmptyString(transform.y, "Regression y field");
-  if (transform.groupBy !== undefined) {
-    nonEmptyString(transform.groupBy, "Regression groupBy field");
-  }
-  if (transform.method === "loess") {
-    if (!Number.isFinite(transform.span) || transform.span <= 0 || transform.span > 1) {
-      throw new RangeError("Regression LOESS span must be greater than zero and at most one.");
-    }
-    if (
-      transform.degree !== undefined ||
-      transform.confidence !== undefined ||
-      transform.interval !== undefined
-    ) {
-      throw new Error("LOESS regression does not support degree or intervals.");
-    }
-    return;
-  }
-  if (transform.span !== undefined) {
-    throw new Error("Regression span requires the loess method.");
-  }
-  if (transform.method === "polynomial") {
-    if (!Number.isInteger(transform.degree) || transform.degree < 1) {
-      throw new RangeError("Regression polynomial degree must be a positive integer.");
-    }
-  } else if (transform.degree !== undefined) {
-    throw new Error("Regression degree requires the polynomial method.");
-  }
-  if (!Number.isFinite(transform.confidence) || transform.confidence <= 0 || transform.confidence >= 1) {
-    throw new RangeError("Regression confidence must be between 0 and 1.");
-  }
-  if (!["mean", "prediction"].includes(transform.interval)) {
-    throw new Error(`Unsupported regression interval "${transform.interval}".`);
-  }
-}
-
-function validateDensity(transform) {
-  const supported = [
-    "type", "field", "groupBy", "bandwidth", "extent", "steps", "as", "resolve",
-    "kernel", "normalization"
-  ];
-  const unknown = Object.keys(transform).find(key => !supported.includes(key));
-  if (unknown !== undefined) {
-    throw new Error(`Unknown density transform property "${unknown}".`);
-  }
-  nonEmptyString(transform.field, "Density field");
-  if (transform.groupBy !== undefined) nonEmptyString(transform.groupBy, "Density groupBy");
-  validateDensityKernel(transform.kernel ?? "gaussian");
-  validateDensityNormalization(transform.normalization ?? "unit");
-  if (
-    transform.bandwidth !== "auto" &&
-    (!Number.isFinite(transform.bandwidth) || transform.bandwidth <= 0)
-  ) {
-    throw new RangeError("Density bandwidth must be a positive finite number or auto.");
-  }
-  if (
-    transform.extent !== "auto" &&
-    (!Array.isArray(transform.extent) ||
-      transform.extent.length !== 2 ||
-      !transform.extent.every(Number.isFinite) ||
-      transform.extent[0] >= transform.extent[1])
-  ) {
-    throw new RangeError("Density extent must be an ascending pair of finite numbers or auto.");
-  }
-  if (!Number.isInteger(transform.steps) || transform.steps < 2) {
-    throw new RangeError("Density steps must be an integer of at least 2.");
-  }
-  if (
-    !Array.isArray(transform.as) ||
-    transform.as.length !== 2 ||
-    !transform.as.every(value => typeof value === "string" && value.length > 0) ||
-    transform.as[0] === transform.as[1]
-  ) {
-    throw new TypeError("Density as must contain two distinct non-empty fields.");
-  }
-  const collisions = new Set([transform.field, transform.groupBy].filter(Boolean));
-  if (transform.as.some(value => collisions.has(value))) {
-    throw new Error("Density output fields must not collide with source or group fields.");
-  }
-  if (transform.resolve !== "shared") {
-    throw new Error(`Unsupported density resolve "${transform.resolve}".`);
-  }
-}
-
-function validateTransforms(value) {
-  if (!Array.isArray(value) || value.length === 0 || !value.every(isPlainObject)) {
-    throw new TypeError("Dataset transform must be a non-empty array of plain objects.");
-  }
-  const validators = {
-    filter: validateFilterTransform,
-    markFilter: validateMarkFilterTransform,
-    regression: validateRegression,
-    density: validateDensity,
-    interval: validateIntervalTransform,
-    boxSummary: validateBoxTransform,
-    boxOutlier: validateBoxTransform
-  };
-  for (const transform of value) {
-    const validate = validators[transform.type];
-    if (validate === undefined) {
-      throw new Error(`Unsupported dataset transform "${transform.type}".`);
-    }
-    validate(transform);
   }
 }
 
@@ -188,7 +63,7 @@ export function validateSemanticValue(program, parsed, value) {
     }
   }
   if (parsed.kind === "dataset" && parsed.path[0] === "transform") {
-    validateTransforms(value);
+    validateDatasetTransforms(value);
   }
   if (
     parsed.kind === "layer" &&

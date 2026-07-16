@@ -14,6 +14,40 @@ function requireField(field, label) {
   return field;
 }
 
+export function validateRegressionTransform(transform) {
+  const supported = [
+    "type", "method", "x", "y", "groupBy", "confidence", "interval",
+    "degree", "span"
+  ];
+  const unknown = Object.keys(transform).find(key => !supported.includes(key));
+  if (unknown !== undefined) {
+    throw new Error(`Unknown regression transform property "${unknown}".`);
+  }
+  if (transform.type !== "regression") {
+    throw new Error(`Unsupported regression transform "${transform.type}".`);
+  }
+  requireField(transform.x, "Regression x field");
+  requireField(transform.y, "Regression y field");
+  if (transform.groupBy !== undefined) {
+    requireField(transform.groupBy, "Regression groupBy field");
+  }
+  const normalized = normalizeRegressionParameters({
+    method: transform.method,
+    degree: transform.degree,
+    span: transform.span,
+    confidence: transform.confidence,
+    interval: transform.interval
+  });
+  if (normalized.method === "loess") return transform;
+  if (!Number.isFinite(transform.confidence)) {
+    throw new RangeError("Regression confidence must be between 0 and 1.");
+  }
+  if (transform.interval === undefined) {
+    throw new Error(`Unsupported regression interval "${transform.interval}".`);
+  }
+  return transform;
+}
+
 function logGamma(value) {
   const coefficients = [
     676.5203681218851,

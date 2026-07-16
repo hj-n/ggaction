@@ -1049,6 +1049,12 @@ Parameterized quantile은 finite output sample에 linear interpolation을 적용
 semantic state에 저장한다. 계산 가능한 candidate가 없는 final group은 zero나 임의 row로
 대체하지 않고 생략한다.
 
+Dataset transform vocabulary와 validator registry는 `grammar/transforms.js`가 소유한다.
+Filter, mark filter, regression, density, interval, box summary/outlier의 상세 schema는 각
+grammar 모듈이 검증한다. `editSemantic` primitive는 transform별 property를 다시 구현하지
+않고 registry에 위임하므로 domain action과 primitive authoring이 같은 transform contract를
+사용한다.
+
 Mark가 incomplete한 중간 상태일 때 empty graphic collection은 존재할 수 있지만 잘못된
 임시 geometry를 만들지 않는다. 이후 responsible encoding action이 completeness를
 확보하면 mark rematerialization을 호출한다.
