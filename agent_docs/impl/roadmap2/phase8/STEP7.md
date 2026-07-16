@@ -14,8 +14,8 @@ component behavior를 승인받는다.
 - [x] `outliers: false` target without outlier resources
 - [x] Two variant manifests and exact future call chains
 - [x] Primitive PNGs and browser/renderer checks
-- [ ] Gate C user confirmation
-- [ ] STEP status, conceptual commit and push
+- [x] Gate C user confirmation
+- [x] STEP status, conceptual commit and push
 
 ## Gate C
 
