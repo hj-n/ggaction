@@ -15,8 +15,14 @@ test("creates a canvas with defaults through nested actions", () => {
       width: 640,
       height: 400,
       background: "white"
-    }
+    },
+    children: ["plot-main"]
   });
+  assert.deepEqual(program.graphicSpec.objects["plot-main"], {
+    type: "collection",
+    items: []
+  });
+  assert.deepEqual(program.graphicSpec.order, ["canvas"]);
   assert.deepEqual(program.materializationConfigs.canvas, {
     margin: { top: 30, right: 30, bottom: 60, left: 70 }
   });
@@ -29,14 +35,19 @@ test("creates a canvas with defaults through nested actions", () => {
   assert.equal(createNode.op, "createCanvas");
   assert.deepEqual(
     createNode.children.map(node => node.op),
-    ["createGraphics", "editCanvas"]
+    ["createGraphics", "createGraphics", "editCanvas"]
   );
+  assert.deepEqual(createNode.children[1].args, {
+    id: "plot-main",
+    type: "collection",
+    parent: "canvas"
+  });
   assert.deepEqual(
-    createNode.children[1].children.map(node => node.op),
+    createNode.children[2].children.map(node => node.op),
     ["editGraphics", "editGraphics", "editGraphics"]
   );
   assert.deepEqual(
-    createNode.children[1].children.map(node => node.args.property),
+    createNode.children[2].children.map(node => node.args.property),
     ["width", "height", "background"]
   );
   assert.deepEqual(program.actionStack, []);
@@ -79,5 +90,17 @@ test("rejects duplicate and invalid createCanvas calls", () => {
   assert.throws(
     () => chart().createCanvas({ margin: { left: 610 } }),
     /horizontal margins/
+  );
+  assert.throws(
+    () => chart()
+      .createGraphics({ id: "plot-main", type: "collection" })
+      .createCanvas(),
+    /reserved graphic id "plot-main"/
+  );
+  assert.throws(
+    () => chart()
+      .createGraphics({ id: "canvas", type: "rect" })
+      .createCanvas(),
+    /reserved graphic id "canvas"/
   );
 });

@@ -18,6 +18,8 @@ import {
   resolveMarkId,
   validateMarkOptions
 } from "./shared.js";
+import { resolveMarkGraphicPlacement } from
+  "../../materialization/graphicHierarchy.js";
 
 const CREATE_OPTIONS = Object.freeze(["id", "data"]);
 const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);
@@ -85,7 +87,12 @@ const createRuleMark = action(
     return this
       .editSemantic({ property: `layer[${id}].mark.type`, value: "rule" })
       .editSemantic({ property: `layer[${id}].data`, value: data })
-      .createGraphics({ id, type: "line", length: 0 })
+      .createGraphics({
+        id,
+        type: "line",
+        length: 0,
+        ...resolveMarkGraphicPlacement(this, { data, markType: "rule" })
+      })
       ._withMarkConfig(id, DEFAULT_RULE_CONFIG);
   }
 );

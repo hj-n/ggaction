@@ -20,7 +20,7 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     oneOf: ["Japan", "USA"]
   },
   regression = {},
-  hierarchy = false
+  hierarchy = true
 } = {}) {
   const width = 760;
   const height = 480;

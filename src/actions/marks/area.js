@@ -28,6 +28,8 @@ import { buildLinearPathCommands } from "../../grammar/pathCommands.js";
 import { resolveEligibleLayer } from "../../selectors/layers.js";
 import { canMaterializeArea } from "../../materialization/marks.js";
 import { findUpstreamTransform } from "../../materialization/dataProvenance.js";
+import { resolveMarkGraphicPlacement } from
+  "../../materialization/graphicHierarchy.js";
 
 const CREATE_OPTIONS = Object.freeze([
   "id", "data", "fill", "opacity", "stroke", "strokeWidth", "curve"
@@ -74,7 +76,12 @@ const createAreaMark = action(
     return this
       .editSemantic({ property: `layer[${id}].mark.type`, value: "area" })
       .editSemantic({ property: `layer[${id}].data`, value: data })
-      .createGraphics({ id, type: "path", length: 0 })
+      .createGraphics({
+        id,
+        type: "path",
+        length: 0,
+        ...resolveMarkGraphicPlacement(this, { data, markType: "area" })
+      })
       ._withMarkConfig(id, {
         fill,
         opacity,

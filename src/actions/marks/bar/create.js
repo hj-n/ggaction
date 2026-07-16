@@ -5,6 +5,8 @@ import {
   resolveMarkData,
   validateMarkOptions
 } from "../shared.js";
+import { resolveMarkGraphicPlacement } from
+  "../../../materialization/graphicHierarchy.js";
 
 const CREATE_OPTIONS = Object.freeze(["id", "data"]);
 
@@ -37,7 +39,8 @@ export const createBarMark = action(
       .createGraphics({
         id,
         type: "rect",
-        length: 0
+        length: 0,
+        ...resolveMarkGraphicPlacement(this, { data, markType: "bar" })
       });
   }
 );

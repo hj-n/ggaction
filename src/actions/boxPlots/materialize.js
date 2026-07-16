@@ -8,6 +8,8 @@ import {
 import { findDataset } from "../../selectors/datasets.js";
 import { findLayer } from "../../selectors/layers.js";
 import { resolveBoxOrientation } from "./resolve.js";
+import { resolvePlotGraphicPlacement } from
+  "../../materialization/graphicHierarchy.js";
 
 export const materializeBoxPlot = action(
   {
@@ -139,7 +141,12 @@ export const materializeBoxPlot = action(
         value: measure.field
       })
       .editGraphics({ target: ownerId, remove: true })
-      .createGraphics({ id: ownerId, type: "rect", length: 0 })
+      .createGraphics({
+        id: ownerId,
+        type: "rect",
+        length: 0,
+        ...resolvePlotGraphicPlacement(next)
+      })
       .rematerializeBarMark({ id: ownerId })
       .createBoxMedian({
         id: medianId,

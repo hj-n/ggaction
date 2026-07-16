@@ -12,6 +12,8 @@ import {
   validateNonNegative,
   validatePositive
 } from "./common.js";
+import { resolveLegendGraphicPlacement } from
+  "../../../../materialization/graphicHierarchy.js";
 
 const OPTIONS = Object.freeze([
   "target", "channels", "position", "align", "offset", "title",
@@ -213,10 +215,20 @@ export const createIntervalLegend = action(
       .createGraphics({
         id: "colorLegendSymbols",
         type: "rect",
-        length: 0
+        length: 0,
+        ...resolveLegendGraphicPlacement(this)
       })
-      .createGraphics({ id: "colorLegendLabels", type: "text", length: 0 })
-      .createGraphics({ id: "colorLegendTitle", type: "text" })
+      .createGraphics({
+        id: "colorLegendLabels",
+        type: "text",
+        length: 0,
+        ...resolveLegendGraphicPlacement(this)
+      })
+      .createGraphics({
+        id: "colorLegendTitle",
+        type: "text",
+        ...resolveLegendGraphicPlacement(this)
+      })
       .rematerializeIntervalLegend();
   }
 );

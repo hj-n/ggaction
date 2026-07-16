@@ -32,6 +32,8 @@ import { DEFAULT_COLORS } from "../../theme/defaults.js";
 import { findDataset } from "../../selectors/datasets.js";
 import { findLayer } from "../../selectors/layers.js";
 import { rematerializeExistingLegend } from "../encodings/shared.js";
+import { resolveMarkGraphicPlacement } from
+  "../../materialization/graphicHierarchy.js";
 
 const POINT_MARK_OPTIONS = Object.freeze(["id", "data", "shape"]);
 const EDIT_POINT_OPTIONS = Object.freeze([
@@ -98,7 +100,8 @@ const createPointMark = action(
       .createGraphics({
         id,
         type: graphicType,
-        length: dataset.values.length
+        length: dataset.values.length,
+        ...resolveMarkGraphicPlacement(next, { data, markType: "point" })
       })
       ._withMarkConfig(id, { shape });
     const inheritedEncodings = Object.values(inherited?.encoding ?? {});

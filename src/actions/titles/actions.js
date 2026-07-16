@@ -6,11 +6,10 @@ import {
   requireTitleConfig,
   resolveTitleLayout
 } from "./resolve.js";
-
-function nextGraphicId(program, id) {
-  const index = program.graphicSpec.order.indexOf(id);
-  return index < 0 ? undefined : program.graphicSpec.order[index + 1];
-}
+import {
+  preserveGraphicPlacement,
+  resolveCanvasGraphicPlacement
+} from "../../materialization/graphicHierarchy.js";
 
 function hasRotation(graphic) {
   const properties = graphic.items?.map(child => child.properties) ??
@@ -27,14 +26,14 @@ function ensureTextShape(program, id, component) {
   const needsCollection = component.lines.length > 1;
   const rotationMismatch = hasRotation(graphic) !== component.explicitRotation;
   if ((collection && !needsCollection) || rotationMismatch) {
-    const before = nextGraphicId(program, id);
+    const placement = preserveGraphicPlacement(program, id);
     return program
       .editGraphics({ target: id, remove: true })
       .createGraphics({
         id,
         type: "text",
         ...(needsCollection ? { length: component.lines.length } : {}),
-        ...(before === undefined ? {} : { before })
+        ...placement
       });
   }
   if (!collection && needsCollection) {
@@ -88,7 +87,8 @@ function createTextGraphic(program, id, component) {
   return program.createGraphics({
     id,
     type: "text",
-    ...(component.lines.length > 1 ? { length: component.lines.length } : {})
+    ...(component.lines.length > 1 ? { length: component.lines.length } : {}),
+    ...resolveCanvasGraphicPlacement(program)
   });
 }
 

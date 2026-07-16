@@ -17,6 +17,8 @@ import {
   validateNonNegative,
   validatePositive
 } from "./common.js";
+import { resolveLegendGraphicPlacement } from
+  "../../../../materialization/graphicHierarchy.js";
 
 const SYMBOL_OPTIONS = Object.freeze([
   "type", "radius", "fill", "stroke", "strokeWidth"
@@ -322,7 +324,7 @@ export const createOpacityLegend = action(
       next = next.createGraphics({
         id: "opacityLegendBackground",
         type: "rect",
-        after: resolved.layer.id
+        ...resolveLegendGraphicPlacement(next)
       });
     }
     return next
@@ -330,12 +332,22 @@ export const createOpacityLegend = action(
         id: "opacityLegendSymbols",
         type: "circle",
         length: 0,
-        after: resolved.config.border === false
-          ? resolved.layer.id
-          : "opacityLegendBackground"
+        ...resolveLegendGraphicPlacement(next),
+        ...(resolved.config.border === false
+          ? {}
+          : { after: "opacityLegendBackground" })
       })
-      .createGraphics({ id: "opacityLegendLabels", type: "text", length: 0 })
-      .createGraphics({ id: "opacityLegendTitle", type: "text" })
+      .createGraphics({
+        id: "opacityLegendLabels",
+        type: "text",
+        length: 0,
+        ...resolveLegendGraphicPlacement(next)
+      })
+      .createGraphics({
+        id: "opacityLegendTitle",
+        type: "text",
+        ...resolveLegendGraphicPlacement(next)
+      })
       .rematerializeOpacityLegend();
   }
 );

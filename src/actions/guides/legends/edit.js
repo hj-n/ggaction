@@ -11,6 +11,8 @@ import {
 import { normalizeOpacitySymbol } from "./continuous/opacity.js";
 import { normalizeIntervalLegend } from "./continuous/interval.js";
 import { findLayer } from "../../../selectors/layers.js";
+import { resolveLegendGraphicPlacement } from
+  "../../../materialization/graphicHierarchy.js";
 
 const OPTIONS = Object.freeze([
   "target", "position", "align", "direction", "columns", "offset",
@@ -51,7 +53,13 @@ function resolveTarget(program, requested) {
 function reconcileGraphic(program, id, shouldExist, definition) {
   const exists = program.graphicSpec.objects[id] !== undefined;
   if (exists && !shouldExist) return program.editGraphics({ target: id, remove: true });
-  if (!exists && shouldExist) return program.createGraphics({ id, ...definition });
+  if (!exists && shouldExist) {
+    return program.createGraphics({
+      id,
+      ...definition,
+      ...resolveLegendGraphicPlacement(program)
+    });
+  }
   return program;
 }
 

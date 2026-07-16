@@ -5,6 +5,7 @@ import { chart } from "../../../../src/ChartProgram.js";
 import { createCarsRegressionScatterplotValues } from
   "../../../charts/cars-regression-scatterplot/reference-values.js";
 import { loadCars } from "../../../support/data.js";
+import { graphicTreeSnapshot } from "../../../support/graphic-tree.js";
 
 function regressionProgram() {
   return chart()
@@ -50,10 +51,11 @@ test("creates shared axes, horizontal grid, and two right-side legends", () => {
     program.trace.children.at(-1).children.map(child => child.op),
     ["createAxes", "createGrid", "createLegend"]
   );
-  assert.equal(program.graphicSpec.order.indexOf("horizontalGridLines") <
-    program.graphicSpec.order.indexOf("points"), true);
-  assert.equal(program.graphicSpec.order.indexOf("seriesLegendSymbolLines") >
-    program.graphicSpec.order.indexOf("yAxisTitle"), true);
+  const drawOrder = graphicTreeSnapshot(program).drawOrder;
+  assert.equal(drawOrder.indexOf("horizontalGridLines") <
+    drawOrder.indexOf("points"), true);
+  assert.equal(drawOrder.indexOf("seriesLegendSymbolLines") >
+    drawOrder.indexOf("yAxisTitle"), true);
 });
 
 test("matches primitive composite and five-symbol size legends", () => {

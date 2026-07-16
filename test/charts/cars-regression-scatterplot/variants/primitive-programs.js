@@ -65,6 +65,7 @@ export function createLeftLegendPrimitives(cars) {
     .createGraphics({
       id: "seriesLegendBackground",
       type: "rect",
+      parent: "canvas",
       before: "seriesLegendSymbolLines"
     })
     .editGraphics({ target: "seriesLegendBackground", property: "x", value: background.x })

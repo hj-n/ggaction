@@ -13,12 +13,12 @@ Complete variant contract:
 
 ## 진행 상태
 
-- [ ] Current graphic-tree implementation, flat consumers and migration boundary audit
-- [ ] Canonical ownership, placement, validation and equivalence contracts
-- [ ] Gate A regression hierarchy primitive and visual approval
-- [ ] Canvas/plot root and ordinary mark attachment integration
-- [ ] Grid, axis, legend and title ownership and draw-order integration
-- [ ] Composite descendants and rematerialization attachment stability
+- [x] Current graphic-tree implementation, flat consumers and migration boundary audit
+- [x] Canonical ownership, placement, validation and equivalence contracts
+- [x] Gate A regression hierarchy primitive and visual approval
+- [x] Canvas/plot root and ordinary mark attachment integration
+- [x] Grid, axis, legend and title ownership and draw-order integration
+- [x] Composite descendants and rematerialization attachment stability
 - [ ] Gate B canonical public regression hierarchy approval
 - [ ] Existing chart-family hierarchy migration and regression coverage
 - [ ] Architecture, contracts, extension docs and executable closeout audits

@@ -22,6 +22,8 @@ import {
   resolveAxisTitleGeometry,
   validateAxisPosition
 } from "./policy.js";
+import { resolvePlotGraphicPlacement } from
+  "../../../materialization/graphicHierarchy.js";
 
 const CREATE_OPTIONS = Object.freeze([
   "text", "scale", "position", "at", "offset", "rotation", "color",
@@ -242,7 +244,11 @@ function makeCreate(channel) {
     return this
       .editSemantic({ property: `guide.axis.${channel}.scale`, value: scale })
       .editSemantic({ property: `guide.axis.${channel}.title`, value: text })
-      .createGraphics({ id: operation.graphic, type: "text" })
+      .createGraphics({
+        id: operation.graphic,
+        type: "text",
+        ...resolvePlotGraphicPlacement(this)
+      })
       ._withGuideConfig(channel, "title", config)[operation.edit]();
   });
 }

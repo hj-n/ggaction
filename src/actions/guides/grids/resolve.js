@@ -17,6 +17,10 @@ import {
   inferGridTickConfig,
   valuesFromTickConfig
 } from "../tickValues.js";
+import {
+  findGraphicParent,
+  walkGraphicDrawOrder
+} from "../../../grammar/schemas/graphicTree.js";
 
 const GRID_OPTIONS = Object.freeze([
   "scale", "coordinate", "count", "values", "color", "lineWidth", "strokeDash"
@@ -159,9 +163,19 @@ export function resolveGridResources(program, direction, args) {
     throw new Error(`${direction} grid requires resolved continuous scale "${scale}".`);
   }
   const related = new Set(layers.map(layer => layer.id));
-  const before = program.graphicSpec.order.find(id => related.has(id));
+  let before;
+  walkGraphicDrawOrder(program.graphicSpec, ({ id }) => {
+    if (before === undefined && related.has(id)) before = id;
+  });
   if (before === undefined) throw new Error(`${direction} grid requires related mark graphics.`);
-  return { channel, coordinate, scale, before };
+  const owner = findGraphicParent(program.graphicSpec, before);
+  return {
+    channel,
+    coordinate,
+    scale,
+    before,
+    ...(owner?.kind === "parent" ? { parent: owner.id } : {})
+  };
 }
 
 export function resolveGridConfig(program, direction, args, resources) {

@@ -24,6 +24,8 @@ import {
   validateAxisFormat,
   validateAxisPosition
 } from "./policy.js";
+import { resolvePlotGraphicPlacement } from
+  "../../../materialization/graphicHierarchy.js";
 
 const OPTIONS = Object.freeze([
   "scale", "position", "count", "values", "offset", "format", "color",
@@ -208,7 +210,12 @@ function makeCreate(channel) {
     assertTickCompatibility(ticks, config, op);
     resolve(this, channel, config);
     return this.editSemantic({ property: `guide.axis.${channel}.scale`, value: scale })
-      .createGraphics({ id, type: "text", length: 0 })
+      .createGraphics({
+        id,
+        type: "text",
+        length: 0,
+        ...resolvePlotGraphicPlacement(this)
+      })
       ._withGuideConfig(channel, "labels", config)[edit]();
   });
 }

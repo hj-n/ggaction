@@ -10,6 +10,11 @@ import {
   applyMaterializationPlan,
   planCanvasRematerialization
 } from "../../materialization/dependencies.js";
+import {
+  assertCanvasHierarchyAvailable,
+  CANVAS_GRAPHIC_ID,
+  PLOT_GRAPHIC_ID
+} from "../../materialization/graphicHierarchy.js";
 
 const CANVAS_OPTIONS = Object.freeze([
   "width",
@@ -110,13 +115,7 @@ export const createCanvas = action(
   function (args = {}) {
     validateOptions(args, "createCanvas", { allowEmpty: true });
 
-    const existingCanvas = Object.values(this.graphicSpec.objects).find(
-      graphic => graphic.type === "canvas"
-    );
-
-    if (existingCanvas) {
-      throw new Error("createCanvas requires a program without a canvas.");
-    }
+    assertCanvasHierarchyAvailable(this);
 
     const options = {
       width: Object.hasOwn(args, "width")
@@ -133,8 +132,13 @@ export const createCanvas = action(
         : DEFAULT_CANVAS.margin
     };
 
-    return this.createGraphics({ id: "canvas", type: "canvas" }).editCanvas(
-      options
-    );
+    return this
+      .createGraphics({ id: CANVAS_GRAPHIC_ID, type: "canvas" })
+      .createGraphics({
+        id: PLOT_GRAPHIC_ID,
+        type: "collection",
+        parent: CANVAS_GRAPHIC_ID
+      })
+      .editCanvas(options);
   }
 );

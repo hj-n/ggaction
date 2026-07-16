@@ -256,5 +256,6 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   variant: "graphic-hierarchy",
   title: "Regression Graphic Hierarchy",
   callChain: baselineCallChain,
-  primitive: () => createGraphicHierarchyPrimitives(cars)
+  primitive: () => createGraphicHierarchyPrimitives(cars),
+  userFacing: () => createCarsRegressionScatterplot(cars)
 })]);

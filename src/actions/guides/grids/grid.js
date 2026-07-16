@@ -104,6 +104,9 @@ function makeCreate(direction) {
           id: operation.graphic,
           type: "line",
           length: 0,
+          ...(resources.parent === undefined
+            ? {}
+            : { parent: resources.parent }),
           before: resources.before
         })
         ._withGridConfig(direction, config)[operation.rematerialize]();

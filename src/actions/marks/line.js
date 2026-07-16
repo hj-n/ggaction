@@ -18,6 +18,8 @@ import {
 } from "../../grammar/curveCommands.js";
 import { normalizeStrokeDashPattern } from "../../grammar/scales.js";
 import { canMaterializeLine } from "../../materialization/marks.js";
+import { resolveMarkGraphicPlacement } from
+  "../../materialization/graphicHierarchy.js";
 
 const DEFAULT_LINE_STROKE = DEFAULT_COLORS.mark;
 const DEFAULT_LINE_WIDTH = 2;
@@ -58,7 +60,8 @@ const createLineMark = action(
       .createGraphics({
         id,
         type: "path",
-        length: 0
+        length: 0,
+        ...resolveMarkGraphicPlacement(this, { data, markType: "line" })
       })
       ._withMarkConfig(
         id,

@@ -226,7 +226,7 @@ test("creates a horizontal Cars band with ordered boundary components", () => {
       .properties.commands.at(-1).op,
     "Z"
   );
-  assert.deepEqual(program.graphicSpec.order.slice(-3), [
+  assert.deepEqual(program.graphicSpec.objects["plot-main"].children.slice(-3), [
     "errorBand",
     "errorBandLowerBoundary",
     "errorBandUpperBoundary"
@@ -347,7 +347,7 @@ test("inherits area curves into styled boundaries and permits an override", () =
     assert.deepEqual(properties.strokeDash, [6, 3]);
     assert.equal(properties.opacity, 0.8);
   }
-  assert.deepEqual(inherited.graphicSpec.order.slice(1, 4), [
+  assert.deepEqual(inherited.graphicSpec.objects["plot-main"].children.slice(0, 3), [
     "errorBand",
     "errorBandLowerBoundary",
     "errorBandUpperBoundary"

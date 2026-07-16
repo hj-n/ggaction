@@ -12,6 +12,8 @@ import {
   resolveAxisLineGeometry,
   validateAxisPosition
 } from "./policy.js";
+import { resolvePlotGraphicPlacement } from
+  "../../../materialization/graphicHierarchy.js";
 
 const DEFAULT_STYLE = Object.freeze({ color: DEFAULT_COLORS.text, lineWidth: 1 });
 const CREATE_OPTIONS = Object.freeze(["scale", "position", "color", "lineWidth"]);
@@ -126,7 +128,11 @@ function createAxisLine(channel) {
 
       return this
         .editSemantic({ property: guidePath, value: scale })
-        .createGraphics({ id: graphic, type: "line" })
+        .createGraphics({
+          id: graphic,
+          type: "line",
+          ...resolvePlotGraphicPlacement(this)
+        })
         [editOperation]({ position, color, lineWidth });
     }
   );

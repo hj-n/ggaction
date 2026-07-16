@@ -7,6 +7,8 @@ import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from
 import { resolveLayout as resolveCategoricalLayout } from
   "./categorical/layout.js";
 import { findLayer } from "../../../selectors/layers.js";
+import { resolveLegendGraphicPlacement } from
+  "../../../materialization/graphicHierarchy.js";
 
 const SIZE_OPTIONS = Object.freeze(["target", "count"]);
 
@@ -191,9 +193,23 @@ export const createSizeLegend = action(
         count,
         inheritAppearance: args.inheritAppearance === true
       })
-      .createGraphics({ id: "sizeLegendSymbols", type: "circle", length: count })
-      .createGraphics({ id: "sizeLegendLabels", type: "text", length: count })
-      .createGraphics({ id: "sizeLegendTitle", type: "text" })
+      .createGraphics({
+        id: "sizeLegendSymbols",
+        type: "circle",
+        length: count,
+        ...resolveLegendGraphicPlacement(this)
+      })
+      .createGraphics({
+        id: "sizeLegendLabels",
+        type: "text",
+        length: count,
+        ...resolveLegendGraphicPlacement(this)
+      })
+      .createGraphics({
+        id: "sizeLegendTitle",
+        type: "text",
+        ...resolveLegendGraphicPlacement(this)
+      })
       .rematerializeSizeLegend();
   }
 );

@@ -16,6 +16,8 @@ import {
   styleContinuousText,
   validatePositive
 } from "./common.js";
+import { resolveLegendGraphicPlacement } from
+  "../../../../materialization/graphicHierarchy.js";
 
 const GRADIENT_OPTIONS = Object.freeze(["length", "thickness"]);
 
@@ -326,7 +328,7 @@ export const createGradientLegend = action(
       next = next.createGraphics({
         id: "colorGradientBackground",
         type: "rect",
-        after: resolved.layer.id
+        ...resolveLegendGraphicPlacement(next)
       });
     }
     return next
@@ -334,13 +336,28 @@ export const createGradientLegend = action(
         id: "colorGradientStrips",
         type: "rect",
         length: 0,
-        after: resolved.config.border === false
-          ? resolved.layer.id
-          : "colorGradientBackground"
+        ...resolveLegendGraphicPlacement(next),
+        ...(resolved.config.border === false
+          ? {}
+          : { after: "colorGradientBackground" })
       })
-      .createGraphics({ id: "colorGradientTicks", type: "line", length: 0 })
-      .createGraphics({ id: "colorGradientLabels", type: "text", length: 0 })
-      .createGraphics({ id: "colorGradientTitle", type: "text" })
+      .createGraphics({
+        id: "colorGradientTicks",
+        type: "line",
+        length: 0,
+        ...resolveLegendGraphicPlacement(next)
+      })
+      .createGraphics({
+        id: "colorGradientLabels",
+        type: "text",
+        length: 0,
+        ...resolveLegendGraphicPlacement(next)
+      })
+      .createGraphics({
+        id: "colorGradientTitle",
+        type: "text",
+        ...resolveLegendGraphicPlacement(next)
+      })
       .rematerializeGradientLegend();
   }
 );

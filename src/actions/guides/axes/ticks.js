@@ -21,6 +21,8 @@ import {
   resolveAxisTickGeometry,
   validateAxisPosition
 } from "./policy.js";
+import { resolvePlotGraphicPlacement } from
+  "../../../materialization/graphicHierarchy.js";
 
 const OPTIONS = Object.freeze(["scale", "position", "count", "values", "length", "color", "lineWidth"]);
 const DEFAULTS = Object.freeze({
@@ -160,7 +162,12 @@ function makeCreate(channel) {
     if (config.mode === "values") delete config.count; else config.count ??= DEFAULTS.count;
     validateConfig(channel, config); geometry(this, channel, config);
     return this.editSemantic({ property: `guide.axis.${channel}.scale`, value: scale })
-      .createGraphics({ id, type: "line", length: 0 })
+      .createGraphics({
+        id,
+        type: "line",
+        length: 0,
+        ...resolvePlotGraphicPlacement(this)
+      })
       ._withGuideConfig(channel, config)[edit]();
   });
 }

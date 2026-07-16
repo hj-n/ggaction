@@ -43,7 +43,10 @@ test("infers a complete grouped regression from the current point mark", () => {
     ]
   );
   assert.deepEqual(program.graphicSpec.order, [
-    "canvas", "points", "pointsRegressionBands", "pointsRegressionLines"
+    "canvas"
+  ]);
+  assert.deepEqual(program.graphicSpec.objects["plot-main"].children, [
+    "pointsRegressionBands", "points", "pointsRegressionLines"
   ]);
   assert.equal(program.semanticSpec.datasets[2].source, "selectedCars");
   assert.equal(program.semanticSpec.datasets[2].transform[0].x, "Displacement");

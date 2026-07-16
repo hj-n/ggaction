@@ -49,7 +49,9 @@ function operationCounts(context) {
 }
 
 test("authors the Gate A regression graphic hierarchy with raw primitives", () => {
-  const baseline = createCarsRegressionScatterplotPrimitives(cars);
+  const baseline = createCarsRegressionScatterplotPrimitives(cars, {
+    hierarchy: false
+  });
   const program = createGraphicHierarchyPrimitives(cars);
   const baselineContext = createMockCanvasContext();
   const context = createMockCanvasContext();
@@ -62,7 +64,7 @@ test("authors the Gate A regression graphic hierarchy with raw primitives", () =
   assert.deepEqual(program.semanticSpec, baseline.semanticSpec);
   assert.deepEqual(
     concreteGraphicSnapshot(program, { exclude: ["plot-main"] }),
-    concreteGraphicSnapshot(baseline)
+    concreteGraphicSnapshot(baseline, { exclude: ["plot-main"] })
   );
   assert.deepEqual(tree.roots, ["canvas"]);
   assert.deepEqual(node("canvas").children, [
@@ -310,8 +312,8 @@ test("authors the left composite and size legend as raw primitive state", () => 
   assert.equal(background.x + background.width < values.chart.axes.y.title.x, true);
   assert.equal(background.x + background.width < values.chart.bounds.x, true);
   assert.equal(
-    program.graphicSpec.order.indexOf("seriesLegendBackground") <
-      program.graphicSpec.order.indexOf("seriesLegendSymbolLines"),
+    program.graphicSpec.objects.canvas.children.indexOf("seriesLegendBackground") <
+      program.graphicSpec.objects.canvas.children.indexOf("seriesLegendSymbolLines"),
     true
   );
   assert.equal(program.trace.children.some(node =>

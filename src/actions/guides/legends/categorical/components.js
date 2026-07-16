@@ -1,5 +1,7 @@
 import { action } from "../../../../core/action.js";
 import { activeConfig, graphic, noOptions, resolveLayout } from "./layout.js";
+import { resolveLegendGraphicPlacement } from
+  "../../../../materialization/graphicHierarchy.js";
 
 export const editLegendLabels = action(
   { op: "editLegendLabels", description: "Rematerialize categorical legend labels." },
@@ -35,7 +37,12 @@ export const createLegendLabels = action(
       throw new Error("createLegendLabels requires missing legend labels.");
     }
     return this
-      .createGraphics({ id, type: "text", length: config.domain.length })
+      .createGraphics({
+        id,
+        type: "text",
+        length: config.domain.length,
+        ...resolveLegendGraphicPlacement(this)
+      })
       .editLegendLabels();
   }
 );
@@ -80,7 +87,11 @@ export const createLegendTitle = action(
       throw new Error("createLegendTitle requires a missing legend title.");
     }
     return this
-      .createGraphics({ id, type: "text" })
+      .createGraphics({
+        id,
+        type: "text",
+        ...resolveLegendGraphicPlacement(this)
+      })
       .editLegendTitle();
   }
 );
@@ -119,7 +130,11 @@ export const createLegendBackground = action(
       throw new Error("createLegendBackground requires a missing background.");
     }
     return this
-      .createGraphics({ id, type: "rect" })
+      .createGraphics({
+        id,
+        type: "rect",
+        ...resolveLegendGraphicPlacement(this)
+      })
       .editLegendBackground();
   }
 );

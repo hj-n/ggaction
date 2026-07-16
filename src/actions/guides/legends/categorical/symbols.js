@@ -9,6 +9,8 @@ import {
   symbolGraphic,
   symbolWidth
 } from "./layout.js";
+import { resolveLegendGraphicPlacement } from
+  "../../../../materialization/graphicHierarchy.js";
 import { createPointShapeGraphic } from "../../../../grammar/pointShapes.js";
 import { resolveStoredSelection } from "../../../../materialization/selection/state.js";
 
@@ -165,6 +167,7 @@ function makeCreateSymbol(type, edit) {
         .createGraphics({
           id,
           type: graphicType,
+          ...resolveLegendGraphicPlacement(this),
           ...(this.graphicSpec.objects[graphic(config, "Labels")] === undefined
             ? {}
             : { before: graphic(config, "Labels") }),

@@ -8,6 +8,7 @@ import { assertChartProgramsEquivalent } from
 import { loadCars } from "../../support/data.js";
 import { createCarsRegressionScatterplotPrimitives } from
   "./primitive.program.js";
+import { graphicTreeSnapshot } from "../../support/graphic-tree.js";
 
 const expectedTopLevelActions = [
   "createCanvas",
@@ -102,4 +103,47 @@ test("owns caller data without mutating the input", () => {
     ),
     true
   );
+});
+
+test("preserves the approved hierarchy across edits and highlighting", () => {
+  const original = createCarsRegressionScatterplot(loadCars());
+  const expectedDrawOrder = graphicTreeSnapshot(original).drawOrder;
+  const resized = original.editCanvas({ width: 800 });
+  const rescaled = resized.editScale({ id: "x", nice: false });
+  const restyled = rescaled
+    .editRegressionBand({ target: "pointsRegressionBands", opacity: 0.1 })
+    .editRegressionLine({ target: "pointsRegressionLines", strokeWidth: 2 });
+  const highlighted = restyled.highlightMarks({
+    target: "points",
+    select: { field: "Displacement", op: "max" }
+  });
+
+  assert.deepEqual(expectedDrawOrder, [
+    "canvas",
+    "plot-main",
+    "horizontalGridLines",
+    "pointsRegressionBands",
+    "points",
+    "pointsRegressionLines",
+    "xAxisLine",
+    "xAxisTicks",
+    "xAxisLabels",
+    "xAxisTitle",
+    "yAxisLine",
+    "yAxisTicks",
+    "yAxisLabels",
+    "yAxisTitle",
+    "seriesLegendSymbolLines",
+    "seriesLegendSymbolPoints",
+    "seriesLegendLabels",
+    "seriesLegendTitle",
+    "sizeLegendSymbols",
+    "sizeLegendLabels",
+    "sizeLegendTitle"
+  ]);
+  for (const program of [resized, rescaled, restyled, highlighted]) {
+    assert.deepEqual(graphicTreeSnapshot(program).drawOrder, expectedDrawOrder);
+  }
+  assert.deepEqual(original.graphicSpec.objects.canvas.properties.width, 760);
+  assert.deepEqual(highlighted.graphicSpec.order, ["canvas"]);
 });
