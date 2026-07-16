@@ -13,7 +13,7 @@ All scale families를 shared consumers, reversed authoring order, Canvas edits, 
 - [x] Explicit domain/range precedence and reset
 - [x] Missing/invalid/unknown behavior
 - [x] Browser/PNG renderer parity and critical coverage floors
-- [ ] STEP status, conceptual commits and pushes
+- [x] STEP status, conceptual commits and pushes
 
 ## 완료 조건
 

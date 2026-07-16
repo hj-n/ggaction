@@ -15,8 +15,8 @@ Scale implementation을 types, examples, public docs, catalog, architecture and 
 - [x] Second Architecture mutable-scale exception and ownership update
 - [x] GOAL/ROADMAP status and artifact gallery
 - [x] Full test, coverage, render, package and generated-doc checks
-- [ ] Built Jekyll desktop/mobile checks
-- [ ] Conceptual commits/pushes and remote CI/Pages completion
+- [x] Built Jekyll desktop/mobile checks
+- [x] Conceptual commits/pushes and remote CI/Pages completion
 
 ## 완료 조건
 
