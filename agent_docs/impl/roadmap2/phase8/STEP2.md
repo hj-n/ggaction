@@ -7,15 +7,15 @@ box, whisker, median, outlier와 guide layering을 승인받는다.
 
 ## 진행 상태
 
-- [ ] Independent q1/median/q3/fence/observed-whisker reference rows
-- [ ] Independent owned outlier rows and source-order evidence
-- [ ] Raw summary/outlier datasets and component semantic layers
-- [ ] Concrete whisker/cap, rect body, median and point geometry
-- [ ] Axes, horizontal grid and title composition
-- [ ] Variant manifest and exact future call chain
-- [ ] `cars-vertical-tukey/primitive.png` and browser/renderer checks
+- [x] Independent q1/median/q3/fence/observed-whisker reference rows
+- [x] Independent owned outlier rows and source-order evidence
+- [x] Raw summary/outlier datasets and component semantic layers
+- [x] Concrete whisker/cap, rect body, median and point geometry
+- [x] Axes, horizontal grid and title composition
+- [x] Variant manifest and exact future call chain
+- [x] `cars-vertical-tukey/primitive.png` and browser/renderer checks
 - [ ] Gate A user confirmation
-- [ ] STEP status, conceptual commit and push
+- [x] STEP status, conceptual commit and push
 
 ## Gate A
 
