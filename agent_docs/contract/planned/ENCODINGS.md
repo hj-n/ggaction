@@ -136,7 +136,10 @@ type ContinuousColorScale = {
 ```
 
 - `encodeColor.fieldType` already accepts `"quantitative" | "temporal"` for point marks. This remaining
-  planned extension adds bar marks, whose concrete children each own one fill.
+  planned extension adds bar marks, whose concrete children each own one fill. For an aggregate bar, a
+  quantitative color field equal to the measure field inherits the measure aggregate. A different color
+  field requires an explicit compatible `aggregate`; raw source rows are never chosen arbitrarily for one
+  final rectangle. Row-owned ranged bars need no aggregate.
   Line and area paths remain unsupported until a segment/gradient-path materialization contract exists.
 - The scale type is `"sequential"` whether inferred or explicit. Auto quantitative domain is the finite
   field extent; auto temporal domain is the normalized timestamp extent. The first contract rejects

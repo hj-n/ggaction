@@ -1,0 +1,20 @@
+# Roadmap 2 — Phase 10 Step 10: Continuous Bar and Mapping Policies
+
+## 목표
+
+Continuous-color bar aggregate ownership과 clamp/reverse/unknown policies를 marks, scales and gradient guides에
+통합한다.
+
+## 진행 상태
+
+- [ ] Aggregate inheritance and explicit color aggregate validation
+- [ ] Sequential bar materialization and gradient legend reuse
+- [ ] Clamp/reverse/unknown channel applicability matrix
+- [ ] Scale/type/Canvas rematerialization
+- [ ] Gate D exact public equivalence
+- [ ] Atomic failure and caller-input immutability
+- [ ] STEP status, conceptual commits and pushes
+
+## 완료 조건
+
+Bar color grain and every mapping policy remain deterministic across edits and shared consumers.

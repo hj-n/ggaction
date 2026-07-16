@@ -581,7 +581,9 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   assert.match(currentCorpus, /zero-anchored exact steps/);
   assert.match(plannedCorpus, /type PlannedScaleType =/);
   assert.match(plannedCorpus, /"log"[\s\S]*"pow"[\s\S]*"sqrt"[\s\S]*"symlog"/);
-  assert.match(plannedCorpus, /"utc"[\s\S]*"band"[\s\S]*"point"/);
+  assert.match(plannedCorpus, /"symlog"[\s\S]*"band"[\s\S]*"point"/);
+  assert.doesNotMatch(plannedCorpus, /"utc"/);
+  assert.match(plannedCorpus, /`time` is the only temporal scale token/);
   assert.match(plannedCorpus, /"point"[\s\S]*"sequential"[\s\S]*"quantize"/);
   assert.match(plannedCorpus, /"quantize"[\s\S]*"quantile"[\s\S]*"threshold"/);
   assert.match(plannedCorpus, /type PlannedScalePolicies =/);

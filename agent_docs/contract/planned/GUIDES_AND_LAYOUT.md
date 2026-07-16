@@ -15,7 +15,7 @@ type GradientLegendOptions = {
   rather than categorical items. `length` defaults to `120`, `thickness` to `12`; right/left positions orient
   the block vertically and top/bottom positions orient it horizontally.
 - `count` is the requested tick-label count with default `5` and minimum `2`. Quantitative labels use the
-  shared numeric tick/format contract and temporal labels use shared UTC/local time scale behavior.
+  shared numeric tick/format contract and temporal labels use the shared UTC-only `time` scale behavior.
   The resolved endpoints always correspond to the displayed scale direction after palette extent and reverse.
 - Title, titlePosition, labels/titleStyle, offset, border and position retain their existing contracts.
   `symbol`, `columns`, `direction` and `itemGap` are categorical-only and are rejected for a gradient legend.

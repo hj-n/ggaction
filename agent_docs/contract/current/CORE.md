@@ -334,7 +334,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 ### Formal values — `createScale`
 
 - Implemented: `createScale({ id: UserId; type?: ScaleType; domain?: ContinuousDomain | OrdinalDomain; range?: "auto" | readonly unknown[]; nice?: boolean; zero?: boolean })`; type별 validation이 값을 제한한다.
-- Planned (NOT IMPLEMENTED): `{ type?: "log" | "pow" | "sqrt" | "symlog" | "utc" | "band" | "point" | "sequential" | "quantize" | "quantile" | "threshold"; base?: PositiveFiniteExceptOne; exponent?: PositiveFinite; constant?: PositiveFinite; clamp?: boolean; reverse?: boolean; unknown?: unknown }`
+- Planned (NOT IMPLEMENTED): `{ type?: "log" | "pow" | "sqrt" | "symlog" | "band" | "point" | "sequential" | "quantize" | "quantile" | "threshold"; base?: PositiveFiniteExceptOne; exponent?: PositiveFinite; constant?: PositiveFinite; clamp?: boolean; reverse?: boolean; unknown?: unknown }`; `time` remains the single UTC temporal token.
 - Proposed (NOT IMPLEMENTED): `{ type?: "identity" | "bin-ordinal" }`
 
 ### Value coverage — `createScale`
@@ -342,7 +342,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 - `id`: ✅ Covered valid/invalid IDs, equivalent idempotence and conflicting duplicate.
 - `type`
   - ✅ Covered: omission→`"linear"`, `"linear" | "time" | "ordinal"`, unknown value.
-  - 🟡 Planned: `"log" | "pow" | "sqrt" | "symlog" | "utc" | "band" | "point" |
+  - 🟡 Planned: `"log" | "pow" | "sqrt" | "symlog" | "band" | "point" |
     "sequential" | "quantize" | "quantile" | "threshold"`; type-specific domain, range, mapping and tick contracts는
     `planned/SCALES.md`가 소유한다.
   - 🟣 Proposed: `"identity" | "bin-ordinal"`.
@@ -367,7 +367,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 - Signature: `editScale({ id?, domain?, range?, nice?, zero?, clamp?, reverse? })`.
 - `id`는 existing scale을 선택한다. 생략하면 current scale, 그렇지 않으면 유일한 scale을 사용하며
   안전하게 하나를 정할 수 없으면 explicit ID를 요구한다.
-- 최소 한 editable property가 필요하다. `type`, scale 삭제, consumer rebind와 `unknown`은 지원하지 않는다.
+- 최소 한 editable property가 필요하다. 현재는 scale 삭제, `type`, consumer rebind와 `unknown`을 지원하지 않는다.
 - `domain`/`range`의 `"auto"`는 reset이고 omission은 기존 값을 보존한다. Explicit domain은
   `nice`/`zero`보다 우선하며 `reverse`는 auto 또는 explicit 최종 range에 적용된다.
 - `nice`는 linear/time, `zero`는 linear, `clamp`는 linear/time에만 적용된다. `reverse`는 현재
@@ -391,7 +391,7 @@ type EditableCurrentScale = {
 ```
 
 - Implemented for existing `linear | time | ordinal` scales.
-- Planned (NOT IMPLEMENTED): `unknown` mapping and the additional scale types in
+- Planned (NOT IMPLEMENTED): atomic `type`/type-parameter editing, `unknown` mapping and the additional scale types in
   [`../planned/SCALES.md`](../planned/SCALES.md).
 - Proposed (NOT IMPLEMENTED): no additional direct `editScale` surface beyond the planned vocabulary.
 

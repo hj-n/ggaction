@@ -21,7 +21,6 @@ type PlannedScaleType =
   | "pow"
   | "sqrt"
   | "symlog"
-  | "utc"
   | "band"
   | "point"
   | "sequential"
@@ -46,8 +45,8 @@ type PlannedScaleOptions = {
   `exponent`.
 - `symlog` accepts negative, zero and positive quantitative values. `constant` defaults to `1`,
   controls the approximately linear region around zero, and is valid only for `symlog`.
-- `utc` has the same input model as `time` but resolves domain boundaries, ticks and labels in UTC
-  rather than local calendar time.
+- `time` is the only temporal scale token and always resolves input normalization, domain boundaries,
+  ticks and labels in UTC. There is no separate `utc` token and no environment-local calendar mode.
 - `band` maps a unique ordered discrete domain to contiguous numeric bands and exposes bandwidth.
   `point` maps the same domain to zero-width centers. Their padding and alignment vocabulary remains
   owned by the accepted bar-width and offset geometry contracts.
@@ -59,10 +58,13 @@ type PlannedScaleOptions = {
   length `n` creates `n` quantile classes.
 - `threshold` takes strictly increasing explicit thresholds. `n` thresholds require exactly
   `n + 1` discrete range values.
-- Position channels accept `linear | log | pow | sqrt | symlog | time | utc | ordinal | band | point`
+- Position channels accept `linear | log | pow | sqrt | symlog | time | band | point`
   when their field and mark grain are compatible. Appearance channels may use the discretizing types
   only when every resolved range value is valid for that channel.
-- `nice` is valid for transformed quantitative, `time` and `utc` auto domains. `zero` remains
+- `ordinal` owns discrete appearance lookup. Category position uses `band` when the consumer needs a
+  non-zero slot width and `point` when it needs only a center. Existing position uses of `ordinal`
+  migrate to one of those explicit types.
+- `nice` is valid for transformed quantitative and `time` auto domains. `zero` remains
   valid only where zero is representable and is rejected for `log`, temporal and discrete scales.
 - Automatic domains, explicit-domain precedence, shared-consumer compatibility and deterministic
   rematerialization follow the existing scale contract.
@@ -71,6 +73,15 @@ type PlannedScaleOptions = {
 - Status: Planned, NOT IMPLEMENTED. Each type needs domain/range validation, mapping, ticks where
   applicable, mark and guide rematerialization, TypeScript declarations, and representative boundary
   coverage before becoming Implemented.
+
+### Scale type editing
+
+`editScale` adds `type`, `base`, `exponent` and `constant` to its editable surface. A type edit validates
+the complete resulting scale and every connected consumer before changing state. Existing domain and range
+are preserved only when valid for the new type; otherwise the same call must provide valid replacements.
+Properties that belong only to the old type are structurally removed and the new type's documented defaults
+are persisted. A successful edit rematerializes all marks and guides; a failed edit leaves the earlier program
+unchanged. This is the approved mutable-scale exception to the general structural-resource rule.
 
 ## Scale mapping policies
 

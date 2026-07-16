@@ -52,7 +52,7 @@ Encoding의 `scale` object는 channel에 따라 아래 subset을 사용한다.
 ### Formal values — `encodeX`
 
 - Implemented: `encodeX({ field: FieldName; target?: UserId; fieldType?: "quantitative" | "temporal" | "ordinal"; scale?: PositionScale; coordinate?: UserId; aggregate?: AggregateOperation; bin?: BinDefinition; stack?: "zero" | "normalize" | null })`; 실제 조합은 canonical matrix와 mark grain policy가 제한한다.
-- Planned (NOT IMPLEMENTED): `{ scale?: { type?: "log" | "pow" | "sqrt" | "symlog" | "utc" | "band" | "point"; base?: PositiveFiniteExceptOne; exponent?: PositiveFinite; constant?: PositiveFinite; clamp?: boolean; reverse?: boolean; unknown?: unknown } }`
+- Planned (NOT IMPLEMENTED): `{ scale?: { type?: "log" | "pow" | "sqrt" | "symlog" | "band" | "point"; base?: PositiveFiniteExceptOne; exponent?: PositiveFinite; constant?: PositiveFinite; clamp?: boolean; reverse?: boolean; unknown?: unknown } }`; temporal `time` remains UTC-only.
 - Proposed (NOT IMPLEMENTED): Polar positional action.
 
 ### Value coverage — `encodeX`
@@ -136,7 +136,7 @@ type AggregateOperation =
 ### Formal values — `encodeY`
 
 - Implemented: `encodeY({ field?: FieldName; target?: UserId; fieldType?: "quantitative" | "temporal" | "ordinal" | "nominal"; scale?: PositionScale; coordinate?: UserId; aggregate?: AggregateOperation; stack?: "zero" | "normalize" | null })`; nominal은 compatible count-style aggregate에만 허용되고 mark/pair policy가 조합을 제한한다.
-- Planned (NOT IMPLEMENTED): `{ scale?: { type?: "log" | "pow" | "sqrt" | "symlog" | "utc" | "band" | "point"; base?: PositiveFiniteExceptOne; exponent?: PositiveFinite; constant?: PositiveFinite; clamp?: boolean; reverse?: boolean; unknown?: unknown } }`
+- Planned (NOT IMPLEMENTED): `{ scale?: { type?: "log" | "pow" | "sqrt" | "symlog" | "band" | "point"; base?: PositiveFiniteExceptOne; exponent?: PositiveFinite; constant?: PositiveFinite; clamp?: boolean; reverse?: boolean; unknown?: unknown } }`; temporal `time` remains UTC-only.
 - Proposed (NOT IMPLEMENTED): `{ stack?: "center" }`; full-item extreme selection은 Planned `selectMarks`가 소유한다.
 
 ### Value coverage — `encodeY`
@@ -159,7 +159,7 @@ type AggregateOperation =
 - `scale`
   - ✅ Covered: auto/explicit domain/range, nice/zero precedence, shared consumer conflicts.
   - ⚠️ Partial: aggregate/stack/scale option pairwise matrix.
-  - 🟡 Planned: compatible transformed/UTC/band/point scale types and clamp/reverse/unknown policies.
+  - 🟡 Planned: compatible transformed/time/band/point scale types and clamp/reverse/unknown policies.
 - Evidence: point position, line aggregate, histogram y and ordinal aggregate bar tests.
 
 ## Position field-type compatibility
@@ -178,8 +178,8 @@ type AggregateOperation =
 - Temporal normalization은 source dataset을 바꾸지 않는다. 1000–9999 정수와 4자리 문자열은 UTC
   year, `YYYY-MM-DD`/`YYYY/MM/DD`는 검증된 UTC date, 그 밖의 valid string과 finite number는
   timestamp로 해석한다.
-- Current scale vocabulary는 temporal `time`, ordinal `ordinal`, quantitative `linear`다. `utc`,
-  `band`, `point`와 transformed continuous aliases는 planned scale vocabulary가 소유한다.
+- Current scale vocabulary는 UTC temporal `time`, ordinal `ordinal`, quantitative `linear`다. `band`,
+  `point`와 transformed continuous aliases는 planned scale vocabulary가 소유한다.
 - Horizontal `layout: "group"`은 yOffset이 없으므로 명시적으로 거부한다. Stack/fill/overlay/diverging은
   quantitative x measure에서 materialize한다.
 - Evidence: `test/unit/grammar/position-compatibility.test.js`, scale temporal normalization tests,

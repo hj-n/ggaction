@@ -251,12 +251,15 @@ Current `filterMark`는 plural `filterMarks`로 완전히 교체하며 compatibi
 
 ## Phase 10 — New transformed-scale chart
 
+- Phase goal: [`phase10/GOAL.md`](phase10/GOAL.md)
+- Complete variant contract: [`chart/gapminder-transformed-scale-variants.md`](chart/gapminder-transformed-scale-variants.md)
+
 - Direct action expansion: `editScale`
 - Capability: `scale-type-vocabulary`
 - Capability: `scale-mapping-policies`
 - Capability: `continuous-color-bar-consumer`
 
-Log/pow/sqrt/symlog/UTC/band/point와 quantize/quantile/threshold/sequential을 compatible channel별로
+Log/pow/sqrt/symlog/time/band/point와 quantize/quantile/threshold/sequential을 compatible channel별로
 나누어 검증한다. Clamp/reverse/unknown과 explicit domain/range precedence를 exact mapping fixture로
 확인하고 대표 visual class만 PNG로 만든다.
 

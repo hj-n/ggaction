@@ -80,7 +80,7 @@ test("validates line-chart semantic closed vocabularies", () => {
     /Unsupported aggregate/
   );
   assert.throws(
-    () => chart().editSemantic({ property: "scale[x].type", value: "utc" }),
+    () => chart().editSemantic({ property: "scale[x].type", value: "localTime" }),
     /Unsupported scale type/
   );
   assert.throws(
