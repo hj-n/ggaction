@@ -50,3 +50,11 @@ dependency audit     0 vulnerabilities
 
 Local qualification은 1100 normal tests, 95.09% lines / 90.69% branches / 98.24% functions와 23 critical coverage
 floors, package consumers, browser checks, 77 render variants, generated gallery와 documentation checks를 통과했다.
+
+## First workflow attempt
+
+Release run `29519776355`는 publish job 전에 중단됐고 registry mutation은 없었다. Verify job이 Node 24에서
+primitive/public graphical equality의 sub-ULP 차이를 발견했다. Package candidate가 아니라 qualification runtime
+선택의 문제이므로 immutable `v0.0.2` tag는 유지한다. Workflow definition은 default branch에서 실행하고 exact
+annotated tag를 checkout/검증하며, full qualification은 canonical Node 20, OIDC publish는 Node 24에서 실행하도록
+수정했다.

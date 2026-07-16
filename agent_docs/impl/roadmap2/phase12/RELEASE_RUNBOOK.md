@@ -97,7 +97,8 @@
 
 1. 공통 candidate 절차와 approval을 완료한다.
 2. Approved commit에 matching annotated tag를 만들고 push한다.
-3. GitHub Actions의 `Release` workflow를 matching tag input으로 수동 실행한다.
+3. GitHub Actions의 default branch에서 `Release` workflow를 matching tag input으로 수동 실행한다. Workflow는
+   annotated tag를 checkout하고 checked-out commit이 그 tag target과 정확히 같은지 검증한다.
 4. Protected `npm-release` environment approval 화면에서 version, commit과 evidence를 다시 확인하고 승인한다.
 5. Workflow가 OIDC로 exact source commit을 publish하고 같은 tag의 GitHub Release를 생성한다. Long-lived npm
    token은 사용하지 않는다.

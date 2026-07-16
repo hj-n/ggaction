@@ -4,16 +4,19 @@ import test from "node:test";
 
 const workflow = readFileSync(new URL("../../.github/workflows/release.yml", import.meta.url), "utf8");
 
-test("keeps publishing manual, tag-bound, protected, and non-concurrent", () => {
+test("keeps publishing manual, immutable-tag-bound, protected, and non-concurrent", () => {
   assert.match(workflow, /^\s{2}workflow_dispatch:/m);
   assert.doesNotMatch(workflow, /^\s{2}(push|release):/m);
-  assert.match(workflow, /test "\$GITHUB_REF" = "refs\/tags\/\$RELEASE_TAG"/);
+  assert.match(workflow, /ref: \$\{\{ inputs\.tag \}\}/);
+  assert.match(workflow, /git cat-file -t "refs\/tags\/\$RELEASE_TAG"/);
+  assert.match(workflow, /git rev-parse "refs\/tags\/\$RELEASE_TAG\^\{commit\}"/);
   assert.match(workflow, /environment:\s*\n\s+name: npm-release/);
   assert.match(workflow, /group: npm-release/);
   assert.match(workflow, /cancel-in-progress: false/);
 });
 
 test("uses current trusted-publishing requirements without an npm secret", () => {
+  assert.match(workflow, /node-version: 20/);
   assert.match(workflow, /node-version: 24/);
   assert.match(workflow, /npm@\^11\.5\.1/);
   assert.match(workflow, /id-token: write/);

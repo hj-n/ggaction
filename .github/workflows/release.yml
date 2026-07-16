@@ -24,10 +24,10 @@ jobs:
         with:
           ref: ${{ inputs.tag }}
           fetch-depth: 0
-      - name: Set up Node.js for trusted publishing compatibility
+      - name: Set up the canonical qualification runtime
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: 20
           registry-url: https://registry.npmjs.org/
           package-manager-cache: false
       - name: Install a trusted-publishing-capable npm CLI
@@ -39,9 +39,9 @@ jobs:
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
-          test "$GITHUB_REF" = "refs/tags/$RELEASE_TAG"
           test "$RELEASE_TAG" = "v$(node -p "require('./package.json').version")"
           test "$(node -p "require('./package-lock.json').version")" = "$(node -p "require('./package.json').version")"
+          test "$(git cat-file -t "refs/tags/$RELEASE_TAG")" = "tag"
           test "$(git rev-parse HEAD)" = "$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")"
       - name: Pack the exact release candidate once
         env:
