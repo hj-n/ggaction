@@ -6,19 +6,35 @@ Cars Origin line chart에서 Japan series path를 raw primitives로 강조하고
 
 ## 진행 상태
 
-- [ ] Independent Origin series keys and Japan path selection
-- [ ] Equality selection through one unique path field value
-- [ ] Approved accent stroke, width, dash and opacity target
-- [ ] Complement dimming and selected-last path order
-- [ ] Legend, axes, grid and title remain consistent
-- [ ] Primitive program, reference values, manifest and future call chain
-- [ ] Browser and `primitive.png` checks
+- [x] Independent Origin series keys and Japan path selection
+- [x] Equality selection through one unique path field value
+- [x] Proposed accent stroke, width, dash and opacity target
+- [x] Complement dimming and selected-last path order
+- [x] Legend, axes, grid and title remain consistent
+- [x] Primitive program, reference values, manifest and future call chain
+- [x] Browser and `primitive.png` checks
 - [ ] Gate C user confirmation
-- [ ] STEP status, conceptual commit and push
+- [x] STEP status, conceptual commit and push
 
 ## Gate C
 
 Confirm the entire Japan path—not individual vertices—is highlighted and remains connected and ordered.
+
+Proposed appearance: selected Japan path uses `#dc2626`, `5px`, named `"dashed"` and opacity `1`;
+the USA and Europe paths retain their geometry but use opacity `0.16`. The selected path is drawn last.
+
+### Gate C candidate
+
+- Semantic target: `trends/series/2`, the unique `Origin === "Japan"` series with 12 ordered annual points.
+- Selection basis: one unique series-level `Origin` field value; no selector reads a vertex or concrete path command.
+- Appearance: red `#dc2626`, 5px named `"dashed"`, opacity `1`; USA and Europe use opacity `0.16`.
+- The Japan path keeps its original complete `M` + ordered `L` command sequence and moves to the last child.
+- Every non-mark graphic, semantic layer, scale, axis, grid, legend and title remains unchanged.
+- A Canvas-only width change preserves `trends/series/2` and its 12 points while remapping concrete x positions.
+- Browser gallery verification loaded the 1440×920 primitive with no console warnings or errors.
+- Artifact: `.artifacts/test/png/roadmap2/mark-selection/line-series-japan/primitive.png`.
+- Manifest: `test/gates/mark-selection-lines/variants/manifest.js` stores the exact future
+  `highlightMarks({ select: { field: "Origin", op: "eq", value: "Japan" }, ... })` chain.
 
 ## 완료 조건
 
