@@ -103,6 +103,13 @@ then one unique eligible layer is used. The source contributes data, coordinate,
 scale IDs. Multiple candidates, two quantitative axes or two categorical axes are errors. Resolved decisions are
 persisted in ordinary semantic resources.
 
+Authoring order does not change the completed result. `createBoxPlot()` may consume compatible x/y encodings that
+already exist, or it may establish its owner and wait for later `encodeX`/`encodeY` calls. In the latter order the
+action stores immutable box-plot materialization intent, creates no fabricated summary or placeholder component,
+and rematerializes the summary, whiskers, body, median and optional outliers as soon as data and both channel roles
+become complete. An incomplete program may remain intentionally unrendered; ambiguous consumers still require an
+explicit `target`.
+
 Phase 8 intentionally has no `groupBy`. The categorical position is the only statistical partition. Automatic
 subgroup offset, subgroup color and subgroup legend are outside this initial contract.
 
@@ -220,5 +227,7 @@ Gate approval and must match semantic state, concrete graphics, drawing order, C
 - Four approved primitive/public pairs converge exactly.
 - Both orientations, style/width/factor/outlier options, sparse/singleton input, inference, ambiguity,
   rematerialization and immutability are executable contracts.
+- Encoding-before-composite and composite-before-encoding programs converge on the same persisted semantics,
+  concrete graphics and drawing order.
 - Public example, types, tutorial/API/reference/LLM docs, action catalog and Roadmap gallery describe the same API.
 - Phase 8 closeout contract removes `createBoxPlot` and box-summary/outlier capability from Planned inventory.

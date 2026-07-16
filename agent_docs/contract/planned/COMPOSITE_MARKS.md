@@ -66,6 +66,11 @@ createBoxPlot({
   otherwise the normal current-then-unique eligible-layer rule applies. Data, coordinate and compatible scales
   are reused from that source. Unsupported or ambiguous combinations fail instead of choosing an orientation
   arbitrarily.
+- The completed contract is authoring-order independent. Compatible x/y encodings may exist before
+  `createBoxPlot`, or `createBoxPlot` may establish its owner before later `encodeX`/`encodeY` calls. The latter
+  stores materialization intent without synthetic summary rows or placeholder components, then rematerializes
+  when the required data and channel roles are complete. Both orders must converge on identical semantic and
+  graphical state; ambiguous targets remain errors.
 - Internal wrapped data actions create the immutable summary and optional outlier datasets. The aggregate then
   composes: `createErrorBar` in explicit whisker mode, a ranged `createBarMark` for q1→q3, a
   `createRuleMark` for the median, and optional `createPointMark` outliers.

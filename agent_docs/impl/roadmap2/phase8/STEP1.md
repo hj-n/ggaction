@@ -12,6 +12,7 @@ contract와 independent oracle policy를 고정한다.
 - [ ] Cars MPG Tukey and Horsepower minmax dataset audit
 - [ ] Quantile, whisker, outlier order and ownership contract
 - [ ] ID/source/channel/coordinate/scale inference and ambiguity matrix
+- [ ] Encoding-before-composite and composite-before-encoding convergence contract
 - [ ] Deterministic child identity and drawing-order contract
 - [ ] Gate manifests, artifact paths and future call chains
 - [ ] STEP status, conceptual commit and push
