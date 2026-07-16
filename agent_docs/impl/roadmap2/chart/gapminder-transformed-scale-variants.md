@@ -105,6 +105,125 @@ Only visually distinct representative classes require PNG variants.
 Gapminder country/year subsets compare `band` bar slots, `point` series centers and UTC `time` positions. Exact
 fixtures cover bandwidth, padding, point centers, year/date normalization, nice boundaries, ticks and Canvas resize.
 
+### Target public chains
+
+Band는 bar의 slot width를 소유하고 point는 같은 category의 center만 소유한다. 두 scale의 id는 서로 다르며,
+x-axis는 band scale `x`를 명시적으로 사용한다.
+
+```javascript
+const bandPoint = chart()
+  .createCanvas({
+    width: 456,
+    height: 312,
+    margin: { top: 58, right: 22, bottom: 54, left: 70 }
+  })
+  .createData({ values: gapminder })
+  .filterData({
+    id: "gapminder2005",
+    field: "year",
+    predicate: { op: "eq", value: 2005 }
+  })
+  .filterData({
+    id: "selectedCountries",
+    field: "country",
+    oneOf: ["Chile", "Cuba", "Egypt", "Japan", "Kenya", "Peru"]
+  })
+  .createBarMark()
+  .encodeX({
+    field: "country",
+    fieldType: "nominal",
+    scale: {
+      type: "band",
+      paddingInner: 0.2,
+      paddingOuter: 0.1,
+      align: 0.5
+    }
+  })
+  .encodeY({
+    field: "pop",
+    aggregate: "mean",
+    scale: { nice: true, zero: true }
+  })
+  .encodeBarWidth({ band: 0.72 })
+  .editBarMark({ fill: "#cbd5e1" })
+  .createPointMark()
+  .encodeX({
+    field: "country",
+    fieldType: "nominal",
+    scale: {
+      id: "countryPoint",
+      type: "point",
+      padding: 0.5,
+      align: 0.5
+    }
+  })
+  .encodeY({
+    field: "pop",
+    fieldType: "quantitative",
+    scale: { id: "y" }
+  })
+  .encodeRadius({ value: 5 })
+  .editPointMark({ stroke: "white", strokeWidth: 1 })
+  .createGuides({
+    axes: {
+      x: { scale: "x", title: { text: "Country" } },
+      y: { scale: "y", title: { text: "Population" } }
+    },
+    grid: { horizontal: {}, vertical: false },
+    legend: false
+  })
+  .createTitle({
+    text: "Population by Country",
+    subtitle: "Band slots with aligned point centers · 2005"
+  });
+```
+
+Temporal input은 numeric four-digit year와 supported calendar string을 UTC timestamp로 normalize한다. `time`
+scale의 domain nice, tick positions와 labels도 모두 UTC 기준이다.
+
+```javascript
+const timeSeries = chart()
+  .createCanvas({
+    width: 456,
+    height: 312,
+    margin: { top: 58, right: 126, bottom: 54, left: 50 }
+  })
+  .createData({ values: gapminder })
+  .filterData({
+    id: "selectedCountries",
+    field: "country",
+    oneOf: ["Afghanistan", "China", "United States"]
+  })
+  .createLineMark({ strokeWidth: 3 })
+  .encodeX({
+    field: "year",
+    fieldType: "temporal",
+    scale: { type: "time", nice: true }
+  })
+  .encodeY({
+    field: "life_expect",
+    aggregate: "mean",
+    scale: { nice: true, zero: false }
+  })
+  .encodeColor({
+    field: "country",
+    fieldType: "nominal",
+    scale: { palette: "tableau10" }
+  })
+  .createGuides({
+    axes: {
+      x: { title: { text: "Year" } },
+      y: { title: { text: "Life expectancy" } }
+    },
+    grid: { horizontal: {}, vertical: false },
+    legend: { title: "Country" }
+  })
+  .createTitle({
+    text: "Life Expectancy over Time",
+    subtitle: "UTC year positions · 1955–2005"
+  });
+```
+
 ## Gate C — discretized color
 
 The Gate A scatterplot is recolored with representative `quantize`, `quantile` and `threshold` definitions. Exact
