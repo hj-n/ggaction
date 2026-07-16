@@ -24,10 +24,7 @@ npm install ggaction
 npm install --save-dev vite
 ```
 
-Registry availability is confirmed as part of the initial release completion.
-If `0.0.1` is not yet available while that release is in progress, use the
-[repository examples](https://github.com/hj-n/ggaction/tree/main/examples)
-instead of substituting another registry package.
+The command installs the public `ggaction` package from the npm registry.
 
 Create `index.html`:
 
