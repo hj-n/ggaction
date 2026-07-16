@@ -4,6 +4,7 @@ import {
   BAR_ORIENTATIONS,
   resolveBarOrientation
 } from "../../grammar/bars/policy.js";
+import { findSemanticScale } from "../../selectors/scales.js";
 
 const OPTIONS = Object.freeze(["axes", "grid", "legend"]);
 
@@ -82,9 +83,8 @@ function hasLegendEncoding(program) {
       (layer.mark?.type === "point" &&
         layer.encoding?.color?.scale !== undefined &&
         (layer.encoding?.shape?.scale !== undefined ||
-          program.semanticSpec.scales.some(scale =>
-            scale.id === layer.encoding.color.scale &&
-              ["sequential", "quantize", "quantile", "threshold"].includes(scale.type)
+          ["sequential", "quantize", "quantile", "threshold"].includes(
+            findSemanticScale(program, layer.encoding.color.scale)?.type
           ))) ||
       (layer.mark?.type === "line" &&
         ["color", "strokeDash"].some(

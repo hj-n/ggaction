@@ -14,6 +14,7 @@ import {
   validateLineSeriesCompatibility,
   validateOptions
 } from "./shared.js";
+import { findLayer } from "../../selectors/layers.js";
 
 const STROKE_DASH_ENCODING_OPTIONS = Object.freeze([
   "field", "value", "target", "fieldType", "scale"
@@ -25,7 +26,7 @@ const clearStrokeDashEncoding = action(
     description: "Remove the current semantic stroke-dash assignment."
   },
   function ({ target } = {}) {
-    const layer = this.semanticSpec.layers.find(item => item.id === target);
+    const layer = findLayer(this, target);
     if (layer?.encoding?.strokeDash === undefined) return this;
     return this.editSemantic({
       property: `layer[${target}].encoding.strokeDash`,
@@ -42,7 +43,7 @@ function reconcileLegendAfterDashRemoval(program, target) {
   ) {
     return program;
   }
-  const layer = program.semanticSpec.layers.find(item => item.id === target);
+  const layer = findLayer(program, target);
   const channels = config.channels.filter(
     channel =>
       channel !== "strokeDash" &&

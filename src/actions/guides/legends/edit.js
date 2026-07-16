@@ -10,6 +10,7 @@ import {
 } from "./continuous/common.js";
 import { normalizeOpacitySymbol } from "./continuous/opacity.js";
 import { normalizeIntervalLegend } from "./continuous/interval.js";
+import { findLayer } from "../../../selectors/layers.js";
 
 const OPTIONS = Object.freeze([
   "target", "position", "align", "direction", "columns", "offset",
@@ -69,7 +70,7 @@ function editContinuous(program, kind, previous, args) {
     : typeof titleMode === "string" ? false : previous.inferredTitle;
   const titleVisible = titleMode === false ? false
     : titleMode === undefined ? previous.titleVisible !== false : true;
-  const layer = program.semanticSpec.layers.find(item => item.id === previous.target);
+  const layer = findLayer(program, previous.target);
   const inferred = layer?.encoding?.[kind === "gradient" ? "color" : "opacity"]?.field;
   const title = titleMode === "auto"
     ? inferred
@@ -132,7 +133,7 @@ function editInterval(program, previous, args) {
     }
   }
   const titleMode = args.title;
-  const layer = program.semanticSpec.layers.find(item => item.id === previous.target);
+  const layer = findLayer(program, previous.target);
   const inferredTitle = titleMode === "auto"
     ? true
     : typeof titleMode === "string" ? false : previous.inferredTitle;

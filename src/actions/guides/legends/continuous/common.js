@@ -4,6 +4,7 @@ import { formatTimeTick } from "../../../../grammar/ticks.js";
 import { resolveGraphicBounds } from "../../../../layout/canvas.js";
 import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from
   "../../../../theme/defaults.js";
+import { findLayer } from "../../../../selectors/layers.js";
 
 const OPTIONS = Object.freeze([
   "target", "channels", "position", "align", "offset", "title", "count",
@@ -167,7 +168,10 @@ export function resolveContinuousPoint(program, requested, channel) {
   );
   const layer = requested === undefined
     ? candidates.length === 1 ? candidates[0] : undefined
-    : candidates.find(candidate => candidate.id === requested);
+    : (() => {
+        const candidate = findLayer(program, requested);
+        return candidates.includes(candidate) ? candidate : undefined;
+      })();
   if (layer === undefined) {
     throw new Error(
       requested === undefined
@@ -185,7 +189,10 @@ export function resolveContinuousColorLayer(program, requested) {
   );
   const layer = requested === undefined
     ? candidates.length === 1 ? candidates[0] : undefined
-    : candidates.find(candidate => candidate.id === requested);
+    : (() => {
+        const candidate = findLayer(program, requested);
+        return candidates.includes(candidate) ? candidate : undefined;
+      })();
   if (layer === undefined) {
     throw new Error(
       requested === undefined

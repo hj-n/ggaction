@@ -1,4 +1,5 @@
 import { isPlainObject } from "../../core/immutable.js";
+import { findLayer } from "../../selectors/layers.js";
 
 export function requireRegressionObject(value, label) {
   if (!isPlainObject(value)) {
@@ -21,14 +22,14 @@ export function findRegressionPoint(program, requested) {
     layer.encoding?.y?.fieldType === "quantitative"
   );
   if (requested !== undefined) {
-    const selected = eligible.find(layer => layer.id === requested);
-    if (selected === undefined) {
+    const selected = findLayer(program, requested);
+    if (selected === undefined || !eligible.includes(selected)) {
       throw new Error(`Unknown regression point target "${requested}".`);
     }
     return selected;
   }
-  const current = eligible.find(layer => layer.id === program.context.currentMark);
-  if (current !== undefined) return current;
+  const current = findLayer(program, program.context.currentMark);
+  if (current !== undefined && eligible.includes(current)) return current;
   if (eligible.length === 1) return eligible[0];
   if (eligible.length === 0) {
     throw new Error(

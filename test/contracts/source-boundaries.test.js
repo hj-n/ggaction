@@ -132,3 +132,24 @@ test("keeps semantic and graphic cloning inside primitive actions", () => {
     );
   }
 });
+
+test("routes exact named semantic resource lookup through selectors", () => {
+  const selectorRoot = path.join(root, "selectors");
+  const directLookup = /semanticSpec\.(layers|datasets|scales|coordinates)\.find\s*\(/u;
+  const directIdentityProbe = /semanticSpec\.(layers|datasets|scales|coordinates)\.some\s*\([^)]*\.id\s*===/su;
+
+  for (const file of sourceFiles()) {
+    if (file.startsWith(`${selectorRoot}${path.sep}`)) continue;
+    const source = readFileSync(file, "utf8");
+    assert.equal(
+      directLookup.test(source),
+      false,
+      `${path.relative(root, file)} must use a named resource selector`
+    );
+    assert.equal(
+      directIdentityProbe.test(source),
+      false,
+      `${path.relative(root, file)} must use a named resource selector`
+    );
+  }
+});

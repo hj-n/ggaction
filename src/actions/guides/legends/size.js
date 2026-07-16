@@ -6,6 +6,7 @@ import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from
   "../../../theme/defaults.js";
 import { resolveLayout as resolveCategoricalLayout } from
   "./categorical/layout.js";
+import { findLayer } from "../../../selectors/layers.js";
 
 const SIZE_OPTIONS = Object.freeze(["target", "count"]);
 
@@ -17,7 +18,10 @@ function resolvePoint(program, requested) {
   );
   const layer = requested === undefined
     ? candidates.length === 1 ? candidates[0] : undefined
-    : candidates.find(item => item.id === requested);
+    : (() => {
+        const candidate = findLayer(program, requested);
+        return candidates.includes(candidate) ? candidate : undefined;
+      })();
   if (layer === undefined) {
     throw new Error(
       requested === undefined
@@ -81,7 +85,7 @@ export const rematerializeSizeLegend = action(
     validateKeys(args, [], "rematerializeSizeLegend");
     const config = this.guideConfigs.legend?.size;
     if (config === undefined) throw new Error("Size legend requires stored configuration.");
-    const layer = this.semanticSpec.layers.find(item => item.id === config.target);
+    const layer = findLayer(this, config.target);
     const encoding = layer?.encoding?.size;
     if (encoding?.scale === undefined) {
       throw new Error("Size legend target requires a size encoding.");

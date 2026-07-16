@@ -219,6 +219,11 @@ package에 포함되지 않는다.
 `ChartProgram`은 생성이 끝나면 freeze된다. 모든 public action과 internal wrapped
 action은 기존 instance를 바꾸지 않고 새로운 instance를 반환한다.
 
+Named dataset, layer, scale, coordinate의 exact ID lookup은 `selectors/`만 소유한다.
+Action과 materializer는 semantic resource array에 직접 `.find(id)` 또는 identity `.some()`을
+작성하지 않는다. 이 경계는 source contract test가 기계적으로 검사한다. Eligibility filter와
+relationship scan은 exact resource lookup이 아니므로 해당 domain module에 남을 수 있다.
+
 ```text
 program0.createData(...) → program1
 program0                  → 그대로 유지

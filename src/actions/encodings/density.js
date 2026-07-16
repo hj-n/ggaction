@@ -3,6 +3,7 @@ import { validateUserId } from "../../core/identifiers.js";
 import { isPlainObject } from "../../core/immutable.js";
 import {
   findDataset,
+  findLayer,
   hasDataset,
   resolveEligibleLayer
 } from "../../selectors/index.js";
@@ -26,12 +27,14 @@ function findArea(program, requested) {
   const areas = program.semanticSpec.layers.filter(layer => layer.mark?.type === "area");
   if (requested !== undefined) {
     const id = validateUserId(requested, "Density target id");
-    const selected = areas.find(layer => layer.id === id);
-    if (selected === undefined) throw new Error(`Unknown density area target "${id}".`);
+    const selected = findLayer(program, id);
+    if (selected === undefined || !areas.includes(selected)) {
+      throw new Error(`Unknown density area target "${id}".`);
+    }
     return selected;
   }
-  const current = areas.find(layer => layer.id === program.context.currentMark);
-  if (current !== undefined) return current;
+  const current = findLayer(program, program.context.currentMark);
+  if (current !== undefined && areas.includes(current)) return current;
   if (areas.length === 1) return areas[0];
   if (areas.length === 0) {
     throw new Error("encodeDensity requires an eligible area mark.");

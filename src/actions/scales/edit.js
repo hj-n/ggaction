@@ -27,7 +27,10 @@ import { getMarkMaterializationStep } from "../../materialization/marks.js";
 import {
   applyMaterializationPlan
 } from "../../materialization/dependencies.js";
-import { requireSemanticScale } from "../../selectors/scales.js";
+import {
+  findSemanticScale,
+  requireSemanticScale
+} from "../../selectors/scales.js";
 import { findScaleConsumers } from "./consumers.js";
 
 const OPTIONS = Object.freeze([
@@ -45,8 +48,7 @@ function resolveScaleId(program, requested) {
   }
   const current = program.context.currentScale;
   if (
-    typeof current === "string" &&
-    program.semanticSpec.scales.some(scale => scale.id === current)
+    typeof current === "string" && findSemanticScale(program, current) !== undefined
   ) {
     return current;
   }

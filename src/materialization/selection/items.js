@@ -21,6 +21,7 @@ import {
 import { deriveHistogramSegments } from "../bars/histogram.js";
 import { findUpstreamTransform } from "../dataProvenance.js";
 import { unionConcreteGraphicBounds } from "../../grammar/schemas/graphicBounds.js";
+import { findSemanticScale } from "../../selectors/scales.js";
 
 function itemKey(layer, grain, index) {
   return `${layer.id}/${grain}/${index}`;
@@ -311,9 +312,7 @@ function histogramDefinitions(program, layer, dataset) {
     dataset,
     layer,
     xEncoding,
-    xScale: program.semanticSpec.scales.find(scale =>
-      scale.id === xEncoding.scale
-    ),
+    xScale: findSemanticScale(program, xEncoding.scale),
     resolvedScales: program.resolvedScales
   });
   const colorScale = program.resolvedScales[colorEncoding?.scale];

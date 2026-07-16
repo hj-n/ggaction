@@ -2,6 +2,8 @@ import { action } from "../../../../core/action.js";
 import { isPlainObject } from "../../../../core/immutable.js";
 import { noOptions, resolveLayout, activeConfig } from "./layout.js";
 import { normalizeOptions } from "./options.js";
+import { findLayer } from "../../../../selectors/layers.js";
+import { findSemanticScale } from "../../../../selectors/scales.js";
 import {
   resolveCurrentDefinition,
   resolveDefinition,
@@ -194,16 +196,17 @@ export const createLegend = action(
       const encoding = ["point", "bar"].includes(layer.mark?.type)
         ? layer.encoding?.color
         : undefined;
-      const scale = this.semanticSpec.scales.find(candidate =>
-        candidate.id === encoding?.scale
-      );
+      const scale = findSemanticScale(this, encoding?.scale);
       return scale?.type === "sequential";
     });
     const continuousColor = args.target === undefined
       ? continuousColorCandidates.length === 1
         ? continuousColorCandidates[0]
         : undefined
-      : continuousColorCandidates.find(layer => layer.id === args.target);
+      : (() => {
+          const layer = findLayer(this, args.target);
+          return continuousColorCandidates.includes(layer) ? layer : undefined;
+        })();
     if (
       (channels?.length === 1 && channels[0] === "color" && continuousColor) ||
       (channels === undefined && continuousColor)
@@ -212,16 +215,17 @@ export const createLegend = action(
     }
     const intervalColorCandidates = this.semanticSpec.layers.filter(layer => {
       const encoding = layer.mark?.type === "point" ? layer.encoding?.color : undefined;
-      const scale = this.semanticSpec.scales.find(candidate =>
-        candidate.id === encoding?.scale
-      );
+      const scale = findSemanticScale(this, encoding?.scale);
       return ["quantize", "quantile", "threshold"].includes(scale?.type);
     });
     const intervalColor = args.target === undefined
       ? intervalColorCandidates.length === 1
         ? intervalColorCandidates[0]
         : undefined
-      : intervalColorCandidates.find(layer => layer.id === args.target);
+      : (() => {
+          const layer = findLayer(this, args.target);
+          return intervalColorCandidates.includes(layer) ? layer : undefined;
+        })();
     if (
       (channels?.length === 1 && channels[0] === "color" &&
         intervalColorCandidates.length > 0) ||
@@ -237,7 +241,10 @@ export const createLegend = action(
     );
     const requestedPoint = args.target === undefined
       ? pointCandidates.length === 1 ? pointCandidates[0] : undefined
-      : pointCandidates.find(layer => layer.id === args.target);
+      : (() => {
+          const layer = findLayer(this, args.target);
+          return pointCandidates.includes(layer) ? layer : undefined;
+        })();
     if (requestedPoint !== undefined) {
       const { count, ...categoricalArgs } = args;
       if (

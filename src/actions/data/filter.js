@@ -13,7 +13,11 @@ import { resolveMarkFilterSelection } from "../../materialization/selection/filt
 import {
   applyLayerDataRematerialization
 } from "../../materialization/dependencies.js";
-import { hasDataset, resolveEligibleLayer } from "../../selectors/index.js";
+import {
+  hasDataset,
+  requireLayer,
+  resolveEligibleLayer
+} from "../../selectors/index.js";
 import { MATERIALIZE_OPTIONS, requireDerivedDataset } from "./shared.js";
 
 const OPTIONS = Object.freeze([
@@ -84,9 +88,7 @@ export const materializeMarkFilteredData = action(
       args.id,
       "markFilter"
     );
-    const layer = this.semanticSpec.layers.find(
-      candidate => candidate.id === transform.target
-    );
+    const layer = requireLayer(this, transform.target);
     if (layer?.data !== dataset.source) {
       throw new Error(
         `Mark filter target "${transform.target}" must still use source dataset "${dataset.source}".`
