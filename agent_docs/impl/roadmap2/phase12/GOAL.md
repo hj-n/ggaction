@@ -10,7 +10,7 @@ GitHub Release와 npm registry 결과가 하나의 release contract로 일치하
 ## 진행 상태
 
 - [x] First public version fixed as `0.0.1`
-- [ ] Release ownership, license, repository visibility and registry contract approved at Gate A
+- [x] Release ownership, license, repository visibility and registry contract approved at Gate A
 - [ ] Public package metadata and legal files completed
 - [ ] Minimal deterministic npm package artifact completed
 - [ ] Packed-package runtime, browser, PNG and TypeScript consumer tests completed
@@ -66,6 +66,11 @@ semantic version과 release notes로 명시한다.
 
 현재 public repository를 유지하면 npm provenance와 source/documentation 접근성을 함께 제공할 수 있다.
 Gate A 승인 전에는 license를 추정하거나 visibility를 다시 변경하지 않는다.
+
+Gate A는 2026-07-17 사용자 승인을 받았다. License는 MIT, copyright holder는 Hyeon Jeon, npm owner는
+`hyeonjeon`으로 확정했고 GitHub repository는 public 상태를 유지한다. First publish는 user npm account의
+interactive 2FA bootstrap을 사용하며 subsequent release는 protected `npm-release` environment와 GitHub-hosted
+OIDC trusted publisher를 사용한다.
 
 ### Gate B — Irreversible publish approval
 

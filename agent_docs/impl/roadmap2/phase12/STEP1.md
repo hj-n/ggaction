@@ -12,10 +12,10 @@
 - [x] Current tarball contents, size and dependency footprint recorded
 - [x] Existing CI, Pages, tag, release and publish automation audited
 - [x] License options and recommended choice presented
-- [ ] First-publish and later trusted-publishing bootstrap sequence fixed
-- [ ] Release environment approval and tag-protection policy fixed
-- [ ] Gate A evidence shown to the user
-- [ ] Explicit Gate A approval before STEP2
+- [x] First-publish and later trusted-publishing bootstrap sequence fixed
+- [x] Release environment approval and tag-protection policy fixed
+- [x] Gate A evidence shown to the user
+- [x] Explicit Gate A approval before STEP2
 
 ## Gate A 결정표
 
@@ -23,12 +23,12 @@
 | --- | --- | --- |
 | Version | confirmed | `0.0.1` |
 | Package | registry lookup required at execution | unscoped public `ggaction` |
-| License | absent | user-approved license and exact copyright holder |
-| Repository visibility | public | explicit keep-public confirmation |
-| npm identity | local session unauthenticated | verified owner account with publish authority |
-| First publish | not configured | authenticated bootstrap procedure |
+| License | absent | MIT, Copyright (c) 2026 Hyeon Jeon |
+| Repository visibility | public | keep public |
+| npm identity | browser session authenticated, CLI unauthenticated | owner `hyeonjeon`; verify CLI authority before publish |
+| First publish | not configured | interactive user-account 2FA bootstrap |
 | Later publish | absent | GitHub OIDC trusted publisher |
-| Release approval | absent | protected GitHub environment and explicit approval rule |
+| Release approval | absent | protected `npm-release` environment and explicit approval rule |
 
 ## 현재 감사 결과
 
@@ -58,3 +58,5 @@
 
 No legal, visibility, ownership or irreversible registry decision remains implicit, and the user explicitly approves the
 release contract before package metadata or external settings are changed.
+
+Gate A was approved by the user on 2026-07-17.
