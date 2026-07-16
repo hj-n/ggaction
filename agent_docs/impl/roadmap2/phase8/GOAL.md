@@ -17,7 +17,7 @@ Complete chart contract:
 - [x] `groupBy`를 initial contract에서 제외하고 category-only partition 확정
 - [x] Public parameters, inference/default, hierarchy와 stored-result contract 설계
 - [x] STEP1–STEP9와 three visual approval Gates 설계
-- [ ] Existing source/contract/data baseline audit
+- [x] Existing source/contract/data baseline audit
 - [ ] Canonical vertical Tukey primitive 승인과 data/ranged-bar foundation
 - [ ] Vertical `createBoxPlot` public implementation
 - [ ] Horizontal minmax primitive 승인과 public implementation
