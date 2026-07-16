@@ -53,6 +53,33 @@ export function isDiscretePositionScaleType(type) {
   return type === "band" || type === "point";
 }
 
+export function isContinuousPositionScaleType(type) {
+  return (
+    SCALE_TYPES_BY_ROLE[SCALE_ROLES.quantitativePosition].includes(type) ||
+    SCALE_TYPES_BY_ROLE[SCALE_ROLES.temporalPosition].includes(type)
+  );
+}
+
+export function isOrdinalScaleType(type) {
+  return type === "ordinal";
+}
+
+export function hasOrdinalDomain(type) {
+  return isOrdinalScaleType(type) || isDiscretePositionScaleType(type);
+}
+
+export function isContinuousColorScaleType(type) {
+  return SCALE_TYPES_BY_ROLE[SCALE_ROLES.continuousColor].includes(type);
+}
+
+export function isDiscretizedColorScaleType(type) {
+  return SCALE_TYPES_BY_ROLE[SCALE_ROLES.discretizedColor].includes(type);
+}
+
+export function isColorScaleType(type) {
+  return isContinuousColorScaleType(type) || isDiscretizedColorScaleType(type);
+}
+
 export function validateScaleTypeForRole(type, role) {
   const accepted = SCALE_TYPES_BY_ROLE[role];
   if (accepted === undefined) {

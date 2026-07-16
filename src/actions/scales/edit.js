@@ -4,15 +4,12 @@ import { isPlainObject } from "../../core/immutable.js";
 import { validateKeys } from "../../core/validation.js";
 import {
   isTransformedScaleType,
-  normalizeTransformParameters,
   SCALE_ROLES,
   validateColorRange,
-  validateContinuousColorInterpolation,
   validateDiscretizedColorDomain,
   validateDiscretizedColorRange,
   validateOrdinalDomain,
   validateScaleDomain,
-  validateScalePropertyForType,
   validateScaleRange,
   validateScaleType,
   validateScaleTypeForRole,
@@ -21,7 +18,10 @@ import {
   validateStrokeDashRange,
   validateSequentialColorRange,
   validateScaleUnknown,
-  validateTransformedDomain
+  isDiscretizedColorScaleType,
+  isDiscretePositionScaleType,
+  hasOrdinalDomain,
+  normalizeScaleDefinition
 } from "../../grammar/scales.js";
 import { getMarkMaterializationStep } from "../../materialization/marks.js";
 import {
@@ -36,7 +36,6 @@ const OPTIONS = Object.freeze([
   "align", "interpolate", "unknown"
 ]);
 const EDITABLE = Object.freeze(OPTIONS.filter(option => option !== "id"));
-const TYPE_PARAMETERS = Object.freeze(["base", "exponent", "constant"]);
 
 function resolveScaleId(program, requested) {
   if (requested !== undefined) {
@@ -78,7 +77,7 @@ function validateRangeForChannel(scale, channel, value) {
   if (scale.type === "sequential") {
     return validateSequentialColorRange(value);
   }
-  if (["quantize", "quantile", "threshold"].includes(scale.type)) {
+  if (isDiscretizedColorScaleType(scale.type)) {
     return validateDiscretizedColorRange(value);
   }
   if (scale.type !== "ordinal") return validateScaleRange(value);
@@ -93,8 +92,8 @@ function validateTypeTransition(scale, nextType, channel, consumers) {
   if (nextType === scale.type) return;
   validateScaleType(nextType);
   if (consumers.length === 0) return;
-  if (["sequential", "quantize", "quantile", "threshold"].includes(nextType)) {
-    const discretized = nextType !== "sequential";
+  if (nextType === "sequential" || isDiscretizedColorScaleType(nextType)) {
+    const discretized = isDiscretizedColorScaleType(nextType);
     if (channel !== "color" || consumers.some(consumer =>
       consumer.encoding.fieldType === "nominal" ||
       (discretized && (
@@ -121,7 +120,7 @@ function validateTypeTransition(scale, nextType, channel, consumers) {
     }
     return;
   }
-  const discrete = ["band", "point"].includes(nextType);
+  const discrete = isDiscretePositionScaleType(nextType);
   if (discrete) {
     if (
       consumers.length > 0 &&
@@ -171,7 +170,7 @@ function validateLegendTypeTransition(program, scale, nextType) {
   }
   if (
     legends.interval?.scale === scale.id &&
-    !["quantize", "quantile", "threshold"].includes(nextType)
+    !isDiscretizedColorScaleType(nextType)
   ) {
     throw new Error(
       `Scale "${scale.id}" cannot change type while its interval legend is active.`
@@ -179,65 +178,28 @@ function validateLegendTypeTransition(program, scale, nextType) {
   }
 }
 
-function propertyValue(scale, typeChanged, args, property) {
-  if (Object.hasOwn(args, property)) return args[property];
-  if (!typeChanged) return scale[property];
-  if (!Object.hasOwn(scale, property)) return undefined;
-  try {
-    validateScalePropertyForType(args.type, property);
-    return scale[property];
-  } catch {
-    return undefined;
-  }
-}
-
 function normalizeDefinition(scale, channel, consumers, args) {
   const type = args.type ?? scale.type;
-  const typeChanged = type !== scale.type;
   validateTypeTransition(scale, type, channel, consumers);
-  const domain = ["quantize", "quantile", "threshold"].includes(type)
-    ? validateDiscretizedColorDomain(type, args.domain ?? scale.domain)
-    : ["ordinal", "band", "point"].includes(type)
-      ? validateOrdinalDomain(args.domain ?? scale.domain)
-      : validateScaleDomain(args.domain ?? scale.domain);
-  if (isTransformedScaleType(type) && domain !== "auto") {
-    validateTransformedDomain(type, domain, Object.fromEntries(
-      TYPE_PARAMETERS
-        .filter(property => Object.hasOwn(args, property))
-        .map(property => [property, args[property]])
-    ));
-  }
-  const definition = {
+  const definition = normalizeScaleDefinition({
     type,
-    domain,
-    range: Object.hasOwn(args, "range") || typeChanged
-      ? validateRangeForChannel({ type }, channel, args.range ?? scale.range)
-      : scale.range
-  };
-  for (const property of ["nice", "zero", "clamp", "reverse"]) {
-    const value = propertyValue(scale, typeChanged, args, property);
-    if (value === undefined) continue;
-    if (typeof value !== "boolean") {
-      throw new TypeError(`Scale ${property} must be a boolean.`);
-    }
-    validateScalePropertyForType(type, property);
-    definition[property] = value;
-  }
-  const requested = Object.fromEntries(TYPE_PARAMETERS.flatMap(property => {
-    const value = propertyValue(scale, typeChanged, args, property);
-    return value === undefined ? [] : [[property, value]];
-  }));
-  const interpolate = Object.hasOwn(args, "interpolate")
-    ? args.interpolate
-    : typeChanged ? undefined : scale.interpolate;
-  if (type === "sequential") {
-    definition.interpolate = validateContinuousColorInterpolation(
-      interpolate ?? "rgb"
-    );
-  } else if (interpolate !== undefined) {
-    throw new Error(`Scale type "${type}" does not support interpolate.`);
-  }
-  const unknown = propertyValue(scale, typeChanged, args, "unknown");
+    previous: scale,
+    patch: args,
+    retainCoreOnTypeChange: true,
+    retainCompatibleOnTypeChange: true,
+    validateDomain: (scaleType, value) =>
+      isDiscretizedColorScaleType(scaleType)
+        ? validateDiscretizedColorDomain(scaleType, value)
+        : hasOrdinalDomain(scaleType)
+          ? validateOrdinalDomain(value)
+          : validateScaleDomain(value),
+    validateRange: (scaleType, value) =>
+      validateRangeForChannel({ type: scaleType }, channel, value)
+  });
+  const typeChanged = type !== scale.type;
+  const unknown = Object.hasOwn(args, "unknown")
+    ? args.unknown
+    : typeChanged ? undefined : scale.unknown;
   if (unknown !== undefined) {
     if (consumers.some(consumer => consumer.layer.mark?.type !== "point")) {
       throw new Error(
@@ -247,45 +209,6 @@ function normalizeDefinition(scale, channel, consumers, args) {
     definition.unknown = consumers.length === 0
       ? unknown
       : validateScaleUnknown(channel, unknown);
-  }
-  if (isTransformedScaleType(type)) {
-    const parameters = normalizeTransformParameters(type, requested);
-    if (type === "log") definition.base = parameters.base;
-    if (type === "pow") definition.exponent = parameters.exponent;
-    if (type === "symlog") definition.constant = parameters.constant;
-  } else {
-    for (const property of Object.keys(requested)) {
-      validateScalePropertyForType(type, property);
-    }
-  }
-  if (type === "band") {
-    const paddingInner = propertyValue(scale, typeChanged, args, "paddingInner") ?? 0;
-    const paddingOuter = propertyValue(scale, typeChanged, args, "paddingOuter") ?? 0;
-    const align = propertyValue(scale, typeChanged, args, "align") ?? 0.5;
-    if (!Number.isFinite(paddingInner) || paddingInner < 0 || paddingInner >= 1) {
-      throw new RangeError("Scale paddingInner must be from 0 (inclusive) to 1 (exclusive).");
-    }
-    if (!Number.isFinite(paddingOuter) || paddingOuter < 0) {
-      throw new RangeError("Scale paddingOuter must be non-negative and finite.");
-    }
-    if (!Number.isFinite(align) || align < 0 || align > 1) {
-      throw new RangeError("Scale align must be between 0 and 1.");
-    }
-    Object.assign(definition, { paddingInner, paddingOuter, align });
-  } else if (type === "point") {
-    const padding = propertyValue(scale, typeChanged, args, "padding") ?? 0.5;
-    const align = propertyValue(scale, typeChanged, args, "align") ?? 0.5;
-    if (!Number.isFinite(padding) || padding < 0) {
-      throw new RangeError("Scale padding must be non-negative and finite.");
-    }
-    if (!Number.isFinite(align) || align < 0 || align > 1) {
-      throw new RangeError("Scale align must be between 0 and 1.");
-    }
-    Object.assign(definition, { padding, align });
-  } else {
-    for (const property of ["paddingInner", "paddingOuter", "padding", "align"]) {
-      if (args[property] !== undefined) validateScalePropertyForType(type, property);
-    }
   }
   return definition;
 }

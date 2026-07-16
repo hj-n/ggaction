@@ -447,7 +447,10 @@ Scale은 named semantic resource다.
 현재 direct scale type은 `linear`, `log`, `pow`, `sqrt`, `symlog`, `time`, `band`, `point`, `ordinal`,
 `sequential`, `quantize`, `quantile`, `threshold`이다. Role registry가 quantitative position, temporal
 position, discrete position, ordinal appearance, continuous color, discretized color의 compatible subset을
-한 번만 소유한다.
+한 번만 소유한다. Scale 종류 판별은 이 registry에서 파생한 predicate를 사용하며 action마다 문자열
+목록을 복제하지 않는다. `createScale`, `editScale`, position encoding은 같은 definition normalizer로
+boolean policy, transformed parameter, interpolation, padding과 align을 검증한다. 각 channel resolver는
+domain/range의 concrete value contract만 제공한다.
 Category position은 width가 필요한 bar에서 `band`, center만 필요한 point/rule에서 `point`를 사용하고
 appearance/offset lookup은 `ordinal`이 소유한다. Band/point는 signed step, aligned start와 각각 positive/zero
 bandwidth를 resolved state에 저장한다. Channel default ID는 일반적으로

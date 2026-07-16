@@ -31,6 +31,9 @@ import {
   validateOrdinalScaleType,
   validateTimeScaleType,
   isDiscretePositionScaleType,
+  isDiscretizedColorScaleType,
+  isContinuousColorScaleType,
+  isOrdinalScaleType,
   isTransformedScaleType,
   normalizeTransformParameters,
   resolveTransformedDomain,
@@ -135,15 +138,16 @@ export const rematerializeScale = action(
     const allValues = valuesByConsumer
       .flatMap(item => item.values)
       .filter(value => value !== undefined);
-    const isSequentialColor = channel === "color" && scale.type === "sequential";
+    const isSequentialColor = channel === "color" &&
+      isContinuousColorScaleType(scale.type);
     const isDiscretizedColor = channel === "color" &&
-      ["quantize", "quantile", "threshold"].includes(scale.type);
+      isDiscretizedColorScaleType(scale.type);
     const isOrdinalAppearance =
       ["color", "strokeDash", "shape"].includes(channel) &&
-      scale.type === "ordinal";
+      isOrdinalScaleType(scale.type);
     const isOrdinalOffset = channel === "xOffset";
     const isOrdinalPosition =
-      !isOrdinalAppearance && !isOrdinalOffset && scale.type === "ordinal";
+      !isOrdinalAppearance && !isOrdinalOffset && isOrdinalScaleType(scale.type);
     const isDiscretePosition =
       !isOrdinalAppearance && !isOrdinalOffset &&
       isDiscretePositionScaleType(scale.type);

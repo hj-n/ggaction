@@ -6,13 +6,15 @@ import {
   validateOrdinalRange,
   validateScaleDomain,
   validateScaleRange,
-  validateScalePropertyForType,
   validateScaleType,
-  normalizeTransformParameters,
-  validateContinuousColorInterpolation,
   validateDiscretizedColorDomain,
   validateDiscretizedColorRange,
-  validateSequentialColorRange
+  validateSequentialColorRange,
+  hasOrdinalDomain,
+  isColorScaleType,
+  isContinuousColorScaleType,
+  isDiscretizedColorScaleType,
+  normalizeScaleDefinition
 } from "../../grammar/scales.js";
 import { findSemanticScale } from "../../selectors/scales.js";
 
@@ -82,9 +84,7 @@ export const createScale = action(
     validateOptions(args);
     const id = validateUserId(args.id, "Scale id");
     const type = validateScaleType(args.type ?? "linear");
-    const colorType = [
-      "sequential", "quantize", "quantile", "threshold"
-    ].includes(type);
+    const colorType = isColorScaleType(type);
     if (args.palette !== undefined && args.range !== undefined) {
       throw new Error("Color scale cannot specify both palette and range.");
     }
@@ -97,99 +97,28 @@ export const createScale = action(
     const requestedRange = args.palette === undefined
       ? args.range
       : { palette: args.palette };
-    const definition = {
+    const definition = normalizeScaleDefinition({
       type,
-      domain: ["quantize", "quantile", "threshold"].includes(type)
-        ? validateDiscretizedColorDomain(type, args.domain ?? "auto")
-        : !["ordinal", "band", "point"].includes(type)
-          ? validateScaleDomain(args.domain ?? "auto")
-          : validateOrdinalDomain(args.domain ?? "auto"),
-      range: ["quantize", "quantile", "threshold"].includes(type)
-        ? validateDiscretizedColorRange(requestedRange ?? "auto")
-        : type === "sequential"
-          ? validateSequentialColorRange(requestedRange ?? "auto")
-          : !["ordinal", "band", "point"].includes(type)
-            ? validateScaleRange(requestedRange ?? "auto")
-            : type === "ordinal"
-              ? validateOrdinalRange(requestedRange ?? "auto")
-              : validateScaleRange(requestedRange ?? "auto")
-    };
-    if (type === "sequential") {
-      definition.interpolate = validateContinuousColorInterpolation(
-        args.interpolate ?? "rgb"
-      );
-    }
+      patch: {
+        ...args,
+        ...(requestedRange === undefined ? {} : { range: requestedRange })
+      },
+      validateDomain: (scaleType, value) =>
+        isDiscretizedColorScaleType(scaleType)
+          ? validateDiscretizedColorDomain(scaleType, value)
+          : hasOrdinalDomain(scaleType)
+            ? validateOrdinalDomain(value)
+            : validateScaleDomain(value),
+      validateRange: (scaleType, value) =>
+        isDiscretizedColorScaleType(scaleType)
+          ? validateDiscretizedColorRange(value)
+          : isContinuousColorScaleType(scaleType)
+            ? validateSequentialColorRange(value)
+            : scaleType === "ordinal"
+              ? validateOrdinalRange(value)
+              : validateScaleRange(value)
+    });
     if (Object.hasOwn(args, "unknown")) definition.unknown = args.unknown;
-
-    if (args.nice !== undefined) {
-      if (typeof args.nice !== "boolean") {
-        throw new TypeError("Scale nice must be a boolean.");
-      }
-      validateScalePropertyForType(type, "nice");
-      definition.nice = args.nice;
-    }
-
-    if (args.zero !== undefined) {
-      if (typeof args.zero !== "boolean") {
-        throw new TypeError("Scale zero must be a boolean.");
-      }
-      validateScalePropertyForType(type, "zero");
-      definition.zero = args.zero;
-    }
-    for (const property of ["clamp", "reverse"]) {
-      if (args[property] === undefined) continue;
-      if (typeof args[property] !== "boolean") {
-        throw new TypeError(`Scale ${property} must be a boolean.`);
-      }
-      validateScalePropertyForType(type, property);
-      definition[property] = args[property];
-    }
-    const requestedParameters = Object.fromEntries(
-      ["base", "exponent", "constant"]
-        .filter(property => args[property] !== undefined)
-        .map(property => [property, args[property]])
-    );
-    if (["log", "pow", "sqrt", "symlog"].includes(type)) {
-      const parameters = normalizeTransformParameters(type, requestedParameters);
-      if (type === "log") definition.base = parameters.base;
-      if (type === "pow") definition.exponent = parameters.exponent;
-      if (type === "symlog") definition.constant = parameters.constant;
-    } else {
-      for (const property of Object.keys(requestedParameters)) {
-        validateScalePropertyForType(type, property);
-      }
-    }
-    if (type === "band") {
-      const paddingInner = args.paddingInner ?? 0;
-      const paddingOuter = args.paddingOuter ?? 0;
-      const align = args.align ?? 0.5;
-      if (!Number.isFinite(paddingInner) || paddingInner < 0 || paddingInner >= 1) {
-        throw new RangeError("Scale paddingInner must be from 0 (inclusive) to 1 (exclusive).");
-      }
-      if (!Number.isFinite(paddingOuter) || paddingOuter < 0) {
-        throw new RangeError("Scale paddingOuter must be non-negative and finite.");
-      }
-      if (!Number.isFinite(align) || align < 0 || align > 1) {
-        throw new RangeError("Scale align must be between 0 and 1.");
-      }
-      Object.assign(definition, { paddingInner, paddingOuter, align });
-    } else if (type === "point") {
-      const padding = args.padding ?? 0.5;
-      const align = args.align ?? 0.5;
-      if (!Number.isFinite(padding) || padding < 0) {
-        throw new RangeError("Scale padding must be non-negative and finite.");
-      }
-      if (!Number.isFinite(align) || align < 0 || align > 1) {
-        throw new RangeError("Scale align must be between 0 and 1.");
-      }
-      Object.assign(definition, { padding, align });
-    } else {
-      for (const property of ["paddingInner", "paddingOuter", "padding", "align"]) {
-        if (args[property] !== undefined) {
-          validateScalePropertyForType(type, property);
-        }
-      }
-    }
     const existing = findSemanticScale(this, id);
 
     if (existing !== undefined) {

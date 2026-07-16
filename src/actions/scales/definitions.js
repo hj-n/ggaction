@@ -17,10 +17,11 @@ import {
   validateDiscretizedColorDomain,
   validateDiscretizedColorRange,
   validateTimeScaleType,
-  normalizeTransformParameters,
+  normalizeScaleDefinition,
   SCALE_ROLES,
   validateScalePropertyForType,
-  validateScaleTypeForRole
+  validateScaleTypeForRole,
+  isDiscretePositionScaleType
 } from "../../grammar/scales.js";
 import { withScaleUnknown } from "../../grammar/scales.js";
 import { findSemanticScale } from "../../selectors/scales.js";
@@ -80,113 +81,36 @@ export function resolvePositionScaleDefinition(
   const type = options.type ?? existing?.type ?? expectedType;
   if (fieldType === "temporal") validateTimeScaleType(type);
   else if (["ordinal", "nominal"].includes(fieldType)) {
-    if (!["band", "point"].includes(type)) {
+    if (!isDiscretePositionScaleType(type)) {
       throw new Error(
         `Scale type "${type}" is not valid for discrete position.`
       );
     }
   }
   else validateScaleTypeForRole(type, SCALE_ROLES.quantitativePosition);
-  for (const property of ["nice", "zero", "clamp", "reverse"]) {
-    if (options[property] !== undefined && typeof options[property] !== "boolean") {
-      throw new TypeError(`Scale ${property} must be a boolean.`);
-    }
-    if (options[property] !== undefined) {
-      validateScalePropertyForType(type, property);
-    }
-  }
   const scale = {
     id,
-    type,
-    domain: ["ordinal", "nominal"].includes(fieldType)
-      ? validateOrdinalDomain(options.domain ?? existing?.domain ?? "auto")
-      : validateScaleDomain(options.domain ?? existing?.domain ?? "auto"),
-    range: validateScaleRange(options.range ?? existing?.range ?? "auto")
+    ...normalizeScaleDefinition({
+      type,
+      previous: existing,
+      patch: options,
+      defaults: {
+        ...(existing === undefined && defaults.nice !== undefined
+          ? { nice: defaults.nice }
+          : {}),
+        ...(existing === undefined && defaults.zero !== undefined
+          ? { zero: defaults.zero }
+          : {})
+      },
+      retainCoreOnTypeChange: true,
+      retainCompatibleOnTypeChange: true,
+      validateDomain: (_scaleType, value) =>
+        ["ordinal", "nominal"].includes(fieldType)
+          ? validateOrdinalDomain(value)
+          : validateScaleDomain(value),
+      validateRange: (_scaleType, value) => validateScaleRange(value)
+    })
   };
-  const nice = options.nice ?? existing?.nice ?? (
-    existing === undefined ? defaults.nice : undefined
-  );
-  const zero = options.zero ?? existing?.zero ?? (
-    existing === undefined ? defaults.zero : undefined
-  );
-  const clamp = options.clamp ?? existing?.clamp;
-  const reverse = options.reverse ?? existing?.reverse;
-  if (nice !== undefined) {
-    validateScalePropertyForType(type, "nice");
-    scale.nice = nice;
-  }
-  if (zero !== undefined) {
-    validateScalePropertyForType(type, "zero");
-    scale.zero = zero;
-  }
-  if (clamp !== undefined) {
-    validateScalePropertyForType(type, "clamp");
-    scale.clamp = clamp;
-  }
-  if (reverse !== undefined) scale.reverse = reverse;
-  if (type === "band") {
-    const paddingInner = options.paddingInner ?? existing?.paddingInner ?? 0;
-    const paddingOuter = options.paddingOuter ?? existing?.paddingOuter ?? 0;
-    const align = options.align ?? existing?.align ?? 0.5;
-    for (const [property, value] of [
-      ["paddingInner", paddingInner],
-      ["paddingOuter", paddingOuter],
-      ["align", align]
-    ]) {
-      validateScalePropertyForType(type, property);
-      if (!Number.isFinite(value)) {
-        throw new TypeError(`Scale ${property} must be finite.`);
-      }
-    }
-    if (paddingInner < 0 || paddingInner >= 1) {
-      throw new RangeError("Scale paddingInner must be from 0 (inclusive) to 1 (exclusive).");
-    }
-    if (paddingOuter < 0) {
-      throw new RangeError("Scale paddingOuter must be non-negative.");
-    }
-    if (align < 0 || align > 1) {
-      throw new RangeError("Scale align must be between 0 and 1.");
-    }
-    Object.assign(scale, { paddingInner, paddingOuter, align });
-  } else if (type === "point") {
-    const padding = options.padding ?? existing?.padding ?? 0.5;
-    const align = options.align ?? existing?.align ?? 0.5;
-    for (const [property, value] of [["padding", padding], ["align", align]]) {
-      validateScalePropertyForType(type, property);
-      if (!Number.isFinite(value)) {
-        throw new TypeError(`Scale ${property} must be finite.`);
-      }
-    }
-    if (padding < 0) throw new RangeError("Scale padding must be non-negative.");
-    if (align < 0 || align > 1) {
-      throw new RangeError("Scale align must be between 0 and 1.");
-    }
-    Object.assign(scale, { padding, align });
-  } else {
-    for (const property of ["paddingInner", "paddingOuter", "padding", "align"]) {
-      if (options[property] !== undefined) {
-        validateScalePropertyForType(type, property);
-      }
-    }
-  }
-  if (["log", "pow", "sqrt", "symlog"].includes(type)) {
-    const sameType = existing?.type === type;
-    const requested = Object.fromEntries([
-      ["base", options.base ?? (sameType ? existing?.base : undefined)],
-      ["exponent", options.exponent ?? (sameType ? existing?.exponent : undefined)],
-      ["constant", options.constant ?? (sameType ? existing?.constant : undefined)]
-    ].filter(([, value]) => value !== undefined));
-    const parameters = normalizeTransformParameters(type, requested);
-    if (type === "log") scale.base = parameters.base;
-    if (type === "pow") scale.exponent = parameters.exponent;
-    if (type === "symlog") scale.constant = parameters.constant;
-  } else {
-    for (const property of ["base", "exponent", "constant"]) {
-      if (options[property] !== undefined) {
-        validateScalePropertyForType(type, property);
-      }
-    }
-  }
   return withScaleUnknown(scale, { ...existing, ...options }, channel);
 }
 
