@@ -183,6 +183,26 @@ test("preserves selected-last order and encoded-style precedence after remateria
   assert.equal(new Set(children.map(child => child.id)).size, children.length);
 });
 
+test("uses every supported point shape as a highlighted replacement", () => {
+  for (const shape of [
+    "circle", "square", "diamond", "triangle-up", "triangle-down",
+    "triangle-left", "triangle-right", "plus", "cross", "star",
+    "hexagon", "wye"
+  ]) {
+    const result = pointProgram().highlightMarks({
+      select: { field: "x", op: "max" },
+      shape,
+      bringToFront: false
+    });
+    const child = result.graphicSpec.objects.point.children[3];
+    const type = child.type ?? result.graphicSpec.objects.point.type;
+    assert.equal(["circle", "rect", "path"].includes(type), true, shape);
+    if (type === "path") {
+      assert.equal(child.properties.commands.at(-1).op, "Z", shape);
+    }
+  }
+});
+
 test("rejects invalid aggregate options without mutating program or caller input", () => {
   const before = pointProgram();
   const select = Object.freeze({ field: "x", op: "max" });

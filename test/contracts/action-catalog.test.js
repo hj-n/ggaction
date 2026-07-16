@@ -393,6 +393,58 @@ test("keeps completed Phase 8 box-plot scope out of planned inventory", () => {
   assert.doesNotMatch(plannedCorpus, /createBoxPlot\(\{/);
 });
 
+test("keeps completed Phase 9 mark-selection scope current and complete", () => {
+  const actions = ["filterMarks", "selectMarks", "highlightMarks", "editBarMark"];
+  const currentByName = new Map(index.actions.map(action => [action.name, action]));
+  const plannedNames = new Set(index.plannedActions.map(action => action.name));
+  const plannedCapabilities = new Set(
+    index.plannedCapabilities.map(capability => capability.id)
+  );
+  const selectionContract = readFileSync(
+    path.join(contractRoot, "current/MARK_SELECTION.md"),
+    "utf8"
+  );
+  const types = readFileSync(path.join(root, "types/program.d.ts"), "utf8");
+  const reference = readFileSync(
+    path.join(root, "docs/reference/actions.md"),
+    "utf8"
+  );
+
+  for (const name of actions) {
+    const action = currentByName.get(name);
+    assert.ok(action, name);
+    assert.equal(plannedNames.has(name), false, name);
+    assert.deepEqual(action.coverage, {
+      contract: "complete",
+      effects: "complete",
+      tests: "complete"
+    });
+    assert.match(types, new RegExp(`\\b${name}\\(`), name);
+    assert.match(reference, new RegExp(`\\b${name}\\b`), name);
+  }
+  assert.equal(
+    plannedCapabilities.has("mark-item-selection-grammar"),
+    false
+  );
+  assert.match(
+    selectionContract,
+    /^## Capability: `mark-item-selection-grammar`$/m
+  );
+  assert.doesNotMatch(plannedCorpus, /^## `selectRows`$/m);
+  assert.equal(existsSync(path.join(root, "examples/mark-selection/program.js")), true);
+  for (const chart of [
+    "mark-selection-points",
+    "mark-selection-bars",
+    "mark-selection-lines"
+  ]) {
+    assert.equal(
+      existsSync(path.join(root, `test/charts/${chart}/variants/manifest.js`)),
+      true,
+      chart
+    );
+  }
+});
+
 test("keeps accepted planned capabilities linked and non-public", () => {
   const ids = index.plannedCapabilities.map(capability => capability.id);
   assert.equal(new Set(ids).size, ids.length);

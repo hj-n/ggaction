@@ -16,6 +16,11 @@ import { createCarsScatterplot } from "../examples/cars-scatterplot/program.js";
 import { createJobsGroupedBar } from "../examples/jobs-grouped-bar/program.js";
 import { createGapminderErrorBand } from
   "../examples/gapminder-error-band/program.js";
+import {
+  createGroupedMaximumPointHighlight,
+  createJapanLineSeriesHighlight,
+  createTallestHistogramStackHighlight
+} from "../examples/mark-selection/program.js";
 
 const cars = JSON.parse(
   await readFile(new URL("../data/cars.json", import.meta.url), "utf8")
@@ -108,6 +113,35 @@ export const chartImages = [
   }
 ];
 
+export const tutorialImages = [
+  {
+    id: "mark-selection-points",
+    width: 760,
+    height: 440,
+    programFile: new URL("../examples/mark-selection/program.js", import.meta.url),
+    dataFile: new URL("../data/cars.json", import.meta.url),
+    createProgram: () => createGroupedMaximumPointHighlight(cars)
+  },
+  {
+    id: "mark-selection-bars",
+    width: 432,
+    height: 460,
+    programFile: new URL("../examples/mark-selection/program.js", import.meta.url),
+    dataFile: new URL("../data/cars.json", import.meta.url),
+    createProgram: () => createTallestHistogramStackHighlight(cars)
+  },
+  {
+    id: "mark-selection-lines",
+    width: 720,
+    height: 460,
+    programFile: new URL("../examples/mark-selection/program.js", import.meta.url),
+    dataFile: new URL("../data/cars.json", import.meta.url),
+    createProgram: () => createJapanLineSeriesHighlight(cars)
+  }
+];
+
+const allImages = [...chartImages, ...tutorialImages];
+
 async function sourceFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   const nested = await Promise.all(entries.map(entry => {
@@ -130,25 +164,33 @@ export async function buildDocImageManifest() {
   }
   const sharedHash = shared.digest("hex");
 
-  const charts = {};
-  for (const chart of chartImages) {
+  const imageManifest = images => Object.fromEntries(images.map(image => [
+    image.id,
+    {
+      width: image.width * 2,
+      height: image.height * 2,
+      sourceHash: undefined
+    }
+  ]));
+  const groups = {
+    charts: imageManifest(chartImages),
+    tutorials: imageManifest(tutorialImages)
+  };
+  for (const chart of allImages) {
     const hash = createHash("sha256");
     hash.update(sharedHash);
     hash.update(`${chart.width}x${chart.height}@2`);
     hash.update(await readFile(chart.programFile));
     hash.update(await readFile(chart.dataFile));
-    charts[chart.id] = {
-      width: chart.width * 2,
-      height: chart.height * 2,
-      sourceHash: hash.digest("hex")
-    };
+    const group = chartImages.includes(chart) ? groups.charts : groups.tutorials;
+    group[chart.id].sourceHash = hash.digest("hex");
   }
 
-  return { version: 1, pixelRatio: 2, charts };
+  return { version: 1, pixelRatio: 2, ...groups };
 }
 
 export async function generateDocImages() {
-  for (const chart of chartImages) {
+  for (const chart of allImages) {
     const output = fileURLToPath(
       new URL(`../docs/assets/images/${chart.id}.png`, import.meta.url)
     );

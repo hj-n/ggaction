@@ -37,9 +37,18 @@ const selected = program.selectMarks({
 
 Choose exactly one value source:
 
-- `field` reads a data value that is unique for the selected visual item.
-- `channel` reads a resolved semantic value before scale mapping.
-- `property` reads a concrete scalar from `graphicSpec`, such as pixel `height`.
+| Source | Reads | Typical use |
+| --- | --- | --- |
+| `field` | One data value that is unique for the final item | Origin of a complete line series |
+| `channel` | Resolved semantic value before scale mapping | Upper bar endpoint `y2` |
+| `property` | Concrete scalar from `graphicSpec` | Rendered rectangle `height` |
+
+| Operator | Required operands | Defaults and result |
+| --- | --- | --- |
+| `eq`, `neq`, `gt`, `gte`, `lt`, `lte` | `value` | Strict comparison without coercion |
+| `oneOf` | `values` array | Strict set membership |
+| `range` | `min`, `max`, optional `inclusive` | Both endpoints included by default |
+| `min`, `max` | optional `count`, `groupBy`, `ties` | `count: 1`, `ties: "first"` |
 
 Operators are strict
 `eq | neq | gt | gte | lt | lte`, set membership with
@@ -102,6 +111,21 @@ mark rejects options it cannot represent. `dimOthers` defaults to `false`;
 `true` uses opacity `0.25`. `bringToFront` defaults to `true` and keeps every
 graphic attached to one selected semantic item together.
 
+| Mark | Selected-item options | Rejected selected-item options |
+| --- | --- | --- |
+| Point | `color`/`fill`, `opacity`, `stroke`, `strokeWidth`, `shape`, `size`, `offset` | `strokeDash` |
+| Bar | `color`/`fill`, `opacity`, `stroke`, `strokeWidth` | `shape`, `size`, `offset`, `strokeDash` |
+| Line | `color`/`stroke`, `opacity`, `strokeWidth`, `strokeDash`, `offset` | `fill`, `shape`, `size` |
+| Area | `color`/`fill`, `opacity`, `stroke`, `strokeWidth`, `offset` | `shape`, `size`, `strokeDash` |
+| Rule | `color`/`stroke`, `opacity`, `strokeWidth`, `strokeDash`, `offset` | `fill`, `shape`, `size` |
+
+All calls reject unknown options, ambiguous targets, incompatible grain, and
+invalid values before creating selection or highlight state. `strokeWidth`
+requires a matching `stroke` for point, bar, and area highlight recipes.
+`select` and `selection` are mutually exclusive. Empty `selectMarks` and
+`highlightMarks` results are valid; `filterMarks` rejects an empty retained
+dataset before mutation.
+
 ```javascript
 program.highlightMarks({
   target: "trends",
@@ -121,6 +145,9 @@ Selection and highlight intent is immutable and is reapplied after owning mark
 rematerialization, including Canvas changes and filtered data cardinality.
 Reapplying `highlightMarks` for the same selection replaces that appearance
 assignment.
+
+See the complete [mark-selection tutorial](../tutorials/mark-selection.md) for
+the approved point, stacked-bar, and line-series examples.
 
 ## `encodeRadius({ value, target? })`
 

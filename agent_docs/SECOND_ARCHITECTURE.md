@@ -617,6 +617,13 @@ legend field의 complete group과 정확히 일대일 대응할 때만 legend sy
 반영하며, legend label text와 item order는 유지한다. Partial group이나 unrelated selector는 legend를
 바꾸지 않는다.
 
+Owning mark가 rematerialize될 때는 해당 target의 highlight config를 잠시 분리하고 base children을 clean
+baseline에서 완전히 다시 만든다. Point의 기본 fill처럼 renderer에 필요한 concrete default도 이 단계에서
+복원한다. 그 다음 현재 item resolver로 selection key를 한 번 다시 계산하고 highlight, complement dimming,
+selected-last order를 순서대로 적용한다. 여러 selection assignment는 각각 독립된 ID를 유지하며 같은
+selection의 재호출만 그 assignment를 교체한다. 따라서 이전 highlight property나 child ID가 Canvas, scale,
+encoding 또는 data-cardinality 변경 뒤 새 baseline으로 누출되지 않는다.
+
 ## Context
 
 Context는 다음 action의 생략된 resource를 편리하게 해석한다.

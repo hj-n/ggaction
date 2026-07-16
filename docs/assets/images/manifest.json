@@ -47,5 +47,22 @@
       "height": 960,
       "sourceHash": "f848c4aa5476aa51639109c323d6a32c683930845ea4f308a35af3e7493360aa"
     }
+  },
+  "tutorials": {
+    "mark-selection-points": {
+      "width": 1520,
+      "height": 880,
+      "sourceHash": "0ac52ab3e73422152214e07c63f6d57e749a50c7dce759a611e4f7272b878d38"
+    },
+    "mark-selection-bars": {
+      "width": 864,
+      "height": 920,
+      "sourceHash": "9463bbbb8414106a6558b33ea60af68443422c901cf4c9c94b5da191bba5410f"
+    },
+    "mark-selection-lines": {
+      "width": 1440,
+      "height": 920,
+      "sourceHash": "3593e0182e83f08bf64ed00ded39132c6b4c81f7e48ca5635a893a888d6a1922"
+    }
   }
 }

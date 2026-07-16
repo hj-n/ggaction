@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ggaction Mark Selection</title>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        color: #1f2937;
+        background: #f3f4f6;
+        font: 16px/1.5 system-ui, sans-serif;
+      }
+      main { width: min(100% - 32px, 900px); margin: 32px auto; }
+      h1 { margin-bottom: 4px; }
+      #status { margin-top: 0; color: #64748b; }
+      section {
+        margin-top: 24px;
+        padding: 20px;
+        overflow: auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 12px 36px rgb(15 23 42 / 10%);
+      }
+      h2 { margin-top: 0; font-size: 18px; }
+      canvas { display: block; max-width: 100%; height: auto; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Mark selection and highlighting</h1>
+      <p id="status">Loading cars…</p>
+      <section>
+        <h2>Grouped maximum points</h2>
+        <canvas id="points-chart" aria-label="Highest-horsepower car highlighted for each origin"></canvas>
+      </section>
+      <section>
+        <h2>Tallest histogram stack</h2>
+        <canvas id="bars-chart" aria-label="Tallest complete displacement histogram stack highlighted"></canvas>
+      </section>
+      <section>
+        <h2>Japan line series</h2>
+        <canvas id="lines-chart" aria-label="Japan acceleration trend highlighted"></canvas>
+      </section>
+    </main>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

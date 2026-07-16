@@ -3,7 +3,9 @@
 Current direct-action contracts for cross-mark selection and highlighting. Shared notation and
 lifecycle rules live in [`../README.md`](../README.md).
 
-## Shared selector algebra and mark-item grain
+## Capability: `mark-item-selection-grammar`
+
+`filterMarks`, `selectMarks`, and `highlightMarks` share the following current selector algebra and final-item grain.
 
 ```typescript
 type MarkSelector =
@@ -115,7 +117,8 @@ type MarkSelector =
   - ✅ Covered: min/max, count, grouped extrema, stable ties and both tie policies in selector grammar tests.
 - Effects and reevaluation
   - ✅ Covered: selection-only graphic identity, exact point keys, trace, Canvas resize and filtered-cardinality reevaluation.
-  - ⚠️ Partial: multiple simultaneous selections through every rematerialization producer.
+  - ✅ Covered: multiple simultaneous selections, independent highlight assignments, assignment replacement, and
+    Canvas/scale/encoding/filter order convergence.
 - Line/area/rule selection and highlight appearance use the same stored selection identity as point/bar.
 - Evidence: `test/unit/grammar/transforms/mark-selection.test.js`,
   `test/unit/selectors/mark-items.test.js`,
@@ -156,7 +159,7 @@ type MarkSelector =
   - ✅ Covered: inline and reusable selection, source conflict, inferred current selection and target agreement.
 - Point appearance
   - ✅ Covered: shortest default, color/fill conflict, opacity, stroke/width dependency, shape, size, offset and errors.
-  - ⚠️ Partial: every supported point shape as a highlighted replacement rather than through shared shape grammar alone.
+  - ✅ Covered: every supported point shape as a highlighted replacement through the shared point-shape grammar.
 - Bar appearance and grain
   - ✅ Covered: default/explicit fill, opacity, stroke/width, point-only option rejection, item/stack attachment and
     selected-last behavior.
@@ -171,6 +174,7 @@ type MarkSelector =
     Canvas/mark rematerialization, and mark-specific option rejection.
   - ✅ Covered: exact categorical legend-symbol reflection without label dimming and approved Gate C equality.
 - Evidence: `test/unit/actions/selection/mark-selection.test.js`,
+  `test/unit/actions/selection/selection-robustness.test.js`,
   `test/charts/mark-selection-points/public.test.js`,
   `test/charts/mark-selection-bars/public.test.js`, and their PNG render tests.
   Gate C evidence: `test/charts/mark-selection-lines/public.test.js`.

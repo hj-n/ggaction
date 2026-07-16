@@ -45,6 +45,7 @@ state is never automatically compiled during rendering.
 - [Density area chart tutorial](./docs/tutorials/density-area.md)
 - [Error-bar chart tutorial](./docs/tutorials/error-bar.md)
 - [Error-band chart tutorial](./docs/tutorials/error-band.md)
+- [Mark selection and highlighting tutorial](./docs/tutorials/mark-selection.md)
 - [Box-plot API](./docs/api/box-plots.md)
 - [Chart concepts](./docs/concepts/chart-program.md)
 - [Complete action reference](./docs/reference/actions.md)
@@ -65,6 +66,8 @@ confidence intervals as closed area paths over time.
 The [box plot](./examples/cars-box-plot/) supports vertical or horizontal
 Tukey/min–max ranges, configurable factor and component appearance, and
 optional outlier rendering from categorical and quantitative field pairs.
+The [mark-selection example](./examples/mark-selection/) compares grouped point,
+complete stacked-bar, and line-series highlighting through one selector grammar.
 Completed programs can also be exported through
 [`ggaction/png`](./docs/api/rendering.md#png-output).
 

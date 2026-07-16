@@ -17,6 +17,7 @@ Build complete charts before exploring individual API options.
 | Density area | area | `encodeDensity`, grouped `encodeColor` | Overlaid probability densities |
 | Error bar | rule | `createErrorBar` | Grouped mean confidence intervals |
 | Error band | area | `createErrorBand` | Grouped confidence ribbons over an independent position |
+| Mark selection | point, bar, line | `selectMarks`, `highlightMarks`, `filterMarks` | Selected-item filtering and emphasis |
 
 Choose the chart whose semantic relationship matches the question you want to
 answer. The bar tutorial uses grouped bars as its current example; grouping is
@@ -77,3 +78,10 @@ Derive grouped confidence intervals over time and materialize one closed area
 path per series.
 
 [Build the Gapminder error-band chart](./error-band.md)
+
+## Mark selection and highlighting
+
+Select grouped point extrema, complete histogram stacks, and categorical line
+series through the same final-item selector grammar.
+
+[Select, filter, and highlight marks](./mark-selection.md)

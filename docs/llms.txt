@@ -37,6 +37,7 @@ are internal operations.
 - Regression scatterplot: ./recipes/regression-scatterplot.md | ./tutorials/regression-scatterplot.md
 - Density area: ./recipes/density-area.md | ./tutorials/density-area.md
 - Error bar: ./recipes/error-bar.md | ./tutorials/error-bar.md
+- Mark selection and highlighting: ./tutorials/mark-selection.md | ./api/appearance.md#mark-selection-and-highlighting
 
 ## Core concepts
 
@@ -79,9 +80,8 @@ stable partial edits including subtitle removal.
 `selectMarks` creates reusable selections over point, bar-item/bar-stack,
 line/area series, and rule items. Its explicit value sources distinguish data
 fields, pre-scale semantic channels, and concrete graphic properties.
-`highlightMarks` currently applies concrete emphasis, optional complement
-dimming, and front order to point and bar items; point recipes also support
-shape, size, and offset.
+`highlightMarks` applies mark-specific concrete emphasis, optional complement
+dimming, and front order to point, bar, line/area-series, and rule items.
 It renders through browser Canvas and Node PNG. It is not published to npm yet.
 
 Do not assume facets, program composition, SVG rendering, animation, automatic

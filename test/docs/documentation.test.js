@@ -7,7 +7,8 @@ import { fileURLToPath } from "node:url";
 
 import {
   buildDocImageManifest,
-  chartImages
+  chartImages,
+  tutorialImages
 } from "../../scripts/generate-doc-images.js";
 import { buildFullLlmDocumentation } from "../../scripts/generate-llm-docs.js";
 
@@ -230,7 +231,8 @@ test("links every public chart example from entry documentation", () => {
     "cars-density-area",
     "cars-error-bar",
     "gapminder-error-band",
-    "cars-box-plot"
+    "cars-box-plot",
+    "mark-selection"
   ]) {
     assert.match(readme, new RegExp(`examples/${name}`));
     assert.match(gettingStarted, new RegExp(`examples/${name}`));
@@ -243,7 +245,8 @@ test("links every public chart example from entry documentation", () => {
     "regression-scatterplot",
     "density-area",
     "error-bar",
-    "error-band"
+    "error-band",
+    "mark-selection"
   ]) {
     assert.match(tutorials, new RegExp(`\\./${name}\\.md`));
   }
@@ -371,6 +374,23 @@ test("keeps one generated gallery image for every public chart", async () => {
     JSON.parse(read("docs/assets/images/manifest.json")),
     await buildDocImageManifest()
   );
+});
+
+test("keeps generated mark-selection tutorial images canonical and fresh", () => {
+  const tutorial = read("docs/tutorials/mark-selection.md");
+
+  assert.equal(tutorialImages.length, 3);
+  for (const { id, width, height } of tutorialImages) {
+    const image = readFileSync(path.join(root, `docs/assets/images/${id}.png`));
+    assert.deepEqual([...image.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+    assert.equal(image.readUInt32BE(16), width * 2, `${id} width`);
+    assert.equal(image.readUInt32BE(20), height * 2, `${id} height`);
+    assert.match(tutorial, new RegExp(`assets/images/${id}\\.png`));
+  }
+  assert.match(tutorial, /examples\/mark-selection\/program\.js/);
+  assert.match(tutorial, /filterMarks/);
+  assert.match(tutorial, /selectMarks/);
+  assert.match(tutorial, /highlightMarks/);
 });
 
 test("classifies every declared ChartProgram action in the reference", () => {

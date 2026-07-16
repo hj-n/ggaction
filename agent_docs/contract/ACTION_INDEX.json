@@ -1502,11 +1502,11 @@
       "status": "implemented",
       "lifecycle": "Stable create-only",
       "update": "Create a new selection ID",
-      "audit": "Intentional",
+      "audit": "Complete",
       "coverage": {
         "contract": "complete",
-        "effects": "partial",
-        "tests": "partial"
+        "effects": "complete",
+        "tests": "complete"
       },
       "contract": {
         "file": "agent_docs/contract/current/MARK_SELECTION.md",
@@ -1520,11 +1520,11 @@
       "status": "implemented",
       "lifecycle": "Mutable resource",
       "update": "Reapply for the same selection",
-      "audit": "Cross-mark recipes complete; exhaustive option matrix partial",
+      "audit": "Complete",
       "coverage": {
         "contract": "complete",
         "effects": "complete",
-        "tests": "partial"
+        "tests": "complete"
       },
       "contract": {
         "file": "agent_docs/contract/current/MARK_SELECTION.md",

@@ -32,6 +32,7 @@ Open one of the runnable repository examples:
 - `http://localhost:4173/examples/cars-error-bar/`
 - `http://localhost:4173/examples/gapminder-error-band/`
 - `http://localhost:4173/examples/cars-box-plot/`
+- `http://localhost:4173/examples/mark-selection/`
 
 Those browser examples import `../../src/index.js` directly. The code below is
 the complete module used by `examples/getting-started/`, so it runs immediately
@@ -111,6 +112,8 @@ actions. It does not compile `semanticSpec` during rendering.
   [regression scatterplot tutorial](./tutorials/regression-scatterplot.md).
 - Summarize grouped means and confidence intervals in the
   [error-bar tutorial](./tutorials/error-bar.md).
+- Select, filter, and emphasize final visual items in the
+  [mark-selection tutorial](./tutorials/mark-selection.md).
 - Check the [action index](./reference/actions.md) for signatures and defaults.
 - Copy a minimal flow from the [chart recipes](./recipes/index.md).
 - Resolve common inference and layout errors with

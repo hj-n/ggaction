@@ -39,7 +39,7 @@ chart-authoring API does not support that combination.
 | Titles | One four-edge title with an optional subtitle, deterministic word/character wrapping, and partial editing |
 | Rendering | Browser Canvas and Node PNG |
 | Graphics | Concrete canvas, circle, line, rect, text, `M/L/C/Z` command paths, shared 8-value line/area curves, and heterogeneous drawable collections |
-| Selection | Strict semantic point/bar/series/rule comparison, set, range, grouped rank, reusable selection state, point highlight/dimming/front order |
+| Selection | Strict point/bar/series/rule comparison, set, range and grouped rank; reusable selection state; mark-specific highlight/dimming/front order |
 
 ## Current limitations
 
@@ -60,4 +60,5 @@ appearance overrides, and explicit outlier opt-out without placeholder resources
 Mark selection supports point, final-bar item, stacked-bar group, line/area
 series, and rule grain. Selector values explicitly distinguish data fields,
 pre-scale semantic channels, and concrete graphic properties.
-Highlight appearance currently supports point items and bar item/stack grains.
+Highlight appearance supports point fill/shape/size/outline/offset, bar fill and
+outline, area fill/outline/offset, and line/rule stroke/width/dash/offset.
