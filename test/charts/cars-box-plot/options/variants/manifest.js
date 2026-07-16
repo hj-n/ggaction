@@ -1,10 +1,14 @@
-import { defineVisualVariant } from "../../../support/visual-variants.js";
-import { loadCars } from "../../../support/data.js";
+import { defineVisualVariant } from "../../../../support/visual-variants.js";
+import { loadCars } from "../../../../support/data.js";
+import {
+  createCarsBoxPlotWithoutOutliers,
+  createCarsStyledFactorBoxPlot
+} from "../../../../../examples/cars-box-plot/program.js";
 import {
   BOX_PLOT_COLORS,
   BOX_PLOT_LAYOUT,
   BOX_PLOT_STYLE
-} from "../../../charts/cars-box-plot/reference-values.js";
+} from "../../reference-values.js";
 import {
   createCarsOutliersOffPrimitives,
   createCarsStyledFactorPrimitives
@@ -64,13 +68,14 @@ const outliersOffCallChain = `chart()
     maxWidth: 240
   });`;
 
-export const visualVariants = Object.freeze([
+export const boxPlotOptionVariants = Object.freeze([
   defineVisualVariant({
     chart: "cars-box-plot",
     variant: "cars-styled-factor",
     title: "Cars Styled Factor Box Plot",
     callChain: styledFactorCallChain,
     primitive: createCarsStyledFactorPrimitives(loadCars()),
+    userFacing: createCarsStyledFactorBoxPlot(loadCars()),
     width: BOX_PLOT_LAYOUT.width,
     height: BOX_PLOT_LAYOUT.height,
     colors: [
@@ -87,6 +92,7 @@ export const visualVariants = Object.freeze([
     title: "Cars Box Plot without Outliers",
     callChain: outliersOffCallChain,
     primitive: createCarsOutliersOffPrimitives(loadCars()),
+    userFacing: createCarsBoxPlotWithoutOutliers(loadCars()),
     width: BOX_PLOT_LAYOUT.width,
     height: BOX_PLOT_LAYOUT.height,
     colors: [...BOX_PLOT_COLORS, BOX_PLOT_STYLE.whiskerStroke],

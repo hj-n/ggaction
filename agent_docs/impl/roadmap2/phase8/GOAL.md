@@ -22,7 +22,7 @@ Complete chart contract:
 - [x] Box data/ranged-bar foundation
 - [x] Vertical `createBoxPlot` public implementation
 - [x] Horizontal minmax primitive 승인과 public implementation
-- [ ] Style/factor/outlier primitive 승인과 full option implementation
+- [x] Style/factor/outlier primitive 승인과 full option implementation
 - [ ] Public docs, contract promotion, gallery와 Phase closeout
 
 ## 구현 범위

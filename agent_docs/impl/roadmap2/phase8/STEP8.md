@@ -6,16 +6,16 @@ Approved Gate C options를 public action에 연결하고 statistical, graphical,
 
 ## 진행 상태
 
-- [ ] Tukey factor and minmax validation/forwarding
-- [ ] Width and box/median/outlier style defaults/overrides
-- [ ] Point-shape vocabulary reuse
-- [ ] Outlier enable/disable without placeholder or stale resources
-- [ ] Gate C primitive/public exact equality
-- [ ] Even/odd/duplicate/singleton/missing/sparse category fixtures
-- [ ] First-appearance order and deterministic namespacing
-- [ ] Ordered deduplicated body/component rematerialization
-- [ ] Error, trace, immutability and caller-ownership coverage
-- [ ] STEP status, conceptual commits and pushes
+- [x] Tukey factor and minmax validation/forwarding
+- [x] Width and box/median/outlier style defaults/overrides
+- [x] Point-shape vocabulary reuse
+- [x] Outlier enable/disable without placeholder or stale resources
+- [x] Gate C primitive/public exact equality
+- [x] Even/odd/duplicate/singleton/missing/sparse category fixtures
+- [x] First-appearance order and deterministic namespacing
+- [x] Ordered deduplicated body/component rematerialization
+- [x] Error, trace, immutability and caller-ownership coverage
+- [x] STEP status, conceptual commits and pushes
 
 ## 완료 조건
 

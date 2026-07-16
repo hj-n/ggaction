@@ -28,7 +28,10 @@ const program = chart()
 ## Signature
 
 ```javascript
-createBoxPlot({ id?, target?, data?, x?, y?, coordinate?, whisker? } = {})
+createBoxPlot({
+  id?, target?, data?, x?, y?, coordinate?, whisker?, width?, outliers?,
+  box?, median?, outlier?
+} = {})
 ```
 
 | Option | Meaning | Default or inference |
@@ -39,7 +42,12 @@ createBoxPlot({ id?, target?, data?, x?, y?, coordinate?, whisker? } = {})
 | `x` | categorical or quantitative field and optional scale | inferred from `target` when omitted |
 | `y` | categorical or quantitative field and optional scale | inferred from `target` when omitted |
 | `coordinate` | Cartesian coordinate ID | source coordinate, then `"main"` |
-| `whisker` | `{ type: "tukey" }` or `{ type: "minmax" }` | Tukey with factor `1.5` |
+| `whisker` | `{ type: "tukey", factor? }` or `{ type: "minmax" }` | Tukey with factor `1.5` |
+| `width` | `{ band }`, where `0 < band < 1` | `{ band: 0.7 }` |
+| `outliers` | create Tukey outlier resources | `true` |
+| `box` | `fill`, `opacity`, `stroke`, `strokeWidth` | blue, opaque, `1.5` stroke |
+| `median` | `stroke`, `strokeWidth` | dark stroke with width `1.5` |
+| `outlier` | `shape`, `radius`, `opacity` | black diamond, radius `3`, opacity `0.75` |
 
 `createBoxPlot()` may also establish an incomplete owner first. Compatible
 `encodeX` and `encodeY` calls can follow later; the completed semantic and
@@ -55,6 +63,24 @@ program.createBoxPlot({
   whisker: { type: "minmax" }
 });
 ```
+
+Tukey factor and component appearance can be changed together without exposing
+the child marks:
+
+```javascript
+program.createBoxPlot({
+  x: { field: "Origin", fieldType: "nominal" },
+  y: { field: "Miles_per_Gallon" },
+  whisker: { type: "tukey", factor: 1 },
+  width: { band: 0.5 },
+  box: { fill: "#f28e2b", opacity: 0.82, stroke: "#9a3412", strokeWidth: 2 },
+  median: { stroke: "#431407", strokeWidth: 3 },
+  outlier: { shape: "diamond", radius: 4, opacity: 0.9 }
+});
+```
+
+Set `outliers: false` to keep the Tukey summary and whiskers without creating
+an outlier dataset, layer, or graphic.
 
 ## Current statistical and visual defaults
 
@@ -76,9 +102,9 @@ explicitly rematerialize boxes, medians, whiskers, caps, and outliers.
 
 ## Current limitations
 
-Public factor customization, width/style options, and outlier toggles are not
-implemented yet. `createBoxPlot` is a create-only aggregate; there is no
-`editBoxPlot` action.
+`createBoxPlot` is a create-only aggregate; there is no `editBoxPlot` action.
+Subgroup offsets, notches, variable-width boxes, and custom whisker appearance
+are not implemented.
 
 ## Related
 

@@ -74,3 +74,5 @@ then renders them through `createBoxPlot`.
 
 The same program module also exports `createCarsHorizontalMinmaxBoxPlot`, which
 uses Horsepower on x, Origin on y, and creates no outlier resources.
+It additionally exports `createCarsStyledFactorBoxPlot` for factor/appearance
+options and `createCarsBoxPlotWithoutOutliers` for the explicit outlier opt-out.

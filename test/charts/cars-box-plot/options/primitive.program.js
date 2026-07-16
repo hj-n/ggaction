@@ -1,4 +1,4 @@
-import { createCarsBoxPlotPrimitives } from "../../charts/cars-box-plot/primitive.program.js";
+import { createCarsBoxPlotPrimitives } from "../primitive.program.js";
 import {
   STYLED_FACTOR_STYLE,
   createCarsStyledFactorReferenceValues
@@ -20,19 +20,11 @@ export function createCarsStyledFactorPrimitives(cars) {
       stroke: STYLED_FACTOR_STYLE.medianStroke,
       strokeWidth: STYLED_FACTOR_STYLE.medianStrokeWidth
     }
-  }).editGraphics({
-    target: "chartSubtitle",
-    property: "text",
-    value: "Factor 1.0 with custom styling"
-  });
+  }).editTitle({ subtitle: "Factor 1.0 with custom styling" });
 }
 
 export function createCarsOutliersOffPrimitives(cars) {
   return createCarsBoxPlotPrimitives(cars, {
     outliers: false
-  }).editGraphics({
-    target: "chartSubtitle",
-    property: "text",
-    value: "Tukey summaries with outlier points disabled"
-  });
+  }).editTitle({ subtitle: "Tukey summaries with outlier points disabled" });
 }

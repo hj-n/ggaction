@@ -388,7 +388,10 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   assert.doesNotMatch(plannedCorpus, /createErrorBar remaining variants/);
   assert.match(currentCorpus, /createErrorBand\(\{/);
   assert.doesNotMatch(plannedCorpus, /createErrorBand\(\{/);
-  assert.match(plannedCorpus, /createBoxPlot\(\{/);
+  assert.match(currentCorpus, /createBoxPlot\(\{/);
+  assert.match(currentCorpus, /factor\?: PositiveFinite/);
+  assert.match(currentCorpus, /outliers\?: boolean/);
+  assert.doesNotMatch(plannedCorpus, /createBoxPlot\(\{/);
   assert.match(currentCorpus, /wrapped `createErrorBand` explicit mode/);
   assert.doesNotMatch(plannedCorpus, /regression band delegation/);
   assert.match(currentCorpus, /No `semanticSpec\.composites` registry is introduced/);

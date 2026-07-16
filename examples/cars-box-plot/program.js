@@ -54,3 +54,60 @@ export function createCarsHorizontalMinmaxBoxPlot(cars) {
       subtitle: "Min–max whiskers with no outlier layer"
     });
 }
+
+export function createCarsStyledFactorBoxPlot(cars) {
+  return chart()
+    .createCanvas({
+      width: 360,
+      height: 460,
+      margin: { top: 140, right: 40, bottom: 70, left: 80 }
+    })
+    .createData({ values: cars })
+    .createBoxPlot({
+      x: { field: "Origin", fieldType: "nominal" },
+      y: { field: "Miles_per_Gallon" },
+      whisker: { type: "tukey", factor: 1 },
+      width: { band: 0.5 },
+      box: {
+        fill: "#f28e2b",
+        opacity: 0.82,
+        stroke: "#9a3412",
+        strokeWidth: 2
+      },
+      median: { stroke: "#431407", strokeWidth: 3 },
+      outlier: { shape: "diamond", radius: 4, opacity: 0.9 }
+    })
+    .createGuides({ legend: false })
+    .createTitle({
+      text: "Fuel Economy Distribution by Origin",
+      subtitle: "Factor 1.0 with custom styling",
+      maxWidth: 240
+    });
+}
+
+export function createCarsBoxPlotWithoutOutliers(cars) {
+  return chart()
+    .createCanvas({
+      width: 360,
+      height: 460,
+      margin: { top: 140, right: 40, bottom: 70, left: 80 }
+    })
+    .createData({ values: cars })
+    .createBoxPlot({
+      x: { field: "Origin", fieldType: "nominal" },
+      y: { field: "Miles_per_Gallon" },
+      outliers: false
+    })
+    .encodeColor({
+      target: "boxPlot",
+      field: "Origin",
+      fieldType: "nominal",
+      scale: { palette: "tableau10" }
+    })
+    .createGuides({ legend: false })
+    .createTitle({
+      text: "Fuel Economy Distribution by Origin",
+      subtitle: "Tukey summaries with outlier points disabled",
+      maxWidth: 240
+    });
+}

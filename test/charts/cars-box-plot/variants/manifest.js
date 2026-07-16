@@ -13,6 +13,7 @@ import {
   BOX_PLOT_STYLE,
   HORIZONTAL_MINMAX_LAYOUT
 } from "../reference-values.js";
+import { boxPlotOptionVariants } from "../options/variants/manifest.js";
 
 const targetCallChain = `chart()
   .createCanvas({
@@ -93,5 +94,6 @@ export const visualVariants = Object.freeze([
     regions: [
       { name: "plot", x: 80, y: 90, width: 440, height: 185 }
     ]
-  })
+  }),
+  ...boxPlotOptionVariants
 ]);

@@ -11,8 +11,25 @@ createBoxPlot({
   y?: PositionChannel;
   coordinate?: UserId;
   whisker?:
-    | { type?: "tukey" }
-    | { type: "minmax" };
+    | { type?: "tukey"; factor?: PositiveFinite }
+    | { type: "minmax"; factor?: never };
+  width?: { band?: UnitIntervalExclusive };
+  outliers?: boolean;
+  box?: {
+    fill?: NonEmptyString;
+    opacity?: UnitInterval;
+    stroke?: NonEmptyString;
+    strokeWidth?: NonNegativeFinite;
+  };
+  median?: {
+    stroke?: NonEmptyString;
+    strokeWidth?: NonNegativeFinite;
+  };
+  outlier?: {
+    shape?: PointShape;
+    radius?: PositiveFinite;
+    opacity?: UnitInterval;
+  };
 } = {}): ChartProgram;
 ```
 
@@ -25,19 +42,21 @@ createBoxPlot({
 - Linear `(n - 1) × p` quartiles, Tukey factor `1.5`, observed in-fence whiskers와 source-order outliers를
   immutable derived datasets에 저장한다. Empty categories are not synthesized; missing category/measure rows are
   omitted and non-missing non-finite measures fail.
-- `{ type: "minmax" }` stores observed minima/maxima as whiskers and creates no outlier dataset, layer or graphic.
-  Public factor customization remains planned; Tukey currently uses the fixed default `1.5`.
+- Tukey accepts a positive finite `factor` and defaults to `1.5`. `{ type: "minmax" }` stores observed
+  minima/maxima as whiskers, rejects `factor`, and creates no outlier dataset, layer or graphic.
 - Concrete order는 whiskers/caps → ranged bar body → median → outliers다. Body width는 category band의 `0.7`,
   box opacity는 `1`, box/median/whisker widths는 `1.5`, outliers는 black diamond radius `3`, opacity `0.75`다.
   Outlier rows가 없으면 outlier dataset/layer/graphic을 만들지 않는다.
+- `width.band`, box fill/opacity/stroke/strokeWidth, median stroke/strokeWidth와 outlier shape/radius/opacity를
+  override할 수 있다. `outliers: false`는 Tukey summary를 유지하면서 outlier dataset/layer/graphic을 만들지 않는다.
 - Body는 ordinary bar with y/y2 or x/x2, whiskers는 explicit `createErrorBar`, median은 ordinary rule, outliers는
   ordinary point actions를 wrapped children으로 조합한다. Canvas/scale changes rematerialize every concrete consumer.
 - Lifecycle은 aggregate create-only다. No `editBoxPlot`; later changes use supported ordinary child actions.
 
 ### Formal values — `createBoxPlot`
 
-- Implemented: vertical/horizontal orientation, Tukey defaults, minmax whiskers and documented inference.
-- Planned (NOT IMPLEMENTED): public Tukey factor, width/style options and `outliers: false`.
+- Implemented: vertical/horizontal orientation, configurable Tukey/minmax whiskers, width/component styles,
+  outlier opt-out and documented inference.
 - Proposed (NOT IMPLEMENTED): subgroup partition/offset and notched or variable-width boxes.
 
 ### Value coverage — `createBoxPlot`
@@ -46,6 +65,6 @@ createBoxPlot({
   equality, missing/outlier ownership, Canvas rematerialization, trace and immutability.
 - ✅ Covered: 1.5px box, median and whisker/cap defaults; opaque colored body and black diamond outliers.
 - ✅ Covered: horizontal x/x2 body, minmax provenance, vertical median/caps, no outlier resources and pixel equality.
-- 🟡 Planned: configurable factor/style/outlier variants in the remaining Phase 8 gate.
+- ✅ Covered: factor `1`, band `0.5`, custom box/median/diamond appearance, `outliers: false`, edge rows and exact pixels.
 - Evidence: `test/unit/actions/statistics/create-box-plot.test.js`,
   `test/charts/cars-box-plot/public.test.js`, and `test/charts/cars-box-plot/png.render.js`.

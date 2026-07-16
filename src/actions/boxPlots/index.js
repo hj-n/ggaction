@@ -7,11 +7,13 @@ import {
   deriveBoxData,
   normalizeBoxTransform
 } from "../../grammar/boxPlot.js";
+import { validatePointShape } from "../../grammar/pointShapes.js";
 import { findDataset } from "../../selectors/datasets.js";
 import { findLayer, hasLayer } from "../../selectors/layers.js";
 
 const OPTIONS = Object.freeze([
-  "id", "target", "data", "x", "y", "coordinate", "whisker"
+  "id", "target", "data", "x", "y", "coordinate", "whisker",
+  "width", "outliers", "box", "median", "outlier"
 ]);
 const MEDIAN_OPTIONS = Object.freeze([
   "id", "owner", "data", "category", "categoryType", "measure",
@@ -23,6 +25,14 @@ const OUTLIER_OPTIONS = Object.freeze([
 ]);
 
 const CATEGORY_TYPES = Object.freeze(["nominal", "ordinal", "temporal"]);
+const DEFAULT_BOX = Object.freeze({
+  fill: "#4c78a8",
+  opacity: 1,
+  stroke: "#4c78a8",
+  strokeWidth: 1.5
+});
+const DEFAULT_MEDIAN = Object.freeze({ stroke: "#1f2937", strokeWidth: 1.5 });
+const DEFAULT_OUTLIER = Object.freeze({ shape: "diamond", radius: 3, opacity: 0.75 });
 
 function position(value, label) {
   if (value === undefined) return undefined;
@@ -43,13 +53,117 @@ function resolveWhisker(value) {
   if (!isPlainObject(value)) {
     throw new TypeError("createBoxPlot whisker must be a plain object.");
   }
-  validateKeys(value, ["type"], "createBoxPlot whisker");
+  validateKeys(value, ["type", "factor"], "createBoxPlot whisker");
   const type = value.type ?? "tukey";
   if (!["tukey", "minmax"].includes(type)) {
     throw new Error(`Unsupported createBoxPlot whisker type "${type}".`);
   }
-  if (type === "minmax") return Object.freeze({ type });
-  return Object.freeze({ type, factor: 1.5 });
+  if (type === "minmax") {
+    if (value.factor !== undefined) {
+      throw new Error("createBoxPlot minmax whiskers do not accept factor.");
+    }
+    return Object.freeze({ type });
+  }
+  const factor = value.factor ?? 1.5;
+  if (!Number.isFinite(factor) || factor <= 0) {
+    throw new RangeError("createBoxPlot whisker factor must be positive and finite.");
+  }
+  return Object.freeze({ type, factor });
+}
+
+function plainOptions(value, keys, label) {
+  if (value === undefined) return {};
+  if (!isPlainObject(value)) {
+    throw new TypeError(`createBoxPlot ${label} must be a plain object.`);
+  }
+  validateKeys(value, keys, `createBoxPlot ${label}`);
+  return value;
+}
+
+function nonEmptyString(value, label) {
+  if (typeof value !== "string" || value.length === 0) {
+    throw new TypeError(`createBoxPlot ${label} must be a non-empty string.`);
+  }
+  return value;
+}
+
+function opacity(value, label) {
+  if (!Number.isFinite(value) || value < 0 || value > 1) {
+    throw new RangeError(`createBoxPlot ${label} must be between 0 and 1.`);
+  }
+  return value;
+}
+
+function nonNegative(value, label) {
+  if (!Number.isFinite(value) || value < 0) {
+    throw new RangeError(`createBoxPlot ${label} must be a non-negative finite number.`);
+  }
+  return value;
+}
+
+function positive(value, label) {
+  if (!Number.isFinite(value) || value <= 0) {
+    throw new RangeError(`createBoxPlot ${label} must be a positive finite number.`);
+  }
+  return value;
+}
+
+function resolveWidth(value) {
+  const options = plainOptions(value, ["band"], "width");
+  const band = options.band ?? 0.7;
+  if (!Number.isFinite(band) || band <= 0 || band >= 1) {
+    throw new RangeError("createBoxPlot width.band must be greater than 0 and less than 1.");
+  }
+  return band;
+}
+
+function resolveBox(value) {
+  const options = plainOptions(
+    value,
+    ["fill", "opacity", "stroke", "strokeWidth"],
+    "box"
+  );
+  return Object.freeze({
+    fill: options.fill === undefined
+      ? DEFAULT_BOX.fill
+      : nonEmptyString(options.fill, "box.fill"),
+    opacity: options.opacity === undefined
+      ? DEFAULT_BOX.opacity
+      : opacity(options.opacity, "box.opacity"),
+    stroke: options.stroke === undefined
+      ? DEFAULT_BOX.stroke
+      : nonEmptyString(options.stroke, "box.stroke"),
+    strokeWidth: options.strokeWidth === undefined
+      ? DEFAULT_BOX.strokeWidth
+      : nonNegative(options.strokeWidth, "box.strokeWidth")
+  });
+}
+
+function resolveMedian(value) {
+  const options = plainOptions(value, ["stroke", "strokeWidth"], "median");
+  return Object.freeze({
+    stroke: options.stroke === undefined
+      ? DEFAULT_MEDIAN.stroke
+      : nonEmptyString(options.stroke, "median.stroke"),
+    strokeWidth: options.strokeWidth === undefined
+      ? DEFAULT_MEDIAN.strokeWidth
+      : nonNegative(options.strokeWidth, "median.strokeWidth")
+  });
+}
+
+function resolveOutlier(value) {
+  const options = plainOptions(value, ["shape", "radius", "opacity"], "outlier");
+  return Object.freeze({
+    shape: options.shape === undefined
+      ? DEFAULT_OUTLIER.shape
+      : validatePointShape(options.shape),
+    radius: options.radius === undefined
+      ? DEFAULT_OUTLIER.radius
+      : positive(options.radius, "outlier.radius"),
+    opacity: options.opacity === undefined
+      ? DEFAULT_OUTLIER.opacity
+      : opacity(options.opacity, "outlier.opacity")
+  });
 }
 
 function resolveOrientation(x, y) {
@@ -302,6 +416,13 @@ const createBoxPlot = action(
     const x = position(args.x, "x") ?? source?.encoding?.x;
     const y = position(args.y, "y") ?? source?.encoding?.y;
     const whisker = resolveWhisker(args.whisker);
+    const width = resolveWidth(args.width);
+    if (args.outliers !== undefined && typeof args.outliers !== "boolean") {
+      throw new TypeError("createBoxPlot outliers must be a boolean.");
+    }
+    const box = resolveBox(args.box);
+    const median = resolveMedian(args.median);
+    const outlier = resolveOutlier(args.outlier);
     if (
       x !== undefined &&
       y !== undefined &&
@@ -312,11 +433,11 @@ const createBoxPlot = action(
     let next = this.createBarMark({ id, data })._withMarkConfig(id, {
       boxPlot: {
         whisker,
-        width: 0.7,
-        outliers: true,
-        box: { fill: "#4c78a8", opacity: 1, stroke: "#4c78a8", strokeWidth: 1.5 },
-        median: { stroke: "#1f2937", strokeWidth: 1.5 },
-        outlier: { shape: "diamond", radius: 3, opacity: 0.75 }
+        width,
+        outliers: args.outliers ?? true,
+        box,
+        median,
+        outlier
       }
     });
     if (x !== undefined) next = next.encodeX({ ...encodingArgs(x), target: id, coordinate: args.coordinate ?? source?.coordinate });

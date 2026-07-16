@@ -458,8 +458,8 @@ export type BoxPlotPositionChannel =
   | BoxPlotMeasureChannel;
 
 export type BoxPlotWhisker =
-  | { type?: "tukey" }
-  | { type: "minmax" };
+  | { type?: "tukey"; factor?: number }
+  | { type: "minmax"; factor?: never };
 
 export interface BoxPlotOptions {
   id?: string;
@@ -469,6 +469,23 @@ export interface BoxPlotOptions {
   y?: BoxPlotPositionChannel;
   coordinate?: string;
   whisker?: BoxPlotWhisker;
+  width?: { band?: number };
+  outliers?: boolean;
+  box?: {
+    fill?: string;
+    opacity?: number;
+    stroke?: string;
+    strokeWidth?: number;
+  };
+  median?: {
+    stroke?: string;
+    strokeWidth?: number;
+  };
+  outlier?: {
+    shape?: PointShape;
+    radius?: number;
+    opacity?: number;
+  };
 }
 
 export interface ErrorBandPositionChannel {

@@ -231,6 +231,151 @@ test("omits empty optional outlier resources and rematerializes after Canvas edi
   );
 });
 
+test("forwards factor, width, and approved component styles", () => {
+  const program = base().createBoxPlot({
+    x: { field: "Origin", fieldType: "nominal" },
+    y: { field: "Miles_per_Gallon" },
+    whisker: { type: "tukey", factor: 1 },
+    width: { band: 0.5 },
+    box: {
+      fill: "#f28e2b",
+      opacity: 0.82,
+      stroke: "#9a3412",
+      strokeWidth: 2
+    },
+    median: { stroke: "#431407", strokeWidth: 3 },
+    outlier: { shape: "diamond", radius: 4, opacity: 0.9 }
+  });
+  const summary = program.semanticSpec.datasets.find(dataset =>
+    dataset.id === "boxPlotSummaryData"
+  );
+  const body = program.graphicSpec.objects.boxPlot.children;
+  const medians = program.graphicSpec.objects.boxPlotMedian.children;
+  const outliers = program.graphicSpec.objects.boxPlotOutliers.children;
+
+  assert.equal(summary.transform[0].factor, 1);
+  assert.equal(outliers.length, 25);
+  assert.deepEqual(body.map(child => child.properties.width), [40, 40, 40]);
+  assert.ok(body.every(child =>
+    child.properties.fill === "#f28e2b" &&
+    child.properties.opacity === 0.82 &&
+    child.properties.stroke === "#9a3412" &&
+    child.properties.strokeWidth === 2
+  ));
+  assert.ok(medians.every(child =>
+    child.properties.stroke === "#431407" && child.properties.strokeWidth === 3
+  ));
+  assert.ok(outliers.every(child =>
+    child.type === "path" && child.properties.opacity === 0.9
+  ));
+  assert.deepEqual(
+    medians.map(child => [child.properties.x1, child.properties.x2]),
+    body.map(child => [child.properties.x, child.properties.x + child.properties.width])
+  );
+});
+
+test("rematerializes approved styles and aligned components after Canvas edits", () => {
+  const original = base().createBoxPlot({
+    x: { field: "Origin", fieldType: "nominal" },
+    y: { field: "Miles_per_Gallon" },
+    whisker: { type: "tukey", factor: 1 },
+    width: { band: 0.5 },
+    box: { fill: "#f28e2b", opacity: 0.82, stroke: "#9a3412", strokeWidth: 2 },
+    median: { stroke: "#431407", strokeWidth: 3 },
+    outlier: { shape: "diamond", radius: 4, opacity: 0.9 }
+  });
+  const resized = original.editCanvas({ width: 460 });
+  const body = resized.graphicSpec.objects.boxPlot.children;
+  const medians = resized.graphicSpec.objects.boxPlotMedian.children;
+
+  assert.notDeepEqual(
+    body.map(child => child.properties.x),
+    original.graphicSpec.objects.boxPlot.children.map(child => child.properties.x)
+  );
+  assert.ok(body.every(child =>
+    child.properties.fill === "#f28e2b" &&
+    child.properties.opacity === 0.82 &&
+    child.properties.strokeWidth === 2
+  ));
+  assert.ok(medians.every(child => child.properties.strokeWidth === 3));
+  assert.deepEqual(
+    medians.map(child => [child.properties.x1, child.properties.x2]),
+    body.map(child => [child.properties.x, child.properties.x + child.properties.width])
+  );
+  assert.ok(resized.graphicSpec.objects.boxPlotOutliers.children.every(child =>
+    child.type === "path" && child.properties.opacity === 0.9
+  ));
+});
+
+test("disables outliers without creating optional resources", () => {
+  const program = base().createBoxPlot({
+    x: { field: "Origin", fieldType: "nominal" },
+    y: { field: "Miles_per_Gallon" },
+    outliers: false
+  });
+  const actionNode = program.trace.children.at(-1);
+
+  assert.equal(program.semanticSpec.datasets.some(dataset =>
+    dataset.id === "boxPlotOutlierData"
+  ), false);
+  assert.equal(program.semanticSpec.layers.some(layer =>
+    layer.id === "boxPlotOutliers"
+  ), false);
+  assert.equal(program.graphicSpec.objects.boxPlotOutliers, undefined);
+  assert.equal(findAction(actionNode, "createBoxOutlierData"), undefined);
+  assert.equal(findAction(actionNode, "createBoxOutliers"), undefined);
+});
+
+test("preserves category order and singleton or duplicate summaries", () => {
+  const rows = [
+    { group: "B", value: 2 },
+    { group: "A", value: 1 },
+    { group: "A", value: 1 },
+    { group: "A", value: 3 },
+    { group: "B", value: null },
+    { group: null, value: 9 }
+  ];
+  const program = base(rows).createBoxPlot({
+    id: "distribution",
+    x: { field: "group", fieldType: "nominal" },
+    y: { field: "value" }
+  });
+  const summary = program.semanticSpec.datasets.find(dataset =>
+    dataset.id === "distributionSummaryData"
+  );
+
+  assert.deepEqual(summary.values.map(row => [
+    row.group,
+    row.__boxPlot_count,
+    row.__boxPlot_q1,
+    row.__boxPlot_median,
+    row.__boxPlot_q3
+  ]), [
+    ["B", 1, 2, 2, 2],
+    ["A", 3, 1, 1, 2]
+  ]);
+  assert.equal(program.semanticSpec.layers.some(layer =>
+    layer.id === "distributionOutliers"
+  ), false);
+  assert.equal(rows[0].group, "B");
+});
+
+test("namespaces repeated box-plot resources from explicit owners", () => {
+  const first = complete();
+  const second = first.createBoxPlot({
+    id: "secondary",
+    data: "data",
+    x: { field: "Origin", fieldType: "nominal", scale: "x" },
+    y: { field: "Miles_per_Gallon", scale: "y" }
+  });
+
+  assert.ok(second.semanticSpec.datasets.some(dataset =>
+    dataset.id === "secondarySummaryData"
+  ));
+  assert.ok(second.semanticSpec.layers.some(layer => layer.id === "secondaryMedian"));
+  assert.ok(second.graphicSpec.objects.secondaryWhisker);
+});
+
 test("validates ownership, orientation, and nested options atomically", () => {
   const program = base();
   assert.throws(
@@ -253,11 +398,11 @@ test("validates ownership, orientation, and nested options atomically", () => {
       y: { field: "Miles_per_Gallon" },
       width: { band: 1 }
     }),
-    /Unknown createBoxPlot option/
+    /width\.band must be greater than 0 and less than 1/
   );
   assert.throws(
     () => program.createBoxPlot({ whisker: { type: "minmax", factor: 1 } }),
-    /Unknown createBoxPlot whisker option/
+    /minmax whiskers do not accept factor/
   );
   assert.throws(
     () => program.createBoxPlot({ whisker: { type: "outer" } }),
@@ -265,7 +410,23 @@ test("validates ownership, orientation, and nested options atomically", () => {
   );
   assert.throws(
     () => program.createBoxPlot({ whisker: { type: "tukey", factor: 0 } }),
-    /Unknown createBoxPlot whisker option/
+    /factor must be positive and finite/
+  );
+  assert.throws(
+    () => program.createBoxPlot({ box: { opacity: 2 } }),
+    /box\.opacity must be between 0 and 1/
+  );
+  assert.throws(
+    () => program.createBoxPlot({ median: { strokeWidth: -1 } }),
+    /median\.strokeWidth must be a non-negative finite number/
+  );
+  assert.throws(
+    () => program.createBoxPlot({ outlier: { shape: "kite" } }),
+    /Unsupported point shape/
+  );
+  assert.throws(
+    () => program.createBoxPlot({ outliers: "no" }),
+    /outliers must be a boolean/
   );
   assert.equal(program.semanticSpec.layers.length, 0);
 });
