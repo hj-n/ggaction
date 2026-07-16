@@ -6,6 +6,7 @@ import {
   mapContinuousScaleValues
 } from "../../../grammar/scales.js";
 import { resolveGraphicBounds } from "../../../layout/canvas.js";
+import { resolveGridLineGeometry } from "../../../layout/grid.js";
 import { DEFAULT_COLORS } from "../../../theme/defaults.js";
 import { findCoordinate } from "../../../selectors/coordinates.js";
 import {
@@ -238,7 +239,10 @@ export function resolveGridGeometry(program, config) {
     throw new RangeError("Grid values must be inside the scale domain.");
   }
   const positions = mapContinuousScaleValues(values, scale);
-  return config.direction === "horizontal"
-    ? { values, x1: bounds.x, y1: positions, x2: bounds.x + bounds.width, y2: positions }
-    : { values, x1: positions, y1: bounds.y, x2: positions, y2: bounds.y + bounds.height };
+  return resolveGridLineGeometry({
+    direction: config.direction,
+    values,
+    positions,
+    bounds
+  });
 }

@@ -2,7 +2,13 @@ import { isPlainObject } from "../../core/immutable.js";
 import { validateKeys } from "../../core/validation.js";
 import { resolveGraphicBounds } from "../../layout/canvas.js";
 import { resolveConcreteGraphicBounds } from "../../grammar/schemas/graphicBounds.js";
-import { measureTextWidth, wrapText } from "../../layout/text.js";
+import {
+  alignedTitleAnchor,
+  buildTitleReadingBlock,
+  layoutBoundsIntersect,
+  resolveTitleComponentBounds,
+  unionTitleBounds
+} from "../../layout/title.js";
 import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from "../../theme/defaults.js";
 
 const OPTIONS = Object.freeze([
@@ -172,107 +178,6 @@ export function requireTitleConfig(program) {
   return program.titleConfig;
 }
 
-function lineCenters(lines, style, lineHeight, start) {
-  return lines.map((_, index) => start + style.fontSize / 2 + index * lineHeight);
-}
-
-function buildReadingBlock(program, config) {
-  const titleText = validateTitleString(program.semanticSpec.title.text, "Chart title text");
-  const subtitleText = program.semanticSpec.title.subtitle;
-  const titleLines = wrapText(titleText, {
-    maxWidth: config.maxWidth,
-    mode: config.wrap,
-    style: config.titleStyle
-  });
-  const subtitleLines = subtitleText === undefined ? [] : wrapText(
-    validateTitleString(subtitleText, "Chart subtitle"),
-    {
-      maxWidth: config.maxWidth,
-      mode: config.wrap,
-      style: config.subtitleStyle
-    }
-  );
-  const titleLineHeight = config.lineHeight ?? config.titleStyle.fontSize * 1.2;
-  const subtitleLineHeight = config.lineHeight ?? config.subtitleStyle.fontSize * 1.2;
-  const titleCenters = lineCenters(
-    titleLines,
-    config.titleStyle,
-    titleLineHeight,
-    0
-  );
-  const titleBottom = titleCenters.at(-1) + config.titleStyle.fontSize / 2;
-  const subtitleStart = titleBottom + (subtitleLines.length === 0 ? 0 : config.gap);
-  const subtitleCenters = lineCenters(
-    subtitleLines,
-    config.subtitleStyle,
-    subtitleLineHeight,
-    subtitleStart
-  );
-  const height = subtitleLines.length === 0
-    ? titleBottom
-    : subtitleCenters.at(-1) + config.subtitleStyle.fontSize / 2;
-  const widths = [
-    ...titleLines.map(line => measureTextWidth(line, config.titleStyle)),
-    ...subtitleLines.map(line => measureTextWidth(line, config.subtitleStyle))
-  ];
-  return {
-    titleLines,
-    subtitleLines,
-    titleCenters,
-    subtitleCenters,
-    width: Math.max(...widths),
-    height
-  };
-}
-
-function alignedAnchor(start, length, blockLength, align) {
-  if (align === "left") return start + blockLength / 2;
-  if (align === "center") return start + length / 2;
-  return start + length - blockLength / 2;
-}
-
-function axisAlignedTextBounds({ x, y, text, style, align, rotation }) {
-  const width = measureTextWidth(text, style);
-  const left = align === "left" ? 0 : align === "center" ? -width / 2 : -width;
-  const right = left + width;
-  const top = -style.fontSize / 2;
-  const bottom = style.fontSize / 2;
-  const cosine = Math.cos(rotation);
-  const sine = Math.sin(rotation);
-  const corners = [
-    [left, top], [right, top], [right, bottom], [left, bottom]
-  ].map(([localX, localY]) => ({
-    x: x + localX * cosine - localY * sine,
-    y: y + localX * sine + localY * cosine
-  }));
-  return {
-    left: Math.min(...corners.map(point => point.x)),
-    right: Math.max(...corners.map(point => point.x)),
-    top: Math.min(...corners.map(point => point.y)),
-    bottom: Math.max(...corners.map(point => point.y))
-  };
-}
-
-function unionBounds(bounds) {
-  return {
-    left: Math.min(...bounds.map(item => item.left)),
-    right: Math.max(...bounds.map(item => item.right)),
-    top: Math.min(...bounds.map(item => item.top)),
-    bottom: Math.max(...bounds.map(item => item.bottom))
-  };
-}
-
-function componentBounds(component, style) {
-  return unionBounds(component.lines.map((text, index) => axisAlignedTextBounds({
-    x: Array.isArray(component.x) ? component.x[index] : component.x,
-    y: Array.isArray(component.y) ? component.y[index] : component.y,
-    text,
-    style,
-    align: component.textAlign,
-    rotation: component.rotation
-  })));
-}
-
 function reservedGraphicIds(program, position) {
   const ids = [];
   const axisChannel = ["top", "bottom"].includes(position) ? "x" : "y";
@@ -301,11 +206,6 @@ function reservedGraphicIds(program, position) {
   return [...new Set(ids)];
 }
 
-function intersects(first, second) {
-  return first.left < second.right && first.right > second.left &&
-    first.top < second.bottom && first.bottom > second.top;
-}
-
 function validateLayout(program, position, titleBounds, plot, canvas) {
   if (
     titleBounds.left < 0 || titleBounds.top < 0 ||
@@ -326,7 +226,7 @@ function validateLayout(program, position, titleBounds, plot, canvas) {
     const bounds = program.graphicSpec.objects[id] === undefined
       ? undefined
       : resolveConcreteGraphicBounds(program.graphicSpec, id);
-    if (bounds !== undefined && intersects(titleBounds, bounds)) {
+    if (bounds !== undefined && layoutBoundsIntersect(titleBounds, bounds)) {
       throw new Error(`Chart title and ${position} guides require more margin space.`);
     }
   }
@@ -344,7 +244,15 @@ export function resolveTitleLayout(program, config) {
   ) {
     throw new Error("Chart title layout requires Canvas bounds and dimensions.");
   }
-  const block = buildReadingBlock(program, config);
+  const block = buildTitleReadingBlock({
+    text: validateTitleString(program.semanticSpec.title.text, "Chart title text"),
+    subtitle: program.semanticSpec.title.subtitle === undefined
+      ? undefined
+      : validateTitleString(
+          program.semanticSpec.title.subtitle,
+          "Chart subtitle"
+        )
+  }, config);
   const horizontal = ["top", "bottom"].includes(config.position);
   let title;
   let subtitle;
@@ -375,7 +283,7 @@ export function resolveTitleLayout(program, config) {
     };
   } else {
     const rotation = config.position === "left" ? -Math.PI / 2 : Math.PI / 2;
-    const y = alignedAnchor(plot.y, plot.height, block.width, config.align);
+    const y = alignedTitleAnchor(plot.y, plot.height, block.width, config.align);
     const edge = config.position === "left"
       ? 16 + config.offset
       : canvas.properties.width - 16 + config.offset;
@@ -397,9 +305,11 @@ export function resolveTitleLayout(program, config) {
       explicitRotation: true
     };
   }
-  const titleBounds = unionBounds([
-    componentBounds(title, config.titleStyle),
-    ...(subtitle === undefined ? [] : [componentBounds(subtitle, config.subtitleStyle)])
+  const titleBounds = unionTitleBounds([
+    resolveTitleComponentBounds(title, config.titleStyle),
+    ...(subtitle === undefined
+      ? []
+      : [resolveTitleComponentBounds(subtitle, config.subtitleStyle)])
   ]);
   validateLayout(
     program,

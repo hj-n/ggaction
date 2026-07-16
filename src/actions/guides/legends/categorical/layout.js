@@ -4,6 +4,12 @@ import { mapOrdinalValues } from "../../../../grammar/scales.js";
 import { resolveGraphicBounds } from "../../../../layout/canvas.js";
 import { unionConcreteGraphicBounds } from "../../../../grammar/schemas/graphicBounds.js";
 import { DEFAULT_COLORS } from "../../../../theme/defaults.js";
+import {
+  alignLegendStart,
+  measureLegendSymbolHeight,
+  measureLegendTextWidth,
+  resolveLegendGrid
+} from "../../../../layout/legend.js";
 
 export function activeConfig(program) {
   const entries = ["series", "color"]
@@ -40,18 +46,6 @@ export function symbolWidth(config) {
   }));
 }
 
-function symbolHeight(config) {
-  return Math.max(...config.symbol.layers.map(layer => {
-    if (layer.type === "swatch") return layer.height;
-    if (layer.type === "point") return layer.size * 2;
-    return layer.lineWidth;
-  }));
-}
-
-function textWidth(value) {
-  return String(value).length * 7;
-}
-
 function leftGuideBoundary(program, bounds) {
   const ids = ["yAxisLine", "yAxisTicks", "yAxisLabels", "yAxisTitle"]
     .filter(id => program.graphicSpec.objects[id] !== undefined);
@@ -81,13 +75,15 @@ function resolveLeftLayout(program, bounds, canvas, config, width, count) {
   const padding = config.border === false ? 0 : config.border.padding;
   const categoricalWidth = Math.max(
     config.titleVisible === false ? 0 : String(config.title).length * 6,
-    ...config.domain.map(value => width + config.labels.offset + textWidth(value))
+    ...config.domain.map(value =>
+      width + config.labels.offset + measureLegendTextWidth(value)
+    )
   );
   const sizeWidth = size === undefined
     ? 0
     : Math.max(
         String(sizeConfig.title).length * 6,
-        ...size.labels.map(label => 44 + textWidth(label))
+        ...size.labels.map(label => 44 + measureLegendTextWidth(label))
       );
   const contentWidth = Math.max(categoricalWidth, sizeWidth);
   const occupiedRight = bounds.x - config.offset;
@@ -112,13 +108,16 @@ function resolveLeftLayout(program, bounds, canvas, config, width, count) {
   const sizeSymbolX = size?.values.map(() => start + 16);
   const sizeLabelX = size?.values.map(() => start + 44);
   const categoricalTop = config.titleVisible === false
-    ? itemY[0] - Math.max(config.labels.fontSize, symbolHeight(config)) / 2
+    ? itemY[0] - Math.max(
+        config.labels.fontSize,
+        measureLegendSymbolHeight(config)
+      ) / 2
     : titleY - config.titleStyle.fontSize / 2;
   const sizeBottom = size === undefined
     ? -Infinity
     : sizeItemY.at(-1) + Math.max(size.maximumRadius, config.labels.fontSize / 2);
   const categoricalBottom = itemY.at(-1) +
-    Math.max(config.labels.fontSize, symbolHeight(config)) / 2;
+    Math.max(config.labels.fontSize, measureLegendSymbolHeight(config)) / 2;
   const blockTop = Math.min(categoricalTop, sizeTitleY - config.titleStyle.fontSize / 2);
   const blockBottom = Math.max(categoricalBottom, sizeBottom);
   if (blockTop < 0 || blockBottom > canvas.properties.height) {
@@ -164,57 +163,15 @@ function resolveLeftLayout(program, bounds, canvas, config, width, count) {
   };
 }
 
-function resolveGrid(config, width, count) {
-  const labels = config.domain.map(String);
-  const itemWidths = labels.map(
-    label => width + config.labels.offset + label.length * 7
-  );
-  const columnCount = Math.min(config.columns ?? count, count);
-  const rowCount = Math.ceil(count / columnCount);
-  const cells = Array.from({ length: count }, (_, index) => {
-    if (config.direction === "horizontal") {
-      return { column: index % columnCount, row: Math.floor(index / columnCount) };
-    }
-    return {
-      column: Math.floor(index / rowCount),
-      row: index % rowCount
-    };
-  });
-  const actualColumns = Math.max(...cells.map(cell => cell.column)) + 1;
-  const actualRows = Math.max(...cells.map(cell => cell.row)) + 1;
-  const columnWidths = Array.from({ length: actualColumns }, (_, column) =>
-    Math.max(...cells
-      .map((cell, index) => cell.column === column ? itemWidths[index] : 0))
-  );
-  const gridWidth = columnWidths.reduce((sum, value) => sum + value, 0) +
-    config.itemGap * Math.max(0, actualColumns - 1);
-  const rowHeight = Math.max(config.labels.fontSize, symbolHeight(config));
-  const gridHeight = rowHeight * actualRows +
-    config.itemGap * Math.max(0, actualRows - 1);
-  return {
-    cells,
-    columnWidths,
-    gridWidth,
-    gridHeight,
-    rowHeight
-  };
-}
-
-function alignedStart(bounds, width, align) {
-  if (align === "left") return bounds.x;
-  if (align === "right") return bounds.x + bounds.width - width;
-  return bounds.x + (bounds.width - width) / 2;
-}
-
 function resolveTopLayout(program, bounds, canvas, config, width, count) {
   const { cells, columnWidths, gridWidth, gridHeight, rowHeight } =
-    resolveGrid(config, width, count);
+    resolveLegendGrid(config, width, count);
   const titleWidth = config.title.length * 7;
   const titleGap = config.titlePosition === "left" ? 20 : 12;
   const totalWidth = config.titlePosition === "left"
     ? titleWidth + titleGap + gridWidth
     : Math.max(titleWidth, gridWidth);
-  const start = alignedStart(bounds, totalWidth, config.align);
+  const start = alignLegendStart(bounds, totalWidth, config.align);
   if (start < 0 || start + totalWidth > canvas.properties.width) {
     throw new Error("Legend layout requires more horizontal Canvas space.");
   }
@@ -279,13 +236,13 @@ function resolveTopLayout(program, bounds, canvas, config, width, count) {
 
 function resolveBottomLayout(program, bounds, canvas, config, width, count) {
   const { cells, columnWidths, gridWidth, gridHeight, rowHeight } =
-    resolveGrid(config, width, count);
+    resolveLegendGrid(config, width, count);
   const titleWidth = config.title.length * 7;
   const titleGap = config.titlePosition === "left" ? 20 : 12;
   const totalWidth = config.titlePosition === "left"
     ? titleWidth + titleGap + gridWidth
     : Math.max(titleWidth, gridWidth);
-  const start = alignedStart(bounds, totalWidth, config.align);
+  const start = alignLegendStart(bounds, totalWidth, config.align);
   if (start < 0 || start + totalWidth > canvas.properties.width) {
     throw new Error("Legend layout requires more horizontal Canvas space.");
   }
@@ -371,7 +328,7 @@ function resolveCompactBottomLayout(bounds, canvas, config, width, count) {
     config.itemGap * Math.max(0, count - 1);
   const start = config.align === "center"
     ? (canvas.properties.width - totalWidth) / 2
-    : alignedStart(bounds, totalWidth, config.align);
+    : alignLegendStart(bounds, totalWidth, config.align);
   if (start < 0 || start + totalWidth > canvas.properties.width) {
     throw new Error("Legend layout requires more horizontal Canvas space.");
   }
@@ -391,7 +348,10 @@ function resolveCompactBottomLayout(bounds, canvas, config, width, count) {
   }
   let background;
   if (config.border !== false) {
-    const maxHeight = Math.max(config.labels.fontSize, symbolHeight(config));
+    const maxHeight = Math.max(
+      config.labels.fontSize,
+      measureLegendSymbolHeight(config)
+    );
     const x = start - config.border.padding;
     const y = titleY - config.titleStyle.fontSize / 2 - config.border.padding;
     background = {
