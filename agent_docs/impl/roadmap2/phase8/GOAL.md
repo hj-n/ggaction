@@ -23,7 +23,7 @@ Complete chart contract:
 - [x] Vertical `createBoxPlot` public implementation
 - [x] Horizontal minmax primitive 승인과 public implementation
 - [x] Style/factor/outlier primitive 승인과 full option implementation
-- [ ] Public docs, contract promotion, gallery와 Phase closeout
+- [x] Public docs, contract promotion, gallery와 Phase closeout
 
 ## 구현 범위
 

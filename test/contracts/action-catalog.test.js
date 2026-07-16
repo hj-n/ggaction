@@ -353,6 +353,23 @@ test("keeps completed Phase 7 error-band scope out of planned inventory", () => 
   }
 });
 
+test("keeps completed Phase 8 box-plot scope out of planned inventory", () => {
+  const currentNames = new Set(index.actions.map(action => action.name));
+  const plannedNames = new Set(index.plannedActions.map(action => action.name));
+  const boxContract = owningSection("createBoxPlot").source;
+
+  assert.equal(currentNames.has("createBoxPlot"), true);
+  assert.equal(plannedNames.has("createBoxPlot"), false);
+  assert.match(boxContract, /factor\?: PositiveFinite/);
+  assert.match(boxContract, /type: "minmax"; factor\?: never/);
+  assert.match(boxContract, /width\?: \{ band\?: UnitIntervalExclusive \}/);
+  assert.match(boxContract, /outliers\?: boolean/);
+  assert.match(boxContract, /box\?: \{/);
+  assert.match(boxContract, /median\?: \{/);
+  assert.match(boxContract, /outlier\?: \{/);
+  assert.doesNotMatch(plannedCorpus, /createBoxPlot\(\{/);
+});
+
 test("keeps accepted planned capabilities linked and non-public", () => {
   const ids = index.plannedCapabilities.map(capability => capability.id);
   assert.equal(new Set(ids).size, ids.length);

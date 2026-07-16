@@ -7,17 +7,24 @@ machine-verifiable하게 종료한다.
 
 ## 진행 상태
 
-- [ ] Canonical browser example and typed package surface
-- [ ] Primitive/public/reference/chart/render vertical slice
-- [ ] Independent Cars and synthetic numeric fixtures
-- [ ] Tutorial, API/reference, supported-features and LLM docs
-- [ ] Four generated primitive/public gallery pairs and call chains
-- [ ] `createBoxPlot` and box-data contracts promoted
-- [ ] Phase 8 inventory closeout contract
-- [ ] Action catalog and generated docs freshness
-- [ ] Full test, coverage, PNG, desktop/mobile browser and package checks
-- [ ] GOAL/ROADMAP status and architecture record
-- [ ] Conceptual commits/pushes and remote CI/Pages completion
+- [x] Canonical browser example and typed package surface
+- [x] Primitive/public/reference/chart/render vertical slice
+- [x] Independent Cars and synthetic numeric fixtures
+- [x] Tutorial, API/reference, supported-features and LLM docs
+- [x] Four generated primitive/public gallery pairs and call chains
+- [x] `createBoxPlot` and box-data contracts promoted
+- [x] Phase 8 inventory closeout contract
+- [x] Action catalog and generated docs freshness
+- [x] Full test, coverage, PNG, desktop/mobile browser and package checks
+- [x] GOAL/ROADMAP status and architecture record
+- [x] Conceptual commits/pushes and remote CI/Pages completion
+
+## 종료 검증
+
+- Local: 895 normal tests, 315 render tests, generated catalog/docs freshness and Roadmap gallery passed.
+- Coverage: line 95.25%, branch 91.19%, function 98.36%.
+- Remote: Linux tests/render/coverage and built Jekyll desktop/mobile documentation are verified by the main CI;
+  Pages deployment is verified from the same pushed revision.
 
 ## Closeout contract
 
