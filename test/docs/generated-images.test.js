@@ -57,13 +57,13 @@ test("keeps one generated gallery image for every public chart", async () => {
 
   const manifest = JSON.parse(read("docs/assets/images/manifest.json"));
   assert.deepEqual(manifest, await buildDocImageManifest());
-  assert.equal(manifest.version, 2);
+  assert.equal(manifest.version, 3);
   for (const entry of [
     ...Object.values(manifest.charts),
     ...Object.values(manifest.tutorials)
   ]) {
     assert.match(entry.sourceHash, /^[a-f0-9]{64}$/);
-    assert.match(entry.pixelHash, /^[a-f0-9]{64}$/);
+    assert.equal("pixelHash" in entry, false);
   }
 });
 

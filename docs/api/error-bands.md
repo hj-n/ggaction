@@ -11,6 +11,12 @@ title: Error Bands
 ribbon as one ordinary area layer. It can derive grouped interval rows or
 consume existing center/lower/upper fields.
 
+## At a glance
+
+| Action | Shortest call | Result |
+| --- | --- | --- |
+| `createErrorBand` | `createErrorBand()` after one eligible encoded layer | One grouped interval dataset and ordinary area/boundary layers |
+
 ## `createErrorBand(options?)`
 
 The following runnable fragment assumes `gapminder` is an in-memory array of

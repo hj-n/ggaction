@@ -151,6 +151,13 @@ try {
   const urls = await results.evaluateAll(links => links.map(link => link.href.split("#")[0]));
   assert.equal(new Set(urls).size, urls.length);
   assert.deepEqual(desktopErrors, []);
+
+  await desktop.goto(`${baseUrl}tutorials/`, { waitUntil: "networkidle" });
+  assert.equal(await desktop.locator(".docs-chart-index article").count(), 9);
+  assert.equal(await desktop.locator(".docs-chart-index img").count(), 9);
+  await desktop.goto(`${baseUrl}getting-started/`, { waitUntil: "networkidle" });
+  assert.equal(await desktop.locator(".docs-example-figure img").count(), 1);
+  await desktop.goto(baseUrl, { waitUntil: "networkidle" });
   await desktop.screenshot({ path: path.join(artifactRoot, "desktop.png"), fullPage: true });
   await desktop.close();
 
@@ -222,10 +229,31 @@ try {
   assert.equal(await mobile.locator(".docs-page-toc").getAttribute("open"), null);
   assert.equal(await mobile.locator(".docs-copy-button").count() > 0, true);
   assert.equal(await mobile.locator(".docs-heading-anchor").count() > 0, true);
+  assert.equal(await mobile.locator(".docs-action-heading").count(), 49);
+  assert.equal(await mobile.locator(".docs-page-toc a").count(), 6);
+  const actionFilter = mobile.locator("#docs-action-filter-input");
+  assert.equal(await actionFilter.count(), 1);
+  await actionFilter.fill("edit");
+  const visibleActions = mobile.locator(".docs-action-heading:not([hidden])");
+  assert.equal(await visibleActions.count() > 0, true);
+  assert.equal(await visibleActions.count() < 49, true);
+  assert.match(await mobile.locator(".docs-action-filter__status").innerText(), /actions$/);
   await mobile.screenshot({
     path: path.join(artifactRoot, "mobile-action-reference.png"),
     fullPage: false
   });
+
+  await mobile.goto(`${baseUrl}api/marks/point/`, { waitUntil: "networkidle" });
+  assert.equal(await mobile.locator(".docs-action-heading").count(), 2);
+  assert.equal(await mobile.locator(".docs-action-signature").count(), 2);
+  assert.equal(
+    await mobile.locator(".docs-action-heading code").first().innerText(),
+    "createPointMark"
+  );
+  assert.equal(
+    (await mobile.locator(".docs-action-kind").first().innerText()).toLowerCase(),
+    "create"
+  );
   await mobile.close();
 } finally {
   await browser.close();

@@ -3,7 +3,6 @@ import { readFile, readdir, writeFile } from "node:fs/promises";
 import { relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-import { createCanvas, loadImage } from "@napi-rs/canvas";
 import { renderToPNG } from "ggaction/png";
 import { publicCharts } from "../examples/registry.js";
 
@@ -43,15 +42,6 @@ async function sourceFiles(directory) {
   return nested.flat().filter(file => file.endsWith(".js")).sort();
 }
 
-async function pixelHash(file) {
-  const image = await loadImage(await readFile(file));
-  const canvas = createCanvas(image.width, image.height);
-  const context = canvas.getContext("2d");
-  context.drawImage(image, 0, 0);
-  const pixels = context.getImageData(0, 0, image.width, image.height).data;
-  return createHash("sha256").update(pixels).digest("hex");
-}
-
 export async function buildDocImageManifest() {
   const root = fileURLToPath(new URL("../", import.meta.url));
   const sharedFiles = [
@@ -70,8 +60,7 @@ export async function buildDocImageManifest() {
     {
       width: image.width * 2,
       height: image.height * 2,
-      sourceHash: undefined,
-      pixelHash: undefined
+      sourceHash: undefined
     }
   ]));
   const groups = {
@@ -86,12 +75,9 @@ export async function buildDocImageManifest() {
     hash.update(await readFile(chart.dataFile));
     const group = chartImages.includes(chart) ? groups.charts : groups.tutorials;
     group[chart.id].sourceHash = hash.digest("hex");
-    group[chart.id].pixelHash = await pixelHash(fileURLToPath(
-      new URL(`../docs/assets/images/${chart.id}.png`, import.meta.url)
-    ));
   }
 
-  return { version: 2, pixelRatio: 2, ...groups };
+  return { version: 3, pixelRatio: 2, ...groups };
 }
 
 export async function generateDocImages() {

@@ -11,6 +11,12 @@ title: Box Plots
 field and one quantitative field. It derives immutable summary data and
 composes ordinary ranged-bar, error-bar, rule, and optional point actions.
 
+## At a glance
+
+| Action | Shortest call | Result |
+| --- | --- | --- |
+| `createBoxPlot` | `createBoxPlot()` after one eligible encoded layer | Quartile boxes, medians, whiskers, caps, and optional outliers |
+
 ```javascript
 import { chart } from "ggaction";
 
@@ -27,7 +33,7 @@ const program = chart()
   });
 ```
 
-## Signature
+## `createBoxPlot`
 
 ```javascript
 createBoxPlot({

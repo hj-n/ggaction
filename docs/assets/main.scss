@@ -382,6 +382,10 @@ summary:focus-visible {
   font-size: 0.78rem;
 }
 
+.docs-content [hidden] {
+  display: none !important;
+}
+
 .docs-content table {
   display: block;
   width: 100%;

@@ -3085,6 +3085,12 @@ the current action.
 ribbon as one ordinary area layer. It can derive grouped interval rows or
 consume existing center/lower/upper fields.
 
+## At a glance
+
+| Action | Shortest call | Result |
+| --- | --- | --- |
+| `createErrorBand` | `createErrorBand()` after one eligible encoded layer | One grouped interval dataset and ordinary area/boundary layers |
+
 ## `createErrorBand(options?)`
 
 The following runnable fragment assumes `gapminder` is an in-memory array of
@@ -3242,6 +3248,12 @@ objects.
 field and one quantitative field. It derives immutable summary data and
 composes ordinary ranged-bar, error-bar, rule, and optional point actions.
 
+## At a glance
+
+| Action | Shortest call | Result |
+| --- | --- | --- |
+| `createBoxPlot` | `createBoxPlot()` after one eligible encoded layer | Quartile boxes, medians, whiskers, caps, and optional outliers |
+
 ```javascript
 import { chart } from "ggaction";
 
@@ -3258,7 +3270,7 @@ const program = chart()
   });
 ```
 
-## Signature
+## `createBoxPlot`
 
 ```javascript
 createBoxPlot({
