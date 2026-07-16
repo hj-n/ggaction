@@ -30,7 +30,6 @@ export function createJapanLineHighlightGatePrimitive(
   }));
   const [selected] = children.splice(target.index, 1);
   const legendSymbols = base.graphicSpec.objects.seriesLegendSymbols;
-  const legendLabels = base.graphicSpec.objects.seriesLegendLabels;
 
   return base
     .editGraphics({
@@ -73,19 +72,6 @@ export function createJapanLineHighlightGatePrimitive(
               ...child.properties,
               opacity: LINE_HIGHLIGHT_TARGET.dimOpacity
             }
-      }))
-    })
-    .editGraphics({
-      target: "seriesLegendLabels",
-      property: "children",
-      value: legendLabels.children.map((child, index) => ({
-        type: child.type ?? legendLabels.type,
-        properties: {
-          ...child.properties,
-          opacity: index === target.index
-            ? LINE_HIGHLIGHT_TARGET.opacity
-            : LINE_HIGHLIGHT_TARGET.dimOpacity
-        }
       }))
     });
 }

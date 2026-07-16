@@ -30,7 +30,8 @@ the USA and Europe paths retain their geometry but use opacity `0.16`. The selec
 - Appearance: red `#dc2626`, 5px named `"dashed"`, opacity `1`; USA and Europe use opacity `0.16`.
 - The Japan path keeps its original complete `M` + ordered `L` command sequence and moves to the last child.
 - Because the selection is exactly one complete categorical `Origin` series, the matching legend symbol receives the
-  selected stroke/width/dash while the USA/Europe symbols and labels use opacity `0.16`. Legend order stays unchanged.
+  selected stroke/width/dash while only the USA/Europe symbols use opacity `0.16`. Legend labels remain fully readable
+  and byte-for-byte unchanged; legend order also stays unchanged.
 - Every non-legend graphic, semantic layer, scale, axis, grid and title remains unchanged.
 - A Canvas-only width change preserves `trends/series/2` and its 12 points while remapping concrete x positions.
 - Browser gallery verification loaded the 1440×920 primitive with no console warnings or errors.

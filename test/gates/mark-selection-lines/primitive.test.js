@@ -25,7 +25,6 @@ test("authors Gate C as one selected-last complete path", () => {
   const children = program.graphicSpec.objects.trends.children;
   const selected = children.at(-1);
   const legendSymbols = program.graphicSpec.objects.seriesLegendSymbols.children;
-  const legendLabels = program.graphicSpec.objects.seriesLegendLabels.children;
 
   assert.equal(program.graphicSpec.objects.trends.type, "path");
   assert.equal(children.length, baseChildren.length);
@@ -49,18 +48,18 @@ test("authors Gate C as one selected-last complete path", () => {
   assert.equal(legendSymbols.slice(0, -1).every(child =>
     child.properties.opacity === LINE_HIGHLIGHT_TARGET.dimOpacity
   ), true);
-  assert.equal(legendLabels.slice(0, -1).every(child =>
-    child.properties.opacity === LINE_HIGHLIGHT_TARGET.dimOpacity
-  ), true);
   assert.equal(legendSymbols.at(-1).properties.stroke, LINE_HIGHLIGHT_TARGET.stroke);
   assert.equal(legendSymbols.at(-1).properties.strokeWidth,
     LINE_HIGHLIGHT_TARGET.strokeWidth);
   assert.deepEqual(legendSymbols.at(-1).properties.strokeDash,
     LINE_HIGHLIGHT_TARGET.strokeDash);
-  assert.equal(legendLabels.at(-1).properties.opacity, LINE_HIGHLIGHT_TARGET.opacity);
   const changedGraphics = new Set([
-    "trends", "seriesLegendSymbols", "seriesLegendLabels"
+    "trends", "seriesLegendSymbols"
   ]);
+  assert.deepEqual(
+    program.graphicSpec.objects.seriesLegendLabels,
+    base.graphicSpec.objects.seriesLegendLabels
+  );
   assert.deepEqual(
     Object.fromEntries(
       Object.entries(program.graphicSpec.objects).filter(([id]) =>
