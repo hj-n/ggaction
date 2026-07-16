@@ -105,7 +105,6 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 
 | Kind | Capability | Readiness | Contract |
 | --- | --- | --- | --- |
-| parameter | Continuous color bar consumer | accepted | [Open](planned/ENCODINGS.md#continuous-color-bar-consumer) |
 | parameter | Scale type vocabulary | accepted | [Open](planned/SCALES.md#scale-type-vocabulary) |
 | parameter | Scale mapping policies | accepted | [Open](planned/SCALES.md#scale-mapping-policies) |
 | parameter | Graphic parent attachment | accepted | [Open](planned/PRIMITIVES.md#graphic-parent-attachment) |

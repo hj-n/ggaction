@@ -7,6 +7,7 @@ import {
 } from "./reference-values.js";
 
 const AXIS = "#334155";
+const MUTED = "#64748b";
 const GRID = "#e2e8f0";
 const FONT = "sans-serif";
 
@@ -94,7 +95,10 @@ export function createGapminderContinuousColorBarPrimitives(gapminder, variant) 
     })
     .editSemantic({ property: "layer[bar].encoding.color.scale", value: "color" })
     .editSemantic({ property: "scale[x].type", value: "band" })
-    .editSemantic({ property: "scale[x].domain", value: "auto" })
+    .editSemantic({
+      property: "scale[x].domain",
+      value: CONTINUOUS_BAR_COUNTRIES
+    })
     .editSemantic({ property: "scale[x].range", value: "auto" })
     .editSemantic({ property: "scale[x].paddingInner", value: 0 })
     .editSemantic({ property: "scale[x].paddingOuter", value: 0 })
@@ -102,11 +106,13 @@ export function createGapminderContinuousColorBarPrimitives(gapminder, variant) 
     .editSemantic({ property: "scale[y].type", value: "linear" })
     .editSemantic({ property: "scale[y].domain", value: reference.domains.y })
     .editSemantic({ property: "scale[y].range", value: "auto" })
+    .editSemantic({ property: "scale[y].nice", value: true })
+    .editSemantic({ property: "scale[y].zero", value: false })
     .editSemantic({ property: "scale[color].type", value: "sequential" })
     .editSemantic({ property: "scale[color].domain", value: "auto" })
     .editSemantic({
       property: "scale[color].range",
-      value: { palette: "viridis" }
+      value: { palette: { name: "viridis" } }
     })
     .editSemantic({ property: "scale[color].interpolate", value: "rgb" });
   if (reference.color.reverse) {
@@ -186,44 +192,72 @@ export function createGapminderContinuousColorBarPrimitives(gapminder, variant) 
       strokeWidth: 1
     });
   }
-  program = program.createGraphics({ id: "xAxisTicks", type: "line", length: x.length });
+  program = program.createGraphics({
+    id: "xAxisTicks",
+    type: "line",
+    length: x.length,
+    after: "xAxisLine"
+  });
   program = properties(program, "xAxisTicks", {
     x1: x,
     y1: bounds.bottom,
     x2: x,
     y2: bounds.bottom + 4,
-    stroke: AXIS,
+    stroke: MUTED,
     strokeWidth: 1
   });
-  program = program.createGraphics({ id: "yAxisTicks", type: "line", length: y.length });
+  program = program.createGraphics({
+    id: "yAxisTicks",
+    type: "line",
+    length: y.length,
+    after: "yAxisLine"
+  });
   program = properties(program, "yAxisTicks", {
     x1: bounds.left - 4,
     y1: y,
     x2: bounds.left,
     y2: y,
-    stroke: AXIS,
+    stroke: MUTED,
     strokeWidth: 1
   });
-  program = program.createGraphics({ id: "xAxisLabels", type: "text", length: x.length });
+  program = program.createGraphics({
+    id: "xAxisLabels",
+    type: "text",
+    length: x.length,
+    after: "xAxisTicks"
+  });
   program = text(program, "xAxisLabels", {
     x,
     y: bounds.bottom + 10,
     text: axes.x.labels
   }, { fontSize: 10, textBaseline: "top" });
-  program = program.createGraphics({ id: "yAxisLabels", type: "text", length: y.length });
+  program = program.createGraphics({
+    id: "yAxisLabels",
+    type: "text",
+    length: y.length,
+    after: "yAxisTicks"
+  });
   program = text(program, "yAxisLabels", {
     x: bounds.left - 8,
     y,
     text: axes.y.labels
   }, { fontSize: 10, textAlign: "right" });
-  program = program.createGraphics({ id: "xAxisTitle", type: "text" });
+  program = program.createGraphics({
+    id: "xAxisTitle",
+    type: "text",
+    after: "xAxisLabels"
+  });
   program = text(program, "xAxisTitle", {
     x: (bounds.left + bounds.right) / 2,
     y: height - 16,
     text: "Country",
     rotation: 0
   }, { fontSize: 12, fontWeight: 600 });
-  program = program.createGraphics({ id: "yAxisTitle", type: "text" });
+  program = program.createGraphics({
+    id: "yAxisTitle",
+    type: "text",
+    after: "yAxisLabels"
+  });
   program = text(program, "yAxisTitle", {
     x: 16,
     y: (bounds.top + bounds.bottom) / 2,
@@ -234,7 +268,8 @@ export function createGapminderContinuousColorBarPrimitives(gapminder, variant) 
   program = program.createGraphics({
     id: "colorGradientStrips",
     type: "rect",
-    length: legend.strips.length
+    length: legend.strips.length,
+    after: "bar"
   });
   program = properties(program, "colorGradientStrips", {
     x: legend.strips.map(item => item.x),
@@ -255,7 +290,7 @@ export function createGapminderContinuousColorBarPrimitives(gapminder, variant) 
     y1: legend.positions,
     x2: legend.x + legend.thickness + 6,
     y2: legend.positions,
-    stroke: AXIS,
+    stroke: MUTED,
     strokeWidth: 1
   });
   program = program.createGraphics({
@@ -289,7 +324,7 @@ export function createGapminderContinuousColorBarPrimitives(gapminder, variant) 
   program = program.createGraphics({ id: "chartSubtitle", type: "text" });
   return text(program, "chartSubtitle", {
     x: bounds.left,
-    y: 37,
+    y: 35.8,
     text: title.subtitle
   }, { fill: "#64748b", fontSize: 10, textAlign: "left" });
 }

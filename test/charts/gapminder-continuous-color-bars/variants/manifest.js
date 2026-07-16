@@ -6,6 +6,8 @@ import {
   CONTINUOUS_BAR_COUNTRIES,
   CONTINUOUS_BAR_VARIANTS
 } from "../reference-values.js";
+import { GAPMINDER_CONTINUOUS_COLOR_BAR_BUILDERS } from
+  "../../../../examples/gapminder-continuous-color-bars/program.js";
 
 const gapminder = loadGapminder();
 
@@ -28,7 +30,11 @@ function baseChain(color) {
     oneOf: ${JSON.stringify(CONTINUOUS_BAR_COUNTRIES)}
   })
   .createBarMark()
-  .encodeX({ field: "country", fieldType: "nominal" })
+  .encodeX({
+    field: "country",
+    fieldType: "nominal",
+    scale: { domain: ${JSON.stringify(CONTINUOUS_BAR_COUNTRIES)} }
+  })
   .encodeY({
     field: "pop",
     fieldType: "quantitative",
@@ -125,7 +131,7 @@ export const visualVariants = Object.freeze(CONTINUOUS_BAR_VARIANTS.map(variant 
     }[variant],
     callChain: chains[variant],
     primitive: createGapminderContinuousColorBarPrimitives(gapminder, variant),
-    userFacing: undefined,
+    userFacing: GAPMINDER_CONTINUOUS_COLOR_BAR_BUILDERS[variant](gapminder),
     width: 680,
     height: 380,
     colors: ["#440154", "#fde725"],

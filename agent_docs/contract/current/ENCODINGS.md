@@ -532,19 +532,24 @@ encodeX2(options: RulePositionAssignment | AreaSecondaryXAssignment): ChartProgr
 
 ## `encodeColor`
 
-- Signature: `encodeColor({ field, target?, fieldType?, layout?, scale? })`
-- `field`: 필수 field. nominal은 모든 current mark contract에, quantitative/temporal은 point에 사용한다.
+- Signature: `encodeColor({ field, target?, fieldType?, layout?, aggregate?, scale? })`
+- `field`: 필수 field. nominal은 모든 current mark contract에, quantitative/temporal은 point에 사용하며
+  aggregate bar는 quantitative field를 지원한다.
 - `target`: point, line, bar 또는 area ID; current/unique inference를 지원한다.
 - `fieldType`: `"nominal" | "quantitative" | "temporal"`; 기본값은 nominal이다.
 - `layout`: bar는 `"stack" | "fill" | "group" | "overlay" | "diverging"`, area는 group을 제외한
   네 layout을 지원한다. Histogram default는 stack, ordinal aggregate bar default는 group, area default는
   overlay다. Point/line과 continuous color는 layout을 거부하며 `"center"`는 Proposed다.
-- `scale`: nominal은 ordinal, continuous point color는 internal sequential scale이다. Quantitative point는
+- `aggregate`: aggregate bar continuous color에서만 사용한다. Color field가 measure field와 같으면 measure
+  aggregate를 상속하고, 다른 field는 compatible aggregate를 명시해야 한다. 집계는 최종 category rect
+  grain에서 독립적으로 계산한다.
+- `scale`: nominal은 ordinal, continuous point/bar color는 internal sequential scale이다. Quantitative point는
   `quantize | quantile | threshold`도 지원한다. `palette` 또는
   explicit `range` 중 하나를 사용할 수 있다. Palette는
   [`PALETTES.md`](PALETTES.md)의 frozen 68-name vocabulary와 `{ name, count?, extent? }` object를 받는다.
 - Continuous color는 default `viridis`, eight interpolation tokens, `clamp`, `reverse`, quantitative/temporal
-  auto domain을 지원하며 layout을 거부한다. General `createScale` vocabulary에는 sequential을 노출하지 않는다.
+  point auto domain과 aggregate-bar quantitative auto domain을 지원하며 layout을 거부한다. General
+  `createScale` vocabulary에는 sequential을 노출하지 않는다.
 - Quantize는 auto 또는 explicit pair를 동일 폭으로 나누고, quantile은 auto 또는 explicit sample에서
   동일 개수에 가까운 class를 만들며, threshold는 strictly increasing explicit domain과 정확히 하나 더
   많은 color를 요구한다. Boundary equality는 upper class에 포함되고 interval legend도 같은 경계를 읽는다.
@@ -562,8 +567,7 @@ encodeX2(options: RulePositionAssignment | AreaSecondaryXAssignment): ChartProgr
 
 ### Formal values — `encodeColor`
 
-- Implemented: `encodeColor({ field: FieldName; target?: UserId; fieldType?: "nominal"; layout?: "stack" | "fill" | "group" | "overlay" | "diverging"; scale?: ColorScale } | { field: FieldName; target?: UserId; fieldType: "quantitative" | "temporal"; scale?: SequentialColorScale | DiscretizedColorScale })`; discretized scales require quantitative point color and mark compatibility narrows the nominal layout set.
-- Planned (NOT IMPLEMENTED): continuous bar consumers; continuous fields reject layout.
+- Implemented: `encodeColor({ field: FieldName; target?: UserId; fieldType?: "nominal"; layout?: "stack" | "fill" | "group" | "overlay" | "diverging"; scale?: ColorScale } | { field: FieldName; target?: UserId; fieldType: "quantitative" | "temporal"; aggregate?: AggregateOperation; scale?: SequentialColorScale | DiscretizedColorScale })`; discretized scales require quantitative point color, aggregate is valid only for quantitative aggregate bars, and mark compatibility narrows the nominal layout set.
 - Proposed (NOT IMPLEMENTED): `{ layout?: "center" }`.
 
 ### Value coverage — `encodeColor`
@@ -571,7 +575,9 @@ encodeX2(options: RulePositionAssignment | AreaSecondaryXAssignment): ChartProgr
 - `field`, `target`
   - ✅ Covered: point/line/bar/area, inferred/explicit target, missing/invalid nominal values.
 - `fieldType`
-  - ✅ Covered: nominal, quantitative/temporal point color와 invalid alternatives.
+  - ✅ Covered: nominal, quantitative/temporal point color, quantitative aggregate-bar color와 invalid alternatives.
+- `aggregate`
+  - ✅ Covered: matching-field inheritance, explicit alternate-field aggregate, ambiguous omission and invalid operation.
 - `layout`
   - ✅ Covered: omission, all five values, bar/area compatibility, normalized and signed baseline policies,
     no-auto-opacity overlay, invalid transition atomicity와 `encodeGroup`과의 distinct ownership.
@@ -583,9 +589,12 @@ encodeX2(options: RulePositionAssignment | AreaSecondaryXAssignment): ChartProgr
   - ✅ Covered: categorical/continuous-family sampling, cycling, reverse and mark/legend parity.
   - ✅ Covered: quantitative/temporal point color, sequential mapping, eight interpolation tokens,
     reverse/extent/clamp and gradient legend parity.
+  - ✅ Covered: aggregate-bar sequential domain, concrete rect fills, gradient legend, reverse rematerialization,
+    primitive/public semantic, graphic, Canvas and decoded-pixel parity.
   - ✅ Covered: quantize/quantile/threshold boundaries, upper-boundary equality, explicit colors, reverse,
     invalid threshold definitions, interval legend editing, primitive/public and Canvas parity.
-- Evidence: color, palette, line-series, bar-color, area-color, grouped-bar and Phase 1 integration tests.
+- Evidence: color, palette, line-series, bar-color, continuous-bar-color, area-color, grouped-bar and Roadmap 2
+  continuous-color bar integration tests.
 
 ## `encodeStrokeDash`
 

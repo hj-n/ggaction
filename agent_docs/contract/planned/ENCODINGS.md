@@ -105,56 +105,7 @@ type ImplementedPalette =
 - Quantitative/temporal color encoding, continuous interpolation and gradient legend는 아래 accepted
   vertical contract가 소유한다. Arbitrary user colors는 explicit `range`가 담당하며 별도 palette
   registration API는 두지 않는다.
-- Status: Implemented. The canonical current contract moved to
-  [`../current/PALETTES.md`](../current/PALETTES.md). This compatibility note remains only because the planned
-  continuous-color bar contract below references the implemented palette vocabulary.
-
-## continuous color bar consumer
-
-```typescript
-type ContinuousColorInterpolation =
-  | "rgb"
-  | "hsl" | "hsl-long"
-  | "lab"
-  | "hcl" | "hcl-long"
-  | "cubehelix" | "cubehelix-long";
-
-type ContinuousColorScale = {
-  id?: UserId;
-  type?: "sequential";
-  domain?: "auto" | OrderedQuantitativePair | OrderedTemporalPair;
-  range?: readonly [NonEmptyString, NonEmptyString, ...NonEmptyString[]];
-  palette?: PaletteName | {
-    name: PaletteName;
-    extent?: readonly [UnitInterval, UnitInterval];
-  };
-  interpolate?: ContinuousColorInterpolation;
-  clamp?: boolean;
-  reverse?: boolean;
-  unknown?: NonEmptyString;
-};
-```
-
-- `encodeColor.fieldType` already accepts `"quantitative" | "temporal"` for point marks. This remaining
-  planned extension adds bar marks, whose concrete children each own one fill. For an aggregate bar, a
-  quantitative color field equal to the measure field inherits the measure aggregate. A different color
-  field requires an explicit compatible `aggregate`; raw source rows are never chosen arbitrarily for one
-  final rectangle. Row-owned ranged bars need no aggregate.
-  Line and area paths remain unsupported until a segment/gradient-path materialization contract exists.
-- The scale type is `"sequential"` whether inferred or explicit. Auto quantitative domain is the finite
-  field extent; auto temporal domain is the normalized timestamp extent. The first contract rejects
-  `nice`, `zero` and color layout because those choices do not define continuous color grouping.
-- `range` and `palette` are mutually exclusive. If both are omitted, palette defaults to `"viridis"`.
-  Explicit range has at least two valid CSS colors. Named palette resolution uses the accepted frozen
-  registry, but continuous palette objects reject discrete `count`; `extent` may crop or reverse the scheme.
-- `interpolate` defaults to `"rgb"` and resolves every mapped mark color into a concrete CSS string during
-  materialization. Renderers never interpret the interpolation token. `reverse`, `clamp` and `unknown` follow
-  the accepted shared scale policies, and an explicit domain remains ahead of automatic inference.
-- A sequential color scale may be shared only by compatible continuous-color consumers with the same field
-  type and complete definition. Encoding or scale edits rematerialize all marks and its gradient legend in a
-  deterministic plan while preserving earlier programs.
-- `createLegend({ channels: ["color"] })` infers the gradient form from the sequential scale; the concrete
-  layout contract is owned by [continuous color gradient legend](GUIDES_AND_LAYOUT.md#continuous-color-gradient-legend).
-- Status: Planned, NOT IMPLEMENTED. Point quantitative/temporal domains, palettes/ranges, all interpolation
-  tokens, policies, gradient legend, rematerialization and renderer parity are Current. This contract now
-  contains only the continuous bar consumer and its `unknown` fallback.
+- Status: Implemented. The canonical current palette and continuous-color contracts are
+  [`../current/PALETTES.md`](../current/PALETTES.md) and
+  [`../current/ENCODINGS.md`](../current/ENCODINGS.md#encodecolor). Remaining `unknown` mapping policy work is
+  owned by [`SCALES.md`](SCALES.md#scale-mapping-policies).

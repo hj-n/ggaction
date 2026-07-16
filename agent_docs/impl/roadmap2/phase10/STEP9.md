@@ -13,7 +13,7 @@ aggregate inheritance target을 승인받는다.
 - [x] Edit-scale rematerialization target
 - [x] Exact future public call chain
 - [x] Browser and PNG verification
-- [ ] Gate D user confirmation
+- [x] Gate D user confirmation
 - [x] STEP status, conceptual commit and push
 
 ## 구현 결과

@@ -8,7 +8,8 @@ import { layoutSeriesPartition } from "../../grammar/seriesLayout.js";
 import {
   isDiscretePositionScaleType,
   mapLinearValues,
-  mapOrdinalPositionValues
+  mapOrdinalPositionValues,
+  mapSequentialColors
 } from "../../grammar/scales.js";
 import {
   DEFAULT_BAR_FILL,
@@ -66,6 +67,63 @@ export function deriveAggregateRectangles(required, resolved, widthConfig) {
     Math.abs(categoryScale.bandwidth ?? categoryScale.step)
   );
   const baseline = layout === "overlay" ? measureScale.domain[0] : 0;
+  const continuousColor = colorEncoding?.fieldType === "quantitative";
+  if (continuousColor) {
+    const mappedColors = mapSequentialColors(
+      cells.map(cell => cell.color),
+      colorScale.domain,
+      colorScale.range,
+      {
+        interpolation: colorScale.interpolate,
+        clamp: colorScale.clamp ?? false
+      }
+    );
+    const cellByCategory = new Map(
+      cells.map((cell, index) => [cell[channels.category], { cell, index }])
+    );
+    const existing = resolved.graphicSpec.objects[layer.id].children;
+    const config = resolved.markConfigs[layer.id] ?? {};
+    const appearance = config.barAppearance ?? {};
+    return categoryDomain.flatMap(categoryValue => {
+      const entry = cellByCategory.get(categoryValue);
+      if (entry === undefined) return [];
+      const { cell, index } = entry;
+      const categoryCenter = discreteCategory
+        ? mapOrdinalPositionValues([categoryValue], categoryScale)[0]
+        : mapLinearValues(
+            [categoryValue],
+            categoryScale.domain,
+            categoryScale.range,
+            { clamp: categoryScale.clamp ?? false }
+          )[0];
+      const [start, end] = mapLinearValues(
+        [baseline, cell[channels.measure]],
+        measureScale.domain,
+        measureScale.range,
+        { clamp: measureScale.clamp ?? false }
+      );
+      return [{
+        x: vertical ? categoryCenter - thickness / 2 : Math.min(start, end),
+        y: vertical ? Math.min(start, end) : categoryCenter - thickness / 2,
+        width: vertical ? thickness : Math.abs(start - end),
+        height: vertical ? Math.abs(start - end) : thickness,
+        fill: mappedColors[index],
+        stroke: appearance.stroke === false
+          ? "transparent"
+          : appearance.stroke ?? config.stroke ??
+            existing[index]?.properties.stroke ?? DEFAULT_BAR_STROKE,
+        strokeWidth: appearance.stroke === false
+          ? 0
+          : appearance.strokeWidth ?? config.strokeWidth ??
+            existing[index]?.properties.strokeWidth ?? DEFAULT_BAR_STROKE_WIDTH,
+        ...((appearance.opacity ?? config.opacity) === undefined
+          ? (existing[index]?.properties.opacity === undefined
+              ? {}
+              : { opacity: existing[index].properties.opacity })
+          : { opacity: appearance.opacity ?? config.opacity })
+      }];
+    });
+  }
   const segments = [];
 
   for (const category of categoryDomain) {

@@ -13,12 +13,11 @@ const plannedScales = read("agent_docs/contract/planned/SCALES.md");
 const declarations = read("types/program.d.ts");
 
 const phase10Capabilities = Object.freeze([
-  "continuous-color-bar-consumer",
   "scale-type-vocabulary",
   "scale-mapping-policies"
 ]);
 
-test("keeps the three accepted scale capabilities assigned to Phase 10", () => {
+test("keeps the remaining accepted scale capabilities assigned to Phase 10", () => {
   const planned = new Map(
     index.plannedCapabilities.map(capability => [capability.id, capability])
   );

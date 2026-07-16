@@ -24,8 +24,9 @@ type TitleWrap = "word" | "character";
 
 ## `createLegend`
 
-- Signature: `createLegend({ target?, channels?, position?, align?, direction?, columns?, offset?, titlePosition?, title?, symbol?, labels?, titleStyle?, itemGap?, border?, count? })`.
-- `target`: compatible mark ID; 생략하면 current 또는 유일한 eligible mark를 추론한다.
+- Signature: `createLegend({ target?, channels?, position?, align?, direction?, columns?, offset?, titlePosition?, title?, symbol?, labels?, titleStyle?, itemGap?, border?, count?, gradient? })`.
+- `target`: compatible mark ID; 생략하면 current 또는 유일한 eligible mark를 추론한다. Sequential gradient는
+  point와 aggregate bar를 지원한다.
 - `channels`: unique compatible subset of `"color" | "strokeDash" | "shape" | "opacity"`. 생략하면
   target의 compatible channels를 추론한다. Sequential color는 gradient, field-driven opacity는 sampled
   point block을 선택한다. Opacity는 단독 channel만 지원한다.
@@ -70,7 +71,8 @@ type TitleWrap = "word" | "character";
 ### Value coverage — `createLegend`
 
 - `target`
-  - ✅ Covered: inferred/explicit line, bar, area and compatible point; ambiguity/invalid target.
+  - ✅ Covered: inferred/explicit line, bar, area and compatible point; sequential point/aggregate-bar gradient;
+    ambiguity/invalid target.
 - `channels`
   - ✅ Covered: color, strokeDash, color+strokeDash, point color-only swatch, point color+shape,
     duplicates/incompatible combinations.
@@ -108,7 +110,8 @@ type TitleWrap = "word" | "character";
 - ✅ Covered: gradient tick-label and opacity sample count with the same boundary contract.
 - ✅ Covered: quantize/quantile/threshold interval labels, swatches, reverse와 exact primitive/public parity.
 - `gradient`
-  - ✅ Covered: positive length/thickness, four position-derived orientations and categorical-option conflicts.
+  - ✅ Covered: positive length/thickness, four position-derived orientations, point/aggregate-bar consumers and
+    categorical-option conflicts.
 - ✅ Covered: left point-composite/size side layout and occupied-bounds failure.
 - Evidence: series, histogram, grouped-bar, top categorical, Phase 2 composite and regression legend tests.
 

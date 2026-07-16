@@ -37,12 +37,20 @@ export function deriveBarAggregates(rows, layer) {
     : readNominalField(rows, category.field);
   const color = layer.encoding?.color;
   let colorValues;
+  let colorAggregate;
 
   if (color !== undefined) {
-    if (color.fieldType !== "nominal") {
-      throw new Error(`Bar color encoding on mark "${layer.id}" must be nominal.`);
+    if (color.fieldType === "nominal") {
+      colorValues = readNominalField(rows, color.field);
+    } else if (color.fieldType === "quantitative") {
+      colorAggregate = color.aggregate;
+      validateAggregateFieldType(colorAggregate, color.fieldType);
+      validateAggregateFieldValues(rows, color.field, color.fieldType);
+    } else {
+      throw new Error(
+        `Bar color encoding on mark "${layer.id}" must be nominal or aggregate quantitative.`
+      );
     }
-    colorValues = readNominalField(rows, color.field);
   }
   const groups = new Map();
 
@@ -65,10 +73,15 @@ export function deriveBarAggregates(rows, layer) {
 
   const values = [...groups.values()].flatMap(group => {
     const value = aggregateRows(group.rows, measure.field, measure.aggregate);
-    return value === undefined ? [] : [{
+    const aggregateColor = colorAggregate === undefined
+      ? group.color
+      : aggregateRows(group.rows, color.field, colorAggregate);
+    return value === undefined || (
+      colorAggregate !== undefined && aggregateColor === undefined
+    ) ? [] : [{
       x: channels.category === "x" ? group.category : value,
       y: channels.category === "y" ? group.category : value,
-      ...(Object.hasOwn(group, "color") ? { color: group.color } : {}),
+      ...(color === undefined ? {} : { color: aggregateColor }),
       count: group.rows.length
     }];
   });

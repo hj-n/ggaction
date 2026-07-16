@@ -13,6 +13,11 @@ import {
 } from "../../grammar/bars/policy.js";
 import { validateColorLayout } from "../../grammar/seriesLayout.js";
 import {
+  validateAggregate,
+  validateAggregateFieldType,
+  validateAggregateFieldValues
+} from "../../grammar/aggregate.js";
+import {
   resolveColorScaleDefinition,
   resolveQuantitativeColorScaleDefinition
 } from "../scales/definitions.js";
@@ -27,7 +32,7 @@ import { applyMaterializationPlan } from "../../materialization/dependencies.js"
 import { planEncodingRematerialization } from "../../materialization/encodings.js";
 
 const COLOR_ENCODING_OPTIONS = Object.freeze([
-  "field", "target", "fieldType", "scale", "layout"
+  "field", "target", "fieldType", "scale", "layout", "aggregate"
 ]);
 
 function resolveColorLayout(layer, requested, barGrain) {
@@ -125,9 +130,45 @@ function encodeContinuousColor(program, args) {
   const { id: target, dataset, layer } = resolveTarget(
     program,
     args.target,
-    ["point"],
-    "continuous color point mark"
+    ["point", "bar"],
+    "continuous color mark"
   );
+  if (
+    layer.mark.type === "bar" &&
+    layer.encoding?.color?.fieldType === "nominal"
+  ) {
+    throw new Error(
+      "Continuous bar color cannot replace an existing nominal color layout."
+    );
+  }
+  let aggregate;
+  if (layer.mark.type === "point") {
+    if (args.aggregate !== undefined) {
+      throw new Error("Point continuous color does not support aggregate.");
+    }
+  } else {
+    if (args.fieldType !== "quantitative") {
+      throw new Error("Aggregate bar color currently requires a quantitative field.");
+    }
+    if (resolveBarGrain(layer) !== BAR_GRAINS.aggregate) {
+      throw new Error(
+        "Continuous bar color requires a complete categorical aggregate bar."
+      );
+    }
+    const channels = resolveBarChannels(layer);
+    const measure = layer.encoding?.[channels.measure];
+    aggregate = args.aggregate ?? (
+      measure?.field === args.field ? measure.aggregate : undefined
+    );
+    if (aggregate === undefined) {
+      throw new Error(
+        "Continuous bar color requires aggregate when its field differs from the measure field."
+      );
+    }
+    aggregate = validateAggregate(aggregate);
+    validateAggregateFieldType(aggregate, args.fieldType);
+    validateAggregateFieldValues(dataset.values, args.field, args.fieldType);
+  }
   if (args.fieldType === "temporal") {
     readTemporalField(dataset.values, args.field);
   } else {
@@ -154,11 +195,17 @@ function encodeContinuousColor(program, args) {
     .editSemantic({
       property: `layer[${target}].encoding.color.scale`,
       value: scale.id
-    })
-    .setQuantitativeColorScale(scale);
+    });
+  const encoded = aggregate === undefined
+    ? next
+    : next.editSemantic({
+        property: `layer[${target}].encoding.color.aggregate`,
+        value: aggregate
+      });
+  const scaled = encoded.setQuantitativeColorScale(scale);
   return applyMaterializationPlan(
-    next,
-    planEncodingRematerialization(next, {
+    scaled,
+    planEncodingRematerialization(scaled, {
       target,
       channel: "color",
       scale: scale.id
@@ -179,6 +226,9 @@ const encodeColor = action(
         ...args,
         fieldType: requestedFieldType
       });
+    }
+    if (args.aggregate !== undefined) {
+      throw new Error("Nominal color does not support aggregate.");
     }
     const fieldType = validateNominalFieldType(requestedFieldType);
     const { id: target, dataset, layer } = resolveTarget(

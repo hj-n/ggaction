@@ -42,12 +42,16 @@ function interpolate(left, right, amount) {
   ).toString(16).padStart(2, "0")).join("")}`;
 }
 
-function paletteColor(amount) {
+function paletteColorFrom(range, amount) {
   const bounded = Math.max(0, Math.min(1, amount));
-  const position = bounded * (VIRIDIS.length - 1);
+  const position = bounded * (range.length - 1);
   const lower = Math.floor(position);
-  const upper = Math.min(VIRIDIS.length - 1, lower + 1);
-  return interpolate(VIRIDIS[lower], VIRIDIS[upper], position - lower);
+  const upper = Math.min(range.length - 1, lower + 1);
+  return interpolate(range[lower], range[upper], position - lower);
+}
+
+function paletteColor(amount) {
+  return paletteColorFrom(VIRIDIS, amount);
 }
 
 function mapLinear(value, domain, range) {
@@ -56,9 +60,7 @@ function mapLinear(value, domain, range) {
     (range[1] - range[0]);
 }
 
-function compactNumber(value) {
-  if (Math.abs(value) >= 1e9) return `${+(value / 1e9).toPrecision(3)}B`;
-  if (Math.abs(value) >= 1e6) return `${+(value / 1e6).toPrecision(3)}M`;
+function precisionNumber(value) {
   return String(+value.toPrecision(3));
 }
 
@@ -151,7 +153,7 @@ export function createContinuousColorBarReference(gapminder, variant) {
       y: gradientY + index * gradientLength / 60,
       width: gradientThickness,
       height: gradientLength / 60,
-      fill: paletteColor(reverse ? fraction : 1 - fraction)
+      fill: paletteColorFrom(gradientRange, 1 - fraction)
     });
   }));
   const legendValues = Object.freeze(Array.from(
@@ -184,7 +186,7 @@ export function createContinuousColorBarReference(gapminder, variant) {
         positions: Object.freeze(yTicks.map(value =>
           mapLinear(value, yDomain, [bounds.bottom, bounds.top])
         )),
-        labels: Object.freeze(yTicks.map(compactNumber))
+        labels: Object.freeze(yTicks.map(String))
       })
     }),
     color: Object.freeze({
@@ -203,9 +205,7 @@ export function createContinuousColorBarReference(gapminder, variant) {
       positions: Object.freeze(legendValues.map((_, index) =>
         gradientY + gradientLength * (1 - index / 4)
       )),
-      labels: Object.freeze(legendValues.map(value =>
-        colorField === "population" ? compactNumber(value) : String(+value.toPrecision(3))
-      )),
+      labels: Object.freeze(legendValues.map(precisionNumber)),
       title: colorField === "population" ? "sum(pop)" : "mean(life_expect)"
     }),
     title: titleFor(variant)

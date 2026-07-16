@@ -211,7 +211,7 @@ function aggregateMembers(rows, layer, cell, channels) {
   const categories = categoryValues(rows, category);
   const categoryValue = cell[channels.category];
   const color = layer.encoding?.color;
-  const colors = color === undefined
+  const colors = color?.fieldType !== "nominal"
     ? undefined
     : readNominalField(rows, color.field);
   return rows.filter((_, index) =>
@@ -248,6 +248,27 @@ function aggregateCellDefinitions(program, layer, dataset) {
       },
       members
     };
+  }
+
+  if (colorEncoding?.fieldType === "quantitative") {
+    const cells = new Map(derived.map(cell => [
+      cell[channels.category],
+      cell
+    ]));
+    const categories = ["ordinal", "band", "point"].includes(categoryScale.type)
+      ? categoryScale.domain
+      : [...new Set(derived.map(cell => cell[channels.category]))]
+          .sort((left, right) => left - right);
+    return categories.flatMap(category => {
+      const cell = cells.get(category);
+      return cell === undefined
+        ? []
+        : [definition(
+            cell,
+            measureScale.domain[0],
+            cell[channels.measure]
+          )];
+    });
   }
 
   if (layout === "group" && offsetScale !== undefined) {

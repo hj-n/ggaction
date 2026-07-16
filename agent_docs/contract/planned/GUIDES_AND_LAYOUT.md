@@ -25,6 +25,6 @@ type GradientLegendOptions = {
 - The legend stores scale/channel/title semantics and graphical layout config separately. Scale domain,
   palette/range/interpolation/policy, Canvas or legend edit invokes wrapped `rematerializeLegend`; actual
   occupied bounds must fit the requested margin without resizing the Canvas.
-- Status: Implemented for point sequential color. Four positions, orientations, quantitative/temporal labels,
+- Status: Implemented for point and aggregate-bar sequential color. Four positions, orientations, quantitative/temporal labels,
   reverse/extent, styles, border, categorical-option conflicts, margin errors, rematerialization and PNG parity
   are Current in [`../current/LEGEND_AND_TITLE.md`](../current/LEGEND_AND_TITLE.md#createlegend).

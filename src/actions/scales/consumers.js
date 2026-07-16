@@ -83,6 +83,9 @@ export function resolveConsumerValues(program, consumer) {
     resolveBarGrain(consumer.layer) === BAR_GRAINS.aggregate
   ) {
     const derived = deriveBarAggregates(dataset.values, consumer.layer);
+    if (consumer.channel === "color") {
+      return derived.values.map(value => value.color);
+    }
     return consumer.channel === "x" ? derived.xValues : derived.yValues;
   }
 

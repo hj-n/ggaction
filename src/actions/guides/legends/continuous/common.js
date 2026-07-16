@@ -178,6 +178,24 @@ export function resolveContinuousPoint(program, requested, channel) {
   return layer;
 }
 
+export function resolveContinuousColorLayer(program, requested) {
+  const candidates = program.semanticSpec.layers.filter(layer =>
+    ["point", "bar"].includes(layer.mark?.type) &&
+    layer.encoding?.color?.scale !== undefined
+  );
+  const layer = requested === undefined
+    ? candidates.length === 1 ? candidates[0] : undefined
+    : candidates.find(candidate => candidate.id === requested);
+  if (layer === undefined) {
+    throw new Error(
+      requested === undefined
+        ? "color legend requires one eligible point or bar mark."
+        : `Unknown color legend target "${requested}".`
+    );
+  }
+  return layer;
+}
+
 export function requireResolvedLegendScale(program, id, type) {
   const scale = program.resolvedScales[id];
   if (scale?.type !== type) {

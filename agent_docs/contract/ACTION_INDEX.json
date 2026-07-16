@@ -1589,17 +1589,6 @@
   "plannedActions": [],
   "plannedCapabilities": [
     {
-      "id": "continuous-color-bar-consumer",
-      "kind": "parameter",
-      "name": "Continuous color bar consumer",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/ENCODINGS.md",
-        "anchor": "continuous-color-bar-consumer"
-      }
-    },
-    {
       "id": "scale-type-vocabulary",
       "kind": "parameter",
       "name": "Scale type vocabulary",

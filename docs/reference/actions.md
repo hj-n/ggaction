@@ -343,7 +343,7 @@ preserved and at least one editable setting is required.
 ### `encodeColor`
 
 ```javascript
-encodeColor({ field, target?, fieldType?, layout?, scale? })
+encodeColor({ field, target?, fieldType?, layout?, aggregate?, scale? })
 ```
 
 Create or compatibly replace point fill, line-series color, grouped area fill,
@@ -352,7 +352,9 @@ and `diverging`; area accepts all except `group`. Quantitative and temporal
 point fields use a sequential scale; quantitative point fields also accept
 `quantize`, `quantile`, and `threshold` color classes. Nominal
 grouped bars record `encodeXOffset` as a child. Reassigning grouped color also
-atomically reassigns xOffset and rematerializes an existing legend.
+atomically reassigns xOffset and rematerializes an existing legend. Aggregate
+bars accept quantitative sequential color: a matching measure field inherits
+its aggregate, while a different field requires `aggregate`.
 [Series encodings](../api/series-encodings.md)
 
 ### `encodeStrokeDash`

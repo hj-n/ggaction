@@ -194,10 +194,12 @@ The semantic scale stores the palette descriptor. Materialized scales, marks,
 legends, and renderers receive only concrete CSS colors. Explicit `range` and
 `palette` cannot be supplied together.
 
-## Continuous point color
+## Continuous point and aggregate-bar color
 
 Quantitative or temporal point color uses `fieldType: "quantitative"` or
-`"temporal"` and an internal sequential scale. The default palette is
+`"temporal"` and an internal sequential scale. Aggregate bars support
+quantitative sequential color with one aggregate value per final rectangle.
+The default palette is
 `viridis`; an explicit palette may use `extent`, while an explicit range needs
 at least two colors. `interpolate` accepts `rgb`, `hsl`, `hsl-long`, `lab`,
 `hcl`, `hcl-long`, `cubehelix`, or `cubehelix-long`. `clamp` and `reverse`
@@ -213,6 +215,11 @@ program.encodeColor({
 
 The sequential type is inferred inside `encodeColor`; it is not added to the
 general direct `createScale` vocabulary.
+
+For aggregate bars, a color field equal to the measure field inherits its
+aggregate. A different quantitative field requires an explicit `aggregate`.
+The automatic domain is derived from those final aggregate values, not from
+the unaggregated source rows.
 
 ## Discretized point color
 

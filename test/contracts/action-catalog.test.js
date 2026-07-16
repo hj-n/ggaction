@@ -542,13 +542,11 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   );
   assert.match(plannedCorpus, /count\?: PositiveInteger/);
   assert.match(plannedCorpus, /extent\?: readonly \[UnitInterval, UnitInterval\]/);
-  assert.match(plannedCorpus, /type ContinuousColorInterpolation =/);
-  assert.match(plannedCorpus, /"cubehelix" \| "cubehelix-long"/);
-  assert.match(plannedCorpus, /type ContinuousColorScale =/);
-  assert.match(plannedCorpus, /type\?: "sequential"/);
-  assert.match(plannedCorpus, /palette defaults to `"viridis"`/);
-  assert.match(plannedCorpus, /## continuous color bar consumer/);
-  assert.match(plannedCorpus, /contains only the continuous bar consumer/);
+  assert.match(currentCorpus, /eight interpolation tokens/);
+  assert.match(currentCorpus, /aggregate-bar quantitative auto domain/);
+  assert.match(currentCorpus, /aggregate를 상속/);
+  assert.match(currentCorpus, /point\/aggregate-bar consumers/);
+  assert.doesNotMatch(plannedCorpus, /## continuous color bar consumer/);
   assert.match(plannedCorpus, /## continuous color gradient legend/);
   assert.match(plannedCorpus, /length\?: PositiveFinite/);
   assert.match(plannedCorpus, /adjacent rect strips/);

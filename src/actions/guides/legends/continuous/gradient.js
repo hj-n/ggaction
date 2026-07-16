@@ -10,7 +10,7 @@ import {
   normalizeContinuousLegend,
   requireResolvedLegendScale,
   resolveContinuousBounds,
-  resolveContinuousPoint,
+  resolveContinuousColorLayer,
   resolveLegendBackgroundBounds,
   sampleContinuousValues,
   styleContinuousText,
@@ -110,7 +110,7 @@ function resolveGradientLayout(program, config, scale) {
 }
 
 function resolveGradientConfig(program, config) {
-  const layer = resolveContinuousPoint(program, config.target, "color");
+  const layer = resolveContinuousColorLayer(program, config.target);
   const encoding = layer.encoding.color;
   if (!["quantitative", "temporal"].includes(encoding.fieldType)) {
     throw new Error("Gradient legend requires quantitative or temporal color.");

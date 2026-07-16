@@ -15,14 +15,17 @@ title: Series Encodings
 ## `encodeColor(options)`
 
 Map a nominal field to point fills, line-series strokes, area fills, or bar
-fills. Line and bar materializers may use the field for their own grouping
-policy. Area color must match an existing `encodeGroup` field.
+fills. Quantitative or temporal point fields use continuous or discretized
+color scales. Aggregate bars additionally support one aggregate quantitative
+color value per final rectangle. Line and nominal bar materializers may use
+the field for grouping. Area color must match an existing `encodeGroup` field.
 
 | Option | Type | Default |
 | --- | --- | --- |
 | `field` | non-empty string | required |
 | `target` | point, line, area, or bar mark ID | current mark |
-| `fieldType` | `"nominal"` | `"nominal"` |
+| `fieldType` | `"nominal"`, `"quantitative"`, or `"temporal"` | `"nominal"` |
+| `aggregate` | aggregate operation; quantitative aggregate bars only | matching measure aggregate |
 | `layout` | `"stack"`, `"fill"`, `"group"`, `"overlay"`, or `"diverging"` | mark policy |
 | `scale.id` | scale ID | `"color"` |
 | `scale.type` | `"ordinal"` | `"ordinal"` |
@@ -124,6 +127,41 @@ Canvas and shared-scale changes rematerialize every affected area fill.
 Once a color layout exists, changing it to another layout is rejected until a
 future companion-cleanup contract is implemented; the earlier program remains
 unchanged.
+
+### Continuous aggregate-bar color
+
+For an aggregate bar, continuous color is computed at the same final category
+grain as the rectangle. When the color field matches the quantitative measure,
+omitting `aggregate` inherits that measure aggregate:
+
+```javascript
+bars
+  .encodeY({ field: "population", aggregate: "sum", stack: null })
+  .encodeColor({
+    field: "population",
+    fieldType: "quantitative",
+    scale: { type: "sequential", palette: "viridis" }
+  });
+```
+
+If color uses a different field, its aggregate is required because multiple
+source rows cannot be chosen arbitrarily for one final rectangle:
+
+```javascript
+bars.encodeColor({
+  field: "lifeExpectancy",
+  fieldType: "quantitative",
+  aggregate: "mean",
+  scale: { type: "sequential", palette: "viridis" }
+});
+```
+
+The resolved color domain contains the per-rectangle aggregate values.
+`createLegend({ channels: ["color"] })` creates a gradient legend, and
+`editScale({ id: "color", reverse: true })` rematerializes both bar fills and
+the gradient without changing geometry. Continuous bar color rejects
+`layout`; histogram, ranged-bar, line-path, and area-path continuous color are
+not part of this contract.
 
 ## `encodeStrokeDash(options)`
 

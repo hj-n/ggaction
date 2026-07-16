@@ -699,13 +699,24 @@ export type DiscretizedColorScaleOptions =
       reverse?: boolean;
     };
 
-export type ColorEncodingOptions = CategoricalEncodingOptions | {
-  field: string;
-  target?: string;
-  fieldType: "quantitative" | "temporal";
-  scale?: ContinuousColorScaleOptions | DiscretizedColorScaleOptions;
-  layout?: never;
-};
+export type ColorEncodingOptions =
+  | CategoricalEncodingOptions
+  | {
+      field: string;
+      target?: string;
+      fieldType: "quantitative";
+      aggregate?: AggregateOperation;
+      scale?: ContinuousColorScaleOptions | DiscretizedColorScaleOptions;
+      layout?: never;
+    }
+  | {
+      field: string;
+      target?: string;
+      fieldType: "temporal";
+      aggregate?: never;
+      scale?: ContinuousColorScaleOptions;
+      layout?: never;
+    };
 
 export interface OpacityScaleOptions {
   id?: string;

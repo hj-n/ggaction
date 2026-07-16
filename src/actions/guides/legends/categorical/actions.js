@@ -191,7 +191,9 @@ export const createLegend = action(
       return this.createOpacityLegend(args);
     }
     const continuousColorCandidates = this.semanticSpec.layers.filter(layer => {
-      const encoding = layer.mark?.type === "point" ? layer.encoding?.color : undefined;
+      const encoding = ["point", "bar"].includes(layer.mark?.type)
+        ? layer.encoding?.color
+        : undefined;
       const scale = this.semanticSpec.scales.find(candidate =>
         candidate.id === encoding?.scale
       );
