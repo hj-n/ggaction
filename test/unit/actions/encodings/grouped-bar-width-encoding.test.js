@@ -27,7 +27,7 @@ function groupedBarProgram(rows = values) {
 test("materializes grouped rectangles with the default band", () => {
   const before = groupedBarProgram();
   const program = before.encodeBarWidth();
-  const rectangles = program.graphicSpec.objects.bars.children.map(
+  const rectangles = program.graphicSpec.objects.bars.items.map(
     child => child.properties
   );
 
@@ -48,7 +48,7 @@ test("materializes grouped rectangles with the default band", () => {
     "#4c78a8", "#f58518", "#4c78a8", "#f58518"
   ]);
   assert.deepEqual(rectangles.map(rect => rect.height), [22, 198, 44, 176]);
-  assert.equal(before.graphicSpec.objects.bars.children.length, 0);
+  assert.equal(before.graphicSpec.objects.bars.items.length, 0);
 
   const node = program.trace.children.at(-1);
   assert.equal(node.op, "encodeBarWidth");
@@ -77,7 +77,7 @@ test("supports an explicit band and omits missing category cells", () => {
     row => !(row.year === 1850 && row.sex === "women")
   );
   const program = groupedBarProgram(missing).encodeBarWidth({ band: 0.5 });
-  const rectangles = program.graphicSpec.objects.bars.children;
+  const rectangles = program.graphicSpec.objects.bars.items;
 
   assert.equal(rectangles.length, 3);
   assert.equal(rectangles.every(child => child.properties.width === 40), true);
@@ -90,8 +90,8 @@ test("replaces an existing bar width through the same assignment", () => {
 
   assert.equal(before.markConfigs.bars.barWidth.band, 0.5);
   assert.equal(after.markConfigs.bars.barWidth.band, 0.8);
-  assert.equal(before.graphicSpec.objects.bars.children[0].properties.width, 40);
-  assert.equal(after.graphicSpec.objects.bars.children[0].properties.width, 64);
+  assert.equal(before.graphicSpec.objects.bars.items[0].properties.width, 40);
+  assert.equal(after.graphicSpec.objects.bars.items[0].properties.width, 64);
   assert.equal(after.trace.children.at(-1).op, "encodeBarWidth");
 });
 
@@ -102,14 +102,14 @@ test("supports fixed logical pixels and retains an omitted reassignment mode", (
   assert.deepEqual(fixed.markConfigs.bars.barWidth, { pixels: 14 });
   assert.deepEqual(retained.markConfigs.bars.barWidth, { pixels: 14 });
   assert.equal(
-    retained.graphicSpec.objects.bars.children.every(
+    retained.graphicSpec.objects.bars.items.every(
       child => child.properties.width === 14
     ),
     true
   );
   const resized = retained.editCanvas({ width: 620 });
   assert.equal(
-    resized.graphicSpec.objects.bars.children.every(
+    resized.graphicSpec.objects.bars.items.every(
       child => child.properties.width === 14
     ),
     true
@@ -118,7 +118,7 @@ test("supports fixed logical pixels and retains an omitted reassignment mode", (
 
 test("allows an explicit pixel width wider than its group slot", () => {
   const program = groupedBarProgram().encodeBarWidth({ pixels: 120 });
-  assert.equal(program.graphicSpec.objects.bars.children[0].properties.width, 120);
+  assert.equal(program.graphicSpec.objects.bars.items[0].properties.width, 120);
 });
 
 test("uses one explicit domain order for color and group slots", () => {
@@ -138,7 +138,7 @@ test("uses one explicit domain order for color and group slots", () => {
       scale: { domain: ["women", "men"] }
     })
     .encodeBarWidth();
-  const rectangles = program.graphicSpec.objects.bars.children.map(
+  const rectangles = program.graphicSpec.objects.bars.items.map(
     child => child.properties
   );
 
@@ -158,12 +158,12 @@ test("rematerializes grouped rectangles after Canvas edits", () => {
   const edited = program.editCanvas({ width: 620, height: 400 });
 
   assert.equal(
-    edited.graphicSpec.objects.bars.children[0].properties.width,
+    edited.graphicSpec.objects.bars.items[0].properties.width,
     93.6
   );
   assert.notEqual(
-    edited.graphicSpec.objects.bars.children[0].properties.height,
-    program.graphicSpec.objects.bars.children[0].properties.height
+    edited.graphicSpec.objects.bars.items[0].properties.height,
+    program.graphicSpec.objects.bars.items[0].properties.height
   );
   assert.equal(program.graphicSpec.objects.canvas.properties.width, 420);
 });

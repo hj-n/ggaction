@@ -57,7 +57,7 @@ export function deriveGroupedRectangles(required, resolved, widthConfig) {
         : xIndex.get(left.x) - xIndex.get(right.x)) ||
       offsetIndex.get(left.color) - offsetIndex.get(right.color)
   );
-  const existing = resolved.graphicSpec.objects[layer.id].children;
+  const existing = resolved.graphicSpec.objects[layer.id].items;
   const config = resolved.markConfigs[layer.id] ?? {};
   const appearance = config.barAppearance ?? {};
 

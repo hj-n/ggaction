@@ -30,7 +30,7 @@ function encoded(program) {
 
 test("combines point size, shape, color, and opacity in one collection", () => {
   const program = encoded(base());
-  const children = program.graphicSpec.objects.points.children;
+  const children = program.graphicSpec.objects.points.items;
 
   assert.deepEqual(program.semanticSpec.layers[0].encoding.size, {
     field: "amount", fieldType: "quantitative", scale: "size"
@@ -74,13 +74,13 @@ test("replaces an existing constant opacity through the same assignment", () => 
   const after = before.encodeOpacity({ value: 0.8 });
 
   assert.deepEqual(
-    before.graphicSpec.objects.points.children.map(
+    before.graphicSpec.objects.points.items.map(
       child => child.properties.opacity
     ),
     [0.4, 0.4]
   );
   assert.deepEqual(
-    after.graphicSpec.objects.points.children.map(
+    after.graphicSpec.objects.points.items.map(
       child => child.properties.opacity
     ),
     [0.8, 0.8]
@@ -104,18 +104,18 @@ test("assigns and reassigns field-driven opacity atomically", () => {
     scale: "opacity"
   });
   assert.deepEqual(
-    field.graphicSpec.objects.points.children.map(child => child.properties.opacity),
+    field.graphicSpec.objects.points.items.map(child => child.properties.opacity),
     [0.2, 1]
   );
   assert.equal(reassigned.semanticSpec.layers[0].encoding.opacity.field, "x");
   assert.deepEqual(reassigned.resolvedScales.opacity.domain, [0, 10]);
   assert.equal(restored.semanticSpec.layers[0].encoding?.opacity, undefined);
   assert.deepEqual(
-    restored.graphicSpec.objects.points.children.map(child => child.properties.opacity),
+    restored.graphicSpec.objects.points.items.map(child => child.properties.opacity),
     [0.6, 0.6]
   );
   assert.deepEqual(
-    constant.graphicSpec.objects.points.children.map(child => child.properties.opacity),
+    constant.graphicSpec.objects.points.items.map(child => child.properties.opacity),
     [0.4, 0.4]
   );
 });
@@ -136,7 +136,7 @@ test("supports explicit descending opacity ranges and policies", () => {
   });
   assert.deepEqual(program.resolvedScales.opacity.range, [0.2, 1]);
   assert.deepEqual(
-    program.graphicSpec.objects.points.children.map(child => child.properties.opacity),
+    program.graphicSpec.objects.points.items.map(child => child.properties.opacity),
     [0.2, 1]
   );
 });
@@ -144,7 +144,7 @@ test("supports explicit descending opacity ranges and policies", () => {
 test("rematerializes centered mixed point geometry after Canvas edits", () => {
   const before = encoded(base());
   const after = before.editCanvas({ width: 300, height: 180, margin: 20 });
-  const square = after.graphicSpec.objects.points.children[1];
+  const square = after.graphicSpec.objects.points.items[1];
 
   assert.equal(square.properties.x, 275);
   assert.equal(square.properties.y, 15);
@@ -231,11 +231,11 @@ test("materializes all twelve shapes in marks and a shape-only legend", () => {
 
   assert.deepEqual(program.resolvedScales.shape.range, shapes);
   assert.deepEqual(
-    program.graphicSpec.objects.points.children.map(child => child.type),
+    program.graphicSpec.objects.points.items.map(child => child.type),
     ["circle", "rect", ...Array(10).fill("path")]
   );
   assert.deepEqual(
-    program.graphicSpec.objects.seriesLegendSymbolPoints.children.map(
+    program.graphicSpec.objects.seriesLegendSymbolPoints.items.map(
       child => child.type
     ),
     ["circle", "rect", ...Array(10).fill("path")]
@@ -280,7 +280,7 @@ test("matches the regression scatterplot primitive point collection", () => {
     .encodeOpacity({ value: 0.27 });
 
   assert.deepEqual(
-    program.graphicSpec.objects.points.children,
+    program.graphicSpec.objects.points.items,
     expected.pointChildren.map((child, index) => ({
       id: `points:${index}`,
       type: child.type,

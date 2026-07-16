@@ -39,8 +39,8 @@ test("builds the final public density area chart contract", () => {
     ["createAxes", "createGrid", "createLegend"]
   );
   assert.equal(program.semanticSpec.datasets[1].values.length, 300);
-  assert.equal(program.graphicSpec.objects.densities.children.length, 3);
-  assert.equal(program.graphicSpec.objects.densities.children[0].properties.commands.length, 103);
+  assert.equal(program.graphicSpec.objects.densities.items.length, 3);
+  assert.equal(program.graphicSpec.objects.densities.items[0].properties.commands.length, 103);
   assert.equal(program.semanticSpec.guides.axis.x.title, "Acceleration");
   assert.equal(program.semanticSpec.guides.axis.y.title, "Density");
 });
@@ -60,5 +60,5 @@ test("owns caller data and leaves earlier programs unchanged", () => {
   input[0].Acceleration = -999;
   assert.deepEqual(program.semanticSpec.datasets[0].values, before);
   assert.equal(Object.isFrozen(program.semanticSpec.datasets[1].values), true);
-  assert.equal(Object.isFrozen(program.graphicSpec.objects.densities.children), true);
+  assert.equal(Object.isFrozen(program.graphicSpec.objects.densities.items), true);
 });

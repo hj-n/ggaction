@@ -36,7 +36,7 @@ for (const [name, primitive, userFacing, selectedCount] of [
       ["selectMarks", "applyBarHighlight", "placeSelectedMarkItemsLast"]
     );
     assert.equal(
-      publicProgram.graphicSpec.objects.bars.children.slice(-selectedCount)
+      publicProgram.graphicSpec.objects.bars.items.slice(-selectedCount)
         .every(child => child.properties.fill === "#facc15"),
       true
     );

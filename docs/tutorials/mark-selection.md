@@ -115,7 +115,7 @@ const highlighted = selected.highlightMarks({
 ```
 
 Selection intent is reevaluated after compatible Canvas, scale, encoding, and
-data-cardinality changes. It does not store stale child IDs.
+data-cardinality changes. It does not store stale item IDs.
 
 ## Run and continue
 

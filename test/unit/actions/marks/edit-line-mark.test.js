@@ -25,7 +25,7 @@ test("materializes every accepted create-time curve vocabulary", () => {
     "basis", "cardinal", "monotone", "natural"
   ]) {
     const program = completeLineProgram({ id: "trends", curve });
-    const commands = program.graphicSpec.objects.trends.children[0]
+    const commands = program.graphicSpec.objects.trends.items[0]
       .properties.commands;
     assert.equal(program.markConfigs.trends.curve, curve);
     assert.equal(commands[0].op, "M");
@@ -42,7 +42,7 @@ test("materializes every accepted create-time curve vocabulary", () => {
 test("edits line curve and width through one nested rematerialization", () => {
   const before = completeLineProgram();
   const after = before.editLineMark({ curve: "monotone", strokeWidth: 4 });
-  const commands = after.graphicSpec.objects.trends.children[0].properties.commands;
+  const commands = after.graphicSpec.objects.trends.items[0].properties.commands;
 
   assert.deepEqual(after.semanticSpec, before.semanticSpec);
   assert.deepEqual(after.markConfigs.trends, {
@@ -51,13 +51,13 @@ test("edits line curve and width through one nested rematerialization", () => {
   });
   assert.equal(commands[0].op, "M");
   assert.equal(commands.slice(1).every(command => command.op === "C"), true);
-  assert.equal(after.graphicSpec.objects.trends.children[0].properties.strokeWidth, 4);
+  assert.equal(after.graphicSpec.objects.trends.items[0].properties.strokeWidth, 4);
   assert.deepEqual(
     after.trace.children.at(-1).children.map(child => child.op),
     ["rematerializeLineMark"]
   );
   assert.equal(
-    before.graphicSpec.objects.trends.children[0].properties.commands[1].op,
+    before.graphicSpec.objects.trends.items[0].properties.commands[1].op,
     "L"
   );
   assert.deepEqual(before.markConfigs.trends, {});
@@ -86,25 +86,25 @@ test("supports explicit, current, and unique line target resolution", () => {
     curve: "cardinal",
     strokeWidth: 1
   });
-  assert.deepEqual(incomplete.graphicSpec.objects.empty.children, []);
+  assert.deepEqual(incomplete.graphicSpec.objects.empty.items, []);
   assert.deepEqual(incomplete.trace.children.at(-1).children, []);
 });
 
 test("retains curve appearance across Canvas and grouping rematerialization", () => {
   const curved = completeLineProgram()
     .editLineMark({ curve: "monotone", strokeWidth: 4 });
-  const beforeCommands = curved.graphicSpec.objects.trends.children[0]
+  const beforeCommands = curved.graphicSpec.objects.trends.items[0]
     .properties.commands;
   const resized = curved.editCanvas({ width: 300 });
   const rescaled = resized.editScale({ id: "y", domain: [0, 10] });
   const grouped = rescaled.encodeGroup({ field: "group" });
-  const commands = grouped.graphicSpec.objects.trends.children[0]
+  const commands = grouped.graphicSpec.objects.trends.items[0]
     .properties.commands;
 
   assert.notDeepEqual(commands, beforeCommands);
   assert.equal(commands.slice(1).every(command => command.op === "C"), true);
   assert.equal(
-    grouped.graphicSpec.objects.trends.children[0].properties.strokeWidth,
+    grouped.graphicSpec.objects.trends.items[0].properties.strokeWidth,
     4
   );
   assert.deepEqual(grouped.markConfigs.trends, curved.markConfigs.trends);
@@ -139,7 +139,7 @@ test("rejects invalid and ambiguous edits without changing prior programs", () =
   );
   assert.deepEqual(base.markConfigs.trends, {});
   assert.equal(
-    base.graphicSpec.objects.trends.children[0].properties.commands[1].op,
+    base.graphicSpec.objects.trends.items[0].properties.commands[1].op,
     "L"
   );
 });

@@ -131,11 +131,11 @@ test("highlights inline and reusable selections through wrapped point actions", 
     "placeSelectedMarkItemsLast"
   ]);
   assert.deepEqual(
-    inline.graphicSpec.objects.point.children.slice(-2).map(child => child.type),
+    inline.graphicSpec.objects.point.items.slice(-2).map(child => child.type),
     ["path", "path"]
   );
   assert.equal(
-    inline.graphicSpec.objects.point.children.slice(0, 2).every(child =>
+    inline.graphicSpec.objects.point.items.slice(0, 2).every(child =>
       child.properties.opacity === 0.2
     ),
     true
@@ -158,7 +158,7 @@ test("uses the default point recipe and can replace an existing assignment", () 
   const selected = pointProgram()
     .selectMarks({ field: "x", op: "max" })
     .highlightMarks({});
-  const highlighted = selected.graphicSpec.objects.point.children.at(-1);
+  const highlighted = selected.graphicSpec.objects.point.items.at(-1);
   assert.equal(
     highlighted.type ?? selected.graphicSpec.objects.point.type,
     "circle"
@@ -174,11 +174,11 @@ test("uses the default point recipe and can replace an existing assignment", () 
     bringToFront: false
   });
   assert.equal(
-    replaced.graphicSpec.objects.point.children[3].properties.fill,
+    replaced.graphicSpec.objects.point.items[3].properties.fill,
     "navy"
   );
   assert.equal(
-    replaced.graphicSpec.objects.point.children.slice(0, 3).every(child =>
+    replaced.graphicSpec.objects.point.items.slice(0, 3).every(child =>
       child.properties.opacity === undefined
     ),
     true
@@ -199,7 +199,7 @@ test("keeps an empty point highlight graphical no-op unless complement dimming i
     dimOthers: { opacity: 0.1 }
   });
   assert.equal(
-    dimmed.graphicSpec.objects.point.children.every(child =>
+    dimmed.graphicSpec.objects.point.items.every(child =>
       child.properties.opacity === 0.1
     ),
     true
@@ -209,14 +209,14 @@ test("keeps an empty point highlight graphical no-op unless complement dimming i
 test("scales existing rect and path point geometry without changing shape", () => {
   for (const shape of ["square", "triangle-up"]) {
     const base = pointProgram(shape);
-    const before = base.graphicSpec.objects.point.children[3];
+    const before = base.graphicSpec.objects.point.items[3];
     const highlighted = base.highlightMarks({
       select: { field: "x", op: "max" },
       size: 4,
       offset: { x: 1, y: -2 },
       bringToFront: false
     });
-    const after = highlighted.graphicSpec.objects.point.children[3];
+    const after = highlighted.graphicSpec.objects.point.items[3];
     assert.equal(
       after.type ?? highlighted.graphicSpec.objects.point.type,
       before.type ?? base.graphicSpec.objects.point.type
@@ -243,11 +243,11 @@ test("reapplies selection and highlight intent after point rematerialization", (
     "point/point/3"
   ]);
   assert.deepEqual(
-    resized.graphicSpec.objects.point.children.slice(-2).map(child => child.type),
+    resized.graphicSpec.objects.point.items.slice(-2).map(child => child.type),
     ["path", "path"]
   );
   assert.equal(
-    resized.graphicSpec.objects.point.children.slice(0, 2).every(child =>
+    resized.graphicSpec.objects.point.items.slice(0, 2).every(child =>
       child.properties.opacity === 0.25
     ),
     true
@@ -259,8 +259,8 @@ test("reapplies selection and highlight intent after point rematerialization", (
     value: "A"
   });
   assert.deepEqual(resolveStoredSelection(filtered).keys, ["point/point/1"]);
-  assert.equal(filtered.graphicSpec.objects.point.children.length, 2);
-  assert.equal(filtered.graphicSpec.objects.point.children.at(-1).type, "path");
+  assert.equal(filtered.graphicSpec.objects.point.items.length, 2);
+  assert.equal(filtered.graphicSpec.objects.point.items.at(-1).type, "path");
 });
 
 test("validates selection and point highlight options atomically", () => {
@@ -305,7 +305,7 @@ test("highlights one bar item or one complete stack from the same y2 channel", (
     opacity: 1
   });
   assert.deepEqual(resolveStoredSelection(item).keys, ["bars/histogram/5"]);
-  assert.equal(item.graphicSpec.objects.bars.children.at(-1).properties.fill, "#facc15");
+  assert.equal(item.graphicSpec.objects.bars.items.at(-1).properties.fill, "#facc15");
   assert.deepEqual(item.trace.children.at(-1).children.map(child => child.op), [
     "selectMarks",
     "applyBarHighlight",
@@ -321,14 +321,14 @@ test("highlights one bar item or one complete stack from the same y2 channel", (
     opacity: 1
   });
   assert.deepEqual(resolveStoredSelection(stack).keys, ["bars/stack/1"]);
-  assert.equal(stack.graphicSpec.objects.bars.children.slice(-3).every(child =>
+  assert.equal(stack.graphicSpec.objects.bars.items.slice(-3).every(child =>
     child.properties.fill === "#facc15" &&
     child.properties.stroke === "#713f12"
   ), true);
 
   const resized = stack.editCanvas({ height: 520 });
   assert.deepEqual(resolveStoredSelection(resized).keys, ["bars/stack/1"]);
-  assert.equal(resized.graphicSpec.objects.bars.children.slice(-3).every(child =>
+  assert.equal(resized.graphicSpec.objects.bars.items.slice(-3).every(child =>
     child.properties.fill === "#facc15"
   ), true);
 });
@@ -363,8 +363,8 @@ test("highlights complete area paths and preserves logical offsets after resize"
     offset: { x: 4, y: -3 },
     dimOthers: true
   });
-  const original = base.graphicSpec.objects.densities.children[2].properties.commands[0];
-  const selected = highlighted.graphicSpec.objects.densities.children.at(-1);
+  const original = base.graphicSpec.objects.densities.items[2].properties.commands[0];
+  const selected = highlighted.graphicSpec.objects.densities.items.at(-1);
 
   assert.equal(selected.properties.fill, "#dc2626");
   assert.equal(selected.properties.opacity, 0.8);
@@ -373,8 +373,8 @@ test("highlights complete area paths and preserves logical offsets after resize"
   const resized = highlighted.editCanvas({ width: 760 });
   const resizedBase = base.editCanvas({ width: 760 });
   assert.equal(
-    resized.graphicSpec.objects.densities.children.at(-1).properties.commands[0].x,
-    resizedBase.graphicSpec.objects.densities.children[2].properties.commands[0].x + 4
+    resized.graphicSpec.objects.densities.items.at(-1).properties.commands[0].x,
+    resizedBase.graphicSpec.objects.densities.items[2].properties.commands[0].x + 4
   );
 });
 
@@ -387,7 +387,7 @@ test("highlights rule items with stroke recipes and translated endpoints", () =>
     ] })
     .createRuleMark()
     .encodeX({ field: "value", fieldType: "quantitative" });
-  const original = base.graphicSpec.objects.rule.children[1].properties;
+  const original = base.graphicSpec.objects.rule.items[1].properties;
   const highlighted = base.highlightMarks({
     select: { field: "group", op: "eq", value: "B" },
     stroke: "#dc2626",
@@ -396,14 +396,14 @@ test("highlights rule items with stroke recipes and translated endpoints", () =>
     offset: { x: 2, y: 3 },
     dimOthers: { opacity: 0.2 }
   });
-  const selected = highlighted.graphicSpec.objects.rule.children.at(-1).properties;
+  const selected = highlighted.graphicSpec.objects.rule.items.at(-1).properties;
 
   assert.equal(selected.stroke, "#dc2626");
   assert.equal(selected.strokeWidth, 4);
   assert.deepEqual(selected.strokeDash, [6, 3, 1, 3]);
   assert.equal(selected.x1, original.x1 + 2);
   assert.equal(selected.y1, original.y1 + 3);
-  assert.equal(highlighted.graphicSpec.objects.rule.children[0].properties.opacity, 0.2);
+  assert.equal(highlighted.graphicSpec.objects.rule.items[0].properties.opacity, 0.2);
 });
 
 test("rejects mark-incompatible path and rule highlight options atomically", () => {

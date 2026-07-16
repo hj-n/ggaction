@@ -34,19 +34,19 @@ test("creates a complete ordinal x axis at category centers", () => {
     title: "year"
   });
   assert.deepEqual(
-    program.graphicSpec.objects.xAxisTicks.children.map(
+    program.graphicSpec.objects.xAxisTicks.items.map(
       child => child.properties.x1
     ),
     [140, 300]
   );
   assert.deepEqual(
-    program.graphicSpec.objects.xAxisLabels.children.map(
+    program.graphicSpec.objects.xAxisLabels.items.map(
       child => child.properties.text
     ),
     ["1850", "1860"]
   );
   assert.deepEqual(
-    program.graphicSpec.objects.xAxisLabels.children.map(
+    program.graphicSpec.objects.xAxisLabels.items.map(
       child => child.properties.x
     ),
     [140, 300]
@@ -68,13 +68,13 @@ test("supports explicit ordinal values and reversed x ranges", () => {
   });
 
   assert.deepEqual(
-    program.graphicSpec.objects.xAxisTicks.children.map(
+    program.graphicSpec.objects.xAxisTicks.items.map(
       child => child.properties.x1
     ),
     [140]
   );
   assert.deepEqual(
-    program.graphicSpec.objects.xAxisLabels.children.map(
+    program.graphicSpec.objects.xAxisLabels.items.map(
       child => child.properties.text
     ),
     ["1860"]
@@ -86,13 +86,13 @@ test("rematerializes ordinal axis positions after Canvas edits", () => {
   const after = before.editCanvas({ width: 620 });
 
   assert.deepEqual(
-    after.graphicSpec.objects.xAxisLabels.children.map(
+    after.graphicSpec.objects.xAxisLabels.items.map(
       child => child.properties.x
     ),
     [190, 450]
   );
   assert.deepEqual(
-    before.graphicSpec.objects.xAxisLabels.children.map(
+    before.graphicSpec.objects.xAxisLabels.items.map(
       child => child.properties.x
     ),
     [140, 300]

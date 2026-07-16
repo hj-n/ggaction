@@ -87,9 +87,9 @@ function drawPath(context, child, collectionId) {
 }
 
 export function drawPathGraphic(context, id, graphic) {
-  if (graphic.children) {
-    for (const child of graphic.children) {
-      drawPath(context, child, id);
+  if (graphic.items) {
+    for (const item of graphic.items) {
+      drawPath(context, item, id);
     }
     return;
   }

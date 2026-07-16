@@ -22,7 +22,7 @@ function rangedBar() {
 test("materializes a nominal-category ranged bar and removes stale aggregate state", () => {
   const program = rangedBar();
   const layer = program.semanticSpec.layers[0];
-  const rectangles = program.graphicSpec.objects.range.children;
+  const rectangles = program.graphicSpec.objects.range.items;
 
   assert.equal(layer.encoding.y.aggregate, undefined);
   assert.equal(layer.encoding.y.stack, undefined);
@@ -52,16 +52,16 @@ test("supports atomic range encoding, pixel width, and Canvas rematerialization"
     ["encodeY", "encodeY2"]
   );
   assert.deepEqual(
-    ranged.graphicSpec.objects.range.children.map(rect => rect.properties.width),
+    ranged.graphicSpec.objects.range.items.map(rect => rect.properties.width),
     [18, 18]
   );
   assert.deepEqual(
-    resized.graphicSpec.objects.range.children.map(rect => rect.properties.width),
+    resized.graphicSpec.objects.range.items.map(rect => rect.properties.width),
     [18, 18]
   );
   assert.notDeepEqual(
-    resized.graphicSpec.objects.range.children.map(rect => rect.properties.x),
-    ranged.graphicSpec.objects.range.children.map(rect => rect.properties.x)
+    resized.graphicSpec.objects.range.items.map(rect => rect.properties.x),
+    ranged.graphicSpec.objects.range.items.map(rect => rect.properties.x)
   );
 });
 
@@ -78,8 +78,8 @@ test("spans a median rule across the rematerialized box body", () => {
     })
     .rematerializeRuleMark({ id: "median" });
 
-  const rectangles = program.graphicSpec.objects.range.children;
-  const medians = program.graphicSpec.objects.median.children;
+  const rectangles = program.graphicSpec.objects.range.items;
+  const medians = program.graphicSpec.objects.median.items;
   assert.deepEqual(
     medians.map(line => [line.properties.x1, line.properties.x2]),
     rectangles.map(rect => [rect.properties.x, rect.properties.x + rect.properties.width])
@@ -87,8 +87,8 @@ test("spans a median rule across the rematerialized box body", () => {
 
   const resized = program.editCanvas({ width: 250 });
   assert.deepEqual(
-    resized.graphicSpec.objects.median.children.map(line => [line.properties.x1, line.properties.x2]),
-    resized.graphicSpec.objects.range.children.map(rect => [
+    resized.graphicSpec.objects.median.items.map(line => [line.properties.x1, line.properties.x2]),
+    resized.graphicSpec.objects.range.items.map(rect => [
       rect.properties.x,
       rect.properties.x + rect.properties.width
     ])

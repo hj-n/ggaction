@@ -31,7 +31,7 @@ test("encodes nominal values with an automatic ordinal color scale", () => {
   ]);
   assert.deepEqual(program.resolvedScales.color.domain, ["USA", "Japan"]);
   assert.deepEqual(
-    program.graphicSpec.objects.points.children.map(child => child.properties.fill),
+    program.graphicSpec.objects.points.items.map(child => child.properties.fill),
     ["#4c78a8", "#f58518", "#4c78a8"]
   );
   assert.equal(before.semanticSpec.layers[0].encoding, undefined);
@@ -119,11 +119,11 @@ test("resolves named palettes for marks and connected legends", () => {
   });
   assert.equal(program.semanticSpec.guides.legend.series, undefined);
   assert.deepEqual(
-    program.graphicSpec.objects.points.children.map(child => child.properties.fill),
+    program.graphicSpec.objects.points.items.map(child => child.properties.fill),
     ["#66c2a5", "#fc8d62", "#8da0cb"]
   );
   assert.deepEqual(
-    program.graphicSpec.objects.colorLegendSymbols.children.map(
+    program.graphicSpec.objects.colorLegendSymbols.items.map(
       child => child.properties.fill
     ),
     ["#66c2a5", "#fc8d62", "#8da0cb"]
@@ -134,11 +134,11 @@ test("resolves named palettes for marks and connected legends", () => {
     "#8da0cb", "#fc8d62", "#66c2a5"
   ]);
   assert.deepEqual(
-    reversed.graphicSpec.objects.points.children.map(child => child.properties.fill),
+    reversed.graphicSpec.objects.points.items.map(child => child.properties.fill),
     ["#8da0cb", "#fc8d62", "#66c2a5"]
   );
   assert.deepEqual(
-    reversed.graphicSpec.objects.colorLegendSymbols.children.map(
+    reversed.graphicSpec.objects.colorLegendSymbols.items.map(
       child => child.properties.fill
     ),
     ["#8da0cb", "#fc8d62", "#66c2a5"]
@@ -173,11 +173,11 @@ test("combines every consumer of a shared color scale", () => {
 
   assert.deepEqual(program.resolvedScales.color.domain, ["USA", "Europe"]);
   assert.equal(
-    program.graphicSpec.objects.points.children[0].properties.fill,
+    program.graphicSpec.objects.points.items[0].properties.fill,
     "#4c78a8"
   );
   assert.equal(
-    program.graphicSpec.objects.otherPoints.children[0].properties.fill,
+    program.graphicSpec.objects.otherPoints.items[0].properties.fill,
     "#f58518"
   );
 });
@@ -212,12 +212,12 @@ test("encodes quantitative and temporal point color through sequential scales", 
   });
   assert.deepEqual(quantitative.resolvedScales.color.domain, [8, 24.8]);
   assert.deepEqual(
-    quantitative.graphicSpec.objects.points.children.map(child => child.properties.fill),
+    quantitative.graphicSpec.objects.points.items.map(child => child.properties.fill),
     ["#440154", "#fde725"]
   );
   assert.equal(temporal.resolvedScales.color.type, "sequential");
   assert.deepEqual(
-    temporal.graphicSpec.objects.points.children.map(child => child.properties.fill),
+    temporal.graphicSpec.objects.points.items.map(child => child.properties.fill),
     ["#000000", "#ffffff"]
   );
 });
@@ -242,11 +242,11 @@ test("supports continuous palette extent, interpolation, and reversal", () => {
   assert.equal(program.resolvedScales.color.clamp, true);
   assert.equal(program.semanticSpec.scales[0].reverse, true);
   assert.equal(
-    program.graphicSpec.objects.points.children[0].properties.fill,
+    program.graphicSpec.objects.points.items[0].properties.fill,
     program.resolvedScales.color.range[0]
   );
   assert.equal(
-    program.graphicSpec.objects.points.children[2].properties.fill,
+    program.graphicSpec.objects.points.items[2].properties.fill,
     program.resolvedScales.color.range.at(-1)
   );
 });
@@ -270,15 +270,15 @@ test("rematerializes every point consumer of one sequential color scale", () => 
       fieldType: "quantitative",
       scale: { id: "sharedColor" }
     });
-  const before = shared.graphicSpec.objects.first.children[0].properties.fill;
+  const before = shared.graphicSpec.objects.first.items[0].properties.fill;
   const reversed = shared.editScale({ id: "sharedColor", reverse: true });
   assert.notEqual(
-    reversed.graphicSpec.objects.first.children[0].properties.fill,
+    reversed.graphicSpec.objects.first.items[0].properties.fill,
     before
   );
   assert.deepEqual(
-    reversed.graphicSpec.objects.first.children.map(child => child.properties.fill),
-    reversed.graphicSpec.objects.second.children.map(child => child.properties.fill)
+    reversed.graphicSpec.objects.first.items.map(child => child.properties.fill),
+    reversed.graphicSpec.objects.second.items.map(child => child.properties.fill)
   );
 });
 

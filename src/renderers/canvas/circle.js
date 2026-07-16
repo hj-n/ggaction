@@ -51,9 +51,9 @@ function drawCircle(context, child, collectionId) {
 }
 
 export function drawCircleGraphic(context, id, graphic) {
-  if (graphic.children) {
-    for (const child of graphic.children) {
-      drawCircle(context, child, id);
+  if (graphic.items) {
+    for (const item of graphic.items) {
+      drawCircle(context, item, id);
     }
     return;
   }

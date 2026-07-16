@@ -113,7 +113,7 @@ export function createEncodingReassignmentPrimitives(cars) {
     .editSemantic({ property: "scale[shape].range", value: "auto" })
     .editSemantic({ property: "guide.axis.x.title", value: "Displacement" })
     .editSemantic({ property: "guide.axis.y.title", value: "Acceleration" })
-    .editGraphics({ target: "points", property: "children", value: values.children })
+    .editGraphics({ target: "points", property: "items", value: values.items })
     .editGraphics({
       target: "horizontalGridLines",
       property: "length",
@@ -265,8 +265,8 @@ export function createPointShapeDiamondPrimitives(cars) {
   return createCarsScatterplotPrimitives(cars)
     .editGraphics({
       target: "points",
-      property: "children",
-      value: values.children
+      property: "items",
+      value: values.items
     });
 }
 
@@ -306,13 +306,13 @@ export function createShapeVocabularyPrimitives(cars) {
     .editGraphics({ target: "canvas", property: "width", value: 860 })
     .editGraphics({
       target: "points",
-      property: "children",
-      value: values.children
+      property: "items",
+      value: values.items
     })
     .createGraphics({ id: "seriesLegendSymbolPoints", type: "collection" })
     .editGraphics({
       target: "seriesLegendSymbolPoints",
-      property: "children",
+      property: "items",
       value: values.legend.symbols
     })
     .createGraphics({

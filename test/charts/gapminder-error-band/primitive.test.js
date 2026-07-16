@@ -65,7 +65,7 @@ test("authors the Gapminder vertical error band with raw primitives", () => {
   const dataset = program.semanticSpec.datasets.find(
     item => item.id === "errorBandIntervalData"
   );
-  const paths = program.graphicSpec.objects.errorBand.children;
+  const paths = program.graphicSpec.objects.errorBand.items;
 
   assert.equal(layer.mark.type, "area");
   assert.equal(layer.data, "errorBandIntervalData");

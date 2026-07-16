@@ -13,7 +13,7 @@ function nextGraphicId(program, id) {
 }
 
 function hasRotation(graphic) {
-  const properties = graphic.children?.map(child => child.properties) ??
+  const properties = graphic.items?.map(child => child.properties) ??
     [graphic.properties];
   return properties.some(item => Object.hasOwn(item, "rotation"));
 }
@@ -23,7 +23,7 @@ function ensureTextShape(program, id, component) {
   if (graphic?.type !== "text") {
     throw new Error(`${id} requires an existing text graphic.`);
   }
-  const collection = graphic.children !== undefined;
+  const collection = graphic.items !== undefined;
   const needsCollection = component.lines.length > 1;
   const rotationMismatch = hasRotation(graphic) !== component.explicitRotation;
   if ((collection && !needsCollection) || rotationMismatch) {
@@ -44,7 +44,7 @@ function ensureTextShape(program, id, component) {
       value: component.lines.length
     });
   }
-  if (collection && graphic.children.length !== component.lines.length) {
+  if (collection && graphic.items.length !== component.lines.length) {
     return program.editGraphics({
       target: id,
       property: "length",

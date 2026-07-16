@@ -16,7 +16,7 @@ function createGraphicSpec() {
       },
       points: {
         type: "circle",
-        children: [
+        items: [
           {
             id: "points:0",
             properties: { x: 10, y: 20, radius: 3, fill: "red" }
@@ -76,7 +76,7 @@ test("renders concrete children from a heterogeneous drawable collection", () =>
   const graphicSpec = createGraphicSpec();
   graphicSpec.objects.symbols = {
     type: "collection",
-    children: [
+    items: [
       {
         id: "symbols:0",
         type: "circle",
@@ -114,6 +114,36 @@ test("renders concrete children from a heterogeneous drawable collection", () =>
     30,
     10,
     12
+  ]);
+});
+
+test("renders attached named graphics in depth-first sibling order", () => {
+  const graphicSpec = {
+    objects: {
+      canvas: {
+        type: "canvas",
+        properties: { width: 100, height: 80, background: "white" },
+        children: ["plot"]
+      },
+      plot: { type: "collection", items: [], children: ["back", "front"] },
+      back: {
+        type: "circle",
+        properties: { x: 10, y: 20, radius: 3, fill: "red" }
+      },
+      front: {
+        type: "circle",
+        properties: { x: 30, y: 40, radius: 4, fill: "blue" }
+      }
+    },
+    order: ["canvas"]
+  };
+  const context = createMockCanvasContext();
+
+  render({ graphicSpec }, context);
+
+  assert.deepEqual(findCanvasCalls(context, "arc").map(call => call.args.slice(0, 3)), [
+    [10, 20, 3],
+    [30, 40, 4]
   ]);
 });
 
@@ -176,7 +206,7 @@ test("renders a backend-neutral filled and stroked rect", () => {
 
 test("rejects incomplete and unsupported concrete graphics", () => {
   const missingRadius = createGraphicSpec();
-  delete missingRadius.objects.points.children[0].properties.radius;
+  delete missingRadius.objects.points.items[0].properties.radius;
 
   assert.throws(
     () => render({ graphicSpec: missingRadius }, createMockCanvasContext()),
@@ -192,7 +222,7 @@ test("rejects incomplete and unsupported concrete graphics", () => {
   );
 
   const invalidOpacity = createGraphicSpec();
-  invalidOpacity.objects.points.children[0].properties.opacity = 2;
+  invalidOpacity.objects.points.items[0].properties.opacity = 2;
 
   assert.throws(
     () => render({ graphicSpec: invalidOpacity }, createMockCanvasContext()),
@@ -200,14 +230,14 @@ test("rejects incomplete and unsupported concrete graphics", () => {
   );
 
   const negativeRadius = createGraphicSpec();
-  negativeRadius.objects.points.children[0].properties.radius = -1;
+  negativeRadius.objects.points.items[0].properties.radius = -1;
   assert.throws(
     () => render({ graphicSpec: negativeRadius }, createMockCanvasContext()),
     /circle\.radius must not be negative/
   );
 
   const invalidFill = createGraphicSpec();
-  invalidFill.objects.points.children[0].properties.fill = null;
+  invalidFill.objects.points.items[0].properties.fill = null;
   assert.throws(
     () => render({ graphicSpec: invalidFill }, createMockCanvasContext()),
     /circle\.fill must be a non-empty string/

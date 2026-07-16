@@ -1573,7 +1573,7 @@
       "domain": "primitives",
       "status": "implemented",
       "lifecycle": "Primitive",
-      "update": "Edits one graphical property or removes one top-level graphic",
+      "update": "Edits one graphical property or removes one named graphic subtree",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
@@ -1587,19 +1587,7 @@
     }
   ],
   "plannedActions": [],
-  "plannedCapabilities": [
-    {
-      "id": "graphic-parent-attachment",
-      "kind": "parameter",
-      "name": "Graphic parent attachment",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/PRIMITIVES.md",
-        "anchor": "graphic-parent-attachment"
-      }
-    }
-  ],
+  "plannedCapabilities": [],
   "internal": {
     "materialization": [
       "materializeBoxOutlierData",

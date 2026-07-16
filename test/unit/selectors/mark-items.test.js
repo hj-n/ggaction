@@ -25,7 +25,7 @@ test("resolves one stable semantic item per point row and graphic child", () => 
     candidate.id === layer.data
   );
   const items = resolveMarkItems(program, layer.id);
-  const child = program.graphicSpec.objects[layer.id].children[0];
+  const child = program.graphicSpec.objects[layer.id].items[0];
 
   assert.equal(items.length, dataset.values.length);
   assert.deepEqual(items[0], {
@@ -57,7 +57,7 @@ test("resolves histogram bars at final bin-cell grain without pixel values", () 
   );
   const items = resolveMarkItems(program, layer.id);
 
-  assert.equal(items.length, program.graphicSpec.objects[layer.id].children.length);
+  assert.equal(items.length, program.graphicSpec.objects[layer.id].items.length);
   assert.equal(items.every(item => item.markType === "bar"), true);
   assert.equal(items.every(item => Number.isFinite(item.channels.x)), true);
   assert.equal(items.every(item => Number.isFinite(item.channels.x2)), true);
@@ -70,8 +70,7 @@ test("resolves histogram bars at final bin-cell grain without pixel values", () 
   assert.notEqual(items[0].properties.height, items[0].channels.y2);
   assert.equal(
     items.some((item, index) =>
-      item.channels.y2 - item.channels.y === program.graphicSpec.objects[layer.id]
-        .children[index].properties.height
+      item.channels.y2 - item.channels.y === program.graphicSpec.objects[layer.id].items[index].properties.height
     ),
     false
   );
@@ -94,7 +93,7 @@ test("resolves histogram bars at final bin-cell grain without pixel values", () 
 test("resolves grouped aggregate and ranged bars in concrete cell order", () => {
   const grouped = createJobsGroupedBar(loadJobs());
   const groupedItems = resolveMarkItems(grouped, "bars");
-  assert.equal(groupedItems.length, grouped.graphicSpec.objects.bars.children.length);
+  assert.equal(groupedItems.length, grouped.graphicSpec.objects.bars.items.length);
   assert.equal(groupedItems.every(item => Number.isFinite(item.channels.y)), true);
   assert.equal(groupedItems.every(item => Number.isFinite(item.channels.y2)), true);
   assert.equal(groupedItems.every(item => typeof item.channels.color === "string"), true);
@@ -106,7 +105,7 @@ test("resolves grouped aggregate and ranged bars in concrete cell order", () => 
 
   const ranged = createCarsBoxPlot(loadCars());
   const rangedItems = resolveMarkItems(ranged, "boxPlot");
-  assert.equal(rangedItems.length, ranged.graphicSpec.objects.boxPlot.children.length);
+  assert.equal(rangedItems.length, ranged.graphicSpec.objects.boxPlot.items.length);
   assert.equal(rangedItems.every(item => Number.isFinite(item.channels.y)), true);
   assert.equal(rangedItems.every(item => Number.isFinite(item.channels.y2)), true);
 });
@@ -148,8 +147,8 @@ test("resolves one rule item per final semantic rule", () => {
   assert.deepEqual(items.map(item => item.channels.x), [10, 30]);
   assert.deepEqual(items.map(item => item.graphicIds), [["rule:0"], ["rule:1"]]);
   assert.deepEqual(items.map(item => item.properties.x1), [
-    program.graphicSpec.objects.rule.children[0].properties.x1,
-    program.graphicSpec.objects.rule.children[1].properties.x1
+    program.graphicSpec.objects.rule.items[0].properties.x1,
+    program.graphicSpec.objects.rule.items[1].properties.x1
   ]);
   assert.throws(
     () => resolveMarkItems(program, "rule", "stack"),

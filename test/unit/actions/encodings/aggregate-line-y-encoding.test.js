@@ -28,7 +28,7 @@ test("encodes aggregate y and materializes one sorted mean line", () => {
     scale: { nice: true, zero: false }
   });
   const layer = program.semanticSpec.layers[0];
-  const paths = program.graphicSpec.objects.trends.children;
+  const paths = program.graphicSpec.objects.trends.items;
 
   assert.deepEqual(layer.encoding.y, {
     field: "value",
@@ -60,7 +60,7 @@ test("encodes aggregate y and materializes one sorted mean line", () => {
     strokeDash: []
   });
   assert.equal(before.semanticSpec.layers[0].encoding.y, undefined);
-  assert.deepEqual(before.graphicSpec.objects.trends.children, []);
+  assert.deepEqual(before.graphicSpec.objects.trends.items, []);
   assert.deepEqual(before.resolvedScales.y, undefined);
 });
 
@@ -104,7 +104,7 @@ test("keeps explicit y domains ahead of zero and nice", () => {
 
   assert.deepEqual(program.resolvedScales.y.domain, [0, 20]);
   assert.deepEqual(
-    program.graphicSpec.objects.trends.children[0].properties.commands,
+    program.graphicSpec.objects.trends.items[0].properties.commands,
     linearPathCommands([
       { x: 20, y: 116 },
       { x: 220, y: 68 }
@@ -123,22 +123,22 @@ test("rematerializes line scales and points after Canvas bounds change", () => {
   assert.deepEqual(program.resolvedScales.x.range, [40, 400]);
   assert.deepEqual(program.resolvedScales.y.range, [120, 40]);
   assert.deepEqual(
-    program.graphicSpec.objects.trends.children[0].properties.commands,
+    program.graphicSpec.objects.trends.items[0].properties.commands,
     linearPathCommands([
       { x: 40, y: 120 },
       { x: 400, y: 40 }
     ])
   );
   assert.equal(
-    program.graphicSpec.objects.trends.children[0].properties.stroke,
+    program.graphicSpec.objects.trends.items[0].properties.stroke,
     "red"
   );
   assert.equal(
-    program.graphicSpec.objects.trends.children[0].properties.strokeWidth,
+    program.graphicSpec.objects.trends.items[0].properties.strokeWidth,
     4
   );
   assert.deepEqual(
-    program.graphicSpec.objects.trends.children[0].properties.strokeDash,
+    program.graphicSpec.objects.trends.items[0].properties.strokeDash,
     [5, 2]
   );
   assert.deepEqual(
@@ -168,7 +168,7 @@ test("regroups and rematerializes paths when a series field is introduced", () =
       value: "nominal"
     })
     .rematerializeLineMark({ id: "trends" });
-  const paths = program.graphicSpec.objects.trends.children;
+  const paths = program.graphicSpec.objects.trends.items;
 
   assert.deepEqual(program.resolvedScales.y.domain, [2, 14]);
   assert.equal(paths.length, 2);

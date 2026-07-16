@@ -26,7 +26,7 @@ test("materializes full-span datum rules against plot bounds", () => {
     });
 
   assert.deepEqual(
-    vertical.graphicSpec.objects.vertical.children[0].properties,
+    vertical.graphicSpec.objects.vertical.items[0].properties,
     {
       x1: 70,
       y1: 20,
@@ -39,7 +39,7 @@ test("materializes full-span datum rules against plot bounds", () => {
     }
   );
   assert.deepEqual(
-    horizontal.graphicSpec.objects.horizontal.children[0].properties,
+    horizontal.graphicSpec.objects.horizontal.items[0].properties,
     {
       x1: 20,
       y1: 50,
@@ -74,7 +74,7 @@ test("materializes one diagonal field rule per dataset row", () => {
     .encodeY2({ field: "y2", fieldType: "quantitative" });
 
   assert.deepEqual(
-    program.graphicSpec.objects.diagonal.children.map(child => [
+    program.graphicSpec.objects.diagonal.items.map(child => [
       child.properties.x1,
       child.properties.y1,
       child.properties.x2,
@@ -106,7 +106,7 @@ test("supports nominal independent positions with quantitative intervals", () =>
   assert.equal(program.semanticSpec.scales[0].type, "point");
   assert.deepEqual(program.resolvedScales.x.domain, ["A", "B"]);
   assert.deepEqual(
-    program.graphicSpec.objects.intervals.children.map(child =>
+    program.graphicSpec.objects.intervals.items.map(child =>
       child.properties.x1
     ),
     [70, 170]
@@ -135,19 +135,19 @@ test("reassigns endpoints and rematerializes after scale and Canvas edits", () =
   const rescaled = resized.editScale({ id: "x", domain: [0, 200] });
 
   assert.equal(
-    original.graphicSpec.objects.interval.children[0].properties.x2,
+    original.graphicSpec.objects.interval.items[0].properties.x2,
     180
   );
   assert.equal(
-    reassigned.graphicSpec.objects.interval.children[0].properties.x2,
+    reassigned.graphicSpec.objects.interval.items[0].properties.x2,
     140
   );
   assert.equal(
-    resized.graphicSpec.objects.interval.children[0].properties.x2,
+    resized.graphicSpec.objects.interval.items[0].properties.x2,
     256
   );
   assert.equal(
-    rescaled.graphicSpec.objects.interval.children[0].properties.x2,
+    rescaled.graphicSpec.objects.interval.items[0].properties.x2,
     148
   );
   assert.equal(rescaled.semanticSpec.layers[0].encoding.x2.datum, 60);
@@ -174,8 +174,8 @@ test("replaces a field endpoint with one datum without retaining stale state", (
     fieldType: "quantitative",
     scale: "x"
   });
-  assert.equal(datum.graphicSpec.objects.threshold.children.length, 1);
-  assert.equal(field.graphicSpec.objects.threshold.children.length, 2);
+  assert.equal(datum.graphicSpec.objects.threshold.items.length, 1);
+  assert.equal(field.graphicSpec.objects.threshold.items.length, 2);
 });
 
 test("validates rule endpoint contracts atomically", () => {

@@ -99,9 +99,9 @@ test("authors and renders the complete primitive jobs grouped bar chart", () => 
 
   const bars = program.graphicSpec.objects.bars;
   assert.equal(bars.type, "rect");
-  assert.equal(bars.children.length, 30);
+  assert.equal(bars.items.length, 30);
   assert.deepEqual(
-    bars.children.map(child => child.properties),
+    bars.items.map(child => child.properties),
     values.rects.map(rect => ({
       x: rect.x,
       y: rect.y,
@@ -112,27 +112,27 @@ test("authors and renders the complete primitive jobs grouped bar chart", () => 
       strokeWidth: 0.5
     }))
   );
-  assert.equal(bars.children.every(child =>
+  assert.equal(bars.items.every(child =>
     ["x", "y", "width", "height"].every(property =>
       Number.isFinite(child.properties[property])
     )
   ), true);
-  assert.equal(bars.children.every(child => child.properties.height >= 0), true);
+  assert.equal(bars.items.every(child => child.properties.height >= 0), true);
 
   assert.deepEqual(
-    program.graphicSpec.objects.xAxisLabels.children.map(
+    program.graphicSpec.objects.xAxisLabels.items.map(
       child => child.properties.text
     ),
     values.years.map(String)
   );
   assert.deepEqual(
-    program.graphicSpec.objects.colorLegendLabels.children.map(
+    program.graphicSpec.objects.colorLegendLabels.items.map(
       child => child.properties.text
     ),
     ["men", "women"]
   );
   assert.deepEqual(
-    program.graphicSpec.objects.colorLegendSymbols.children.map(
+    program.graphicSpec.objects.colorLegendSymbols.items.map(
       child => child.properties.fill
     ),
     ["#4c78a8", "#f58518"]
@@ -178,7 +178,7 @@ test("authors and renders the complete primitive jobs grouped bar chart", () => 
     "createLegend",
     "createGuides"
   ].includes(node.op)), false);
-  assert.equal(Object.isFrozen(bars.children[0].properties), true);
+  assert.equal(Object.isFrozen(bars.items[0].properties), true);
   assert.equal(Object.isFrozen(program.semanticSpec.layers[0].encoding.xOffset), true);
   assert.deepEqual(program.actionStack, []);
 });

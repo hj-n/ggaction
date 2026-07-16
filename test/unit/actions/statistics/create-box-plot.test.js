@@ -57,17 +57,17 @@ test("creates the shortest vertical Tukey box plot with documented defaults", ()
       ["boxPlotOutliers", "point"]
     ]
   );
-  assert.equal(program.graphicSpec.objects.boxPlot.children.length, 3);
-  assert.equal(program.graphicSpec.objects.boxPlotOutliers.children.length, 10);
-  assert.ok(program.graphicSpec.objects.boxPlotOutliers.children.every(child =>
+  assert.equal(program.graphicSpec.objects.boxPlot.items.length, 3);
+  assert.equal(program.graphicSpec.objects.boxPlotOutliers.items.length, 10);
+  assert.ok(program.graphicSpec.objects.boxPlotOutliers.items.every(child =>
     child.type === "path" && child.properties.fill === "#111111"
   ));
   assert.deepEqual(
-    program.graphicSpec.objects.boxPlotMedian.children.map(child => [
+    program.graphicSpec.objects.boxPlotMedian.items.map(child => [
       child.properties.x1,
       child.properties.x2
     ]),
-    program.graphicSpec.objects.boxPlot.children.map(child => [
+    program.graphicSpec.objects.boxPlot.items.map(child => [
       child.properties.x,
       child.properties.x + child.properties.width
     ])
@@ -138,11 +138,11 @@ test("creates horizontal minmax boxes without optional outlier resources", () =>
   assert.equal(body.encoding.x.field, "__boxPlot_q1");
   assert.equal(body.encoding.x2.field, "__boxPlot_q3");
   assert.deepEqual(
-    program.graphicSpec.objects.boxPlotMedian.children.map(child => [
+    program.graphicSpec.objects.boxPlotMedian.items.map(child => [
       child.properties.y1,
       child.properties.y2
     ]),
-    program.graphicSpec.objects.boxPlot.children.map(child => [
+    program.graphicSpec.objects.boxPlot.items.map(child => [
       child.properties.y,
       child.properties.y + child.properties.height
     ])
@@ -183,19 +183,19 @@ test("rematerializes horizontal boxes, medians, and minmax whiskers", () => {
   const reversed = resized.editScale({ id: "x", reverse: true });
 
   assert.notDeepEqual(
-    resized.graphicSpec.objects.boxPlot.children.map(child => child.properties.x),
-    program.graphicSpec.objects.boxPlot.children.map(child => child.properties.x)
+    resized.graphicSpec.objects.boxPlot.items.map(child => child.properties.x),
+    program.graphicSpec.objects.boxPlot.items.map(child => child.properties.x)
   );
   assert.notDeepEqual(
-    reversed.graphicSpec.objects.boxPlot.children.map(child => child.properties.x),
-    resized.graphicSpec.objects.boxPlot.children.map(child => child.properties.x)
+    reversed.graphicSpec.objects.boxPlot.items.map(child => child.properties.x),
+    resized.graphicSpec.objects.boxPlot.items.map(child => child.properties.x)
   );
   assert.deepEqual(
-    reversed.graphicSpec.objects.boxPlotMedian.children.map(child => [
+    reversed.graphicSpec.objects.boxPlotMedian.items.map(child => [
       child.properties.y1,
       child.properties.y2
     ]),
-    reversed.graphicSpec.objects.boxPlot.children.map(child => [
+    reversed.graphicSpec.objects.boxPlot.items.map(child => [
       child.properties.y,
       child.properties.y + child.properties.height
     ])
@@ -216,15 +216,15 @@ test("omits empty optional outlier resources and rematerializes after Canvas edi
   assert.equal(program.semanticSpec.layers.some(layer => layer.id === "boxPlotOutliers"), false);
   assert.equal(program.graphicSpec.objects.boxPlotOutliers, undefined);
   assert.notDeepEqual(
-    resized.graphicSpec.objects.boxPlot.children.map(child => child.properties.x),
-    program.graphicSpec.objects.boxPlot.children.map(child => child.properties.x)
+    resized.graphicSpec.objects.boxPlot.items.map(child => child.properties.x),
+    program.graphicSpec.objects.boxPlot.items.map(child => child.properties.x)
   );
   assert.deepEqual(
-    resized.graphicSpec.objects.boxPlotMedian.children.map(child => [
+    resized.graphicSpec.objects.boxPlotMedian.items.map(child => [
       child.properties.x1,
       child.properties.x2
     ]),
-    resized.graphicSpec.objects.boxPlot.children.map(child => [
+    resized.graphicSpec.objects.boxPlot.items.map(child => [
       child.properties.x,
       child.properties.x + child.properties.width
     ])
@@ -249,9 +249,9 @@ test("forwards factor, width, and approved component styles", () => {
   const summary = program.semanticSpec.datasets.find(dataset =>
     dataset.id === "boxPlotSummaryData"
   );
-  const body = program.graphicSpec.objects.boxPlot.children;
-  const medians = program.graphicSpec.objects.boxPlotMedian.children;
-  const outliers = program.graphicSpec.objects.boxPlotOutliers.children;
+  const body = program.graphicSpec.objects.boxPlot.items;
+  const medians = program.graphicSpec.objects.boxPlotMedian.items;
+  const outliers = program.graphicSpec.objects.boxPlotOutliers.items;
 
   assert.equal(summary.transform[0].factor, 1);
   assert.equal(outliers.length, 25);
@@ -285,12 +285,12 @@ test("rematerializes approved styles and aligned components after Canvas edits",
     outlier: { shape: "diamond", radius: 4, opacity: 0.9 }
   });
   const resized = original.editCanvas({ width: 460 });
-  const body = resized.graphicSpec.objects.boxPlot.children;
-  const medians = resized.graphicSpec.objects.boxPlotMedian.children;
+  const body = resized.graphicSpec.objects.boxPlot.items;
+  const medians = resized.graphicSpec.objects.boxPlotMedian.items;
 
   assert.notDeepEqual(
     body.map(child => child.properties.x),
-    original.graphicSpec.objects.boxPlot.children.map(child => child.properties.x)
+    original.graphicSpec.objects.boxPlot.items.map(child => child.properties.x)
   );
   assert.ok(body.every(child =>
     child.properties.fill === "#f28e2b" &&
@@ -302,7 +302,7 @@ test("rematerializes approved styles and aligned components after Canvas edits",
     medians.map(child => [child.properties.x1, child.properties.x2]),
     body.map(child => [child.properties.x, child.properties.x + child.properties.width])
   );
-  assert.ok(resized.graphicSpec.objects.boxPlotOutliers.children.every(child =>
+  assert.ok(resized.graphicSpec.objects.boxPlotOutliers.items.every(child =>
     child.type === "path" && child.properties.opacity === 0.9
   ));
 });

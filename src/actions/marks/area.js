@@ -284,7 +284,7 @@ const rematerializeAreaMark = action(
           resolved.resolvedScales[colorEncoding.scale].domain,
           resolved.resolvedScales[colorEncoding.scale].range
         );
-    const existingChildren = resolved.graphicSpec.objects[id].children ?? [];
+    const existingChildren = resolved.graphicSpec.objects[id].items ?? [];
     const removesOutline = config.stroke === undefined && existingChildren.some(
       child => child.properties.stroke !== undefined
     );

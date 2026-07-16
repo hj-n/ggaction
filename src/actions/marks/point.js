@@ -197,7 +197,7 @@ const rematerializePointMark = action(
         ]);
       }
       return baseline
-        .editGraphics({ target: id, property: "children", value: [] })
+        .editGraphics({ target: id, property: "items", value: [] })
         .rematerializePointMark({ id })
         .rematerializeMarkHighlights({ target: id, highlights });
     }
@@ -224,7 +224,7 @@ const rematerializePointMark = action(
     const config = this.markConfigs[id] ?? {};
     const fill = mappedFill ?? config.fill ?? DEFAULT_POINT_FILL;
     const shapes = encodedShape ?? dataset.values.map(() => config.shape ?? "circle");
-    const existingChildren = graphic.children ?? [];
+    const existingChildren = graphic.items ?? [];
     const constantShape = validatePointShape(config.shape ?? "circle");
     const requiresMixedCollection =
       encodedShape !== undefined ||
@@ -232,7 +232,7 @@ const rematerializePointMark = action(
       getPointGraphicType(constantShape) !== graphic.type;
 
     if (requiresMixedCollection) {
-      const children = dataset.values.map((_, index) => {
+      const items = dataset.values.map((_, index) => {
         const shape = shapes[index];
         const existing = existingChildren[index]?.properties ?? {};
         const color = mappedFill?.[index] ?? config.fill ??
@@ -270,10 +270,10 @@ const rematerializePointMark = action(
           opacity
         });
       });
-      return this.editGraphics({ target: id, property: "children", value: children });
+      return this.editGraphics({ target: id, property: "items", value: items });
     }
 
-    let next = graphic.children.length === dataset.values.length
+    let next = graphic.items.length === dataset.values.length
       ? this
       : this.editGraphics({
           target: id,

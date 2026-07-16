@@ -42,9 +42,9 @@ test("infers a count/zero-stack bar y encoding", () => {
     domain: [0, 120],
     range: [330, 80]
   });
-  assert.equal(program.graphicSpec.objects.bars.children.length, 9);
+  assert.equal(program.graphicSpec.objects.bars.items.length, 9);
   assert.equal(
-    program.graphicSpec.objects.bars.children.every(child =>
+    program.graphicSpec.objects.bars.items.every(child =>
       ["x", "y", "width", "height"].every(property =>
         Number.isFinite(child.properties[property])
       )
@@ -107,7 +107,7 @@ test("normalizes histogram partitions through the direct y encoding", () => {
 
   assert.equal(program.semanticSpec.layers[0].encoding.y.stack, "normalize");
   assert.deepEqual(program.resolvedScales.y.domain, [0, 1]);
-  assert.equal(program.graphicSpec.objects.bars.children.length, 9);
+  assert.equal(program.graphicSpec.objects.bars.items.length, 9);
 });
 
 test("converges when normalize is authored before or through fill color", () => {
@@ -127,14 +127,14 @@ test("rematerializes histogram scales and rects after Canvas edits", () => {
 
   assert.deepEqual(edited.resolvedScales.x.range, [80, 440]);
   assert.deepEqual(edited.resolvedScales.y.range, [370, 80]);
-  assert.equal(edited.graphicSpec.objects.bars.children.length, 9);
+  assert.equal(edited.graphicSpec.objects.bars.items.length, 9);
   assert.equal(
-    edited.graphicSpec.objects.bars.children[0].properties.width,
+    edited.graphicSpec.objects.bars.items[0].properties.width,
     40
   );
   assert.notEqual(
-    edited.graphicSpec.objects.bars.children[0].properties.height,
-    program.graphicSpec.objects.bars.children[0].properties.height
+    edited.graphicSpec.objects.bars.items[0].properties.height,
+    program.graphicSpec.objects.bars.items[0].properties.height
   );
   assert.equal(program.graphicSpec.objects.canvas.properties.width, 432);
 });

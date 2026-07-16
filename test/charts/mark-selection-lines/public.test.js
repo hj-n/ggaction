@@ -27,14 +27,14 @@ test("matches the approved Japan line-series primitive exactly", () => {
 test("reapplies the line and legend highlight after mark edits", () => {
   const program = createJapanLineSeriesHighlight(loadCars())
     .editLineMark({ target: "trends", strokeWidth: 3 });
-  const paths = program.graphicSpec.objects.trends.children;
-  const symbols = program.graphicSpec.objects.seriesLegendSymbols.children;
+  const paths = program.graphicSpec.objects.trends.items;
+  const symbols = program.graphicSpec.objects.seriesLegendSymbols.items;
 
   assert.deepEqual(paths.map(path => path.properties.strokeWidth), [3, 3, 5]);
   assert.deepEqual(paths.map(path => path.properties.opacity), [0.16, 0.16, 1]);
   assert.deepEqual(symbols.map(symbol => symbol.properties.opacity), [0.16, 0.16, 1]);
   assert.equal(
-    program.graphicSpec.objects.seriesLegendLabels.children.every(label =>
+    program.graphicSpec.objects.seriesLegendLabels.items.every(label =>
       label.properties.opacity === undefined
     ),
     true

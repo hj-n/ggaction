@@ -38,7 +38,7 @@ test("locks the exact-step histogram primitive target", () => {
   assert.deepEqual(values.scales.y.domain, [0, 150]);
   assert.deepEqual(program.semanticSpec.layers[0].encoding.x.bin, { step: 60 });
   assert.deepEqual(
-    program.graphicSpec.objects.bars.children.map(child => child.properties),
+    program.graphicSpec.objects.bars.items.map(child => child.properties),
     values.rects.map(rect => ({
       x: rect.x,
       y: rect.y,
@@ -68,7 +68,7 @@ test("locks irregular boundaries and interval assignment", () => {
   assert.equal(values.rects.length, 12);
   assert.deepEqual(program.semanticSpec.layers[0].encoding.x.bin, { boundaries });
   assert.deepEqual(
-    program.graphicSpec.objects.xAxisLabels.children.map(
+    program.graphicSpec.objects.xAxisLabels.items.map(
       child => Number(child.properties.text)
     ),
     boundaries
@@ -117,7 +117,7 @@ test("locks complete histogram field reassignment while preserving grouping", ()
     y: { scale: "y", coordinate: "main", title: "count(Horsepower)" }
   });
   assert.deepEqual(
-    program.graphicSpec.objects.colorLegendLabels.children.map(
+    program.graphicSpec.objects.colorLegendLabels.items.map(
       child => child.properties.text
     ),
     ["USA", "Europe", "Japan"]
@@ -146,7 +146,7 @@ test("locks normalized histogram partitions and the unit y domain", () => {
   assert.equal(encoding.y.stack, "normalize");
   assert.equal(encoding.color.layout, "fill");
   assert.deepEqual(
-    program.graphicSpec.objects.yAxisLabels.children.map(
+    program.graphicSpec.objects.yAxisLabels.items.map(
       child => Number(child.properties.text)
     ),
     [0, 0.2, 0.4, 0.6, 0.8, 1]
@@ -162,7 +162,7 @@ test("locks normalized histogram partitions and the unit y domain", () => {
     true
   );
   assert.deepEqual(
-    program.graphicSpec.objects.bars.children.map(child => child.properties),
+    program.graphicSpec.objects.bars.items.map(child => child.properties),
     values.rects.map(rect => ({
       x: rect.x,
       y: rect.y,

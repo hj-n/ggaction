@@ -50,7 +50,7 @@ also support `encoding.y2`, field-driven `encoding.shape`, and scale-free
 extension-level building blocks; the corresponding chart-authoring actions are
 introduced separately when their complete materialization behavior is ready.
 
-## `createGraphics({ id, type, length?, before?, after? })`
+## `createGraphics({ id, type, length?, parent?, before?, after? })`
 
 Creates one concrete object, a homogeneous drawable collection, or an empty
 heterogeneous drawable `collection`.
@@ -62,7 +62,7 @@ program.createGraphics({ id: "points", type: "circle", length: 2 });
 Supported types are `canvas`, `collection`, `circle`, `rect`, `line`, `text`,
 and `path`. `length` is a non-negative integer accepted by
 homogeneous drawable types. A heterogeneous `collection` is populated through
-one `editGraphics({ property: "children" })` call instead. Equivalent repeated
+one `editGraphics({ property: "items" })` call instead. Equivalent repeated
 creation is idempotent.
 
 ```javascript
@@ -70,7 +70,7 @@ program
   .createGraphics({ id: "symbols", type: "collection" })
   .editGraphics({
     target: "symbols",
-    property: "children",
+    property: "items",
     value: [
       {
         type: "circle",
@@ -92,24 +92,32 @@ program
   });
 ```
 
-Collection child IDs are generated as `symbols:0`, `symbols:1`, and so on.
-Each child stores its own concrete primitive type. Shared properties such as
-`opacity` can then be broadcast to every compatible child. Program composition
-is not part of the current primitive graphic contract.
+Collection item IDs are generated as `symbols:0`, `symbols:1`, and so on.
+Each item stores its own concrete primitive type. Shared properties such as
+`opacity` can then be broadcast to every compatible item.
 
-`before` or `after` can place a new top-level graphic relative to an existing
-top-level graphic. They are mutually exclusive, the referenced graphic must
-already exist, and no graphic can be placed before the Canvas. When neither is
-provided, creation appends to `graphicSpec.order` as usual.
+`parent` attaches a named graphic to an existing Canvas or collection. Attached
+IDs are stored in the parent's `children` list; repeated drawable instances stay
+separate in the owning graphic's `items` list. Omitting `parent` preserves
+top-level placement in `graphicSpec.order`.
+
+`before` or `after` places a new graphic relative to a direct sibling. They are
+mutually exclusive, the referenced graphic must already belong to the same
+parent, and no top-level graphic can be placed before the Canvas.
 
 ```javascript
 program.createGraphics({
   id: "grid",
   type: "line",
   length: 5,
+  parent: "plot",
   before: "bars"
 });
 ```
+
+Graphic IDs are unique across the complete tree. The renderer visits named
+graphics depth-first in sibling order. Attachment defines ownership and drawing
+order only; it does not create coordinate transforms, clipping, or layout.
 
 Path graphics use backend-neutral `path.commands` arrays rather than renderer-specific
 path strings. The closed command vocabulary is `M`, `L`, `C`, and `Z`. A path starts
@@ -163,7 +171,7 @@ grouped line paths, and two concrete legends.
 
 ## `editGraphics({ target, property, value | remove })`
 
-Sets one validated concrete property or removes one top-level graphic.
+Sets one validated concrete property or removes one named graphic subtree.
 
 ```javascript
 program.editGraphics({
@@ -175,12 +183,13 @@ program.editGraphics({
 
 For a homogeneous or heterogeneous collection, an outer array distributes
 values by index and must match its length. A non-array value is broadcast to
-every child that supports the property. Nested arrays and objects remain one
-value per child. Generated child IDs such as `points:1` can be targeted.
+every item that supports the property. Nested arrays and objects remain one
+value per item. Generated item IDs such as `points:1` can be targeted.
 
-Use `remove: true` without `property` or `value` to remove an entire top-level
-graphic and its render-order entry. A generated collection child cannot be
-removed independently; resize or replace its owning collection instead.
+Use `remove: true` without `property` or `value` to remove a named graphic and
+its owned named descendants. The action also detaches the root from its parent
+or top-level order. The Canvas root and generated items cannot be removed;
+resize or replace an item's owning collection instead.
 
 ```javascript
 program.editGraphics({

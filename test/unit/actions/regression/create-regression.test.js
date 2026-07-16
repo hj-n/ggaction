@@ -62,7 +62,7 @@ test("matches primitive band and line graphics exactly", () => {
   });
 
   assert.deepEqual(
-    program.graphicSpec.objects.pointsRegressionBands.children.map(
+    program.graphicSpec.objects.pointsRegressionBands.items.map(
       child => child.properties
     ),
     expected.regressionBands.map(band => ({
@@ -72,7 +72,7 @@ test("matches primitive band and line graphics exactly", () => {
     }))
   );
   assert.deepEqual(
-    program.graphicSpec.objects.pointsRegressionLines.children.map(
+    program.graphicSpec.objects.pointsRegressionLines.items.map(
       child => child.properties
     ),
     expected.regressionLines.map(line => ({
@@ -222,19 +222,19 @@ test("supports explicit ungrouped regression without series encodings", () => {
   assert.equal(line.encoding.group, undefined);
   assert.equal(line.encoding.color, undefined);
   assert.equal(
-    program.graphicSpec.objects.pointsRegressionBands.children.length,
+    program.graphicSpec.objects.pointsRegressionBands.items.length,
     1
   );
   assert.equal(
-    program.graphicSpec.objects.pointsRegressionLines.children.length,
+    program.graphicSpec.objects.pointsRegressionLines.items.length,
     1
   );
   assert.equal(
-    program.graphicSpec.objects.pointsRegressionBands.children[0].properties.fill,
+    program.graphicSpec.objects.pointsRegressionBands.items[0].properties.fill,
     "#222222"
   );
   assert.equal(
-    program.graphicSpec.objects.pointsRegressionLines.children[0].properties.strokeWidth,
+    program.graphicSpec.objects.pointsRegressionLines.items[0].properties.strokeWidth,
     2
   );
 });

@@ -216,10 +216,17 @@ export interface SemanticSpec {
   readonly title: Readonly<Record<string, unknown>>;
 }
 
+export interface GraphicItem {
+  readonly id: string;
+  readonly type?: Exclude<GraphicType, "canvas" | "collection">;
+  readonly properties: Readonly<Record<string, unknown>>;
+}
+
 export interface GraphicObject {
   readonly type: GraphicType;
   readonly properties?: Readonly<Record<string, unknown>>;
-  readonly children?: readonly GraphicObject[];
+  readonly items?: readonly GraphicItem[];
+  readonly children?: readonly string[];
 }
 
 export interface GraphicSpec {
@@ -1081,6 +1088,7 @@ export class ChartProgram {
     id: string;
     type: GraphicType;
     length?: number;
+    parent?: string;
     before?: string;
     after?: string;
   }): ChartProgram;

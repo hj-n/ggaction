@@ -73,10 +73,10 @@ test("authors the Gate A semantics and concrete drawing order with primitives on
     "colorGradientTicks", "colorGradientLabels", "colorGradientTitle",
     "chartTitle", "chartSubtitle"
   ]);
-  assert.equal(program.graphicSpec.objects.point.children.length, 62);
-  assert.equal(program.graphicSpec.objects.colorGradientStrips.children.length, 60);
-  assert.equal(program.graphicSpec.objects.verticalGridLines.children.length, 6);
-  assert.equal(program.graphicSpec.objects.horizontalGridLines.children.length, 5);
+  assert.equal(program.graphicSpec.objects.point.items.length, 62);
+  assert.equal(program.graphicSpec.objects.colorGradientStrips.items.length, 60);
+  assert.equal(program.graphicSpec.objects.verticalGridLines.items.length, 6);
+  assert.equal(program.graphicSpec.objects.horizontalGridLines.items.length, 5);
   assert.ok(program.trace.children.length > 150);
   assert.equal(program.trace.children.every(node =>
     ["editSemantic", "createGraphics", "editGraphics"].includes(node.op)

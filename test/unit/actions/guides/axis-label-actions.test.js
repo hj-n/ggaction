@@ -17,15 +17,15 @@ test("creates x/y labels from shared tick configurations", () => {
   const result = program().createXAxisLabels().createYAxisLabels();
 
   assert.deepEqual(
-    result.graphicSpec.objects.xAxisLabels.children.map(child => child.properties.text),
+    result.graphicSpec.objects.xAxisLabels.items.map(child => child.properties.text),
     ["0", "5", "10"]
   );
   assert.deepEqual(
-    result.graphicSpec.objects.yAxisLabels.children.map(child => child.properties.y),
+    result.graphicSpec.objects.yAxisLabels.items.map(child => child.properties.y),
     [110, 60, 10]
   );
   assert.equal(result.guideConfigs.axis.x.labels.mode, "values");
-  assert.equal(result.graphicSpec.objects.xAxisLabels.children[0].properties.y, 128);
+  assert.equal(result.graphicSpec.objects.xAxisLabels.items[0].properties.y, 128);
 });
 
 test("formats decimals and records nested graphical edits", () => {
@@ -38,7 +38,7 @@ test("formats decimals and records nested graphical edits", () => {
   const node = result.trace.children.at(-1);
 
   assert.deepEqual(
-    result.graphicSpec.objects.xAxisLabels.children.map(child => child.properties.text),
+    result.graphicSpec.objects.xAxisLabels.items.map(child => child.properties.text),
     ["0.0", "0.5", "1.0"]
   );
   assert.deepEqual(node.children.map(child => child.op), ["editSemantic", "createGraphics", "editXAxisLabels"]);
@@ -48,8 +48,8 @@ test("rejects conflicts and rematerializes after Canvas edits", () => {
   assert.throws(() => program().createXAxisLabels({ count: 5 }), /conflicts with axis ticks/);
   const created = program().createXAxisLabels();
   const resized = created.editCanvas({ width: 300, margin: 20 });
-  assert.equal(resized.graphicSpec.objects.xAxisLabels.children[0].properties.y, 118);
-  assert.equal(created.graphicSpec.objects.xAxisLabels.children[0].properties.y, 128);
+  assert.equal(resized.graphicSpec.objects.xAxisLabels.items[0].properties.y, 118);
+  assert.equal(created.graphicSpec.objects.xAxisLabels.items[0].properties.y, 128);
 });
 
 test("creates mirrored labels and edits their position and format immutably", () => {
@@ -75,23 +75,23 @@ test("creates mirrored labels and edits their position and format immutably", ()
       format: ".0%"
     });
 
-  assert.equal(created.graphicSpec.objects.xAxisLabels.children[0].properties.y, 22);
-  assert.equal(created.graphicSpec.objects.xAxisLabels.children[0].properties.textBaseline, "bottom");
+  assert.equal(created.graphicSpec.objects.xAxisLabels.items[0].properties.y, 22);
+  assert.equal(created.graphicSpec.objects.xAxisLabels.items[0].properties.textBaseline, "bottom");
   assert.deepEqual(
-    created.graphicSpec.objects.yAxisLabels.children.map(child => child.properties.text),
+    created.graphicSpec.objects.yAxisLabels.items.map(child => child.properties.text),
     ["0%", "50%", "100%"]
   );
-  assert.equal(created.graphicSpec.objects.yAxisLabels.children[0].properties.textAlign, "left");
+  assert.equal(created.graphicSpec.objects.yAxisLabels.items[0].properties.textAlign, "left");
 
   const edited = created
     .editXAxisLabels({ position: "bottom", format: ".2f" })
     .editYAxisLabels({ position: "left" });
-  assert.equal(edited.graphicSpec.objects.xAxisLabels.children[0].properties.y, 168);
+  assert.equal(edited.graphicSpec.objects.xAxisLabels.items[0].properties.y, 168);
   assert.deepEqual(
-    edited.graphicSpec.objects.xAxisLabels.children.map(child => child.properties.text),
+    edited.graphicSpec.objects.xAxisLabels.items.map(child => child.properties.text),
     ["0.00", "0.50", "1.00"]
   );
-  assert.equal(edited.graphicSpec.objects.yAxisLabels.children[0].properties.textAlign, "right");
+  assert.equal(edited.graphicSpec.objects.yAxisLabels.items[0].properties.textAlign, "right");
   assert.equal(created.guideConfigs.axis.x.labels.position, "top");
 });
 
@@ -109,7 +109,7 @@ test("rejects incompatible formats and insufficient mirrored label margins", () 
     temporal.createXAxisLabels({
       values: [Date.UTC(2020, 0, 1), Date.UTC(2021, 0, 1)],
       format: "%Y-%m-%d"
-    }).graphicSpec.objects.xAxisLabels.children.map(child => child.properties.text),
+    }).graphicSpec.objects.xAxisLabels.items.map(child => child.properties.text),
     ["2020-01-01", "2021-01-01"]
   );
   assert.throws(

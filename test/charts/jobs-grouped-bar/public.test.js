@@ -24,9 +24,9 @@ test("builds the public jobs grouped bar chart with chart actions", () => {
   assert.equal(layer.encoding.y.stack, null);
   assert.equal(layer.encoding.color.field, "sex");
   assert.equal(layer.encoding.xOffset.field, "sex");
-  assert.equal(program.graphicSpec.objects.bars.children.length, 30);
+  assert.equal(program.graphicSpec.objects.bars.items.length, 30);
   assert.deepEqual(
-    program.graphicSpec.objects.colorLegendLabels.children.map(
+    program.graphicSpec.objects.colorLegendLabels.items.map(
       child => child.properties.text
     ),
     ["men", "women"]

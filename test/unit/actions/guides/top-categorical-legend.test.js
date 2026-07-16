@@ -51,7 +51,7 @@ test("creates the density top legend with a left title and area swatches", () =>
     title: "Origin"
   });
   assert.deepEqual(
-    program.graphicSpec.objects.colorLegendSymbols.children.map(child => ({
+    program.graphicSpec.objects.colorLegendSymbols.items.map(child => ({
       x: child.properties.x,
       y: child.properties.y,
       width: child.properties.width,
@@ -67,7 +67,7 @@ test("creates the density top legend with a left title and area swatches", () =>
     }))
   );
   assert.deepEqual(
-    program.graphicSpec.objects.colorLegendLabels.children.map(child => ({
+    program.graphicSpec.objects.colorLegendLabels.items.map(child => ({
       x: child.properties.x,
       y: child.properties.y,
       text: child.properties.text
@@ -86,7 +86,7 @@ test("creates the density top legend with a left title and area swatches", () =>
 test("uses top title position by default", () => {
   const program = densityArea().createLegend({ position: "top", columns: 3 });
   const title = program.graphicSpec.objects.colorLegendTitle.properties;
-  const itemY = program.graphicSpec.objects.colorLegendLabels.children[0].properties.y;
+  const itemY = program.graphicSpec.objects.colorLegendLabels.items[0].properties.y;
 
   assert.equal(title.textAlign, "center");
   assert.ok(title.y < itemY);
@@ -104,10 +104,10 @@ test("lays out horizontal and vertical fill orders deterministically", () => {
     columns: 2,
     direction: "vertical"
   });
-  const h = horizontal.graphicSpec.objects.colorLegendLabels.children.map(
+  const h = horizontal.graphicSpec.objects.colorLegendLabels.items.map(
     child => [child.properties.x, child.properties.y]
   );
-  const v = vertical.graphicSpec.objects.colorLegendLabels.children.map(
+  const v = vertical.graphicSpec.objects.colorLegendLabels.items.map(
     child => [child.properties.x, child.properties.y]
   );
 
@@ -128,8 +128,8 @@ test("rematerializes a bordered top legend after Canvas edits", () => {
   const after = before.editCanvas({ width: 820 });
 
   assert.notEqual(
-    after.graphicSpec.objects.colorLegendSymbols.children[0].properties.x,
-    before.graphicSpec.objects.colorLegendSymbols.children[0].properties.x
+    after.graphicSpec.objects.colorLegendSymbols.items[0].properties.x,
+    before.graphicSpec.objects.colorLegendSymbols.items[0].properties.x
   );
   assert.notEqual(
     after.graphicSpec.objects.colorLegendBackground.properties.x,

@@ -29,7 +29,7 @@ export function createPointHighlightGatePrimitive(cars) {
       text: "Highest-Horsepower Car in Each Origin",
       subtitle: "Selected points are enlarged, offset, and drawn in front"
     });
-  const sourceChildren = base.graphicSpec.objects.points.children;
+  const sourceChildren = base.graphicSpec.objects.points.items;
   const unselected = [];
   const selected = [];
 
@@ -59,7 +59,7 @@ export function createPointHighlightGatePrimitive(cars) {
 
   return base.editGraphics({
     target: "points",
-    property: "children",
+    property: "items",
     value: [...unselected, ...selected]
   });
 }

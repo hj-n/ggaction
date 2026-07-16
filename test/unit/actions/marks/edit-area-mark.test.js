@@ -26,21 +26,21 @@ test("creates, edits, and removes a concrete area outline immutably", () => {
     stroke: "#334155",
     strokeWidth: 1.5
   });
-  assert.ok(outlined.graphicSpec.objects.densities.children.every(
+  assert.ok(outlined.graphicSpec.objects.densities.items.every(
     child => child.properties.stroke === "#334155" &&
       child.properties.strokeWidth === 1.5 &&
       child.properties.opacity === 0.35
   ));
-  assert.ok(widened.graphicSpec.objects.densities.children.every(
+  assert.ok(widened.graphicSpec.objects.densities.items.every(
     child => child.properties.strokeWidth === 3
   ));
   assert.equal(removed.markConfigs.densities.stroke, undefined);
   assert.equal(removed.markConfigs.densities.strokeWidth, undefined);
-  assert.ok(removed.graphicSpec.objects.densities.children.every(
+  assert.ok(removed.graphicSpec.objects.densities.items.every(
     child => child.properties.stroke === undefined &&
       child.properties.strokeWidth === undefined
   ));
-  assert.ok(baseline.graphicSpec.objects.densities.children.every(
+  assert.ok(baseline.graphicSpec.objects.densities.items.every(
     child => child.properties.stroke === undefined
   ));
 });
@@ -62,7 +62,7 @@ test("stores an outline on an incomplete area and materializes it later", () => 
     stroke: "black",
     strokeWidth: 1
   });
-  assert.deepEqual(incomplete.graphicSpec.objects.band.children, []);
+  assert.deepEqual(incomplete.graphicSpec.objects.band.items, []);
 });
 
 test("validates area appearance, targeting, and encoded fill conflicts", () => {
@@ -125,12 +125,12 @@ test("creates and edits every area curve without mutating earlier programs", () 
     const edited = base.editAreaMark({ target: "band", curve });
     assert.equal(edited.markConfigs.band.curve, curve);
     assert.equal(
-      edited.graphicSpec.objects.band.children[0].properties.commands.at(-1).op,
+      edited.graphicSpec.objects.band.items[0].properties.commands.at(-1).op,
       "Z"
     );
     if (["basis", "cardinal", "monotone", "natural"].includes(curve)) {
       assert.equal(
-        edited.graphicSpec.objects.band.children[0].properties.commands.some(
+        edited.graphicSpec.objects.band.items[0].properties.commands.some(
           command => command.op === "C"
         ),
         true

@@ -16,7 +16,7 @@ test("creates a point mark from currentData with default circle shape", () => {
   ]);
   assert.deepEqual(program.graphicSpec.objects.point, {
     type: "circle",
-    children: [
+    items: [
       { id: "point:0", properties: {} },
       { id: "point:1", properties: {} }
     ]
@@ -33,7 +33,7 @@ test("uses an explicit dataset without changing currentData", () => {
     .createPointMark({ id: "points", data: "cars", shape: "circle" });
 
   assert.equal(program.semanticSpec.layers[0].data, "cars");
-  assert.equal(program.graphicSpec.objects.points.children.length, 2);
+  assert.equal(program.graphicSpec.objects.points.items.length, 2);
   assert.equal(program.context.currentData, "fit");
   assert.equal(program.context.currentMark, "points");
 });
@@ -44,8 +44,8 @@ test("supports empty datasets and multiple point marks", () => {
     .createPointMark({ id: "first" })
     .createPointMark({ id: "second" });
 
-  assert.equal(program.graphicSpec.objects.first.children.length, 0);
-  assert.equal(program.graphicSpec.objects.second.children.length, 0);
+  assert.equal(program.graphicSpec.objects.first.items.length, 0);
+  assert.equal(program.graphicSpec.objects.second.items.length, 0);
   assert.deepEqual(
     program.semanticSpec.layers.map(layer => layer.id),
     ["first", "second"]

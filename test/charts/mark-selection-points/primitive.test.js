@@ -18,7 +18,7 @@ test("authors Gate A through an independent selector and low-level graphic edit"
   const cars = loadCars();
   const values = selectGroupedMaximumHorsepower(cars);
   const program = createPointHighlightGatePrimitive(cars);
-  const children = program.graphicSpec.objects.points.children;
+  const children = program.graphicSpec.objects.points.items;
   const selected = children.slice(-values.selected.length);
   const unselected = children.slice(0, -values.selected.length);
 

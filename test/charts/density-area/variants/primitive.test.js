@@ -42,7 +42,7 @@ test("authors the density area outline target with low-level graphic edits", () 
   assert.deepEqual(program.semanticSpec, baseline.semanticSpec);
   assert.deepEqual(program.graphicSpec.order, baseline.graphicSpec.order);
   assert.deepEqual(
-    program.graphicSpec.objects.densities.children.map(child => ({
+    program.graphicSpec.objects.densities.items.map(child => ({
       opacity: child.properties.opacity,
       stroke: child.properties.stroke,
       strokeWidth: child.properties.strokeWidth
@@ -76,7 +76,7 @@ function densityTransform(program) {
 }
 
 function assertDensityGraphicTarget(program, expected) {
-  const areas = program.graphicSpec.objects.densities.children;
+  const areas = program.graphicSpec.objects.densities.items;
   assert.equal(areas.length, expected.areas.length);
   assert.deepEqual(
     areas.map(area => area.properties.commands),
@@ -87,13 +87,13 @@ function assertDensityGraphicTarget(program, expected) {
     ])
   );
   assert.deepEqual(
-    program.graphicSpec.objects.yAxisLabels.children.map(
+    program.graphicSpec.objects.yAxisLabels.items.map(
       child => child.properties.text
     ),
     expected.axes.y.ticks.map(tick => tick.label)
   );
   assert.equal(
-    program.graphicSpec.objects.horizontalGridLines.children.length,
+    program.graphicSpec.objects.horizontalGridLines.items.length,
     expected.grid.horizontal.length
   );
 }
@@ -196,12 +196,12 @@ test("authors a wrapped bottom title as concrete text children", () => {
     text: target.options.text,
     subtitle: target.options.subtitle
   });
-  assert.deepEqual(title.children.map(child => child.properties.text),
+  assert.deepEqual(title.items.map(child => child.properties.text),
     target.title.lines);
-  assert.deepEqual(title.children.map(child => child.properties.y), target.title.y);
-  assert.deepEqual(subtitle.children.map(child => child.properties.text),
+  assert.deepEqual(title.items.map(child => child.properties.y), target.title.y);
+  assert.deepEqual(subtitle.items.map(child => child.properties.text),
     target.subtitle.lines);
-  assert.deepEqual(subtitle.children.map(child => child.properties.y),
+  assert.deepEqual(subtitle.items.map(child => child.properties.y),
     target.subtitle.y);
   assert.deepEqual(
     target.title.y.slice(1).map((value, index) => value - target.title.y[index]),
@@ -218,12 +218,12 @@ test("authors a wrapped bottom title as concrete text children", () => {
     target.longTokenFallback.text
   );
   assert.equal(target.longTokenFallback.lines.every(line => line.length > 0), true);
-  assert.equal(title.children.every(child =>
+  assert.equal(title.items.every(child =>
     child.properties.x === target.title.x &&
     child.properties.textAlign === "center" &&
     child.properties.rotation === 0
   ), true);
-  assert.equal(subtitle.children.every(child =>
+  assert.equal(subtitle.items.every(child =>
     child.properties.x === target.subtitle.x &&
     child.properties.textAlign === "center" &&
     child.properties.rotation === 0

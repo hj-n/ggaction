@@ -39,7 +39,7 @@ test("encodes nominal line color and materializes one stroke per series", () => 
     field: "origin",
     scale: { palette: "tableau10" }
   });
-  const paths = program.graphicSpec.objects.trends.children;
+  const paths = program.graphicSpec.objects.trends.items;
 
   assert.deepEqual(program.semanticSpec.layers[0].encoding.color, {
     field: "origin",
@@ -66,7 +66,7 @@ test("encodes nominal line color and materializes one stroke per series", () => 
     paths.map(path => path.properties.strokeDash),
     [[], []]
   );
-  assert.equal(before.graphicSpec.objects.trends.children.length, 1);
+  assert.equal(before.graphicSpec.objects.trends.items.length, 1);
   assert.equal(before.semanticSpec.layers[0].encoding.color, undefined);
 });
 
@@ -74,7 +74,7 @@ test("encodes nominal stroke dash with the built-in ten-pattern range", () => {
   const program = createMeanLine()
     .encodeColor({ field: "origin", scale: { palette: "tableau10" } })
     .encodeStrokeDash({ field: "origin" });
-  const paths = program.graphicSpec.objects.trends.children;
+  const paths = program.graphicSpec.objects.trends.items;
 
   assert.deepEqual(program.semanticSpec.layers[0].encoding.strokeDash, {
     field: "origin",
@@ -180,14 +180,14 @@ test("supports explicit dash ranges and cycles automatic patterns", () => {
   const cycled = createMeanLine(manyRows).encodeStrokeDash({ field: "origin" });
 
   assert.deepEqual(
-    explicit.graphicSpec.objects.trends.children.map(
+    explicit.graphicSpec.objects.trends.items.map(
       path => path.properties.strokeDash
     ),
     [[], [5, 2]]
   );
-  assert.equal(cycled.graphicSpec.objects.trends.children.length, 11);
+  assert.equal(cycled.graphicSpec.objects.trends.items.length, 11);
   assert.deepEqual(
-    cycled.graphicSpec.objects.trends.children[10].properties.strokeDash,
+    cycled.graphicSpec.objects.trends.items[10].properties.strokeDash,
     DASH10[0]
   );
 });
@@ -205,7 +205,7 @@ test("resolves named dash ranges while preserving semantic names", () => {
     [], [6, 4], [1, 3], [6, 3, 1, 3]
   ]);
   assert.deepEqual(
-    program.graphicSpec.objects.trends.children.map(
+    program.graphicSpec.objects.trends.items.map(
       child => child.properties.strokeDash
     ),
     [[], [6, 4]]
@@ -231,9 +231,9 @@ test("atomically replaces field dash with a constant and removes its legend", ()
     constant.graphicSpec.order.some(id => id.startsWith("seriesLegend")),
     false
   );
-  assert.equal(constant.graphicSpec.objects.trends.children.length, 1);
+  assert.equal(constant.graphicSpec.objects.trends.items.length, 1);
   assert.deepEqual(
-    constant.graphicSpec.objects.trends.children[0].properties.strokeDash,
+    constant.graphicSpec.objects.trends.items[0].properties.strokeDash,
     [1, 3]
   );
   assert.deepEqual(
@@ -278,13 +278,13 @@ test("preserves a combined legend when dash becomes constant", () => {
   assert.equal(after.guideConfigs.legend.series.title, "Series");
   assert.equal(after.guideConfigs.legend.series.labels.color, "#123456");
   assert.deepEqual(
-    after.graphicSpec.objects.seriesLegendSymbols.children.map(
+    after.graphicSpec.objects.seriesLegendSymbols.items.map(
       child => child.properties.strokeDash
     ),
     [[], []]
   );
   assert.deepEqual(
-    after.graphicSpec.objects.trends.children.map(
+    after.graphicSpec.objects.trends.items.map(
       child => child.properties.strokeDash
     ),
     [[2, 5], [2, 5]]
@@ -315,7 +315,7 @@ test("reassigns dash and group fields without retaining stale bindings", () => {
     field: "cylinders",
     fieldType: "nominal"
   });
-  assert.equal(grouped.graphicSpec.objects.trends.children.length, 2);
+  assert.equal(grouped.graphicSpec.objects.trends.items.length, 2);
 });
 
 test("rejects incompatible line series fields and invalid constant dash", () => {
@@ -376,11 +376,11 @@ test("reapplies semantic series styles after Canvas geometry changes", () => {
   const resized = manuallyChanged.editCanvas({ width: 440 });
 
   assert.deepEqual(
-    resized.graphicSpec.objects.trends.children.map(path => path.properties.stroke),
+    resized.graphicSpec.objects.trends.items.map(path => path.properties.stroke),
     TABLEAU10.slice(0, 2)
   );
   assert.deepEqual(
-    resized.graphicSpec.objects.trends.children.map(
+    resized.graphicSpec.objects.trends.items.map(
       path => path.properties.strokeDash
     ),
     DASH10.slice(0, 2)
@@ -390,7 +390,7 @@ test("reapplies semantic series styles after Canvas geometry changes", () => {
     .encodeStrokeDash({ value: "dashdot" })
     .editCanvas({ width: 460 });
   assert.deepEqual(
-    constant.graphicSpec.objects.trends.children.map(
+    constant.graphicSpec.objects.trends.items.map(
       path => path.properties.strokeDash
     ),
     [[6, 3, 1, 3], [6, 3, 1, 3]]
@@ -401,7 +401,7 @@ test("reapplies semantic series styles after Canvas geometry changes", () => {
     .encodeStrokeDash({ field: "cylinders" })
     .editCanvas({ width: 480 });
   assert.deepEqual(
-    reassigned.graphicSpec.objects.trends.children.map(
+    reassigned.graphicSpec.objects.trends.items.map(
       path => path.properties.strokeDash
     ),
     DASH10.slice(0, 2)

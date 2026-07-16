@@ -43,8 +43,8 @@ test("uses channel defaults and inferred titles", () => {
 
   assert.equal(program.semanticSpec.guides.axis.x.title, "x");
   assert.equal(program.semanticSpec.guides.axis.y.title, "y");
-  assert.equal(program.graphicSpec.objects.xAxisTicks.children.length > 0, true);
-  assert.equal(program.graphicSpec.objects.yAxisLabels.children.length > 0, true);
+  assert.equal(program.graphicSpec.objects.xAxisTicks.items.length > 0, true);
+  assert.equal(program.graphicSpec.objects.yAxisLabels.items.length > 0, true);
 });
 
 test("routes shared scale and position to every child", () => {

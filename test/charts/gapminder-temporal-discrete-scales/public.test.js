@@ -59,7 +59,7 @@ test("builds UTC time lines with public actions", () => {
     Date.UTC(2005, 0, 1)
   ]);
   assert.deepEqual(
-    program.graphicSpec.objects.xAxisLabels.children.map(
+    program.graphicSpec.objects.xAxisLabels.items.map(
       child => child.properties.text
     ),
     ["1960", "1970", "1980", "1990", "2000"]

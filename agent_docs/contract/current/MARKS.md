@@ -64,7 +64,7 @@ validation and uniqueness contract.
 - `fill`은 non-empty color string이며 field-driven `encodeColor`가 있으면 충돌하므로 오류다.
 - `opacity`는 `[0, 1]`, `stroke`는 non-empty color string, `strokeWidth`는 non-negative finite logical pixel이다.
 - 최소 한 appearance property가 필요하며 omitted properties는 기존 stored config를 보존한다.
-- Effect: mark materialization config를 갱신하고 wrapped `rematerializePointMark`로 concrete children을
+- Effect: mark materialization config를 갱신하고 wrapped `rematerializePointMark`로 concrete items를
   equal-area circle, rect 또는 path recipe로 교체한다. Semantic mark/data/encoding은 바꾸지 않는다.
 
 ### Formal values — `editPointMark`

@@ -26,8 +26,8 @@ function histogram() {
 test("creates an inferred right-side histogram color legend", () => {
   const before = histogram();
   const program = before.createLegend();
-  const symbols = program.graphicSpec.objects.colorLegendSymbols.children;
-  const labels = program.graphicSpec.objects.colorLegendLabels.children;
+  const symbols = program.graphicSpec.objects.colorLegendSymbols.items;
+  const labels = program.graphicSpec.objects.colorLegendLabels.items;
 
   assert.deepEqual(program.semanticSpec.guides.legend.color, {
     scale: "color",
@@ -80,7 +80,7 @@ test("supports explicit bottom layout, swatch style, and border", () => {
     },
     border: { background: "white", padding: 8 }
   });
-  const symbols = program.graphicSpec.objects.colorLegendSymbols.children;
+  const symbols = program.graphicSpec.objects.colorLegendSymbols.items;
 
   assert.equal(symbols[0].properties.x, 80);
   assert.equal(symbols[0].properties.width, 16);
@@ -102,12 +102,12 @@ test("rematerializes a right histogram legend after Canvas and domain changes", 
     .rematerializeLegend();
 
   assert.notEqual(
-    resized.graphicSpec.objects.colorLegendSymbols.children[0].properties.x,
-    before.graphicSpec.objects.colorLegendSymbols.children[0].properties.x
+    resized.graphicSpec.objects.colorLegendSymbols.items[0].properties.x,
+    before.graphicSpec.objects.colorLegendSymbols.items[0].properties.x
   );
   assert.equal(resized.graphicSpec.objects.colorLegendTitle.properties.y, 100);
   assert.deepEqual(
-    reordered.graphicSpec.objects.colorLegendLabels.children.map(
+    reordered.graphicSpec.objects.colorLegendLabels.items.map(
       child => child.properties.text
     ),
     ["Japan", "USA", "Europe"]

@@ -60,11 +60,11 @@ test("renders one backend-neutral command path per series", () => {
   );
   assert.equal(findCanvasCalls(context, "stroke").length, 2);
   assert.deepEqual(
-    program.graphicSpec.objects.trends.children[0].properties.commands,
+    program.graphicSpec.objects.trends.items[0].properties.commands,
     commands[0]
   );
   assert.notEqual(
-    program.graphicSpec.objects.trends.children[0].properties.commands,
+    program.graphicSpec.objects.trends.items[0].properties.commands,
     commands[0]
   );
 });

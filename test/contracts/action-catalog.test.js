@@ -629,9 +629,9 @@ test("keeps accepted planned capabilities linked and non-public", () => {
   assert.match(currentCorpus, /wrap\?: TitleWrap/);
   assert.match(currentCorpus, /## `editTitle`/);
   assert.doesNotMatch(plannedCorpus, /## chart title positions|## title wrapping and measurement|## editTitle/);
-  assert.match(plannedCorpus, /## graphic parent attachment/);
-  assert.match(plannedCorpus, /parent\?: UserId/);
-  assert.match(plannedCorpus, /같은 parent의 direct sibling/);
+  assert.match(currentCorpus, /parent\?: UserId/);
+  assert.match(currentCorpus, /같은 parent의 direct sibling/);
+  assert.doesNotMatch(plannedCorpus, /## graphic parent attachment/);
   assert.doesNotMatch(currentCorpus + plannedCorpus, /placement\?: "center" \| "boundary"/);
   assert.doesNotMatch(currentCorpus + plannedCorpus, /interactive\??:/i);
   assert.doesNotMatch(currentCorpus + plannedCorpus, /coordinate-level `clip`\/transform options/);

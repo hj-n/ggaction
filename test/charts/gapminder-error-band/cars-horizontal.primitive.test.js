@@ -99,15 +99,15 @@ test("authors the Cars horizontal error band with raw primitives", () => {
   assert.deepEqual(dataset.values, values.rows);
 
   assert.deepEqual(
-    program.graphicSpec.objects.errorBand.children[0].properties.commands,
+    program.graphicSpec.objects.errorBand.items[0].properties.commands,
     linearPathCommands(values.band.points, { close: true })
   );
   assert.deepEqual(
-    program.graphicSpec.objects.errorBandLowerBoundary.children[0].properties.commands,
+    program.graphicSpec.objects.errorBandLowerBoundary.items[0].properties.commands,
     linearPathCommands(values.boundaries.lower.points)
   );
   assert.deepEqual(
-    program.graphicSpec.objects.errorBandUpperBoundary.children[0].properties.commands,
+    program.graphicSpec.objects.errorBandUpperBoundary.items[0].properties.commands,
     linearPathCommands(values.boundaries.upper.points)
   );
 

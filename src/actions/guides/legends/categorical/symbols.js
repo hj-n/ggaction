@@ -96,7 +96,7 @@ function makeEditSymbol(type) {
       if (type === "point") {
         const x = layout.symbolX.map(value => value + symbolWidth(config) / 2);
         if (dynamicPoint) {
-          const children = config.domain.map((_, index) => {
+          const items = config.domain.map((_, index) => {
             const fill = layer.fill ?? appearance.colors[index];
             return createPointShapeGraphic({
               shape: appearance.shapes[index],
@@ -110,8 +110,8 @@ function makeEditSymbol(type) {
           });
           return next.editGraphics({
             target: id,
-            property: "children",
-            value: children
+            property: "items",
+            value: items
           });
         }
         return next
@@ -260,8 +260,8 @@ export const rematerializeLegendHighlights = action(
           : highlight.dimOthers.opacity;
         next = next.editGraphics({
           target: id,
-          property: "children",
-          value: graphic.children.map((child, index) => ({
+          property: "items",
+          value: graphic.items.map((child, index) => ({
             type: child.type ?? graphic.type,
             properties: states[index]
               ? { ...child.properties, ...selectedStyle }

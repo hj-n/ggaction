@@ -17,7 +17,7 @@ test("authors a complete single-mark chart without resource IDs", () => {
   assert.equal(program.semanticSpec.layers[0].data, "data");
   assert.equal(program.context.currentData, "data");
   assert.equal(program.context.currentMark, "point");
-  assert.equal(program.graphicSpec.objects.point.children.every(child =>
+  assert.equal(program.graphicSpec.objects.point.items.every(child =>
     Number.isFinite(child.properties.x) &&
     Number.isFinite(child.properties.y) &&
     child.properties.radius === 3

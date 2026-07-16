@@ -77,7 +77,7 @@ test("edits quantitative point color types atomically and removes stale state", 
 
   assert.equal(Object.hasOwn(quantize.semanticSpec.scales[2], "interpolate"), false);
   assert.deepEqual(
-    threshold.graphicSpec.objects.point.children.map(child => child.properties.fill),
+    threshold.graphicSpec.objects.point.items.map(child => child.properties.fill),
     ["black", "white"]
   );
   assert.equal(sequential.semanticSpec.scales[2].type, "sequential");
@@ -132,7 +132,7 @@ test("attaches direct color scales and defers unknown validation to the channel"
     .encodeRadius({ value: 3 });
 
   assert.equal(
-    program.graphicSpec.objects.point.children[0].properties.fill,
+    program.graphicSpec.objects.point.items[0].properties.fill,
     "gray"
   );
   assert.throws(
@@ -156,7 +156,7 @@ test("attaches direct color scales and defers unknown validation to the channel"
 
 test("maps missing point values through channel-valid unknown fallbacks", () => {
   const program = fallbackPoints();
-  const missing = program.graphicSpec.objects.point.children[1];
+  const missing = program.graphicSpec.objects.point.items[1];
   const [move, , opposite] = missing.properties.commands;
 
   assert.equal((move.x + opposite.x) / 2, 15);
@@ -182,11 +182,11 @@ test("keeps unknown outside the domain and stable across Canvas rematerializatio
     .encodeRadius({ value: 3 });
   const resized = program.editCanvas({ width: 320 });
 
-  assert.equal(program.graphicSpec.objects.point.children[1].properties.x, 12);
-  assert.equal(resized.graphicSpec.objects.point.children[1].properties.x, 12);
+  assert.equal(program.graphicSpec.objects.point.items[1].properties.x, 12);
+  assert.equal(resized.graphicSpec.objects.point.items[1].properties.x, 12);
   assert.notEqual(
-    program.graphicSpec.objects.point.children[0].properties.x,
-    resized.graphicSpec.objects.point.children[0].properties.x
+    program.graphicSpec.objects.point.items[0].properties.x,
+    resized.graphicSpec.objects.point.items[0].properties.x
   );
 });
 
@@ -229,8 +229,8 @@ test("edits unknown for every shared point consumer before rematerializing", () 
   const edited = base.editScale({ id: "shared", unknown: 30 });
 
   for (const id of ["first", "second"]) {
-    assert.equal(edited.graphicSpec.objects[id].children[1].properties.x, 30);
-    assert.equal(base.graphicSpec.objects[id].children[1].properties.x, 10);
+    assert.equal(edited.graphicSpec.objects[id].items[1].properties.x, 30);
+    assert.equal(base.graphicSpec.objects[id].items[1].properties.x, 10);
   }
 });
 

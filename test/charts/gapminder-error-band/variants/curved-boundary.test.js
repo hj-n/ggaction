@@ -51,9 +51,9 @@ for (const boundaryCurve of ["cardinal", "step"]) {
     const program = createGapminderCurvedBoundaryPrimitives(gapminder, {
       boundaryCurve
     });
-    const area = program.graphicSpec.objects.errorBand.children;
-    const lower = program.graphicSpec.objects.errorBandLowerBoundary.children;
-    const upper = program.graphicSpec.objects.errorBandUpperBoundary.children;
+    const area = program.graphicSpec.objects.errorBand.items;
+    const lower = program.graphicSpec.objects.errorBandLowerBoundary.items;
+    const upper = program.graphicSpec.objects.errorBandUpperBoundary.items;
 
     assert.equal(area.length, 6);
     assert.equal(lower.length, 6);

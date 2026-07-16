@@ -13,7 +13,7 @@ const STRUCTURAL_TYPES = new Set(["canvas"]);
 const GRAPHIC_PROPERTIES = Object.freeze({
   canvas: new Set(["width", "height", "background"]),
   collection: new Set([
-    "children",
+    "items",
     "x",
     "y",
     "x1",
@@ -112,6 +112,10 @@ export function isPrimitiveDrawableGraphicType(type) {
 
 export function isStructuralGraphicType(type) {
   return STRUCTURAL_TYPES.has(type);
+}
+
+export function isGraphicContainerType(type) {
+  return type === "canvas" || type === "collection";
 }
 
 export function validateGraphicProperty(type, property) {

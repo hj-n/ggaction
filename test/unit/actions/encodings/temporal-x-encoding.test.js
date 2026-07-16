@@ -43,7 +43,7 @@ test("encodes a temporal x field and resolves a nice time scale", () => {
     domain: [Date.UTC(1970, 0, 1), Date.UTC(1982, 0, 1)],
     range: [20, 220]
   });
-  assert.deepEqual(program.graphicSpec.objects.trends.children, []);
+  assert.deepEqual(program.graphicSpec.objects.trends.items, []);
   assert.equal(before.semanticSpec.layers[0].encoding, undefined);
   assert.equal(before.semanticSpec.layers[0].coordinate, undefined);
   assert.deepEqual(before.resolvedScales, {});
@@ -123,7 +123,7 @@ test("validates temporal x fields and scale policies", () => {
     fieldType: "temporal"
   });
   assert.equal(horizontal.semanticSpec.layers[0].encoding.y.field, "year");
-  assert.equal(horizontal.graphicSpec.objects.trends.children.length, 0);
+  assert.equal(horizontal.graphicSpec.objects.trends.items.length, 0);
 });
 
 test("rejects conflicting policies on a shared time scale", () => {

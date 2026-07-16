@@ -57,10 +57,10 @@ test("partially edits one combined legend and preserves earlier state", () => {
 
   assert.deepEqual(before.graphicSpec, beforeSpec);
   assert.equal(after.semanticSpec.guides.legend.series.title, "Country");
-  assert.equal(after.graphicSpec.objects.sizeLegendSymbols.children.length, 3);
-  assert.equal(after.graphicSpec.objects.seriesLegendLabels.children[0]
+  assert.equal(after.graphicSpec.objects.sizeLegendSymbols.items.length, 3);
+  assert.equal(after.graphicSpec.objects.seriesLegendLabels.items[0]
     .properties.fontSize, 11);
-  assert.equal(after.graphicSpec.objects.sizeLegendLabels.children[0]
+  assert.equal(after.graphicSpec.objects.sizeLegendLabels.items[0]
     .properties.fontSize, 11);
   assert.equal(after.graphicSpec.objects.seriesLegendTitle.properties.fontWeight, 800);
   assert.equal(after.graphicSpec.objects.sizeLegendTitle.properties.fontWeight, 800);
@@ -116,7 +116,7 @@ test("edits gradient and opacity legend-specific options", () => {
     labels: { color: "#475569" },
     border: true
   });
-  assert.equal(gradient.graphicSpec.objects.colorGradientLabels.children.length, 3);
+  assert.equal(gradient.graphicSpec.objects.colorGradientLabels.items.length, 3);
   assert.equal(gradient.guideConfigs.legend.gradient.gradient.length, 80);
   assert.equal(gradient.semanticSpec.guides.legend.color.title, "Magnitude");
   assert.ok(gradient.graphicSpec.objects.colorGradientBackground);
@@ -127,8 +127,8 @@ test("edits gradient and opacity legend-specific options", () => {
     symbol: { type: "point", radius: 5, fill: "#334155" },
     title: false
   });
-  assert.equal(opacity.graphicSpec.objects.opacityLegendSymbols.children.length, 4);
-  assert.equal(opacity.graphicSpec.objects.opacityLegendSymbols.children[0]
+  assert.equal(opacity.graphicSpec.objects.opacityLegendSymbols.items.length, 4);
+  assert.equal(opacity.graphicSpec.objects.opacityLegendSymbols.items[0]
     .properties.radius, 5);
   assert.equal(opacity.graphicSpec.objects.opacityLegendTitle, undefined);
 });
@@ -182,6 +182,6 @@ test("requires an explicit target when independent legends are ambiguous", () =>
 
   assert.throws(() => program.editLegend({ count: 3 }), /target.*ambiguous/);
   const edited = program.editLegend({ target: "opacityPoints", count: 3 });
-  assert.equal(edited.graphicSpec.objects.opacityLegendSymbols.children.length, 3);
-  assert.equal(edited.graphicSpec.objects.colorGradientLabels.children.length, 5);
+  assert.equal(edited.graphicSpec.objects.opacityLegendSymbols.items.length, 3);
+  assert.equal(edited.graphicSpec.objects.colorGradientLabels.items.length, 5);
 });

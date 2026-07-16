@@ -41,13 +41,13 @@ test("authors every continuous-color bar target with primitives only", () => {
       variant
     );
     const layer = program.semanticSpec.layers.find(item => item.id === "bar");
-    const fills = program.graphicSpec.objects.bar.children.map(
+    const fills = program.graphicSpec.objects.bar.items.map(
       child => child.properties.fill
     );
 
     assert.equal(layer.encoding.color.aggregate, reference.color.aggregate);
     assert.equal(layer.encoding.color.field, reference.color.sourceField);
-    assert.equal(program.graphicSpec.objects.bar.children.length, 8);
+    assert.equal(program.graphicSpec.objects.bar.items.length, 8);
     assert.equal(new Set(fills).size > 4, true);
     assert.equal(
       program.graphicSpec.order.indexOf("horizontalGridLines") <

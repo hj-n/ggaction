@@ -57,7 +57,7 @@ test("matches primitive density geometry and records aggregate children", () => 
     bandwidth: 0.6
   });
   assert.deepEqual(
-    program.graphicSpec.objects.densities.children.map(child => child.properties.commands),
+    program.graphicSpec.objects.densities.items.map(child => child.properties.commands),
     expected.areas.map(area => linearPathCommands(area.points, { close: true }))
   );
   const node = program.trace.children.at(-1);
@@ -96,8 +96,8 @@ test("supports explicit x-density, output fields, scales, and coordinate", () =>
   assert.equal(layer.encoding.y.field, "sample");
   assert.equal(layer.encoding.y.scale, "value");
   assert.equal(layer.encoding.group, undefined);
-  assert.equal(program.graphicSpec.objects.horizontal.children.length, 1);
-  assert.equal(program.graphicSpec.objects.horizontal.children[0].properties.commands.length, 28);
+  assert.equal(program.graphicSpec.objects.horizontal.items.length, 1);
+  assert.equal(program.graphicSpec.objects.horizontal.items[0].properties.commands.length, 28);
 });
 
 test("forwards kernel and normalization and rematerializes their magnitude", () => {
@@ -119,7 +119,7 @@ test("forwards kernel and normalization and rematerializes their magnitude", () 
   assert.deepEqual(dataset.values, expected.densityRows);
   assert.deepEqual(program.resolvedScales.y.domain, expected.scales.y.domain);
   assert.deepEqual(
-    program.graphicSpec.objects.densities.children.map(
+    program.graphicSpec.objects.densities.items.map(
       child => child.properties.commands
     ),
     expected.areas.map(area => linearPathCommands(area.points, { close: true }))

@@ -16,7 +16,7 @@ test("creates the default semantic rule and empty line collection", () => {
   ]);
   assert.deepEqual(program.graphicSpec.objects.rule, {
     type: "line",
-    children: []
+    items: []
   });
   assert.deepEqual(program.markConfigs.rule, {
     stroke: "#4c78a8",

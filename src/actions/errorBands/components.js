@@ -73,7 +73,7 @@ export const createErrorBandBoundary = action(
       .editGraphics({
         target: id,
         property: "strokeDash",
-        value: next.graphicSpec.objects[id].children.map(() => strokeDash)
+        value: next.graphicSpec.objects[id].items.map(() => strokeDash)
       })
       .editGraphics({ target: id, property: "opacity", value: opacity });
     return next;

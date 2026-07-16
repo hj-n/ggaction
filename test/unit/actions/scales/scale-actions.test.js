@@ -77,7 +77,7 @@ test("stores and reuses explicit ordinal dash ranges", () => {
 test("materializes an automatic scale into concrete graphical values", () => {
   const before = createEncodedMark().createScale({ id: "x" });
   const program = before.rematerializeScale({ id: "x" });
-  const points = program.graphicSpec.objects.points.children;
+  const points = program.graphicSpec.objects.points.items;
   const node = program.trace.children.at(-1);
 
   assert.deepEqual(program.resolvedScales.x, {
@@ -89,7 +89,7 @@ test("materializes an automatic scale into concrete graphical values", () => {
     points.map(point => point.properties.x),
     [10, 190]
   );
-  assert.equal(before.graphicSpec.objects.points.children[0].properties.x, undefined);
+  assert.equal(before.graphicSpec.objects.points.items[0].properties.x, undefined);
   assert.equal(node.op, "rematerializeScale");
   assert.deepEqual(
     node.children.map(child => child.op),
@@ -118,11 +118,11 @@ test("combines every consumer of a shared scale", () => {
 
   assert.deepEqual(program.resolvedScales.x.domain, [0, 20]);
   assert.deepEqual(
-    program.graphicSpec.objects.points.children.map(point => point.properties.x),
+    program.graphicSpec.objects.points.items.map(point => point.properties.x),
     [10, 55]
   );
   assert.deepEqual(
-    program.graphicSpec.objects.otherPoints.children.map(
+    program.graphicSpec.objects.otherPoints.items.map(
       point => point.properties.x
     ),
     [100, 190]

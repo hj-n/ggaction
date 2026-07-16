@@ -21,10 +21,10 @@ test("authors Gate C as one selected-last complete path", () => {
   const base = createCarsLineChart(cars);
   const program = createJapanLineHighlightGatePrimitive(cars);
   const { target } = selectJapanLineSeries(cars);
-  const baseChildren = base.graphicSpec.objects.trends.children;
-  const children = program.graphicSpec.objects.trends.children;
+  const baseChildren = base.graphicSpec.objects.trends.items;
+  const children = program.graphicSpec.objects.trends.items;
   const selected = children.at(-1);
-  const legendSymbols = program.graphicSpec.objects.seriesLegendSymbols.children;
+  const legendSymbols = program.graphicSpec.objects.seriesLegendSymbols.items;
 
   assert.equal(program.graphicSpec.objects.trends.type, "path");
   assert.equal(children.length, baseChildren.length);
@@ -106,14 +106,14 @@ test("reauthors the same semantic series after Canvas-only resize", () => {
   const program = createJapanLineHighlightGatePrimitive(cars, { width });
   const target = selectJapanLineSeries(cars, { width }).target;
 
-  assert.equal(program.graphicSpec.objects.trends.children.at(-1).properties.stroke,
+  assert.equal(program.graphicSpec.objects.trends.items.at(-1).properties.stroke,
     LINE_HIGHLIGHT_TARGET.stroke);
   assert.deepEqual(
-    program.graphicSpec.objects.trends.children.at(-1).properties.commands,
-    base.graphicSpec.objects.trends.children[target.index].properties.commands
+    program.graphicSpec.objects.trends.items.at(-1).properties.commands,
+    base.graphicSpec.objects.trends.items[target.index].properties.commands
   );
   assert.equal(
-    program.graphicSpec.objects.seriesLegendSymbols.children.at(-1)
+    program.graphicSpec.objects.seriesLegendSymbols.items.at(-1)
       .properties.stroke,
     LINE_HIGHLIGHT_TARGET.stroke
   );

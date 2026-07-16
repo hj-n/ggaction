@@ -37,8 +37,8 @@ test("inherits compatible layered point positions without repeated encodings", (
     .createPointMark({ id: "centers" })
     .encodeRadius({ value: 4 });
   const point = program.semanticSpec.layers.find(layer => layer.id === "centers");
-  const barChildren = program.graphicSpec.objects.bars.children;
-  const pointChildren = program.graphicSpec.objects.centers.children;
+  const barChildren = program.graphicSpec.objects.bars.items;
+  const pointChildren = program.graphicSpec.objects.centers.items;
 
   assert.equal(point.data, "rows");
   assert.equal(point.coordinate, "main");

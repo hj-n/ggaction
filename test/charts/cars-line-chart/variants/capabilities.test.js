@@ -132,20 +132,20 @@ test("authors the approved-target step geometry with raw primitive commands", ()
   assert.deepEqual(program.graphicSpec.order, baseline.graphicSpec.order);
   assert.deepEqual(withoutTrends(program.graphicSpec), withoutTrends(baseline.graphicSpec));
   assert.deepEqual(
-    program.graphicSpec.objects.trends.children.map(
+    program.graphicSpec.objects.trends.items.map(
       child => child.properties.commands
     ),
     values.stepCommands
   );
   assert.deepEqual(
-    program.graphicSpec.objects.trends.children.map(
+    program.graphicSpec.objects.trends.items.map(
       child => child.properties.commands.length
     ),
     [34, 34, 34]
   );
   assert.equal(findCanvasCalls(context, "bezierCurveTo").length, 0);
   assert.equal(findCanvasCalls(context, "lineTo").length, 123);
-  assert.deepEqual(baseline.graphicSpec.objects.trends.children.map(
+  assert.deepEqual(baseline.graphicSpec.objects.trends.items.map(
     child => child.properties.commands.length
   ), [12, 12, 12]);
 });
@@ -162,20 +162,20 @@ test("authors the approved-target monotone edit with cubic commands", () => {
   assert.deepEqual(program.graphicSpec.order, baseline.graphicSpec.order);
   assert.deepEqual(withoutTrends(program.graphicSpec), withoutTrends(baseline.graphicSpec));
   assert.deepEqual(
-    program.graphicSpec.objects.trends.children.map(
+    program.graphicSpec.objects.trends.items.map(
       child => child.properties.commands
     ),
     values.monotoneCommands
   );
   assert.deepEqual(
-    program.graphicSpec.objects.trends.children.map(
+    program.graphicSpec.objects.trends.items.map(
       child => child.properties.strokeWidth
     ),
     [4, 4, 4]
   );
   assert.equal(findCanvasCalls(context, "bezierCurveTo").length, 33);
   assert.equal(findCanvasCalls(context, "lineTo").length, 24);
-  assert.deepEqual(baseline.graphicSpec.objects.trends.children.map(
+  assert.deepEqual(baseline.graphicSpec.objects.trends.items.map(
     child => child.properties.strokeWidth
   ), [2, 2, 2]);
 });
@@ -244,17 +244,17 @@ test("authors four named dash styles and a matching dash legend", () => {
     ["solid", "dashed", "dotted", "dashdot"]
   );
   assert.deepEqual(
-    program.graphicSpec.objects.trends.children.map(child => child.properties.strokeDash),
+    program.graphicSpec.objects.trends.items.map(child => child.properties.strokeDash),
     Object.values(NAMED_DASH_PATTERNS)
   );
   assert.deepEqual(
-    program.graphicSpec.objects.seriesLegendSymbols.children.map(
+    program.graphicSpec.objects.seriesLegendSymbols.items.map(
       child => child.properties.strokeDash
     ),
     Object.values(NAMED_DASH_PATTERNS)
   );
   assert.deepEqual(
-    program.graphicSpec.objects.seriesLegendLabels.children.map(
+    program.graphicSpec.objects.seriesLegendLabels.items.map(
       child => child.properties.text
     ),
     ["8", "4", "6", "3"]
@@ -277,7 +277,7 @@ test("authors a scale-free constant dotted line after legend cleanup", () => {
   assert.equal(program.semanticSpec.guides.legend, undefined);
   assert.deepEqual(program.graphicSpec.order, ["canvas", "trends"]);
   assert.deepEqual(
-    program.graphicSpec.objects.trends.children[0].properties.strokeDash,
+    program.graphicSpec.objects.trends.items[0].properties.strokeDash,
     [1, 3]
   );
 });
@@ -293,9 +293,9 @@ test("authors group-only Cylinder series with no scale or legend", () => {
   });
   assert.equal(program.semanticSpec.layers[0].encoding.strokeDash, undefined);
   assert.equal(program.semanticSpec.guides.legend, undefined);
-  assert.equal(program.graphicSpec.objects.trends.children.length, 5);
+  assert.equal(program.graphicSpec.objects.trends.items.length, 5);
   assert.deepEqual(
-    program.graphicSpec.objects.trends.children.map(child => child.properties.strokeDash),
+    program.graphicSpec.objects.trends.items.map(child => child.properties.strokeDash),
     [[], [], [], [], []]
   );
 });
@@ -320,11 +320,11 @@ test("authors dash reassignment with retained old scale and refreshed legend", (
     title: "Cylinders"
   });
   assert.deepEqual(
-    program.graphicSpec.objects.trends.children.map(child => child.properties.strokeDash),
+    program.graphicSpec.objects.trends.items.map(child => child.properties.strokeDash),
     DEFAULT_DASH_PATTERNS
   );
   assert.deepEqual(
-    program.graphicSpec.objects.seriesLegendLabels.children.map(
+    program.graphicSpec.objects.seriesLegendLabels.items.map(
       child => child.properties.text
     ),
     ["8", "4", "6", "3", "5"]
@@ -478,17 +478,17 @@ test("authors the four aggregate targets with concrete paths and inferred guides
     assert.deepEqual(program.semanticSpec.layers[0].encoding.y.aggregate, aggregate);
     assert.equal(program.semanticSpec.guides.axis.y.title, title);
     assert.equal(program.graphicSpec.objects.yAxisTitle.properties.text, title);
-    assert.equal(program.graphicSpec.objects.trends.children.length, 3);
+    assert.equal(program.graphicSpec.objects.trends.items.length, 3);
     assert.deepEqual(
-      program.graphicSpec.objects.trends.children.map(child => child.properties.commands.length),
+      program.graphicSpec.objects.trends.items.map(child => child.properties.commands.length),
       [12, 12, 12]
     );
     assert.deepEqual(
-      program.graphicSpec.objects.yAxisLabels.children.map(child => Number(child.properties.text)),
+      program.graphicSpec.objects.yAxisLabels.items.map(child => Number(child.properties.text)),
       ticks
     );
     assert.equal(findCanvasCalls(context, "stroke").length > 0, true);
-    const yValues = program.graphicSpec.objects.trends.children.flatMap(child =>
+    const yValues = program.graphicSpec.objects.trends.items.flatMap(child =>
       child.properties.commands.map(command => command.y)
     );
     assert.equal(yValues.every(Number.isFinite), true);
@@ -552,32 +552,32 @@ test("authors top and bottom layered legend primitives in declared order", () =>
     assert.equal(background < lines && lines < points, true);
     assert.equal(points < labels && labels < title, true);
     assert.deepEqual(
-      program.graphicSpec.objects.seriesLegendSymbolLines.children.map(
+      program.graphicSpec.objects.seriesLegendSymbolLines.items.map(
         child => [child.properties.x1, child.properties.y1,
           child.properties.x2, child.properties.y2]
       ),
       values.legend.items.map(item => [item.x1, item.y, item.x2, item.y])
     );
     assert.deepEqual(
-      program.graphicSpec.objects.seriesLegendSymbolPoints.children.map(
+      program.graphicSpec.objects.seriesLegendSymbolPoints.items.map(
         child => [child.properties.x, child.properties.y]
       ),
       values.legend.items.map(item => [item.pointX, item.y])
     );
     assert.deepEqual(
-      program.graphicSpec.objects.seriesLegendLabels.children.map(
+      program.graphicSpec.objects.seriesLegendLabels.items.map(
         child => child.properties.x
       ),
       values.legend.items.map(item => item.labelX)
     );
     assert.equal(
-      program.graphicSpec.objects.seriesLegendSymbolLines.children.every(
+      program.graphicSpec.objects.seriesLegendSymbolLines.items.every(
         child => child.properties.strokeWidth === 3
       ),
       true
     );
     assert.equal(
-      program.graphicSpec.objects.seriesLegendSymbolPoints.children.every(
+      program.graphicSpec.objects.seriesLegendSymbolPoints.items.every(
         child => child.properties.radius === 5
       ),
       true

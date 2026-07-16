@@ -111,7 +111,7 @@ test("authors and renders the complete primitive density area chart", () => {
   assert.deepEqual(program.semanticSpec.title, values.title);
 
   assert.deepEqual(
-    program.graphicSpec.objects.densities.children.map(child => child.properties),
+    program.graphicSpec.objects.densities.items.map(child => child.properties),
     values.areas.map(area => ({
       commands: linearPathCommands(area.points, { close: true }),
       fill: area.fill,
@@ -119,19 +119,19 @@ test("authors and renders the complete primitive density area chart", () => {
     }))
   );
   assert.deepEqual(
-    program.graphicSpec.objects.horizontalGridLines.children.map(
+    program.graphicSpec.objects.horizontalGridLines.items.map(
       child => child.properties.y1
     ),
     values.grid.horizontal.map(line => line.y1)
   );
   assert.deepEqual(
-    program.graphicSpec.objects.verticalGridLines.children.map(
+    program.graphicSpec.objects.verticalGridLines.items.map(
       child => child.properties.x1
     ),
     values.grid.vertical.map(line => line.x1)
   );
   assert.deepEqual(
-    program.graphicSpec.objects.colorLegendSymbols.children.map(
+    program.graphicSpec.objects.colorLegendSymbols.items.map(
       child => child.properties.fill
     ),
     ["#4c78a8", "#f58518", "#e45756"]
@@ -193,7 +193,7 @@ test("authors and renders the complete primitive density area chart", () => {
     false
   );
   assert.equal(
-    Object.isFrozen(program.graphicSpec.objects.densities.children[0].properties),
+    Object.isFrozen(program.graphicSpec.objects.densities.items[0].properties),
     true
   );
   assert.equal(Object.isFrozen(program.semanticSpec.datasets[1].values), true);

@@ -16,12 +16,12 @@ test("broadcasts a constant radius without changing semantic state", () => {
   assert.equal(program.semanticSpec, before.semanticSpec);
   assert.equal(program.resolvedScales, before.resolvedScales);
   assert.deepEqual(
-    program.graphicSpec.objects.points.children.map(
+    program.graphicSpec.objects.points.items.map(
       child => child.properties.radius
     ),
     [3, 3]
   );
-  assert.equal(before.graphicSpec.objects.points.children[0].properties.radius, undefined);
+  assert.equal(before.graphicSpec.objects.points.items[0].properties.radius, undefined);
 });
 
 test("records encodeRadius with one graphical child action", () => {
@@ -43,7 +43,7 @@ test("supports an explicit point target", () => {
   });
 
   assert.deepEqual(
-    program.graphicSpec.objects.points.children.map(
+    program.graphicSpec.objects.points.items.map(
       child => child.properties.radius
     ),
     [0, 0]
@@ -55,13 +55,13 @@ test("replaces an existing constant radius through the same assignment", () => {
   const after = before.encodeRadius({ value: 6 });
 
   assert.deepEqual(
-    before.graphicSpec.objects.points.children.map(
+    before.graphicSpec.objects.points.items.map(
       child => child.properties.radius
     ),
     [3, 3]
   );
   assert.deepEqual(
-    after.graphicSpec.objects.points.children.map(
+    after.graphicSpec.objects.points.items.map(
       child => child.properties.radius
     ),
     [6, 6]

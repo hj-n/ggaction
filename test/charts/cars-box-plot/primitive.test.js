@@ -29,7 +29,7 @@ test("authors the canonical Cars Tukey box plot with raw primitives", () => {
   assert.equal(body.encoding.y.field, BOX_PLOT_FIELDS.q1);
   assert.equal(body.encoding.y2.field, BOX_PLOT_FIELDS.q3);
   assert.deepEqual(
-    program.graphicSpec.objects.boxPlot.children.map(child => child.properties),
+    program.graphicSpec.objects.boxPlot.items.map(child => child.properties),
     values.boxes.map((box, index) => ({
       ...box,
       fill: values.boxColors[index],
@@ -38,15 +38,15 @@ test("authors the canonical Cars Tukey box plot with raw primitives", () => {
       strokeWidth: 1.5
     }))
   );
-  assert.equal(program.graphicSpec.objects.boxPlotOutliers.children.length, 10);
+  assert.equal(program.graphicSpec.objects.boxPlotOutliers.items.length, 10);
   assert.deepEqual(
-    program.graphicSpec.objects.boxPlotOutliers.children.map(({ type, properties }) => ({
+    program.graphicSpec.objects.boxPlotOutliers.items.map(({ type, properties }) => ({
       type,
       properties
     })),
     values.outlierGraphics
   );
-  assert.ok(program.graphicSpec.objects.boxPlotOutliers.children.every(child =>
+  assert.ok(program.graphicSpec.objects.boxPlotOutliers.items.every(child =>
     child.type === "path" && child.properties.fill === "#111111"
   ));
 
@@ -72,13 +72,13 @@ test("keeps all primitive children concrete and renderable", () => {
     "boxPlotWhiskerUpperCap",
     "boxPlotMedian"
   ]) {
-    for (const child of program.graphicSpec.objects[id].children) {
+    for (const child of program.graphicSpec.objects[id].items) {
       assert.ok(["x1", "y1", "x2", "y2"].every(property =>
         Number.isFinite(child.properties[property])
       ));
     }
   }
-  for (const child of program.graphicSpec.objects.boxPlot.children) {
+  for (const child of program.graphicSpec.objects.boxPlot.items) {
     assert.ok(["x", "y", "width", "height"].every(property =>
       Number.isFinite(child.properties[property])
     ));

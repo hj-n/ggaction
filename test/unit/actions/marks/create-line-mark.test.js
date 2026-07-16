@@ -19,7 +19,7 @@ test("creates a semantic line mark and empty path collection", () => {
   ]);
   assert.deepEqual(program.graphicSpec.objects.line, {
     type: "path",
-    children: []
+    items: []
   });
   assert.equal(program.context.currentData, "cars");
   assert.equal(program.context.currentMark, "line");
@@ -56,7 +56,7 @@ test("supports empty datasets because series cardinality is unresolved", () => {
     .createData({ id: "empty", values: [] })
     .createLineMark({ id: "trends" });
 
-  assert.equal(program.graphicSpec.objects.trends.children.length, 0);
+  assert.equal(program.graphicSpec.objects.trends.items.length, 0);
 });
 
 test("stores explicit curve and stroke appearance for later materialization", () => {

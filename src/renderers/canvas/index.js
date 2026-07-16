@@ -4,6 +4,7 @@ import { drawPathGraphic } from "./path.js";
 import { drawRectGraphic } from "./rect.js";
 import { drawTextGraphic } from "./text.js";
 import { requireFiniteProperty } from "./validation.js";
+import { walkGraphicDrawOrder } from "../../grammar/schemas/graphicTree.js";
 
 const DRAWERS = Object.freeze({
   circle: drawCircleGraphic,
@@ -108,19 +109,9 @@ export function render(program, context, { pixelRatio = 1 } = {}) {
       context.fillRect(0, 0, width, height);
     }
 
-    for (const id of graphicSpec.order) {
-      if (id === canvasId) {
-        continue;
-      }
-
-      const graphic = graphicSpec.objects[id];
-
-      if (graphic === undefined) {
-        throw new Error(`Unknown ordered graphic "${id}".`);
-      }
-
-      drawConcreteGraphic(context, id, graphic);
-    }
+    walkGraphicDrawOrder(graphicSpec, ({ id, object }) => {
+      if (id !== canvasId) drawConcreteGraphic(context, id, object);
+    });
   } finally {
     context.restore();
   }
@@ -128,8 +119,8 @@ export function render(program, context, { pixelRatio = 1 } = {}) {
 
 function drawConcreteGraphic(context, id, graphic) {
   if (graphic.type === "collection") {
-    for (const child of graphic.children ?? []) {
-      drawConcreteGraphic(context, child.id ?? id, child);
+    for (const item of graphic.items ?? []) {
+      drawConcreteGraphic(context, item.id ?? id, item);
     }
     return;
   }

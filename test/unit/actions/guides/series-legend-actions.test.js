@@ -69,7 +69,7 @@ test("creates a combined series legend from color and strokeDash", () => {
     scales: ["color", "strokeDash"],
     title: "origin"
   });
-  assert.deepEqual(program.graphicSpec.objects.seriesLegendSymbols.children.map(
+  assert.deepEqual(program.graphicSpec.objects.seriesLegendSymbols.items.map(
     child => child.properties
   ), [
     {
@@ -91,7 +91,7 @@ test("creates a combined series legend from color and strokeDash", () => {
       strokeDash: [8, 4]
     }
   ]);
-  assert.deepEqual(program.graphicSpec.objects.seriesLegendLabels.children.map(
+  assert.deepEqual(program.graphicSpec.objects.seriesLegendLabels.items.map(
     child => child.properties.text
   ), ["A", "B"]);
   assert.equal(
@@ -137,8 +137,8 @@ test("supports composite line and point symbol recipes", () => {
       ]
     }
   });
-  const lines = program.graphicSpec.objects.seriesLegendSymbolLines.children;
-  const points = program.graphicSpec.objects.seriesLegendSymbolPoints.children;
+  const lines = program.graphicSpec.objects.seriesLegendSymbolLines.items;
+  const points = program.graphicSpec.objects.seriesLegendSymbolPoints.items;
 
   assert.equal(lines.length, points.length);
   assert.deepEqual(
@@ -178,9 +178,9 @@ test("lays out bordered bottom composite symbols in a deterministic grid", () =>
       ]
     }
   });
-  const lines = program.graphicSpec.objects.seriesLegendSymbolLines.children;
-  const points = program.graphicSpec.objects.seriesLegendSymbolPoints.children;
-  const labels = program.graphicSpec.objects.seriesLegendLabels.children;
+  const lines = program.graphicSpec.objects.seriesLegendSymbolLines.items;
+  const points = program.graphicSpec.objects.seriesLegendSymbolPoints.items;
+  const labels = program.graphicSpec.objects.seriesLegendLabels.items;
   const background = program.graphicSpec.objects.seriesLegendBackground;
 
   assert.equal(lines[0].properties.y1 < lines[1].properties.y1, true);
@@ -221,8 +221,8 @@ test("rematerializes bottom composite layout and fails atomically when cramped",
   const after = before.editCanvas({ width: 560 });
 
   assert.notEqual(
-    after.graphicSpec.objects.seriesLegendSymbolLines.children[0].properties.x1,
-    before.graphicSpec.objects.seriesLegendSymbolLines.children[0].properties.x1
+    after.graphicSpec.objects.seriesLegendSymbolLines.items[0].properties.x1,
+    before.graphicSpec.objects.seriesLegendSymbolLines.items[0].properties.x1
   );
   assert.equal(
     after.trace.children.at(-1).children.some(
@@ -245,7 +245,7 @@ test("keeps color and shape point composites compatible with top grids", () => {
     columns: 2,
     border: true
   });
-  const symbols = before.graphicSpec.objects.seriesLegendSymbolPoints.children;
+  const symbols = before.graphicSpec.objects.seriesLegendSymbolPoints.items;
 
   assert.deepEqual(symbols.map(child => child.type), ["circle", "rect"]);
   assert.deepEqual(
@@ -260,13 +260,13 @@ test("keeps color and shape point composites compatible with top grids", () => {
     .rematerializeLegend();
 
   assert.deepEqual(
-    after.graphicSpec.objects.seriesLegendLabels.children.map(
+    after.graphicSpec.objects.seriesLegendLabels.items.map(
       child => child.properties.text
     ),
     ["B", "A"]
   );
   assert.deepEqual(
-    after.graphicSpec.objects.seriesLegendSymbolPoints.children.map(
+    after.graphicSpec.objects.seriesLegendSymbolPoints.items.map(
       child => child.properties.fill
     ),
     ["#4c78a8", "#f58518"]
@@ -279,14 +279,14 @@ test("supports single-channel series legends", () => {
 
   assert.deepEqual(color.semanticSpec.guides.legend.series.channels, ["color"]);
   assert.deepEqual(
-    color.graphicSpec.objects.seriesLegendSymbols.children.map(
+    color.graphicSpec.objects.seriesLegendSymbols.items.map(
       child => child.properties.strokeDash
     ),
     [[], []]
   );
   assert.deepEqual(dash.semanticSpec.guides.legend.series.channels, ["strokeDash"]);
   assert.deepEqual(
-    dash.graphicSpec.objects.seriesLegendSymbols.children.map(
+    dash.graphicSpec.objects.seriesLegendSymbols.items.map(
       child => child.properties.stroke
     ),
     ["#4c78a8", "#4c78a8"]
@@ -330,7 +330,7 @@ test("rematerializes legend and border layout after Canvas edits", () => {
   const program = before.editCanvas({ width: 500 });
 
   assert.equal(
-    program.graphicSpec.objects.seriesLegendSymbols.children[0].properties.x1,
+    program.graphicSpec.objects.seriesLegendSymbols.items[0].properties.x1,
     410
   );
   assert.equal(
@@ -348,7 +348,7 @@ test("rematerializes legend and border layout after Canvas edits", () => {
     1
   );
   assert.equal(
-    before.graphicSpec.objects.seriesLegendSymbols.children[0].properties.x1,
+    before.graphicSpec.objects.seriesLegendSymbols.items[0].properties.x1,
     310
   );
 });
@@ -366,7 +366,7 @@ test("reads the latest shared scale domain when rematerializing", () => {
     .rematerializeLegend();
 
   assert.deepEqual(
-    program.graphicSpec.objects.seriesLegendLabels.children.map(
+    program.graphicSpec.objects.seriesLegendLabels.items.map(
       child => child.properties.text
     ),
     ["B", "A"]

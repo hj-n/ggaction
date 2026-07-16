@@ -87,7 +87,7 @@ test("rematerializes auto-range position scales after bounds change", () => {
   assert.deepEqual(encoded.resolvedScales.x.range, [10, 190]);
   assert.deepEqual(resized.resolvedScales.x.range, [20, 280]);
   assert.deepEqual(
-    resized.graphicSpec.objects.points.children.map(child => child.properties.x),
+    resized.graphicSpec.objects.points.items.map(child => child.properties.x),
     [20, 280]
   );
   assert.deepEqual(

@@ -23,6 +23,7 @@ import { deriveHistogramSegments } from "../bars/histogram.js";
 import { findDataset } from "../../selectors/datasets.js";
 import { findLayer } from "../../selectors/layers.js";
 import { findUpstreamTransform } from "../dataProvenance.js";
+import { unionConcreteGraphicBounds } from "../../grammar/schemas/graphicBounds.js";
 
 function itemKey(layer, grain, index) {
   return `${layer.id}/${grain}/${index}`;
@@ -67,10 +68,10 @@ function uniqueFields(rows) {
 function requireResolvedGraphic(program, layer, type) {
   const graphic = program.graphicSpec.objects[layer.id];
   const compatibleCollection = graphic?.type === "collection" &&
-    graphic.children?.every(child => child.type === type);
+    graphic.items?.every(child => child.type === type);
   if (
     (graphic?.type !== type && !compatibleCollection) ||
-    !Array.isArray(graphic.children)
+    !Array.isArray(graphic.items)
   ) {
     throw new Error(
       `Mark "${layer.id}" requires a materialized ${type} collection for selection.`
@@ -90,32 +91,24 @@ function concreteProperties(properties) {
   );
 }
 
-function sharedConcreteProperties(children) {
-  if (children.length === 0) return {};
-  const shared = concreteProperties(children[0].properties);
+function sharedConcreteProperties(items) {
+  if (items.length === 0) return {};
+  const shared = concreteProperties(items[0].properties);
   for (const key of Object.keys(shared)) {
-    if (!children.every(child => child.properties?.[key] === shared[key])) {
+    if (!items.every(child => child.properties?.[key] === shared[key])) {
       delete shared[key];
     }
   }
   return shared;
 }
 
-function collectionBounds(children) {
-  if (!children.every(child =>
-    Number.isFinite(child.properties?.x) &&
-    Number.isFinite(child.properties?.y) &&
-    Number.isFinite(child.properties?.width) &&
-    Number.isFinite(child.properties?.height)
-  )) return {};
-  const left = Math.min(...children.map(child => child.properties.x));
-  const top = Math.min(...children.map(child => child.properties.y));
-  const right = Math.max(...children.map(child =>
-    child.properties.x + child.properties.width
-  ));
-  const bottom = Math.max(...children.map(child =>
-    child.properties.y + child.properties.height
-  ));
+function collectionBounds(program, items) {
+  const bounds = unionConcreteGraphicBounds(
+    program.graphicSpec,
+    items.map(item => item.id)
+  );
+  if (bounds === undefined) return {};
+  const { left, top, right, bottom } = bounds;
   return { x: left, y: top, width: right - left, height: bottom - top };
 }
 
@@ -125,9 +118,9 @@ function finalizeItems(program, layer, grain, definitions, graphicType) {
     definition.graphicIndices ?? [index]
   );
   if (
-    referenced.some(index => graphic.children[index] === undefined) ||
+    referenced.some(index => graphic.items[index] === undefined) ||
     (definitions.every(definition => definition.graphicIndices === undefined) &&
-      graphic.children.length !== definitions.length)
+      graphic.items.length !== definitions.length)
   ) {
     throw new Error(
       `Mark "${layer.id}" item count does not match its materialized graphics.`
@@ -135,13 +128,13 @@ function finalizeItems(program, layer, grain, definitions, graphicType) {
   }
   return Object.freeze(definitions.map((definition, index) => {
     const indices = definition.graphicIndices ?? [index];
-    const children = indices.map(childIndex => graphic.children[childIndex]);
+    const items = indices.map(childIndex => graphic.items[childIndex]);
     const properties = definition.properties ?? (
-      children.length === 1
-        ? concreteProperties(children[0].properties)
+      items.length === 1
+        ? concreteProperties(items[0].properties)
         : {
-            ...sharedConcreteProperties(children),
-            ...collectionBounds(children)
+            ...sharedConcreteProperties(items),
+            ...collectionBounds(program, items)
           }
     );
     return Object.freeze({
@@ -152,7 +145,7 @@ function finalizeItems(program, layer, grain, definitions, graphicType) {
       channels: cloneAndFreeze(definition.channels),
       properties: cloneAndFreeze(properties),
       members: Object.freeze([...definition.members]),
-      graphicIds: Object.freeze(children.map((child, childOffset) =>
+      graphicIds: Object.freeze(items.map((child, childOffset) =>
         child.id ?? graphicId(layer, indices[childOffset])
       ))
     });
@@ -162,7 +155,7 @@ function finalizeItems(program, layer, grain, definitions, graphicType) {
 function resolvePointItems(program, layer, dataset) {
   const graphic = program.graphicSpec.objects[layer.id];
   if (
-    !Array.isArray(graphic?.children) ||
+    !Array.isArray(graphic?.items) ||
     layer.encoding?.x?.scale === undefined ||
     layer.encoding?.y?.scale === undefined ||
     (
@@ -176,7 +169,7 @@ function resolvePointItems(program, layer, dataset) {
     key: itemKey(layer, "point", index),
     fields: ownFields(row),
     channels: channelMapFromRow(row, layer),
-    properties: concreteProperties(graphic.children[index]?.properties),
+    properties: concreteProperties(graphic.items[index]?.properties),
     members: [row]
   }));
   for (const config of Object.values(

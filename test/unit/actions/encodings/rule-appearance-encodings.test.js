@@ -35,7 +35,7 @@ test("assigns and reassigns constant rule stroke appearance", () => {
     .encodeStrokeDash({ value: "dotted" })
     .encodeOpacity({ value: 0.4 });
 
-  for (const child of styled.graphicSpec.objects.intervals.children) {
+  for (const child of styled.graphicSpec.objects.intervals.items) {
     assert.equal(child.properties.stroke, "#d9485f");
     assert.equal(child.properties.strokeWidth, 0);
     assert.deepEqual(child.properties.strokeDash, [1, 3]);
@@ -49,7 +49,7 @@ test("maps field-driven dash and opacity per concrete rule", () => {
   const program = encodedRule()
     .encodeStrokeDash({ field: "row" })
     .encodeOpacity({ field: "amount", scale: { range: [0.2, 1] } });
-  const children = program.graphicSpec.objects.intervals.children;
+  const children = program.graphicSpec.objects.intervals.items;
 
   assert.deepEqual(
     children.map(child => child.properties.strokeDash),
@@ -76,13 +76,13 @@ test("restores constant appearance after field-driven assignments", () => {
     datum: []
   });
   assert.deepEqual(
-    constants.graphicSpec.objects.intervals.children.map(child =>
+    constants.graphicSpec.objects.intervals.items.map(child =>
       child.properties.strokeDash
     ),
     [[], []]
   );
   assert.deepEqual(
-    constants.graphicSpec.objects.intervals.children.map(child =>
+    constants.graphicSpec.objects.intervals.items.map(child =>
       child.properties.opacity
     ),
     [1, 1]
@@ -102,7 +102,7 @@ test("validates rule appearance without mutating earlier output", () => {
   );
   assert.throws(() => program.encodeOpacity({ value: 2 }), /from 0 to 1/);
   assert.equal(
-    program.graphicSpec.objects.intervals.children[0].properties.stroke,
+    program.graphicSpec.objects.intervals.items[0].properties.stroke,
     "#4c78a8"
   );
 });

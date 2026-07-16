@@ -1,6 +1,7 @@
 import { isPlainObject } from "../../core/immutable.js";
 import { validateKeys } from "../../core/validation.js";
 import { resolveGraphicBounds } from "../../layout/canvas.js";
+import { resolveConcreteGraphicBounds } from "../../grammar/schemas/graphicBounds.js";
 import { measureTextWidth, wrapText } from "../../layout/text.js";
 import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from "../../theme/defaults.js";
 
@@ -272,74 +273,6 @@ function componentBounds(component, style) {
   })));
 }
 
-function textGraphicBounds(graphic) {
-  const children = graphic.children ?? [{ properties: graphic.properties }];
-  const bounds = children.map(({ properties }) => axisAlignedTextBounds({
-    x: properties.x,
-    y: properties.y,
-    text: properties.text,
-    style: { fontSize: properties.fontSize },
-    align: properties.textAlign ?? "left",
-    rotation: properties.rotation ?? 0
-  }));
-  return bounds.every(item => Object.values(item).every(Number.isFinite))
-    ? unionBounds(bounds)
-    : undefined;
-}
-
-function lineGraphicBounds(graphic) {
-  const children = graphic.children ?? [{ properties: graphic.properties }];
-  const bounds = children.flatMap(({ properties }) => {
-    if (![properties.x1, properties.y1, properties.x2, properties.y2]
-      .every(Number.isFinite)) return [];
-    const extent = (properties.lineWidth ?? 0) / 2;
-    return [{
-      left: Math.min(properties.x1, properties.x2) - extent,
-      right: Math.max(properties.x1, properties.x2) + extent,
-      top: Math.min(properties.y1, properties.y2) - extent,
-      bottom: Math.max(properties.y1, properties.y2) + extent
-    }];
-  });
-  return bounds.length === 0 ? undefined : unionBounds(bounds);
-}
-
-function graphicBounds(graphic) {
-  if (graphic?.type === "text") return textGraphicBounds(graphic);
-  if (graphic?.type === "line") return lineGraphicBounds(graphic);
-  if (graphic?.type === "rect") {
-    const children = graphic.children ?? [{ properties: graphic.properties }];
-    const bounds = children.flatMap(({ properties }) => {
-      if (![properties.x, properties.y, properties.width, properties.height]
-        .every(Number.isFinite)) return [];
-      const extent = (properties.strokeWidth ?? 0) / 2;
-      return [{
-        left: properties.x - extent,
-        right: properties.x + properties.width + extent,
-        top: properties.y - extent,
-        bottom: properties.y + properties.height + extent
-      }];
-    });
-    return bounds.length === 0 ? undefined : unionBounds(bounds);
-  }
-  if (graphic?.type === "circle") {
-    const children = graphic.children ?? [{ properties: graphic.properties }];
-    const bounds = children.flatMap(({ properties }) => {
-      if (![properties.x, properties.y, properties.radius].every(Number.isFinite)) {
-        return [];
-      }
-      const radius = properties.radius + (properties.strokeWidth ?? 0) / 2;
-      return [{
-        left: properties.x - radius,
-        right: properties.x + radius,
-        top: properties.y - radius,
-        bottom: properties.y + radius
-      }];
-    });
-    return bounds.length === 0 ? undefined : unionBounds(bounds);
-  }
-  return undefined;
-}
-
 function reservedGraphicIds(program, position) {
   const ids = [];
   const axisChannel = ["top", "bottom"].includes(position) ? "x" : "y";
@@ -390,7 +323,9 @@ function validateLayout(program, position, titleBounds, plot, canvas) {
     throw new Error(`Chart title requires more ${position}-margin space.`);
   }
   for (const id of reservedGraphicIds(program, position)) {
-    const bounds = graphicBounds(program.graphicSpec.objects[id]);
+    const bounds = program.graphicSpec.objects[id] === undefined
+      ? undefined
+      : resolveConcreteGraphicBounds(program.graphicSpec, id);
     if (bounds !== undefined && intersects(titleBounds, bounds)) {
       throw new Error(`Chart title and ${position} guides require more margin space.`);
     }

@@ -52,13 +52,13 @@ test("encodes bar color and materializes zero-stacked category rects", () => {
     "#e45756"
   ]);
   assert.deepEqual(program.resolvedScales.y, yScale);
-  assert.equal(before.graphicSpec.objects.bars.children.length, 9);
-  assert.equal(bars.children.length, 15);
+  assert.equal(before.graphicSpec.objects.bars.items.length, 9);
+  assert.equal(bars.items.length, 15);
   assert.deepEqual(
-    bars.children.slice(0, 3).map(child => child.properties.fill),
+    bars.items.slice(0, 3).map(child => child.properties.fill),
     ["#4c78a8", "#f58518", "#e45756"]
   );
-  assert.equal(Object.isFrozen(bars.children[0].properties), true);
+  assert.equal(Object.isFrozen(bars.items[0].properties), true);
 
   const node = program.trace.children.at(-1);
   assert.equal(node.op, "encodeColor");
@@ -89,7 +89,7 @@ test("uses explicit color domain order for stacking and fill", () => {
       range: ["orange", "blue"]
     }
   });
-  const bars = program.graphicSpec.objects.bars.children;
+  const bars = program.graphicSpec.objects.bars.items;
 
   assert.equal(bars.length, 2);
   assert.deepEqual(
@@ -107,16 +107,16 @@ test("rematerializes colored bars after Canvas edits", () => {
   const program = histogram().encodeColor({ field: "Origin" });
   const edited = program.editCanvas({ width: 500, height: 500 });
 
-  assert.equal(edited.graphicSpec.objects.bars.children.length, 15);
+  assert.equal(edited.graphicSpec.objects.bars.items.length, 15);
   assert.deepEqual(
-    edited.graphicSpec.objects.bars.children.slice(0, 3).map(
+    edited.graphicSpec.objects.bars.items.slice(0, 3).map(
       child => child.properties.fill
     ),
     ["#4c78a8", "#f58518", "#e45756"]
   );
   assert.notEqual(
-    edited.graphicSpec.objects.bars.children[0].properties.width,
-    program.graphicSpec.objects.bars.children[0].properties.width
+    edited.graphicSpec.objects.bars.items[0].properties.width,
+    program.graphicSpec.objects.bars.items[0].properties.width
   );
   assert.equal(program.graphicSpec.objects.canvas.properties.width, 432);
 });

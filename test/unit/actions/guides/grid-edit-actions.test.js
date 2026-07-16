@@ -27,13 +27,13 @@ test("edits horizontal and vertical grid policies through wrapped rematerializat
   assert.equal(horizontal.guideConfigs.grid.horizontal.inferredValues, false);
   assert.equal(edited.guideConfigs.grid.vertical.mode, "values");
   assert.deepEqual(edited.guideConfigs.grid.vertical.values, [0, 10]);
-  assert.equal(edited.graphicSpec.objects.verticalGridLines.children.length, 2);
+  assert.equal(edited.graphicSpec.objects.verticalGridLines.items.length, 2);
   assert.deepEqual(
     horizontal.trace.children.at(-1).children.map(child => child.op),
     ["rematerializeHorizontalGrid"]
   );
   assert.deepEqual(before.guideConfigs.grid.horizontal.values, [0, 5, 10]);
-  assert.equal(before.graphicSpec.objects.verticalGridLines.children.length, 3);
+  assert.equal(before.graphicSpec.objects.verticalGridLines.items.length, 3);
 });
 
 test("restores current axis inference with values auto", () => {
@@ -41,11 +41,11 @@ test("restores current axis inference with values auto", () => {
   const explicit = before.editHorizontalGrid({ values: [0, 10] });
   const restored = explicit.editHorizontalGrid({ values: "auto" });
 
-  assert.equal(explicit.graphicSpec.objects.horizontalGridLines.children.length, 2);
+  assert.equal(explicit.graphicSpec.objects.horizontalGridLines.items.length, 2);
   assert.equal(restored.guideConfigs.grid.horizontal.inferredValues, true);
   assert.equal(restored.guideConfigs.grid.horizontal.mode, "values");
   assert.deepEqual(restored.guideConfigs.grid.horizontal.values, [0, 5, 10]);
-  assert.equal(restored.graphicSpec.objects.horizontalGridLines.children.length, 3);
+  assert.equal(restored.graphicSpec.objects.horizontalGridLines.items.length, 3);
 });
 
 test("merges only requested appearance and matches raw primitive graphics", () => {

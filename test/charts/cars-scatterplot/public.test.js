@@ -18,7 +18,7 @@ test("builds the public cars scatterplot with chart actions", () => {
   assert.equal(layer.encoding.x.field, "Horsepower");
   assert.equal(layer.encoding.y.field, "Miles_per_Gallon");
   assert.equal(layer.encoding.color.field, "Origin");
-  assert.equal(program.graphicSpec.objects.points.children.length, 392);
+  assert.equal(program.graphicSpec.objects.points.items.length, 392);
   assert.deepEqual(program.trace.children.map(node => node.op), [
     "createCanvas",
     "createData",

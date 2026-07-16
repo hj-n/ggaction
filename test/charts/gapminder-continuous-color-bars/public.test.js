@@ -26,8 +26,8 @@ for (const variant of CONTINUOUS_BAR_VARIANTS) {
       program.resolvedScales.color.domain,
       reference.domains.color
     );
-    assert.equal(program.graphicSpec.objects.bar.children.length, 8);
-    assert.equal(program.graphicSpec.objects.colorGradientStrips.children.length, 60);
+    assert.equal(program.graphicSpec.objects.bar.items.length, 8);
+    assert.equal(program.graphicSpec.objects.colorGradientStrips.items.length, 60);
     assert.deepEqual(program.trace.children.map(node => node.op), [
       "createCanvas",
       "createData",

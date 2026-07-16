@@ -329,7 +329,7 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     .createGraphics({ id: "points", type: "collection" })
     .editGraphics({
       target: "points",
-      property: "children",
+      property: "items",
       value: values.pointChildren.map(child => ({
         type: child.type,
         properties: child.properties
@@ -523,7 +523,7 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     .createGraphics({ id: "seriesLegendSymbolPoints", type: "collection" })
     .editGraphics({
       target: "seriesLegendSymbolPoints",
-      property: "children",
+      property: "items",
       value: originLegend.items.map(item => item.symbol)
     })
     .createGraphics({

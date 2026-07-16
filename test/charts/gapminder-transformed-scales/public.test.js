@@ -24,7 +24,7 @@ test("builds the transformed-scale scatterplot with public actions", () => {
   assert.equal(scales.x.type, "log");
   assert.equal(scales.x.base, 10);
   assert.equal(scales.y.type, "sqrt");
-  assert.equal(program.graphicSpec.objects.point.children.length, 62);
+  assert.equal(program.graphicSpec.objects.point.items.length, 62);
   assert.deepEqual(program.trace.children.map(node => node.op), [
     "createCanvas",
     "createData",

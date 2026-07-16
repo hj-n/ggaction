@@ -44,7 +44,7 @@ function requireRule(program, id) {
     throw new Error(`Rule mark "${id}" requires an existing dataset.`);
   }
   const graphic = program.graphicSpec.objects[id];
-  if (graphic?.type !== "line" || graphic.children === undefined) {
+  if (graphic?.type !== "line" || graphic.items === undefined) {
     throw new Error(`Rule mark "${id}" requires line collection graphics.`);
   }
   return { dataset, graphic, layer };
@@ -123,7 +123,7 @@ const rematerializeRuleMark = action(
       ? "fixed-span"
       : resolveRuleMode(layer);
     if (mode === undefined) {
-      return graphic.children.length === 0
+      return graphic.items.length === 0
         ? this
         : this.editGraphics({ target: id, property: "length", value: 0 });
     }
@@ -176,7 +176,7 @@ const rematerializeRuleMark = action(
         y2.push(mapped.y[index]);
       } else if (mode === "box-span") {
         const owner = resolved.graphicSpec.objects[boxSpan];
-        const box = owner?.children?.[index]?.properties;
+        const box = owner?.items?.[index]?.properties;
         if (box === undefined) throw new Error(`Rule mark "${id}" requires box span owner "${boxSpan}".`);
         if (layer.encoding?.x?.fieldType === "quantitative") {
           x1.push(mapped.x[index]);

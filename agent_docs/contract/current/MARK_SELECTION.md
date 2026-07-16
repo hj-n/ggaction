@@ -138,9 +138,9 @@ type MarkSelector =
 - `opacity` is selected-item opacity. Area/point optional `strokeWidth` requires `stroke`. Logical `offset.x/y` defaults
   to zero and translates point geometry, complete path commands, or rule endpoints without changing semantic values.
 - `dimOthers` defaults to `false`; `true` uses opacity `0.25`, or `{ opacity }` supplies an explicit unit interval.
-  `bringToFront` defaults to `true` and stores selected collection children last. Empty selection changes no selected
+  `bringToFront` defaults to `true` and stores selected collection items last. Empty selection changes no selected
   child and may still dim the full complement when requested.
-- Effect: selected concrete children receive overrides after ordinary encoding appearance. Stack selection applies the
+- Effect: selected concrete items receive overrides after ordinary encoding appearance. Stack selection applies the
   override to every attached rect. Assignment intent is stored in `materializationConfigs.highlights`; reapplying the
   same selection immutably replaces it. Every owning mark rematerializer rebuilds base children, resolves selected keys once,
   then passes the same key snapshot to highlight, dimming and ordering children.

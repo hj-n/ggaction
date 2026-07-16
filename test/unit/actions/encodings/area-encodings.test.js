@@ -68,7 +68,7 @@ test("stores ranged area semantics and grouped closed paths", () => {
   });
   assert.deepEqual(program.resolvedScales.y.domain, [6, 24]);
   assert.deepEqual(
-    program.graphicSpec.objects.regressionBand.children.map(child => ({
+    program.graphicSpec.objects.regressionBand.items.map(child => ({
       length: child.properties.commands.length,
       closed: child.properties.commands.at(-1).op === "Z",
       fill: child.properties.fill,
@@ -85,7 +85,7 @@ test("matches primitive confidence-band geometry", () => {
   const expected = createCarsRegressionScatterplotValues(loadCars());
   const program = createBand(regressionBase());
   assert.deepEqual(
-    program.graphicSpec.objects.regressionBand.children.map(child => child.properties),
+    program.graphicSpec.objects.regressionBand.items.map(child => child.properties),
     expected.regressionBands.map(band => ({
       commands: linearPathCommands(band.points, { close: true }),
       fill: band.fill,
@@ -133,7 +133,7 @@ test("stores and reassigns horizontal ranged areas atomically", () => {
     x2: { field: "high", fieldType: "quantitative", scale: "x" }
   });
   assert.equal(
-    before.graphicSpec.objects.area.children[0].properties.commands.at(-1).op,
+    before.graphicSpec.objects.area.items[0].properties.commands.at(-1).op,
     "Z"
   );
   assert.equal(after.semanticSpec.layers[0].encoding.x.field, "nextLow");

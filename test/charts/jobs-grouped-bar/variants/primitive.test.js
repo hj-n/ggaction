@@ -40,7 +40,7 @@ const layout = {
 };
 
 function graphicProperties(program) {
-  return program.graphicSpec.objects.bars.children.map(child => child.properties);
+  return program.graphicSpec.objects.bars.items.map(child => child.properties);
 }
 
 function expectedProperties(values) {
@@ -187,13 +187,13 @@ test("locks atomic group reassignment to the three-job subset", () => {
   assert.deepEqual(values.scales.xOffset.domain, values.groups);
   assert.equal(program.semanticSpec.guides.legend.color.title, "Occupation");
   assert.deepEqual(
-    program.graphicSpec.objects.colorLegendLabels.children.map(
+    program.graphicSpec.objects.colorLegendLabels.items.map(
       child => child.properties.text
     ),
     values.groups
   );
   assert.deepEqual(
-    program.graphicSpec.objects.colorLegendSymbols.children.map(
+    program.graphicSpec.objects.colorLegendSymbols.items.map(
       child => child.properties.fill
     ),
     ["#4c78a8", "#f58518", "#e45756"]
@@ -271,7 +271,7 @@ test("rematerializes approved geometry modes after Canvas resize", () => {
   const fixed = createJobsFixedPixelBar(jobs);
   const fixedResized = fixed.editCanvas({ width: 760, height: 500 });
   assert.equal(
-    fixedResized.graphicSpec.objects.bars.children.every(
+    fixedResized.graphicSpec.objects.bars.items.every(
       child => child.properties.width === 14
     ),
     true
@@ -280,8 +280,8 @@ test("rematerializes approved geometry modes after Canvas resize", () => {
   const padded = createJobsOffsetPaddingBar(jobs);
   const paddedResized = padded.editCanvas({ width: 760, height: 500 });
   assert.notEqual(
-    paddedResized.graphicSpec.objects.bars.children[0].properties.width,
-    padded.graphicSpec.objects.bars.children[0].properties.width
+    paddedResized.graphicSpec.objects.bars.items[0].properties.width,
+    padded.graphicSpec.objects.bars.items[0].properties.width
   );
   assert.deepEqual(paddedResized.markConfigs.bars.xOffset, {
     paddingInner: 0.2,
@@ -294,7 +294,7 @@ test("rematerializes approved geometry modes after Canvas resize", () => {
     "Actor", "Agent", "Author"
   ]);
   assert.deepEqual(
-    reassignedResized.graphicSpec.objects.colorLegendLabels.children.map(
+    reassignedResized.graphicSpec.objects.colorLegendLabels.items.map(
       child => child.properties.text
     ),
     ["Actor", "Agent", "Author"]
@@ -310,12 +310,12 @@ test("rematerializes approved public layouts after Canvas resize", () => {
     const edited = program.editCanvas({ width: 760, height: 500 });
     assert.equal(edited.graphicSpec.objects.canvas.properties.width, 760);
     assert.notEqual(
-      edited.graphicSpec.objects.bars.children[0].properties.width,
-      program.graphicSpec.objects.bars.children[0].properties.width
+      edited.graphicSpec.objects.bars.items[0].properties.width,
+      program.graphicSpec.objects.bars.items[0].properties.width
     );
     assert.notEqual(
-      edited.graphicSpec.objects.horizontalGridLines.children[0].properties.x2,
-      program.graphicSpec.objects.horizontalGridLines.children[0].properties.x2
+      edited.graphicSpec.objects.horizontalGridLines.items[0].properties.x2,
+      program.graphicSpec.objects.horizontalGridLines.items[0].properties.x2
     );
     assert.equal(
       edited.semanticSpec.layers[0].encoding.color.layout,

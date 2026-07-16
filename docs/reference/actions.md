@@ -141,7 +141,7 @@ Create a semantic point mark with one of 12 equal-area shape realizations. [Mark
 editPointMark({ target?, shape?, fill?, opacity?, stroke?, strokeWidth? })
 ```
 
-Change constant point shape, fill, opacity, or outline appearance and rematerialize its concrete children. [Marks](../api/marks.md)
+Change constant point shape, fill, opacity, or outline appearance and rematerialize its concrete items. [Marks](../api/marks.md)
 
 ### `createLineMark`
 
@@ -708,7 +708,7 @@ are available on programs used by extension actions.
 | --- | --- |
 | Wrapper | `action({ op, description }, implementation)` |
 | Semantic primitive | `editSemantic({ property, value })` or `editSemantic({ property, remove: true })` |
-| Graphic primitive | `createGraphics({ id, type, length?, before?, after? })` |
+| Graphic primitive | `createGraphics({ id, type, length?, parent?, before?, after? })` |
 | Graphic primitive | `editGraphics({ target, property, value })` or `editGraphics({ target, remove: true })` |
 | Scale actions | `createScale({ id, type?, domain?, range?, nice?, zero?, clamp?, reverse?, base?, exponent?, constant?, paddingInner?, paddingOuter?, padding?, align?, palette?, interpolate?, unknown? })`, `editScale({ id?, type?, domain?, range?, nice?, zero?, clamp?, reverse?, base?, exponent?, constant?, paddingInner?, paddingOuter?, padding?, align?, interpolate?, unknown? })` |
 

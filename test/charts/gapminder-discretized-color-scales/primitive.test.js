@@ -33,7 +33,7 @@ test("authors each discretized color target with primitives only", () => {
     const reference = createDiscretizedColorReference(gapminder, type);
     const program = createGapminderDiscretizedColorPrimitives(gapminder, type);
     const scale = program.semanticSpec.scales.find(item => item.id === "color");
-    const fills = program.graphicSpec.objects.point.children.map(
+    const fills = program.graphicSpec.objects.point.items.map(
       child => child.properties.fill
     );
 
@@ -41,7 +41,7 @@ test("authors each discretized color target with primitives only", () => {
     assert.deepEqual(scale.domain, reference.domains.color);
     assert.deepEqual(scale.range, DISCRETIZED_COLORS);
     assert.deepEqual(
-      program.graphicSpec.objects.colorLegendLabels.children.map(
+      program.graphicSpec.objects.colorLegendLabels.items.map(
         child => child.properties.text
       ),
       reference.legend.labels

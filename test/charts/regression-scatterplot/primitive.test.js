@@ -135,20 +135,20 @@ test("authors and renders the complete primitive regression scatterplot", () => 
 
   const points = program.graphicSpec.objects.points;
   assert.equal(points.type, "collection");
-  assert.equal(points.children.length, 333);
+  assert.equal(points.items.length, 333);
   assert.deepEqual(
-    points.children.map(child => child.type).reduce(
+    points.items.map(child => child.type).reduce(
       (counts, type) => ({ ...counts, [type]: (counts[type] ?? 0) + 1 }),
       {}
     ),
     { circle: 254, rect: 79 }
   );
   assert.deepEqual(
-    points.children.map(({ type, properties }) => ({ type, properties })),
+    points.items.map(({ type, properties }) => ({ type, properties })),
     values.pointChildren.map(({ type, properties }) => ({ type, properties }))
   );
   assert.deepEqual(
-    program.graphicSpec.objects.pointsRegressionBands.children.map(
+    program.graphicSpec.objects.pointsRegressionBands.items.map(
       child => child.properties
     ),
     values.regressionBands.map(band => ({
@@ -158,7 +158,7 @@ test("authors and renders the complete primitive regression scatterplot", () => 
     }))
   );
   assert.deepEqual(
-    program.graphicSpec.objects.pointsRegressionLines.children.map(
+    program.graphicSpec.objects.pointsRegressionLines.items.map(
       child => child.properties
     ),
     values.regressionLines.map(line => ({
@@ -215,7 +215,7 @@ test("authors and renders the complete primitive regression scatterplot", () => 
     ].includes(node.op)),
     false
   );
-  assert.equal(Object.isFrozen(points.children[0].properties), true);
+  assert.equal(Object.isFrozen(points.items[0].properties), true);
   assert.equal(Object.isFrozen(program.semanticSpec.datasets[1].transform), true);
   assert.deepEqual(program.actionStack, []);
 });

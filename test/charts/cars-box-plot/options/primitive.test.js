@@ -29,13 +29,13 @@ test("authors the styled factor target through low-level edits", () => {
   assert.deepEqual(summary.values, values.summaries);
   assert.equal(program.semanticSpec.scales.some(scale => scale.id === "color"), false);
   assert.equal(program.semanticSpec.layers[0].encoding.color, undefined);
-  assert.equal(program.graphicSpec.objects.boxPlot.children[0].properties.fill,
+  assert.equal(program.graphicSpec.objects.boxPlot.items[0].properties.fill,
     STYLED_FACTOR_STYLE.boxFill);
-  assert.equal(program.graphicSpec.objects.boxPlot.children[0].properties.width, 40);
-  assert.equal(program.graphicSpec.objects.boxPlotMedian.children[0].properties.strokeWidth, 3);
-  assert.equal(program.graphicSpec.objects.boxPlotOutliers.children.length, 25);
+  assert.equal(program.graphicSpec.objects.boxPlot.items[0].properties.width, 40);
+  assert.equal(program.graphicSpec.objects.boxPlotMedian.items[0].properties.strokeWidth, 3);
+  assert.equal(program.graphicSpec.objects.boxPlotOutliers.items.length, 25);
   assert.deepEqual(
-    program.graphicSpec.objects.boxPlotOutliers.children.map(({ type, properties }) => ({
+    program.graphicSpec.objects.boxPlotOutliers.items.map(({ type, properties }) => ({
       type,
       properties
     })),

@@ -24,7 +24,7 @@ export function createJapanLineHighlightGatePrimitive(
   const base = baseLineChart(cars, width, height);
   const { target } = selectJapanLineSeries(cars, { width, height });
   const graphic = base.graphicSpec.objects.trends;
-  const children = graphic.children.map(child => ({
+  const children = graphic.items.map(child => ({
     type: child.type ?? graphic.type,
     properties: child.properties
   }));
@@ -34,7 +34,7 @@ export function createJapanLineHighlightGatePrimitive(
   return base
     .editGraphics({
       target: "trends",
-      property: "children",
+      property: "items",
       value: [
         ...children.map(child => ({
           type: child.type,
@@ -57,8 +57,8 @@ export function createJapanLineHighlightGatePrimitive(
     })
     .editGraphics({
       target: "seriesLegendSymbols",
-      property: "children",
-      value: legendSymbols.children.map((child, index) => ({
+      property: "items",
+      value: legendSymbols.items.map((child, index) => ({
         type: child.type ?? legendSymbols.type,
         properties: index === target.index
           ? {

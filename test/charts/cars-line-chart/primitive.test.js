@@ -114,21 +114,21 @@ test("authors and renders the complete primitive cars line chart", () => {
 
   const trends = program.graphicSpec.objects.trends;
   assert.equal(trends.type, "path");
-  assert.equal(trends.children.length, 3);
-  assert.deepEqual(trends.children.map(child => child.properties.commands.length), [
+  assert.equal(trends.items.length, 3);
+  assert.deepEqual(trends.items.map(child => child.properties.commands.length), [
     12, 12, 12
   ]);
-  assert.deepEqual(trends.children.map(child => child.properties.strokeDash), [
+  assert.deepEqual(trends.items.map(child => child.properties.strokeDash), [
     [], [8, 4], [3, 3]
   ]);
   assert.deepEqual(
-    program.graphicSpec.objects.seriesLegendLabels.children.map(
+    program.graphicSpec.objects.seriesLegendLabels.items.map(
       child => child.properties.text
     ),
     ["USA", "Europe", "Japan"]
   );
   assert.deepEqual(
-    program.graphicSpec.objects.seriesLegendSymbols.children.map(
+    program.graphicSpec.objects.seriesLegendSymbols.items.map(
       child => child.properties.strokeDash
     ),
     [[], [8, 4], [3, 3]]
@@ -178,7 +178,7 @@ test("authors and renders the complete primitive cars line chart", () => {
   ), false);
   assert.deepEqual(program.actionStack, []);
   assert.equal(Object.isFrozen(program.semanticSpec.title), true);
-  assert.equal(Object.isFrozen(trends.children[0].properties.commands), true);
+  assert.equal(Object.isFrozen(trends.items[0].properties.commands), true);
 });
 
 test("owns primitive chart input and renders from graphicSpec alone", () => {

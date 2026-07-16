@@ -93,7 +93,7 @@ test("forwards explicit child options", () => {
   assert.equal(program.graphicSpec.objects.seriesLegendBackground.type, "rect");
   assert.equal(program.guideConfigs.axis.y.ticks.count, 3);
   assert.equal(
-    program.graphicSpec.objects.horizontalGridLines.children[0].properties
+    program.graphicSpec.objects.horizontalGridLines.items[0].properties
       .strokeWidth,
     2
   );
@@ -191,13 +191,13 @@ test("collects grouped bar axes, grid, and right legend", () => {
     "createYAxis"
   ]);
   assert.deepEqual(
-    program.graphicSpec.objects.xAxisLabels.children.map(
+    program.graphicSpec.objects.xAxisLabels.items.map(
       child => child.properties.text
     ),
     ["1850", "1860"]
   );
   assert.equal(
-    program.graphicSpec.objects.colorLegendSymbols.children[0].properties.x,
+    program.graphicSpec.objects.colorLegendSymbols.items[0].properties.x,
     610
   );
   assert.equal(
@@ -223,24 +223,24 @@ test("forwards grouped guide options, supports opt-out, and rematerializes", () 
   assert.equal(configured.semanticSpec.guides.grid, undefined);
   assert.equal(configured.semanticSpec.guides.legend.color.title, "Sex");
   assert.equal(
-    configured.graphicSpec.objects.xAxisLabels.children[0].properties.fontSize,
+    configured.graphicSpec.objects.xAxisLabels.items[0].properties.fontSize,
     11
   );
   assert.equal(
-    before.graphicSpec.objects.colorLegendSymbols.children[0].properties.x,
+    before.graphicSpec.objects.colorLegendSymbols.items[0].properties.x,
     610
   );
   assert.equal(
-    after.graphicSpec.objects.colorLegendSymbols.children[0].properties.x,
+    after.graphicSpec.objects.colorLegendSymbols.items[0].properties.x,
     710
   );
   assert.notEqual(
-    before.graphicSpec.objects.xAxisLabels.children[0].properties.x,
-    after.graphicSpec.objects.xAxisLabels.children[0].properties.x
+    before.graphicSpec.objects.xAxisLabels.items[0].properties.x,
+    after.graphicSpec.objects.xAxisLabels.items[0].properties.x
   );
   assert.notEqual(
-    before.graphicSpec.objects.bars.children[0].properties.width,
-    after.graphicSpec.objects.bars.children[0].properties.width
+    before.graphicSpec.objects.bars.items[0].properties.width,
+    after.graphicSpec.objects.bars.items[0].properties.width
   );
 });
 

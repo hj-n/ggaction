@@ -73,11 +73,11 @@ test("authors explicit band and point semantics with primitive calls only", () =
   assert.equal(program.semanticSpec.layers[0].encoding.y.scale, "y");
   assert.equal(program.semanticSpec.layers[1].encoding.y.scale, "y");
   assert.deepEqual(
-    program.graphicSpec.objects.bar.children.map(child => child.properties.x),
+    program.graphicSpec.objects.bar.items.map(child => child.properties.x),
     values.bars.map(bar => bar.x)
   );
   assert.deepEqual(
-    program.graphicSpec.objects.point.children.map(child => child.properties.x),
+    program.graphicSpec.objects.point.items.map(child => child.properties.x),
     values.centers
   );
   assert.equal(
@@ -114,11 +114,11 @@ test("locks UTC time positions and one path per line series", () => {
     nice: true
   });
   assert.deepEqual(
-    program.graphicSpec.objects.line.children.map(child => child.properties.commands),
+    program.graphicSpec.objects.line.items.map(child => child.properties.commands),
     values.series.map(series => series.commands)
   );
   assert.deepEqual(
-    program.graphicSpec.objects.xAxisLabels.children.map(
+    program.graphicSpec.objects.xAxisLabels.items.map(
       child => child.properties.text
     ),
     values.xTickYears.map(String)

@@ -414,7 +414,7 @@ encoding.y.title = "Mean acceleration";
 
 // graphical
 materializationConfigs.marks.points.opacity = 0.27;
-graphicSpec.objects.points.children[0].properties.opacity = 0.27;
+graphicSpec.objects.points.items[0].properties.opacity = 0.27;
 ```
 
 Grouped bar의 width mode와 xOffset padding도 semantic scale에 중복 저장하지 않는다.
@@ -512,8 +512,10 @@ Canonical empty graphic state는 다음과 같다.
 }
 ```
 
-`objects`는 top-level graphic ID로 concrete node를 찾는 map이고, `order`는 drawing
-order다. 렌더링 순서는 action 호출의 우연한 부산물이 아니라 명시적 graphical state다.
+`objects`는 tree depth와 무관하게 모든 named graphic ID로 concrete node를 찾는 flat registry이고,
+`order`는 top-level root order다. Container의 `children`은 named child ID만 저장하고 drawable의
+`items`는 반복 concrete item만 저장한다. 렌더러는 `order`에서 시작해 named tree를 depth-first로
+방문한다. 렌더링 순서는 action 호출의 우연한 부산물이 아니라 명시적 graphical state다.
 
 ### Graphic type
 
@@ -528,12 +530,12 @@ heterogeneous draw  collection
 Canvas는 logical width, height, background를 가진다. Margin은 renderer가 직접 그리는
 property가 아니라 `materializationConfigs.canvas`에 저장되어 plot bounds 계산에 쓰인다.
 
-Drawable은 단일 node 또는 concrete child collection이 될 수 있다.
+Drawable은 단일 node 또는 concrete item collection이 될 수 있다.
 
 ```javascript
 points: {
   type: "circle",
-  children: [
+  items: [
     {
       id: "points:0",
       properties: {
@@ -547,14 +549,14 @@ points: {
 }
 ```
 
-서로 다른 point shape를 한 collection에 저장해야 하면 각 child가 자신의 concrete type을 가진다.
+서로 다른 point shape를 한 collection에 저장해야 하면 각 item이 자신의 concrete type을 가진다.
 Shared point-shape grammar가 12-value vocabulary, validation과 equal-area geometry를 한 번 소유한다.
 Circle은 `circle`, square는 `rect`, 나머지 shape는 renderer-neutral closed `path`가 된다.
 
 ```javascript
 points: {
   type: "collection",
-  children: [
+  items: [
     { id: "points:0", type: "circle", properties: { ... } },
     { id: "points:1", type: "rect", properties: { ... } },
     { id: "points:2", type: "path", properties: { commands: [...], ... } }
@@ -637,11 +639,11 @@ legend field의 complete group과 정확히 일대일 대응할 때만 legend sy
 반영하며, legend label text와 item order는 유지한다. Partial group이나 unrelated selector는 legend를
 바꾸지 않는다.
 
-Owning mark가 rematerialize될 때는 해당 target의 highlight config를 잠시 분리하고 base children을 clean
+Owning mark가 rematerialize될 때는 해당 target의 highlight config를 잠시 분리하고 base items를 clean
 baseline에서 완전히 다시 만든다. Point의 기본 fill처럼 renderer에 필요한 concrete default도 이 단계에서
 복원한다. 그 다음 현재 item resolver로 selection key를 한 번 다시 계산하고 highlight, complement dimming,
 selected-last order를 순서대로 적용한다. 여러 selection assignment는 각각 독립된 ID를 유지하며 같은
-selection의 재호출만 그 assignment를 교체한다. 따라서 이전 highlight property나 child ID가 Canvas, scale,
+selection의 재호출만 그 assignment를 교체한다. 따라서 이전 highlight property나 item ID가 Canvas, scale,
 encoding 또는 data-cardinality 변경 뒤 새 baseline으로 누출되지 않는다.
 
 ## Context
@@ -825,30 +827,32 @@ transform schema, stack/bin policy, coordinate type 등을 검증한다.
 정리한다. Dataset state는 생성 이후 삭제하거나 교체할 수 없다. 삭제도 동일한
 `editSemantic` trace node로 기록된다.
 
-### `createGraphics({ id, type, length?, before?, after? })`
+### `createGraphics({ id, type, length?, parent?, before?, after? })`
 
-Graphic identity, type, optional homogeneous cardinality와 top-level placement를 만든다.
+Graphic identity, type, optional homogeneous cardinality와 tree attachment를 만든다.
 
 - Equivalent definition은 idempotent할 수 있다.
-- 같은 ID의 conflicting type, length, placement는 error다.
-- `before`/`after`는 explicit `graphicSpec.order`를 만든다.
-- `length`는 drawable child cardinality만 만든다.
-- Heterogeneous `collection`은 `editGraphics(children)`로 child를 제공한다.
+- 같은 ID의 conflicting type, length, parent, placement는 error다.
+- `parent`를 생략하면 `graphicSpec.order`, 지정하면 Canvas/collection의 named `children`에 붙인다.
+- `before`/`after`는 같은 parent의 direct sibling order를 만든다.
+- `length`는 drawable item cardinality만 만든다.
+- Heterogeneous `collection`은 `editGraphics(items)`로 concrete item을 제공한다.
 
 ### `editGraphics({ target, property, value | remove })`
 
-기존 graphic 또는 concrete child의 property 하나를 upsert한다.
+기존 graphic 또는 concrete item의 property 하나를 upsert한다.
 
-- Scalar는 homogeneous children 전체에 broadcast한다.
-- Outer array는 child index별 값으로 distribute한다.
-- Nested array/object item은 한 child의 값으로 그대로 저장할 수 있다.
+- Scalar는 homogeneous items 전체에 broadcast한다.
+- Outer array는 item index별 값으로 distribute한다.
+- Nested array/object item은 한 concrete item의 값으로 그대로 저장할 수 있다.
 - `length`는 collection cardinality를 immutable하게 바꾼다.
-- `children` replacement는 모든 child가 기존 drawable type과 같으면 parent의
-  homogeneous type을 보존한다. Child type이 섞일 때만 parent를 heterogeneous
+- `items` replacement는 모든 item이 기존 drawable type과 같으면 parent의
+  homogeneous type을 보존한다. Item type이 섞일 때만 parent를 heterogeneous
   `collection`으로 전환한다.
 - Target, property, concrete value는 shared graphic schema로 검증한다.
-- `remove: true`는 property/value 없이 top-level graphic 전체와 order entry를 삭제한다.
-- Generated child는 독립 삭제하지 않고 owning collection의 `length` 또는 `children`을 편집한다.
+- `remove: true`는 property/value 없이 named graphic subtree를 삭제하고 parent children 또는
+  top-level order에서 detach한다. Canvas root는 삭제할 수 없다.
+- Generated item은 독립 삭제하지 않고 owning collection의 `length` 또는 `items`를 편집한다.
 
 ## Selector와 resource identity
 

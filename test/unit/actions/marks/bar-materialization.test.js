@@ -23,26 +23,26 @@ test("materializes one concrete rect per non-empty bin", () => {
   const program = encodedHistogram();
   const bars = program.graphicSpec.objects.bars;
 
-  assert.equal(bars.children.length, 9);
+  assert.equal(bars.items.length, 9);
   assert.deepEqual(
-    bars.children.map(child => child.properties.fill),
+    bars.items.map(child => child.properties.fill),
     Array(9).fill("#4c78a8")
   );
   assert.deepEqual(
-    bars.children.map(child => child.properties.stroke),
+    bars.items.map(child => child.properties.stroke),
     Array(9).fill("white")
   );
   assert.equal(
-    bars.children.every(child => child.properties.strokeWidth === 0.5),
+    bars.items.every(child => child.properties.strokeWidth === 0.5),
     true
   );
-  assert.equal(bars.children[0].properties.x, 80);
-  assert.equal(bars.children.at(-1).properties.x < 372, true);
+  assert.equal(bars.items[0].properties.x, 80);
+  assert.equal(bars.items.at(-1).properties.x < 372, true);
   assert.equal(
-    bars.children.reduce((sum, child) => sum + child.properties.width, 0),
+    bars.items.reduce((sum, child) => sum + child.properties.width, 0),
     292
   );
-  assert.equal(Object.isFrozen(bars.children[0].properties), true);
+  assert.equal(Object.isFrozen(bars.items[0].properties), true);
 });
 
 test("supports existing semantic color grouping during rematerialization", () => {
@@ -67,9 +67,9 @@ test("supports existing semantic color grouping during rematerialization", () =>
     })
     .rematerializeBarMark({ id: "bars" });
 
-  assert.equal(program.graphicSpec.objects.bars.children.length, 15);
+  assert.equal(program.graphicSpec.objects.bars.items.length, 15);
   assert.deepEqual(
-    program.graphicSpec.objects.bars.children.slice(0, 3).map(
+    program.graphicSpec.objects.bars.items.slice(0, 3).map(
       child => child.properties.fill
     ),
     ["#4c78a8", "#f58518", "#e45756"]

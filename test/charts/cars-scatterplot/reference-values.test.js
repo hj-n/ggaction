@@ -45,12 +45,12 @@ test("derives plot bounds from canvas dimensions and margins", () => {
 test("authors axes in a separate concrete scatterplot program", () => {
   const program = createCarsScatterplotPrimitives(cars);
 
-  assert.equal(program.graphicSpec.objects.points.children.length, 392);
-  assert.equal(program.graphicSpec.objects.horizontalGridLines.children.length, 4);
-  assert.equal(program.graphicSpec.objects.xAxisTicks.children.length, 4);
-  assert.equal(program.graphicSpec.objects.yAxisTicks.children.length, 4);
-  assert.equal(program.graphicSpec.objects.xAxisLabels.children.length, 4);
-  assert.equal(program.graphicSpec.objects.yAxisLabels.children.length, 4);
+  assert.equal(program.graphicSpec.objects.points.items.length, 392);
+  assert.equal(program.graphicSpec.objects.horizontalGridLines.items.length, 4);
+  assert.equal(program.graphicSpec.objects.xAxisTicks.items.length, 4);
+  assert.equal(program.graphicSpec.objects.yAxisTicks.items.length, 4);
+  assert.equal(program.graphicSpec.objects.xAxisLabels.items.length, 4);
+  assert.equal(program.graphicSpec.objects.yAxisLabels.items.length, 4);
   assert.equal(program.graphicSpec.objects.xAxisTitle.properties.text, "Horsepower");
   assert.equal(
     program.graphicSpec.objects.yAxisTitle.properties.rotation,

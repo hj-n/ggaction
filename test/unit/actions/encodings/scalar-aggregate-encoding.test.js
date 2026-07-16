@@ -26,9 +26,9 @@ test("materializes every scalar aggregate through encodeY", () => {
     const program = xEncodedLine().encodeY({ field: "value", aggregate });
 
     assert.equal(program.semanticSpec.layers[0].encoding.y.aggregate, aggregate);
-    assert.equal(program.graphicSpec.objects.trends.children.length, 1);
+    assert.equal(program.graphicSpec.objects.trends.items.length, 1);
     assert.equal(
-      program.graphicSpec.objects.trends.children[0].properties.commands.every(
+      program.graphicSpec.objects.trends.items[0].properties.commands.every(
         command => Number.isFinite(command.x) && Number.isFinite(command.y)
       ),
       true,
@@ -58,7 +58,7 @@ test("omits incomplete aggregate groups without synthesizing points", () => {
     { year: "2022-01-01", value: 5 }
   ];
   const program = xEncodedLine(rows).encodeY({ field: "value", aggregate: "mean" });
-  const commands = program.graphicSpec.objects.trends.children[0].properties.commands;
+  const commands = program.graphicSpec.objects.trends.items[0].properties.commands;
 
   assert.equal(commands.length, 2);
   assert.deepEqual(
@@ -82,12 +82,12 @@ test("replaces aggregate semantics and rematerializes inferred guide text atomic
     "median(value)"
   );
   assert.notDeepEqual(
-    median.graphicSpec.objects.horizontalGridLines.children.map(child => child.properties.y1),
-    mean.graphicSpec.objects.horizontalGridLines.children.map(child => child.properties.y1)
+    median.graphicSpec.objects.horizontalGridLines.items.map(child => child.properties.y1),
+    mean.graphicSpec.objects.horizontalGridLines.items.map(child => child.properties.y1)
   );
   assert.notDeepEqual(
-    median.graphicSpec.objects.yAxisLabels.children.map(child => child.properties.text),
-    mean.graphicSpec.objects.yAxisLabels.children.map(child => child.properties.text)
+    median.graphicSpec.objects.yAxisLabels.items.map(child => child.properties.text),
+    mean.graphicSpec.objects.yAxisLabels.items.map(child => child.properties.text)
   );
 
   const custom = mean
@@ -164,7 +164,7 @@ test("supports ordered direction, last selection, and incomplete-group omission"
     { op: "last", orderBy: "rank", order: "descending" }
   );
   assert.equal(
-    program.graphicSpec.objects.trends.children[0].properties.commands.length,
+    program.graphicSpec.objects.trends.items[0].properties.commands.length,
     2
   );
 });
@@ -217,9 +217,9 @@ test("materializes scalar aggregate grouped bars at the final category grain", (
 
   assert.equal(program.semanticSpec.layers[0].encoding.y.aggregate, "median");
   assert.deepEqual(program.resolvedScales.y.domain, [2, 8]);
-  assert.equal(program.graphicSpec.objects.bars.children.length, 4);
+  assert.equal(program.graphicSpec.objects.bars.items.length, 4);
   assert.equal(
-    program.graphicSpec.objects.bars.children.every(child =>
+    program.graphicSpec.objects.bars.items.every(child =>
       Number.isFinite(child.properties.x) && Number.isFinite(child.properties.y)
     ),
     true
@@ -252,5 +252,5 @@ test("materializes parameterized grouped bars at the final category grain", () =
     { op: "first", orderBy: "rank", order: "ascending" }
   );
   assert.deepEqual(program.resolvedScales.y.domain, [2, 10]);
-  assert.equal(program.graphicSpec.objects.bars.children.length, 4);
+  assert.equal(program.graphicSpec.objects.bars.items.length, 4);
 });

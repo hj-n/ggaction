@@ -38,7 +38,7 @@ test("persists, resolves, and maps each discretized quantitative color type", ()
       ...(domain === undefined ? {} : { domain }),
       range: ["red", "green", "blue"]
     });
-    const fills = result.graphicSpec.objects.point.children.map(
+    const fills = result.graphicSpec.objects.point.items.map(
       child => child.properties.fill
     );
 
@@ -60,11 +60,11 @@ test("reverses the resolved class colors and interval legend together", () => {
 
   assert.deepEqual(result.resolvedScales.color.range, ["blue", "green", "red"]);
   assert.deepEqual(
-    result.graphicSpec.objects.point.children.map(child => child.properties.fill),
+    result.graphicSpec.objects.point.items.map(child => child.properties.fill),
     ["blue", "green", "red"]
   );
   assert.deepEqual(
-    result.graphicSpec.objects.colorLegendSymbols.children.map(
+    result.graphicSpec.objects.colorLegendSymbols.items.map(
       child => child.properties.fill
     ),
     ["blue", "green", "red"]
@@ -86,7 +86,7 @@ test("edits an interval legend through the shared public legend action", () => {
   assert.equal(original.graphicSpec.objects.colorLegendTitle !== undefined, true);
   assert.equal(edited.graphicSpec.objects.colorLegendTitle, undefined);
   assert.deepEqual(
-    edited.graphicSpec.objects.colorLegendSymbols.children.map(
+    edited.graphicSpec.objects.colorLegendSymbols.items.map(
       child => child.properties.width
     ),
     [10, 10, 10]
@@ -117,12 +117,12 @@ test("rematerializes a shared discretized scale and interval legend after Canvas
   const edited = withLegend.editCanvas({ width: 220 });
 
   assert.deepEqual(
-    edited.graphicSpec.objects.point.children.map(child => child.properties.fill),
-    edited.graphicSpec.objects.second.children.map(child => child.properties.fill)
+    edited.graphicSpec.objects.point.items.map(child => child.properties.fill),
+    edited.graphicSpec.objects.second.items.map(child => child.properties.fill)
   );
   assert.equal(
-    edited.graphicSpec.objects.colorLegendSymbols.children[0].properties.x -
-      withLegend.graphicSpec.objects.colorLegendSymbols.children[0].properties.x,
+    edited.graphicSpec.objects.colorLegendSymbols.items[0].properties.x -
+      withLegend.graphicSpec.objects.colorLegendSymbols.items[0].properties.x,
     20
   );
   assert.equal(withLegend.graphicSpec.objects.canvas.properties.width, 200);

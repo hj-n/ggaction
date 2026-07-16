@@ -44,22 +44,26 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 
 ## `createGraphics`
 
-- Signature: `createGraphics({ id, type, length?, before?, after? })`.
-- `id`: 필수 새 top-level graphic ID. equivalent repeated definition은 idempotent하다.
+- Signature: `createGraphics({ id, type, length?, parent?, before?, after? })`.
+- `id`: 필수 global graphic ID. tree depth와 무관하게 unique하며 equivalent repeated definition과
+  attachment는 idempotent하다.
 - `type`: `"canvas" | "collection" | "circle" | "rect" | "line" | "text" | "path"`.
-- `length`: non-negative integer. homogeneous drawable type에 지정하면 generated child collection을 만들며
-  생략 시 single graphic, `0`이면 empty collection이다. heterogeneous `collection`은 children edit로 채운다.
-- `before`, `after`: existing top-level graphic ID; mutually exclusive다. concrete rendering order를
-  명시하며 Canvas 앞 배치는 허용하지 않는다.
-- Effect: backend-neutral concrete object와 order를 structural copy로 추가한다. visual property는 아직 없다.
-- 오류: invalid ID/type/length, conflicting repeated definition/placement, unknown anchor를 거부한다.
+- `length`: non-negative integer. homogeneous drawable type에 지정하면 generated `items`를 만들며
+  생략 시 single graphic, `0`이면 empty collection이다. heterogeneous `collection`은 `items` edit로 채운다.
+- `parent`: optional existing `canvas | collection` ID. 지정하면 새 named graphic을 parent의 direct
+  `children` ID list에 붙인다. 생략하면 top-level `order`에 둔다.
+- `before`, `after`: 같은 parent의 direct sibling ID; mutually exclusive다. top-level에서는 Canvas 앞
+  배치를 허용하지 않는다.
+- Effect: backend-neutral concrete object와 structural attachment/order를 structural copy로 추가한다.
+  Attachment는 좌표 변환, clipping 또는 layout을 암시하지 않는다.
+- 오류: invalid ID/type/length, second Canvas, conflicting repeated definition/attachment/placement,
+  self/unknown/non-container parent, cross-parent anchor를 거부한다. Reparent는 지원하지 않는다.
 - Coverage: `test/unit/actions/primitives/create-graphics.test.js`가 all creation modes, idempotence,
   placement와 invalid definitions를 검증한다.
 
 ### Formal values — `createGraphics`
 
-- Implemented: `createGraphics({ id: UserId; type: "canvas" | "collection" | "circle" | "rect" | "line" | "text" | "path"; length?: NonNegativeInteger; before?: UserId; after?: UserId })`; `before | after` 중 최대 하나.
-- Planned (NOT IMPLEMENTED): `{ parent?: UserId }` for backend-neutral graphic-tree attachment.
+- Implemented: `createGraphics({ id: UserId; type: "canvas" | "collection" | "circle" | "rect" | "line" | "text" | "path"; length?: NonNegativeInteger; parent?: UserId; before?: UserId; after?: UserId })`; `before | after` 중 최대 하나이며 anchor는 같은 parent의 direct sibling이다.
 - Proposed (NOT IMPLEMENTED): —
 - Maybe Future (NOT IMPLEMENTED): renderer-specific `svg | g` graphic types.
 
@@ -73,49 +77,52 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 - `length`
   - ✅ Covered: omitted single, zero empty, positive collection, invalid negative/non-integer and resize transition.
 - `before`, `after`
-  - ✅ Covered: each placement, mutual exclusion, unknown anchor, Canvas-before restriction, idempotent/conflicting placement.
-- 🟡 Planned: collection/Canvas parent attachment, sibling ordering, global target lookup and depth-first rendering.
+  - ✅ Covered: top-level/nested sibling placement, mutual exclusion, unknown/cross-parent anchor, Canvas-before restriction,
+    idempotent/conflicting placement.
+- `parent`
+  - ✅ Covered: Canvas/collection attachment, global lookup, nested sibling order, invalid parent and immutable updates.
+  - ✅ Covered: depth-first renderer traversal, duplicate/cycle/orphan rejection.
 - Evidence: `test/unit/actions/primitives/create-graphics.test.js`.
 
 ## `editGraphics`
 
 - Signature: `editGraphics({ target, property, value }) | editGraphics({ target, remove: true })`.
-- `target`: existing top-level graphic ID 또는 generated child ID(`points:1`).
+- `target`: tree 어디에 있는 existing named graphic ID 또는 generated item ID(`points:1`).
 - `property`: selected graphic type가 지원하는 concrete property. 공통 opaque style bag은 허용하지 않는다.
 - `value`
   - single graphic: property schema에 맞는 scalar, nested array 또는 object.
-  - collection + scalar/non-distributed value: compatible children 모두에 broadcast.
-  - collection + outer array: child count와 길이가 같으면 index별 distribute. path `points`처럼 property
-    자체가 nested array인 경우 한 child value 단위를 보존한다.
-  - `children`: heterogeneous collection의 typed child object array를 원자적으로 교체한다.
-- `remove`: `true`일 때 property/value 없이 top-level graphic 전체와 render order entry를 삭제한다.
-  Generated child의 독립 삭제는 허용하지 않는다.
+  - collection + scalar/non-distributed value: compatible items 모두에 broadcast.
+  - collection + outer array: item count와 길이가 같으면 index별 distribute. path `commands`처럼 property
+    자체가 nested array인 경우 한 item value 단위를 보존한다.
+  - `items`: heterogeneous collection의 typed concrete item array를 원자적으로 교체한다.
+- `remove`: `true`일 때 property/value 없이 named graphic과 owned named subtree를 삭제하고 parent의
+  `children` 또는 top-level `order`에서 detach한다. Canvas root와 generated item의 독립 삭제는 허용하지 않는다.
 - Effect: concrete graphic path만 structural copy한다. semantic state나 automatic compiler는 관여하지 않는다.
 - 오류: unknown target/property, incompatible child type, mismatched distributed length, non-finite geometry,
   negative dimensions/strokes, opacity 밖의 값과 invalid Canvas text vocabulary를 거부한다.
 - Coverage: `test/unit/actions/primitives/edit-graphics.test.js`와
   `test/contracts/shared-graphic-validation.test.js`가 distribution, broadcast, nested paths,
-  heterogeneous children, resize, structural copy와 renderer-shared validation을 검증한다.
+  heterogeneous items, subtree removal, resize, structural copy와 renderer-shared validation을 검증한다.
 
 ### Formal values — `editGraphics`
 
-- Implemented: assignment `editGraphics({ target: UserId | GeneratedChildId; property: GraphicPropertyForTarget; value: GraphicValueForProperty })` 또는 top-level removal `editGraphics({ target: UserId; remove: true })`; 두 mode는 mutually exclusive다.
-- Planned (NOT IMPLEMENTED): path `{ property: "commands"; value: readonly ConcretePathCommand[] }` after the atomic points-to-commands migration.
+- Implemented: assignment `editGraphics({ target: UserId | GeneratedItemId; property: GraphicPropertyForTarget; value: GraphicValueForProperty })` 또는 named-subtree removal `editGraphics({ target: UserId; remove: true })`; 두 mode는 mutually exclusive다.
+- Planned (NOT IMPLEMENTED): —
 - Proposed (NOT IMPLEMENTED): —
 - Maybe Future (NOT IMPLEMENTED): multi-property dictionary/batch edit.
 
 ### Value coverage — `editGraphics`
 
 - `target`
-  - ✅ Covered: top-level ID, generated child ID, unknown target.
-  - ✅ Covered: top-level removal과 order cleanup, generated child removal rejection.
+  - ✅ Covered: top-level/nested ID, generated item ID, unknown target.
+  - ✅ Covered: top-level/nested subtree removal과 attachment cleanup, Canvas/generated item removal rejection.
 - `property`
-  - ✅ Covered: type-specific canvas/circle/rect/line/text/path properties, `length`, heterogeneous `children`.
+  - ✅ Covered: type-specific canvas/circle/rect/line/text/path properties, `length`, heterogeneous `items`.
   - ⚠️ Partial: every valid property does not yet have all boundary classes in direct primitive tests.
-  - 🟡 Planned: finite `M | L | C | Z` path command arrays and command-order validation.
+  - ✅ Covered: finite `M | L | C | Z` path command arrays and command-order validation.
 - `value` distribution
   - ✅ Covered: scalar broadcast, outer array distribution, mismatched length, nested points arrays preserved,
-    heterogeneous child replacement and shared compatible-property broadcast.
+    heterogeneous item replacement and shared compatible-property broadcast.
 - concrete value classes
   - ✅ Covered: finite geometry, non-negative dimensions/strokes, `[0,1]` opacity, non-empty appearance strings,
     Canvas text vocabulary and renderer-shared validation.

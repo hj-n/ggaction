@@ -81,7 +81,7 @@ export function deriveAggregateRectangles(required, resolved, widthConfig) {
     const cellByCategory = new Map(
       cells.map((cell, index) => [cell[channels.category], { cell, index }])
     );
-    const existing = resolved.graphicSpec.objects[layer.id].children;
+    const existing = resolved.graphicSpec.objects[layer.id].items;
     const config = resolved.markConfigs[layer.id] ?? {};
     const appearance = config.barAppearance ?? {};
     return categoryDomain.flatMap(categoryValue => {
@@ -134,7 +134,7 @@ export function deriveAggregateRectangles(required, resolved, widthConfig) {
     }
   }
 
-  const existing = resolved.graphicSpec.objects[layer.id].children;
+  const existing = resolved.graphicSpec.objects[layer.id].items;
   const config = resolved.markConfigs[layer.id] ?? {};
   const appearance = config.barAppearance ?? {};
   return segments.map((segment, index) => {

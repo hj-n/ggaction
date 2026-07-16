@@ -8,4 +8,4 @@ const program = createCarsDensityArea(cars);
 const canvas = document.querySelector("#chart");
 render(program, canvas.getContext("2d"));
 document.querySelector("#status").textContent =
-  `${program.graphicSpec.objects.densities.children.length} Origin density curves from ${cars.length} cars`;
+  `${program.graphicSpec.objects.densities.items.length} Origin density curves from ${cars.length} cars`;

@@ -39,12 +39,12 @@ test("colors density paths in the group domain order", () => {
   assert.equal(program.semanticSpec.layers[0].encoding.y.stack, null);
   assert.deepEqual(program.resolvedScales.color.domain, expected.groupDomain);
   assert.deepEqual(
-    program.graphicSpec.objects.densities.children.map(child => child.properties.fill),
+    program.graphicSpec.objects.densities.items.map(child => child.properties.fill),
     expected.areas.map(area => area.fill)
   );
   assert.deepEqual(
-    program.graphicSpec.objects.densities.children.map(child => child.properties.commands),
-    before.graphicSpec.objects.densities.children.map(child => child.properties.commands)
+    program.graphicSpec.objects.densities.items.map(child => child.properties.commands),
+    before.graphicSpec.objects.densities.items.map(child => child.properties.commands)
   );
 });
 
@@ -58,7 +58,7 @@ test("supports explicit area color domains and ranges", () => {
   });
 
   assert.deepEqual(
-    program.graphicSpec.objects.densities.children.map(child => child.properties.fill),
+    program.graphicSpec.objects.densities.items.map(child => child.properties.fill),
     ["blue", "green", "red"]
   );
 });
@@ -77,8 +77,8 @@ test("materializes stacked and normalized vertical density areas", () => {
   assert.equal(stacked.resolvedScales.y.domain[1] > 0.25, true);
   assert.equal(filled.semanticSpec.layers[0].encoding.y.stack, "normalize");
   assert.deepEqual(filled.resolvedScales.y.domain, [0, 1]);
-  assert.equal(stacked.graphicSpec.objects.densities.children.length, 3);
-  assert.equal(filled.graphicSpec.objects.densities.children.length, 3);
+  assert.equal(stacked.graphicSpec.objects.densities.items.length, 3);
+  assert.equal(filled.graphicSpec.objects.densities.items.length, 3);
 });
 
 test("rejects unsupported area layouts and layout transitions atomically", () => {
@@ -101,11 +101,11 @@ test("rematerializes colored area paths after Canvas edits", () => {
   const after = before.editCanvas({ width: 820, height: 540 });
 
   assert.notDeepEqual(
-    after.graphicSpec.objects.densities.children[0].properties.commands,
-    before.graphicSpec.objects.densities.children[0].properties.commands
+    after.graphicSpec.objects.densities.items[0].properties.commands,
+    before.graphicSpec.objects.densities.items[0].properties.commands
   );
   assert.deepEqual(
-    after.graphicSpec.objects.densities.children.map(child => child.properties.fill),
+    after.graphicSpec.objects.densities.items.map(child => child.properties.fill),
     ["#4c78a8", "#f58518", "#e45756"]
   );
 });
@@ -128,11 +128,11 @@ test("rematerializes every area consumer of a shared color scale", () => {
 
   assert.deepEqual(program.resolvedScales.color.domain, ["A", "B"]);
   assert.equal(
-    program.graphicSpec.objects.firstArea.children[0].properties.fill,
+    program.graphicSpec.objects.firstArea.items[0].properties.fill,
     "#4c78a8"
   );
   assert.equal(
-    program.graphicSpec.objects.secondArea.children[0].properties.fill,
+    program.graphicSpec.objects.secondArea.items[0].properties.fill,
     "#f58518"
   );
 });

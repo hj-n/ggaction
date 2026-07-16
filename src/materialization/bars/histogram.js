@@ -108,7 +108,7 @@ export function deriveHistogramRectangles(required, resolved) {
     ...required,
     resolvedScales: resolved.resolvedScales
   });
-  const existing = resolved.graphicSpec.objects[required.layer.id].children;
+  const existing = resolved.graphicSpec.objects[required.layer.id].items;
   const layout = resolveBarColorLayout(required.layer);
   const config = resolved.markConfigs[required.layer.id] ?? {};
   const appearance = config.barAppearance ?? {};

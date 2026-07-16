@@ -32,7 +32,7 @@ export function createLeftLegendPrimitives(cars) {
     })
     .editGraphics({
       target: "points",
-      property: "children",
+      property: "items",
       value: chart.pointChildren.map(child => ({
         type: child.type,
         properties: child.properties
@@ -106,7 +106,7 @@ export function createLeftLegendPrimitives(cars) {
     })
     .editGraphics({
       target: "seriesLegendSymbolPoints",
-      property: "children",
+      property: "items",
       value: origin.items.map(item => item.symbol)
     })
     .editGraphics({

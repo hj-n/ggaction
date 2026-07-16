@@ -17,8 +17,8 @@ import {
 } from "./reference-values.js";
 
 function assertPrimitiveTarget(program, base, target) {
-  const baseChildren = base.graphicSpec.objects.bars.children;
-  const children = program.graphicSpec.objects.bars.children;
+  const baseChildren = base.graphicSpec.objects.bars.items;
+  const children = program.graphicSpec.objects.bars.items;
   const selected = children.slice(-target.indices.length);
   const selectedIndices = new Set(target.indices);
 
@@ -65,8 +65,8 @@ function assertPrimitiveTarget(program, base, target) {
 }
 
 function assertSegmentTarget(program, base, target) {
-  const baseChildren = base.graphicSpec.objects.bars.children;
-  const children = program.graphicSpec.objects.bars.children;
+  const baseChildren = base.graphicSpec.objects.bars.items;
+  const children = program.graphicSpec.objects.bars.items;
   const selected = children.at(-1);
   assert.deepEqual(
     children.slice(0, -1).map(child => child.properties),

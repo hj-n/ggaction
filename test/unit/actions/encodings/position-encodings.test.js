@@ -20,7 +20,7 @@ test("encodes horizontal and vertical quantitative positions", () => {
     .encodeX({ field: "horsepower" })
     .encodeY({ field: "mpg" });
   const layer = program.semanticSpec.layers[0];
-  const children = program.graphicSpec.objects.points.children;
+  const children = program.graphicSpec.objects.points.items;
 
   assert.deepEqual(layer.encoding, {
     x: { field: "horsepower", fieldType: "quantitative", scale: "x" },
@@ -98,7 +98,7 @@ test("maps temporal and ordinal point positions without rewriting source data", 
   ]);
   assert.deepEqual(program.resolvedScales.y.domain, ["USA", "Japan"]);
   assert.deepEqual(
-    program.graphicSpec.objects.points.children.map(child => child.properties.y),
+    program.graphicSpec.objects.points.items.map(child => child.properties.y),
     [50, 110]
   );
 });
@@ -122,7 +122,7 @@ test("materializes horizontal bars from temporal string categories", () => {
     .encodeY({ field: "date", fieldType: "temporal" })
     .encodeColor({ field: "group", layout: "stack" })
     .encodeBarWidth({ band: 0.72 });
-  const rectangles = program.graphicSpec.objects.bars.children;
+  const rectangles = program.graphicSpec.objects.bars.items;
 
   assert.equal(rectangles.length, 4);
   assert.equal(new Set(rectangles.map(child => child.properties.y)).size, 2);
@@ -166,7 +166,7 @@ test("supports explicit targets and scale definitions", () => {
     range: [0, 100]
   });
   assert.deepEqual(
-    program.graphicSpec.objects.points.children.map(child => child.properties.x),
+    program.graphicSpec.objects.points.items.map(child => child.properties.x),
     [25, 75]
   );
 });

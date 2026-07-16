@@ -184,7 +184,7 @@ Its ordinal scale accepts the 12 shared point shapes documented under
 [Marks](./marks.md). The automatic range uses each shape once and rejects more
 than 12 distinct categories rather than silently repeating symbols. Explicit
 ranges must contain unique supported shapes. Mixed circle, rect, and Z-closed path
-symbols are stored as typed children in one graphical collection.
+symbols are stored as typed items in one graphical collection.
 
 `encodeOpacity` accepts exactly one of `value` or `field`. A constant value from
 `0` to `1` is graphical. A quantitative field creates semantic opacity and a

@@ -237,22 +237,22 @@ test("creates deterministic wrapped title and subtitle collections", () => {
   });
 
   assert.deepEqual(
-    program.graphicSpec.objects.chartTitle.children.map(child => child.properties.text),
+    program.graphicSpec.objects.chartTitle.items.map(child => child.properties.text),
     ["Distribution of Acceleration", "Across Vehicle Origins"]
   );
   assert.deepEqual(
-    program.graphicSpec.objects.chartSubtitle.children.map(child => child.properties.text),
+    program.graphicSpec.objects.chartSubtitle.items.map(child => child.properties.text),
     [
       "Kernel density estimates for acceleration,",
       "grouped by origin in the cars dataset"
     ]
   );
   assert.deepEqual(
-    program.graphicSpec.objects.chartTitle.children.map(child => child.properties.y),
+    program.graphicSpec.objects.chartTitle.items.map(child => child.properties.y),
     [501, 527]
   );
   assert.deepEqual(
-    program.graphicSpec.objects.chartSubtitle.children.map(child => child.properties.y),
+    program.graphicSpec.objects.chartSubtitle.items.map(child => child.properties.y),
     [557, 583]
   );
 });
@@ -305,8 +305,8 @@ test("reconciles wrapped collections and side rotations through edits", () => {
     offset: 10
   });
 
-  assert.equal(side.graphicSpec.objects.chartTitle.children.length > 1, true);
-  assert.equal(side.graphicSpec.objects.chartTitle.children.every(child =>
+  assert.equal(side.graphicSpec.objects.chartTitle.items.length > 1, true);
+  assert.equal(side.graphicSpec.objects.chartTitle.items.every(child =>
     child.properties.rotation === -Math.PI / 2
   ), true);
   assert.equal(

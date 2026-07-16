@@ -28,11 +28,11 @@ function pointProgram() {
 
 test("edits a scale immutably and reverses its final concrete range", () => {
   const original = pointProgram();
-  const before = original.graphicSpec.objects.points.children.map(
+  const before = original.graphicSpec.objects.points.items.map(
     child => child.properties.x
   );
   const edited = original.editScale({ id: "x", reverse: true });
-  const after = edited.graphicSpec.objects.points.children.map(
+  const after = edited.graphicSpec.objects.points.items.map(
     child => child.properties.x
   );
 
@@ -52,7 +52,7 @@ test("edits a scale immutably and reverses its final concrete range", () => {
 test("applies clamp to out-of-domain continuous values", () => {
   const unclamped = pointProgram();
   const clamped = unclamped.editScale({ id: "x", clamp: true });
-  const values = clamped.graphicSpec.objects.points.children.map(
+  const values = clamped.graphicSpec.objects.points.items.map(
     child => child.properties.x
   );
 

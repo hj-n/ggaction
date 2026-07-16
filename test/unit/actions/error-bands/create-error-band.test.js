@@ -67,7 +67,7 @@ test("creates one grouped statistical area through wrapped interval actions", ()
     group: { field: "cluster", fieldType: "nominal" }
   });
   assert.equal(interval.values.length, 66);
-  assert.equal(program.graphicSpec.objects.errorBand.children.length, 6);
+  assert.equal(program.graphicSpec.objects.errorBand.items.length, 6);
   assert.deepEqual(program.resolvedScales.y.domain, [30, 90]);
 });
 
@@ -173,7 +173,7 @@ test("forwards constant area appearance through the owned mark action", () => {
       opacity: 0.4
     });
 
-  const child = program.graphicSpec.objects.errorBand.children[0];
+  const child = program.graphicSpec.objects.errorBand.items[0];
   assert.equal(child.properties.fill, "#d9485f");
   assert.equal(child.properties.opacity, 0.4);
   assert.throws(() => chart()
@@ -220,9 +220,9 @@ test("creates a horizontal Cars band with ordered boundary components", () => {
   assert.equal(area.encoding.x.field, "__errorBand_lower");
   assert.equal(area.encoding.x2.field, "__errorBand_upper");
   assert.deepEqual(program.resolvedScales.x.domain, [10, 20]);
-  assert.equal(program.graphicSpec.objects.errorBand.children.length, 1);
+  assert.equal(program.graphicSpec.objects.errorBand.items.length, 1);
   assert.equal(
-    program.graphicSpec.objects.errorBand.children[0]
+    program.graphicSpec.objects.errorBand.items[0]
       .properties.commands.at(-1).op,
     "Z"
   );
@@ -232,7 +232,7 @@ test("creates a horizontal Cars band with ordered boundary components", () => {
     "errorBandUpperBoundary"
   ]);
   for (const id of ["errorBandLowerBoundary", "errorBandUpperBoundary"]) {
-    const properties = program.graphicSpec.objects[id].children[0].properties;
+    const properties = program.graphicSpec.objects[id].items[0].properties;
     assert.equal(properties.stroke, "#355f8a");
     assert.equal(properties.strokeWidth, 1.5);
     assert.equal(properties.opacity, 1);
@@ -291,7 +291,7 @@ test("rematerializes horizontal bands and boundaries after Canvas and scale edit
     assert.notDeepEqual(after.graphicSpec.objects[id], resized.graphicSpec.objects[id]);
   }
   assert.equal(
-    after.graphicSpec.objects.errorBandLowerBoundary.children[0]
+    after.graphicSpec.objects.errorBandLowerBoundary.items[0]
       .properties.stroke,
     "#4c78a8"
   );
@@ -341,7 +341,7 @@ test("inherits area curves into styled boundaries and permits an override", () =
     "errorBandLowerBoundary",
     "errorBandUpperBoundary"
   ]) {
-    const properties = inherited.graphicSpec.objects[id].children[0].properties;
+    const properties = inherited.graphicSpec.objects[id].items[0].properties;
     assert.equal(properties.stroke, "#25364d");
     assert.equal(properties.strokeWidth, 1.4);
     assert.deepEqual(properties.strokeDash, [6, 3]);

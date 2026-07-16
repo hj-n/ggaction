@@ -25,11 +25,11 @@ test("uses point scales for categorical points and rematerializes padding edits"
     .encodeX({ field: "category", fieldType: "nominal" })
     .encodeY({ field: "value" })
     .encodeRadius({ value: 4 });
-  const before = program.graphicSpec.objects.points.children.map(
+  const before = program.graphicSpec.objects.points.items.map(
     child => child.properties.x
   );
   const edited = program.editScale({ id: "x", padding: 0, align: 0 });
-  const after = edited.graphicSpec.objects.points.children.map(
+  const after = edited.graphicSpec.objects.points.items.map(
     child => child.properties.x
   );
 
@@ -63,8 +63,8 @@ test("shares one editable band scale across bars and inferred point centers", ()
     paddingOuter: 0.2,
     align: 0
   });
-  const bars = edited.graphicSpec.objects.bars.children;
-  const points = edited.graphicSpec.objects.centers.children;
+  const bars = edited.graphicSpec.objects.bars.items;
+  const points = edited.graphicSpec.objects.centers.items;
 
   assert.equal(edited.semanticSpec.scales.find(scale => scale.id === "x").type, "band");
   assert.ok(points.every((child, index) =>

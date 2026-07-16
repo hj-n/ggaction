@@ -30,13 +30,13 @@ test("creates complete temporal x and aggregate linear y axes", () => {
   const program = before.createAxes();
 
   assert.deepEqual(
-    program.graphicSpec.objects.xAxisLabels.children.map(
+    program.graphicSpec.objects.xAxisLabels.items.map(
       child => child.properties.text
     ),
     ["1970", "1972", "1974", "1976", "1978", "1980", "1982"]
   );
   assert.deepEqual(
-    program.graphicSpec.objects.xAxisTicks.children.map(
+    program.graphicSpec.objects.xAxisTicks.items.map(
       child => child.properties.x1
     ),
     [
@@ -84,19 +84,19 @@ test("preserves the aggregate axis action hierarchy", () => {
 test("rematerializes temporal axis geometry after Canvas edits", () => {
   const before = createTemporalLine().createAxes();
   const program = before.editCanvas({ width: 920 });
-  const positions = program.graphicSpec.objects.xAxisTicks.children.map(
+  const positions = program.graphicSpec.objects.xAxisTicks.items.map(
     child => child.properties.x1
   );
 
   assert.equal(positions[0], 80);
   assert.equal(positions.at(-1), 750);
   assert.deepEqual(
-    program.graphicSpec.objects.xAxisLabels.children.map(
+    program.graphicSpec.objects.xAxisLabels.items.map(
       child => child.properties.text
     ),
     ["1970", "1972", "1974", "1976", "1978", "1980", "1982"]
   );
-  assert.equal(before.graphicSpec.objects.xAxisTicks.children.at(-1).properties.x1, 550);
+  assert.equal(before.graphicSpec.objects.xAxisTicks.items.at(-1).properties.x1, 550);
 });
 
 test("validates temporal axis formatting and explicit tick values", () => {
@@ -105,7 +105,7 @@ test("validates temporal axis formatting and explicit tick values", () => {
   assert.deepEqual(
     encoded.createXAxis({
       ticksAndLabels: { labels: { format: "%Y" } }
-    }).graphicSpec.objects.xAxisLabels.children.map(
+    }).graphicSpec.objects.xAxisLabels.items.map(
       child => child.properties.text
     ),
     ["1970", "1972", "1974", "1976", "1978", "1980", "1982"]

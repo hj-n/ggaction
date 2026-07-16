@@ -43,9 +43,9 @@ function drawLine(context, child, collectionId) {
 }
 
 export function drawLineGraphic(context, id, graphic) {
-  if (graphic.children) {
-    for (const child of graphic.children) {
-      drawLine(context, child, id);
+  if (graphic.items) {
+    for (const item of graphic.items) {
+      drawLine(context, item, id);
     }
     return;
   }

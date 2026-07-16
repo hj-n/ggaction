@@ -140,7 +140,7 @@ encodings rather than raw dataset length.
 
 ```javascript
 program.graphicSpec.objects.line;
-// { type: "path", children: [] }
+// { type: "path", items: [] }
 ```
 
 Line mark creation does not infer one default series, coordinates, encodings,
@@ -193,7 +193,7 @@ determine the eventual rectangle count.
 
 ```javascript
 program.graphicSpec.objects.bar;
-// { type: "rect", children: [] }
+// { type: "rect", items: [] }
 ```
 
 Bar mark creation does not assign coordinates, encodings, bins, or concrete

@@ -2,6 +2,7 @@ import { isPlainObject } from "../../../../core/immutable.js";
 import { noOptions } from "../../../../core/validation.js";
 import { mapOrdinalValues } from "../../../../grammar/scales.js";
 import { resolveGraphicBounds } from "../../../../layout/canvas.js";
+import { unionConcreteGraphicBounds } from "../../../../grammar/schemas/graphicBounds.js";
 import { DEFAULT_COLORS } from "../../../../theme/defaults.js";
 
 export function activeConfig(program) {
@@ -52,30 +53,10 @@ function textWidth(value) {
 }
 
 function leftGuideBoundary(program, bounds) {
-  const candidates = [bounds.x];
-  const line = program.graphicSpec.objects.yAxisLine;
-  if (line?.type === "line") {
-    candidates.push(line.properties.x1, line.properties.x2);
-  }
-  const ticks = program.graphicSpec.objects.yAxisTicks;
-  if (ticks?.type === "line") {
-    for (const tick of ticks.children) {
-      candidates.push(tick.properties.x1, tick.properties.x2);
-    }
-  }
-  const labels = program.graphicSpec.objects.yAxisLabels;
-  if (labels?.type === "text") {
-    for (const label of labels.children) {
-      candidates.push(
-        label.properties.x - textWidth(label.properties.text)
-      );
-    }
-  }
-  const title = program.graphicSpec.objects.yAxisTitle;
-  if (title?.type === "text") {
-    candidates.push(title.properties.x - title.properties.fontSize / 2);
-  }
-  return Math.min(...candidates.filter(Number.isFinite));
+  const ids = ["yAxisLine", "yAxisTicks", "yAxisLabels", "yAxisTitle"]
+    .filter(id => program.graphicSpec.objects[id] !== undefined);
+  const occupied = unionConcreteGraphicBounds(program.graphicSpec, ids);
+  return occupied === undefined ? bounds.x : Math.min(bounds.x, occupied.left);
 }
 
 function resolveLeftSizeMetrics(program, sizeConfig) {

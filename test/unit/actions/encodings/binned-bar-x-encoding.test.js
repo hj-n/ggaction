@@ -57,7 +57,7 @@ test("encodes a binned quantitative bar x field with defaults", () => {
   });
   assert.deepEqual(program.graphicSpec.objects.bars, {
     type: "rect",
-    children: []
+    items: []
   });
   assert.equal(before.semanticSpec.layers[0].encoding, undefined);
 
@@ -97,7 +97,7 @@ test("keeps explicit scale bounds ahead of nice and zero", () => {
     domain: [0, 500],
     range: [10, 210]
   });
-  assert.equal(program.graphicSpec.objects.bars.children.length, 0);
+  assert.equal(program.graphicSpec.objects.bars.items.length, 0);
 });
 
 test("supports a non-nice automatic binned domain", () => {

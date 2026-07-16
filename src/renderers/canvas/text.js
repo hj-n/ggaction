@@ -85,9 +85,9 @@ function drawText(context, child, collectionId) {
 }
 
 export function drawTextGraphic(context, id, graphic) {
-  if (graphic.children) {
-    for (const child of graphic.children) {
-      drawText(context, child, id);
+  if (graphic.items) {
+    for (const item of graphic.items) {
+      drawText(context, item, id);
     }
     return;
   }

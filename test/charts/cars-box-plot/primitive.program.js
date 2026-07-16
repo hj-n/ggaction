@@ -269,7 +269,7 @@ export function createCarsBoxPlotPrimitives(cars, options = {}) {
     .editSemantic({ property: "layer[boxPlotOutliers].encoding.y.fieldType", value: "quantitative" })
     .editSemantic({ property: "layer[boxPlotOutliers].encoding.y.scale", value: "y" })
     .createGraphics({ id: "boxPlotOutliers", type: "collection" })
-    .editGraphics({ target: "boxPlotOutliers", property: "children", value: values.outlierGraphics });
+    .editGraphics({ target: "boxPlotOutliers", property: "items", value: values.outlierGraphics });
   }
 
   return program

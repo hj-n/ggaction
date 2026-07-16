@@ -190,7 +190,7 @@ test("atomically reassigns histogram fields and inferred guides", () => {
   assert.deepEqual(after.guideConfigs.axis.x.ticks.values, [40, 80, 120, 160, 200, 240]);
   assert.deepEqual(after.guideConfigs.axis.x.labels.values, [40, 80, 120, 160, 200, 240]);
   assert.deepEqual(after.guideConfigs.grid.vertical.values, [40, 80, 120, 160, 200, 240]);
-  assert.equal(after.graphicSpec.objects.colorLegendSymbols.children.length, 2);
+  assert.equal(after.graphicSpec.objects.colorLegendSymbols.items.length, 2);
   assert.deepEqual(after.graphicSpec.order, before.graphicSpec.order);
 });
 

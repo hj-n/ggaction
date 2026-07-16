@@ -311,7 +311,7 @@ export const applyPointHighlight = action(
     const keyByGraphic = new Map(resolved.items.flatMap(item =>
       item.graphicIds.map(id => [id, item.key])
     ));
-    const children = graphic.children.map(child =>
+    const items = graphic.items.map(child =>
       selected.has(keyByGraphic.get(child.id))
         ? transformPointHighlightChild({
             type: child.type ?? graphic.type,
@@ -321,8 +321,8 @@ export const applyPointHighlight = action(
     );
     return this.editGraphics({
       target: resolved.definition.target,
-      property: "children",
-      value: children
+      property: "items",
+      value: items
     });
   }
 );
@@ -344,8 +344,8 @@ export const applyBarHighlight = action(
     ));
     return this.editGraphics({
       target: resolved.definition.target,
-      property: "children",
-      value: graphic.children.map(child => ({
+      property: "items",
+      value: graphic.items.map(child => ({
         type: child.type ?? graphic.type,
         properties: selected.has(keyByGraphic.get(child.id))
           ? { ...child.properties, ...args.style }
@@ -373,8 +373,8 @@ export const applyPathHighlight = action(
     ));
     return this.editGraphics({
       target: resolved.definition.target,
-      property: "children",
-      value: graphic.children.map(child => ({
+      property: "items",
+      value: graphic.items.map(child => ({
         type: child.type ?? graphic.type,
         properties: selected.has(keyByGraphic.get(child.id))
           ? transformPathHighlightProperties(child.properties, args.style)
@@ -401,8 +401,8 @@ export const applyRuleHighlight = action(
     ));
     return this.editGraphics({
       target: resolved.definition.target,
-      property: "children",
-      value: graphic.children.map(child => ({
+      property: "items",
+      value: graphic.items.map(child => ({
         type: child.type ?? graphic.type,
         properties: selected.has(keyByGraphic.get(child.id))
           ? transformRuleHighlightProperties(child.properties, args.style)
@@ -425,8 +425,8 @@ export const dimUnselectedMarkItems = action(
     ));
     return this.editGraphics({
       target: resolved.definition.target,
-      property: "children",
-      value: graphic.children.map(child => ({
+      property: "items",
+      value: graphic.items.map(child => ({
         type: child.type ?? graphic.type,
         properties: selected.has(keyByGraphic.get(child.id))
           ? child.properties
@@ -437,7 +437,7 @@ export const dimUnselectedMarkItems = action(
 );
 
 export const placeSelectedMarkItemsLast = action(
-  { op: "placeSelectedMarkItemsLast", description: "Place selected collection children after their complement." },
+  { op: "placeSelectedMarkItemsLast", description: "Place selected collection items after their complement." },
   function (args = {}) {
     validateKeys(args, INTERNAL_ORDER_OPTIONS, "placeSelectedMarkItemsLast");
     const resolved = resolveStoredSelection(this, args.selection);
@@ -450,16 +450,16 @@ export const placeSelectedMarkItemsLast = action(
     const keyByGraphic = new Map(resolved.items.flatMap(item =>
       item.graphicIds.map(id => [id, item.key])
     ));
-    const children = graphic.children.map(child => ({
+    const items = graphic.items.map(child => ({
       key: keyByGraphic.get(child.id),
       child: { type: child.type ?? graphic.type, properties: child.properties }
     }));
     return this.editGraphics({
       target: resolved.definition.target,
-      property: "children",
+      property: "items",
       value: [
-        ...children.filter(item => !selected.has(item.key)),
-        ...children.filter(item => selected.has(item.key))
+        ...items.filter(item => !selected.has(item.key)),
+        ...items.filter(item => selected.has(item.key))
       ].map(item => item.child)
     });
   }

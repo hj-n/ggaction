@@ -47,8 +47,8 @@ test("edits shared values atomically through tick then label leaf actions", () =
   ]);
   assert.deepEqual(edited.guideConfigs.axis.x.ticks.values, [0, 10]);
   assert.deepEqual(edited.guideConfigs.axis.x.labels.values, [0, 10]);
-  assert.equal(edited.graphicSpec.objects.xAxisTicks.children.length, 2);
-  assert.equal(edited.graphicSpec.objects.xAxisLabels.children.length, 2);
+  assert.equal(edited.graphicSpec.objects.xAxisTicks.items.length, 2);
+  assert.equal(edited.graphicSpec.objects.xAxisLabels.items.length, 2);
 });
 
 test("edits only the requested appearance component", () => {

@@ -121,7 +121,7 @@ const rematerializeLineMark = action(
         .rematerializeMarkHighlights({ target: id, highlights });
     }
     const { dataset, layer } = requireLine(this, id);
-    const existingChildren = this.graphicSpec.objects[id].children;
+    const existingChildren = this.graphicSpec.objects[id].items;
     const xScaleId = layer.encoding?.x?.scale;
     const yScaleId = layer.encoding?.y?.scale;
     const derived = deriveLineSeries(dataset.values, layer);

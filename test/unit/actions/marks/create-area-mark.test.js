@@ -12,7 +12,7 @@ test("creates an unnamed area with a stable role id", () => {
   ]);
   assert.deepEqual(program.graphicSpec.objects.area, {
     type: "path",
-    children: []
+    items: []
   });
   assert.deepEqual(program.markConfigs.area, {
     fill: "#4c78a8",

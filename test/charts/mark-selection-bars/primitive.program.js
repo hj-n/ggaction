@@ -25,7 +25,7 @@ export function createTallestHistogramStackGatePrimitive(
   const base = baseHistogram(cars, width, height);
   const { target } = selectTallestHistogramStack(cars, { width, height });
   const graphic = base.graphicSpec.objects.bars;
-  const children = graphic.children.map(child => ({
+  const children = graphic.items.map(child => ({
     type: child.type ?? graphic.type,
     properties: child.properties
   }));
@@ -33,7 +33,7 @@ export function createTallestHistogramStackGatePrimitive(
 
   return base.editGraphics({
     target: "bars",
-    property: "children",
+    property: "items",
     value: [
       ...children.filter((_, index) => !selectedIndices.has(index)),
       ...children.filter((_, index) => selectedIndices.has(index)).map(selected => ({
@@ -54,14 +54,14 @@ export function createTopmostHistogramSegmentGatePrimitive(
   const base = baseHistogram(cars, width, height);
   const { target } = selectTopmostHistogramSegment(cars, { width, height });
   const graphic = base.graphicSpec.objects.bars;
-  const children = graphic.children.map(child => ({
+  const children = graphic.items.map(child => ({
     type: child.type ?? graphic.type,
     properties: child.properties
   }));
   const [selected] = children.splice(target.index, 1);
   return base.editGraphics({
     target: "bars",
-    property: "children",
+    property: "items",
     value: [
       ...children,
       {

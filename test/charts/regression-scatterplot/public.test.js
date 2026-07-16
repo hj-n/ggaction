@@ -98,7 +98,7 @@ test("owns caller data without mutating the input", () => {
   assert.equal(Object.isFrozen(program.semanticSpec.datasets[2].values), true);
   assert.equal(
     Object.isFrozen(
-      program.graphicSpec.objects.pointsRegressionBands.children[0].properties
+      program.graphicSpec.objects.pointsRegressionBands.items[0].properties
     ),
     true
   );

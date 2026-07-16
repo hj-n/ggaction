@@ -35,9 +35,9 @@ test("inherits a matching bar measure aggregate for continuous color", () => {
 
   assert.equal(layer.encoding.color.aggregate, "sum");
   assert.deepEqual(program.resolvedScales.color.domain, [5, 12]);
-  assert.equal(program.graphicSpec.objects.bar.children.length, 2);
+  assert.equal(program.graphicSpec.objects.bar.items.length, 2);
   assert.equal(
-    new Set(program.graphicSpec.objects.bar.children.map(
+    new Set(program.graphicSpec.objects.bar.items.map(
       child => child.properties.fill
     )).size,
     2
@@ -57,7 +57,7 @@ test("aggregates a different bar color field at the final rect grain", () => {
 
   assert.equal(layer.encoding.color.aggregate, "mean");
   assert.deepEqual(program.resolvedScales.color.domain, [0, 100]);
-  assert.equal(program.graphicSpec.objects.bar.children.length, 2);
+  assert.equal(program.graphicSpec.objects.bar.items.length, 2);
   assert.deepEqual(options, snapshot);
 });
 
@@ -87,19 +87,19 @@ test("creates and rematerializes a gradient legend for a bar consumer", () => {
   const program = aggregateBars()
     .encodeColor({ field: "value", fieldType: "quantitative" })
     .createLegend({ channels: ["color"] });
-  const first = program.graphicSpec.objects.bar.children.map(
+  const first = program.graphicSpec.objects.bar.items.map(
     child => child.properties.fill
   );
   const reversed = program.editScale({ id: "color", reverse: true });
 
   assert.ok(program.graphicSpec.objects.colorGradientStrips);
   assert.deepEqual(
-    reversed.graphicSpec.objects.bar.children.map(child => child.properties.fill),
+    reversed.graphicSpec.objects.bar.items.map(child => child.properties.fill),
     [...first].reverse()
   );
   assert.notEqual(
-    reversed.graphicSpec.objects.colorGradientStrips.children[0].properties.fill,
-    program.graphicSpec.objects.colorGradientStrips.children[0].properties.fill
+    reversed.graphicSpec.objects.colorGradientStrips.items[0].properties.fill,
+    program.graphicSpec.objects.colorGradientStrips.items[0].properties.fill
   );
 });
 
@@ -107,17 +107,16 @@ test("rematerializes continuous bar and gradient geometry after a Canvas edit", 
   const program = aggregateBars()
     .encodeColor({ field: "value", fieldType: "quantitative" })
     .createLegend({ channels: ["color"] });
-  const firstBarX = program.graphicSpec.objects.bar.children[0].properties.x;
-  const firstLegendX = program.graphicSpec.objects.colorGradientStrips
-    .children[0].properties.x;
+  const firstBarX = program.graphicSpec.objects.bar.items[0].properties.x;
+  const firstLegendX = program.graphicSpec.objects.colorGradientStrips.items[0].properties.x;
   const resized = program.editCanvas({ width: 360 });
 
   assert.notEqual(
-    resized.graphicSpec.objects.bar.children[0].properties.x,
+    resized.graphicSpec.objects.bar.items[0].properties.x,
     firstBarX
   );
   assert.notEqual(
-    resized.graphicSpec.objects.colorGradientStrips.children[0].properties.x,
+    resized.graphicSpec.objects.colorGradientStrips.items[0].properties.x,
     firstLegendX
   );
   assert.equal(program.graphicSpec.objects.canvas.properties.width, 320);

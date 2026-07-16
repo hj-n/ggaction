@@ -49,8 +49,8 @@ function drawRect(context, child, collectionId) {
 }
 
 export function drawRectGraphic(context, id, graphic) {
-  if (graphic.children) {
-    for (const child of graphic.children) drawRect(context, child, id);
+  if (graphic.items) {
+    for (const item of graphic.items) drawRect(context, item, id);
     return;
   }
   drawRect(context, { id, properties: graphic.properties }, id);

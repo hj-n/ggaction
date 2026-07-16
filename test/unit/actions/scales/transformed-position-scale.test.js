@@ -35,15 +35,15 @@ test("encodes log and sqrt positions and shares their mappings with guides", () 
     range: [180, 20]
   });
   assert.deepEqual(
-    program.graphicSpec.objects.points.children.map(child => child.properties.x),
+    program.graphicSpec.objects.points.items.map(child => child.properties.x),
     [20, 150, 280]
   );
   assert.deepEqual(
-    program.graphicSpec.objects.xAxisLabels.children.map(child => child.properties.text),
+    program.graphicSpec.objects.xAxisLabels.items.map(child => child.properties.text),
     ["1", "10", "100"]
   );
   assert.deepEqual(
-    program.graphicSpec.objects.verticalGridLines.children.map(
+    program.graphicSpec.objects.verticalGridLines.items.map(
       child => child.properties.x1
     ),
     [20, 150, 280]
@@ -63,8 +63,8 @@ test("materializes pow and symlog parameters and supports Canvas rematerializati
   assert.equal(symmetric.resolvedScales.x.constant, 2);
   assert.equal(resized.resolvedScales.x.range[1], 480);
   assert.notDeepEqual(
-    resized.graphicSpec.objects.points.children.map(child => child.properties.x),
-    symmetric.graphicSpec.objects.points.children.map(child => child.properties.x)
+    resized.graphicSpec.objects.points.items.map(child => child.properties.x),
+    symmetric.graphicSpec.objects.points.items.map(child => child.properties.x)
   );
 });
 
@@ -126,8 +126,8 @@ test("rematerializes every shared point consumer and rejects invalid transitions
   const log = shared.editScale({ id: "shared", type: "log" });
 
   assert.deepEqual(
-    log.graphicSpec.objects.points.children.map(child => child.properties.x),
-    log.graphicSpec.objects.other.children.map(child => child.properties.x)
+    log.graphicSpec.objects.points.items.map(child => child.properties.x),
+    log.graphicSpec.objects.other.items.map(child => child.properties.x)
   );
   assert.throws(
     () => shared.editScale({ id: "shared", type: "log", domain: [-1, 1] }),
@@ -161,15 +161,15 @@ test("materializes transformed positions for compound marks and type edits", () 
   const squareRootBars = bars.editScale({ id: "y", type: "sqrt" });
 
   assert.deepEqual(
-    area.graphicSpec.objects.area.children[0].properties.commands
+    area.graphicSpec.objects.area.items[0].properties.commands
       .filter(command => command.op !== "Z")
       .slice(0, 3)
       .map(command => command.x),
     [20, 150, 280]
   );
   assert.notDeepEqual(
-    squareRootBars.graphicSpec.objects.bar.children.map(child => child.properties.height),
-    bars.graphicSpec.objects.bar.children.map(child => child.properties.height)
+    squareRootBars.graphicSpec.objects.bar.items.map(child => child.properties.height),
+    bars.graphicSpec.objects.bar.items.map(child => child.properties.height)
   );
   assert.equal(bars.semanticSpec.scales.find(scale => scale.id === "y").type, "linear");
 });
@@ -202,16 +202,16 @@ test("uses transformed mappings for line paths and rule endpoints", () => {
     .encodeY2({ datum: 10, fieldType: "quantitative" });
 
   assert.deepEqual(
-    transformedLine.graphicSpec.objects.line.children[0].properties.commands
+    transformedLine.graphicSpec.objects.line.items[0].properties.commands
       .map(command => command.y),
     [180, 100, 20]
   );
   assert.deepEqual(
-    rule.graphicSpec.objects.rule.children.map(child => child.properties.x1),
+    rule.graphicSpec.objects.rule.items.map(child => child.properties.x1),
     [20, 150, 280]
   );
   assert.deepEqual(
-    rule.graphicSpec.objects.rule.children.map(child => child.properties.x2),
+    rule.graphicSpec.objects.rule.items.map(child => child.properties.x2),
     [20, 150, 280]
   );
 });

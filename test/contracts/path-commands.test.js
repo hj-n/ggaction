@@ -26,8 +26,8 @@ function pathNodes(program) {
   const result = [];
   function visit(node, inheritedType) {
     const type = node.type ?? inheritedType;
-    if (node.children !== undefined) {
-      for (const child of node.children) visit(child, type);
+    if (node.items !== undefined) {
+      for (const item of node.items) visit(item, type);
     } else if (type === "path") {
       result.push(node);
     }

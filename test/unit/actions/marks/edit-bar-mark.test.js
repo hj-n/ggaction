@@ -42,7 +42,7 @@ test("edits whole-bar appearance and retains it after rematerialization", () => 
     strokeWidth: 2
   });
 
-  assert.equal(edited.graphicSpec.objects.bar.children.every(child =>
+  assert.equal(edited.graphicSpec.objects.bar.items.every(child =>
     child.properties.fill === "#0f766e" &&
     child.properties.opacity === 0.6 &&
     child.properties.stroke === "#134e4a" &&
@@ -54,7 +54,7 @@ test("edits whole-bar appearance and retains it after rematerialization", () => 
   );
 
   const resized = edited.editCanvas({ width: 320 });
-  assert.equal(resized.graphicSpec.objects.bar.children.every(child =>
+  assert.equal(resized.graphicSpec.objects.bar.items.every(child =>
     child.properties.fill === "#0f766e" &&
     child.properties.opacity === 0.6 &&
     child.properties.strokeWidth === 2
@@ -64,13 +64,13 @@ test("edits whole-bar appearance and retains it after rematerialization", () => 
 
 test("removes a visible outline and can later restore it", () => {
   const removed = uncoloredBar().editBarMark({ stroke: false });
-  assert.equal(removed.graphicSpec.objects.bar.children.every(child =>
+  assert.equal(removed.graphicSpec.objects.bar.items.every(child =>
     child.properties.stroke === "transparent" &&
     child.properties.strokeWidth === 0
   ), true);
 
   const restored = removed.editBarMark({ stroke: "black" });
-  assert.equal(restored.graphicSpec.objects.bar.children.every(child =>
+  assert.equal(restored.graphicSpec.objects.bar.items.every(child =>
     child.properties.stroke === "black" &&
     child.properties.strokeWidth === 0.5
   ), true);
@@ -87,10 +87,10 @@ test("edits encoded-color bars except for their field-driven fill", () => {
     strokeWidth: 1.5,
     opacity: 0.8
   });
-  assert.equal(new Set(outlined.graphicSpec.objects.bars.children.map(child =>
+  assert.equal(new Set(outlined.graphicSpec.objects.bars.items.map(child =>
     child.properties.fill
   )).size > 1, true);
-  assert.equal(outlined.graphicSpec.objects.bars.children.every(child =>
+  assert.equal(outlined.graphicSpec.objects.bars.items.every(child =>
     child.properties.stroke === "#111827" &&
     child.properties.strokeWidth === 1.5 &&
     child.properties.opacity === 0.8
@@ -108,13 +108,13 @@ test("persists outline and opacity across grouped and ranged bar grains", () => 
       stroke: "#111827",
       strokeWidth: 1.25
     });
-    assert.equal(edited.graphicSpec.objects[target].children.every(child =>
+    assert.equal(edited.graphicSpec.objects[target].items.every(child =>
       child.properties.opacity === 0.55 &&
       child.properties.stroke === "#111827" &&
       child.properties.strokeWidth === 1.25
     ), true);
     const resized = edited.editCanvas({ width: 700 });
-    assert.equal(resized.graphicSpec.objects[target].children.every(child =>
+    assert.equal(resized.graphicSpec.objects[target].items.every(child =>
       child.properties.opacity === 0.55 &&
       child.properties.stroke === "#111827"
     ), true);
@@ -123,7 +123,7 @@ test("persists outline and opacity across grouped and ranged bar grains", () => 
 
 test("applies whole-mark fill to an uncolored ranged bar", () => {
   const edited = uncoloredRangedBar().editBarMark({ fill: "#0f766e" });
-  assert.equal(edited.graphicSpec.objects.bar.children.every(child =>
+  assert.equal(edited.graphicSpec.objects.bar.items.every(child =>
     child.properties.fill === "#0f766e"
   ), true);
 });

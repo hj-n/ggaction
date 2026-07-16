@@ -45,7 +45,7 @@ test("authors regression component edit targets with low-level graphic edits", (
   assert.deepEqual(program.semanticSpec, baseline.semanticSpec);
   assert.deepEqual(program.graphicSpec.order, baseline.graphicSpec.order);
   assert.deepEqual(
-    program.graphicSpec.objects.pointsRegressionBands.children.map(child => ({
+    program.graphicSpec.objects.pointsRegressionBands.items.map(child => ({
       fill: child.properties.fill,
       opacity: child.properties.opacity,
       stroke: child.properties.stroke,
@@ -59,7 +59,7 @@ test("authors regression component edit targets with low-level graphic edits", (
     }))
   );
   assert.deepEqual(
-    program.graphicSpec.objects.pointsRegressionLines.children.map(
+    program.graphicSpec.objects.pointsRegressionLines.items.map(
       child => child.properties.strokeWidth
     ),
     [5, 5]
@@ -122,13 +122,13 @@ test("authors comparison and range filter targets with primitive state", () => {
       groups
     );
     assert.deepEqual(regression.values, expected.regressionRows);
-    assert.equal(program.graphicSpec.objects.points.children.length, count);
+    assert.equal(program.graphicSpec.objects.points.items.length, count);
     assert.equal(
-      program.graphicSpec.objects.pointsRegressionLines.children.length,
+      program.graphicSpec.objects.pointsRegressionLines.items.length,
       groups.length
     );
     assert.equal(
-      program.graphicSpec.objects.pointsRegressionBands.children.length,
+      program.graphicSpec.objects.pointsRegressionBands.items.length,
       groups.length
     );
     assert.ok(!program.trace.children.some(node => node.op === "filterData"));
@@ -206,10 +206,10 @@ test("authors the left composite and size legend as raw primitive state", () => 
   const program = createLeftLegendPrimitives(cars);
   const objects = program.graphicSpec.objects;
   const background = objects.seriesLegendBackground.properties;
-  const seriesLines = objects.seriesLegendSymbolLines.children;
-  const seriesLabels = objects.seriesLegendLabels.children;
-  const sizeSymbols = objects.sizeLegendSymbols.children;
-  const sizeLabels = objects.sizeLegendLabels.children;
+  const seriesLines = objects.seriesLegendSymbolLines.items;
+  const seriesLabels = objects.seriesLegendLabels.items;
+  const sizeSymbols = objects.sizeLegendSymbols.items;
+  const sizeLabels = objects.sizeLegendLabels.items;
 
   assert.deepEqual(background, values.legend.background);
   assert.deepEqual(

@@ -55,7 +55,7 @@ test("validates whole-graphic removal mode", () => {
   );
   assert.throws(
     () => program.editGraphics({ target: "points:0", remove: true }),
-    /cannot remove a generated child/
+    /cannot remove a generated item/
   );
   assert.throws(
     () => program.editGraphics({ target: "missing", remove: true }),
@@ -81,13 +81,13 @@ test("distributes arrays and broadcasts scalar values to collection children", (
   });
 
   assert.deepEqual(
-    sized.graphicSpec.objects.points.children.map(child => child.properties),
+    sized.graphicSpec.objects.points.items.map(child => child.properties),
     [
       { x: 32.5, radius: 3 },
       { x: 81.4, radius: 3 }
     ]
   );
-  assert.deepEqual(points.graphicSpec.objects.points.children[0].properties, {});
+  assert.deepEqual(points.graphicSpec.objects.points.items[0].properties, {});
 });
 
 test("stores nested path commands intact and can target one child", () => {
@@ -103,15 +103,15 @@ test("stores nested path commands intact and can target one child", () => {
   paths[0][0].x = 99;
 
   assert.deepEqual(
-    program.graphicSpec.objects.paths.children[0].properties.commands,
+    program.graphicSpec.objects.paths.items[0].properties.commands,
     [{ op: "M", x: 0, y: 1 }, { op: "L", x: 2, y: 3 }]
   );
   assert.equal(
-    program.graphicSpec.objects.paths.children[1].properties.opacity,
+    program.graphicSpec.objects.paths.items[1].properties.opacity,
     0.4
   );
   assert.equal(
-    "opacity" in program.graphicSpec.objects.paths.children[0].properties,
+    "opacity" in program.graphicSpec.objects.paths.items[0].properties,
     false
   );
 });
@@ -138,7 +138,7 @@ test("replaces heterogeneous children and broadcasts shared properties", () => {
   const empty = chart().createGraphics({ id: "symbols", type: "collection" });
   const populated = empty.editGraphics({
     target: "symbols",
-    property: "children",
+    property: "items",
     value: children
   });
   const faded = populated.editGraphics({
@@ -154,9 +154,9 @@ test("replaces heterogeneous children and broadcasts shared properties", () => {
 
   children[0].properties.fill = "black";
 
-  assert.deepEqual(empty.graphicSpec.objects.symbols.children, []);
+  assert.deepEqual(empty.graphicSpec.objects.symbols.items, []);
   assert.deepEqual(
-    resized.graphicSpec.objects.symbols.children,
+    resized.graphicSpec.objects.symbols.items,
     [
       {
         id: "symbols:0",
@@ -185,14 +185,14 @@ test("replaces heterogeneous children and broadcasts shared properties", () => {
       }
     ]
   );
-  assert.equal(populated.graphicSpec.objects.symbols.children[0].properties.radius, 4);
+  assert.equal(populated.graphicSpec.objects.symbols.items[0].properties.radius, 4);
 });
 
 test("keeps a homogeneous collection type when replacing ordered children", () => {
   const base = chart().createGraphics({ id: "bars", type: "rect", length: 2 });
   const replaced = base.editGraphics({
     target: "bars",
-    property: "children",
+    property: "items",
     value: [
       {
         type: "rect",
@@ -212,9 +212,9 @@ test("keeps a homogeneous collection type when replacing ordered children", () =
   });
 
   assert.equal(replaced.graphicSpec.objects.bars.type, "rect");
-  assert.equal(replaced.graphicSpec.objects.bars.children[0].type, undefined);
+  assert.equal(replaced.graphicSpec.objects.bars.items[0].type, undefined);
   assert.deepEqual(
-    replaced.graphicSpec.objects.bars.children.map(child => child.id),
+    replaced.graphicSpec.objects.bars.items.map(child => child.id),
     ["bars:0", "bars:1"]
   );
 });
@@ -229,12 +229,12 @@ test("validates heterogeneous child types and type-specific properties", () => {
     [[{ type: "canvas", properties: {} }], /primitive drawable type/],
     [[{ type: "circle", properties: { width: 4 } }], /Unknown circle graphic property/],
     [[{ type: "circle", properties: null }], /requires plain properties/],
-    [[{ type: "circle", properties: {}, id: "custom" }], /Unknown collection child property/]
+    [[{ type: "circle", properties: {}, id: "custom" }], /Unknown collection item property/]
   ]) {
     assert.throws(
       () => collection.editGraphics({
         target: "symbols",
-        property: "children",
+        property: "items",
         value: children
       }),
       message
@@ -243,7 +243,7 @@ test("validates heterogeneous child types and type-specific properties", () => {
 
   const populated = collection.editGraphics({
     target: "symbols",
-    property: "children",
+    property: "items",
     value: [
       { type: "circle", properties: {} },
       { type: "rect", properties: {} }
@@ -259,6 +259,26 @@ test("validates heterogeneous child types and type-specific properties", () => {
   );
 });
 
+test("removes a named subtree and detaches it from its parent", () => {
+  const base = chart()
+    .createGraphics({ id: "canvas", type: "canvas" })
+    .createGraphics({ id: "plot", type: "collection", parent: "canvas" })
+    .createGraphics({ id: "marks", type: "collection", parent: "plot" })
+    .createGraphics({ id: "points", type: "circle", length: 2, parent: "marks" })
+    .createGraphics({ id: "axis", type: "line", length: 1, parent: "plot" });
+  const removed = base.editGraphics({ target: "marks", remove: true });
+
+  assert.deepEqual(base.graphicSpec.objects.plot.children, ["marks", "axis"]);
+  assert.deepEqual(removed.graphicSpec.objects.plot.children, ["axis"]);
+  assert.equal(removed.graphicSpec.objects.marks, undefined);
+  assert.equal(removed.graphicSpec.objects.points, undefined);
+  assert.equal(base.graphicSpec.objects.points.items.length, 2);
+  assert.throws(
+    () => base.editGraphics({ target: "canvas", remove: true }),
+    /canvas root cannot be removed/
+  );
+});
+
 test("resizes a drawable collection while preserving existing children", () => {
   const onePoint = chart()
     .createGraphics({ id: "points", type: "circle", length: 1 })
@@ -269,12 +289,12 @@ test("resizes a drawable collection while preserving existing children", () => {
     value: 2
   });
 
-  assert.equal(twoPoints.graphicSpec.objects.points.children.length, 2);
-  assert.deepEqual(twoPoints.graphicSpec.objects.points.children[0].properties, {
+  assert.equal(twoPoints.graphicSpec.objects.points.items.length, 2);
+  assert.deepEqual(twoPoints.graphicSpec.objects.points.items[0].properties, {
     x: 10
   });
-  assert.equal(twoPoints.graphicSpec.objects.points.children[1].id, "points:1");
-  assert.equal(onePoint.graphicSpec.objects.points.children.length, 1);
+  assert.equal(twoPoints.graphicSpec.objects.points.items[1].id, "points:1");
+  assert.equal(onePoint.graphicSpec.objects.points.items.length, 1);
 });
 
 test("turns a single drawable into a collection through length", () => {
@@ -284,7 +304,7 @@ test("turns a single drawable into a collection through length", () => {
 
   assert.deepEqual(program.graphicSpec.objects.points, {
     type: "circle",
-    children: [
+    items: [
       { id: "points:0", properties: {} },
       { id: "points:1", properties: {} }
     ]

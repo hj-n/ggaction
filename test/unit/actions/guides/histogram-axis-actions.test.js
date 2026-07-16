@@ -39,7 +39,7 @@ test("creates inferred histogram axes with bin-boundary ticks", () => {
     }
   });
   assert.deepEqual(
-    program.graphicSpec.objects.xAxisLabels.children.map(
+    program.graphicSpec.objects.xAxisLabels.items.map(
       child => child.properties.text
     ),
     ["50", "100", "150", "200", "250", "300", "350", "400", "450", "500"]
@@ -56,7 +56,7 @@ test("keeps explicit histogram tick values ahead of bin inference", () => {
   });
 
   assert.deepEqual(
-    program.graphicSpec.objects.xAxisLabels.children.map(
+    program.graphicSpec.objects.xAxisLabels.items.map(
       child => child.properties.text
     ),
     ["100", "300", "500"]
@@ -68,14 +68,14 @@ test("rematerializes inferred histogram axes after Canvas edits", () => {
   const after = before.editCanvas({ width: 500, margin: 30 });
 
   assert.notEqual(
-    after.graphicSpec.objects.xAxisTicks.children.at(-1).properties.x1,
-    before.graphicSpec.objects.xAxisTicks.children.at(-1).properties.x1
+    after.graphicSpec.objects.xAxisTicks.items.at(-1).properties.x1,
+    before.graphicSpec.objects.xAxisTicks.items.at(-1).properties.x1
   );
   assert.deepEqual(
-    after.graphicSpec.objects.xAxisLabels.children.map(
+    after.graphicSpec.objects.xAxisLabels.items.map(
       child => child.properties.text
     ),
-    before.graphicSpec.objects.xAxisLabels.children.map(
+    before.graphicSpec.objects.xAxisLabels.items.map(
       child => child.properties.text
     )
   );

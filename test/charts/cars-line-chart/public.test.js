@@ -13,7 +13,7 @@ test("builds the public cars line-chart example with chart actions", () => {
   const program = createCarsLineChart(cars);
 
   assert.equal(program.semanticSpec.layers[0].mark.type, "line");
-  assert.equal(program.graphicSpec.objects.trends.children.length, 3);
+  assert.equal(program.graphicSpec.objects.trends.items.length, 3);
   assert.deepEqual(program.semanticSpec.guides.legend.series.channels, [
     "color",
     "strokeDash"

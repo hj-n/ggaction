@@ -19,7 +19,7 @@ for (const type of DISCRETIZED_COLOR_TYPES) {
 
     assert.equal(scale.type, type);
     assert.equal(program.resolvedScales.color.type, type);
-    assert.equal(program.graphicSpec.objects.colorLegendSymbols.children.length, 5);
+    assert.equal(program.graphicSpec.objects.colorLegendSymbols.items.length, 5);
     assert.deepEqual(program.trace.children.map(node => node.op), [
       "createCanvas",
       "createData",

@@ -27,7 +27,7 @@ test("creates a homogeneous drawable collection with generated child IDs", () =>
 
   assert.deepEqual(program.graphicSpec.objects.points, {
     type: "circle",
-    children: [
+    items: [
       { id: "points:0", properties: {} },
       { id: "points:1", properties: {} }
     ]
@@ -42,7 +42,7 @@ test("creates an empty heterogeneous drawable collection", () => {
 
   assert.deepEqual(program.graphicSpec.objects.symbols, {
     type: "collection",
-    children: []
+    items: []
   });
   assert.throws(
     () => chart().createGraphics({
@@ -50,7 +50,7 @@ test("creates an empty heterogeneous drawable collection", () => {
       type: "collection",
       length: 2
     }),
-    /use editGraphics children/
+    /use editGraphics items/
   );
 });
 
@@ -129,7 +129,7 @@ test("keeps equivalent placement idempotent and rejects conflicting placement", 
         length: 0,
         after: "bars"
       }),
-    /conflicting placement/
+    /different definition or placement/
   );
 });
 
@@ -194,5 +194,49 @@ test("rejects invalid and conflicting graphic definitions", () => {
         before: "other"
       }),
     /relative to itself/
+  );
+});
+
+test("attaches named graphics to canvas and collection parents", () => {
+  const base = chart()
+    .createGraphics({ id: "canvas", type: "canvas" })
+    .createGraphics({ id: "plot", type: "collection", parent: "canvas" })
+    .createGraphics({ id: "bars", type: "rect", length: 2, parent: "plot" })
+    .createGraphics({ id: "grid", type: "line", length: 1, parent: "plot", before: "bars" })
+    .createGraphics({ id: "labels", type: "text", length: 1, parent: "plot", after: "bars" });
+
+  assert.deepEqual(base.graphicSpec.order, ["canvas"]);
+  assert.deepEqual(base.graphicSpec.objects.canvas.children, ["plot"]);
+  assert.deepEqual(base.graphicSpec.objects.plot.children, ["grid", "bars", "labels"]);
+  assert.equal(base.graphicSpec.objects.bars.items.length, 2);
+  assert.equal(
+    base.createGraphics({ id: "bars", type: "rect", length: 2, parent: "plot" })
+      .graphicSpec,
+    base.graphicSpec
+  );
+});
+
+test("rejects invalid graphic parents and cross-parent placement", () => {
+  const base = chart()
+    .createGraphics({ id: "canvas", type: "canvas" })
+    .createGraphics({ id: "point", type: "circle" })
+    .createGraphics({ id: "plot", type: "collection", parent: "canvas" })
+    .createGraphics({ id: "bars", type: "rect", length: 0, parent: "plot" });
+
+  assert.throws(
+    () => base.createGraphics({ id: "label", type: "text", parent: "missing" }),
+    /Unknown graphic parent/
+  );
+  assert.throws(
+    () => base.createGraphics({ id: "label", type: "text", parent: "point" }),
+    /must be a canvas or collection/
+  );
+  assert.throws(
+    () => base.createGraphics({ id: "label", type: "text", parent: "plot", before: "point" }),
+    /direct sibling/
+  );
+  assert.throws(
+    () => base.createGraphics({ id: "otherCanvas", type: "canvas" }),
+    /exactly one canvas/
   );
 });

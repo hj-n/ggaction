@@ -57,7 +57,7 @@ test("encodes a nominal xOffset inside each ordinal x band", () => {
     paddingInner: 0,
     paddingOuter: 0
   });
-  assert.deepEqual(program.graphicSpec.objects.bars.children, []);
+  assert.deepEqual(program.graphicSpec.objects.bars.items, []);
   assert.equal(before.semanticSpec.layers[0].encoding.xOffset, undefined);
 
   const node = program.trace.children.at(-1);
@@ -117,7 +117,7 @@ test("applies inner and outer padding to automatic group slots", () => {
     paddingOuter: 0.1
   });
   assert.deepEqual(
-    program.graphicSpec.objects.bars.children.map(
+    program.graphicSpec.objects.bars.items.map(
       child => Number(child.properties.width.toFixed(6))
     ),
     [46.08, 46.08, 46.08, 46.08]

@@ -59,7 +59,7 @@ test("creates, rebinds, and materializes one immutable density revision", () => 
   assert.deepEqual(revised.values, expected.densityRows);
   assert.deepEqual(after.resolvedScales.y.domain, [0, 40]);
   assert.deepEqual(
-    after.graphicSpec.objects.densities.children.map(
+    after.graphicSpec.objects.densities.items.map(
       child => child.properties.commands
     ),
     expected.areas.map(area => linearPathCommands(area.points, { close: true }))
@@ -115,7 +115,7 @@ test("retains a previous revision while another layer still consumes it", () => 
       field: "Acceleration_density",
       scale: { id: "y", nice: true, zero: true }
     });
-  const beforeY = shared.graphicSpec.objects.samples.children.map(
+  const beforeY = shared.graphicSpec.objects.samples.items.map(
     child => child.properties.y
   );
   const revised = shared.editDensity({
@@ -139,7 +139,7 @@ test("retains a previous revision while another layer still consumes it", () => 
     "rematerializePointMark"
   ]);
   assert.notDeepEqual(
-    revised.graphicSpec.objects.samples.children.map(
+    revised.graphicSpec.objects.samples.items.map(
       child => child.properties.y
     ),
     beforeY

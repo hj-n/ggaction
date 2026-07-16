@@ -20,7 +20,7 @@ export function requireCompleteBar(program, id) {
   }
   const graphic = program.graphicSpec.objects[id];
   const rectCollection = graphic?.type === "collection" &&
-    graphic.children?.every(child => child.type === "rect");
+    graphic.items?.every(child => child.type === "rect");
   if (graphic?.type !== "rect" && !rectCollection) {
     throw new Error(`Bar mark "${id}" requires rect graphics.`);
   }

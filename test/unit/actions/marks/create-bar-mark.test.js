@@ -19,7 +19,7 @@ test("creates a semantic bar mark and empty rect collection", () => {
   ]);
   assert.deepEqual(program.graphicSpec.objects.bar, {
     type: "rect",
-    children: []
+    items: []
   });
   assert.equal(program.context.currentData, "cars");
   assert.equal(program.context.currentMark, "bar");
@@ -56,7 +56,7 @@ test("supports empty datasets because bar cardinality is unresolved", () => {
     .createData({ id: "empty", values: [] })
     .createBarMark({ id: "bars" });
 
-  assert.equal(program.graphicSpec.objects.bars.children.length, 0);
+  assert.equal(program.graphicSpec.objects.bars.items.length, 0);
 });
 
 test("validates bar mark options, ids, data, and conflicts", () => {

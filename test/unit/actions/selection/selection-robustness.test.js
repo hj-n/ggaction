@@ -112,8 +112,8 @@ test("keeps multiple highlight assignments independent when one is replaced", ()
       dimOthers: false,
       bringToFront: false
     });
-  assert.equal(both.graphicSpec.objects.point.children[0].properties.fill, "#2563eb");
-  assert.equal(both.graphicSpec.objects.point.children[3].properties.fill, "#dc2626");
+  assert.equal(both.graphicSpec.objects.point.items[0].properties.fill, "#2563eb");
+  assert.equal(both.graphicSpec.objects.point.items[3].properties.fill, "#dc2626");
 
   const replaced = both.highlightMarks({
     selection: "low",
@@ -122,10 +122,10 @@ test("keeps multiple highlight assignments independent when one is replaced", ()
     dimOthers: false,
     bringToFront: false
   });
-  assert.equal(replaced.graphicSpec.objects.point.children[0].properties.fill, "#16a34a");
-  assert.equal(replaced.graphicSpec.objects.point.children[3].properties.fill, "#dc2626");
+  assert.equal(replaced.graphicSpec.objects.point.items[0].properties.fill, "#16a34a");
+  assert.equal(replaced.graphicSpec.objects.point.items[3].properties.fill, "#dc2626");
   assert.deepEqual(Object.keys(replaced.materializationConfigs.highlights), ["high", "low"]);
-  assert.equal(both.graphicSpec.objects.point.children[0].properties.fill, "#2563eb");
+  assert.equal(both.graphicSpec.objects.point.items[0].properties.fill, "#2563eb");
 });
 
 test("converges across color encoding, scale, Canvas, and filter order", () => {
@@ -157,7 +157,7 @@ test("converges across color encoding, scale, Canvas, and filter order", () => {
   assert.deepEqual(highlightThenFilter.semanticSpec, filterThenHighlight.semanticSpec);
   assert.deepEqual(highlightThenFilter.graphicSpec, filterThenHighlight.graphicSpec);
   assert.deepEqual(resolveStoredSelection(highlightThenFilter).keys, ["point/point/1"]);
-  assert.equal(highlightThenFilter.graphicSpec.objects.point.children.length, 2);
+  assert.equal(highlightThenFilter.graphicSpec.objects.point.items.length, 2);
 });
 
 test("preserves selected-last order and encoded-style precedence after rematerialization", () => {
@@ -165,7 +165,7 @@ test("preserves selected-last order and encoded-style precedence after remateria
     .encodeColor({ field: "group" })
     .encodeOpacity({ field: "x" });
   const result = highlighted(base).editCanvas({ width: 300, height: 220 });
-  const children = result.graphicSpec.objects.point.children;
+  const children = result.graphicSpec.objects.point.items;
 
   assert.deepEqual(resolveStoredSelection(result).keys, [
     "point/point/1",
@@ -194,7 +194,7 @@ test("uses every supported point shape as a highlighted replacement", () => {
       shape,
       bringToFront: false
     });
-    const child = result.graphicSpec.objects.point.children[3];
+    const child = result.graphicSpec.objects.point.items[3];
     const type = child.type ?? result.graphicSpec.objects.point.type;
     assert.equal(["circle", "rect", "path"].includes(type), true, shape);
     if (type === "path") {

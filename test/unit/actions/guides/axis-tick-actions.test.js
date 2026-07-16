@@ -10,8 +10,8 @@ function program() {
 
 test("creates nice x ticks and explicit y ticks", () => {
   const result = program().createXAxisTicks({ count: 5 }).createYAxisTicks({ values: [5, 10, 15] });
-  assert.equal(result.graphicSpec.objects.xAxisTicks.children.length > 0, true);
-  assert.deepEqual(result.graphicSpec.objects.yAxisTicks.children.map(x => x.properties.y1), [110, 60, 10]);
+  assert.equal(result.graphicSpec.objects.xAxisTicks.items.length > 0, true);
+  assert.deepEqual(result.graphicSpec.objects.yAxisTicks.items.map(x => x.properties.y1), [110, 60, 10]);
   assert.equal(result.guideConfigs.axis.x.ticks.mode, "count");
   assert.equal(result.guideConfigs.axis.y.ticks.mode, "values");
 });
@@ -20,7 +20,7 @@ test("validates mutually exclusive options and rematerializes after Canvas edits
   assert.throws(() => program().createXAxisTicks({ count: 5, values: [0] }), /cannot use/);
   const created = program().createXAxisTicks();
   const resized = created.editCanvas({ width: 300, margin: 20 });
-  assert.equal(resized.graphicSpec.objects.xAxisTicks.children[0].properties.y1, 100);
+  assert.equal(resized.graphicSpec.objects.xAxisTicks.items[0].properties.y1, 100);
   assert.equal(
     resized.trace.children.at(-1).children.some(
       child => child.op === "rematerializeScale"
@@ -43,16 +43,16 @@ test("creates and edits outward top and right ticks", () => {
     .createXAxisTicks({ position: "top", values: [0, 10] })
     .createYAxisTicks({ position: "right", values: [5, 15] });
 
-  assert.equal(created.graphicSpec.objects.xAxisTicks.children[0].properties.y1, 30);
-  assert.equal(created.graphicSpec.objects.xAxisTicks.children[0].properties.y2, 24);
-  assert.equal(created.graphicSpec.objects.yAxisTicks.children[0].properties.x1, 210);
-  assert.equal(created.graphicSpec.objects.yAxisTicks.children[0].properties.x2, 216);
+  assert.equal(created.graphicSpec.objects.xAxisTicks.items[0].properties.y1, 30);
+  assert.equal(created.graphicSpec.objects.xAxisTicks.items[0].properties.y2, 24);
+  assert.equal(created.graphicSpec.objects.yAxisTicks.items[0].properties.x1, 210);
+  assert.equal(created.graphicSpec.objects.yAxisTicks.items[0].properties.x2, 216);
 
   const edited = created
     .editXAxisTicks({ position: "bottom" })
     .editYAxisTicks({ position: "left" });
-  assert.equal(edited.graphicSpec.objects.xAxisTicks.children[0].properties.y1, 160);
-  assert.equal(edited.graphicSpec.objects.yAxisTicks.children[0].properties.x1, 14);
+  assert.equal(edited.graphicSpec.objects.xAxisTicks.items[0].properties.y1, 160);
+  assert.equal(edited.graphicSpec.objects.yAxisTicks.items[0].properties.x1, 14);
   assert.equal(created.guideConfigs.axis.x.ticks.position, "top");
 });
 

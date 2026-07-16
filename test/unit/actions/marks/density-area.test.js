@@ -43,7 +43,7 @@ function yDensityArea() {
 test("materializes grouped y-density paths against a zero baseline", () => {
   const expected = createCarsDensityAreaValues(loadCars());
   const program = yDensityArea();
-  const paths = program.graphicSpec.objects.densities.children;
+  const paths = program.graphicSpec.objects.densities.items;
 
   assert.deepEqual(
     paths.map(child => child.properties.commands),
@@ -74,7 +74,7 @@ test("materializes an ungrouped x-density path against a zero baseline", () => {
       field: "Acceleration_value",
       scale: { nice: false, zero: false }
     });
-  const commands = program.graphicSpec.objects.density.children[0].properties.commands;
+  const commands = program.graphicSpec.objects.density.items[0].properties.commands;
   const points = linearCommandPoints(commands);
   const baseline = program.resolvedScales.x.range[0];
 

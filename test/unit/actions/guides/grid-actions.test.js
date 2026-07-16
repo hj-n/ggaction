@@ -38,9 +38,9 @@ test("creates a default horizontal grid behind the histogram mark", () => {
     "horizontalGridLines",
     "bars"
   ]);
-  assert.equal(grid.children.length > 0, true);
-  assert.equal(grid.children.every(child => child.properties.x1 === 50), true);
-  assert.equal(grid.children.every(child => child.properties.x2 === 270), true);
+  assert.equal(grid.items.length > 0, true);
+  assert.equal(grid.items.every(child => child.properties.x1 === 50), true);
+  assert.equal(grid.items.every(child => child.properties.x2 === 270), true);
 
   const node = program.trace.children.at(-1);
   assert.equal(node.op, "createGrid");
@@ -71,13 +71,13 @@ test("creates both directions with bin-aligned vertical grid values", () => {
     "verticalGridLines",
     "bars"
   ]);
-  assert.equal(vertical.children.length, 10);
+  assert.equal(vertical.items.length, 10);
   assert.deepEqual(
-    vertical.children[0].properties.strokeDash,
+    vertical.items[0].properties.strokeDash,
     [2, 2]
   );
-  assert.equal(vertical.children[0].properties.stroke, "#cbd5e1");
-  assert.equal(vertical.children[0].properties.strokeWidth, 2);
+  assert.equal(vertical.items[0].properties.stroke, "#cbd5e1");
+  assert.equal(vertical.items[0].properties.strokeWidth, 2);
   assert.deepEqual(
     program.trace.children.at(-1).children.map(child => child.op),
     ["createHorizontalGrid", "createVerticalGrid"]
@@ -88,8 +88,8 @@ test("reuses existing axis tick values when grid values are omitted", () => {
   const program = histogram()
     .createAxes({ y: { ticksAndLabels: { values: [0, 1, 2] } } })
     .createGrid();
-  const ticks = program.graphicSpec.objects.yAxisTicks.children;
-  const grid = program.graphicSpec.objects.horizontalGridLines.children;
+  const ticks = program.graphicSpec.objects.yAxisTicks.items;
+  const grid = program.graphicSpec.objects.horizontalGridLines.items;
 
   assert.equal(grid.length, 3);
   assert.deepEqual(
@@ -103,12 +103,12 @@ test("rematerializes grid geometry after Canvas edits", () => {
   const after = before.editCanvas({ width: 360, margin: 30 });
 
   assert.notEqual(
-    after.graphicSpec.objects.horizontalGridLines.children[0].properties.x2,
-    before.graphicSpec.objects.horizontalGridLines.children[0].properties.x2
+    after.graphicSpec.objects.horizontalGridLines.items[0].properties.x2,
+    before.graphicSpec.objects.horizontalGridLines.items[0].properties.x2
   );
   assert.notEqual(
-    after.graphicSpec.objects.verticalGridLines.children.at(-1).properties.x1,
-    before.graphicSpec.objects.verticalGridLines.children.at(-1).properties.x1
+    after.graphicSpec.objects.verticalGridLines.items.at(-1).properties.x1,
+    before.graphicSpec.objects.verticalGridLines.items.at(-1).properties.x1
   );
   assert.deepEqual(before.graphicSpec.order, [
     "canvas",

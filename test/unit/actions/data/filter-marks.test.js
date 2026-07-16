@@ -37,7 +37,7 @@ test("supports the shortest call immediately after point creation", () => {
     .filterMarks({ field: "category", op: "oneOf", values: ["A"] });
 
   assert.equal(program.semanticSpec.layers[0].data, "pointsFilteredData");
-  assert.equal(program.graphicSpec.objects.points.children.length, 2);
+  assert.equal(program.graphicSpec.objects.points.items.length, 2);
   assert.deepEqual(
     program.trace.children.at(-1).children.map(node => node.op),
     [
@@ -80,9 +80,9 @@ test("filters the current mark through an immutable derived dataset", () => {
   assert.equal(program.context.currentData, "pointsFilteredData");
   assert.deepEqual(program.resolvedScales.x.domain, [1, 3]);
   assert.deepEqual(program.resolvedScales.y.domain, [10, 30]);
-  assert.equal(program.graphicSpec.objects.points.children.length, 2);
+  assert.equal(program.graphicSpec.objects.points.items.length, 2);
   assert.equal(before.semanticSpec.layers[0].data, "rows");
-  assert.equal(before.graphicSpec.objects.points.children.length, 4);
+  assert.equal(before.graphicSpec.objects.points.items.length, 4);
 
   assert.deepEqual(
     program.trace.children.at(-1).children.map(node => node.op),
@@ -165,7 +165,7 @@ test("filters histogram stacks without changing their approved bin boundaries", 
     op: "max"
   });
   const layer = filtered.semanticSpec.layers.find(candidate => candidate.id === "bars");
-  const rectangles = filtered.graphicSpec.objects.bars.children;
+  const rectangles = filtered.graphicSpec.objects.bars.items;
 
   assert.equal(filtered.semanticSpec.datasets.at(-1).values.length < cars.length, true);
   assert.equal(rectangles.length, 3);
@@ -191,12 +191,12 @@ test("filters complete line and density-area series at native path grain", () =>
     value: "Japan"
   });
 
-  assert.equal(line.graphicSpec.objects.trends.children.length, 1);
+  assert.equal(line.graphicSpec.objects.trends.items.length, 1);
   assert.deepEqual(line.resolvedScales.color.domain, ["Japan"]);
-  assert.equal(line.graphicSpec.objects.seriesLegendSymbols.children.length, 1);
-  assert.equal(area.graphicSpec.objects.densities.children.length, 1);
+  assert.equal(line.graphicSpec.objects.seriesLegendSymbols.items.length, 1);
+  assert.equal(area.graphicSpec.objects.densities.items.length, 1);
   assert.deepEqual(area.resolvedScales.color.domain, ["Japan"]);
-  assert.equal(area.graphicSpec.objects.colorLegendSymbols.children.length, 1);
+  assert.equal(area.graphicSpec.objects.colorLegendSymbols.items.length, 1);
 });
 
 test("filters individual rule items and rematerializes their endpoints", () => {
@@ -219,7 +219,7 @@ test("filters individual rule items and rematerializes their endpoints", () => {
     filtered.semanticSpec.datasets.at(-1).values.map(row => row.group),
     ["B", "C"]
   );
-  assert.equal(filtered.graphicSpec.objects.rule.children.length, 2);
+  assert.equal(filtered.graphicSpec.objects.rule.items.length, 2);
   assert.notDeepEqual(filtered.graphicSpec.objects.rule, base.graphicSpec.objects.rule);
 });
 
@@ -232,13 +232,13 @@ test("rematerializes connected axes and grids from the filtered scale domains", 
   });
 
   assert.deepEqual(
-    before.graphicSpec.objects.xAxisLabels.children.map(
+    before.graphicSpec.objects.xAxisLabels.items.map(
       child => child.properties.text
     ),
     ["1", "2", "3", "4"]
   );
   assert.deepEqual(
-    after.graphicSpec.objects.xAxisLabels.children.map(
+    after.graphicSpec.objects.xAxisLabels.items.map(
       child => child.properties.text
     ),
     ["1", "1.5", "2", "2.5", "3"]

@@ -164,17 +164,17 @@ test("keeps fixed cap widths through scale and Canvas rematerialization", () => 
 
   for (const program of [created, resized]) {
     for (const id of ["errorBarLowerCap", "errorBarUpperCap"]) {
-      for (const child of program.graphicSpec.objects[id].children) {
+      for (const child of program.graphicSpec.objects[id].items) {
         assert.equal(child.properties.x2 - child.properties.x1, 8);
       }
     }
   }
   assert.notEqual(
-    created.graphicSpec.objects.errorBar.children[0].properties.x1,
-    resized.graphicSpec.objects.errorBar.children[0].properties.x1
+    created.graphicSpec.objects.errorBar.items[0].properties.x1,
+    resized.graphicSpec.objects.errorBar.items[0].properties.x1
   );
   assert.equal(
-    created.graphicSpec.objects.errorBarLowerCap.children[0].properties.x1,
+    created.graphicSpec.objects.errorBarLowerCap.items[0].properties.x1,
     176
   );
 });
@@ -183,7 +183,7 @@ test("supports appearance options and rejects duplicate default ownership atomic
   const base = encodedPoints();
   assert.equal(
     base.createErrorBar({ stroke: "red" })
-      .graphicSpec.objects.errorBar.children[0].properties.stroke,
+      .graphicSpec.objects.errorBar.items[0].properties.stroke,
     "red"
   );
   const created = base.createErrorBar();
@@ -224,7 +224,7 @@ test("creates horizontal statistical intervals with x2 and vertical caps", () =>
   for (const cap of [lower, upper]) {
     assert.equal(cap.encoding.x.fieldType, "quantitative");
     assert.equal(cap.encoding.y.fieldType, "nominal");
-    for (const child of program.graphicSpec.objects[cap.id].children) {
+    for (const child of program.graphicSpec.objects[cap.id].items) {
       assert.equal(child.properties.y2 - child.properties.y1, 8);
     }
   }
@@ -269,7 +269,7 @@ test("forwards one custom appearance and cap size to every owned rule", () => {
   for (const id of ["errorBar", "errorBarLowerCap", "errorBarUpperCap"]) {
     const layer = program.semanticSpec.layers.find(item => item.id === id);
     assert.deepEqual(layer.encoding.strokeDash.datum, [8, 4]);
-    for (const child of program.graphicSpec.objects[id].children) {
+    for (const child of program.graphicSpec.objects[id].items) {
       assert.equal(child.properties.stroke, "#d9485f");
       assert.equal(child.properties.strokeWidth, 3);
       assert.deepEqual(child.properties.strokeDash, [8, 4]);
@@ -277,7 +277,7 @@ test("forwards one custom appearance and cap size to every owned rule", () => {
     }
   }
   for (const id of ["errorBarLowerCap", "errorBarUpperCap"]) {
-    for (const child of program.graphicSpec.objects[id].children) {
+    for (const child of program.graphicSpec.objects[id].items) {
       assert.equal(child.properties.x2 - child.properties.x1, 16);
     }
   }
@@ -408,18 +408,18 @@ test("keeps custom cap spans after Canvas and shared-scale rematerialization", (
   });
 
   assert.notEqual(
-    created.graphicSpec.objects.errorBar.children[0].properties.x1,
-    resized.graphicSpec.objects.errorBar.children[0].properties.x1
+    created.graphicSpec.objects.errorBar.items[0].properties.x1,
+    resized.graphicSpec.objects.errorBar.items[0].properties.x1
   );
   for (const program of [created, resized, rescaled]) {
     for (const id of ["errorBarLowerCap", "errorBarUpperCap"]) {
-      for (const child of program.graphicSpec.objects[id].children) {
+      for (const child of program.graphicSpec.objects[id].items) {
         assert.equal(child.properties.y2 - child.properties.y1, 16);
       }
     }
   }
   assert.notEqual(
-    resized.graphicSpec.objects.errorBarLowerCap.children[0].properties.x1,
-    rescaled.graphicSpec.objects.errorBarLowerCap.children[0].properties.x1
+    resized.graphicSpec.objects.errorBarLowerCap.items[0].properties.x1,
+    rescaled.graphicSpec.objects.errorBarLowerCap.items[0].properties.x1
   );
 });

@@ -63,13 +63,13 @@ test("matches primitive composite and five-symbol size legends", () => {
   const size = expected.legends.size;
 
   assert.deepEqual(
-    program.graphicSpec.objects.seriesLegendSymbolLines.children.map(
+    program.graphicSpec.objects.seriesLegendSymbolLines.items.map(
       child => child.properties
     ),
     origin.items.map(item => ({ ...item.line, stroke: item.color, strokeWidth: 3 }))
   );
   assert.deepEqual(
-    program.graphicSpec.objects.seriesLegendSymbolPoints.children,
+    program.graphicSpec.objects.seriesLegendSymbolPoints.items,
     origin.items.map((item, index) => ({
       id: `seriesLegendSymbolPoints:${index}`,
       type: item.symbol.type,
@@ -77,29 +77,29 @@ test("matches primitive composite and five-symbol size legends", () => {
     }))
   );
   assert.deepEqual(
-    program.graphicSpec.objects.sizeLegendSymbols.children.map(child =>
+    program.graphicSpec.objects.sizeLegendSymbols.items.map(child =>
       child.properties.radius
     ),
     size.items.map(item => item.symbol.radius)
   );
   assert.deepEqual(
-    program.graphicSpec.objects.sizeLegendLabels.children.map(child =>
+    program.graphicSpec.objects.sizeLegendLabels.items.map(child =>
       child.properties.text
     ),
     size.items.map(item => item.label.text)
   );
-  assert.equal(program.graphicSpec.objects.sizeLegendSymbols.children.length, 5);
+  assert.equal(program.graphicSpec.objects.sizeLegendSymbols.items.length, 5);
 });
 
 test("rematerializes both legend blocks after Canvas edits", () => {
   const before = regressionProgram().createGuides();
   const after = before.editCanvas({ width: 860 });
   assert.equal(
-    after.graphicSpec.objects.seriesLegendSymbolLines.children[0].properties.x1,
+    after.graphicSpec.objects.seriesLegendSymbolLines.items[0].properties.x1,
     700
   );
   assert.equal(
-    after.graphicSpec.objects.sizeLegendSymbols.children[0].properties.x,
+    after.graphicSpec.objects.sizeLegendSymbols.items[0].properties.x,
     716
   );
   const legendNode = after.trace.children.at(-1).children.find(
@@ -115,7 +115,7 @@ test("rematerializes both legend blocks after Canvas edits", () => {
 
 test("supports an explicit quantitative symbol count and validates point legends", () => {
   const program = regressionProgram().createLegend({ count: 3 });
-  assert.equal(program.graphicSpec.objects.sizeLegendSymbols.children.length, 3);
+  assert.equal(program.graphicSpec.objects.sizeLegendSymbols.items.length, 3);
   assert.throws(
     () => regressionProgram().createLegend({ count: 1 }),
     /at least 2/

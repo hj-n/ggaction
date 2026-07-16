@@ -20,13 +20,13 @@ test("edits regression components through nested generic mark actions", () => {
     })
     .editRegressionLine({ strokeWidth: 5, curve: "step" });
 
-  assert.ok(program.graphicSpec.objects.pointsRegressionBands.children.every(
+  assert.ok(program.graphicSpec.objects.pointsRegressionBands.items.every(
     child => child.properties.fill === "#475569" &&
       child.properties.opacity === 0.12 &&
       child.properties.stroke === "#111827" &&
       child.properties.strokeWidth === 1.5
   ));
-  assert.ok(program.graphicSpec.objects.pointsRegressionLines.children.every(
+  assert.ok(program.graphicSpec.objects.pointsRegressionLines.items.every(
     child => child.properties.strokeWidth === 5
   ));
   assert.equal(program.markConfigs.pointsRegressionLines.curve, "step");
@@ -44,7 +44,7 @@ test("edits regression components through nested generic mark actions", () => {
     baseline.graphicSpec.objects.pointsRegressionBands
   );
   assert.equal(
-    baseline.graphicSpec.objects.pointsRegressionBands.children[0].properties.stroke,
+    baseline.graphicSpec.objects.pointsRegressionBands.items[0].properties.stroke,
     undefined
   );
 });
@@ -66,7 +66,7 @@ test("forwards create-time regression component appearance", () => {
   assert.equal(extra.markConfigs.otherRegressionBands.strokeWidth, 2);
   assert.equal(extra.markConfigs.otherRegressionBands.curve, "cardinal");
   assert.equal(
-    extra.graphicSpec.objects.otherRegressionBands.children[0]
+    extra.graphicSpec.objects.otherRegressionBands.items[0]
       .properties.commands.some(command => command.op === "C"),
     true
   );

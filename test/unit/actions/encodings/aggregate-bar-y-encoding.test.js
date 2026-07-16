@@ -78,7 +78,7 @@ test("encodes aggregate ordinal bars with inferred mean/non-stack defaults", () 
     domain: [2, 10],
     range: [250, 30]
   });
-  assert.deepEqual(program.graphicSpec.objects.bars.children, []);
+  assert.deepEqual(program.graphicSpec.objects.bars.items, []);
   assert.equal(before.semanticSpec.layers[0].encoding.y, undefined);
 
   const node = program.trace.children.at(-1);
@@ -121,7 +121,7 @@ test("keeps explicit aggregate y scale bounds ahead of nice and zero", () => {
     domain: [0, 20],
     range: [240, 20]
   });
-  assert.deepEqual(program.graphicSpec.objects.bars.children, []);
+  assert.deepEqual(program.graphicSpec.objects.bars.items, []);
 });
 
 test("validates aggregate ordinal bar y requirements", () => {

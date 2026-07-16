@@ -29,7 +29,7 @@ function pathArea(points) {
 test("edits a constant point shape into normalized diamond paths", () => {
   const before = completePointProgram();
   const after = before.editPointMark({ shape: "diamond" });
-  const children = after.graphicSpec.objects.points.children;
+  const children = after.graphicSpec.objects.points.items;
 
   assert.equal(before.graphicSpec.objects.points.type, "circle");
   assert.equal(after.graphicSpec.objects.points.type, "collection");
@@ -56,7 +56,7 @@ test("supports every constant shape and preserves equal logical area", () => {
     "hexagon", "wye"
   ]) {
     const program = base.editPointMark({ target: "points", shape });
-    const child = program.graphicSpec.objects.points.children[0];
+    const child = program.graphicSpec.objects.points.items[0];
     const type = child.type ?? program.graphicSpec.objects.points.type;
     const area = type === "circle"
       ? Math.PI * child.properties.radius ** 2
@@ -86,7 +86,7 @@ test("edits persistent point opacity and outline appearance", () => {
     strokeWidth: 0.6
   });
   for (const program of [styled, rematerialized]) {
-    assert.equal(program.graphicSpec.objects.points.children.every(child =>
+    assert.equal(program.graphicSpec.objects.points.items.every(child =>
       child.properties.opacity === 0.72 &&
       child.properties.fill === "#2563eb" &&
       child.properties.stroke === "#ffffff" &&
@@ -105,13 +105,13 @@ test("keeps path shapes incomplete until position and size are all available", (
     .encodeY({ field: "value" })
     .encodeRadius({ value: 3 });
 
-  assert.deepEqual(withX.graphicSpec.objects.point.children[0], {
+  assert.deepEqual(withX.graphicSpec.objects.point.items[0], {
     id: "point:0",
     type: "path",
     properties: { fill: "#4c78a8" }
   });
   assert.equal(
-    complete.graphicSpec.objects.point.children[0].properties.commands.at(-1).op,
+    complete.graphicSpec.objects.point.items[0].properties.commands.at(-1).op,
     "Z"
   );
 });

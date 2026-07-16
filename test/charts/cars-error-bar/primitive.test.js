@@ -46,7 +46,7 @@ test("authors the rule geometry gate with raw graphical primitives", () => {
   );
   for (const rule of values.rules) {
     assert.deepEqual(
-      program.graphicSpec.objects[rule.id].children[0].properties,
+      program.graphicSpec.objects[rule.id].items[0].properties,
       {
         x1: rule.x1,
         y1: rule.y1,
@@ -158,7 +158,7 @@ test("stores complete main rules and fixed caps in declared order", () => {
     ["errorBarUpperCap", values.upperCaps]
   ]) {
     assert.deepEqual(
-      program.graphicSpec.objects[id].children.map(child => child.properties),
+      program.graphicSpec.objects[id].items.map(child => child.properties),
       expected.map(line => ({
         ...line,
         stroke: ERROR_BAR_COLOR,
@@ -242,7 +242,7 @@ test("authors an inferred error-bar overlay from an encoded point layer", () => 
     ["errorBarUpperCap", values.upperCaps]
   ]) {
     assert.deepEqual(
-      program.graphicSpec.objects[id].children.map(child => child.properties),
+      program.graphicSpec.objects[id].items.map(child => child.properties),
       expected.map(line => ({
         ...line,
         stroke: ERROR_BAR_COLOR,
@@ -281,7 +281,7 @@ test("authors horizontal x/x2 intervals with vertical fixed caps", () => {
     ["errorBarUpperCap", values.upperCaps]
   ]) {
     assert.deepEqual(
-      program.graphicSpec.objects[id].children.map(child => child.properties),
+      program.graphicSpec.objects[id].items.map(child => child.properties),
       expected.map(line => ({
         ...line,
         stroke: ERROR_BAR_COLOR,
@@ -323,7 +323,7 @@ test("authors custom cap size and one constant appearance across all rules", () 
     ["errorBarUpperCap", values.upperCaps]
   ]) {
     assert.deepEqual(
-      program.graphicSpec.objects[id].children.map(child => child.properties),
+      program.graphicSpec.objects[id].items.map(child => child.properties),
       expected.map(line => ({
         ...line,
         stroke: ERROR_BAR_VARIANT_STYLE.stroke,

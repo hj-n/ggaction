@@ -55,7 +55,7 @@ test("encodes an ordinal bar x field with the shortest valid call", () => {
     paddingInner: 0,
     paddingOuter: 0
   });
-  assert.deepEqual(program.graphicSpec.objects.bars.children, []);
+  assert.deepEqual(program.graphicSpec.objects.bars.items, []);
   assert.equal(before.semanticSpec.layers[0].encoding, undefined);
 
   const node = program.trace.children.at(-1);

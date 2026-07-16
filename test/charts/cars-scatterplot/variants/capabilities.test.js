@@ -64,10 +64,10 @@ test("authors mirrored axes and fixed-decimal labels as raw primitives", () => {
   const { bounds } = values.baseline;
   const xLine = program.graphicSpec.objects.xAxisLine.properties;
   const yLine = program.graphicSpec.objects.yAxisLine.properties;
-  const xTicks = program.graphicSpec.objects.xAxisTicks.children;
-  const yTicks = program.graphicSpec.objects.yAxisTicks.children;
-  const xLabels = program.graphicSpec.objects.xAxisLabels.children;
-  const yLabels = program.graphicSpec.objects.yAxisLabels.children;
+  const xTicks = program.graphicSpec.objects.xAxisTicks.items;
+  const yTicks = program.graphicSpec.objects.yAxisTicks.items;
+  const xLabels = program.graphicSpec.objects.xAxisLabels.items;
+  const yLabels = program.graphicSpec.objects.yAxisLabels.items;
 
   assert.deepEqual(bounds, { left: 30, right: 550, top: 80, bottom: 370 });
   assert.deepEqual([xLine.x1, xLine.y1, xLine.x2, xLine.y2], [30, 80, 550, 80]);
@@ -106,8 +106,8 @@ test("matches the approved mirrored-axis primitive with public guides", () => {
 test("derives reversed positions without changing the baseline domain", () => {
   const values = createScaleReversePrimitiveValues(cars);
   const program = createScaleReversePrimitives(cars);
-  const points = program.graphicSpec.objects.points.children;
-  const labels = program.graphicSpec.objects.xAxisLabels.children;
+  const points = program.graphicSpec.objects.points.items;
+  const labels = program.graphicSpec.objects.xAxisLabels.items;
 
   assert.equal(values.x.every((value, index) =>
     value + values.baseline.x[index] ===
@@ -132,7 +132,7 @@ test("derives reversed positions without changing the baseline domain", () => {
 test("materializes the constant diamond as equal-area concrete paths", () => {
   const values = createDiamondPrimitiveValues(cars);
   const program = createPointShapeDiamondPrimitives(cars);
-  const points = program.graphicSpec.objects.points.children;
+  const points = program.graphicSpec.objects.points.items;
 
   assert.equal(program.graphicSpec.objects.points.type, "collection");
   assert.equal(points.length, 392);
@@ -144,15 +144,15 @@ test("materializes the constant diamond as equal-area concrete paths", () => {
     ),
     true
   );
-  assert.deepEqual(points[0].properties, values.children[0].properties);
+  assert.deepEqual(points[0].properties, values.items[0].properties);
 });
 
 test("builds one normalized symbol for every planned point shape", () => {
   const values = createShapeVocabularyPrimitiveValues(cars);
   const program = createShapeVocabularyPrimitives(cars);
-  const points = program.graphicSpec.objects.points.children;
-  const symbols = program.graphicSpec.objects.seriesLegendSymbolPoints.children;
-  const labels = program.graphicSpec.objects.seriesLegendLabels.children;
+  const points = program.graphicSpec.objects.points.items;
+  const symbols = program.graphicSpec.objects.seriesLegendSymbolPoints.items;
+  const labels = program.graphicSpec.objects.seriesLegendLabels.items;
 
   assert.deepEqual(values.shapes, POINT_SHAPES);
   assert.equal(values.rows.length, 12);
@@ -179,13 +179,13 @@ test("applies set2 colors consistently to points and a color-only legend", () =>
     candidate.id === "color"
   );
   const pointColors = new Set(
-    program.graphicSpec.objects.points.children.map(point =>
+    program.graphicSpec.objects.points.items.map(point =>
       point.properties.fill
     )
   );
-  const symbolColors = program.graphicSpec.objects.colorLegendSymbols.children
+  const symbolColors = program.graphicSpec.objects.colorLegendSymbols.items
     .map(symbol => symbol.properties.fill);
-  const labels = program.graphicSpec.objects.colorLegendLabels.children
+  const labels = program.graphicSpec.objects.colorLegendLabels.items
     .map(label => label.properties.text);
 
   assert.deepEqual(scale.domain, ["USA", "Japan", "Europe"]);
@@ -258,7 +258,7 @@ test("authors the encoding-reassignment target as concrete primitive state", () 
   const values = createEncodingReassignmentPrimitiveValues(cars);
   const program = createEncodingReassignmentPrimitives(cars);
   const layer = program.semanticSpec.layers[0];
-  const children = program.graphicSpec.objects.points.children;
+  const children = program.graphicSpec.objects.points.items;
 
   assert.equal(values.rows.length, 392);
   assert.deepEqual(values.xDomain, [68, 455]);
@@ -283,13 +283,13 @@ test("authors the encoding-reassignment target as concrete primitive state", () 
     "circle", "rect", "path"
   ]));
   assert.deepEqual(
-    program.graphicSpec.objects.xAxisLabels.children.map(
+    program.graphicSpec.objects.xAxisLabels.items.map(
       child => child.properties.text
     ),
     ["100", "200", "300", "400"]
   );
   assert.deepEqual(
-    program.graphicSpec.objects.yAxisLabels.children.map(
+    program.graphicSpec.objects.yAxisLabels.items.map(
       child => child.properties.text
     ),
     ["10", "15", "20"]
@@ -301,10 +301,10 @@ test("authors the encoding-reassignment target as concrete primitive state", () 
 test("materializes quantitative color as concrete points and a gradient legend", () => {
   const values = createContinuousColorPrimitiveValues(cars);
   const program = createContinuousColorPrimitives(cars);
-  const points = program.graphicSpec.objects.points.children;
-  const strips = program.graphicSpec.objects.colorGradientStrips.children;
-  const ticks = program.graphicSpec.objects.colorGradientTicks.children;
-  const labels = program.graphicSpec.objects.colorGradientLabels.children;
+  const points = program.graphicSpec.objects.points.items;
+  const strips = program.graphicSpec.objects.colorGradientStrips.items;
+  const ticks = program.graphicSpec.objects.colorGradientTicks.items;
+  const labels = program.graphicSpec.objects.colorGradientLabels.items;
   const scale = program.semanticSpec.scales.find(candidate =>
     candidate.id === "color"
   );
@@ -338,9 +338,9 @@ test("materializes field opacity with ascending concrete legend samples", () => 
   const values = createFieldOpacityPrimitiveValues(cars);
   const program = createFieldOpacityPrimitives(cars);
   const layer = program.semanticSpec.layers[0];
-  const points = program.graphicSpec.objects.points.children;
-  const symbols = program.graphicSpec.objects.opacityLegendSymbols.children;
-  const labels = program.graphicSpec.objects.opacityLegendLabels.children;
+  const points = program.graphicSpec.objects.points.items;
+  const symbols = program.graphicSpec.objects.opacityLegendSymbols.items;
+  const labels = program.graphicSpec.objects.opacityLegendLabels.items;
   const scale = program.semanticSpec.scales.find(candidate =>
     candidate.id === "opacity"
   );

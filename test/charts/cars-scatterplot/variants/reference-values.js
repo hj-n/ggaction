@@ -227,7 +227,7 @@ export function createDiamondPrimitiveValues(cars) {
   const area = Math.PI * 3 ** 2;
   return Object.freeze({
     baseline,
-    children: Object.freeze(baseline.x.map((x, index) =>
+    items: Object.freeze(baseline.x.map((x, index) =>
       createShapeGraphic("diamond", {
         x,
         y: baseline.y[index],
@@ -270,7 +270,7 @@ export function createShapeVocabularyPrimitiveValues(cars) {
     baseline,
     rows: Object.freeze(selected.map(item => item.row)),
     shapes: POINT_SHAPES,
-    children: Object.freeze(selected.map(item =>
+    items: Object.freeze(selected.map(item =>
       createShapeGraphic(item.shape, {
         x: baseline.x[item.index],
         y: baseline.y[item.index],
@@ -513,7 +513,7 @@ export function createEncodingReassignmentPrimitiveValues(cars) {
         [baseline.bounds.bottom, baseline.bounds.top]
       )))
     }),
-    children: Object.freeze(rows.map((row, index) =>
+    items: Object.freeze(rows.map((row, index) =>
       createShapeGraphic(shapeByValue.get(row.Origin), {
         x: x[index],
         y: y[index],

@@ -28,8 +28,8 @@ function groupedBars() {
 test("creates an inferred right-side grouped bar legend", () => {
   const before = groupedBars();
   const program = before.createLegend();
-  const symbols = program.graphicSpec.objects.colorLegendSymbols.children;
-  const labels = program.graphicSpec.objects.colorLegendLabels.children;
+  const symbols = program.graphicSpec.objects.colorLegendSymbols.items;
+  const labels = program.graphicSpec.objects.colorLegendLabels.items;
 
   assert.deepEqual(program.semanticSpec.guides.legend.color, {
     scale: "color",
@@ -68,11 +68,11 @@ test("rematerializes grouped legend layout after Canvas edits", () => {
   const after = before.editCanvas({ width: 820 });
 
   assert.equal(
-    after.graphicSpec.objects.colorLegendSymbols.children[0].properties.x,
+    after.graphicSpec.objects.colorLegendSymbols.items[0].properties.x,
     710
   );
   assert.equal(
-    before.graphicSpec.objects.colorLegendSymbols.children[0].properties.x,
+    before.graphicSpec.objects.colorLegendSymbols.items[0].properties.x,
     610
   );
 });
@@ -84,7 +84,7 @@ test("supports grouped legend appearance and explicit bottom placement", () => {
   });
 
   assert.equal(
-    bordered.graphicSpec.objects.colorLegendSymbols.children[0].properties.width,
+    bordered.graphicSpec.objects.colorLegendSymbols.items[0].properties.width,
     16
   );
   assert.equal(

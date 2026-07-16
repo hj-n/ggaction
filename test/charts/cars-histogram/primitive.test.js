@@ -108,9 +108,9 @@ test("authors and renders the complete primitive cars histogram", () => {
   const bars = program.graphicSpec.objects.bars;
   assert.equal(bars.type, "rect");
   assert.equal(values.bins.length <= layout.maxBins, true);
-  assert.equal(bars.children.length, 15);
+  assert.equal(bars.items.length, 15);
   assert.deepEqual(
-    bars.children.map(child => child.properties),
+    bars.items.map(child => child.properties),
     values.rects.map(rect => ({
       x: rect.x,
       y: rect.y,
@@ -122,7 +122,7 @@ test("authors and renders the complete primitive cars histogram", () => {
     }))
   );
   assert.equal(
-    bars.children.every(child =>
+    bars.items.every(child =>
       [
         child.properties.x,
         child.properties.y,
@@ -143,20 +143,20 @@ test("authors and renders the complete primitive cars histogram", () => {
   }
 
   assert.deepEqual(
-    program.graphicSpec.objects.horizontalGridLines.children.map(
+    program.graphicSpec.objects.horizontalGridLines.items.map(
       child => child.properties.y1
     ),
     values.axes.y.ticks.map(tick => tick.position)
   );
   assert.equal(program.graphicSpec.objects.verticalGridLines, undefined);
   assert.deepEqual(
-    program.graphicSpec.objects.colorLegendLabels.children.map(
+    program.graphicSpec.objects.colorLegendLabels.items.map(
       child => child.properties.text
     ),
     ["USA", "Europe", "Japan"]
   );
   assert.deepEqual(
-    program.graphicSpec.objects.colorLegendSymbols.children.map(
+    program.graphicSpec.objects.colorLegendSymbols.items.map(
       child => child.properties.fill
     ),
     ["#4c78a8", "#f58518", "#e45756"]
@@ -229,7 +229,7 @@ test("authors and renders the complete primitive cars histogram", () => {
   );
   assert.deepEqual(program.actionStack, []);
   assert.equal(Object.isFrozen(program.semanticSpec.layers[0].encoding.x.bin), true);
-  assert.equal(Object.isFrozen(bars.children[0].properties), true);
+  assert.equal(Object.isFrozen(bars.items[0].properties), true);
 });
 
 test("owns histogram input and renders from graphicSpec alone", () => {
