@@ -23,7 +23,7 @@ encoding reassignment의 선행 조건으로 Phase 1의 첫 implementation slice
 - [x] Phase 8 — 신규 box-plot chart
 - [x] Phase 9 — mark selection, filtering과 highlighting
 - [x] Phase 10 — 신규 transformed-scale chart
-- [ ] Phase 11 — graphical hierarchy와 전체 Planned closeout
+- [x] Phase 11 — graphical hierarchy와 전체 Planned closeout
 
 ## 실행 원칙
 
