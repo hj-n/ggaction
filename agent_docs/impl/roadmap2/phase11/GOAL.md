@@ -21,7 +21,7 @@ Complete variant contract:
 - [x] Composite descendants and rematerialization attachment stability
 - [x] Gate B canonical public regression hierarchy approval
 - [x] Existing chart-family hierarchy migration and regression coverage
-- [ ] Architecture, contracts, extension docs and executable closeout audits
+- [x] Architecture, contracts, extension docs and executable closeout audits
 - [ ] Full local/remote verification and Roadmap 2 closeout
 
 ## Target hierarchy
