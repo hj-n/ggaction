@@ -27,7 +27,12 @@ function editGraphicProperties(program, target, properties) {
 }
 
 function addLineCollection(program, id, lines, style) {
-  let next = program.createGraphics({ id, type: "line", length: lines.length });
+  let next = program.createGraphics({
+    id,
+    parent: "plot-main",
+    type: "line",
+    length: lines.length
+  });
   return editGraphicProperties(next, id, {
     x1: lines.map(line => line.x1),
     y1: lines.map(line => line.y1),
@@ -42,8 +47,13 @@ function addLineCollection(program, id, lines, style) {
 
 function addTextCollection(program, id, { x, y, text, ...style }) {
   const next = Array.isArray(text)
-    ? program.createGraphics({ id, type: "text", length: text.length })
-    : program.createGraphics({ id, type: "text" });
+    ? program.createGraphics({
+        id,
+        parent: "plot-main",
+        type: "text",
+        length: text.length
+      })
+    : program.createGraphics({ id, parent: "plot-main", type: "text" });
   return editGraphicProperties(next, id, { x, y, text, ...style });
 }
 
@@ -55,7 +65,7 @@ function addAxes(program, axes, { xTitle, yTitle }) {
     next = editSemantic(next, `guide.axis.${channel}.scale`, channel);
     next = editSemantic(next, `guide.axis.${channel}.coordinate`, "main");
     next = editSemantic(next, `guide.axis.${channel}.title`, title);
-    next = next.createGraphics({ id: `${channel}AxisLine`, type: "line" });
+    next = next.createGraphics({ id: `${channel}AxisLine`, parent: "plot-main", type: "line" });
     next = editGraphicProperties(next, `${channel}AxisLine`, {
       ...axis.line,
       stroke: AXIS_COLOR,
@@ -63,6 +73,7 @@ function addAxes(program, axes, { xTitle, yTitle }) {
     });
     next = next.createGraphics({
       id: `${channel}AxisTicks`,
+      parent: "plot-main",
       type: "line",
       length: axis.values.length
     });

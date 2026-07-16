@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -310,7 +311,7 @@ test("reconciles wrapped collections and side rotations through edits", () => {
     child.properties.rotation === -Math.PI / 2
   ), true);
   assert.equal(
-    side.graphicSpec.order.filter(id => id === "chartTitle").length,
+    graphicDrawOrder(side).filter(id => id === "chartTitle").length,
     1
   );
 });

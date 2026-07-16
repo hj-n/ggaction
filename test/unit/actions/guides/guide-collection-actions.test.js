@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -66,8 +67,8 @@ test("automatically creates axes, grid, and a line-series legend", () => {
   assert.equal(program.semanticSpec.guides.grid.horizontal.scale, "y");
   assert.equal(program.graphicSpec.objects.seriesLegendTitle.type, "text");
   assert.equal(
-    program.graphicSpec.order.indexOf("horizontalGridLines") <
-      program.graphicSpec.order.indexOf("trends"),
+    graphicDrawOrder(program).indexOf("horizontalGridLines") <
+      graphicDrawOrder(program).indexOf("trends"),
     true
   );
 });
@@ -201,8 +202,8 @@ test("collects grouped bar axes, grid, and right legend", () => {
     610
   );
   assert.equal(
-    program.graphicSpec.order.indexOf("horizontalGridLines") <
-      program.graphicSpec.order.indexOf("bars"),
+    graphicDrawOrder(program).indexOf("horizontalGridLines") <
+      graphicDrawOrder(program).indexOf("bars"),
     true
   );
 });

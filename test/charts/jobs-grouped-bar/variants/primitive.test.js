@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -78,13 +79,13 @@ test("locks overlay bars to one shared band without automatic opacity", () => {
     true
   );
   assert.equal(
-    program.graphicSpec.order.indexOf("horizontalGridLines") <
-      program.graphicSpec.order.indexOf("bars"),
+    graphicDrawOrder(program).indexOf("horizontalGridLines") <
+      graphicDrawOrder(program).indexOf("bars"),
     true
   );
   assert.equal(
-    program.graphicSpec.order.indexOf("bars") <
-      program.graphicSpec.order.indexOf("colorLegendSymbols"),
+    graphicDrawOrder(program).indexOf("bars") <
+      graphicDrawOrder(program).indexOf("colorLegendSymbols"),
     true
   );
   assert.deepEqual(graphicProperties(program), expectedProperties(values));
@@ -395,8 +396,8 @@ test("locks horizontal stacked bar geometry and directional guides", () => {
   assert.equal(program.semanticSpec.guides.grid.horizontal, undefined);
   assert.equal(program.semanticSpec.guides.grid.vertical.scale, "x");
   assert.equal(
-    program.graphicSpec.order.indexOf("verticalGridLines") <
-      program.graphicSpec.order.indexOf("bars"),
+    graphicDrawOrder(program).indexOf("verticalGridLines") <
+      graphicDrawOrder(program).indexOf("bars"),
     true
   );
   assert.deepEqual(graphicProperties(program), expectedProperties(values));

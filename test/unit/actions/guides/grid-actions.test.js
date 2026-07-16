@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -32,8 +33,8 @@ test("creates a default horizontal grid behind the histogram mark", () => {
   assert.deepEqual(program.semanticSpec.guides.grid, {
     horizontal: { scale: "y", coordinate: "main" }
   });
-  assert.deepEqual(before.graphicSpec.order, ["canvas", "bars"]);
-  assert.deepEqual(program.graphicSpec.order, [
+  assert.deepEqual(graphicDrawOrder(before), ["canvas", "bars"]);
+  assert.deepEqual(graphicDrawOrder(program), [
     "canvas",
     "horizontalGridLines",
     "bars"
@@ -65,7 +66,7 @@ test("creates both directions with bin-aligned vertical grid values", () => {
   });
   const vertical = program.graphicSpec.objects.verticalGridLines;
 
-  assert.deepEqual(program.graphicSpec.order, [
+  assert.deepEqual(graphicDrawOrder(program), [
     "canvas",
     "horizontalGridLines",
     "verticalGridLines",
@@ -110,7 +111,7 @@ test("rematerializes grid geometry after Canvas edits", () => {
     after.graphicSpec.objects.verticalGridLines.items.at(-1).properties.x1,
     before.graphicSpec.objects.verticalGridLines.items.at(-1).properties.x1
   );
-  assert.deepEqual(before.graphicSpec.order, [
+  assert.deepEqual(graphicDrawOrder(before), [
     "canvas",
     "horizontalGridLines",
     "verticalGridLines",

@@ -170,6 +170,7 @@ export function createJobsGroupedBarPrimitives(
     .editGraphics({ target: "bars", property: "strokeWidth", value: 0.5 })
     .createGraphics({
       id: "horizontalGridLines",
+      parent: "plot-main",
       type: "line",
       length: horizontalGrid.length,
       before: "bars"
@@ -209,21 +210,21 @@ export function createJobsGroupedBarPrimitives(
       property: "strokeDash",
       value: horizontalGrid.map(() => [])
     })
-    .createGraphics({ id: "xAxisLine", type: "line" })
+    .createGraphics({ id: "xAxisLine", parent: "plot-main", type: "line" })
     .editGraphics({ target: "xAxisLine", property: "x1", value: xAxis.line.x1 })
     .editGraphics({ target: "xAxisLine", property: "y1", value: xAxis.line.y1 })
     .editGraphics({ target: "xAxisLine", property: "x2", value: xAxis.line.x2 })
     .editGraphics({ target: "xAxisLine", property: "y2", value: xAxis.line.y2 })
     .editGraphics({ target: "xAxisLine", property: "stroke", value: "#334155" })
     .editGraphics({ target: "xAxisLine", property: "strokeWidth", value: 1 })
-    .createGraphics({ id: "xAxisTicks", type: "line", length: xAxis.ticks.length })
+    .createGraphics({ id: "xAxisTicks", parent: "plot-main", type: "line", length: xAxis.ticks.length })
     .editGraphics({ target: "xAxisTicks", property: "x1", value: xTickPositions })
     .editGraphics({ target: "xAxisTicks", property: "y1", value: xAxis.line.y1 })
     .editGraphics({ target: "xAxisTicks", property: "x2", value: xTickPositions })
     .editGraphics({ target: "xAxisTicks", property: "y2", value: xAxis.line.y1 + 6 })
     .editGraphics({ target: "xAxisTicks", property: "stroke", value: "#64748b" })
     .editGraphics({ target: "xAxisTicks", property: "strokeWidth", value: 1 })
-    .createGraphics({ id: "xAxisLabels", type: "text", length: xAxis.ticks.length })
+    .createGraphics({ id: "xAxisLabels", parent: "plot-main", type: "text", length: xAxis.ticks.length })
     .editGraphics({ target: "xAxisLabels", property: "x", value: xTickPositions })
     .editGraphics({ target: "xAxisLabels", property: "y", value: xAxis.line.y1 + 18 })
     .editGraphics({
@@ -237,7 +238,7 @@ export function createJobsGroupedBarPrimitives(
     .editGraphics({ target: "xAxisLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "xAxisLabels", property: "textAlign", value: "center" })
     .editGraphics({ target: "xAxisLabels", property: "textBaseline", value: "top" })
-    .createGraphics({ id: "xAxisTitle", type: "text" })
+    .createGraphics({ id: "xAxisTitle", parent: "plot-main", type: "text" })
     .editGraphics({ target: "xAxisTitle", property: "x", value: xAxis.title.x })
     .editGraphics({ target: "xAxisTitle", property: "y", value: 432 })
     .editGraphics({ target: "xAxisTitle", property: "text", value: xAxis.title.text })
@@ -248,21 +249,21 @@ export function createJobsGroupedBarPrimitives(
     .editGraphics({ target: "xAxisTitle", property: "textAlign", value: "center" })
     .editGraphics({ target: "xAxisTitle", property: "textBaseline", value: "middle" })
     .editGraphics({ target: "xAxisTitle", property: "rotation", value: xAxis.title.rotation })
-    .createGraphics({ id: "yAxisLine", type: "line" })
+    .createGraphics({ id: "yAxisLine", parent: "plot-main", type: "line" })
     .editGraphics({ target: "yAxisLine", property: "x1", value: yAxis.line.x1 })
     .editGraphics({ target: "yAxisLine", property: "y1", value: yAxis.line.y2 })
     .editGraphics({ target: "yAxisLine", property: "x2", value: yAxis.line.x2 })
     .editGraphics({ target: "yAxisLine", property: "y2", value: yAxis.line.y1 })
     .editGraphics({ target: "yAxisLine", property: "stroke", value: "#334155" })
     .editGraphics({ target: "yAxisLine", property: "strokeWidth", value: 1 })
-    .createGraphics({ id: "yAxisTicks", type: "line", length: yAxis.ticks.length })
+    .createGraphics({ id: "yAxisTicks", parent: "plot-main", type: "line", length: yAxis.ticks.length })
     .editGraphics({ target: "yAxisTicks", property: "x1", value: yAxis.line.x1 - 6 })
     .editGraphics({ target: "yAxisTicks", property: "y1", value: yTickPositions })
     .editGraphics({ target: "yAxisTicks", property: "x2", value: yAxis.line.x1 })
     .editGraphics({ target: "yAxisTicks", property: "y2", value: yTickPositions })
     .editGraphics({ target: "yAxisTicks", property: "stroke", value: "#64748b" })
     .editGraphics({ target: "yAxisTicks", property: "strokeWidth", value: 1 })
-    .createGraphics({ id: "yAxisLabels", type: "text", length: yAxis.ticks.length })
+    .createGraphics({ id: "yAxisLabels", parent: "plot-main", type: "text", length: yAxis.ticks.length })
     .editGraphics({ target: "yAxisLabels", property: "x", value: yAxis.line.x1 - 12 })
     .editGraphics({ target: "yAxisLabels", property: "y", value: yTickPositions })
     .editGraphics({
@@ -276,7 +277,7 @@ export function createJobsGroupedBarPrimitives(
     .editGraphics({ target: "yAxisLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "yAxisLabels", property: "textAlign", value: "right" })
     .editGraphics({ target: "yAxisLabels", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "yAxisTitle", type: "text" })
+    .createGraphics({ id: "yAxisTitle", parent: "plot-main", type: "text" })
     .editGraphics({ target: "yAxisTitle", property: "x", value: 28 })
     .editGraphics({ target: "yAxisTitle", property: "y", value: yAxis.title.y })
     .editGraphics({ target: "yAxisTitle", property: "text", value: yAxis.title.text })
@@ -287,7 +288,7 @@ export function createJobsGroupedBarPrimitives(
     .editGraphics({ target: "yAxisTitle", property: "textAlign", value: "center" })
     .editGraphics({ target: "yAxisTitle", property: "textBaseline", value: "middle" })
     .editGraphics({ target: "yAxisTitle", property: "rotation", value: yAxis.title.rotation })
-    .createGraphics({ id: "colorLegendSymbols", type: "rect", length: legendItems.length })
+    .createGraphics({ id: "colorLegendSymbols", parent: "canvas", type: "rect", length: legendItems.length })
     .editGraphics({
       target: "colorLegendSymbols",
       property: "x",
@@ -315,7 +316,7 @@ export function createJobsGroupedBarPrimitives(
     })
     .editGraphics({ target: "colorLegendSymbols", property: "stroke", value: "white" })
     .editGraphics({ target: "colorLegendSymbols", property: "strokeWidth", value: 0.5 })
-    .createGraphics({ id: "colorLegendLabels", type: "text", length: legendItems.length })
+    .createGraphics({ id: "colorLegendLabels", parent: "canvas", type: "text", length: legendItems.length })
     .editGraphics({
       target: "colorLegendLabels",
       property: "x",
@@ -337,7 +338,7 @@ export function createJobsGroupedBarPrimitives(
     .editGraphics({ target: "colorLegendLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "colorLegendLabels", property: "textAlign", value: "left" })
     .editGraphics({ target: "colorLegendLabels", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "colorLegendTitle", type: "text" })
+    .createGraphics({ id: "colorLegendTitle", parent: "canvas", type: "text" })
     .editGraphics({ target: "colorLegendTitle", property: "x", value: values.legend.title.x })
     .editGraphics({ target: "colorLegendTitle", property: "y", value: values.legend.title.y })
     .editGraphics({ target: "colorLegendTitle", property: "text", value: values.legend.title.text })

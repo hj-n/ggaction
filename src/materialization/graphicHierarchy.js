@@ -2,6 +2,7 @@ import {
   findGraphicParent,
   graphicSiblings
 } from "../grammar/schemas/graphicTree.js";
+import { findDataset } from "../selectors/datasets.js";
 
 export const CANVAS_GRAPHIC_ID = "canvas";
 export const PLOT_GRAPHIC_ID = "plot-main";
@@ -39,7 +40,7 @@ export function resolvePlotGraphicPlacement(program, relative = {}) {
 }
 
 export function resolveMarkGraphicPlacement(program, { data, markType }) {
-  const dataset = program.semanticSpec.datasets.find(item => item.id === data);
+  const dataset = findDataset(program, data);
   const transform = dataset?.transform?.length === 1
     ? dataset.transform[0]
     : undefined;

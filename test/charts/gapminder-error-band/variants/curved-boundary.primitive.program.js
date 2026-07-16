@@ -51,6 +51,7 @@ function addBoundaryGraphics(program, {
   return program
     .createGraphics({
       id,
+      parent: "plot-main",
       type: "path",
       length: commands.length,
       after

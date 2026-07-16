@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -329,8 +330,8 @@ test("materializes quantitative color as concrete points and a gradient legend",
     labels.map(label => label.properties.text),
     ["8", "12.2", "16.4", "20.6", "24.8"]
   );
-  assert.equal(program.graphicSpec.order.indexOf("points") <
-    program.graphicSpec.order.indexOf("colorGradientStrips"), true);
+  assert.equal(graphicDrawOrder(program).indexOf("points") <
+    graphicDrawOrder(program).indexOf("colorGradientStrips"), true);
   assert.equal(program.graphicSpec.objects.canvas.properties.width, 760);
 });
 
@@ -374,7 +375,7 @@ test("materializes field opacity with ascending concrete legend samples", () => 
     labels.map(label => label.properties.text),
     ["8", "12.2", "16.4", "20.6", "24.8"]
   );
-  assert.equal(program.graphicSpec.order.indexOf("points") <
-    program.graphicSpec.order.indexOf("opacityLegendSymbols"), true);
+  assert.equal(graphicDrawOrder(program).indexOf("points") <
+    graphicDrawOrder(program).indexOf("opacityLegendSymbols"), true);
   assert.equal(program.graphicSpec.objects.canvas.properties.width, 760);
 });

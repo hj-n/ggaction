@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -87,8 +88,8 @@ test("supports explicit bottom layout, swatch style, and border", () => {
   assert.equal(symbols[0].properties.height, 10);
   assert.equal(symbols[0].properties.stroke, "#0f172a");
   assert.equal(
-    program.graphicSpec.order.indexOf("colorLegendBackground") <
-      program.graphicSpec.order.indexOf("colorLegendSymbols"),
+    graphicDrawOrder(program).indexOf("colorLegendBackground") <
+      graphicDrawOrder(program).indexOf("colorLegendSymbols"),
     true
   );
 });

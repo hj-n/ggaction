@@ -103,7 +103,7 @@ export function createNamedDashVocabularyPrimitives(cars) {
     .editSemantic({ property: "guide.legend.series.channels", value: ["strokeDash"] })
     .editSemantic({ property: "guide.legend.series.scales", value: ["strokeDash"] })
     .editSemantic({ property: "guide.legend.series.title", value: "Cylinders" })
-    .createGraphics({ id: "trends", type: "path", length: values.series.length })
+    .createGraphics({ id: "trends", parent: "plot-main", type: "path", length: values.series.length })
     .editGraphics({
       target: "trends",
       property: "commands",
@@ -112,7 +112,7 @@ export function createNamedDashVocabularyPrimitives(cars) {
     .editGraphics({ target: "trends", property: "stroke", value: "#4c78a8" })
     .editGraphics({ target: "trends", property: "strokeWidth", value: 2 })
     .editGraphics({ target: "trends", property: "strokeDash", value: dashes })
-    .createGraphics({ id: "seriesLegendSymbols", type: "line", length: values.keys.length })
+    .createGraphics({ id: "seriesLegendSymbols", parent: "canvas", type: "line", length: values.keys.length })
     .editGraphics({ target: "seriesLegendSymbols", property: "x1", value: values.legend.x1 })
     .editGraphics({ target: "seriesLegendSymbols", property: "y1", value: values.legend.itemY })
     .editGraphics({ target: "seriesLegendSymbols", property: "x2", value: values.legend.x2 })
@@ -120,7 +120,7 @@ export function createNamedDashVocabularyPrimitives(cars) {
     .editGraphics({ target: "seriesLegendSymbols", property: "stroke", value: "#4c78a8" })
     .editGraphics({ target: "seriesLegendSymbols", property: "strokeWidth", value: 2 })
     .editGraphics({ target: "seriesLegendSymbols", property: "strokeDash", value: dashes })
-    .createGraphics({ id: "seriesLegendLabels", type: "text", length: values.keys.length })
+    .createGraphics({ id: "seriesLegendLabels", parent: "canvas", type: "text", length: values.keys.length })
     .editGraphics({ target: "seriesLegendLabels", property: "x", value: values.legend.labelX })
     .editGraphics({ target: "seriesLegendLabels", property: "y", value: values.legend.itemY })
     .editGraphics({ target: "seriesLegendLabels", property: "text", value: values.keys.map(String) })
@@ -130,7 +130,7 @@ export function createNamedDashVocabularyPrimitives(cars) {
     .editGraphics({ target: "seriesLegendLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "seriesLegendLabels", property: "textAlign", value: "left" })
     .editGraphics({ target: "seriesLegendLabels", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "seriesLegendTitle", type: "text" })
+    .createGraphics({ id: "seriesLegendTitle", parent: "canvas", type: "text" })
     .editGraphics({ target: "seriesLegendTitle", property: "x", value: values.legend.titleX })
     .editGraphics({ target: "seriesLegendTitle", property: "y", value: values.legend.titleY })
     .editGraphics({ target: "seriesLegendTitle", property: "text", value: "Cylinders" })
@@ -177,7 +177,7 @@ export function createConstantDashPrimitives(cars) {
     .editSemantic({ property: "scale[originDash].domain", value: "auto" })
     .editSemantic({ property: "scale[originDash].range", value: "auto" })
     .editSemantic({ property: "coordinate[main].type", value: "cartesian" })
-    .createGraphics({ id: "trends", type: "path", length: 1 })
+    .createGraphics({ id: "trends", parent: "plot-main", type: "path", length: 1 })
     .editGraphics({ target: "trends", property: "commands", value: [values.series[0].commands] })
     .editGraphics({ target: "trends", property: "stroke", value: "#4c78a8" })
     .editGraphics({ target: "trends", property: "strokeWidth", value: 2 })
@@ -217,7 +217,7 @@ export function createGroupReassignmentPrimitives(cars) {
     .editSemantic({ property: "scale[y].nice", value: true })
     .editSemantic({ property: "scale[y].zero", value: false })
     .editSemantic({ property: "coordinate[main].type", value: "cartesian" })
-    .createGraphics({ id: "trends", type: "path", length: values.series.length })
+    .createGraphics({ id: "trends", parent: "plot-main", type: "path", length: values.series.length })
     .editGraphics({
       target: "trends",
       property: "commands",
@@ -276,7 +276,7 @@ export function createDashReassignmentPrimitives(cars) {
     .editSemantic({ property: "guide.legend.series.channels", value: ["strokeDash"] })
     .editSemantic({ property: "guide.legend.series.scales", value: ["strokeDash"] })
     .editSemantic({ property: "guide.legend.series.title", value: "Cylinders" })
-    .createGraphics({ id: "trends", type: "path", length: values.series.length })
+    .createGraphics({ id: "trends", parent: "plot-main", type: "path", length: values.series.length })
     .editGraphics({
       target: "trends",
       property: "commands",
@@ -285,7 +285,7 @@ export function createDashReassignmentPrimitives(cars) {
     .editGraphics({ target: "trends", property: "stroke", value: "#4c78a8" })
     .editGraphics({ target: "trends", property: "strokeWidth", value: 2 })
     .editGraphics({ target: "trends", property: "strokeDash", value: dashes })
-    .createGraphics({ id: "seriesLegendSymbols", type: "line", length: values.keys.length })
+    .createGraphics({ id: "seriesLegendSymbols", parent: "canvas", type: "line", length: values.keys.length })
     .editGraphics({ target: "seriesLegendSymbols", property: "x1", value: values.legend.x1 })
     .editGraphics({ target: "seriesLegendSymbols", property: "y1", value: values.legend.itemY })
     .editGraphics({ target: "seriesLegendSymbols", property: "x2", value: values.legend.x2 })
@@ -293,7 +293,7 @@ export function createDashReassignmentPrimitives(cars) {
     .editGraphics({ target: "seriesLegendSymbols", property: "stroke", value: "#4c78a8" })
     .editGraphics({ target: "seriesLegendSymbols", property: "strokeWidth", value: 2 })
     .editGraphics({ target: "seriesLegendSymbols", property: "strokeDash", value: dashes })
-    .createGraphics({ id: "seriesLegendLabels", type: "text", length: values.keys.length })
+    .createGraphics({ id: "seriesLegendLabels", parent: "canvas", type: "text", length: values.keys.length })
     .editGraphics({ target: "seriesLegendLabels", property: "x", value: values.legend.labelX })
     .editGraphics({ target: "seriesLegendLabels", property: "y", value: values.legend.itemY })
     .editGraphics({ target: "seriesLegendLabels", property: "text", value: values.keys.map(String) })
@@ -303,7 +303,7 @@ export function createDashReassignmentPrimitives(cars) {
     .editGraphics({ target: "seriesLegendLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "seriesLegendLabels", property: "textAlign", value: "left" })
     .editGraphics({ target: "seriesLegendLabels", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "seriesLegendTitle", type: "text" })
+    .createGraphics({ id: "seriesLegendTitle", parent: "canvas", type: "text" })
     .editGraphics({ target: "seriesLegendTitle", property: "x", value: values.legend.titleX })
     .editGraphics({ target: "seriesLegendTitle", property: "y", value: values.legend.titleY })
     .editGraphics({ target: "seriesLegendTitle", property: "text", value: "Cylinders" })

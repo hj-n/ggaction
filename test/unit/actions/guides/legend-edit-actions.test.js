@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -102,8 +103,8 @@ test("reconciles categorical symbol recipes without stale graphics", () => {
   assert.equal(program.graphicSpec.objects.seriesLegendSymbolPoints, undefined);
   assert.ok(program.graphicSpec.objects.seriesLegendSymbolSwatches);
   assert.equal(
-    program.graphicSpec.order.indexOf("seriesLegendSymbolSwatches") <
-      program.graphicSpec.order.indexOf("seriesLegendLabels"),
+    graphicDrawOrder(program).indexOf("seriesLegendSymbolSwatches") <
+      graphicDrawOrder(program).indexOf("seriesLegendLabels"),
     true
   );
 });

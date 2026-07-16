@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -90,7 +91,7 @@ test("authors the Gapminder vertical error band with raw primitives", () => {
     [0.2, 0.2, 0.2, 0.2, 0.2, 0.2]
   );
 
-  const order = program.graphicSpec.order;
+  const order = graphicDrawOrder(program);
   assert.ok(order.indexOf("horizontalGridLines") < order.indexOf("errorBand"));
   assert.ok(order.indexOf("errorBand") < order.indexOf("xAxisLine"));
   assert.ok(order.indexOf("errorBand") < order.indexOf("colorLegendSymbols"));

@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -179,7 +180,7 @@ test("authors and renders the complete primitive cars histogram", () => {
     program.graphicSpec.objects.chartSubtitle.properties.text,
     "by country"
   );
-  assert.deepEqual(program.graphicSpec.order, [
+  assert.deepEqual(graphicDrawOrder(program), [
     "canvas",
     "horizontalGridLines",
     "bars",

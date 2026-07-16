@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -137,7 +138,7 @@ test("authors and renders the complete primitive jobs grouped bar chart", () => 
     ),
     ["#4c78a8", "#f58518"]
   );
-  assert.deepEqual(program.graphicSpec.order, [
+  assert.deepEqual(graphicDrawOrder(program), [
     "canvas",
     "horizontalGridLines",
     "bars",

@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -88,8 +89,8 @@ test("supports grouped legend appearance and explicit bottom placement", () => {
     16
   );
   assert.equal(
-    bordered.graphicSpec.order.indexOf("colorLegendBackground") <
-      bordered.graphicSpec.order.indexOf("colorLegendSymbols"),
+    graphicDrawOrder(bordered).indexOf("colorLegendBackground") <
+      graphicDrawOrder(bordered).indexOf("colorLegendSymbols"),
     true
   );
   const bottom = groupedBars().createLegend({ position: "bottom" });

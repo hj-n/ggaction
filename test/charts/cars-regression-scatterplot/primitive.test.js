@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -168,11 +169,11 @@ test("authors and renders the complete primitive regression scatterplot", () => 
       strokeDash: []
     }))
   );
-  assert.deepEqual(program.graphicSpec.order, [
+  assert.deepEqual(graphicDrawOrder(program), [
     "canvas",
     "horizontalGridLines",
-    "points",
     "pointsRegressionBands",
+    "points",
     "pointsRegressionLines",
     "xAxisLine",
     "xAxisTicks",
@@ -200,9 +201,9 @@ test("authors and renders the complete primitive regression scatterplot", () => 
   const topLevelOps = new Set(program.trace.children.map(node => node.op));
   assert.deepEqual([...topLevelOps], [
     "createCanvas",
+    "createGraphics",
     "createData",
     "editSemantic",
-    "createGraphics",
     "editGraphics"
   ]);
   assert.equal(

@@ -14,7 +14,7 @@ const LOADERS = Object.freeze({
   jobs: loadJobs
 });
 
-const CURRENT_FLAT_ROOTS = Object.freeze({
+const EXPECTED_DRAW_ORDER = Object.freeze({
   "cars-scatterplot": [
     "canvas", "horizontalGridLines", "points",
     "xAxisLine", "xAxisTicks", "xAxisLabels", "xAxisTitle",
@@ -41,7 +41,7 @@ const CURRENT_FLAT_ROOTS = Object.freeze({
     "colorLegendSymbols", "colorLegendLabels", "colorLegendTitle"
   ],
   "cars-regression-scatterplot": [
-    "canvas", "horizontalGridLines", "points", "pointsRegressionBands",
+    "canvas", "horizontalGridLines", "pointsRegressionBands", "points",
     "pointsRegressionLines", "xAxisLine", "xAxisTicks", "xAxisLabels",
     "xAxisTitle", "yAxisLine", "yAxisTicks", "yAxisLabels", "yAxisTitle",
     "seriesLegendSymbolLines", "seriesLegendSymbolPoints",
@@ -78,10 +78,11 @@ const CURRENT_FLAT_ROOTS = Object.freeze({
     "chartTitle", "chartSubtitle"
   ],
   "gapminder-continuous-color-bars": [
-    "canvas", "horizontalGridLines", "bar", "colorGradientStrips",
+    "canvas", "horizontalGridLines", "bar",
     "xAxisLine", "xAxisTicks", "xAxisLabels", "xAxisTitle",
     "yAxisLine", "yAxisTicks", "yAxisLabels", "yAxisTitle",
-    "colorGradientTicks", "colorGradientLabels", "colorGradientTitle",
+    "colorGradientStrips", "colorGradientTicks", "colorGradientLabels",
+    "colorGradientTitle",
     "chartTitle", "chartSubtitle"
   ],
   "gapminder-discretized-color-scales": [
@@ -99,9 +100,10 @@ const CURRENT_FLAT_ROOTS = Object.freeze({
   ],
   "gapminder-transformed-scales": [
     "canvas", "horizontalGridLines", "verticalGridLines", "point",
-    "colorGradientStrips", "xAxisLine", "xAxisTicks", "xAxisLabels",
+    "xAxisLine", "xAxisTicks", "xAxisLabels",
     "xAxisTitle", "yAxisLine", "yAxisTicks", "yAxisLabels", "yAxisTitle",
-    "colorGradientTicks", "colorGradientLabels", "colorGradientTitle",
+    "colorGradientStrips", "colorGradientTicks", "colorGradientLabels",
+    "colorGradientTitle",
     "chartTitle", "chartSubtitle"
   ],
   "mark-selection-points": [
@@ -127,9 +129,14 @@ const CURRENT_FLAT_ROOTS = Object.freeze({
   ]
 });
 
-test("locks the complete pre-migration public graphic-root inventory", () => {
+function isCanvasOwned(id) {
+  return id.includes("Legend") || id.includes("Gradient") ||
+    id === "chartTitle" || id === "chartSubtitle";
+}
+
+test("locks the complete public graphic hierarchy inventory", () => {
   assert.deepEqual(
-    Object.keys(CURRENT_FLAT_ROOTS).sort(),
+    Object.keys(EXPECTED_DRAW_ORDER).sort(),
     PUBLIC_CHARTS.map(chart => chart.id).sort()
   );
 
@@ -137,12 +144,26 @@ test("locks the complete pre-migration public graphic-root inventory", () => {
     const program = chart.createProgram(LOADERS[chart.data]());
     const drawOrder = [];
     walkGraphicDrawOrder(program.graphicSpec, ({ id }) => drawOrder.push(id));
+    const expected = EXPECTED_DRAW_ORDER[chart.id];
+    const descendants = expected.slice(1);
+    const canvasChildren = [
+      "plot-main",
+      ...descendants.filter(isCanvasOwned)
+    ];
+    const plotChildren = descendants.filter(id => !isCanvasOwned(id));
 
-    assert.deepEqual(program.graphicSpec.order, CURRENT_FLAT_ROOTS[chart.id]);
-    assert.deepEqual(drawOrder, CURRENT_FLAT_ROOTS[chart.id]);
+    assert.deepEqual(program.graphicSpec.order, ["canvas"]);
+    assert.deepEqual(program.graphicSpec.objects.canvas.children, canvasChildren);
+    assert.deepEqual(program.graphicSpec.objects["plot-main"].children, plotChildren);
+    assert.deepEqual(drawOrder, ["canvas", "plot-main", ...descendants]);
     assert.equal(program.graphicSpec.objects.canvas.type, "canvas");
-    for (const id of program.graphicSpec.order) {
-      assert.equal(findGraphicParent(program.graphicSpec, id), undefined);
+    assert.equal(findGraphicParent(program.graphicSpec, "canvas"), undefined);
+    assert.equal(findGraphicParent(program.graphicSpec, "plot-main").id, "canvas");
+    for (const id of plotChildren) {
+      assert.equal(findGraphicParent(program.graphicSpec, id).id, "plot-main");
+    }
+    for (const id of canvasChildren.slice(1)) {
+      assert.equal(findGraphicParent(program.graphicSpec, id).id, "canvas");
     }
   }
 });

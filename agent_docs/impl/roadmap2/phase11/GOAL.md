@@ -20,7 +20,7 @@ Complete variant contract:
 - [x] Grid, axis, legend and title ownership and draw-order integration
 - [x] Composite descendants and rematerialization attachment stability
 - [x] Gate B canonical public regression hierarchy approval
-- [ ] Existing chart-family hierarchy migration and regression coverage
+- [x] Existing chart-family hierarchy migration and regression coverage
 - [ ] Architecture, contracts, extension docs and executable closeout audits
 - [ ] Full local/remote verification and Roadmap 2 closeout
 

@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -182,8 +183,8 @@ test("materializes optional continuous legend backgrounds before content", () =>
       border: { background: "white", padding: 8 }
     });
   assert.equal(
-    gradient.graphicSpec.order.indexOf("colorGradientBackground") <
-      gradient.graphicSpec.order.indexOf("colorGradientStrips"),
+    graphicDrawOrder(gradient).indexOf("colorGradientBackground") <
+      graphicDrawOrder(gradient).indexOf("colorGradientStrips"),
     true
   );
   assert.equal(
@@ -195,8 +196,8 @@ test("materializes optional continuous legend backgrounds before content", () =>
     .encodeOpacity({ field: "value" })
     .createLegend({ channels: ["opacity"], border: true });
   assert.equal(
-    opacity.graphicSpec.order.indexOf("opacityLegendBackground") <
-      opacity.graphicSpec.order.indexOf("opacityLegendSymbols"),
+    graphicDrawOrder(opacity).indexOf("opacityLegendBackground") <
+      graphicDrawOrder(opacity).indexOf("opacityLegendSymbols"),
     true
   );
 });

@@ -1,4 +1,5 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
+import { link, mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import {
@@ -39,10 +40,12 @@ export async function ensureRoadmap2VariantMetadata(
     return Object.freeze({ file, metadata: existing });
   }
 
+  const temporary = `${file}.${process.pid}.${randomUUID()}.tmp`;
+  await writeFile(temporary, `${JSON.stringify(expected, null, 2)}\n`, {
+    flag: "wx"
+  });
   try {
-    await writeFile(file, `${JSON.stringify(expected, null, 2)}\n`, {
-      flag: "wx"
-    });
+    await link(temporary, file);
   } catch (error) {
     if (error.code !== "EEXIST") throw error;
     const raced = await readMetadata(file, expected);
@@ -51,6 +54,8 @@ export async function ensureRoadmap2VariantMetadata(
         `Conflicting Roadmap 2 metadata for ${expected.chart}/${expected.variant}.`
       );
     }
+  } finally {
+    await unlink(temporary);
   }
 
   return Object.freeze({ file, metadata: expected });

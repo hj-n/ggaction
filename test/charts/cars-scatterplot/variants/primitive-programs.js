@@ -309,7 +309,7 @@ export function createShapeVocabularyPrimitives(cars) {
       property: "items",
       value: values.items
     })
-    .createGraphics({ id: "seriesLegendSymbolPoints", type: "collection" })
+    .createGraphics({ id: "seriesLegendSymbolPoints", parent: "canvas", type: "collection" })
     .editGraphics({
       target: "seriesLegendSymbolPoints",
       property: "items",
@@ -317,6 +317,7 @@ export function createShapeVocabularyPrimitives(cars) {
     })
     .createGraphics({
       id: "seriesLegendLabels",
+      parent: "canvas",
       type: "text",
       length: values.legend.labels.length
     })
@@ -349,7 +350,7 @@ export function createShapeVocabularyPrimitives(cars) {
       property: "textBaseline",
       value: "middle"
     })
-    .createGraphics({ id: "seriesLegendTitle", type: "text" })
+    .createGraphics({ id: "seriesLegendTitle", parent: "canvas", type: "text" })
     .editGraphics({
       target: "seriesLegendTitle",
       property: "x",
@@ -418,6 +419,7 @@ export function createCategoricalPalettePrimitives(cars) {
     .editGraphics({ target: "points", property: "fill", value: values.fill })
     .createGraphics({
       id: "colorLegendSymbols",
+      parent: "canvas",
       type: "rect",
       length: values.legend.symbols.length
     })
@@ -450,6 +452,7 @@ export function createCategoricalPalettePrimitives(cars) {
     })
     .createGraphics({
       id: "colorLegendLabels",
+      parent: "canvas",
       type: "text",
       length: values.legend.labels.length
     })
@@ -478,7 +481,7 @@ export function createCategoricalPalettePrimitives(cars) {
       property: "textBaseline",
       value: "middle"
     })
-    .createGraphics({ id: "colorLegendTitle", type: "text" })
+    .createGraphics({ id: "colorLegendTitle", parent: "canvas", type: "text" })
     .editGraphics({
       target: "colorLegendTitle",
       property: "x",
@@ -534,9 +537,9 @@ export function createContinuousColorPrimitives(cars) {
     .editGraphics({ target: "points", property: "fill", value: values.fill })
     .createGraphics({
       id: "colorGradientStrips",
+      parent: "canvas",
       type: "rect",
-      length: strips.length,
-      after: "points"
+      length: strips.length
     })
     .editGraphics({
       target: "colorGradientStrips",
@@ -575,6 +578,7 @@ export function createContinuousColorPrimitives(cars) {
     })
     .createGraphics({
       id: "colorGradientTicks",
+      parent: "canvas",
       type: "line",
       length: ticks.length
     })
@@ -602,11 +606,12 @@ export function createContinuousColorPrimitives(cars) {
     .editGraphics({ target: "colorGradientTicks", property: "strokeWidth", value: 1 })
     .createGraphics({
       id: "colorGradientLabels",
+      parent: "canvas",
       type: "text",
       length: values.legend.labels.length
     });
   program = editLegendText(program, "colorGradientLabels", values.legend.labels)
-    .createGraphics({ id: "colorGradientTitle", type: "text" });
+    .createGraphics({ id: "colorGradientTitle", parent: "canvas", type: "text" });
 
   return editLegendTitle(program, "colorGradientTitle", values.legend.title);
 }
@@ -643,9 +648,9 @@ export function createFieldOpacityPrimitives(cars) {
     .editGraphics({ target: "points", property: "opacity", value: values.opacity })
     .createGraphics({
       id: "opacityLegendSymbols",
+      parent: "canvas",
       type: "circle",
-      length: symbols.length,
-      after: "points"
+      length: symbols.length
     })
     .editGraphics({
       target: "opacityLegendSymbols",
@@ -674,11 +679,12 @@ export function createFieldOpacityPrimitives(cars) {
     })
     .createGraphics({
       id: "opacityLegendLabels",
+      parent: "canvas",
       type: "text",
       length: values.legend.labels.length
     });
   program = editLegendText(program, "opacityLegendLabels", values.legend.labels)
-    .createGraphics({ id: "opacityLegendTitle", type: "text" });
+    .createGraphics({ id: "opacityLegendTitle", parent: "canvas", type: "text" });
 
   return editLegendTitle(program, "opacityLegendTitle", values.legend.title);
 }

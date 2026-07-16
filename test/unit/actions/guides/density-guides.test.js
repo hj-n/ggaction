@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -51,7 +52,7 @@ test("creates density axes, two grids, and a top area legend", () => {
     program.trace.children.at(-1).children.map(child => child.op),
     ["createAxes", "createGrid", "createLegend"]
   );
-  assert.deepEqual(program.graphicSpec.order, [
+  assert.deepEqual(graphicDrawOrder(program), [
     "canvas",
     "horizontalGridLines",
     "verticalGridLines",
@@ -87,7 +88,7 @@ test("keeps createTitle separate and appends it after every guide", () => {
     subtitle: "By Origin (cars dataset)"
   });
 
-  assert.deepEqual(program.graphicSpec.order.slice(-5), [
+  assert.deepEqual(graphicDrawOrder(program).slice(-5), [
     "colorLegendSymbols",
     "colorLegendLabels",
     "colorLegendTitle",

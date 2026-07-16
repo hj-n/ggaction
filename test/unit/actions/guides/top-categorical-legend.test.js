@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -135,8 +136,8 @@ test("rematerializes a bordered top legend after Canvas edits", () => {
     after.graphicSpec.objects.colorLegendBackground.properties.x,
     before.graphicSpec.objects.colorLegendBackground.properties.x
   );
-  assert.equal(after.graphicSpec.order.indexOf("colorLegendBackground") <
-    after.graphicSpec.order.indexOf("colorLegendSymbols"), true);
+  assert.equal(graphicDrawOrder(after).indexOf("colorLegendBackground") <
+    graphicDrawOrder(after).indexOf("colorLegendSymbols"), true);
 });
 
 test("validates top layout vocabulary and available margin", () => {

@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -129,7 +130,7 @@ test("authors the approved-target step geometry with raw primitive commands", ()
   renderCarsLineChartPrimitives(program, context);
 
   assert.deepEqual(program.semanticSpec, baseline.semanticSpec);
-  assert.deepEqual(program.graphicSpec.order, baseline.graphicSpec.order);
+  assert.deepEqual(graphicDrawOrder(program), graphicDrawOrder(baseline));
   assert.deepEqual(withoutTrends(program.graphicSpec), withoutTrends(baseline.graphicSpec));
   assert.deepEqual(
     program.graphicSpec.objects.trends.items.map(
@@ -159,7 +160,7 @@ test("authors the approved-target monotone edit with cubic commands", () => {
   renderCarsLineChartPrimitives(program, context);
 
   assert.deepEqual(program.semanticSpec, baseline.semanticSpec);
-  assert.deepEqual(program.graphicSpec.order, baseline.graphicSpec.order);
+  assert.deepEqual(graphicDrawOrder(program), graphicDrawOrder(baseline));
   assert.deepEqual(withoutTrends(program.graphicSpec), withoutTrends(baseline.graphicSpec));
   assert.deepEqual(
     program.graphicSpec.objects.trends.items.map(
@@ -211,7 +212,7 @@ test("matches approved curve primitives with user-facing action flows", () => {
 
     assert.deepEqual(publicProgram.semanticSpec, primitive.semanticSpec);
     assert.deepEqual(publicProgram.graphicSpec, primitive.graphicSpec);
-    assert.deepEqual(publicProgram.graphicSpec.order, primitive.graphicSpec.order);
+    assert.deepEqual(graphicDrawOrder(publicProgram), graphicDrawOrder(primitive));
     assert.deepEqual(publicContext.calls, primitiveContext.calls);
     assert.equal(publicProgram.trace.children.at(-1).op, finalAction);
     assert.deepEqual(publicProgram.actionStack, []);
@@ -275,7 +276,7 @@ test("authors a scale-free constant dotted line after legend cleanup", () => {
     ["x", "y", "originDash"]
   );
   assert.equal(program.semanticSpec.guides.legend, undefined);
-  assert.deepEqual(program.graphicSpec.order, ["canvas", "trends"]);
+  assert.deepEqual(graphicDrawOrder(program), ["canvas", "trends"]);
   assert.deepEqual(
     program.graphicSpec.objects.trends.items[0].properties.strokeDash,
     [1, 3]
@@ -380,7 +381,7 @@ test("matches approved dash and reassignment primitives with public actions", ()
 
     assert.deepEqual(publicProgram.semanticSpec, primitive.semanticSpec);
     assert.deepEqual(publicProgram.graphicSpec, primitive.graphicSpec);
-    assert.deepEqual(publicProgram.graphicSpec.order, primitive.graphicSpec.order);
+    assert.deepEqual(graphicDrawOrder(publicProgram), graphicDrawOrder(primitive));
     assert.deepEqual(publicContext.calls, primitiveContext.calls);
     assert.equal(publicProgram.trace.children.at(-1).op, finalAction);
     assert.deepEqual(publicProgram.actionStack, []);
@@ -509,7 +510,7 @@ test("matches approved aggregate primitives with public programs", () => {
 
     assert.deepEqual(publicProgram.semanticSpec, primitive.semanticSpec);
     assert.deepEqual(publicProgram.graphicSpec, primitive.graphicSpec);
-    assert.deepEqual(publicProgram.graphicSpec.order, primitive.graphicSpec.order);
+    assert.deepEqual(graphicDrawOrder(publicProgram), graphicDrawOrder(primitive));
     assert.deepEqual(publicContext.calls, primitiveContext.calls);
     assert.deepEqual(publicProgram.actionStack, []);
   }
@@ -542,7 +543,7 @@ test("authors top and bottom layered legend primitives in declared order", () =>
     const values = createCompositeLegendPrimitiveValues(cars, { position });
     const context = createMockCanvasContext();
     renderCarsLineChartPrimitives(program, context);
-    const order = program.graphicSpec.order;
+    const order = graphicDrawOrder(program);
     const background = order.indexOf("seriesLegendBackground");
     const lines = order.indexOf("seriesLegendSymbolLines");
     const points = order.indexOf("seriesLegendSymbolPoints");
@@ -618,7 +619,7 @@ test("matches approved composite legend primitives with public actions", () => {
 
     assert.deepEqual(publicProgram.semanticSpec, primitive.semanticSpec);
     assert.deepEqual(publicProgram.graphicSpec, primitive.graphicSpec);
-    assert.deepEqual(publicProgram.graphicSpec.order, primitive.graphicSpec.order);
+    assert.deepEqual(graphicDrawOrder(publicProgram), graphicDrawOrder(primitive));
     assert.deepEqual(publicContext.calls, primitiveContext.calls);
     assert.equal(publicProgram.trace.children.at(-1).op, "createTitle");
     assert.deepEqual(publicProgram.actionStack, []);

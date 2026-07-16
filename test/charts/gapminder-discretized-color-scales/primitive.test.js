@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -48,13 +49,13 @@ test("authors each discretized color target with primitives only", () => {
     );
     assert.deepEqual(new Set(fills), new Set(DISCRETIZED_COLORS));
     assert.equal(
-      program.graphicSpec.order.indexOf("horizontalGridLines") <
-        program.graphicSpec.order.indexOf("point"),
+      graphicDrawOrder(program).indexOf("horizontalGridLines") <
+        graphicDrawOrder(program).indexOf("point"),
       true
     );
     assert.equal(
-      program.graphicSpec.order.indexOf("point") <
-        program.graphicSpec.order.indexOf("colorLegendSymbols"),
+      graphicDrawOrder(program).indexOf("point") <
+        graphicDrawOrder(program).indexOf("colorLegendSymbols"),
       true
     );
     assert.equal(

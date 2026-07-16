@@ -87,11 +87,13 @@ export function createGapminderDiscretizedColorPrimitives(gapminder, type) {
     .editSemantic({ property: "title.text", value: title.text })
     .editSemantic({ property: "title.subtitle", value: title.subtitle })
     .createGraphics({ id: "canvas", type: "canvas" })
+    .createGraphics({ id: "plot-main", type: "collection", parent: "canvas" })
     .editGraphics({ target: "canvas", property: "width", value: width })
     .editGraphics({ target: "canvas", property: "height", value: height })
     .editGraphics({ target: "canvas", property: "background", value: "white" })
     .createGraphics({
       id: "horizontalGridLines",
+      parent: "plot-main",
       type: "line",
       length: yPositions.length
     })
@@ -108,6 +110,7 @@ export function createGapminderDiscretizedColorPrimitives(gapminder, type) {
     })
     .createGraphics({
       id: "verticalGridLines",
+      parent: "plot-main",
       type: "line",
       length: xPositions.length
     })
@@ -122,7 +125,7 @@ export function createGapminderDiscretizedColorPrimitives(gapminder, type) {
       property: "strokeDash",
       value: xPositions.map(() => [])
     })
-    .createGraphics({ id: "point", type: "circle", length: rows.length })
+    .createGraphics({ id: "point", parent: "plot-main", type: "circle", length: rows.length })
     .editGraphics({ target: "point", property: "x", value: points.map(point => point.x) })
     .editGraphics({ target: "point", property: "y", value: points.map(point => point.y) })
     .editGraphics({ target: "point", property: "radius", value: 4 })
@@ -130,14 +133,14 @@ export function createGapminderDiscretizedColorPrimitives(gapminder, type) {
     .editGraphics({ target: "point", property: "opacity", value: 0.72 })
     .editGraphics({ target: "point", property: "stroke", value: "#ffffff" })
     .editGraphics({ target: "point", property: "strokeWidth", value: 0.6 })
-    .createGraphics({ id: "xAxisLine", type: "line" })
+    .createGraphics({ id: "xAxisLine", parent: "plot-main", type: "line" })
     .editGraphics({ target: "xAxisLine", property: "x1", value: bounds.left })
     .editGraphics({ target: "xAxisLine", property: "y1", value: bounds.bottom })
     .editGraphics({ target: "xAxisLine", property: "x2", value: bounds.right })
     .editGraphics({ target: "xAxisLine", property: "y2", value: bounds.bottom })
     .editGraphics({ target: "xAxisLine", property: "stroke", value: AXIS })
     .editGraphics({ target: "xAxisLine", property: "strokeWidth", value: 1 })
-    .createGraphics({ id: "yAxisLine", type: "line" })
+    .createGraphics({ id: "yAxisLine", parent: "plot-main", type: "line" })
     .editGraphics({ target: "yAxisLine", property: "x1", value: bounds.left })
     .editGraphics({ target: "yAxisLine", property: "y1", value: bounds.bottom })
     .editGraphics({ target: "yAxisLine", property: "x2", value: bounds.left })
@@ -146,6 +149,7 @@ export function createGapminderDiscretizedColorPrimitives(gapminder, type) {
     .editGraphics({ target: "yAxisLine", property: "strokeWidth", value: 1 })
     .createGraphics({
       id: "xAxisTicks",
+      parent: "plot-main",
       type: "line",
       length: xPositions.length,
       before: "yAxisLine"
@@ -156,7 +160,7 @@ export function createGapminderDiscretizedColorPrimitives(gapminder, type) {
     .editGraphics({ target: "xAxisTicks", property: "y2", value: bounds.bottom + 3.6 })
     .editGraphics({ target: "xAxisTicks", property: "stroke", value: AXIS })
     .editGraphics({ target: "xAxisTicks", property: "strokeWidth", value: 1 })
-    .createGraphics({ id: "yAxisTicks", type: "line", length: yPositions.length })
+    .createGraphics({ id: "yAxisTicks", parent: "plot-main", type: "line", length: yPositions.length })
     .editGraphics({ target: "yAxisTicks", property: "x1", value: bounds.left - 3.6 })
     .editGraphics({ target: "yAxisTicks", property: "y1", value: yPositions })
     .editGraphics({ target: "yAxisTicks", property: "x2", value: bounds.left })
@@ -165,6 +169,7 @@ export function createGapminderDiscretizedColorPrimitives(gapminder, type) {
     .editGraphics({ target: "yAxisTicks", property: "strokeWidth", value: 1 })
     .createGraphics({
       id: "xAxisLabels",
+      parent: "plot-main",
       type: "text",
       length: xPositions.length,
       before: "yAxisLine"
@@ -178,7 +183,7 @@ export function createGapminderDiscretizedColorPrimitives(gapminder, type) {
     .editGraphics({ target: "xAxisLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "xAxisLabels", property: "textAlign", value: "center" })
     .editGraphics({ target: "xAxisLabels", property: "textBaseline", value: "top" })
-    .createGraphics({ id: "yAxisLabels", type: "text", length: yPositions.length })
+    .createGraphics({ id: "yAxisLabels", parent: "plot-main", type: "text", length: yPositions.length })
     .editGraphics({ target: "yAxisLabels", property: "x", value: bounds.left - 7.2 })
     .editGraphics({ target: "yAxisLabels", property: "y", value: yPositions })
     .editGraphics({ target: "yAxisLabels", property: "text", value: axes.y.labels })
@@ -188,7 +193,7 @@ export function createGapminderDiscretizedColorPrimitives(gapminder, type) {
     .editGraphics({ target: "yAxisLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "yAxisLabels", property: "textAlign", value: "right" })
     .editGraphics({ target: "yAxisLabels", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "xAxisTitle", type: "text", before: "yAxisLine" })
+    .createGraphics({ id: "xAxisTitle", parent: "plot-main", type: "text", before: "yAxisLine" })
     .editGraphics({ target: "xAxisTitle", property: "x", value: (bounds.left + bounds.right) / 2 })
     .editGraphics({ target: "xAxisTitle", property: "y", value: 300 })
     .editGraphics({ target: "xAxisTitle", property: "text", value: "Population" })
@@ -199,7 +204,7 @@ export function createGapminderDiscretizedColorPrimitives(gapminder, type) {
     .editGraphics({ target: "xAxisTitle", property: "textAlign", value: "center" })
     .editGraphics({ target: "xAxisTitle", property: "textBaseline", value: "middle" })
     .editGraphics({ target: "xAxisTitle", property: "rotation", value: 0 })
-    .createGraphics({ id: "yAxisTitle", type: "text" })
+    .createGraphics({ id: "yAxisTitle", parent: "plot-main", type: "text" })
     .editGraphics({
       target: "yAxisTitle",
       property: "x",
@@ -216,6 +221,7 @@ export function createGapminderDiscretizedColorPrimitives(gapminder, type) {
     .editGraphics({ target: "yAxisTitle", property: "rotation", value: -Math.PI / 2 })
     .createGraphics({
       id: "colorLegendSymbols",
+      parent: "canvas",
       type: "rect",
       length: colors.length
     })
@@ -230,7 +236,7 @@ export function createGapminderDiscretizedColorPrimitives(gapminder, type) {
     .editGraphics({ target: "colorLegendSymbols", property: "fill", value: colors })
     .editGraphics({ target: "colorLegendSymbols", property: "stroke", value: "white" })
     .editGraphics({ target: "colorLegendSymbols", property: "strokeWidth", value: 0.5 })
-    .createGraphics({ id: "colorLegendLabels", type: "text", length: colors.length })
+    .createGraphics({ id: "colorLegendLabels", parent: "canvas", type: "text", length: colors.length })
     .editGraphics({ target: "colorLegendLabels", property: "x", value: legend.labelX })
     .editGraphics({ target: "colorLegendLabels", property: "y", value: legend.itemY })
     .editGraphics({ target: "colorLegendLabels", property: "text", value: legend.labels })
@@ -240,7 +246,7 @@ export function createGapminderDiscretizedColorPrimitives(gapminder, type) {
     .editGraphics({ target: "colorLegendLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "colorLegendLabels", property: "textAlign", value: "left" })
     .editGraphics({ target: "colorLegendLabels", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "colorLegendTitle", type: "text" })
+    .createGraphics({ id: "colorLegendTitle", parent: "canvas", type: "text" })
     .editGraphics({ target: "colorLegendTitle", property: "x", value: legend.titleX })
     .editGraphics({ target: "colorLegendTitle", property: "y", value: legend.titleY })
     .editGraphics({ target: "colorLegendTitle", property: "text", value: "Life expectancy" })
@@ -250,7 +256,7 @@ export function createGapminderDiscretizedColorPrimitives(gapminder, type) {
     .editGraphics({ target: "colorLegendTitle", property: "fontWeight", value: 600 })
     .editGraphics({ target: "colorLegendTitle", property: "textAlign", value: "left" })
     .editGraphics({ target: "colorLegendTitle", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "chartTitle", type: "text" })
+    .createGraphics({ id: "chartTitle", parent: "canvas", type: "text" })
     .editGraphics({ target: "chartTitle", property: "x", value: bounds.left })
     .editGraphics({ target: "chartTitle", property: "y", value: 18 })
     .editGraphics({ target: "chartTitle", property: "text", value: title.text })
@@ -260,7 +266,7 @@ export function createGapminderDiscretizedColorPrimitives(gapminder, type) {
     .editGraphics({ target: "chartTitle", property: "fontWeight", value: 700 })
     .editGraphics({ target: "chartTitle", property: "textAlign", value: "left" })
     .editGraphics({ target: "chartTitle", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "chartSubtitle", type: "text" })
+    .createGraphics({ id: "chartSubtitle", parent: "canvas", type: "text" })
     .editGraphics({ target: "chartSubtitle", property: "x", value: bounds.left })
     .editGraphics({ target: "chartSubtitle", property: "y", value: 35.8 })
     .editGraphics({ target: "chartSubtitle", property: "text", value: title.subtitle })

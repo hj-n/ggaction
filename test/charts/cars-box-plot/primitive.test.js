@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -50,7 +51,7 @@ test("authors the canonical Cars Tukey box plot with raw primitives", () => {
     child.type === "path" && child.properties.fill === "#111111"
   ));
 
-  const order = program.graphicSpec.order;
+  const order = graphicDrawOrder(program);
   assert.ok(order.indexOf("horizontalGridLines") < order.indexOf("boxPlotWhisker"));
   assert.ok(order.indexOf("boxPlotWhisker") < order.indexOf("boxPlot"));
   assert.ok(order.indexOf("boxPlot") < order.indexOf("boxPlotMedian"));

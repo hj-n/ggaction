@@ -160,6 +160,7 @@ export function createCarsScatterplotPrimitives(cars) {
       value: "main"
     })
     .createGraphics({ id: "canvas", type: "canvas" })
+    .createGraphics({ id: "plot-main", type: "collection", parent: "canvas" })
     .editGraphics({ target: "canvas", property: "width", value: 640 })
     .editGraphics({ target: "canvas", property: "height", value: 400 })
     .editGraphics({
@@ -169,9 +170,9 @@ export function createCarsScatterplotPrimitives(cars) {
     })
     .createGraphics({
       id: "horizontalGridLines",
+      parent: "plot-main",
       type: "line",
-      length: yTicks.positions.length,
-      after: "canvas"
+      length: yTicks.positions.length
     })
     .editGraphics({
       target: "horizontalGridLines",
@@ -208,14 +209,14 @@ export function createCarsScatterplotPrimitives(cars) {
       property: "strokeDash",
       value: yTicks.positions.map(() => [])
     })
-    .createGraphics({ id: "xAxisLine", type: "line" })
+    .createGraphics({ id: "xAxisLine", parent: "plot-main", type: "line" })
     .editGraphics({ target: "xAxisLine", property: "x1", value: bounds.left })
     .editGraphics({ target: "xAxisLine", property: "y1", value: bounds.bottom })
     .editGraphics({ target: "xAxisLine", property: "x2", value: bounds.right })
     .editGraphics({ target: "xAxisLine", property: "y2", value: bounds.bottom })
     .editGraphics({ target: "xAxisLine", property: "stroke", value: "#334155" })
     .editGraphics({ target: "xAxisLine", property: "strokeWidth", value: 1 })
-    .createGraphics({ id: "yAxisLine", type: "line" })
+    .createGraphics({ id: "yAxisLine", parent: "plot-main", type: "line" })
     .editGraphics({ target: "yAxisLine", property: "x1", value: bounds.left })
     .editGraphics({ target: "yAxisLine", property: "y1", value: bounds.bottom })
     .editGraphics({ target: "yAxisLine", property: "x2", value: bounds.left })
@@ -224,6 +225,7 @@ export function createCarsScatterplotPrimitives(cars) {
     .editGraphics({ target: "yAxisLine", property: "strokeWidth", value: 1 })
     .createGraphics({
       id: "xAxisTicks",
+      parent: "plot-main",
       type: "line",
       length: xTicks.positions.length,
       after: "xAxisLine"
@@ -240,6 +242,7 @@ export function createCarsScatterplotPrimitives(cars) {
     .editGraphics({ target: "xAxisTicks", property: "strokeWidth", value: 1 })
     .createGraphics({
       id: "yAxisTicks",
+      parent: "plot-main",
       type: "line",
       length: yTicks.positions.length,
       after: "yAxisLine"
@@ -256,6 +259,7 @@ export function createCarsScatterplotPrimitives(cars) {
     .editGraphics({ target: "yAxisTicks", property: "strokeWidth", value: 1 })
     .createGraphics({
       id: "points",
+      parent: "plot-main",
       type: "circle",
       length: validCars.length,
       after: "horizontalGridLines"
@@ -266,6 +270,7 @@ export function createCarsScatterplotPrimitives(cars) {
     .editGraphics({ target: "points", property: "radius", value: 3 })
     .createGraphics({
       id: "xAxisLabels",
+      parent: "plot-main",
       type: "text",
       length: xTicks.positions.length,
       after: "xAxisTicks"
@@ -289,6 +294,7 @@ export function createCarsScatterplotPrimitives(cars) {
     .editGraphics({ target: "xAxisLabels", property: "textBaseline", value: "top" })
     .createGraphics({
       id: "yAxisLabels",
+      parent: "plot-main",
       type: "text",
       length: yTicks.positions.length,
       after: "yAxisTicks"
@@ -314,7 +320,7 @@ export function createCarsScatterplotPrimitives(cars) {
       property: "textBaseline",
       value: "middle"
     })
-    .createGraphics({ id: "xAxisTitle", type: "text", after: "xAxisLabels" })
+    .createGraphics({ id: "xAxisTitle", parent: "plot-main", type: "text", after: "xAxisLabels" })
     .editGraphics({
       target: "xAxisTitle",
       property: "x",
@@ -337,7 +343,7 @@ export function createCarsScatterplotPrimitives(cars) {
       value: "middle"
     })
     .editGraphics({ target: "xAxisTitle", property: "rotation", value: 0 })
-    .createGraphics({ id: "yAxisTitle", type: "text", after: "yAxisLabels" })
+    .createGraphics({ id: "yAxisTitle", parent: "plot-main", type: "text", after: "yAxisLabels" })
     .editGraphics({ target: "yAxisTitle", property: "x", value: 18 })
     .editGraphics({
       target: "yAxisTitle",

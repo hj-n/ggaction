@@ -138,6 +138,7 @@ export function createGapminderErrorBandPrimitives(gapminder) {
     })
     .createGraphics({
       id: "errorBand",
+      parent: "plot-main",
       type: "path",
       length: values.series.length
     })
@@ -160,6 +161,7 @@ export function createGapminderErrorBandPrimitives(gapminder) {
     })
     .createGraphics({
       id: "horizontalGridLines",
+      parent: "plot-main",
       type: "line",
       length: values.grid.horizontal.length,
       before: "errorBand"
@@ -199,7 +201,7 @@ export function createGapminderErrorBandPrimitives(gapminder) {
       property: "strokeDash",
       value: values.grid.horizontal.map(() => [])
     })
-    .createGraphics({ id: "xAxisLine", type: "line" })
+    .createGraphics({ id: "xAxisLine", parent: "plot-main", type: "line" })
     .editGraphics({ target: "xAxisLine", property: "x1", value: xAxis.line.x1 })
     .editGraphics({ target: "xAxisLine", property: "y1", value: xAxis.line.y1 })
     .editGraphics({ target: "xAxisLine", property: "x2", value: xAxis.line.x2 })
@@ -208,6 +210,7 @@ export function createGapminderErrorBandPrimitives(gapminder) {
     .editGraphics({ target: "xAxisLine", property: "strokeWidth", value: 1 })
     .createGraphics({
       id: "xAxisTicks",
+      parent: "plot-main",
       type: "line",
       length: xAxis.ticks.length
     })
@@ -219,6 +222,7 @@ export function createGapminderErrorBandPrimitives(gapminder) {
     .editGraphics({ target: "xAxisTicks", property: "strokeWidth", value: 1 })
     .createGraphics({
       id: "xAxisLabels",
+      parent: "plot-main",
       type: "text",
       length: xAxis.ticks.length
     })
@@ -235,7 +239,7 @@ export function createGapminderErrorBandPrimitives(gapminder) {
     .editGraphics({ target: "xAxisLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "xAxisLabels", property: "textAlign", value: "center" })
     .editGraphics({ target: "xAxisLabels", property: "textBaseline", value: "top" })
-    .createGraphics({ id: "xAxisTitle", type: "text" })
+    .createGraphics({ id: "xAxisTitle", parent: "plot-main", type: "text" })
     .editGraphics({ target: "xAxisTitle", property: "x", value: xAxis.title.x })
     .editGraphics({ target: "xAxisTitle", property: "y", value: xAxis.title.y })
     .editGraphics({ target: "xAxisTitle", property: "text", value: xAxis.title.text })
@@ -246,7 +250,7 @@ export function createGapminderErrorBandPrimitives(gapminder) {
     .editGraphics({ target: "xAxisTitle", property: "textAlign", value: "center" })
     .editGraphics({ target: "xAxisTitle", property: "textBaseline", value: "middle" })
     .editGraphics({ target: "xAxisTitle", property: "rotation", value: 0 })
-    .createGraphics({ id: "yAxisLine", type: "line" })
+    .createGraphics({ id: "yAxisLine", parent: "plot-main", type: "line" })
     .editGraphics({ target: "yAxisLine", property: "x1", value: yAxis.line.x1 })
     .editGraphics({ target: "yAxisLine", property: "y1", value: yAxis.line.y1 })
     .editGraphics({ target: "yAxisLine", property: "x2", value: yAxis.line.x2 })
@@ -255,6 +259,7 @@ export function createGapminderErrorBandPrimitives(gapminder) {
     .editGraphics({ target: "yAxisLine", property: "strokeWidth", value: 1 })
     .createGraphics({
       id: "yAxisTicks",
+      parent: "plot-main",
       type: "line",
       length: yAxis.ticks.length
     })
@@ -266,6 +271,7 @@ export function createGapminderErrorBandPrimitives(gapminder) {
     .editGraphics({ target: "yAxisTicks", property: "strokeWidth", value: 1 })
     .createGraphics({
       id: "yAxisLabels",
+      parent: "plot-main",
       type: "text",
       length: yAxis.ticks.length
     })
@@ -282,7 +288,7 @@ export function createGapminderErrorBandPrimitives(gapminder) {
     .editGraphics({ target: "yAxisLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "yAxisLabels", property: "textAlign", value: "right" })
     .editGraphics({ target: "yAxisLabels", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "yAxisTitle", type: "text" })
+    .createGraphics({ id: "yAxisTitle", parent: "plot-main", type: "text" })
     .editGraphics({ target: "yAxisTitle", property: "x", value: yAxis.title.x })
     .editGraphics({ target: "yAxisTitle", property: "y", value: yAxis.title.y })
     .editGraphics({ target: "yAxisTitle", property: "text", value: yAxis.title.text })
@@ -295,6 +301,7 @@ export function createGapminderErrorBandPrimitives(gapminder) {
     .editGraphics({ target: "yAxisTitle", property: "rotation", value: yAxis.title.rotation })
     .createGraphics({
       id: "colorLegendSymbols",
+      parent: "canvas",
       type: "rect",
       length: values.legend.items.length
     })
@@ -327,6 +334,7 @@ export function createGapminderErrorBandPrimitives(gapminder) {
     .editGraphics({ target: "colorLegendSymbols", property: "strokeWidth", value: 0.5 })
     .createGraphics({
       id: "colorLegendLabels",
+      parent: "canvas",
       type: "text",
       length: values.legend.items.length
     })
@@ -351,7 +359,7 @@ export function createGapminderErrorBandPrimitives(gapminder) {
     .editGraphics({ target: "colorLegendLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "colorLegendLabels", property: "textAlign", value: "left" })
     .editGraphics({ target: "colorLegendLabels", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "colorLegendTitle", type: "text" })
+    .createGraphics({ id: "colorLegendTitle", parent: "canvas", type: "text" })
     .editGraphics({ target: "colorLegendTitle", property: "x", value: values.legend.title.x })
     .editGraphics({ target: "colorLegendTitle", property: "y", value: values.legend.title.y })
     .editGraphics({ target: "colorLegendTitle", property: "text", value: values.legend.title.text })
@@ -361,7 +369,7 @@ export function createGapminderErrorBandPrimitives(gapminder) {
     .editGraphics({ target: "colorLegendTitle", property: "fontWeight", value: 600 })
     .editGraphics({ target: "colorLegendTitle", property: "textAlign", value: "left" })
     .editGraphics({ target: "colorLegendTitle", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "chartTitle", type: "text" })
+    .createGraphics({ id: "chartTitle", parent: "canvas", type: "text" })
     .editGraphics({ target: "chartTitle", property: "x", value: values.title.x })
     .editGraphics({ target: "chartTitle", property: "y", value: values.title.titleY })
     .editGraphics({ target: "chartTitle", property: "text", value: values.title.text })
@@ -371,7 +379,7 @@ export function createGapminderErrorBandPrimitives(gapminder) {
     .editGraphics({ target: "chartTitle", property: "fontWeight", value: 600 })
     .editGraphics({ target: "chartTitle", property: "textAlign", value: "left" })
     .editGraphics({ target: "chartTitle", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "chartSubtitle", type: "text" })
+    .createGraphics({ id: "chartSubtitle", parent: "canvas", type: "text" })
     .editGraphics({ target: "chartSubtitle", property: "x", value: values.title.x })
     .editGraphics({ target: "chartSubtitle", property: "y", value: values.title.subtitleY })
     .editGraphics({ target: "chartSubtitle", property: "text", value: values.title.subtitle })

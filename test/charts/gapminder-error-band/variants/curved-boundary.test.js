@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -83,7 +84,7 @@ for (const boundaryCurve of ["cardinal", "step"]) {
       assert.equal(path.properties.opacity, CURVED_BOUNDARY_STYLE.opacity);
     }
 
-    const order = program.graphicSpec.order;
+    const order = graphicDrawOrder(program);
     assert.ok(order.indexOf("horizontalGridLines") < order.indexOf("errorBand"));
     assert.ok(
       order.indexOf("errorBand") <

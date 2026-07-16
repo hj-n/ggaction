@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -50,8 +51,8 @@ test("authors every continuous-color bar target with primitives only", () => {
     assert.equal(program.graphicSpec.objects.bar.items.length, 8);
     assert.equal(new Set(fills).size > 4, true);
     assert.equal(
-      program.graphicSpec.order.indexOf("horizontalGridLines") <
-        program.graphicSpec.order.indexOf("bar"),
+      graphicDrawOrder(program).indexOf("horizontalGridLines") <
+        graphicDrawOrder(program).indexOf("bar"),
       true
     );
     assert.equal(

@@ -36,6 +36,15 @@ export function graphicTreeSnapshot(program) {
   };
 }
 
+export function graphicDrawOrder(program) {
+  const graphicSpec = requireProgram(program);
+  const ids = [];
+  walkGraphicDrawOrder(graphicSpec, ({ id }) => {
+    if (id !== "plot-main") ids.push(id);
+  });
+  return ids;
+}
+
 export function concreteGraphicSnapshot(program, { exclude = [] } = {}) {
   const graphicSpec = requireProgram(program);
   const excluded = new Set(exclude);

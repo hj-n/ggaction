@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -152,13 +153,13 @@ test("locks normalized histogram partitions and the unit y domain", () => {
     [0, 0.2, 0.4, 0.6, 0.8, 1]
   );
   assert.equal(
-    program.graphicSpec.order.indexOf("horizontalGridLines") <
-      program.graphicSpec.order.indexOf("bars"),
+    graphicDrawOrder(program).indexOf("horizontalGridLines") <
+      graphicDrawOrder(program).indexOf("bars"),
     true
   );
   assert.equal(
-    program.graphicSpec.order.indexOf("bars") <
-      program.graphicSpec.order.indexOf("colorLegendSymbols"),
+    graphicDrawOrder(program).indexOf("bars") <
+      graphicDrawOrder(program).indexOf("colorLegendSymbols"),
     true
   );
   assert.deepEqual(

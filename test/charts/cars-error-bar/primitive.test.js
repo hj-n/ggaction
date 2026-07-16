@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -41,7 +42,7 @@ test("authors the rule geometry target with raw graphical primitives", () => {
     values.rules.map(() => "rule")
   );
   assert.deepEqual(
-    program.graphicSpec.order.slice(1, 6),
+    graphicDrawOrder(program).slice(1, 6),
     values.rules.map(rule => rule.id)
   );
   for (const rule of values.rules) {
@@ -124,7 +125,7 @@ test("authors the canonical error-bar target with raw interval and line primitiv
     },
     grid: { horizontal: { scale: "y", coordinate: "main" } }
   });
-  assert.deepEqual(program.graphicSpec.order, [
+  assert.deepEqual(graphicDrawOrder(program), [
     "canvas",
     "horizontalGridLines",
     "errorBar",
@@ -218,7 +219,7 @@ test("authors an inferred error-bar overlay from an encoded point layer", () => 
   assert.equal(main.data, "errorBarIntervalData");
   assert.deepEqual(program.resolvedScales.x.domain, values.xDomain);
   assert.deepEqual(program.resolvedScales.y.domain, values.yDomain);
-  assert.deepEqual(program.graphicSpec.order, [
+  assert.deepEqual(graphicDrawOrder(program), [
     "canvas",
     "horizontalGridLines",
     "point",
@@ -308,8 +309,8 @@ test("authors explicit interval fields without derived data or stale cap objects
   assert.deepEqual(program.semanticSpec.layers.map(layer => layer.id), ["errorBar"]);
   assert.equal(program.graphicSpec.objects.errorBarLowerCap, undefined);
   assert.equal(program.graphicSpec.objects.errorBarUpperCap, undefined);
-  assert.equal(program.graphicSpec.order.includes("errorBarLowerCap"), false);
-  assert.equal(program.graphicSpec.order.includes("errorBarUpperCap"), false);
+  assert.equal(graphicDrawOrder(program).includes("errorBarLowerCap"), false);
+  assert.equal(graphicDrawOrder(program).includes("errorBarUpperCap"), false);
 });
 
 test("authors custom cap size and one constant appearance across all rules", () => {

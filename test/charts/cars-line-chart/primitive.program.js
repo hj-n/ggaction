@@ -110,7 +110,7 @@ export function createCarsLineChartPrimitiveProgram(
     .editSemantic({ property: "guide.legend.series.title", value: "Origin" })
     .editSemantic({ property: "title.text", value: values.title.text })
     .editSemantic({ property: "title.subtitle", value: values.title.subtitle })
-    .createGraphics({ id: "trends", type: "path", length: values.series.length })
+    .createGraphics({ id: "trends", parent: "plot-main", type: "path", length: values.series.length })
     .editGraphics({
       target: "trends",
       property: "commands",
@@ -129,6 +129,7 @@ export function createCarsLineChartPrimitiveProgram(
     })
     .createGraphics({
       id: "horizontalGridLines",
+      parent: "plot-main",
       type: "line",
       length: yAxis.ticks.length,
       before: "trends"
@@ -144,14 +145,14 @@ export function createCarsLineChartPrimitiveProgram(
       property: "strokeDash",
       value: yAxis.ticks.map(() => [])
     })
-    .createGraphics({ id: "xAxisLine", type: "line" })
+    .createGraphics({ id: "xAxisLine", parent: "plot-main", type: "line" })
     .editGraphics({ target: "xAxisLine", property: "x1", value: xAxis.line.x1 })
     .editGraphics({ target: "xAxisLine", property: "y1", value: xAxis.line.y1 })
     .editGraphics({ target: "xAxisLine", property: "x2", value: xAxis.line.x2 })
     .editGraphics({ target: "xAxisLine", property: "y2", value: xAxis.line.y2 })
     .editGraphics({ target: "xAxisLine", property: "stroke", value: "#334155" })
     .editGraphics({ target: "xAxisLine", property: "strokeWidth", value: 1 })
-    .createGraphics({ id: "yAxisLine", type: "line" })
+    .createGraphics({ id: "yAxisLine", parent: "plot-main", type: "line" })
     .editGraphics({ target: "yAxisLine", property: "x1", value: yAxis.line.x1 })
     .editGraphics({ target: "yAxisLine", property: "y1", value: yAxis.line.y1 })
     .editGraphics({ target: "yAxisLine", property: "x2", value: yAxis.line.x2 })
@@ -160,6 +161,7 @@ export function createCarsLineChartPrimitiveProgram(
     .editGraphics({ target: "yAxisLine", property: "strokeWidth", value: 1 })
     .createGraphics({
       id: "xAxisTicks",
+      parent: "plot-main",
       type: "line",
       length: xAxis.ticks.length,
       before: "yAxisLine"
@@ -170,7 +172,7 @@ export function createCarsLineChartPrimitiveProgram(
     .editGraphics({ target: "xAxisTicks", property: "y2", value: xAxis.line.y1 + 6 })
     .editGraphics({ target: "xAxisTicks", property: "stroke", value: "#64748b" })
     .editGraphics({ target: "xAxisTicks", property: "strokeWidth", value: 1 })
-    .createGraphics({ id: "yAxisTicks", type: "line", length: yAxis.ticks.length })
+    .createGraphics({ id: "yAxisTicks", parent: "plot-main", type: "line", length: yAxis.ticks.length })
     .editGraphics({ target: "yAxisTicks", property: "x1", value: yAxis.line.x1 - 6 })
     .editGraphics({ target: "yAxisTicks", property: "y1", value: yTickPositions })
     .editGraphics({ target: "yAxisTicks", property: "x2", value: yAxis.line.x1 })
@@ -179,6 +181,7 @@ export function createCarsLineChartPrimitiveProgram(
     .editGraphics({ target: "yAxisTicks", property: "strokeWidth", value: 1 })
     .createGraphics({
       id: "xAxisLabels",
+      parent: "plot-main",
       type: "text",
       length: xAxis.ticks.length,
       before: "yAxisLine"
@@ -196,7 +199,7 @@ export function createCarsLineChartPrimitiveProgram(
     .editGraphics({ target: "xAxisLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "xAxisLabels", property: "textAlign", value: "center" })
     .editGraphics({ target: "xAxisLabels", property: "textBaseline", value: "top" })
-    .createGraphics({ id: "yAxisLabels", type: "text", length: yAxis.ticks.length })
+    .createGraphics({ id: "yAxisLabels", parent: "plot-main", type: "text", length: yAxis.ticks.length })
     .editGraphics({ target: "yAxisLabels", property: "x", value: yAxis.line.x1 - 12 })
     .editGraphics({ target: "yAxisLabels", property: "y", value: yTickPositions })
     .editGraphics({
@@ -210,7 +213,7 @@ export function createCarsLineChartPrimitiveProgram(
     .editGraphics({ target: "yAxisLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "yAxisLabels", property: "textAlign", value: "right" })
     .editGraphics({ target: "yAxisLabels", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "xAxisTitle", type: "text", before: "yAxisLine" })
+    .createGraphics({ id: "xAxisTitle", parent: "plot-main", type: "text", before: "yAxisLine" })
     .editGraphics({ target: "xAxisTitle", property: "x", value: xAxis.title.x })
     .editGraphics({ target: "xAxisTitle", property: "y", value: xAxis.title.y })
     .editGraphics({ target: "xAxisTitle", property: "text", value: xAxis.title.text })
@@ -221,7 +224,7 @@ export function createCarsLineChartPrimitiveProgram(
     .editGraphics({ target: "xAxisTitle", property: "textAlign", value: "center" })
     .editGraphics({ target: "xAxisTitle", property: "textBaseline", value: "middle" })
     .editGraphics({ target: "xAxisTitle", property: "rotation", value: 0 })
-    .createGraphics({ id: "yAxisTitle", type: "text" })
+    .createGraphics({ id: "yAxisTitle", parent: "plot-main", type: "text" })
     .editGraphics({ target: "yAxisTitle", property: "x", value: yAxis.title.x })
     .editGraphics({ target: "yAxisTitle", property: "y", value: yAxis.title.y })
     .editGraphics({ target: "yAxisTitle", property: "text", value: yAxis.title.text })
@@ -236,7 +239,7 @@ export function createCarsLineChartPrimitiveProgram(
   if (values.legend.background !== undefined) {
     const background = values.legend.background;
     program = program
-      .createGraphics({ id: "seriesLegendBackground", type: "rect" })
+      .createGraphics({ id: "seriesLegendBackground", parent: "canvas", type: "rect" })
       .editGraphics({ target: "seriesLegendBackground", property: "x", value: background.x })
       .editGraphics({ target: "seriesLegendBackground", property: "y", value: background.y })
       .editGraphics({ target: "seriesLegendBackground", property: "width", value: background.width })
@@ -252,6 +255,7 @@ export function createCarsLineChartPrimitiveProgram(
   program = program
     .createGraphics({
       id: lineId,
+      parent: "canvas",
       type: "line",
       length: values.legend.items.length
     })
@@ -287,6 +291,7 @@ export function createCarsLineChartPrimitiveProgram(
     program = program
       .createGraphics({
         id: "seriesLegendSymbolPoints",
+        parent: "canvas",
         type: "circle",
         length: values.legend.items.length
       })
@@ -325,6 +330,7 @@ export function createCarsLineChartPrimitiveProgram(
   return program
     .createGraphics({
       id: "seriesLegendLabels",
+      parent: "canvas",
       type: "text",
       length: values.legend.items.length
     })
@@ -345,7 +351,7 @@ export function createCarsLineChartPrimitiveProgram(
     .editGraphics({ target: "seriesLegendLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "seriesLegendLabels", property: "textAlign", value: "left" })
     .editGraphics({ target: "seriesLegendLabels", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "seriesLegendTitle", type: "text" })
+    .createGraphics({ id: "seriesLegendTitle", parent: "canvas", type: "text" })
     .editGraphics({ target: "seriesLegendTitle", property: "x", value: values.legend.title.x })
     .editGraphics({ target: "seriesLegendTitle", property: "y", value: values.legend.title.y })
     .editGraphics({ target: "seriesLegendTitle", property: "text", value: values.legend.title.text })
@@ -361,7 +367,7 @@ export function createCarsLineChartPrimitiveProgram(
         : "left"
     })
     .editGraphics({ target: "seriesLegendTitle", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "chartTitle", type: "text" })
+    .createGraphics({ id: "chartTitle", parent: "canvas", type: "text" })
     .editGraphics({ target: "chartTitle", property: "x", value: values.title.x })
     .editGraphics({ target: "chartTitle", property: "y", value: values.title.titleY })
     .editGraphics({ target: "chartTitle", property: "text", value: values.title.text })
@@ -371,7 +377,7 @@ export function createCarsLineChartPrimitiveProgram(
     .editGraphics({ target: "chartTitle", property: "fontWeight", value: 600 })
     .editGraphics({ target: "chartTitle", property: "textAlign", value: "left" })
     .editGraphics({ target: "chartTitle", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "chartSubtitle", type: "text" })
+    .createGraphics({ id: "chartSubtitle", parent: "canvas", type: "text" })
     .editGraphics({ target: "chartSubtitle", property: "x", value: values.title.x })
     .editGraphics({ target: "chartSubtitle", property: "y", value: values.title.subtitleY })
     .editGraphics({ target: "chartSubtitle", property: "text", value: values.title.subtitle })

@@ -4,6 +4,7 @@ import test from "node:test";
 import { render } from "../../../../src/index.js";
 import { loadCars } from "../../../support/data.js";
 import { createMockCanvasContext } from "../../../support/canvas.js";
+import { graphicDrawOrder } from "../../../support/graphic-tree.js";
 import { createCarsHorizontalMinmaxPrimitives } from "./horizontal-minmax.program.js";
 
 test("authors the horizontal minmax box plot with raw primitives", () => {
@@ -33,7 +34,7 @@ test("renders horizontal components in explicit order", () => {
   const context = createMockCanvasContext();
   render(program, context);
 
-  assert.deepEqual(Object.keys(program.graphicSpec.objects).slice(0, 7), [
+  assert.deepEqual(graphicDrawOrder(program).slice(0, 7), [
     "canvas",
     "verticalGridLines",
     "boxPlotWhisker",

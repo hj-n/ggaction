@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -195,7 +196,7 @@ test("lays out bordered bottom composite symbols in a deterministic grid", () =>
     labels.map((child, index) => child.properties.x - lines[index].properties.x2),
     [10, 10]
   );
-  assert.deepEqual(program.graphicSpec.order.slice(-5), [
+  assert.deepEqual(graphicDrawOrder(program).slice(-5), [
     "seriesLegendBackground",
     "seriesLegendSymbolLines",
     "seriesLegendSymbolPoints",
@@ -313,7 +314,7 @@ test("creates and renders an optional background before legend content", () => {
       strokeWidth: 1
     }
   });
-  assert.deepEqual(program.graphicSpec.order.slice(-4), [
+  assert.deepEqual(graphicDrawOrder(program).slice(-4), [
     "seriesLegendBackground",
     "seriesLegendSymbols",
     "seriesLegendLabels",

@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -57,9 +58,9 @@ test("authors outliers-off without optional semantic or graphic resources", () =
   assert.equal(ids.datasets.includes("boxPlotOutlierData"), false);
   assert.equal(ids.layers.includes("boxPlotOutliers"), false);
   assert.equal(ids.graphics.includes("boxPlotOutliers"), false);
-  assert.equal(program.graphicSpec.order.includes("boxPlotOutliers"), false);
-  assert.ok(program.graphicSpec.order.indexOf("boxPlotMedian") <
-    program.graphicSpec.order.indexOf("xAxisLine"));
+  assert.equal(graphicDrawOrder(program).includes("boxPlotOutliers"), false);
+  assert.ok(graphicDrawOrder(program).indexOf("boxPlotMedian") <
+    graphicDrawOrder(program).indexOf("xAxisLine"));
 
   const context = createMockCanvasContext();
   render(program, context);

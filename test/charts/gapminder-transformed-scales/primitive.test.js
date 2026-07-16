@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -66,10 +67,11 @@ test("authors the transformed-scale semantics and concrete drawing order with pr
     interpolate: "rgb"
   });
 
-  assert.deepEqual(program.graphicSpec.order, [
+  assert.deepEqual(graphicDrawOrder(program), [
     "canvas", "horizontalGridLines", "verticalGridLines", "point",
-    "colorGradientStrips", "xAxisLine", "xAxisTicks", "xAxisLabels",
+    "xAxisLine", "xAxisTicks", "xAxisLabels",
     "xAxisTitle", "yAxisLine", "yAxisTicks", "yAxisLabels", "yAxisTitle",
+    "colorGradientStrips",
     "colorGradientTicks", "colorGradientLabels", "colorGradientTitle",
     "chartTitle", "chartSubtitle"
   ]);

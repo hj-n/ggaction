@@ -228,7 +228,7 @@ export function createRuleGeometryPrimitives() {
       property: `layer[${diagonal.id}].encoding.y2.scale`,
       value: "y"
     })
-    .createGraphics({ id: vertical.id, type: "line", length: 1 })
+    .createGraphics({ id: vertical.id, parent: "plot-main", type: "line", length: 1 })
     .editGraphics({ target: vertical.id, property: "x1", value: vertical.x1 })
     .editGraphics({ target: vertical.id, property: "y1", value: vertical.y1 })
     .editGraphics({ target: vertical.id, property: "x2", value: vertical.x2 })
@@ -237,7 +237,7 @@ export function createRuleGeometryPrimitives() {
     .editGraphics({ target: vertical.id, property: "strokeWidth", value: 3 })
     .editGraphics({ target: vertical.id, property: "strokeDash", value: [[]] })
     .editGraphics({ target: vertical.id, property: "opacity", value: 1 })
-    .createGraphics({ id: horizontal.id, type: "line", length: 1 })
+    .createGraphics({ id: horizontal.id, parent: "plot-main", type: "line", length: 1 })
     .editGraphics({ target: horizontal.id, property: "x1", value: horizontal.x1 })
     .editGraphics({ target: horizontal.id, property: "y1", value: horizontal.y1 })
     .editGraphics({ target: horizontal.id, property: "x2", value: horizontal.x2 })
@@ -246,7 +246,7 @@ export function createRuleGeometryPrimitives() {
     .editGraphics({ target: horizontal.id, property: "strokeWidth", value: 3 })
     .editGraphics({ target: horizontal.id, property: "strokeDash", value: [[]] })
     .editGraphics({ target: horizontal.id, property: "opacity", value: 1 })
-    .createGraphics({ id: verticalInterval.id, type: "line", length: 1 })
+    .createGraphics({ id: verticalInterval.id, parent: "plot-main", type: "line", length: 1 })
     .editGraphics({ target: verticalInterval.id, property: "x1", value: verticalInterval.x1 })
     .editGraphics({ target: verticalInterval.id, property: "y1", value: verticalInterval.y1 })
     .editGraphics({ target: verticalInterval.id, property: "x2", value: verticalInterval.x2 })
@@ -255,7 +255,7 @@ export function createRuleGeometryPrimitives() {
     .editGraphics({ target: verticalInterval.id, property: "strokeWidth", value: 3 })
     .editGraphics({ target: verticalInterval.id, property: "strokeDash", value: [[]] })
     .editGraphics({ target: verticalInterval.id, property: "opacity", value: 1 })
-    .createGraphics({ id: horizontalInterval.id, type: "line", length: 1 })
+    .createGraphics({ id: horizontalInterval.id, parent: "plot-main", type: "line", length: 1 })
     .editGraphics({ target: horizontalInterval.id, property: "x1", value: horizontalInterval.x1 })
     .editGraphics({ target: horizontalInterval.id, property: "y1", value: horizontalInterval.y1 })
     .editGraphics({ target: horizontalInterval.id, property: "x2", value: horizontalInterval.x2 })
@@ -264,7 +264,7 @@ export function createRuleGeometryPrimitives() {
     .editGraphics({ target: horizontalInterval.id, property: "strokeWidth", value: 3 })
     .editGraphics({ target: horizontalInterval.id, property: "strokeDash", value: [[]] })
     .editGraphics({ target: horizontalInterval.id, property: "opacity", value: 1 })
-    .createGraphics({ id: diagonal.id, type: "line", length: 1 })
+    .createGraphics({ id: diagonal.id, parent: "plot-main", type: "line", length: 1 })
     .editGraphics({ target: diagonal.id, property: "x1", value: diagonal.x1 })
     .editGraphics({ target: diagonal.id, property: "y1", value: diagonal.y1 })
     .editGraphics({ target: diagonal.id, property: "x2", value: diagonal.x2 })
@@ -454,6 +454,7 @@ export function createErrorBarBaselinePrimitives(cars) {
     })
     .createGraphics({
       id: "horizontalGridLines",
+      parent: "plot-main",
       type: "line",
       length: values.horizontalGrid.length
     })
@@ -492,7 +493,7 @@ export function createErrorBarBaselinePrimitives(cars) {
       property: "strokeDash",
       value: values.horizontalGrid.map(() => [])
     })
-    .createGraphics({ id: "errorBar", type: "line", length: values.mainRules.length })
+    .createGraphics({ id: "errorBar", parent: "plot-main", type: "line", length: values.mainRules.length })
     .editGraphics({ target: "errorBar", property: "x1", value: lineX1(values.mainRules) })
     .editGraphics({ target: "errorBar", property: "y1", value: lineY1(values.mainRules) })
     .editGraphics({ target: "errorBar", property: "x2", value: lineX2(values.mainRules) })
@@ -507,6 +508,7 @@ export function createErrorBarBaselinePrimitives(cars) {
     .editGraphics({ target: "errorBar", property: "opacity", value: 1 })
     .createGraphics({
       id: "errorBarLowerCap",
+      parent: "plot-main",
       type: "line",
       length: values.lowerCaps.length
     })
@@ -524,6 +526,7 @@ export function createErrorBarBaselinePrimitives(cars) {
     .editGraphics({ target: "errorBarLowerCap", property: "opacity", value: 1 })
     .createGraphics({
       id: "errorBarUpperCap",
+      parent: "plot-main",
       type: "line",
       length: values.upperCaps.length
     })
@@ -539,21 +542,21 @@ export function createErrorBarBaselinePrimitives(cars) {
       value: values.upperCaps.map(() => [])
     })
     .editGraphics({ target: "errorBarUpperCap", property: "opacity", value: 1 })
-    .createGraphics({ id: "xAxisLine", type: "line" })
+    .createGraphics({ id: "xAxisLine", parent: "plot-main", type: "line" })
     .editGraphics({ target: "xAxisLine", property: "x1", value: xAxis.line.x1 })
     .editGraphics({ target: "xAxisLine", property: "y1", value: xAxis.line.y1 })
     .editGraphics({ target: "xAxisLine", property: "x2", value: xAxis.line.x2 })
     .editGraphics({ target: "xAxisLine", property: "y2", value: xAxis.line.y2 })
     .editGraphics({ target: "xAxisLine", property: "stroke", value: "#334155" })
     .editGraphics({ target: "xAxisLine", property: "strokeWidth", value: 1 })
-    .createGraphics({ id: "xAxisTicks", type: "line", length: xAxis.values.length })
+    .createGraphics({ id: "xAxisTicks", parent: "plot-main", type: "line", length: xAxis.values.length })
     .editGraphics({ target: "xAxisTicks", property: "x1", value: xAxis.positions })
     .editGraphics({ target: "xAxisTicks", property: "y1", value: xAxis.line.y1 })
     .editGraphics({ target: "xAxisTicks", property: "x2", value: xAxis.positions })
     .editGraphics({ target: "xAxisTicks", property: "y2", value: xAxis.line.y1 + 6 })
     .editGraphics({ target: "xAxisTicks", property: "stroke", value: "#64748b" })
     .editGraphics({ target: "xAxisTicks", property: "strokeWidth", value: 1 })
-    .createGraphics({ id: "xAxisLabels", type: "text", length: xAxis.values.length })
+    .createGraphics({ id: "xAxisLabels", parent: "plot-main", type: "text", length: xAxis.values.length })
     .editGraphics({ target: "xAxisLabels", property: "x", value: xAxis.positions })
     .editGraphics({ target: "xAxisLabels", property: "y", value: xAxis.line.y1 + 18 })
     .editGraphics({ target: "xAxisLabels", property: "text", value: xAxis.values })
@@ -563,7 +566,7 @@ export function createErrorBarBaselinePrimitives(cars) {
     .editGraphics({ target: "xAxisLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "xAxisLabels", property: "textAlign", value: "center" })
     .editGraphics({ target: "xAxisLabels", property: "textBaseline", value: "top" })
-    .createGraphics({ id: "xAxisTitle", type: "text" })
+    .createGraphics({ id: "xAxisTitle", parent: "plot-main", type: "text" })
     .editGraphics({ target: "xAxisTitle", property: "x", value: xAxis.title.x })
     .editGraphics({ target: "xAxisTitle", property: "y", value: xAxis.title.y })
     .editGraphics({ target: "xAxisTitle", property: "text", value: "Origin" })
@@ -574,21 +577,21 @@ export function createErrorBarBaselinePrimitives(cars) {
     .editGraphics({ target: "xAxisTitle", property: "textAlign", value: "center" })
     .editGraphics({ target: "xAxisTitle", property: "textBaseline", value: "middle" })
     .editGraphics({ target: "xAxisTitle", property: "rotation", value: 0 })
-    .createGraphics({ id: "yAxisLine", type: "line" })
+    .createGraphics({ id: "yAxisLine", parent: "plot-main", type: "line" })
     .editGraphics({ target: "yAxisLine", property: "x1", value: yAxis.line.x1 })
     .editGraphics({ target: "yAxisLine", property: "y1", value: yAxis.line.y1 })
     .editGraphics({ target: "yAxisLine", property: "x2", value: yAxis.line.x2 })
     .editGraphics({ target: "yAxisLine", property: "y2", value: yAxis.line.y2 })
     .editGraphics({ target: "yAxisLine", property: "stroke", value: "#334155" })
     .editGraphics({ target: "yAxisLine", property: "strokeWidth", value: 1 })
-    .createGraphics({ id: "yAxisTicks", type: "line", length: yAxis.values.length })
+    .createGraphics({ id: "yAxisTicks", parent: "plot-main", type: "line", length: yAxis.values.length })
     .editGraphics({ target: "yAxisTicks", property: "x1", value: yAxis.line.x1 - 6 })
     .editGraphics({ target: "yAxisTicks", property: "y1", value: yAxis.positions })
     .editGraphics({ target: "yAxisTicks", property: "x2", value: yAxis.line.x1 })
     .editGraphics({ target: "yAxisTicks", property: "y2", value: yAxis.positions })
     .editGraphics({ target: "yAxisTicks", property: "stroke", value: "#64748b" })
     .editGraphics({ target: "yAxisTicks", property: "strokeWidth", value: 1 })
-    .createGraphics({ id: "yAxisLabels", type: "text", length: yAxis.values.length })
+    .createGraphics({ id: "yAxisLabels", parent: "plot-main", type: "text", length: yAxis.values.length })
     .editGraphics({ target: "yAxisLabels", property: "x", value: yAxis.line.x1 - 12 })
     .editGraphics({ target: "yAxisLabels", property: "y", value: yAxis.positions })
     .editGraphics({
@@ -602,7 +605,7 @@ export function createErrorBarBaselinePrimitives(cars) {
     .editGraphics({ target: "yAxisLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "yAxisLabels", property: "textAlign", value: "right" })
     .editGraphics({ target: "yAxisLabels", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "yAxisTitle", type: "text" })
+    .createGraphics({ id: "yAxisTitle", parent: "plot-main", type: "text" })
     .editGraphics({ target: "yAxisTitle", property: "x", value: yAxis.title.x })
     .editGraphics({ target: "yAxisTitle", property: "y", value: yAxis.title.y })
     .editGraphics({ target: "yAxisTitle", property: "text", value: "mean(Acceleration)" })
@@ -774,6 +777,7 @@ export function createEncodedLayerInferencePrimitives(cars) {
     })
     .createGraphics({
       id: "errorBar",
+      parent: "plot-main",
       type: "line",
       length: values.mainRules.length
     })
@@ -791,6 +795,7 @@ export function createEncodedLayerInferencePrimitives(cars) {
     .editGraphics({ target: "errorBar", property: "opacity", value: 1 })
     .createGraphics({
       id: "errorBarLowerCap",
+      parent: "plot-main",
       type: "line",
       length: values.lowerCaps.length
     })
@@ -808,6 +813,7 @@ export function createEncodedLayerInferencePrimitives(cars) {
     .editGraphics({ target: "errorBarLowerCap", property: "opacity", value: 1 })
     .createGraphics({
       id: "errorBarUpperCap",
+      parent: "plot-main",
       type: "line",
       length: values.upperCaps.length
     })

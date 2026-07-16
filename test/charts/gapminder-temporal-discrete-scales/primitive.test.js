@@ -1,3 +1,4 @@
+import { graphicDrawOrder } from "../../support/graphic-tree.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -81,13 +82,13 @@ test("authors explicit band and point semantics with primitive calls only", () =
     values.centers
   );
   assert.equal(
-    program.graphicSpec.order.indexOf("horizontalGridLines") <
-      program.graphicSpec.order.indexOf("bar"),
+    graphicDrawOrder(program).indexOf("horizontalGridLines") <
+      graphicDrawOrder(program).indexOf("bar"),
     true
   );
   assert.equal(
-    program.graphicSpec.order.indexOf("bar") <
-      program.graphicSpec.order.indexOf("point"),
+    graphicDrawOrder(program).indexOf("bar") <
+      graphicDrawOrder(program).indexOf("point"),
     true
   );
   assert.equal(program.trace.children.every(node =>
