@@ -152,8 +152,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   variant: "baseline",
   title: "Canonical Regression Scatterplot Baseline",
   callChain: baselineCallChain,
-  primitive: createCarsRegressionScatterplotPrimitives(cars),
-  userFacing: createCarsRegressionScatterplot(cars)
+  primitive: () => createCarsRegressionScatterplotPrimitives(cars),
+  userFacing: () => createCarsRegressionScatterplot(cars)
 }), defineVisualVariant({
   ...shared,
   variant: "component-edit",
@@ -170,8 +170,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
     target: "pointsRegressionLines",
     strokeWidth: 5
   });`,
-  primitive: createComponentEditPrimitives(cars),
-  userFacing: createComponentEditCarsRegressionScatterplot(cars)
+  primitive: () => createComponentEditPrimitives(cars),
+  userFacing: () => createComponentEditCarsRegressionScatterplot(cars)
 }), defineVisualVariant({
   ...shared,
   variant: "comparison-filter",
@@ -182,8 +182,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
     op: "gte",
     value: 150
   })`),
-  primitive: createComparisonFilterPrimitives(cars),
-  userFacing: createComparisonFilterCarsRegressionScatterplot(cars)
+  primitive: () => createComparisonFilterPrimitives(cars),
+  userFacing: () => createComparisonFilterCarsRegressionScatterplot(cars)
 }), defineVisualVariant({
   ...shared,
   variant: "range-filter",
@@ -196,8 +196,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
     max: 300,
     inclusive: true
   })`),
-  primitive: createRangeFilterPrimitives(cars),
-  userFacing: createRangeFilterCarsRegressionScatterplot(cars)
+  primitive: () => createRangeFilterPrimitives(cars),
+  userFacing: () => createRangeFilterCarsRegressionScatterplot(cars)
 }), defineVisualVariant({
   ...shared,
   variant: "polynomial-degree-2",
@@ -206,8 +206,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
     method: "polynomial",
     degree: 2
   })`),
-  primitive: createPolynomialRegressionPrimitives(cars),
-  userFacing: createPolynomialCarsRegressionScatterplot(cars)
+  primitive: () => createPolynomialRegressionPrimitives(cars),
+  userFacing: () => createPolynomialCarsRegressionScatterplot(cars)
 }), defineVisualVariant({
   ...shared,
   variant: "loess-span",
@@ -217,8 +217,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
     span: 0.55,
     band: false
   })`),
-  primitive: createLoessRegressionPrimitives(cars),
-  userFacing: createLoessCarsRegressionScatterplot(cars)
+  primitive: () => createLoessRegressionPrimitives(cars),
+  userFacing: () => createLoessCarsRegressionScatterplot(cars)
 }), defineVisualVariant({
   ...shared,
   variant: "prediction-interval",
@@ -226,15 +226,15 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   callChain: withRegressionCall(`  .createRegression({
     interval: "prediction"
   })`),
-  primitive: createPredictionIntervalPrimitives(cars),
-  userFacing: createPredictionIntervalCarsRegressionScatterplot(cars)
+  primitive: () => createPredictionIntervalPrimitives(cars),
+  userFacing: () => createPredictionIntervalCarsRegressionScatterplot(cars)
 }), defineVisualVariant({
   ...shared,
   variant: "left-legend",
   title: "Left Composite and Size Legends",
   callChain: leftLegendCallChain,
-  primitive: createLeftLegendPrimitives(cars),
-  userFacing: createLeftLegendCarsRegressionScatterplot(cars),
+  primitive: () => createLeftLegendPrimitives(cars),
+  userFacing: () => createLeftLegendCarsRegressionScatterplot(cars),
   regions: [Object.freeze({
     name: "legend",
     x: 10,

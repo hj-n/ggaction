@@ -74,8 +74,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   })
   .encodeBarWidth({ band: 0.72 })
   .createGuides();`,
-  primitive: createJobsGroupedBarPrimitives(jobs),
-  userFacing: createJobsGroupedBar(jobs)
+  primitive: () => createJobsGroupedBarPrimitives(jobs),
+  userFacing: () => createJobsGroupedBar(jobs)
 }), defineVisualVariant({
   ...shared,
   variant: "overlay-layout",
@@ -101,8 +101,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   })
   .encodeBarWidth({ band: 0.72 })
   .createGuides();`,
-  primitive: createOverlayLayoutPrimitives(jobs),
-  userFacing: createJobsOverlayBar(jobs)
+  primitive: () => createOverlayLayoutPrimitives(jobs),
+  userFacing: () => createJobsOverlayBar(jobs)
 }), defineVisualVariant({
   ...shared,
   variant: "diverging-layout",
@@ -128,8 +128,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   })
   .encodeBarWidth({ band: 0.72 })
   .createGuides();`,
-  primitive: createDivergingLayoutPrimitives(signedJobs),
-  userFacing: createJobsDivergingBar(signedJobs)
+  primitive: () => createDivergingLayoutPrimitives(signedJobs),
+  userFacing: () => createJobsDivergingBar(signedJobs)
 }), defineVisualVariant({
   ...shared,
   variant: "width-pixels",
@@ -155,8 +155,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   })
   .encodeBarWidth({ pixels: 14 })
   .createGuides();`,
-  primitive: createFixedPixelWidthPrimitives(jobs),
-  userFacing: createJobsFixedPixelBar(jobs)
+  primitive: () => createFixedPixelWidthPrimitives(jobs),
+  userFacing: () => createJobsFixedPixelBar(jobs)
 }), defineVisualVariant({
   ...shared,
   variant: "offset-padding",
@@ -187,8 +187,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   })
   .encodeBarWidth({ band: 0.72 })
   .createGuides();`,
-  primitive: createOffsetPaddingPrimitives(jobs),
-  userFacing: createJobsOffsetPaddingBar(jobs)
+  primitive: () => createOffsetPaddingPrimitives(jobs),
+  userFacing: () => createJobsOffsetPaddingBar(jobs)
 }), defineVisualVariant({
   ...shared,
   colors: ["#4c78a8", "#f58518", "#e45756"],
@@ -216,8 +216,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   .encodeBarWidth({ band: 0.72 })
   .createGuides({ legend: { title: "Occupation" } })
   .encodeColor({ field: "job", layout: "group" });`,
-  primitive: createGroupReassignmentPrimitives(reassignmentJobs),
-  userFacing: createJobsGroupReassignmentBar(reassignmentJobs)
+  primitive: () => createGroupReassignmentPrimitives(reassignmentJobs),
+  userFacing: () => createJobsGroupReassignmentBar(reassignmentJobs)
 }), defineVisualVariant({
   ...shared,
   variant: "temporal-x",
@@ -243,8 +243,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   })
   .encodeBarWidth({ band: 0.72 })
   .createGuides();`,
-  primitive: createTemporalXPrimitives(jobs),
-  userFacing: createJobsTemporalXBar(jobs)
+  primitive: () => createTemporalXPrimitives(jobs),
+  userFacing: () => createJobsTemporalXBar(jobs)
 }), defineVisualVariant({
   ...shared,
   variant: "horizontal-bar",
@@ -270,6 +270,6 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   })
   .encodeBarWidth({ band: 0.72 })
   .createGuides();`,
-  primitive: createHorizontalBarPrimitives(jobs),
-  userFacing: createJobsHorizontalBar(jobs)
+  primitive: () => createHorizontalBarPrimitives(jobs),
+  userFacing: () => createJobsHorizontalBar(jobs)
 })]);

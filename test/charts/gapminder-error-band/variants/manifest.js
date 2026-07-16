@@ -9,7 +9,7 @@ import {
   createGapminderCurvedBoundaryErrorBand,
   createCarsHorizontalErrorBand,
   createGapminderErrorBand
-} from "../public.program.js";
+} from "../../../../examples/gapminder-error-band/program.js";
 import { createGapminderCurvedBoundaryPrimitives } from
   "./curved-boundary.primitive.program.js";
 import {
@@ -105,8 +105,8 @@ export const visualVariants = Object.freeze([
     variant: "gapminder-vertical",
     title: "Gapminder Vertical Error Band",
     callChain: targetCallChain,
-    primitive: createGapminderErrorBandPrimitives(loadGapminder()),
-    userFacing: createGapminderErrorBand(loadGapminder()),
+    primitive: () => createGapminderErrorBandPrimitives(loadGapminder()),
+    userFacing: () => createGapminderErrorBand(loadGapminder()),
     width: ERROR_BAND_LAYOUT.width,
     height: ERROR_BAND_LAYOUT.height,
     colors: ERROR_BAND_COLORS,
@@ -119,8 +119,8 @@ export const visualVariants = Object.freeze([
     variant: "cars-horizontal",
     title: "Cars Horizontal Error Band",
     callChain: horizontalTargetCallChain,
-    primitive: createCarsHorizontalErrorBandPrimitives(loadCars()),
-    userFacing: createCarsHorizontalErrorBand(loadCars()),
+    primitive: () => createCarsHorizontalErrorBandPrimitives(loadCars()),
+    userFacing: () => createCarsHorizontalErrorBand(loadCars()),
     width: CARS_HORIZONTAL_LAYOUT.width,
     height: CARS_HORIZONTAL_LAYOUT.height,
     colors: [CARS_HORIZONTAL_STYLE.boundaryStroke],
@@ -133,8 +133,8 @@ export const visualVariants = Object.freeze([
     variant: "gapminder-curved-boundaries",
     title: "Cardinal Error Band with Inherited Boundaries",
     callChain: curvedTargetCallChain,
-    primitive: createGapminderCurvedBoundaryPrimitives(loadGapminder()),
-    userFacing: createGapminderCurvedBoundaryErrorBand(loadGapminder()),
+    primitive: () => createGapminderCurvedBoundaryPrimitives(loadGapminder()),
+    userFacing: () => createGapminderCurvedBoundaryErrorBand(loadGapminder()),
     width: ERROR_BAND_LAYOUT.width,
     height: ERROR_BAND_LAYOUT.height,
     colors: ["#334155"],
@@ -147,10 +147,10 @@ export const visualVariants = Object.freeze([
     variant: "gapminder-boundary-override",
     title: "Cardinal Error Band with Step Boundary Override",
     callChain: overrideTargetCallChain,
-    primitive: createGapminderCurvedBoundaryPrimitives(loadGapminder(), {
+    primitive: () => createGapminderCurvedBoundaryPrimitives(loadGapminder(), {
       boundaryCurve: "step"
     }),
-    userFacing: createGapminderBoundaryOverrideErrorBand(loadGapminder()),
+    userFacing: () => createGapminderBoundaryOverrideErrorBand(loadGapminder()),
     width: ERROR_BAND_LAYOUT.width,
     height: ERROR_BAND_LAYOUT.height,
     colors: ["#334155"],

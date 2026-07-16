@@ -1,16 +1,16 @@
 import test from "node:test";
 
-import { assertChartProgramsEquivalent } from "../../support/chart-equivalence.js";
-import { loadCars, loadGapminder } from "../../support/data.js";
-import { createCarsHorizontalErrorBandPrimitives } from
-  "./cars-horizontal.primitive.program.js";
-import { createGapminderErrorBandPrimitives } from "./primitive.program.js";
 import {
   createGapminderBoundaryOverrideErrorBand,
   createGapminderCurvedBoundaryErrorBand,
   createCarsHorizontalErrorBand,
   createGapminderErrorBand
-} from "./public.program.js";
+} from "../../../examples/gapminder-error-band/program.js";
+import { assertChartProgramsEquivalent } from "../../support/chart-equivalence.js";
+import { loadCars, loadGapminder } from "../../support/data.js";
+import { createCarsHorizontalErrorBandPrimitives } from
+  "./cars-horizontal.primitive.program.js";
+import { createGapminderErrorBandPrimitives } from "./primitive.program.js";
 import { createGapminderCurvedBoundaryPrimitives } from
   "./variants/curved-boundary.primitive.program.js";
 

@@ -91,8 +91,8 @@ const scatterArtifacts = Object.freeze([
     }
   });`
     }),
-    primitive: createMirroredAxesPrimitives(cars),
-    userFacing: createMirroredAxesCarsScatterplot(cars),
+    primitive: () => createMirroredAxesPrimitives(cars),
+    userFacing: () => createMirroredAxesCarsScatterplot(cars),
     width: 640,
     height: 400,
     colors: ["#4c78a8", "#f58518", "#e45756"]
@@ -123,8 +123,8 @@ const scatterArtifacts = Object.freeze([
   })
   .editScale({ id: "x", reverse: true });`
     }),
-    primitive: createScaleReversePrimitives(cars),
-    userFacing: createScaleReverseCarsScatterplot(cars),
+    primitive: () => createScaleReversePrimitives(cars),
+    userFacing: () => createScaleReverseCarsScatterplot(cars),
     width: 640,
     height: 400,
     colors: ["#4c78a8", "#f58518", "#e45756"]
@@ -155,8 +155,8 @@ const scatterArtifacts = Object.freeze([
   })
   .editPointMark({ target: "points", shape: "diamond" });`
     }),
-    primitive: createPointShapeDiamondPrimitives(cars),
-    userFacing: createDiamondCarsScatterplot(cars),
+    primitive: () => createPointShapeDiamondPrimitives(cars),
+    userFacing: () => createDiamondCarsScatterplot(cars),
     width: 640,
     height: 400,
     colors: ["#4c78a8", "#f58518", "#e45756"]
@@ -204,8 +204,8 @@ const scatterArtifacts = Object.freeze([
     }
   });`
     }),
-    primitive: createShapeVocabularyPrimitives(cars),
-    userFacing: createShapeVocabularyCarsScatterplot(shapeRows),
+    primitive: () => createShapeVocabularyPrimitives(cars),
+    userFacing: () => createShapeVocabularyCarsScatterplot(shapeRows),
     width: 860,
     height: 400,
     colors: ["#4c78a8"]
@@ -236,8 +236,8 @@ const scatterArtifacts = Object.freeze([
     legend: { channels: ["color"] }
   });`
     }),
-    primitive: createCategoricalPalettePrimitives(cars),
-    userFacing: createPaletteCarsScatterplot(cars),
+    primitive: () => createCategoricalPalettePrimitives(cars),
+    userFacing: () => createPaletteCarsScatterplot(cars),
     width: 760,
     height: 400,
     colors: ["#66c2a5", "#fc8d62", "#8da0cb"]
@@ -266,8 +266,8 @@ const scatterArtifacts = Object.freeze([
   .encodeSize({ field: "Weight_in_lbs" })
   .encodeShape({ field: "Origin" });`
     }),
-    primitive: createEncodingReassignmentPrimitives(cars),
-    userFacing: createEncodingReassignmentCarsScatterplot(cars),
+    primitive: () => createEncodingReassignmentPrimitives(cars),
+    userFacing: () => createEncodingReassignmentCarsScatterplot(cars),
     width: 640,
     height: 400,
     colors: ["#4c78a8", "#f58518", "#e45756", "#72b7b2", "#54a24b"]
@@ -298,8 +298,8 @@ const scatterArtifacts = Object.freeze([
     legend: { channels: ["color"] }
   });`
     }),
-    primitive: createContinuousColorPrimitives(cars),
-    userFacing: createContinuousColorCarsScatterplot(cars),
+    primitive: () => createContinuousColorPrimitives(cars),
+    userFacing: () => createContinuousColorCarsScatterplot(cars),
     width: 760,
     height: 400,
     colors: ["#440154", "#fde725"]
@@ -330,8 +330,8 @@ const scatterArtifacts = Object.freeze([
     legend: { channels: ["opacity"] }
   });`
     }),
-    primitive: createFieldOpacityPrimitives(cars),
-    userFacing: createFieldOpacityCarsScatterplot(cars),
+    primitive: () => createFieldOpacityPrimitives(cars),
+    userFacing: () => createFieldOpacityCarsScatterplot(cars),
     width: 760,
     height: 400,
     colors: ["#4c78a8"]
@@ -397,8 +397,8 @@ export const visualVariants = Object.freeze([
     variant: baselineArtifact.variant,
     title: baselineArtifact.title,
     callChain: baselineArtifact.userFacingCallChain,
-    primitive: createCarsScatterplotPrimitives(cars),
-    userFacing: createCarsScatterplot(cars),
+    primitive: () => createCarsScatterplotPrimitives(cars),
+    userFacing: () => createCarsScatterplot(cars),
     width: 640,
     height: 400,
     colors: ["#4c78a8", "#f58518", "#e45756"],

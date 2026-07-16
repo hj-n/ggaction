@@ -97,8 +97,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
   variant: "baseline",
   title: "Canonical Density Area Baseline",
   callChain: baselineCallChain,
-  primitive: createCarsDensityAreaPrimitives(cars),
-  userFacing: createCarsDensityArea(cars)
+  primitive: () => createCarsDensityAreaPrimitives(cars),
+  userFacing: () => createCarsDensityArea(cars)
 }), defineVisualVariant({
   ...shared,
   variant: "area-outline-edit",
@@ -110,22 +110,22 @@ export const visualVariants = Object.freeze([defineVisualVariant({
     stroke: "#334155",
     strokeWidth: 1.5
   });`,
-  primitive: createAreaOutlineEditPrimitives(cars),
-  userFacing: createAreaOutlineEditCarsDensityArea(cars)
+  primitive: () => createAreaOutlineEditPrimitives(cars),
+  userFacing: () => createAreaOutlineEditCarsDensityArea(cars)
 }), defineVisualVariant({
   ...shared,
   variant: "epanechnikov-kernel",
   title: "Epanechnikov Density Kernel",
   callChain: densityCallChain({ kernel: "epanechnikov" }),
-  primitive: createEpanechnikovKernelPrimitives(cars),
-  userFacing: createEpanechnikovKernelCarsDensityArea(cars)
+  primitive: () => createEpanechnikovKernelPrimitives(cars),
+  userFacing: () => createEpanechnikovKernelCarsDensityArea(cars)
 }), defineVisualVariant({
   ...shared,
   variant: "count-normalization",
   title: "Count-normalized Density",
   callChain: densityCallChain({ normalization: "count" }),
-  primitive: createCountNormalizationPrimitives(cars),
-  userFacing: createCountNormalizationCarsDensityArea(cars)
+  primitive: () => createCountNormalizationPrimitives(cars),
+  userFacing: () => createCountNormalizationCarsDensityArea(cars)
 }), defineVisualVariant({
   ...shared,
   variant: "density-revision",
@@ -137,15 +137,15 @@ export const visualVariants = Object.freeze([defineVisualVariant({
     kernel: "triangular",
     normalization: "count"
   });`,
-  primitive: createDensityRevisionPrimitives(cars),
-  userFacing: createDensityRevisionCarsDensityArea(cars)
+  primitive: () => createDensityRevisionPrimitives(cars),
+  userFacing: () => createDensityRevisionCarsDensityArea(cars)
 }), defineVisualVariant({
   ...shared,
   variant: "wrapped-title-bottom",
   title: "Wrapped Bottom Chart Title",
   callChain: wrappedBottomTitleCallChain,
-  primitive: createWrappedBottomTitlePrimitives(cars),
-  userFacing: createWrappedBottomTitleCarsDensityArea(cars),
+  primitive: () => createWrappedBottomTitlePrimitives(cars),
+  userFacing: () => createWrappedBottomTitleCarsDensityArea(cars),
   width: wrappedBottomTitleTarget.width,
   height: wrappedBottomTitleTarget.height,
   regions: [

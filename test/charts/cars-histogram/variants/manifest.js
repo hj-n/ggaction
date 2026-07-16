@@ -59,8 +59,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
     subtitle: "by country",
     align: "center"
   });`,
-  primitive: createCarsHistogramPrimitives(cars),
-  userFacing: createCarsHistogram(cars),
+  primitive: () => createCarsHistogramPrimitives(cars),
+  userFacing: () => createCarsHistogram(cars),
 }), defineVisualVariant({
   ...shared,
   variant: "bin-step",
@@ -85,8 +85,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
     subtitle: "by country",
     align: "center"
   });`,
-  primitive: createBinStepPrimitives(cars),
-  userFacing: createBinStepCarsHistogram(cars)
+  primitive: () => createBinStepPrimitives(cars),
+  userFacing: () => createBinStepCarsHistogram(cars)
 }), defineVisualVariant({
   ...shared,
   variant: "bin-boundaries",
@@ -111,8 +111,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
     subtitle: "by country",
     align: "center"
   });`,
-  primitive: createBinBoundariesPrimitives(cars),
-  userFacing: createBinBoundariesCarsHistogram(cars)
+  primitive: () => createBinBoundariesPrimitives(cars),
+  userFacing: () => createBinBoundariesCarsHistogram(cars)
 }), defineVisualVariant({
   ...shared,
   variant: "field-reassignment",
@@ -142,8 +142,8 @@ export const visualVariants = Object.freeze([defineVisualVariant({
     maxBins: 8,
     xScale: { nice: true, zero: false }
   });`,
-  primitive: createFieldReassignmentPrimitives(cars),
-  userFacing: createFieldReassignmentCarsHistogram(cars)
+  primitive: () => createFieldReassignmentPrimitives(cars),
+  userFacing: () => createFieldReassignmentCarsHistogram(cars)
 }), defineVisualVariant({
   ...shared,
   variant: "normalized-stack",
@@ -172,6 +172,6 @@ export const visualVariants = Object.freeze([defineVisualVariant({
     subtitle: "by country",
     align: "center"
   });`,
-  primitive: createNormalizedStackPrimitives(cars),
-  userFacing: createNormalizedStackCarsHistogram(cars)
+  primitive: () => createNormalizedStackPrimitives(cars),
+  userFacing: () => createNormalizedStackCarsHistogram(cars)
 })]);

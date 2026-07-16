@@ -130,8 +130,8 @@ export const visualVariants = Object.freeze(CONTINUOUS_BAR_VARIANTS.map(variant 
       "reversed-life-expectancy": "Reversed Continuous Bar Color"
     }[variant],
     callChain: chains[variant],
-    primitive: createGapminderContinuousColorBarPrimitives(gapminder, variant),
-    userFacing: GAPMINDER_CONTINUOUS_COLOR_BAR_BUILDERS[variant](gapminder),
+    primitive: () => createGapminderContinuousColorBarPrimitives(gapminder, variant),
+    userFacing: () => GAPMINDER_CONTINUOUS_COLOR_BAR_BUILDERS[variant](gapminder),
     width: 680,
     height: 380,
     colors: ["#440154", "#fde725"],

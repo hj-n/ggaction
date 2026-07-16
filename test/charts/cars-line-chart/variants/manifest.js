@@ -102,8 +102,8 @@ const curveArtifacts = Object.freeze([
     subtitle: "from 1970 to 1982"
   });`
     }),
-    primitive: createCurveStepPrimitives(cars),
-    userFacing: createStepCarsLineChart(cars)
+    primitive: () => createCurveStepPrimitives(cars),
+    userFacing: () => createStepCarsLineChart(cars)
   }),
   Object.freeze({
     artifact: Object.freeze({
@@ -138,8 +138,8 @@ const curveArtifacts = Object.freeze([
   })
   .editLineMark({ target: "trends", curve: "monotone", strokeWidth: 4 });`
     }),
-    primitive: createCurveMonotoneEditPrimitives(cars),
-    userFacing: createMonotoneEditCarsLineChart(cars)
+    primitive: () => createCurveMonotoneEditPrimitives(cars),
+    userFacing: () => createMonotoneEditCarsLineChart(cars)
   })
 ]);
 
@@ -170,8 +170,8 @@ const dashPrimitiveArtifacts = Object.freeze([
   })
   .createLegend();`
     }),
-    primitive: createNamedDashVocabularyPrimitives(cars),
-    userFacing: createNamedDashVocabularyCarsLineChart(cars)
+    primitive: () => createNamedDashVocabularyPrimitives(cars),
+    userFacing: () => createNamedDashVocabularyCarsLineChart(cars)
   }),
   Object.freeze({
     artifact: Object.freeze({
@@ -197,8 +197,8 @@ const dashPrimitiveArtifacts = Object.freeze([
   .createLegend()
   .encodeStrokeDash({ value: "dotted" });`
     }),
-    primitive: createConstantDashPrimitives(cars),
-    userFacing: createConstantDashCarsLineChart(cars)
+    primitive: () => createConstantDashPrimitives(cars),
+    userFacing: () => createConstantDashCarsLineChart(cars)
   }),
   Object.freeze({
     artifact: Object.freeze({
@@ -223,8 +223,8 @@ const dashPrimitiveArtifacts = Object.freeze([
   .encodeGroup({ field: "Origin" })
   .encodeGroup({ field: "Cylinders" });`
     }),
-    primitive: createGroupReassignmentPrimitives(cars),
-    userFacing: createGroupReassignmentCarsLineChart(cars)
+    primitive: () => createGroupReassignmentPrimitives(cars),
+    userFacing: () => createGroupReassignmentCarsLineChart(cars)
   }),
   Object.freeze({
     artifact: Object.freeze({
@@ -250,8 +250,8 @@ const dashPrimitiveArtifacts = Object.freeze([
   .createLegend()
   .encodeStrokeDash({ field: "Cylinders" });`
     }),
-    primitive: createDashReassignmentPrimitives(cars),
-    userFacing: createDashReassignmentCarsLineChart(cars)
+    primitive: () => createDashReassignmentPrimitives(cars),
+    userFacing: () => createDashReassignmentCarsLineChart(cars)
   })
 ]);
 
@@ -292,8 +292,8 @@ const aggregatePrimitiveArtifacts = Object.freeze([
       title: "Median Acceleration",
       userFacingCallChain: aggregateTargetCallChain('"median"')
     }),
-    primitive: createAggregateMedianPrimitives(cars),
-    userFacing: createMedianCarsLineChart(cars)
+    primitive: () => createAggregateMedianPrimitives(cars),
+    userFacing: () => createMedianCarsLineChart(cars)
   }),
   Object.freeze({
     artifact: Object.freeze({
@@ -303,8 +303,8 @@ const aggregatePrimitiveArtifacts = Object.freeze([
       title: "Acceleration Dispersion",
       userFacingCallChain: aggregateTargetCallChain('"stdev"')
     }),
-    primitive: createAggregateDispersionPrimitives(cars),
-    userFacing: createDispersionCarsLineChart(cars)
+    primitive: () => createAggregateDispersionPrimitives(cars),
+    userFacing: () => createDispersionCarsLineChart(cars)
   }),
   Object.freeze({
     artifact: Object.freeze({
@@ -316,8 +316,8 @@ const aggregatePrimitiveArtifacts = Object.freeze([
         '{ op: "quantile", probability: 0.75 }'
       )
     }),
-    primitive: createAggregateQuantilePrimitives(cars),
-    userFacing: createQuantileCarsLineChart(cars)
+    primitive: () => createAggregateQuantilePrimitives(cars),
+    userFacing: () => createQuantileCarsLineChart(cars)
   }),
   Object.freeze({
     artifact: Object.freeze({
@@ -329,8 +329,8 @@ const aggregatePrimitiveArtifacts = Object.freeze([
         '{ op: "first", orderBy: "Horsepower" }'
       )
     }),
-    primitive: createAggregateOrderedPrimitives(cars),
-    userFacing: createOrderedCarsLineChart(cars)
+    primitive: () => createAggregateOrderedPrimitives(cars),
+    userFacing: () => createOrderedCarsLineChart(cars)
   })
 ]);
 
@@ -401,8 +401,8 @@ const compositeLegendPrimitiveArtifacts = Object.freeze([
       title: "Top Composite Line and Point Legend",
       userFacingCallChain: compositeLegendTargetCallChain("top")
     }),
-    primitive: createCompositeLegendTopPrimitives(cars),
-    userFacing: createCompositeLegendTopCarsLineChart(cars),
+    primitive: () => createCompositeLegendTopPrimitives(cars),
+    userFacing: () => createCompositeLegendTopCarsLineChart(cars),
     width: 720,
     height: 520
   }),
@@ -414,8 +414,8 @@ const compositeLegendPrimitiveArtifacts = Object.freeze([
       title: "Bottom Composite Line and Point Legend",
       userFacingCallChain: compositeLegendTargetCallChain("bottom")
     }),
-    primitive: createCompositeLegendBottomPrimitives(cars),
-    userFacing: createCompositeLegendBottomCarsLineChart(cars),
+    primitive: () => createCompositeLegendBottomPrimitives(cars),
+    userFacing: () => createCompositeLegendBottomCarsLineChart(cars),
     width: 720,
     height: 560
   })
@@ -458,8 +458,8 @@ export const visualVariants = Object.freeze([
     variant: baselineArtifact.variant,
     title: baselineArtifact.title,
     callChain: baselineArtifact.userFacingCallChain,
-    primitive: createCarsLineChartPrimitives(cars),
-    userFacing: createCarsLineChart(cars),
+    primitive: () => createCarsLineChartPrimitives(cars),
+    userFacing: () => createCarsLineChart(cars),
     width: 720,
     height: 460,
     colors: SERIES_COLORS,

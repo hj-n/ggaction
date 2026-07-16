@@ -1,7 +1,21 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+import { chart } from "../../src/index.js";
+
 import { assertRenderedPNG } from "./png.js";
+
+const DATA_ALIASES = Object.freeze([
+  "rows",
+  "cars",
+  "jobs",
+  "gapminder",
+  "shapeRows",
+  "namedDashRows",
+  "originAccelerationIntervals",
+  "ruleRows"
+]);
+const VALUE_ALIASES = Object.freeze(["pointShapes"]);
 
 export function defineVisualVariant({
   chart,
@@ -44,6 +58,12 @@ export function defineVisualVariant({
       throw new RangeError(`${chart}/${variant} has an invalid visual region.`);
     }
   }
+  if (typeof primitive !== "function") {
+    throw new TypeError(`${chart}/${variant} primitive must be a program factory.`);
+  }
+  if (userFacing !== undefined && typeof userFacing !== "function") {
+    throw new TypeError(`${chart}/${variant} userFacing must be a program factory.`);
+  }
   return Object.freeze({
     chart,
     variant,
@@ -57,6 +77,32 @@ export function defineVisualVariant({
     regions,
     artifact
   });
+}
+
+function replayDisplayedCallChain(source, program) {
+  const expression = source.trim().replace(/;$/, "");
+  const values = program.semanticSpec.datasets[0]?.values;
+  const pointShapes = program.semanticSpec.scales.find(
+    scale => scale.id === "shape"
+  )?.range;
+  const evaluate = new Function(
+    "chart",
+    ...DATA_ALIASES,
+    ...VALUE_ALIASES,
+    `"use strict"; return (${expression});`
+  );
+  return evaluate(
+    chart,
+    ...DATA_ALIASES.map(() => structuredClone(values)),
+    structuredClone(pointShapes)
+  );
+}
+
+function assertDisplayedProgram(variant, program) {
+  const replayed = replayDisplayedCallChain(variant.callChain, program);
+  assert.deepEqual(replayed.semanticSpec, program.semanticSpec);
+  assert.deepEqual(replayed.graphicSpec, program.graphicSpec);
+  assert.deepEqual(replayed.trace, program.trace);
 }
 
 function renderOptions(variant, kind) {
@@ -89,35 +135,27 @@ function renderOptions(variant, kind) {
 
 export function registerVisualVariantTests(variants) {
   for (const variant of variants) {
-    test(`renders ${variant.chart}/${variant.variant}`, async context => {
-      const results = {};
-      await context.test("primitive", async () => {
-        results.primitive = await assertRenderedPNG(
-          variant.primitive,
+    test(`renders ${variant.chart}/${variant.variant}`, async () => {
+      const primitive = variant.primitive();
+      if (variant.userFacing !== undefined) {
+        const userFacing = variant.userFacing();
+        if (variant.artifact) assertDisplayedProgram(variant, userFacing);
+        const [primitiveResult, userFacingResult] = await Promise.all([
+          assertRenderedPNG(
+            primitive,
+            renderOptions(variant, "primitive")
+          ),
+          assertRenderedPNG(
+            userFacing,
+            renderOptions(variant, "user-facing")
+          )
+        ]);
+        assert.equal(userFacingResult.pixelHash, primitiveResult.pixelHash);
+      } else {
+        await assertRenderedPNG(
+          primitive,
           renderOptions(variant, "primitive")
         );
-      });
-      if (variant.userFacing !== undefined) {
-        if (variant.artifact) {
-          await context.test("matches displayed call-chain actions", () => {
-            const displayed = [...variant.callChain.matchAll(
-              /\.([A-Za-z][A-Za-z0-9]*)\s*\(/g
-            )].map(match => match[1]);
-            assert.deepEqual(
-              variant.userFacing.trace.children.map(node => node.op),
-              displayed
-            );
-          });
-        }
-        await context.test("user-facing", async () => {
-          results.userFacing = await assertRenderedPNG(
-            variant.userFacing,
-            renderOptions(variant, "user-facing")
-          );
-        });
-        await context.test("matches primitive pixels", () => {
-          assert.equal(results.userFacing.pixelHash, results.primitive.pixelHash);
-        });
       }
     });
   }

@@ -11,18 +11,19 @@ import {
   createStyledCapsPrimitives
 } from "../gate-c.program.js";
 import {
-  createEncodedLayerInferenceProgram,
-  createErrorBarProgram,
-  createExplicitIntervalProgram,
-  createHorizontalErrorBarProgram,
-  createRuleGeometryProgram,
-  createStyledCapsProgram
-} from "../public.program.js";
+  createCarsErrorBar,
+  createCarsErrorBarOverlay,
+  createCarsHorizontalErrorBar,
+  createExplicitIntervalErrorBar,
+  createRuleGeometryExample,
+  createStyledCarsErrorBar
+} from "../../../../examples/cars-error-bar/program.js";
 import {
   ERROR_BAR_COLOR,
   ERROR_BAR_LAYOUT,
   RULE_GEOMETRY_COLORS,
-  RULE_GEOMETRY_LAYOUT
+  RULE_GEOMETRY_LAYOUT,
+  createExplicitIntervalReferenceValues
 } from "../reference-values.js";
 
 const ruleGeometryCallChain = `chart()
@@ -183,8 +184,8 @@ export const visualVariants = Object.freeze([
     variant: "rule-geometry",
     title: "Rule Geometry",
     callChain: ruleGeometryCallChain,
-    primitive: createRuleGeometryPrimitives(),
-    userFacing: createRuleGeometryProgram(),
+    primitive: () => createRuleGeometryPrimitives(),
+    userFacing: () => createRuleGeometryExample(),
     width: RULE_GEOMETRY_LAYOUT.width,
     height: RULE_GEOMETRY_LAYOUT.height,
     colors: RULE_GEOMETRY_COLORS,
@@ -197,8 +198,8 @@ export const visualVariants = Object.freeze([
     variant: "baseline",
     title: "Mean Acceleration Error Bars",
     callChain: baselineCallChain,
-    primitive: createErrorBarBaselinePrimitives(loadCars()),
-    userFacing: createErrorBarProgram(loadCars()),
+    primitive: () => createErrorBarBaselinePrimitives(loadCars()),
+    userFacing: () => createCarsErrorBar(loadCars()),
     width: ERROR_BAR_LAYOUT.width,
     height: ERROR_BAR_LAYOUT.height,
     colors: [ERROR_BAR_COLOR],
@@ -211,8 +212,8 @@ export const visualVariants = Object.freeze([
     variant: "encoded-layer-inference",
     title: "Encoded Layer Error-Bar Inference",
     callChain: encodedLayerInferenceCallChain,
-    primitive: createEncodedLayerInferencePrimitives(loadCars()),
-    userFacing: createEncodedLayerInferenceProgram(loadCars()),
+    primitive: () => createEncodedLayerInferencePrimitives(loadCars()),
+    userFacing: () => createCarsErrorBarOverlay(loadCars()),
     width: ERROR_BAR_LAYOUT.width,
     height: ERROR_BAR_LAYOUT.height,
     colors: [ERROR_BAR_COLOR],
@@ -225,8 +226,8 @@ export const visualVariants = Object.freeze([
     variant: "horizontal",
     title: "Horizontal Horsepower Error Bars",
     callChain: horizontalCallChain,
-    primitive: createHorizontalErrorBarPrimitives(loadCars()),
-    userFacing: createHorizontalErrorBarProgram(loadCars()),
+    primitive: () => createHorizontalErrorBarPrimitives(loadCars()),
+    userFacing: () => createCarsHorizontalErrorBar(loadCars()),
     width: ERROR_BAR_LAYOUT.width,
     height: ERROR_BAR_LAYOUT.height,
     colors: [ERROR_BAR_COLOR],
@@ -239,8 +240,10 @@ export const visualVariants = Object.freeze([
     variant: "explicit-interval",
     title: "Explicit Error-Bar Intervals",
     callChain: explicitIntervalCallChain,
-    primitive: createExplicitIntervalPrimitives(loadCars()),
-    userFacing: createExplicitIntervalProgram(loadCars()),
+    primitive: () => createExplicitIntervalPrimitives(loadCars()),
+    userFacing: () => createExplicitIntervalErrorBar(
+      createExplicitIntervalReferenceValues(loadCars()).sourceRows
+    ),
     width: ERROR_BAR_LAYOUT.width,
     height: ERROR_BAR_LAYOUT.height,
     colors: [ERROR_BAR_COLOR],
@@ -253,8 +256,8 @@ export const visualVariants = Object.freeze([
     variant: "styled-caps",
     title: "Styled Error-Bar Caps",
     callChain: styledCapsCallChain,
-    primitive: createStyledCapsPrimitives(loadCars()),
-    userFacing: createStyledCapsProgram(loadCars()),
+    primitive: () => createStyledCapsPrimitives(loadCars()),
+    userFacing: () => createStyledCarsErrorBar(loadCars()),
     width: ERROR_BAR_LAYOUT.width,
     height: ERROR_BAR_LAYOUT.height,
     colors: ["#e16d7f"],
