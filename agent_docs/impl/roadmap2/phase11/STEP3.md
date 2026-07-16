@@ -16,7 +16,7 @@ Canonical regression scatterplot의 concrete values를 유지하면서 Canvas �
 - [x] High-resolution browser and `primitive.png` rendering
 - [x] Gallery metadata and plot-region ink checks
 - [x] Gate A source, image, tree and draw-order review package
-- [ ] Explicit user approval before STEP4
+- [x] Explicit user approval before STEP4
 
 ## 구현 결과
 
@@ -59,3 +59,5 @@ canvas
 
 The primitive hierarchy is visually approved, preserves chart meaning and concrete geometry, and explicitly approves
 the intended band-before-points pixel change.
+
+Gate A was approved by the user on 2026-07-17.
