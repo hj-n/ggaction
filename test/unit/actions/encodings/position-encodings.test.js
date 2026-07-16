@@ -74,7 +74,11 @@ test("records the explicit nested encoding action hierarchy", () => {
   );
   assert.deepEqual(
     node.children.at(-1).children.map(child => child.op),
-    ["editGraphics"]
+    ["editGraphics", "editGraphics"]
+  );
+  assert.deepEqual(
+    node.children.at(-1).children.map(child => child.args.property),
+    ["x", "fill"]
   );
 });
 

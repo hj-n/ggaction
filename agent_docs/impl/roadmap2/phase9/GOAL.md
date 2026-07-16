@@ -23,14 +23,15 @@ Normative action contract:
 - [x] Point/bar/path/rule selection grain and non-pixel boundary designed
 - [x] `highlightMarks` facade, defaults and style applicability designed
 - [x] STEP1–STEP12 and three visual approval Gates designed
-- [ ] Contract and current implementation audit
-- [ ] Pure selector and mark-item resolver foundation
+- [x] Contract and current implementation audit
+- [x] Pure selector and mark-item resolver foundation
 - [x] Point selection/highlight Gate A and public implementation
 - [x] Histogram tallest-stack Gate B and public implementation
 - [x] Line-series Gate C and cross-mark integration
 - [x] `filterMarks` migration
 - [x] `editBarMark`
-- [ ] Robustness, docs, contract promotion and Phase closeout
+- [x] Cross-cutting robustness and option matrix
+- [ ] Docs, contract promotion and Phase closeout
 
 ## Public API scope
 

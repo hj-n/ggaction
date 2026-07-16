@@ -148,6 +148,7 @@ const rematerializePointMark = action(
         ]);
       }
       return baseline
+        .editGraphics({ target: id, property: "children", value: [] })
         .rematerializePointMark({ id })
         .rematerializeMarkHighlights({ target: id, highlights });
     }
@@ -171,9 +172,7 @@ const rematerializePointMark = action(
     const area = resolveMappedValues(this, layer, dataset, "size");
     const encodedShape = resolveMappedValues(this, layer, dataset, "shape");
     const encodedOpacity = resolveMappedValues(this, layer, dataset, "opacity");
-    const fill = mappedFill ?? (
-      encodedOpacity === undefined ? undefined : DEFAULT_POINT_FILL
-    );
+    const fill = mappedFill ?? DEFAULT_POINT_FILL;
     const config = this.markConfigs[id] ?? {};
     const shapes = encodedShape ?? dataset.values.map(() => config.shape ?? "circle");
     const existingChildren = graphic.children ?? [];

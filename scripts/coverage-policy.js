@@ -1,10 +1,32 @@
 export const CRITICAL_COVERAGE_FLOORS = Object.freeze({
+  "actions/selection/actions.js": Object.freeze({
+    lines: 90,
+    branches: 75,
+    functions: 100
+  }),
   "core/immutable.js": Object.freeze({ lines: 90, branches: 85, functions: 100 }),
   "grammar/areaSeries.js": Object.freeze({ lines: 75, branches: 75, functions: 100 }),
+  "grammar/markFilter.js": Object.freeze({ lines: 75, branches: 60, functions: 100 }),
+  "grammar/markSelection.js": Object.freeze({ lines: 90, branches: 90, functions: 100 }),
   "grammar/regression.js": Object.freeze({ lines: 90, branches: 75, functions: 100 }),
   "grammar/schemas/concreteGraphic.js": Object.freeze({
     lines: 85,
     branches: 85,
+    functions: 100
+  }),
+  "materialization/selection/filter.js": Object.freeze({
+    lines: 90,
+    branches: 75,
+    functions: 100
+  }),
+  "materialization/selection/items.js": Object.freeze({
+    lines: 90,
+    branches: 75,
+    functions: 90
+  }),
+  "materialization/selection/state.js": Object.freeze({
+    lines: 95,
+    branches: 90,
     functions: 100
   }),
   "renderers/canvas/index.js": Object.freeze({ lines: 85, branches: 70, functions: 100 }),
