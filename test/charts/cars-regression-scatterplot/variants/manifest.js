@@ -16,6 +16,7 @@ import { createCarsRegressionScatterplotPrimitives } from
 import {
   createComparisonFilterPrimitives,
   createComponentEditPrimitives,
+  createGraphicHierarchyPrimitives,
   createLoessRegressionPrimitives,
   createLeftLegendPrimitives,
   createPolynomialRegressionPrimitives,
@@ -250,4 +251,10 @@ export const visualVariants = Object.freeze([defineVisualVariant({
     height: 370,
     minimumInkPixels: 200
   })]
+}), defineVisualVariant({
+  ...shared,
+  variant: "graphic-hierarchy",
+  title: "Regression Graphic Hierarchy",
+  callChain: baselineCallChain,
+  primitive: () => createGraphicHierarchyPrimitives(cars)
 })]);

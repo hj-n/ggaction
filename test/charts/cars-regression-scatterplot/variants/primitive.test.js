@@ -5,6 +5,10 @@ import {
   createMockCanvasContext,
   findCanvasCalls
 } from "../../../support/canvas.js";
+import {
+  concreteGraphicSnapshot,
+  graphicTreeSnapshot
+} from "../../../support/graphic-tree.js";
 import { loadCars } from "../../../support/data.js";
 import { assertChartProgramsEquivalent } from
   "../../../support/chart-equivalence.js";
@@ -25,6 +29,7 @@ import { createCarsRegressionScatterplotValues } from "../reference-values.js";
 import {
   createComparisonFilterPrimitives,
   createComponentEditPrimitives,
+  createGraphicHierarchyPrimitives,
   createLoessRegressionPrimitives,
   createLeftLegendPrimitives,
   createPolynomialRegressionPrimitives,
@@ -34,6 +39,82 @@ import {
 import { createLeftLegendPrimitiveValues } from "./reference-values.js";
 
 const cars = loadCars();
+
+function operationCounts(context) {
+  const counts = {};
+  for (const call of context.calls) {
+    counts[call.op] = (counts[call.op] ?? 0) + 1;
+  }
+  return counts;
+}
+
+test("authors the Gate A regression graphic hierarchy with raw primitives", () => {
+  const baseline = createCarsRegressionScatterplotPrimitives(cars);
+  const program = createGraphicHierarchyPrimitives(cars);
+  const baselineContext = createMockCanvasContext();
+  const context = createMockCanvasContext();
+  const tree = graphicTreeSnapshot(program);
+  const node = id => tree.nodes.find(candidate => candidate.id === id);
+
+  renderCarsRegressionScatterplotPrimitives(baseline, baselineContext);
+  renderCarsRegressionScatterplotPrimitives(program, context);
+
+  assert.deepEqual(program.semanticSpec, baseline.semanticSpec);
+  assert.deepEqual(
+    concreteGraphicSnapshot(program, { exclude: ["plot-main"] }),
+    concreteGraphicSnapshot(baseline)
+  );
+  assert.deepEqual(tree.roots, ["canvas"]);
+  assert.deepEqual(node("canvas").children, [
+    "plot-main",
+    "seriesLegendSymbolLines",
+    "seriesLegendSymbolPoints",
+    "seriesLegendLabels",
+    "seriesLegendTitle",
+    "sizeLegendSymbols",
+    "sizeLegendLabels",
+    "sizeLegendTitle"
+  ]);
+  assert.deepEqual(node("plot-main").children, [
+    "horizontalGridLines",
+    "pointsRegressionBands",
+    "points",
+    "pointsRegressionLines",
+    "xAxisLine",
+    "xAxisTicks",
+    "xAxisLabels",
+    "xAxisTitle",
+    "yAxisLine",
+    "yAxisTicks",
+    "yAxisLabels",
+    "yAxisTitle"
+  ]);
+  assert.deepEqual(tree.drawOrder, [
+    "canvas",
+    "plot-main",
+    ...node("plot-main").children,
+    ...node("canvas").children.slice(1)
+  ]);
+  assert.equal(node("pointsRegressionBands").parent, "plot-main");
+  assert.equal(node("points").parent, "plot-main");
+  assert.equal(node("pointsRegressionLines").parent, "plot-main");
+  assert.equal(node("xAxisLine").parent, "plot-main");
+  assert.equal(node("seriesLegendTitle").parent, "canvas");
+  assert.deepEqual(operationCounts(context), operationCounts(baselineContext));
+  assert.notDeepEqual(context.calls, baselineContext.calls);
+  assert.deepEqual(program.actionStack, []);
+
+  const createNodes = program.trace.children.filter(node => node.op === "createGraphics");
+  assert.ok(createNodes.some(node =>
+    node.args.id === "plot-main" && node.args.parent === "canvas"
+  ));
+  assert.ok(createNodes.some(node =>
+    node.args.id === "pointsRegressionBands" &&
+    node.args.parent === "plot-main" &&
+    node.args.before === "points"
+  ));
+  assert.equal(program.trace.children.some(node => node.op === "createRegression"), false);
+});
 
 test("authors regression component edit targets with low-level graphic edits", () => {
   const baseline = createCarsRegressionScatterplotPrimitives(cars);

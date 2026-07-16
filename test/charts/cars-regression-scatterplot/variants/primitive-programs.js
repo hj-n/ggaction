@@ -162,6 +162,12 @@ export function createComponentEditPrimitives(cars) {
     });
 }
 
+export function createGraphicHierarchyPrimitives(cars) {
+  return createCarsRegressionScatterplotPrimitives(cars, {
+    hierarchy: true
+  });
+}
+
 export function createComparisonFilterPrimitives(cars) {
   return createCarsRegressionScatterplotPrimitives(cars, {
     filter: {

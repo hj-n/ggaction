@@ -19,7 +19,8 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     field: "Origin",
     oneOf: ["Japan", "USA"]
   },
-  regression = {}
+  regression = {},
+  hierarchy = false
 } = {}) {
   const width = 760;
   const height = 480;
@@ -36,10 +37,21 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
   const yTickPositions = yAxis.ticks.map(tick => tick.position);
   const originLegend = values.legends.origin;
   const sizeLegend = values.legends.size;
+  const plotPlacement = hierarchy ? { parent: "plot-main" } : {};
+  const canvasPlacement = hierarchy ? { parent: "canvas" } : {};
 
   let program = chart()
-    .createCanvas({ width, height, margin, background: "white" })
-    .createData({ id: "cars", values: cars })
+    .createCanvas({ width, height, margin, background: "white" });
+
+  if (hierarchy) {
+    program = program.createGraphics({
+      id: "plot-main",
+      type: "collection",
+      parent: "canvas"
+    });
+  }
+
+  program = program.createData({ id: "cars", values: cars })
     .editSemantic({ property: "dataset[pointsFilteredData].source", value: "cars" })
     .editSemantic({
       property: "dataset[pointsFilteredData].transform",
@@ -289,7 +301,8 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     .createGraphics({
       id: "horizontalGridLines",
       type: "line",
-      length: values.grid.horizontal.length
+      length: values.grid.horizontal.length,
+      ...plotPlacement
     })
     .editGraphics({
       target: "horizontalGridLines",
@@ -326,7 +339,7 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
       property: "strokeDash",
       value: values.grid.horizontal.map(() => [])
     })
-    .createGraphics({ id: "points", type: "collection" })
+    .createGraphics({ id: "points", type: "collection", ...plotPlacement })
     .editGraphics({
       target: "points",
       property: "items",
@@ -340,7 +353,10 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     program = program.createGraphics({
       id: "pointsRegressionBands",
       type: "path",
-      length: values.regressionBands.length
+      length: values.regressionBands.length,
+      ...(hierarchy
+        ? { parent: "plot-main", before: "points" }
+        : {})
     })
     .editGraphics({
       target: "pointsRegressionBands",
@@ -364,7 +380,8 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
   return program.createGraphics({
       id: "pointsRegressionLines",
       type: "path",
-      length: values.regressionLines.length
+      length: values.regressionLines.length,
+      ...plotPlacement
     })
     .editGraphics({
       target: "pointsRegressionLines",
@@ -386,7 +403,7 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
       property: "strokeDash",
       value: values.regressionLines.map(line => line.strokeDash)
     })
-    .createGraphics({ id: "xAxisLine", type: "line" })
+    .createGraphics({ id: "xAxisLine", type: "line", ...plotPlacement })
     .editGraphics({ target: "xAxisLine", property: "x1", value: xAxis.line.x1 })
     .editGraphics({ target: "xAxisLine", property: "y1", value: xAxis.line.y1 })
     .editGraphics({ target: "xAxisLine", property: "x2", value: xAxis.line.x2 })
@@ -396,7 +413,8 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     .createGraphics({
       id: "xAxisTicks",
       type: "line",
-      length: xAxis.ticks.length
+      length: xAxis.ticks.length,
+      ...plotPlacement
     })
     .editGraphics({ target: "xAxisTicks", property: "x1", value: xTickPositions })
     .editGraphics({ target: "xAxisTicks", property: "y1", value: xAxis.line.y1 })
@@ -407,7 +425,8 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     .createGraphics({
       id: "xAxisLabels",
       type: "text",
-      length: xAxis.ticks.length
+      length: xAxis.ticks.length,
+      ...plotPlacement
     })
     .editGraphics({ target: "xAxisLabels", property: "x", value: xTickPositions })
     .editGraphics({ target: "xAxisLabels", property: "y", value: xAxis.line.y1 + 18 })
@@ -422,7 +441,7 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     .editGraphics({ target: "xAxisLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "xAxisLabels", property: "textAlign", value: "center" })
     .editGraphics({ target: "xAxisLabels", property: "textBaseline", value: "top" })
-    .createGraphics({ id: "xAxisTitle", type: "text" })
+    .createGraphics({ id: "xAxisTitle", type: "text", ...plotPlacement })
     .editGraphics({ target: "xAxisTitle", property: "x", value: xAxis.title.x })
     .editGraphics({ target: "xAxisTitle", property: "y", value: xAxis.title.y })
     .editGraphics({ target: "xAxisTitle", property: "text", value: xAxis.title.text })
@@ -433,7 +452,7 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     .editGraphics({ target: "xAxisTitle", property: "textAlign", value: "center" })
     .editGraphics({ target: "xAxisTitle", property: "textBaseline", value: "middle" })
     .editGraphics({ target: "xAxisTitle", property: "rotation", value: 0 })
-    .createGraphics({ id: "yAxisLine", type: "line" })
+    .createGraphics({ id: "yAxisLine", type: "line", ...plotPlacement })
     .editGraphics({ target: "yAxisLine", property: "x1", value: yAxis.line.x1 })
     .editGraphics({ target: "yAxisLine", property: "y1", value: yAxis.line.y1 })
     .editGraphics({ target: "yAxisLine", property: "x2", value: yAxis.line.x2 })
@@ -443,7 +462,8 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     .createGraphics({
       id: "yAxisTicks",
       type: "line",
-      length: yAxis.ticks.length
+      length: yAxis.ticks.length,
+      ...plotPlacement
     })
     .editGraphics({ target: "yAxisTicks", property: "x1", value: yAxis.line.x1 - 6 })
     .editGraphics({ target: "yAxisTicks", property: "y1", value: yTickPositions })
@@ -454,7 +474,8 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     .createGraphics({
       id: "yAxisLabels",
       type: "text",
-      length: yAxis.ticks.length
+      length: yAxis.ticks.length,
+      ...plotPlacement
     })
     .editGraphics({ target: "yAxisLabels", property: "x", value: yAxis.line.x1 - 12 })
     .editGraphics({ target: "yAxisLabels", property: "y", value: yTickPositions })
@@ -469,7 +490,7 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     .editGraphics({ target: "yAxisLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "yAxisLabels", property: "textAlign", value: "right" })
     .editGraphics({ target: "yAxisLabels", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "yAxisTitle", type: "text" })
+    .createGraphics({ id: "yAxisTitle", type: "text", ...plotPlacement })
     .editGraphics({ target: "yAxisTitle", property: "x", value: yAxis.title.x })
     .editGraphics({ target: "yAxisTitle", property: "y", value: yAxis.title.y })
     .editGraphics({ target: "yAxisTitle", property: "text", value: yAxis.title.text })
@@ -483,7 +504,8 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     .createGraphics({
       id: "seriesLegendSymbolLines",
       type: "line",
-      length: originLegend.items.length
+      length: originLegend.items.length,
+      ...canvasPlacement
     })
     .editGraphics({
       target: "seriesLegendSymbolLines",
@@ -520,7 +542,11 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
       property: "strokeDash",
       value: originLegend.items.map(item => item.line.strokeDash)
     })
-    .createGraphics({ id: "seriesLegendSymbolPoints", type: "collection" })
+    .createGraphics({
+      id: "seriesLegendSymbolPoints",
+      type: "collection",
+      ...canvasPlacement
+    })
     .editGraphics({
       target: "seriesLegendSymbolPoints",
       property: "items",
@@ -529,7 +555,8 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     .createGraphics({
       id: "seriesLegendLabels",
       type: "text",
-      length: originLegend.items.length
+      length: originLegend.items.length,
+      ...canvasPlacement
     })
     .editGraphics({
       target: "seriesLegendLabels",
@@ -552,7 +579,11 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     .editGraphics({ target: "seriesLegendLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "seriesLegendLabels", property: "textAlign", value: "left" })
     .editGraphics({ target: "seriesLegendLabels", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "seriesLegendTitle", type: "text" })
+    .createGraphics({
+      id: "seriesLegendTitle",
+      type: "text",
+      ...canvasPlacement
+    })
     .editGraphics({ target: "seriesLegendTitle", property: "x", value: originLegend.title.x })
     .editGraphics({ target: "seriesLegendTitle", property: "y", value: originLegend.title.y })
     .editGraphics({ target: "seriesLegendTitle", property: "text", value: originLegend.title.text })
@@ -565,7 +596,8 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     .createGraphics({
       id: "sizeLegendSymbols",
       type: "circle",
-      length: sizeLegend.items.length
+      length: sizeLegend.items.length,
+      ...canvasPlacement
     })
     .editGraphics({
       target: "sizeLegendSymbols",
@@ -587,7 +619,8 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     .createGraphics({
       id: "sizeLegendLabels",
       type: "text",
-      length: sizeLegend.items.length
+      length: sizeLegend.items.length,
+      ...canvasPlacement
     })
     .editGraphics({
       target: "sizeLegendLabels",
@@ -610,7 +643,11 @@ export function createCarsRegressionScatterplotPrimitives(cars, {
     .editGraphics({ target: "sizeLegendLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "sizeLegendLabels", property: "textAlign", value: "left" })
     .editGraphics({ target: "sizeLegendLabels", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "sizeLegendTitle", type: "text" })
+    .createGraphics({
+      id: "sizeLegendTitle",
+      type: "text",
+      ...canvasPlacement
+    })
     .editGraphics({ target: "sizeLegendTitle", property: "x", value: sizeLegend.title.x })
     .editGraphics({ target: "sizeLegendTitle", property: "y", value: sizeLegend.title.y })
     .editGraphics({ target: "sizeLegendTitle", property: "text", value: sizeLegend.title.text })
