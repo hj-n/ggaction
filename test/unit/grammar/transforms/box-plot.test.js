@@ -76,6 +76,32 @@ test("keeps first category appearance and owns caller-provided output names", ()
   );
 });
 
+test("derives observed minmax whiskers without outlier rows", () => {
+  const transform = normalizeBoxTransform({
+    category: "group",
+    field: "value",
+    whisker: "minmax"
+  });
+  const result = deriveBoxData(rows, transform);
+
+  assert.equal(transform.whisker, "minmax");
+  assert.equal(Object.hasOwn(transform, "factor"), false);
+  assert.deepEqual(
+    result.summaries.map(row => ({
+      group: row.group,
+      lower: row[BOX_FIELDS.lowerWhisker],
+      upper: row[BOX_FIELDS.upperWhisker],
+      lowerFence: row[BOX_FIELDS.lowerFence],
+      upperFence: row[BOX_FIELDS.upperFence]
+    })),
+    [
+      { group: "A", lower: 1, upper: 100, lowerFence: 1, upperFence: 100 },
+      { group: "B", lower: 5, upper: 5, lowerFence: 5, upperFence: 5 }
+    ]
+  );
+  assert.deepEqual(result.outliers, []);
+});
+
 test("validates box transform provenance and finite measures", () => {
   const valid = normalizeBoxTransform({ category: "group", field: "value" });
   assert.equal(validateBoxTransform(valid), valid);
@@ -91,6 +117,23 @@ test("validates box transform provenance and finite measures", () => {
   assert.throws(
     () => normalizeBoxTransform({ category: "group", field: "value", factor: 0 }),
     /positive and finite/
+  );
+  assert.throws(
+    () => normalizeBoxTransform({
+      category: "group",
+      field: "value",
+      whisker: "minmax",
+      factor: 1
+    }),
+    /do not accept factor/
+  );
+  assert.throws(
+    () => normalizeBoxTransform({
+      category: "group",
+      field: "value",
+      whisker: "outer"
+    }),
+    /Unsupported box whisker policy/
   );
   assert.throws(
     () => validateBoxTransform({ ...valid, method: "nearest" }),

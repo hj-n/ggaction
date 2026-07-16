@@ -21,7 +21,8 @@ type BoxWhisker =
   whisker policy, generated fields and the owning box ID. Source data and old derived revisions are immutable.
 - Status: Partially Current. Linear quartiles, default Tukey factor, observed whiskers, missing values,
   category order, singleton categories, outlier ownership and deterministic IDs are implemented through
-  `createBoxPlot`; minmax and configurable factor coverage remain Planned.
+  `createBoxPlot`. Pure minmax derivation is implemented and covered by the Gate B primitive; public minmax
+  composition and configurable factor coverage remain Planned.
 
 ## selectRows
 

@@ -8,7 +8,7 @@ export const BOX_FIELDS = Object.freeze({
 });
 
 const TRANSFORM_KEYS = Object.freeze([
-  "type", "category", "field", "method", "factor", "as"
+  "type", "category", "field", "method", "whisker", "factor", "as"
 ]);
 const OUTPUT_KEYS = Object.freeze(Object.keys(BOX_FIELDS));
 
@@ -40,21 +40,40 @@ export function validateBoxTransform(value) {
   field(value.category, "Box category field");
   field(value.field, "Box measure field");
   if (value.method !== "linear") throw new Error(`Unsupported box quantile method "${value.method}".`);
-  if (!Number.isFinite(value.factor) || value.factor <= 0) {
+  const whisker = value.whisker ?? "tukey";
+  if (!["tukey", "minmax"].includes(whisker)) {
+    throw new Error(`Unsupported box whisker policy "${whisker}".`);
+  }
+  if (whisker === "tukey" && (!Number.isFinite(value.factor) || value.factor <= 0)) {
     throw new RangeError("Box factor must be positive and finite.");
+  }
+  if (whisker === "minmax" && value.factor !== undefined) {
+    throw new Error("Box minmax whiskers do not accept factor.");
   }
   validateOutputs(value.as, new Set([value.category, value.field]));
   return value;
 }
 
-export function normalizeBoxTransform({
-  type = "boxSummary",
-  category,
-  field: measure,
-  factor = 1.5,
-  as = BOX_FIELDS
-} = {}) {
-  const normalized = { type, category, field: measure, method: "linear", factor, as };
+export function normalizeBoxTransform(options = {}) {
+  const {
+    type = "boxSummary",
+    category,
+    field: measure,
+    whisker = "tukey",
+    factor = 1.5,
+    as = BOX_FIELDS
+  } = options;
+  if (whisker === "minmax" && Object.hasOwn(options, "factor")) {
+    throw new Error("Box minmax whiskers do not accept factor.");
+  }
+  const normalized = {
+    type,
+    category,
+    field: measure,
+    method: "linear",
+    ...(whisker === "tukey" ? { factor } : { whisker }),
+    as
+  };
   validateBoxTransform(normalized);
   return cloneAndFreeze(normalized);
 }
@@ -74,6 +93,7 @@ export function deriveBoxData(rows, transform) {
   if (!Array.isArray(rows)) throw new TypeError("Box rows must be an array.");
   validateBoxTransform(transform);
   const { category, field: measure, factor, as } = transform;
+  const whisker = transform.whisker ?? "tukey";
   const groups = [];
   const byCategory = new Map();
   for (const row of rows) {
@@ -96,8 +116,12 @@ export function deriveBoxData(rows, transform) {
     const q1 = stableNumber(quantile(sorted, 0.25));
     const median = stableNumber(quantile(sorted, 0.5));
     const q3 = stableNumber(quantile(sorted, 0.75));
-    const lowerFence = stableNumber(q1 - factor * (q3 - q1));
-    const upperFence = stableNumber(q3 + factor * (q3 - q1));
+    const lowerFence = whisker === "minmax"
+      ? sorted[0]
+      : stableNumber(q1 - factor * (q3 - q1));
+    const upperFence = whisker === "minmax"
+      ? sorted.at(-1)
+      : stableNumber(q3 + factor * (q3 - q1));
     const inliers = sorted.filter(value => value >= lowerFence && value <= upperFence);
     const lowerWhisker = inliers[0];
     const upperWhisker = inliers.at(-1);
@@ -106,7 +130,11 @@ export function deriveBoxData(rows, transform) {
       [as.lowerWhisker]: lowerWhisker, [as.upperWhisker]: upperWhisker,
       [as.lowerFence]: lowerFence, [as.upperFence]: upperFence, [as.count]: sorted.length
     });
-    for (const row of group.rows) if (row[measure] < lowerWhisker || row[measure] > upperWhisker) outlierSet.add(row);
+    if (whisker === "tukey") {
+      for (const row of group.rows) {
+        if (row[measure] < lowerWhisker || row[measure] > upperWhisker) outlierSet.add(row);
+      }
+    }
   }
   return cloneAndFreeze({ summaries, outliers: rows.filter(row => outlierSet.has(row)).map(row => ({ ...row })) });
 }

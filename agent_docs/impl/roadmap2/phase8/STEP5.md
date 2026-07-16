@@ -7,15 +7,15 @@ vertical median과 no-outlier policy를 승인받는다.
 
 ## 진행 상태
 
-- [ ] Independent category-wise min/median/q1/q3/max rows
-- [ ] Raw y + x/x2 box body geometry
-- [ ] Horizontal whiskers, vertical caps and median geometry
-- [ ] No outlier dataset/layer/graphic evidence
-- [ ] Axes, vertical grid and title composition
-- [ ] Variant manifest and exact future call chain
-- [ ] `cars-horizontal-minmax/primitive.png` and renderer checks
+- [x] Independent category-wise min/median/q1/q3/max rows
+- [x] Raw y + x/x2 box body geometry
+- [x] Horizontal whiskers, vertical caps and median geometry
+- [x] No outlier dataset/layer/graphic evidence
+- [x] Axes, vertical grid and title composition
+- [x] Variant manifest and exact future call chain
+- [x] `cars-horizontal-minmax/primitive.png` and renderer checks
 - [ ] Gate B user confirmation
-- [ ] STEP status, conceptual commit and push
+- [x] STEP status, conceptual commit and push
 
 ## Gate B
 
