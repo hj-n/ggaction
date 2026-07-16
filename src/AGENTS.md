@@ -45,6 +45,7 @@ Apply these instructions to library source, public package entry points, and sou
 - Treat user-defined IDs as names: validate their basic form, uniqueness when creating, and existence when referencing rather than checking them against a library vocabulary.
 - Infer layout coordinates from Canvas or plot bounds when possible instead of requiring raw x/y values. Do not make non-overlap a global invariant; individual actions and explicit user options may intentionally produce overlapping graphics.
 - Do not create placeholder resources for optional content. Create an optional dataset, semantic component, materialization config, graphic, or wrapped trace child only when the option is enabled and the component is semantically applicable with non-empty output; disabling or inapplicability must leave the entire optional branch absent.
+- Validate every mark-specific appearance option against the resolved mark recipe before changing state. Reject inapplicable options with a clear error instead of silently ignoring them or partially applying a highlight.
 
 ## Actions and Trace
 
@@ -81,6 +82,12 @@ Apply these instructions to library source, public package entry points, and sou
 - Keep appearance-only materialization settings such as a grouped-bar band fraction outside `semanticSpec`; store them in immutable graphical configuration and materialize their concrete results into `graphicSpec`.
 - Keep mark-selector value sources explicit and non-overlapping: `field` reads data values, `channel` reads resolved pre-scale semantic encoding values, and `property` reads concrete `graphicSpec` values. Never expose a pixel dimension under a semantic channel name or overwrite a source field with an aggregate result.
 - Represent bar measure geometry semantically with endpoint channels: `y`/`x` is the start endpoint and `y2`/`x2` is the end endpoint. Concrete rectangles continue to use top-left `x`/`y` plus `width`/`height`. A selector grain that groups multiple concrete children must retain every attachment ID and expose the union bounds only as graphical properties.
+- Define selection over final materialized mark items rather than raw source rows. Reuse row identity only when one row corresponds deterministically to one final item; aggregated, grouped, stacked, path, area, and composite marks require identities at their actual visual grain.
+- Give every selectable mark recipe an explicit semantic item model. Keep semantic endpoints and grouping roles distinct from derived concrete properties such as top-left position, width, height, radius, or union bounds, and never introduce ambiguous aliases between them.
+- For marks with multiple meaningful grains, expose the grain explicitly and evaluate each grain independently. For example, one stacked-bar segment and the complete stack that contains it are different selectable items and must not be conflated by inference.
+- Implement highlighting as an appearance operation over the canonical normalized selection result. `highlightMarks` must reuse `selectMarks` selection semantics rather than introducing a second selector grammar or resolving a different item set.
+- Rematerialize highlights from the unhighlighted concrete baseline, then reevaluate stable item identities and apply the current selected/complement recipes. Never accumulate new highlight edits on previously highlighted graphics or treat stale child graphic IDs as authoritative.
+- When a legend represents a selected or highlighted mark domain, synchronize the applicable legend symbol appearance with that domain state while preserving label readability. Do not dim or restyle legend text unless an explicit text option requests it.
 - Output density such as PNG `pixelRatio` is a renderer option and must not rewrite logical values in `graphicSpec`.
 - When a semantic change affects existing concrete output, the responsible domain action must explicitly rematerialize every affected graphical consumer.
 - Positional encoding actions own coordinate inference and layer attachment. Guide actions read stored coordinates and must not create or repair them.
