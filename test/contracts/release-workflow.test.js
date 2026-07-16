@@ -34,6 +34,8 @@ test("qualifies, retains, verifies, and publishes one exact artifact", () => {
     "npm run test:docs:browser"
   ]) assert.match(workflow, new RegExp(command.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   assert.match(workflow, /node scripts\/release-candidate\.js "\$RELEASE_TAG"/);
+  assert.equal((workflow.match(/EFFECTIVE_RELEASE_REF: refs\/tags\/\$\{\{ inputs\.tag \}\}/g) ?? []).length, 2);
+  assert.equal((workflow.match(/GITHUB_REF="\$EFFECTIVE_RELEASE_REF"/g) ?? []).length, 2);
   assert.match(workflow, /actions\/upload-artifact@v4/);
   assert.match(workflow, /release-candidate\.js --verify/);
   assert.match(workflow, /npm publish "\$TARBALL" --access public --tag latest/);

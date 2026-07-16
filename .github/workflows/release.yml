@@ -46,7 +46,8 @@ jobs:
       - name: Pack the exact release candidate once
         env:
           RELEASE_TAG: ${{ inputs.tag }}
-        run: node scripts/release-candidate.js "$RELEASE_TAG"
+          EFFECTIVE_RELEASE_REF: refs/tags/${{ inputs.tag }}
+        run: GITHUB_REF="$EFFECTIVE_RELEASE_REF" node scripts/release-candidate.js "$RELEASE_TAG"
       - name: Verify generated contracts and documentation
         run: |
           npm run contracts:catalog:check
@@ -117,7 +118,10 @@ jobs:
       - name: Verify downloaded artifact identity
         env:
           RELEASE_TAG: ${{ inputs.tag }}
-        run: node scripts/release-candidate.js --verify .artifacts/release/candidate.json "$RELEASE_TAG"
+          EFFECTIVE_RELEASE_REF: refs/tags/${{ inputs.tag }}
+        run: >-
+          GITHUB_REF="$EFFECTIVE_RELEASE_REF"
+          node scripts/release-candidate.js --verify .artifacts/release/candidate.json "$RELEASE_TAG"
       - name: Check whether this exact version is already public
         id: registry
         run: |

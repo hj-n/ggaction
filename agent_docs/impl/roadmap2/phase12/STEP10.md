@@ -24,9 +24,9 @@ deprecate하거나 unpublish하지 않는다.
 ## 승인과 실행 경계
 
 사용자는 2026-07-17 `0.0.2` corrective release 완료까지 명시적으로 승인했다. 같은 version을 수동으로 중복
-publish하지 않는다. Candidate qualification 뒤 annotated tag를 push하고, `release.yml`을 그 tag ref와 matching
-input으로 한 번만 실행한다. `npm-release` environment 승인 뒤 OIDC publish와 GitHub Release가 같은 workflow에서
-완료돼야 한다.
+publish하지 않는다. Candidate qualification 뒤 annotated tag를 push하고, default branch의 `release.yml`을
+matching tag input으로 실행한다. Workflow는 그 tag를 checkout하고 exact commit을 검증한다. `npm-release`
+environment 승인 뒤 OIDC publish와 GitHub Release가 같은 workflow에서 완료돼야 한다.
 
 ## 완료 조건
 
@@ -58,3 +58,8 @@ primitive/public graphical equality의 sub-ULP 차이를 발견했다. Package c
 선택의 문제이므로 immutable `v0.0.2` tag는 유지한다. Workflow definition은 default branch에서 실행하고 exact
 annotated tag를 checkout/검증하며, full qualification은 canonical Node 20, OIDC publish는 Node 24에서 실행하도록
 수정했다.
+
+Release run `29519959283`도 publish 전 중단됐다. Workflow가 tag를 정확히 checkout했지만 candidate tag에 포함된
+기존 helper가 `GITHUB_REF`를 직접 읽는 compatibility contract를 유지하고 있었다. Default-branch orchestrator는
+pack/verify helper에 이미 검증한 effective tag ref를 명시적으로 전달하고, annotated tag/commit 검사는 workflow와
+helper 양쪽에서 계속 수행한다.
