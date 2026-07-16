@@ -34,6 +34,9 @@ export function createCarsBoxPlotPrimitives(cars) {
     .editSemantic({ property: "scale[y].range", value: "auto" })
     .editSemantic({ property: "scale[y].nice", value: true })
     .editSemantic({ property: "scale[y].zero", value: false })
+    .editSemantic({ property: "scale[color].type", value: "ordinal" })
+    .editSemantic({ property: "scale[color].domain", value: values.categories })
+    .editSemantic({ property: "scale[color].range", value: { palette: "tableau10" } })
     .editSemantic({ property: "guide.axis.x.scale", value: "x" })
     .editSemantic({ property: "guide.axis.x.coordinate", value: "main" })
     .editSemantic({ property: "guide.axis.x.title", value: "Origin" })
@@ -155,14 +158,17 @@ export function createCarsBoxPlotPrimitives(cars) {
     .editSemantic({ property: "layer[boxPlot].encoding.y2.field", value: BOX_PLOT_FIELDS.q3 })
     .editSemantic({ property: "layer[boxPlot].encoding.y2.fieldType", value: "quantitative" })
     .editSemantic({ property: "layer[boxPlot].encoding.y2.scale", value: "y" })
+    .editSemantic({ property: "layer[boxPlot].encoding.color.field", value: "Origin" })
+    .editSemantic({ property: "layer[boxPlot].encoding.color.fieldType", value: "nominal" })
+    .editSemantic({ property: "layer[boxPlot].encoding.color.scale", value: "color" })
     .createGraphics({ id: "boxPlot", type: "rect", length: values.boxes.length })
     .editGraphics({ target: "boxPlot", property: "x", value: values.boxes.map(box => box.x) })
     .editGraphics({ target: "boxPlot", property: "y", value: values.boxes.map(box => box.y) })
     .editGraphics({ target: "boxPlot", property: "width", value: values.boxes.map(box => box.width) })
     .editGraphics({ target: "boxPlot", property: "height", value: values.boxes.map(box => box.height) })
-    .editGraphics({ target: "boxPlot", property: "fill", value: BOX_PLOT_STYLE.boxFill })
+    .editGraphics({ target: "boxPlot", property: "fill", value: values.boxColors })
     .editGraphics({ target: "boxPlot", property: "opacity", value: BOX_PLOT_STYLE.boxOpacity })
-    .editGraphics({ target: "boxPlot", property: "stroke", value: BOX_PLOT_STYLE.boxStroke })
+    .editGraphics({ target: "boxPlot", property: "stroke", value: values.boxColors })
     .editGraphics({ target: "boxPlot", property: "strokeWidth", value: BOX_PLOT_STYLE.boxStrokeWidth })
     .editSemantic({ property: "layer[boxPlotMedian].mark.type", value: "rule" })
     .editSemantic({ property: "layer[boxPlotMedian].data", value: "boxPlotSummaryData" })
@@ -191,12 +197,8 @@ export function createCarsBoxPlotPrimitives(cars) {
     .editSemantic({ property: "layer[boxPlotOutliers].encoding.y.field", value: "Miles_per_Gallon" })
     .editSemantic({ property: "layer[boxPlotOutliers].encoding.y.fieldType", value: "quantitative" })
     .editSemantic({ property: "layer[boxPlotOutliers].encoding.y.scale", value: "y" })
-    .createGraphics({ id: "boxPlotOutliers", type: "circle", length: values.outlierPoints.length })
-    .editGraphics({ target: "boxPlotOutliers", property: "x", value: values.outlierPoints.map(point => point.x) })
-    .editGraphics({ target: "boxPlotOutliers", property: "y", value: values.outlierPoints.map(point => point.y) })
-    .editGraphics({ target: "boxPlotOutliers", property: "radius", value: BOX_PLOT_STYLE.outlierRadius })
-    .editGraphics({ target: "boxPlotOutliers", property: "fill", value: BOX_PLOT_STYLE.outlierFill })
-    .editGraphics({ target: "boxPlotOutliers", property: "opacity", value: BOX_PLOT_STYLE.outlierOpacity })
+    .createGraphics({ id: "boxPlotOutliers", type: "collection" })
+    .editGraphics({ target: "boxPlotOutliers", property: "children", value: values.outlierGraphics })
     .createGraphics({ id: "xAxisLine", type: "line" })
     .editGraphics({ target: "xAxisLine", property: "x1", value: xAxis.line.x1 })
     .editGraphics({ target: "xAxisLine", property: "y1", value: xAxis.line.y1 })
@@ -269,6 +271,7 @@ export function createCarsBoxPlotPrimitives(cars) {
     .editGraphics({ target: "yAxisTitle", property: "rotation", value: yAxis.title.rotation })
     .createTitle({
       text: values.title.text,
-      subtitle: values.title.subtitle
+      subtitle: values.title.subtitle,
+      maxWidth: values.bounds.width
     });
 }

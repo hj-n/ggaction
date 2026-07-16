@@ -1,7 +1,7 @@
 export const BOX_PLOT_LAYOUT = Object.freeze({
-  width: 720,
+  width: 360,
   height: 460,
-  margin: Object.freeze({ top: 90, right: 40, bottom: 70, left: 80 })
+  margin: Object.freeze({ top: 140, right: 40, bottom: 70, left: 80 })
 });
 
 export const BOX_PLOT_FIELDS = Object.freeze({
@@ -17,19 +17,26 @@ export const BOX_PLOT_FIELDS = Object.freeze({
 
 export const BOX_PLOT_STYLE = Object.freeze({
   boxFill: "#4c78a8",
-  boxOpacity: 0.28,
+  boxOpacity: 1,
   boxStroke: "#4c78a8",
   boxStrokeWidth: 1.5,
   medianStroke: "#1f2937",
   medianStrokeWidth: 2,
-  whiskerStroke: "#4c78a8",
+  whiskerStroke: "#111111",
   whiskerStrokeWidth: 2,
-  outlierFill: "#4c78a8",
+  outlierFill: "#111111",
+  outlierShape: "diamond",
   outlierRadius: 3,
   outlierOpacity: 0.75,
   capSize: 8,
   band: 0.7
 });
+
+export const BOX_PLOT_COLORS = Object.freeze([
+  "#4c78a8",
+  "#f58518",
+  "#e45756"
+]);
 
 function freezeRows(rows) {
   return Object.freeze(rows.map(row => Object.freeze(row)));
@@ -223,6 +230,23 @@ export function createCarsBoxPlotReferenceValues(cars, {
     value: item.measure,
     category: item.category
   }));
+  const diamondHalfDiagonal = Math.sqrt(
+    Math.PI * BOX_PLOT_STYLE.outlierRadius ** 2 / 2
+  );
+  const outlierGraphics = outlierPoints.map(point => Object.freeze({
+    type: "path",
+    properties: Object.freeze({
+      commands: Object.freeze([
+        Object.freeze({ op: "M", x: point.x, y: point.y - diamondHalfDiagonal }),
+        Object.freeze({ op: "L", x: point.x + diamondHalfDiagonal, y: point.y }),
+        Object.freeze({ op: "L", x: point.x, y: point.y + diamondHalfDiagonal }),
+        Object.freeze({ op: "L", x: point.x - diamondHalfDiagonal, y: point.y }),
+        Object.freeze({ op: "Z" })
+      ]),
+      fill: BOX_PLOT_STYLE.outlierFill,
+      opacity: BOX_PLOT_STYLE.outlierOpacity
+    })
+  }));
   const yTicks = ticks(yDomain).map(value => ({
     value,
     position: y(value),
@@ -235,6 +259,7 @@ export function createCarsBoxPlotReferenceValues(cars, {
     outliers: freezeRows(outliers),
     outlierSourceIndices: Object.freeze(outlierItems.map(item => item.sourceIndex)),
     categories: Object.freeze(categories),
+    boxColors: Object.freeze(BOX_PLOT_COLORS.slice(0, categories.length)),
     bounds,
     scales: Object.freeze({
       x: Object.freeze({ domain: Object.freeze(categories), range: Object.freeze(xRange), step }),
@@ -246,6 +271,7 @@ export function createCarsBoxPlotReferenceValues(cars, {
     upperCaps: freezeRows(upperCaps),
     medians: freezeRows(medians),
     outlierPoints: freezeRows(outlierPoints),
+    outlierGraphics: Object.freeze(outlierGraphics),
     axes: Object.freeze({
       x: Object.freeze({
         line: Object.freeze({

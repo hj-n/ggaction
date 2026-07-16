@@ -53,8 +53,12 @@ test("uses observed whiskers, linear quartiles, and source-order outliers", () =
     values.outlierSourceIndices,
     [...values.outlierSourceIndices].sort((left, right) => left - right)
   );
-  assert.equal(values.boxes[0].width, 140);
-  assert.deepEqual(values.medians.map(rule => rule.x2 - rule.x1), [140, 140, 140]);
+  assert.equal(values.boxes[0].width, 56);
+  assert.deepEqual(values.medians.map(rule => rule.x2 - rule.x1), [56, 56, 56]);
+  assert.deepEqual(values.boxColors, ["#4c78a8", "#f58518", "#e45756"]);
+  assert.ok(values.outlierGraphics.every(graphic =>
+    graphic.type === "path" && graphic.properties.fill === "#111111"
+  ));
 });
 
 test("owns caller rows and rejects invalid measures or empty valid input", () => {

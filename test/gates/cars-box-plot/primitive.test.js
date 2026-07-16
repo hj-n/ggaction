@@ -30,22 +30,25 @@ test("authors the canonical Cars Tukey box plot with raw primitives", () => {
   assert.equal(body.encoding.y2.field, BOX_PLOT_FIELDS.q3);
   assert.deepEqual(
     program.graphicSpec.objects.boxPlot.children.map(child => child.properties),
-    values.boxes.map(box => ({
+    values.boxes.map((box, index) => ({
       ...box,
-      fill: "#4c78a8",
-      opacity: 0.28,
-      stroke: "#4c78a8",
+      fill: values.boxColors[index],
+      opacity: 1,
+      stroke: values.boxColors[index],
       strokeWidth: 1.5
     }))
   );
   assert.equal(program.graphicSpec.objects.boxPlotOutliers.children.length, 10);
   assert.deepEqual(
-    program.graphicSpec.objects.boxPlotOutliers.children.map(child => ({
-      x: child.properties.x,
-      y: child.properties.y
+    program.graphicSpec.objects.boxPlotOutliers.children.map(({ type, properties }) => ({
+      type,
+      properties
     })),
-    values.outlierPoints.map(point => ({ x: point.x, y: point.y }))
+    values.outlierGraphics
   );
+  assert.ok(program.graphicSpec.objects.boxPlotOutliers.children.every(child =>
+    child.type === "path" && child.properties.fill === "#111111"
+  ));
 
   const order = program.graphicSpec.order;
   assert.ok(order.indexOf("horizontalGridLines") < order.indexOf("boxPlotWhisker"));
@@ -84,6 +87,6 @@ test("keeps all primitive children concrete and renderable", () => {
   const context = createMockCanvasContext();
   render(program, context);
   assert.ok(context.calls.some(call => call.op === "fillRect"));
-  assert.ok(context.calls.some(call => call.op === "arc"));
+  assert.equal(context.calls.some(call => call.op === "arc"), false);
   assert.ok(context.calls.some(call => call.op === "fillText"));
 });

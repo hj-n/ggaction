@@ -16,16 +16,16 @@ error-bar whisker, median rule, outlier point와 `createBoxPlot` hierarchy의 ca
 - Whisker: fence 안의 실제 observed minimum/maximum; interpolated fence 자체를 endpoint로 쓰지 않는다.
 - Outliers: whisker 밖의 source rows, source order 유지; canonical counts는 USA 3, Japan 1, Europe 6이다.
 - Box width: category bandwidth의 `0.7`
-- Box appearance: fill `#4c78a8`, opacity `0.28`, stroke `#4c78a8`, stroke width `1.5`
+- Box appearance: opacity `1`, stroke width `1.5`; categorical color maps `Origin` through the default palette
 - Median: stroke `#1f2937`, stroke width `2`, concrete box body의 폭과 동일한 span
-- Whisker/caps: current explicit `createErrorBar` defaults; caps는 8 logical pixels
-- Outlier: circle, radius `3`, opacity `0.75`
+- Whisker/caps: black `#111111`, stroke width `2`; caps는 8 logical pixels
+- Outlier: black diamond, radius-equivalent area from `3`, opacity `0.75`
 - Scales: ordinal x; linear y with `nice: true`, `zero: false`
-- Guides: x/y axes와 horizontal grid; constant appearance이므로 legend 없음
-- Canvas: `720×460`, margin `{ top: 90, right: 40, bottom: 70, left: 80 }`
+- Guides: x/y axes와 horizontal grid; x가 이미 Origin을 식별하므로 redundant color legend는 명시적으로 끈다.
+- Canvas: `360×460`, margin `{ top: 140, right: 40, bottom: 70, left: 80 }`; title wraps within the 240px plot width
 - Title: `Fuel Economy Distribution by Origin`; subtitle: `Tukey box plot with 1.5× IQR whiskers`
 
-Renderer는 final rect, line, circle과 text만 읽는다. Quartile, whisker policy, outlier role, band fraction,
+Renderer는 final rect, line, closed path와 text만 읽는다. Quartile, whisker policy, outlier role, band fraction,
 semantic scale 또는 composite ownership을 해석하지 않는다.
 
 ## Final user-facing API
@@ -33,19 +33,26 @@ semantic scale 또는 composite ownership을 해석하지 않는다.
 ```javascript
 const program = chart()
   .createCanvas({
-    width: 720,
+    width: 360,
     height: 460,
-    margin: { top: 90, right: 40, bottom: 70, left: 80 }
+    margin: { top: 140, right: 40, bottom: 70, left: 80 }
   })
   .createData({ values: cars })
   .createBoxPlot({
     x: { field: "Origin", fieldType: "nominal" },
     y: { field: "Miles_per_Gallon" }
   })
-  .createGuides()
+  .encodeColor({
+    target: "boxPlot",
+    field: "Origin",
+    fieldType: "nominal",
+    scale: { palette: "tableau10" }
+  })
+  .createGuides({ legend: false })
   .createTitle({
     text: "Fuel Economy Distribution by Origin",
-    subtitle: "Tukey box plot with 1.5× IQR whiskers"
+    subtitle: "Tukey box plot with 1.5× IQR whiskers",
+    maxWidth: 240
   });
 ```
 
@@ -177,8 +184,8 @@ error-bar, point-shape or appearance validation.
 
 ### Graphical state
 
-- Box body is a concrete `rect` collection, whisker/caps/median are `line` collections, outliers are point
-  primitives.
+- Box body is a concrete `rect` collection, whisker/caps/median are `line` collections, and diamond outliers are
+  concrete closed `path` primitives.
 - Every child has final finite coordinates and concrete appearance values.
 - Median endpoints are recomputed from the actual box rectangle extent after range, scale or Canvas changes.
 - Drawing order is grid → whisker/caps → box body → median → outliers → axes/title.

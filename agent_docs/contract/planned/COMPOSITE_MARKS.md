@@ -79,8 +79,9 @@ createBoxPlot({
   mark configuration.
 - `whisker` defaults to Tukey factor `1.5`; `outliers` defaults to `true` for Tukey and has no effect in minmax
   mode. Concrete order is whiskers/caps behind the box, then median, then outliers.
-- `width.band` defaults to `0.7`. Box defaults are fill/stroke `#4c78a8`, opacity `0.28`, stroke width `1.5`;
-  median defaults are stroke `#1f2937`, width `2`; outliers default to circle, radius `3`, opacity `0.75`.
+- `width.band` defaults to `0.7`. Box defaults are fill/stroke `#4c78a8`, opacity `1`, stroke width `1.5`;
+  median defaults are stroke `#1f2937`, width `2`; whiskers/caps default to black `#111111`, width `2`, and
+  outliers default to black diamond, radius-equivalent area from `3`, opacity `0.75`.
   Median span follows the concrete box body extent, while reused error-bar caps keep their 8px logical default.
 - Omitted `id` resolves once to `"boxPlot"`; a second box plot requires an explicit ID. Child IDs and datasets
   are namespaced from the resolved owner. The aggregate is create-only; users modify stable child

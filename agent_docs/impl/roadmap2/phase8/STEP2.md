@@ -19,8 +19,9 @@ box, whisker, median, outlier와 guide layering을 승인받는다.
 
 ## Gate A
 
-USA/Japan/Europe의 quartile와 whisker 관계, 10 outlier visibility, 0.7 band width, component order와 default
-appearance를 확인한다. 승인 전에는 `createBoxPlot` public flow를 구현하지 않는다.
+USA/Japan/Europe의 quartile와 whisker 관계, 10 black diamond outlier visibility, Origin별 opaque box color,
+0.7 band width, black whisker/cap, component order와 half-width Canvas를 확인한다. 승인 전에는
+`createBoxPlot` public flow를 구현하지 않는다.
 
 ## 완료 조건
 
