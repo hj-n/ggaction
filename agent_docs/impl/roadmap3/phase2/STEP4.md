@@ -2,9 +2,10 @@
 
 ## 진행 상태
 
-- [ ] Normal Gate tests 통과
-- [ ] Cars와 Fashion high-DPI PNG 생성
-- [ ] Roadmap 3 gallery 검증
+- [x] Normal Gate tests 통과
+- [x] Cars와 Fashion high-DPI PNG 생성
+- [x] Browser Canvas size와 console/page error 검증
+- [x] Roadmap 3 gallery 검증
 - [ ] Exact code와 images 제시
 - [ ] 사용자 승인
 

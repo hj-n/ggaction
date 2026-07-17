@@ -3,8 +3,8 @@
 ## 진행 상태
 
 - [x] STEP 1 — Phase 계약, inventory와 chart target 확정
-- [ ] STEP 2 — Deterministic Polar reference geometry
-- [ ] STEP 3 — Primitive visual baselines
+- [x] STEP 2 — Deterministic Polar reference geometry
+- [x] STEP 3 — Primitive visual baselines
 - [ ] STEP 4 — Gate C visual evidence와 사용자 승인
 - [ ] STEP 5 — Pure Polar grammar
 - [ ] STEP 6 — Polar semantic, scale와 coordinate policy
