@@ -44,7 +44,8 @@ Operators are strict
 `{ op: "min" | "max", count?, groupBy?, ties? }`. `count` defaults to `1`,
 `ties` to `"first"`, and `inclusive` to `true`. Values are semantic data
 values without coercion. The default `grain: "item"` selects one point symbol,
-one final bar segment/rectangle, one line/area series path, or one rule line.
+one final bar segment/rectangle, one line/area series path, one arc sector, or
+one rule line.
 Stacked bars additionally accept `grain: "stack"` to treat all segments in one
 bin or category as a single item. A multi-row path field or channel must have
 one unique value at series grain.
@@ -90,11 +91,12 @@ const reused = selected.highlightMarks({
 });
 ```
 
-Current highlighting supports point, bar, line, area, and rule marks. Points
+Current highlighting supports point, bar, line, area, arc, and rule marks. Points
 support fill, shape, size, outline, and logical offset. Bars support fill and
-outline. Areas support fill, optional outline, and path offset. Lines and rules
-support stroke, width, named or numeric `strokeDash`, and logical offset. Each
-mark rejects options it cannot represent. `dimOthers` defaults to `false`;
+outline. Areas and arc sectors support fill, optional outline, opacity, and path
+offset. Lines and rules support stroke, width, named or numeric `strokeDash`,
+and logical offset. Each mark rejects options it cannot represent. `dimOthers`
+defaults to `false`;
 `true` uses opacity `0.25`. `bringToFront` defaults to `true` and keeps every
 graphic attached to one selected semantic item together.
 
@@ -104,11 +106,12 @@ graphic attached to one selected semantic item together.
 | Bar | `color`/`fill`, `opacity`, `stroke`, `strokeWidth` | `shape`, `size`, `offset`, `strokeDash` |
 | Line | `color`/`stroke`, `opacity`, `strokeWidth`, `strokeDash`, `offset` | `fill`, `shape`, `size` |
 | Area | `color`/`fill`, `opacity`, `stroke`, `strokeWidth`, `offset` | `shape`, `size`, `strokeDash` |
+| Arc | `color`/`fill`, `opacity`, `stroke`, `strokeWidth`, `offset` | `shape`, `size`, `strokeDash` |
 | Rule | `color`/`stroke`, `opacity`, `strokeWidth`, `strokeDash`, `offset` | `fill`, `shape`, `size` |
 
 All calls reject unknown options, ambiguous targets, incompatible grain, and
 invalid values before creating selection or highlight state. `strokeWidth`
-requires a matching `stroke` for point, bar, and area highlight recipes.
+requires a matching `stroke` for point, bar, area, and arc highlight recipes.
 `select` and `selection` are mutually exclusive. Empty `selectMarks` and
 `highlightMarks` results are valid; `filterMarks` rejects an empty retained
 dataset before mutation.

@@ -91,7 +91,7 @@ the item grain, `channel` for a pre-scale semantic value, or `property` for a
 concrete graphical value. Operators are `eq | neq | gt | gte | lt | lte`,
 `oneOf`, `range`, and ranked `min | max` with optional `count`, `groupBy`, and
 `ties`. The default `grain: "item"` means a point, final bar rectangle,
-line/area series path, or rule. Stacked bars additionally support
+line/area series path, arc sector, or rule. Stacked bars additionally support
 `grain: "stack"`.
 
 ```javascript

@@ -154,28 +154,28 @@ export function normalizeStrokeHighlightStyle(args, mark) {
   };
 }
 
-export function normalizeAreaHighlightStyle(args) {
-  rejectHighlightOptions(args, "Area", ["shape", "size", "strokeDash"]);
+export function normalizeAreaHighlightStyle(args, mark = "Area") {
+  rejectHighlightOptions(args, mark, ["shape", "size", "strokeDash"]);
   if (args.color !== undefined && args.fill !== undefined) {
-    throw new Error("Area highlight accepts color or fill, not both.");
+    throw new Error(`${mark} highlight accepts color or fill, not both.`);
   }
   const stroke = args.stroke === undefined
     ? undefined
-    : validateNonEmptyString(args.stroke, "Area highlight stroke");
+    : validateNonEmptyString(args.stroke, `${mark} highlight stroke`);
   const strokeWidth = args.strokeWidth === undefined
     ? undefined
-    : validateNonNegativeFinite(args.strokeWidth, "Area highlight strokeWidth");
+    : validateNonNegativeFinite(args.strokeWidth, `${mark} highlight strokeWidth`);
   if (strokeWidth !== undefined && stroke === undefined) {
-    throw new Error("Area highlight strokeWidth requires stroke.");
+    throw new Error(`${mark} highlight strokeWidth requires stroke.`);
   }
   return {
     fill: validateNonEmptyString(
       args.fill ?? args.color ?? DEFAULT_COLORS.highlight,
-      "Area highlight fill"
+      `${mark} highlight fill`
     ),
     ...(args.opacity === undefined
       ? {}
-      : { opacity: validateUnitInterval(args.opacity, "Area highlight opacity") }),
+      : { opacity: validateUnitInterval(args.opacity, `${mark} highlight opacity`) }),
     ...(stroke === undefined ? {} : { stroke }),
     ...(strokeWidth === undefined ? {} : { strokeWidth }),
     offset: normalizeOffset(args.offset)

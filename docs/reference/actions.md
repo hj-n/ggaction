@@ -227,7 +227,7 @@ highlightMarks({
 })
 ```
 
-Select point, bar, line, area, or rule items inline or reuse a stored selection,
+Select point, bar, line, area, arc, or rule items inline or reuse a stored selection,
 then apply mark-specific concrete emphasis, optional complement dimming, and
 selected-last order.
 [Mark selection and highlighting](../api/appearance/selection-and-highlighting.md#mark-selection-and-highlighting)

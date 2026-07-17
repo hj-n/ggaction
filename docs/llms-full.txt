@@ -2554,7 +2554,7 @@ the item grain, `channel` for a pre-scale semantic value, or `property` for a
 concrete graphical value. Operators are `eq | neq | gt | gte | lt | lte`,
 `oneOf`, `range`, and ranked `min | max` with optional `count`, `groupBy`, and
 `ties`. The default `grain: "item"` means a point, final bar rectangle,
-line/area series path, or rule. Stacked bars additionally support
+line/area series path, arc sector, or rule. Stacked bars additionally support
 `grain: "stack"`.
 
 ```javascript
@@ -5121,7 +5121,8 @@ Operators are strict
 `{ op: "min" | "max", count?, groupBy?, ties? }`. `count` defaults to `1`,
 `ties` to `"first"`, and `inclusive` to `true`. Values are semantic data
 values without coercion. The default `grain: "item"` selects one point symbol,
-one final bar segment/rectangle, one line/area series path, or one rule line.
+one final bar segment/rectangle, one line/area series path, one arc sector, or
+one rule line.
 Stacked bars additionally accept `grain: "stack"` to treat all segments in one
 bin or category as a single item. A multi-row path field or channel must have
 one unique value at series grain.
@@ -5167,11 +5168,12 @@ const reused = selected.highlightMarks({
 });
 ```
 
-Current highlighting supports point, bar, line, area, and rule marks. Points
+Current highlighting supports point, bar, line, area, arc, and rule marks. Points
 support fill, shape, size, outline, and logical offset. Bars support fill and
-outline. Areas support fill, optional outline, and path offset. Lines and rules
-support stroke, width, named or numeric `strokeDash`, and logical offset. Each
-mark rejects options it cannot represent. `dimOthers` defaults to `false`;
+outline. Areas and arc sectors support fill, optional outline, opacity, and path
+offset. Lines and rules support stroke, width, named or numeric `strokeDash`,
+and logical offset. Each mark rejects options it cannot represent. `dimOthers`
+defaults to `false`;
 `true` uses opacity `0.25`. `bringToFront` defaults to `true` and keeps every
 graphic attached to one selected semantic item together.
 
@@ -5181,11 +5183,12 @@ graphic attached to one selected semantic item together.
 | Bar | `color`/`fill`, `opacity`, `stroke`, `strokeWidth` | `shape`, `size`, `offset`, `strokeDash` |
 | Line | `color`/`stroke`, `opacity`, `strokeWidth`, `strokeDash`, `offset` | `fill`, `shape`, `size` |
 | Area | `color`/`fill`, `opacity`, `stroke`, `strokeWidth`, `offset` | `shape`, `size`, `strokeDash` |
+| Arc | `color`/`fill`, `opacity`, `stroke`, `strokeWidth`, `offset` | `shape`, `size`, `strokeDash` |
 | Rule | `color`/`stroke`, `opacity`, `strokeWidth`, `strokeDash`, `offset` | `fill`, `shape`, `size` |
 
 All calls reject unknown options, ambiguous targets, incompatible grain, and
 invalid values before creating selection or highlight state. `strokeWidth`
-requires a matching `stroke` for point, bar, and area highlight recipes.
+requires a matching `stroke` for point, bar, area, and arc highlight recipes.
 `select` and `selection` are mutually exclusive. Empty `selectMarks` and
 `highlightMarks` results are valid; `filterMarks` rejects an empty retained
 dataset before mutation.
@@ -6997,12 +7000,12 @@ screens.
 | Titles | One four-edge title with an optional subtitle, deterministic word/character wrapping, and partial editing |
 | Rendering | Browser Canvas and Node PNG |
 | Graphics | Concrete canvas, circle, line, rect, text, `M/L/C/Z` command paths, shared 8-value line/area curves, and heterogeneous drawable collections |
-| Selection | Strict point/bar/series/rule comparison, set, range and grouped rank; reusable selection state; mark-specific highlight/dimming/front order |
+| Selection | Strict point/bar/series/arc/rule comparison, set, range and grouped rank; reusable selection state; mark-specific highlight/dimming/front order |
 
 ## Current limitations
 
-Polar arc marks, transforms beyond the documented filters, regressions,
-and density derivations, facets, interactive legends, and program composition
+Transforms beyond the documented filters, regressions, density derivations,
+facets, interactive legends, and program composition
 are not implemented.
 Categorical legends support all four edges; point composite and size legends
 support right and left side layouts.
@@ -7016,10 +7019,10 @@ Box plots support vertical or horizontal category/measure pairings, default
 or configurable Tukey summaries, min–max whiskers, band width and component
 appearance overrides, and explicit outlier opt-out without placeholder resources.
 Mark selection supports point, final-bar item, stacked-bar group, line/area
-series, and rule grain. Selector values explicitly distinguish data fields,
+series, arc sector, and rule grain. Selector values explicitly distinguish data fields,
 pre-scale semantic channels, and concrete graphic properties.
 Highlight appearance supports point fill/shape/size/outline/offset, bar fill and
-outline, area fill/outline/offset, and line/rule stroke/width/dash/offset.
+outline, area/arc fill/outline/offset, and line/rule stroke/width/dash/offset.
 
 <!-- Source: /reference/actions/ -->
 
@@ -7245,7 +7248,7 @@ highlightMarks({
 })
 ```
 
-Select point, bar, line, area, or rule items inline or reuse a stored selection,
+Select point, bar, line, area, arc, or rule items inline or reuse a stored selection,
 then apply mark-specific concrete emphasis, optional complement dimming, and
 selected-last order.
 [Mark selection and highlighting](../api/appearance/selection-and-highlighting.md#mark-selection-and-highlighting)

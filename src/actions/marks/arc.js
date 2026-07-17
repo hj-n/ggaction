@@ -137,6 +137,22 @@ const rematerializeArcMark = action(
   function (args = {}) {
     validateMarkOptions(args, REMATERIALIZE_OPTIONS, "rematerializeArcMark");
     const id = validateUserId(args.id, "Arc mark id");
+    const highlights = Object.entries(
+      this.materializationConfigs.highlights ?? {}
+    ).filter(([, config]) => config.target === id);
+    if (highlights.length > 0) {
+      let baseline = this;
+      for (const [highlightId] of highlights) {
+        baseline = baseline._withoutMaterializationConfig([
+          "highlights",
+          highlightId
+        ]);
+      }
+      return baseline
+        .editGraphics({ target: id, property: "length", value: 0 })
+        .rematerializeArcMark({ id })
+        .rematerializeMarkHighlights({ target: id, highlights });
+    }
     const { layer, dataset } = requireArc(this, id);
     if (!canMaterializeArc(this, layer)) {
       throw new Error(`Arc mark "${id}" does not have a complete encoding.`);

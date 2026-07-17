@@ -10,6 +10,8 @@ import {
   normalizeMarkFilterTransform
 } from "../../grammar/markFilter.js";
 import { resolveMarkFilterSelection } from "../../materialization/selection/filter.js";
+import { findSelectionPolicy } from
+  "../../materialization/selection/policies/index.js";
 import {
   applyLayerDataRematerialization
 } from "../../materialization/dependencies.js";
@@ -121,7 +123,7 @@ export const filterMarks = action(
       label: "filter mark",
       predicate: candidate =>
         candidate.data !== undefined &&
-        ["point", "bar", "line", "area", "rule"].includes(candidate.mark?.type)
+        findSelectionPolicy(candidate.mark?.type) !== undefined
     });
     const derivedId = `${layer.id}FilteredData`;
     if (hasDataset(this, derivedId)) {

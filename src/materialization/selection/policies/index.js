@@ -1,12 +1,14 @@
 import { findDataset } from "../../../selectors/datasets.js";
 import { requireLayer } from "../../../selectors/layers.js";
 import { areaSelectionPolicy } from "./area.js";
+import { arcSelectionPolicy } from "./arc.js";
 import { barSelectionPolicy } from "./bar.js";
 import { lineSelectionPolicy } from "./line.js";
 import { pointSelectionPolicy } from "./point.js";
 import { ruleSelectionPolicy } from "./rule.js";
 
 const POLICIES = Object.freeze({
+  arc: arcSelectionPolicy,
   area: areaSelectionPolicy,
   bar: barSelectionPolicy,
   line: lineSelectionPolicy,

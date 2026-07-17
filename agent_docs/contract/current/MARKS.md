@@ -17,7 +17,7 @@ This closed vocabulary is owned by the shared point-shape grammar and reused by 
 shape encoding, concrete materialization, and legend symbols.
 
 Ordinary mark creation may omit `id` for the first mark of that semantic type. The library persists the
-deterministic role ID `"point" | "line" | "bar" | "area" | "rule"`. A second mark of the same type requires an
+deterministic role ID `"point" | "line" | "bar" | "area" | "arc" | "rule"`. A second mark of the same type requires an
 explicit user ID; the library never invents numbered public-resource IDs. Explicit IDs retain the existing
 validation and uniqueness contract.
 
