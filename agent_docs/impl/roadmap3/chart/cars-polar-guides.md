@@ -27,6 +27,7 @@ chart()
 - radial grid: one concentric path per positive radius tick
 - theta axis: outer circular baseline, outward ticks and perimeter labels
 - radial axis: center-to-right baseline at `90°`, perpendicular ticks and labels
+- radial title: centered directly below the radial baseline
 - inferred titles: `Acceleration` and `Horsepower`
 - grids draw behind points; axes draw above points
 
