@@ -183,7 +183,7 @@ export function createCarsPolarGuideReference(rows) {
     radialLabels,
     thetaTitle: {
       x: frame.cx,
-      y: frame.cy + frame.radius + 28,
+      y: frame.cy + frame.radius + 42,
       text: "Acceleration"
     },
     radialTitle: {
