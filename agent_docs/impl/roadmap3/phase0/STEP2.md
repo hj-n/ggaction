@@ -180,10 +180,10 @@ component를 한 번에 편집하는 aggregate convenience로 유지할 수 있�
 ### Scale palette
 
 ```javascript
-program.editScale({ scale: "color", palette: "set2" });
+program.editScale({ id: "color", palette: "set2" });
 // Error: Unknown editScale option "palette".
 
-program.editScale({ scale: "color", range: { palette: "set2" } });
+program.editScale({ id: "color", range: { palette: "set2" } });
 // supported
 ```
 

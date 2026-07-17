@@ -63,6 +63,9 @@ Current baseline
 
 ## Gate A
 
+Review package: [`STEP6.md`](./STEP6.md) and
+[`GATE_A_INVENTORY.json`](./GATE_A_INVENTORY.json).
+
 Gate A에서는 다음을 함께 제시한다.
 
 - Capability gap matrix와 executable evidence
