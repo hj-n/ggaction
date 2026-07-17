@@ -1022,6 +1022,13 @@ resolver는 target/data/field/coordinate/scale과 field values를 검증한다. 
 completeness 제약만 소유한다. 새 mark를 지원할 때 공통 resolver에 조건문을 추가하지 않고
 해당 policy를 등록하며, policy는 semantic 결정을 반환하고 graphic state를 직접 수정하지 않는다.
 
+공통 semantic applicator는 field/datum 교체, field type, normalized bin mode,
+aggregate와 stack을 동일한 순서로 기록한다. 이후 mark materialization policy가 incomplete
+상태에서 scale만 resolve할지, 빈 mark를 다시 만들지, complete mark보다 현재 scale을 먼저
+resolve할지를 결정한다. Scale materializer도 같은 policy registry에서 consumer가 direct
+property edit, full mark rematerialization 또는 상위 plan으로 defer되어야 하는지를 읽는다.
+따라서 position action과 scale action에 mark type 목록을 따로 복제하지 않는다.
+
 ## Mark materialization policy
 
 각 semantic mark type은 자신이 concrete output을 만들 준비가 되었는지를 mark

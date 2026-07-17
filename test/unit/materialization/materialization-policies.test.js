@@ -6,7 +6,9 @@ import {
   canMaterializeBar,
   canMaterializeLine,
   canMaterializePoint,
-  getMarkMaterializationStep
+  getMarkMaterializationStep,
+  getPositionEncodingMaterializationSteps,
+  getScaleConsumerMaterializationMode
 } from "../../../src/materialization/marks.js";
 
 function programWith({ datasets = [], marks = {} } = {}) {
@@ -71,4 +73,24 @@ test("keeps mark completeness policies beside mark actions", () => {
     }),
     false
   );
+
+  assert.deepEqual(
+    getPositionEncodingMaterializationSteps(
+      program,
+      { ...point, encoding: { x: { scale: "x" } } },
+      "x"
+    ),
+    [
+      { op: "rematerializeScale", args: { id: "x" } },
+      { op: "rematerializePointMark", args: { id: "points" } }
+    ]
+  );
+  assert.deepEqual(
+    getPositionEncodingMaterializationSteps(program, line, "y"),
+    [{ op: "rematerializeLineMark", args: { id: "lines" } }]
+  );
+  assert.equal(getScaleConsumerMaterializationMode(point, "x"), "rematerialize");
+  assert.equal(getScaleConsumerMaterializationMode(point, "color"), "direct");
+  assert.equal(getScaleConsumerMaterializationMode(point, "shape"), "defer");
+  assert.equal(getScaleConsumerMaterializationMode(line, "color"), "defer");
 });

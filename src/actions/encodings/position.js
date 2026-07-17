@@ -1,11 +1,10 @@
 import { action } from "../../core/action.js";
 import {
-  canMaterializeArea,
-  canMaterializeLine,
+  getPositionEncodingMaterializationSteps
 } from "../../materialization/marks.js";
-import { resolveBarGrain } from "../../grammar/bars/policy.js";
 import { resolvePositionEncoding } from "./position/resolve.js";
 import { findLayer } from "../../selectors/layers.js";
+import { applyPositionSemantics } from "./position/apply.js";
 import {
   applyEncodingScale,
   rebindPositionGuides
@@ -34,69 +33,18 @@ function encodePosition(program, channel, args, operation) {
       type: coordinate.type,
       layers: [target]
     });
-  if (previous !== undefined) {
-    const alternate = hasField ? "datum" : "field";
-    if (Object.hasOwn(previous, alternate)) {
-      next = next.editSemantic({
-        property: `layer[${target}].encoding.${channel}.${alternate}`,
-        remove: true
-      });
-    }
-  }
-  next = next
-    .editSemantic({
-      property: `layer[${target}].encoding.${channel}.${hasField ? "field" : "datum"}`,
-      value: hasField ? field : datum
-    })
-    .editSemantic({
-      property: `layer[${target}].encoding.${channel}.fieldType`,
-      value: fieldType
-    });
-
-  if (layer.mark.type === "line" && channel === "y" && args.aggregate !== undefined) {
-    next = next.editSemantic({
-      property: `layer[${target}].encoding.y.aggregate`,
-      value: aggregate
-    });
-  }
-
-  if (layer.mark.type === "bar" && channel === "x" && bin !== undefined) {
-    const [mode] = Object.keys(bin);
-    const previousModes = Object.keys(layer.encoding?.x?.bin ?? {});
-    for (const previousMode of previousModes) {
-      if (previousMode === mode) continue;
-      next = next.editSemantic({
-        property: `layer[${target}].encoding.x.bin.${previousMode}`,
-        remove: true
-      });
-    }
-    next = next.editSemantic({
-      property: `layer[${target}].encoding.x.bin.${mode}`,
-      value: bin[mode]
-    });
-  }
-
-  if (layer.mark.type === "bar") {
-    if (aggregate !== undefined) {
-      next = next.editSemantic({
-        property: `layer[${target}].encoding.${channel}.aggregate`,
-        value: aggregate
-      });
-    }
-    if (stack !== undefined) {
-      next = next.editSemantic({
-        property: `layer[${target}].encoding.${channel}.stack`,
-        value: stack
-      });
-    }
-  }
-
-  if (layer.mark.type === "area" && channel === "y" && stack !== undefined) {
-    next = next.editSemantic({
-      property: `layer[${target}].encoding.y.stack`,
-      value: stack
-    });
-  }
+  next = applyPositionSemantics(next, {
+    target,
+    channel,
+    previous,
+    field,
+    datum,
+    hasField,
+    fieldType,
+    bin,
+    aggregate,
+    stack
+  });
 
   next = next.editSemantic({
       property: `layer[${target}].encoding.${channel}.scale`,
@@ -113,17 +61,6 @@ function encodePosition(program, channel, args, operation) {
     target
   );
 
-  if (layer.mark.type === "line") {
-    const updated = findLayer(next, target);
-    return canMaterializeLine(next, updated)
-      ? next.rematerializeLineMark({ id: target })
-      : next.rematerializeScale({ id: scale.id });
-  }
-
-  if (layer.mark.type === "rule") {
-    return next.rematerializeRuleMark({ id: target });
-  }
-
   if (layer.mark.type === "bar") {
     const updated = findLayer(next, target);
     const pendingBox = next.markConfigs[target]?.boxPlot;
@@ -132,22 +69,17 @@ function encodePosition(program, channel, args, operation) {
         ? next.materializeBoxPlot({ id: target })
         : next;
     }
-    const materialized = resolveBarGrain(updated) !== undefined
-      ? next.rematerializeBarMark({ id: target })
-      : next.rematerializeScale({ id: scale.id });
-    return materialized;
   }
 
-  next = next.rematerializeScale({ id: scale.id });
-  if (layer.mark.type === "area") {
-    const updated = findLayer(next, target);
-    return canMaterializeArea(next, updated)
-      ? next.rematerializeAreaMark({ id: target })
-      : next;
+  const updated = findLayer(next, target);
+  for (const step of getPositionEncodingMaterializationSteps(
+    next,
+    updated,
+    scale.id
+  )) {
+    next = next[step.op](step.args);
   }
-  return layer.mark.type === "point"
-    ? next.rematerializePointMark({ id: target })
-    : next;
+  return next;
 }
 
 const encodeX = action(

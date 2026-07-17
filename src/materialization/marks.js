@@ -7,6 +7,7 @@ import {
 } from "../grammar/bars/policy.js";
 import { resolveRuleMode } from "../grammar/rules.js";
 import { findUpstreamTransform } from "./dataProvenance.js";
+import { POSITION_CHANNELS } from "../core/vocabulary.js";
 
 function hasCartesianPositionScales(layer) {
   return (
@@ -110,23 +111,28 @@ export function canMaterializeRule(program, layer) {
 const MARK_MATERIALIZATION_POLICIES = Object.freeze({
   point: Object.freeze({
     canMaterialize: canMaterializePoint,
-    op: "rematerializePointMark"
+    op: "rematerializePointMark",
+    positionEncoding: Object.freeze({ incomplete: "mark", scaleFirst: true })
   }),
   line: Object.freeze({
     canMaterialize: canMaterializeLine,
-    op: "rematerializeLineMark"
+    op: "rematerializeLineMark",
+    positionEncoding: Object.freeze({ incomplete: "scale", scaleFirst: false })
   }),
   area: Object.freeze({
     canMaterialize: canMaterializeArea,
-    op: "rematerializeAreaMark"
+    op: "rematerializeAreaMark",
+    positionEncoding: Object.freeze({ incomplete: "scale", scaleFirst: true })
   }),
   bar: Object.freeze({
     canMaterialize: canMaterializeBar,
-    op: "rematerializeBarMark"
+    op: "rematerializeBarMark",
+    positionEncoding: Object.freeze({ incomplete: "scale", scaleFirst: false })
   }),
   rule: Object.freeze({
     canMaterialize: canMaterializeRule,
-    op: "rematerializeRuleMark"
+    op: "rematerializeRuleMark",
+    positionEncoding: Object.freeze({ incomplete: "mark", scaleFirst: false })
   })
 });
 
@@ -143,4 +149,28 @@ export function getMarkMaterializationStep(program, layer) {
     return undefined;
   }
   return getMarkRematerializationStep(layer);
+}
+
+export function getPositionEncodingMaterializationSteps(program, layer, scaleId) {
+  const policy = MARK_MATERIALIZATION_POLICIES[layer.mark?.type];
+  if (policy === undefined) return [];
+  const scale = { op: "rematerializeScale", args: { id: scaleId } };
+  const complete = policy.canMaterialize(program, layer);
+  const mark = getMarkRematerializationStep(layer);
+  if (!complete) {
+    if (policy.positionEncoding.incomplete === "scale") return [scale];
+    return policy.positionEncoding.scaleFirst ? [scale, mark] : [mark];
+  }
+  return policy.positionEncoding.scaleFirst ? [scale, mark] : [mark];
+}
+
+export function getScaleConsumerMaterializationMode(layer, channel) {
+  if (layer.mark?.type === "point") {
+    if (POSITION_CHANNELS.includes(channel)) return "rematerialize";
+    if (["size", "shape"].includes(channel)) return "defer";
+    return "direct";
+  }
+  return MARK_MATERIALIZATION_POLICIES[layer.mark?.type] === undefined
+    ? "direct"
+    : "defer";
 }

@@ -51,6 +51,8 @@ import {
   planScaleGuideRematerialization
 } from "../../materialization/dependencies.js";
 import { normalizePositionScaleChannel } from "../../core/vocabulary.js";
+import { getScaleConsumerMaterializationMode } from
+  "../../materialization/marks.js";
 
 const OPTIONS = Object.freeze(["id", "guides", "marks"]);
 
@@ -443,21 +445,17 @@ export const rematerializeScale = action(
       if (consumer.layer.mark?.type === "point" && args.marks === false) {
         continue;
       }
-      if (
-        consumer.layer.mark?.type === "point" &&
-        ["x", "y", "theta", "radius"].includes(channel)
-      ) {
+      const materializationMode = getScaleConsumerMaterializationMode(
+        consumer.layer,
+        channel
+      );
+      if (materializationMode === "rematerialize") {
         if (args.marks !== false) {
           next = next.rematerializePointMark({ id: consumer.layer.id });
         }
         continue;
       }
-      if (
-        ["line", "bar", "area", "rule"].includes(consumer.layer.mark?.type) ||
-        (consumer.layer.mark?.type === "point" &&
-          ["x", "y", "theta", "radius"].includes(channel) && isOrdinalPosition) ||
-        (consumer.layer.mark?.type === "point" && ["size", "shape"].includes(channel))
-      ) continue;
+      if (materializationMode === "defer") continue;
       next = next.editGraphics({
         target: consumer.layer.id,
         property: channel === "color" ? "fill" : channel,
