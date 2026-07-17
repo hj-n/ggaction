@@ -314,7 +314,7 @@ Gate D는 axes와 both grid families가 포함된 Polar scatterplot을 승인한
 대표 chart는 Jobs 또는 Gapminder의 grouped radial trend와 closed radar variant다. Gate E에서 open/closed
 primitive를 각각 승인한다.
 
-## Phase 5 — Arc, donut and radial bar
+## Phase 5 — Arc, donut, rose and radial bar
 
 Arc는 별도 semantic mark다.
 
@@ -330,12 +330,16 @@ chart()
 
 - `createArcMark`/`editArcMark`가 stable arc appearance resource를 소유한다.
 - Pie/donut은 aggregate/normalized theta와 inner radius로 표현한다.
+- Rose chart는 ordinal theta band 안에서 color series별 radial sector를 center baseline부터
+  overlay한다. 큰 sector를 먼저 그리고 작은 sector를 나중에 그려 모두 보이게 한다.
 - Radial bar는 ordinal theta band와 quantitative radial extent를 사용한다.
 - 필요한 시점에 `encodeTheta2`/`encodeR2` endpoint contract를 별도 승인한다.
 - Arc, annular sector와 circle은 backend-neutral `M/L/C/Z` path commands로 materialize한다.
 - Selection/highlight는 final arc item grain과 concrete bounds/attachment를 소유하는 policy를 추가한다.
 
-Gate F는 Cars Origin donut을 먼저 승인하고 Gapminder radial bar로 coverage를 확장한다.
+Gate F는 Cars Origin donut, Nightingale rose chart와 Gapminder radial bar의 graphical primitive를
+한 번에 승인한다. 세 chart는 각각 aggregate angular partition, overlaid radial sector, ordinary radial
+bar grain을 검증한다.
 
 ## Phase 6 — Child programs, `hconcat`, and `vconcat`
 
