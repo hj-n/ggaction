@@ -41,6 +41,21 @@ test("accepts an exact Roadmap 3 phase and capability scope", () => {
   });
 });
 
+test("accepts only complete compact visual signatures", () => {
+  const visualSignature = {
+    inkRatio: { min: 0.1, max: 0.2 },
+    inkBounds: { x: 2, y: 3, width: 90, height: 70, tolerance: 2 }
+  };
+  assert.deepEqual(defineVisualVariant({
+    ...required,
+    visualSignature
+  }).visualSignature, visualSignature);
+  assert.throws(() => defineVisualVariant({
+    ...required,
+    visualSignature: { inkRatio: { min: 0.2, max: 0.1 } }
+  }), /invalid visual signature/);
+});
+
 test("rejects incomplete or expanded visual artifact scope", () => {
   assert.throws(
     () => defineVisualVariant({

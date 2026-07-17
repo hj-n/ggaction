@@ -48,6 +48,10 @@ export const visualVariants = Object.freeze([
     width: 520,
     height: 520,
     colors: ["#4c78a8", "#f58518", "#e45756"],
+    visualSignature: {
+      inkRatio: { min: 0.0268, max: 0.0328 },
+      inkBounds: { x: 137, y: 65.5, width: 312, height: 351.5, tolerance: 2 }
+    },
     regions: [{ name: "polar-points", x: 48, y: 48, width: 424, height: 424 }]
   }),
   defineVisualVariant({
@@ -61,6 +65,10 @@ export const visualVariants = Object.freeze([
     width: 560,
     height: 560,
     colors: [],
+    visualSignature: {
+      inkRatio: { min: 0.0109, max: 0.0134 },
+      inkBounds: { x: 73, y: 104, width: 442, height: 382.5, tolerance: 2 }
+    },
     regions: [{
       name: "dense-polar-points",
       x: 40,

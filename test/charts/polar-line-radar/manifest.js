@@ -106,6 +106,10 @@ export const visualVariants = Object.freeze([
     width: 760,
     height: 620,
     colors: ["#4c78a8", "#f58518", "#e45756", "#d7e0ea"],
+    visualSignature: {
+      inkRatio: { min: 0.0388, max: 0.0475 },
+      inkBounds: { x: 42.5, y: 41.5, width: 660.5, height: 554.5, tolerance: 2 }
+    },
     regions: [{
       name: "open-polar-lines",
       x: 52,
@@ -130,6 +134,10 @@ export const visualVariants = Object.freeze([
     width: 820,
     height: 650,
     colors: ["#4c78a8", "#f58518", "#d7e0ea"],
+    visualSignature: {
+      inkRatio: { min: 0.0264, max: 0.0324 },
+      inkBounds: { x: 78, y: 80, width: 660.5, height: 528, tolerance: 2 }
+    },
     regions: [{
       name: "closed-radar-lines",
       x: 82,

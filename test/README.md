@@ -46,6 +46,11 @@ program. Their displayed `callChain` is presentation metadata: the render harnes
 parses it without evaluation and requires its top-level actions to match the
 factory trace exactly.
 
+Approved representative charts may also declare a compact visual signature:
+an ink-density range and logical ink bounds with a small tolerance. Signatures
+catch major layout regressions without committing platform-sensitive full PNG
+snapshots; primitive and user-facing renders must still match pixel-for-pixel.
+
 Artifact track shape is owned by `test/support/artifact-schema.js`. Paths,
 metadata validation, render manifests, and gallery generation consume that
 registry so a later roadmap does not add independent conditionals across the

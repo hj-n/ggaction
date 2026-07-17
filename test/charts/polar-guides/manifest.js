@@ -33,6 +33,10 @@ export const visualVariants = Object.freeze([
     width: 620,
     height: 620,
     colors: ["#d7e0ea", "#475569"],
+    visualSignature: {
+      inkRatio: { min: 0.0438, max: 0.0537 },
+      inkBounds: { x: 53.5, y: 60.5, width: 515, height: 527.5, tolerance: 2 }
+    },
     regions: [{
       name: "polar-guides",
       x: 48,

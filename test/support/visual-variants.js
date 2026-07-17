@@ -41,6 +41,7 @@ export function defineVisualVariant({
   height,
   colors,
   regions,
+  visualSignature,
   artifact = true
 }) {
   if (typeof chart !== "string" || chart.length === 0) {
@@ -77,6 +78,22 @@ export function defineVisualVariant({
   if (userFacing !== undefined && typeof userFacing !== "function") {
     throw new TypeError(`${chart}/${variant} userFacing must be a program factory.`);
   }
+  if (visualSignature !== undefined && (
+    visualSignature === null ||
+    typeof visualSignature !== "object" ||
+    !Number.isFinite(visualSignature.inkRatio?.min) ||
+    !Number.isFinite(visualSignature.inkRatio?.max) ||
+    visualSignature.inkRatio.min < 0 ||
+    visualSignature.inkRatio.max < visualSignature.inkRatio.min ||
+    !["x", "y", "width", "height"].every(key =>
+      Number.isFinite(visualSignature.inkBounds?.[key])
+    ) ||
+    (visualSignature.inkBounds.tolerance !== undefined &&
+      (!Number.isFinite(visualSignature.inkBounds.tolerance) ||
+        visualSignature.inkBounds.tolerance < 0))
+  )) {
+    throw new TypeError(`${chart}/${variant} has an invalid visual signature.`);
+  }
   const artifactScope = normalizeArtifactScope(artifact, `${chart}/${variant}`);
   return Object.freeze({
     chart,
@@ -89,6 +106,7 @@ export function defineVisualVariant({
     height,
     colors,
     regions,
+    visualSignature,
     artifact: artifactScope
   });
 }
@@ -117,7 +135,8 @@ function renderOptions(variant, kind) {
     width: variant.width,
     height: variant.height,
     colors: variant.colors,
-    regions: variant.regions
+    regions: variant.regions,
+    visualSignature: variant.visualSignature
   };
   if (variant.artifact) {
     return {

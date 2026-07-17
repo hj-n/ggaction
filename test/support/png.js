@@ -25,7 +25,8 @@ export async function assertRenderedPNG(
     pixelRatio = 2,
     colors = ["#4c78a8"],
     minimumInkPixels = 100,
-    regions = []
+    regions = [],
+    visualSignature
   }
 ) {
   const output = resolvePngArtifactPath({ name, artifact });
@@ -48,6 +49,10 @@ export async function assertRenderedPNG(
   context.drawImage(image, 0, 0);
   const pixels = context.getImageData(0, 0, image.width, image.height).data;
   let inkPixels = 0;
+  let inkLeft = image.width;
+  let inkTop = image.height;
+  let inkRight = -1;
+  let inkBottom = -1;
   const parsedColors = new Map(colors.map(color => [color, parseHex(color)]));
   const colorCounts = new Map(colors.map(color => [color, 0]));
 
@@ -55,6 +60,13 @@ export async function assertRenderedPNG(
     const rgba = [pixels[index], pixels[index + 1], pixels[index + 2], pixels[index + 3]];
     if (rgba[3] > 0 && (rgba[0] < 250 || rgba[1] < 250 || rgba[2] < 250)) {
       inkPixels += 1;
+      const pixelIndex = index / 4;
+      const x = pixelIndex % image.width;
+      const y = Math.floor(pixelIndex / image.width);
+      inkLeft = Math.min(inkLeft, x);
+      inkTop = Math.min(inkTop, y);
+      inkRight = Math.max(inkRight, x);
+      inkBottom = Math.max(inkBottom, y);
     }
     for (const [color, [red, green, blue]] of parsedColors) {
       if (rgba[0] === red && rgba[1] === green && rgba[2] === blue && rgba[3] === 255) {
@@ -67,6 +79,33 @@ export async function assertRenderedPNG(
   assert.equal(inkPixels >= minimumInkPixels, true, `${label} is unexpectedly blank`);
   for (const [color, count] of colorCounts) {
     assert.equal(count > 0, true, `${label} does not contain ${color}`);
+  }
+
+  const compactSignature = Object.freeze({
+    inkRatio: inkPixels / pixels.length * 4,
+    inkBounds: Object.freeze({
+      x: inkLeft / pixelRatio,
+      y: inkTop / pixelRatio,
+      width: (inkRight - inkLeft + 1) / pixelRatio,
+      height: (inkBottom - inkTop + 1) / pixelRatio
+    })
+  });
+  if (visualSignature) {
+    assert.equal(
+      compactSignature.inkRatio >= visualSignature.inkRatio.min &&
+        compactSignature.inkRatio <= visualSignature.inkRatio.max,
+      true,
+      `${label} ink ratio ${compactSignature.inkRatio} left its approved range`
+    );
+    const tolerance = visualSignature.inkBounds.tolerance ?? 0;
+    for (const key of ["x", "y", "width", "height"]) {
+      assert.equal(
+        Math.abs(compactSignature.inkBounds[key] - visualSignature.inkBounds[key]) <=
+          tolerance,
+        true,
+        `${label} ink bound ${key} changed from its approved signature`
+      );
+    }
   }
 
   const regionResults = regions.map(region => {
@@ -118,6 +157,7 @@ export async function assertRenderedPNG(
     inkPixels,
     colorCounts,
     regionResults,
+    visualSignature: compactSignature,
     pixelHash: createHash("sha256").update(pixels).digest("hex")
   };
 }
