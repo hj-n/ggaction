@@ -105,6 +105,27 @@ Proposed contract와 target call chain
 - 각 Phase closeout은 배정된 Planned inventory가 Current, Maybe Future 또는 removed 중 하나로 모두
   해소됐는지 contract test로 증명한다.
 
+## Roadmap 3 데이터셋 운용
+
+Roadmap 3의 chart와 parameter variant는 관성적으로 한 데이터셋만 반복하지 않는다. 각 capability의
+semantic grain, field type과 edge case에 맞춰 아래 reference dataset을 다양하게 사용한다.
+
+| 데이터셋 | 우선 활용 범위 |
+| --- | --- |
+| `data/cars.json` | quantitative/nominal encoding, regression, density와 기존 회귀 호환성 |
+| `data/jobs.json` | ordinal category, grouped/stacked layout와 directional bar |
+| `data/gapminder.json` | temporal trend, country/region grouping, facet과 composition |
+| `data/fashion_mnist_tsne.csv` | dense 2D points, class clusters, labels, Polar point와 facet |
+| `data/imdb_top_1000.csv` | mixed categorical/quantitative fields, missing or malformed values, long text, annotation과 heatmap |
+
+- Phase plan과 chart contract는 선택한 데이터셋과 그 선택이 검증하는 capability를 명시한다.
+- 여러 chart나 variant를 포함하는 Phase는 의미 있는 경우 서로 다른 데이터셋을 사용해 데이터 형태와
+  parameter coverage를 넓힌다. 모든 Phase에서 모든 데이터셋을 억지로 사용할 필요는 없다.
+- 같은 visual Gate의 primitive와 user-facing pair는 동일한 source rows와 transform을 사용한다.
+- CSV fixture는 test/example program에서 row object array로 읽어 `createData({ values })`에 전달한다.
+- 새 데이터셋을 추가하기 전에 현재 reference dataset으로 필요한 grain과 edge case를 표현할 수 있는지
+  먼저 확인한다.
+
 ## Artifact 구조
 
 ```text
