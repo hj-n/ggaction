@@ -5,7 +5,7 @@
 - [x] STEP 1 — Phase 계약, action inventory와 target chart 확정
 - [x] STEP 2 — Deterministic Polar guide reference geometry
 - [x] STEP 3 — Primitive Polar guide visual baseline
-- [ ] STEP 4 — Gate D visual evidence와 사용자 승인
+- [x] STEP 4 — Gate D visual evidence와 사용자 승인
 - [ ] STEP 5 — Pure Polar guide grammar와 tick policy
 - [ ] STEP 6 — Polar guide semantic/config ownership
 - [ ] STEP 7 — Theta/radial grid actions
@@ -58,3 +58,6 @@ axis lines, ticks, labels and titles are placed after marks. Call order must not
 
 STEP 4 presents the exact target `createGuides()` call chain, independent reference values, primitive source and PNG.
 Before explicit approval, do not add the Polar guide public actions, semantic paths or runtime rematerializers.
+
+Gate D는 2026-07-17 승인되었다. 승인 baseline은 radial baseline 아래 8px에 radial title을 중앙 정렬하고,
+outer circular baseline 아래 42px에 theta title을 중앙 정렬한다.
