@@ -11,6 +11,69 @@ function unionBounds(bounds) {
   };
 }
 
+function cubicValue(start, control1, control2, end, t) {
+  const remaining = 1 - t;
+  return remaining ** 3 * start +
+    3 * remaining ** 2 * t * control1 +
+    3 * remaining * t ** 2 * control2 +
+    t ** 3 * end;
+}
+
+function cubicExtrema(start, control1, control2, end) {
+  const quadratic = 3 * (-start + 3 * control1 - 3 * control2 + end);
+  const linear = 2 * (3 * start - 6 * control1 + 3 * control2);
+  const constant = 3 * (control1 - start);
+  const epsilon = Number.EPSILON * 64 * Math.max(
+    1,
+    Math.abs(quadratic),
+    Math.abs(linear),
+    Math.abs(constant)
+  );
+  if (Math.abs(quadratic) <= epsilon) {
+    if (Math.abs(linear) <= epsilon) return [];
+    const root = -constant / linear;
+    return root > 0 && root < 1 ? [root] : [];
+  }
+  const discriminant = linear ** 2 - 4 * quadratic * constant;
+  if (discriminant < -epsilon) return [];
+  const root = Math.sqrt(Math.max(0, discriminant));
+  return [
+    (-linear - root) / (2 * quadratic),
+    (-linear + root) / (2 * quadratic)
+  ].filter(value => value > 0 && value < 1);
+}
+
+function pathPoints(commands) {
+  const points = [];
+  let current;
+  for (const command of commands) {
+    if (command.op === "M" || command.op === "L") {
+      if ([command.x, command.y].every(Number.isFinite)) {
+        current = { x: command.x, y: command.y };
+        points.push(current);
+      }
+      continue;
+    }
+    if (command.op !== "C" || current === undefined) continue;
+    if (![command.x1, command.y1, command.x2, command.y2, command.x, command.y]
+      .every(Number.isFinite)) continue;
+    const roots = new Set([
+      0,
+      1,
+      ...cubicExtrema(current.x, command.x1, command.x2, command.x),
+      ...cubicExtrema(current.y, command.y1, command.y2, command.y)
+    ]);
+    for (const t of roots) {
+      points.push({
+        x: cubicValue(current.x, command.x1, command.x2, command.x, t),
+        y: cubicValue(current.y, command.y1, command.y2, command.y, t)
+      });
+    }
+    current = { x: command.x, y: command.y };
+  }
+  return points;
+}
+
 function primitiveBounds(type, properties = {}) {
   const strokeExtent = (properties.strokeWidth ?? 0) / 2;
   if (type === "circle") {
@@ -86,15 +149,7 @@ function primitiveBounds(type, properties = {}) {
   if (type === "path") {
     const commands = properties.commands;
     if (!Array.isArray(commands)) return undefined;
-    const points = commands.flatMap(command => {
-      if (command.op === "M" || command.op === "L") return [{ x: command.x, y: command.y }];
-      if (command.op === "C") return [
-        { x: command.x1, y: command.y1 },
-        { x: command.x2, y: command.y2 },
-        { x: command.x, y: command.y }
-      ];
-      return [];
-    }).filter(point => Number.isFinite(point.x) && Number.isFinite(point.y));
+    const points = pathPoints(commands);
     if (points.length === 0) return undefined;
     return {
       left: Math.min(...points.map(point => point.x)) - strokeExtent,

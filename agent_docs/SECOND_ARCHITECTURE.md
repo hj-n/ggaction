@@ -640,6 +640,11 @@ x/y/width/height를 가진다. Path command는 하나의 `M`으로 시작하고 
 closed Polar line, filled area와 polygon point shape는 마지막 `Z`를 저장한다. Original point array,
 `closed` flag 또는 renderer-specific path string을 함께 저장하지 않는다.
 
+Concrete path bounds는 cubic control-point hull을 그대로 쓰지 않는다. 각 `C` segment의
+x/y 도함수 근을 구해 `[0, 1]` 안의 실제 Bézier extrema와 endpoint만 union한다. Selection
+item bounds, guide collision과 layout occupancy는 이 동일한 exact path-bounds policy를
+사용한다.
+
 ### Shared concrete-graphic contract
 
 Graphic type별 허용 property vocabulary는 하나의 schema가 소유한다. Concrete value

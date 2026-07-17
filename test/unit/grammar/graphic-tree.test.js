@@ -11,6 +11,8 @@ import {
   resolveConcreteGraphicBounds,
   unionConcreteGraphicBounds
 } from "../../../src/grammar/schemas/graphicBounds.js";
+import { buildAnnularSectorCommands } from
+  "../../../src/grammar/polarPaths.js";
 
 function tree() {
   return {
@@ -71,6 +73,62 @@ test("resolves item, path, and subtree bounds through one shared policy", () => 
     top: 4,
     bottom: 44
   });
+});
+
+test("uses exact cubic extrema instead of conservative control-point bounds", () => {
+  const spec = {
+    objects: {
+      curve: {
+        type: "path",
+        properties: {
+          commands: [
+            { op: "M", x: 0, y: 0 },
+            {
+              op: "C",
+              x1: 100,
+              y1: 100,
+              x2: 100,
+              y2: -100,
+              x: 0,
+              y: 0
+            }
+          ]
+        }
+      }
+    },
+    order: ["curve"]
+  };
+  const bounds = resolveConcreteGraphicBounds(spec, "curve");
+
+  assert.equal(bounds.left, 0);
+  assert.equal(bounds.right, 75);
+  assert.equal(Math.abs(bounds.top + 28.867513459481287) < 1e-12, true);
+  assert.equal(Math.abs(bounds.bottom - 28.867513459481287) < 1e-12, true);
+});
+
+test("measures cubic Polar sectors at their actual occupied bounds", () => {
+  const spec = {
+    objects: {
+      sector: {
+        type: "path",
+        properties: {
+          commands: buildAnnularSectorCommands({
+            frame: { centerX: 100, centerY: 80, availableRadius: 50 },
+            startTheta: 0,
+            endTheta: 90,
+            outerRadius: 40
+          })
+        }
+      }
+    },
+    order: ["sector"]
+  };
+  const bounds = resolveConcreteGraphicBounds(spec, "sector");
+
+  assert.equal(Math.abs(bounds.left - 100) < 1e-12, true);
+  assert.equal(Math.abs(bounds.right - 140) < 1e-12, true);
+  assert.equal(Math.abs(bounds.top - 40) < 1e-12, true);
+  assert.equal(Math.abs(bounds.bottom - 80) < 1e-12, true);
 });
 
 test("rejects cycles, duplicate attachment, and orphaned named graphics", () => {
