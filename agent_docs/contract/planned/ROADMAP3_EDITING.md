@@ -3,21 +3,6 @@
 Gate A에서 승인된 Phase 1과 Phase 10 계약이다. 아직 current public behavior가 아니며 runtime, public
 TypeScript와 user documentation에 노출하지 않는다.
 
-## Composite owner edits
-
-```text
-editBoxPlot
-editRegression
-```
-
-- Appearance-only patch는 current derived data를 유지한다.
-- Statistical patch는 새 immutable revision을 한 번 만들고 every owned consumer를 rebind한다.
-- Appearance와 statistics를 함께 받으면 entire request를 preflight하고 one final materialization plan을
-  실행한다.
-- Stable named subcomponents는 aggregate option으로 편집하지만 generated layer ID를 ordinary target으로
-  요구하지 않는다.
-- Status: Planned, NOT IMPLEMENTED. Roadmap 3 Phase 1.
-
 ## Domain removal
 
 ```typescript

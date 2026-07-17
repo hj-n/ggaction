@@ -247,6 +247,31 @@ without naming generated child layers.
   band creation/opt-out와 child trace hierarchy.
 - Evidence: `test/unit/actions/regression/create-regression.test.js` and regression chart tests.
 
+## `editRegression`
+
+- Signature: `editRegression({ target?, method?, degree?, span?, confidence?, interval?, band?, line? })`.
+- `target` is the stable point owner passed to or inferred by `createRegression`; generated band and line IDs are not
+  ordinary targets. Omission resolves the current owner, then one unique regression owner, and rejects ambiguity.
+- Method-specific values follow `createRegression`. A statistical change creates one deterministic immutable derived
+  dataset revision, rebinds the owned band and line to it, rematerializes them, and releases the old unreferenced
+  revision. Appearance-only `band`/`line` patches retain the current derived dataset.
+- `band: false` removes the owned band. Switching to LOESS also removes it; switching back to linear/polynomial or
+  passing a band object recreates it under the same stable owner role. `line` is always retained.
+- The complete patch is validated before any returned program state changes. Earlier programs and source data remain
+  immutable.
+
+### Formal values — `editRegression`
+
+- Implemented: `editRegression({ target?: UserId; method?: "linear" | "polynomial" | "loess"; degree?: PositiveInteger; span?: UnitIntervalExclusiveZero; confidence?: UnitIntervalExclusive; interval?: "mean" | "prediction"; band?: false | RegressionBandOptions; line?: { strokeWidth?: NonNegativeFinite; curve?: CurveInterpolation } })` with method-specific runtime validation.
+- Proposed (NOT IMPLEMENTED): changing source x/y/groupBy fields through this owner edit.
+
+### Value coverage — `editRegression`
+
+- ✅ Covered: linear→polynomial revision, exact derived rows and band/line graphics, appearance-only data retention,
+  LOESS band removal, later band restoration, owner inference, invalid nested options and immutable failure.
+- ✅ Covered: approved regression owner-edit primitive/public and PNG parity.
+- Evidence: `test/unit/actions/regression/edit-regression.test.js` and Roadmap 3 focused-editing Gate.
+
 ## `createRegressionBand`
 
 - Signature: `createRegressionBand({ id, data, x, lower, upper, groupBy?, coordinate, xScale, yScale, color?, opacity?, stroke?, strokeWidth?, curve? })`

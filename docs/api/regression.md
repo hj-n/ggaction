@@ -16,6 +16,7 @@ or prediction interval bands; LOESS is line-only.
 | Action | Required decision | Inferred or default behavior |
 | --- | --- | --- |
 | `createRegression(options?)` | Nothing when one eligible point layer exists | Target, x, y, grouping, linear method, 95% mean interval, band and line appearance |
+| `editRegression(options)` | At least one model or component option | Current or unique owner; unchanged values and fitted data retained |
 
 ## `createRegression(options?)`
 
@@ -86,6 +87,31 @@ regression provenance and delegates its interval geometry to a nested
 `createErrorBand` call. See
 [Actions and trace trees](../concepts/actions-and-trace.md) when that
 decomposition matters.
+
+## Editing a regression
+
+Use the original point owner, not generated band or line IDs:
+
+```javascript
+const revised = program.editRegression({
+  target: "points",
+  method: "polynomial",
+  degree: 2,
+  band: { color: "#a78bfa", opacity: 0.16 },
+  line: { strokeWidth: 4 }
+});
+```
+
+`method`, `degree`, `span`, `confidence`, and `interval` follow the same
+method-specific rules as creation. A statistical change creates one new
+immutable fitted-data revision, rebinds every owned regression component, and
+releases the old revision when nothing references it. A request containing
+only `band` or `line` appearance retains the existing fitted rows.
+
+Set `band: false` or switch to LOESS to remove the owned band. Switching back
+to linear or polynomial regression recreates the band by default; a band
+object can also restore it explicitly. Target omission uses the current or
+only regression owner and fails on ambiguity.
 
 ## Editing generated components
 

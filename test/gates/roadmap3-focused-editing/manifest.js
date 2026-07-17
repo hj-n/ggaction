@@ -236,6 +236,66 @@ function createErrorBandEditActions(rows) {
     });
 }
 
+function createRegressionEditActions(rows) {
+  return chart()
+    .createCanvas({
+      width: 760,
+      height: 480,
+      margin: { top: 40, right: 190, bottom: 70, left: 80 }
+    })
+    .createData({ id: "cars", values: rows })
+    .createPointMark({ id: "points" })
+    .encodeX({ field: "Displacement", scale: { nice: true, zero: false } })
+    .encodeY({ field: "Acceleration", scale: { nice: true, zero: false } })
+    .encodeColor({ field: "Origin" })
+    .encodeSize({ field: "Acceleration" })
+    .encodeShape({ field: "Origin" })
+    .encodeOpacity({ value: 0.27 })
+    .filterMarks({ field: "Origin", op: "oneOf", values: ["Japan", "USA"] })
+    .createRegression()
+    .createGuides()
+    .editRegression({
+      target: "points",
+      method: "polynomial",
+      degree: 2,
+      band: { color: "#a78bfa", opacity: 0.16 },
+      line: { strokeWidth: 4 }
+    });
+}
+
+function createBoxPlotEditActions(rows) {
+  return chart()
+    .createCanvas({
+      width: 360,
+      height: 460,
+      margin: { top: 140, right: 40, bottom: 70, left: 80 }
+    })
+    .createData({ values: rows })
+    .createBoxPlot({
+      x: { field: "Origin", fieldType: "nominal" },
+      y: { field: "Miles_per_Gallon" }
+    })
+    .createGuides({ legend: false })
+    .createTitle({
+      text: "Fuel Economy Distribution by Origin",
+      subtitle: "Factor 1.0 with custom styling",
+      maxWidth: 240
+    })
+    .editBoxPlot({
+      target: "boxPlot",
+      whisker: { type: "tukey", factor: 1 },
+      width: { band: 0.5 },
+      box: {
+        fill: "#f28e2b",
+        opacity: 0.82,
+        stroke: "#9a3412",
+        strokeWidth: 2
+      },
+      median: { stroke: "#431407", strokeWidth: 3 },
+      outlier: { shape: "diamond", radius: 4, opacity: 0.9 }
+    });
+}
+
 function artifact(capability) {
   return Object.freeze({ roadmap: "roadmap3", phase, capability });
 }
@@ -440,6 +500,9 @@ const regressionCallChain = `chart()
   .encodeX({ field: "Displacement", scale: { nice: true, zero: false } })
   .encodeY({ field: "Acceleration", scale: { nice: true, zero: false } })
   .encodeColor({ field: "Origin" })
+  .encodeSize({ field: "Acceleration" })
+  .encodeShape({ field: "Origin" })
+  .encodeOpacity({ value: 0.27 })
   .filterMarks({ field: "Origin", op: "oneOf", values: ["Japan", "USA"] })
   .createRegression()
   .createGuides()
@@ -627,6 +690,7 @@ export const visualVariants = Object.freeze([
     callChain: regressionCallChain,
     artifact: artifact("focused-component-editing"),
     primitive: () => createRegressionEditPrimitives(cars),
+    userFacing: () => createRegressionEditActions(cars),
     width: 760,
     height: 480,
     colors: [],
@@ -639,6 +703,7 @@ export const visualVariants = Object.freeze([
     callChain: boxPlotCallChain,
     artifact: artifact("focused-component-editing"),
     primitive: () => createBoxPlotEditPrimitives(cars),
+    userFacing: () => createBoxPlotEditActions(cars),
     width: 360,
     height: 460,
     colors: [],

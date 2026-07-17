@@ -708,6 +708,28 @@ export interface BoxPlotOptions {
   };
 }
 
+export interface EditBoxPlotOptions {
+  target?: string;
+  whisker?: BoxPlotWhisker;
+  width?: { band?: number };
+  outliers?: boolean;
+  box?: {
+    fill?: string;
+    opacity?: number;
+    stroke?: string;
+    strokeWidth?: number;
+  };
+  median?: {
+    stroke?: string;
+    strokeWidth?: number;
+  };
+  outlier?: {
+    shape?: PointShape;
+    radius?: number;
+    opacity?: number;
+  };
+}
+
 export interface ErrorBandPositionChannel {
   field?: string;
   fieldType?: "quantitative" | "temporal";
@@ -965,6 +987,17 @@ export type RegressionOptions = RegressionCommonOptions & (
       band?: false;
     })
 );
+
+export interface EditRegressionOptions {
+  target?: string;
+  method?: RegressionMethod;
+  degree?: number;
+  span?: number;
+  confidence?: number;
+  interval?: RegressionInterval;
+  band?: false | RegressionBandOptions;
+  line?: { strokeWidth?: number; curve?: CurveInterpolation };
+}
 
 export interface LegendTextOptions {
   offset?: number;
@@ -1227,12 +1260,14 @@ export class ChartProgram {
   encodeStrokeWidth(options: { target?: string; value: number }): ChartProgram;
 
   createRegression(options?: RegressionOptions): ChartProgram;
+  editRegression(options: EditRegressionOptions): ChartProgram;
   createErrorBar(options?: ErrorBarOptions): ChartProgram;
   editErrorBar(options: EditErrorBarOptions): ChartProgram;
   createErrorBand(options?: ErrorBandOptions): ChartProgram;
   editErrorBand(options: EditErrorBandOptions): ChartProgram;
   editErrorBandBoundary(options: EditErrorBandBoundaryOptions): ChartProgram;
   createBoxPlot(options?: BoxPlotOptions): ChartProgram;
+  editBoxPlot(options: EditBoxPlotOptions): ChartProgram;
   createAxes(options?: CreateAxesOptions): ChartProgram;
   createXAxis(options?: CompleteAxisOptions<XAxisPosition>): ChartProgram;
   createYAxis(options?: CompleteAxisOptions<YAxisPosition>): ChartProgram;

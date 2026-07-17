@@ -2908,6 +2908,7 @@ or prediction interval bands; LOESS is line-only.
 | Action | Required decision | Inferred or default behavior |
 | --- | --- | --- |
 | `createRegression(options?)` | Nothing when one eligible point layer exists | Target, x, y, grouping, linear method, 95% mean interval, band and line appearance |
+| `editRegression(options)` | At least one model or component option | Current or unique owner; unchanged values and fitted data retained |
 
 ## `createRegression(options?)`
 
@@ -2978,6 +2979,31 @@ regression provenance and delegates its interval geometry to a nested
 `createErrorBand` call. See
 [Actions and trace trees](../concepts/actions-and-trace.md) when that
 decomposition matters.
+
+## Editing a regression
+
+Use the original point owner, not generated band or line IDs:
+
+```javascript
+const revised = program.editRegression({
+  target: "points",
+  method: "polynomial",
+  degree: 2,
+  band: { color: "#a78bfa", opacity: 0.16 },
+  line: { strokeWidth: 4 }
+});
+```
+
+`method`, `degree`, `span`, `confidence`, and `interval` follow the same
+method-specific rules as creation. A statistical change creates one new
+immutable fitted-data revision, rebinds every owned regression component, and
+releases the old revision when nothing references it. A request containing
+only `band` or `line` appearance retains the existing fitted rows.
+
+Set `band: false` or switch to LOESS to remove the owned band. Switching back
+to linear or polynomial regression recreates the band by default; a band
+object can also restore it explicitly. Target omission uses the current or
+only regression owner and fails on ambiguity.
 
 ## Editing generated components
 
@@ -3445,6 +3471,7 @@ composes ordinary ranged-bar, error-bar, rule, and optional point actions.
 | Action | Shortest call | Result |
 | --- | --- | --- |
 | `createBoxPlot` | `createBoxPlot()` after one eligible encoded layer | Quartile boxes, medians, whiskers, caps, and optional outliers |
+| `editBoxPlot` | `editBoxPlot({ width: { band: 0.5 } })` | Stable owner and current summary retained unless statistics change |
 
 ```javascript
 import { chart } from "ggaction";
@@ -3519,6 +3546,28 @@ program.createBoxPlot({
 Set `outliers: false` to keep the Tukey summary and whiskers without creating
 an outlier dataset, layer, or graphic.
 
+## Editing a box plot
+
+Edit the stable box owner instead of generated whisker, cap, median, or
+outlier IDs:
+
+```javascript
+const styled = program.editBoxPlot({
+  target: "boxPlot",
+  whisker: { type: "tukey", factor: 1 },
+  width: { band: 0.5 },
+  box: { fill: "#f28e2b", opacity: 0.82, stroke: "#9a3412", strokeWidth: 2 },
+  median: { stroke: "#431407", strokeWidth: 3 },
+  outlier: { shape: "diamond", radius: 4, opacity: 0.9 }
+});
+```
+
+Whisker or outlier-presence changes create an immutable summary revision and
+rebind the body, whiskers, caps, median, and optional outliers together. Width
+or appearance-only edits keep the current derived datasets. `outliers: false`
+removes the optional outlier resources; a later `true` recreates them only when
+the revised Tukey result actually contains outlier rows.
+
 ## Current statistical and visual defaults
 
 - Quartiles use linear interpolation at `(n - 1) × p`.
@@ -3539,9 +3588,8 @@ explicitly rematerialize boxes, medians, whiskers, caps, and outliers.
 
 ## Current limitations
 
-`createBoxPlot` is a create-only aggregate; there is no `editBoxPlot` action.
-Subgroup offsets, notches, variable-width boxes, and custom whisker appearance
-are not implemented.
+Category/measure reassignment, subgroup offsets, notches, variable-width
+boxes, and custom whisker appearance are not implemented.
 
 ## Related
 
@@ -6750,6 +6798,18 @@ interval-band paths, and grouped line paths. Method defaults to `"linear"`;
 polynomial degree to `2`; LOESS span to `0.75`.
 [Regression](../api/regression.md)
 
+### `editRegression`
+
+```javascript
+editRegression({
+  target?, method?, degree?, span?, confidence?, interval?, band?, line?
+})
+```
+
+Revise the model through its stable point owner. Statistical changes create and
+rebind one immutable derived-data revision; component-only changes retain the
+current fitted rows. [Regression](../api/regression.md#editing-a-regression)
+
 ### `createErrorBar`
 
 ```javascript
@@ -6821,6 +6881,16 @@ and one quantitative field. The action infers an encoded source when possible
 and composes immutable box summary data, error-bar whiskers, ranged-bar bodies,
 median rules, and optional point outliers. Tukey factor, band width, component
 appearance, and outlier creation are configurable. [Box plots](../api/box-plots.md)
+
+### `editBoxPlot`
+
+```javascript
+editBoxPlot({ target?, whisker?, width?, outliers?, box?, median?, outlier? })
+```
+
+Revise box statistics, optional outlier topology, width, and component
+appearance through the stable box owner without addressing generated child
+IDs. [Box plots](../api/box-plots.md#editing-a-box-plot)
 
 ### `createGuides`
 

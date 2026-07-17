@@ -27,12 +27,12 @@ const DEFAULT_OUTLIER = Object.freeze({
   opacity: 0.75
 });
 
-function plainOptions(value, keys, label) {
+function plainOptions(value, keys, label, operation = "createBoxPlot") {
   if (value === undefined) return {};
   if (!isPlainObject(value)) {
-    throw new TypeError(`createBoxPlot ${label} must be a plain object.`);
+    throw new TypeError(`${operation} ${label} must be a plain object.`);
   }
-  validateKeys(value, keys, `createBoxPlot ${label}`);
+  validateKeys(value, keys, `${operation} ${label}`);
   return value;
 }
 
@@ -52,12 +52,12 @@ export function boxEncodingArgs(value) {
   };
 }
 
-export function resolveBoxWhisker(value) {
+export function resolveBoxWhisker(value, operation = "createBoxPlot") {
   if (value === undefined) return Object.freeze({ type: "tukey", factor: 1.5 });
   if (!isPlainObject(value)) {
-    throw new TypeError("createBoxPlot whisker must be a plain object.");
+    throw new TypeError(`${operation} whisker must be a plain object.`);
   }
-  validateKeys(value, ["type", "factor"], "createBoxPlot whisker");
+  validateKeys(value, ["type", "factor"], `${operation} whisker`);
   const type = value.type ?? "tukey";
   if (!["tukey", "minmax"].includes(type)) {
     throw new Error(`Unsupported createBoxPlot whisker type "${type}".`);
@@ -77,8 +77,8 @@ export function resolveBoxWhisker(value) {
   return Object.freeze({ type, factor });
 }
 
-export function resolveBoxWidth(value) {
-  const options = plainOptions(value, ["band"], "width");
+export function resolveBoxWidth(value, operation = "createBoxPlot") {
+  const options = plainOptions(value, ["band"], "width", operation);
   const band = options.band ?? 0.7;
   if (!Number.isFinite(band) || band <= 0 || band >= 1) {
     throw new RangeError(
@@ -88,11 +88,12 @@ export function resolveBoxWidth(value) {
   return band;
 }
 
-export function resolveBoxAppearance(value) {
+export function resolveBoxAppearance(value, operation = "createBoxPlot") {
   const options = plainOptions(
     value,
     ["fill", "opacity", "stroke", "strokeWidth"],
-    "box"
+    "box",
+    operation
   );
   return Object.freeze({
     fill: options.fill === undefined
@@ -113,8 +114,13 @@ export function resolveBoxAppearance(value) {
   });
 }
 
-export function resolveBoxMedianAppearance(value) {
-  const options = plainOptions(value, ["stroke", "strokeWidth"], "median");
+export function resolveBoxMedianAppearance(value, operation = "createBoxPlot") {
+  const options = plainOptions(
+    value,
+    ["stroke", "strokeWidth"],
+    "median",
+    operation
+  );
   return Object.freeze({
     stroke: options.stroke === undefined
       ? DEFAULT_MEDIAN.stroke
@@ -128,8 +134,13 @@ export function resolveBoxMedianAppearance(value) {
   });
 }
 
-export function resolveBoxOutlierAppearance(value) {
-  const options = plainOptions(value, ["shape", "radius", "opacity"], "outlier");
+export function resolveBoxOutlierAppearance(value, operation = "createBoxPlot") {
+  const options = plainOptions(
+    value,
+    ["shape", "radius", "opacity"],
+    "outlier",
+    operation
+  );
   return Object.freeze({
     shape: options.shape === undefined
       ? DEFAULT_OUTLIER.shape

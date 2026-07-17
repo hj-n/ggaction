@@ -50,7 +50,11 @@ export const materializeBoxPlot = action(
         source,
         orientation,
         category: category.field,
-        measure: measure.field
+        measure: measure.field,
+        summaryId,
+        whiskerId,
+        medianId,
+        outlierId
       },
       barWidth: { band: config.width },
       fill: config.box.fill,
@@ -178,6 +182,13 @@ export const materializeBoxPlot = action(
         opacity: config.outlier.opacity
       });
     }
+    next = next._withMarkConfig(ownerId, {
+      ...next.markConfigs[ownerId],
+      boxPlot: {
+        ...next.markConfigs[ownerId].boxPlot,
+        outlierDataId: hasOutliers ? outlierDataId : undefined
+      }
+    });
     return next._withContext({ currentMark: ownerId, currentData: source });
   }
 );

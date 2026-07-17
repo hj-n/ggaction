@@ -64,7 +64,8 @@ export const createBoxOutliers = action(
     let next = this.createPointMark({
       id: args.id,
       data: args.data,
-      shape: args.shape
+      shape: args.shape,
+      fill: "#111111"
     });
     next = next[categoryAction]({
       target: args.id,
@@ -82,7 +83,6 @@ export const createBoxOutliers = action(
     });
     return next
       .encodeRadius({ target: args.id, value: args.radius })
-      .encodeOpacity({ target: args.id, value: args.opacity })
-      .editGraphics({ target: args.id, property: "fill", value: "#111111" });
+      .encodeOpacity({ target: args.id, value: args.opacity });
   }
 );

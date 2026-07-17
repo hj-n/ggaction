@@ -87,7 +87,7 @@ export const createRegression = action(
         ...band
       });
     }
-    return next.createRegressionLine({
+    next = next.createRegressionLine({
       id: lineId,
       data: dataId,
       x,
@@ -97,6 +97,23 @@ export const createRegression = action(
       xScale,
       yScale,
       ...line
+    });
+    return next._withMarkConfig(point.id, {
+      ...next.markConfigs[point.id],
+      regression: {
+        source: point.data,
+        x,
+        y,
+        groupBy,
+        coordinate,
+        xScale,
+        yScale,
+        colorScale,
+        dataId,
+        bandId: band === false ? undefined : bandId,
+        lineId,
+        parameters
+      }
     });
   }
 );

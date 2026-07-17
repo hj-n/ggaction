@@ -44,13 +44,15 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | user-facing | [`encodeDensity`](current/ENCODINGS.md#encodedensity) | encodings | Assignment | Reassignment — Implemented | ✅ / ✅ / ✅ |
 | user-facing | [`editDensity`](current/ENCODINGS.md#editdensity) | encodings | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`encodeBarWidth`](current/ENCODINGS.md#encodebarwidth) | encodings | Assignment | Reassignment — Implemented | ✅ / ✅ / ✅ |
-| user-facing | [`createRegression`](current/STATISTICS.md#createregression) | statistics | Aggregate create-only | Intentional | ✅ / ✅ / ⚠️ |
+| user-facing | [`createRegression`](current/STATISTICS.md#createregression) | statistics | Mutable resource | Complete | ✅ / ✅ / ⚠️ |
+| user-facing | [`editRegression`](current/STATISTICS.md#editregression) | statistics | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`createErrorBar`](current/STATISTICS.md#createerrorbar) | statistics | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editErrorBar`](current/STATISTICS.md#editerrorbar) | statistics | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`createErrorBand`](current/STATISTICS.md#createerrorband) | statistics | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editErrorBand`](current/STATISTICS.md#editerrorband) | statistics | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editErrorBandBoundary`](current/STATISTICS.md#editerrorbandboundary) | statistics | Mutable resource | Complete | ✅ / ✅ / ✅ |
-| user-facing | [`createBoxPlot`](current/COMPOSITE_MARKS.md#createboxplot) | statistics | Aggregate create-only | Intentional create-only aggregate; updates delegate to supported child assignments | ✅ / ✅ / ✅ |
+| user-facing | [`createBoxPlot`](current/COMPOSITE_MARKS.md#createboxplot) | statistics | Mutable resource | Complete | ✅ / ✅ / ✅ |
+| user-facing | [`editBoxPlot`](current/COMPOSITE_MARKS.md#editboxplot) | statistics | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`createAxes`](current/AXES.md#createaxes) | axes | Aggregate create-only | Intentional | ✅ / ✅ / ⚠️ |
 | user-facing | [`createXAxis`](current/AXES.md#createxaxis) | axes | Aggregate create-only | Intentional | ✅ / ✅ / ⚠️ |
 | user-facing | [`createYAxis`](current/AXES.md#createyaxis) | axes | Aggregate create-only | Intentional | ✅ / ✅ / ✅ |
@@ -111,8 +113,6 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 
 | Action | Readiness | Contract |
 | --- | --- | --- |
-| `editBoxPlot` | accepted | [Open](planned/ROADMAP3_EDITING.md#composite-owner-edits) |
-| `editRegression` | accepted | [Open](planned/ROADMAP3_EDITING.md#composite-owner-edits) |
 | `removeXAxis` | accepted | [Open](planned/ROADMAP3_EDITING.md#domain-removal) |
 | `removeYAxis` | accepted | [Open](planned/ROADMAP3_EDITING.md#domain-removal) |
 | `removeGrid` | accepted | [Open](planned/ROADMAP3_EDITING.md#domain-removal) |
@@ -160,7 +160,6 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | parameter | Closed Polar line option | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-line-radar) |
 | parameter | Facet scale resolution options | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#facet-resolution-and-derived-replay) |
 | behavior | Compatibility-aware layer inference | accepted | [Open](planned/ROADMAP3_EDITING.md#layer-inference-and-api-contract) |
-| composition | Focused component editing | accepted | [Open](planned/ROADMAP3_EDITING.md#composite-owner-edits) |
 | behavior | Atomic domain removal | accepted | [Open](planned/ROADMAP3_EDITING.md#domain-removal) |
 | parameter | Exact public option types | accepted | [Open](planned/ROADMAP3_EDITING.md#layer-inference-and-api-contract) |
 | parameter | API layer classification alignment | accepted | [Open](planned/ROADMAP3_EDITING.md#layer-inference-and-api-contract) |

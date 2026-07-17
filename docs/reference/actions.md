@@ -452,6 +452,18 @@ interval-band paths, and grouped line paths. Method defaults to `"linear"`;
 polynomial degree to `2`; LOESS span to `0.75`.
 [Regression](../api/regression.md)
 
+### `editRegression`
+
+```javascript
+editRegression({
+  target?, method?, degree?, span?, confidence?, interval?, band?, line?
+})
+```
+
+Revise the model through its stable point owner. Statistical changes create and
+rebind one immutable derived-data revision; component-only changes retain the
+current fitted rows. [Regression](../api/regression.md#editing-a-regression)
+
 ### `createErrorBar`
 
 ```javascript
@@ -523,6 +535,16 @@ and one quantitative field. The action infers an encoded source when possible
 and composes immutable box summary data, error-bar whiskers, ranged-bar bodies,
 median rules, and optional point outliers. Tukey factor, band width, component
 appearance, and outlier creation are configurable. [Box plots](../api/box-plots.md)
+
+### `editBoxPlot`
+
+```javascript
+editBoxPlot({ target?, whisker?, width?, outliers?, box?, median?, outlier? })
+```
+
+Revise box statistics, optional outlier topology, width, and component
+appearance through the stable box owner without addressing generated child
+IDs. [Box plots](../api/box-plots.md#editing-a-box-plot)
 
 ### `createGuides`
 

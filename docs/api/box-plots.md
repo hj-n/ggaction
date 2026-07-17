@@ -16,6 +16,7 @@ composes ordinary ranged-bar, error-bar, rule, and optional point actions.
 | Action | Shortest call | Result |
 | --- | --- | --- |
 | `createBoxPlot` | `createBoxPlot()` after one eligible encoded layer | Quartile boxes, medians, whiskers, caps, and optional outliers |
+| `editBoxPlot` | `editBoxPlot({ width: { band: 0.5 } })` | Stable owner and current summary retained unless statistics change |
 
 ```javascript
 import { chart } from "ggaction";
@@ -90,6 +91,28 @@ program.createBoxPlot({
 Set `outliers: false` to keep the Tukey summary and whiskers without creating
 an outlier dataset, layer, or graphic.
 
+## Editing a box plot
+
+Edit the stable box owner instead of generated whisker, cap, median, or
+outlier IDs:
+
+```javascript
+const styled = program.editBoxPlot({
+  target: "boxPlot",
+  whisker: { type: "tukey", factor: 1 },
+  width: { band: 0.5 },
+  box: { fill: "#f28e2b", opacity: 0.82, stroke: "#9a3412", strokeWidth: 2 },
+  median: { stroke: "#431407", strokeWidth: 3 },
+  outlier: { shape: "diamond", radius: 4, opacity: 0.9 }
+});
+```
+
+Whisker or outlier-presence changes create an immutable summary revision and
+rebind the body, whiskers, caps, median, and optional outliers together. Width
+or appearance-only edits keep the current derived datasets. `outliers: false`
+removes the optional outlier resources; a later `true` recreates them only when
+the revised Tukey result actually contains outlier rows.
+
 ## Current statistical and visual defaults
 
 - Quartiles use linear interpolation at `(n - 1) × p`.
@@ -110,9 +133,8 @@ explicitly rematerialize boxes, medians, whiskers, caps, and outliers.
 
 ## Current limitations
 
-`createBoxPlot` is a create-only aggregate; there is no `editBoxPlot` action.
-Subgroup offsets, notches, variable-width boxes, and custom whisker appearance
-are not implemented.
+Category/measure reassignment, subgroup offsets, notches, variable-width
+boxes, and custom whisker appearance are not implemented.
 
 ## Related
 

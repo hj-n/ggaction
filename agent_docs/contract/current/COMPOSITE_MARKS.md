@@ -51,7 +51,8 @@ createBoxPlot({
   override할 수 있다. `outliers: false`는 Tukey summary를 유지하면서 outlier dataset/layer/graphic을 만들지 않는다.
 - Body는 ordinary bar with y/y2 or x/x2, whiskers는 explicit `createErrorBar`, median은 ordinary rule, outliers는
   ordinary point actions를 wrapped children으로 조합한다. Canvas/scale changes rematerialize every concrete consumer.
-- Lifecycle은 aggregate create-only다. No `editBoxPlot`; later changes use supported ordinary child actions.
+- Lifecycle은 mutable aggregate다. `editBoxPlot`은 stable owner를 통해 statistics, topology와 component
+  appearance를 함께 편집한다.
 
 ### Formal values — `createBoxPlot`
 
@@ -68,3 +69,38 @@ createBoxPlot({
 - ✅ Covered: factor `1`, band `0.5`, custom box/median/diamond appearance, `outliers: false`, edge rows and exact pixels.
 - Evidence: `test/unit/actions/statistics/create-box-plot.test.js`,
   `test/charts/cars-box-plot/public.test.js`, and `test/charts/cars-box-plot/png.render.js`.
+
+## `editBoxPlot`
+
+```typescript
+editBoxPlot({
+  target?: UserId;
+  whisker?: BoxPlotWhisker;
+  width?: { band?: UnitIntervalExclusive };
+  outliers?: boolean;
+  box?: BoxAppearance;
+  median?: MedianAppearance;
+  outlier?: OutlierAppearance;
+}): ChartProgram;
+```
+
+- `target` is the stable box owner, never a generated whisker, cap, median or outlier ID. Omission resolves current,
+  then unique owner and rejects ambiguity.
+- Whisker or outlier-topology changes create one immutable summary revision and, when needed, one matching outlier
+  revision. Body, whisker/caps, median and outlier consumers are rebound before old unreferenced revisions are released.
+- Width and appearance-only patches retain current derived datasets. Missing selected outlier resources are created
+  only when the revised Tukey result contains outliers; disabled or empty outliers leave no dataset/layer/graphic shell.
+- Nested options use the same formal values as `createBoxPlot`. A constant `box.fill` is rejected when the body owns a
+  field-driven color encoding because the request would not have a concrete effect.
+
+### Formal values — `editBoxPlot`
+
+- Implemented: `editBoxPlot({ target?: UserId; whisker?: BoxPlotWhisker; width?: { band?: UnitIntervalExclusive }; outliers?: boolean; box?: BoxAppearance; median?: MedianAppearance; outlier?: OutlierAppearance })`.
+- Proposed (NOT IMPLEMENTED): category/measure reassignment, subgroup offsets, notches and variable-width boxes.
+
+### Value coverage — `editBoxPlot`
+
+- ✅ Covered: factor revision, all owned data rebindings, old revision release, exact body/whisker/median/outlier
+  graphics, width and appearance-only retention, outlier disable/restore, owner and nested validation.
+- ✅ Covered: approved box owner-edit primitive/public and PNG parity.
+- Evidence: `test/unit/actions/statistics/edit-box-plot.test.js` and Roadmap 3 focused-editing Gate.
