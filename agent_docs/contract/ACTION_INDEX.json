@@ -182,6 +182,24 @@
       }
     },
     {
+      "name": "removeMark",
+      "layer": "user-facing",
+      "domain": "marks",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Removes one stable mark owner and its owned state",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/MARKS.md",
+        "anchor": "removemark"
+      }
+    },
+    {
       "name": "createLineMark",
       "layer": "user-facing",
       "domain": "marks",
@@ -1280,6 +1298,42 @@
       }
     },
     {
+      "name": "removeXAxis",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Removes the complete x-axis resource",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "removexaxis"
+      }
+    },
+    {
+      "name": "removeYAxis",
+      "layer": "user-facing",
+      "domain": "axes",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Removes the complete y-axis resource",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/AXES.md",
+        "anchor": "removeyaxis"
+      }
+    },
+    {
       "name": "createGrid",
       "layer": "user-facing",
       "domain": "grid",
@@ -1385,6 +1439,24 @@
       "contract": {
         "file": "agent_docs/contract/current/GRID.md",
         "anchor": "editgrid"
+      }
+    },
+    {
+      "name": "removeGrid",
+      "layer": "user-facing",
+      "domain": "grid",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Removes selected existing grid directions",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/GRID.md",
+        "anchor": "removegrid"
       }
     },
     {
@@ -1532,6 +1604,24 @@
       }
     },
     {
+      "name": "removeLegend",
+      "layer": "user-facing",
+      "domain": "legend_and_title",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Removes every legend block owned by one mark",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/LEGEND_AND_TITLE.md",
+        "anchor": "removelegend"
+      }
+    },
+    {
       "name": "createTitle",
       "layer": "user-facing",
       "domain": "legend_and_title",
@@ -1565,6 +1655,24 @@
       "contract": {
         "file": "agent_docs/contract/current/LEGEND_AND_TITLE.md",
         "anchor": "edittitle"
+      }
+    },
+    {
+      "name": "removeTitle",
+      "layer": "user-facing",
+      "domain": "legend_and_title",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Removes the complete chart title resource",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/LEGEND_AND_TITLE.md",
+        "anchor": "removetitle"
       }
     },
     {
@@ -1821,12 +1929,6 @@
     }
   ],
   "plannedActions": [
-    { "name": "removeXAxis", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_EDITING.md", "anchor": "domain-removal" } },
-    { "name": "removeYAxis", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_EDITING.md", "anchor": "domain-removal" } },
-    { "name": "removeGrid", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_EDITING.md", "anchor": "domain-removal" } },
-    { "name": "removeLegend", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_EDITING.md", "anchor": "domain-removal" } },
-    { "name": "removeTitle", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_EDITING.md", "anchor": "domain-removal" } },
-    { "name": "removeMark", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_EDITING.md", "anchor": "domain-removal" } },
     { "name": "encodeTheta", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_POLAR.md", "anchor": "polar-position-actions" } },
     { "name": "encodeR", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_POLAR.md", "anchor": "polar-position-actions" } },
     { "name": "encodePointRadius", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_POLAR.md", "anchor": "polar-position-actions" } },
@@ -1864,10 +1966,6 @@
     { "id": "vconcat", "kind": "composition", "name": "Vertical program composition", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_COMPOSITION.md", "anchor": "program-composition" } },
     { "id": "polar-line-closed", "kind": "parameter", "name": "Closed Polar line option", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_POLAR.md", "anchor": "polar-line-radar" } },
     { "id": "facet-scale-resolution", "kind": "parameter", "name": "Facet scale resolution options", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_COMPOSITION.md", "anchor": "facet-resolution-and-derived-replay" } },
-    { "id": "compatible-layer-inference", "kind": "behavior", "name": "Compatibility-aware layer inference", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_EDITING.md", "anchor": "layer-inference-and-api-contract" } },
-    { "id": "domain-removal", "kind": "behavior", "name": "Atomic domain removal", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_EDITING.md", "anchor": "domain-removal" } },
-    { "id": "exact-public-option-types", "kind": "parameter", "name": "Exact public option types", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_EDITING.md", "anchor": "layer-inference-and-api-contract" } },
-    { "id": "api-layer-classification-alignment", "kind": "parameter", "name": "API layer classification alignment", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_EDITING.md", "anchor": "layer-inference-and-api-contract" } },
     { "id": "polar-point", "kind": "composition", "name": "Polar point chart vertical slice", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_POLAR.md", "anchor": "polar-position-actions" } },
     { "id": "polar-guides", "kind": "composition", "name": "Polar axes and grids", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_POLAR.md", "anchor": "polar-guide-actions" } },
     { "id": "polar-line-radar", "kind": "composition", "name": "Polar line and radar charts", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_POLAR.md", "anchor": "polar-line-radar" } },

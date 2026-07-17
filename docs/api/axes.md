@@ -14,6 +14,7 @@ title: Axes
 | `createAxes` | `createAxes()` | Encoded Cartesian channels, scales, coordinate, titles | Complete selected x/y axes |
 | `editXAxis` | `editXAxis({ line: { lineWidth: 2 } })` | Existing x-axis components | Selected x-axis components rematerialized |
 | `editYAxis` | `editYAxis({ position: "right" })` | Existing y-axis components | Existing y-axis components moved together |
+| `removeXAxis` / `removeYAxis` | `removeXAxis()` | Existing complete axis | Semantic, graphic, and stored axis state removed |
 
 ## `createAxes(options?)`
 
@@ -137,6 +138,20 @@ coordinate binding. It delegates to the existing line, tick, label, grouped
 tick/label, and title edit actions. Omitted component objects remain unchanged.
 Changing `position` updates every existing component on that axis, including
 components omitted from the call.
+
+## Removing an axis
+
+`removeXAxis()` and `removeYAxis()` remove the complete axis: line, ticks,
+labels, title, semantic guide state, and stored materialization settings. Marks,
+scales, coordinates, and the opposite axis remain.
+
+```javascript
+const withoutXAxis = program.removeXAxis();
+const selected = program.removeYAxis({ scale: "y", coordinate: "main" });
+```
+
+Optional selectors must match the existing resource. A missing or mismatched
+axis throws before anything changes.
 
 | Option | Meaning |
 | --- | --- |

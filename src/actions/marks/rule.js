@@ -14,6 +14,9 @@ import { findLayer } from "../../selectors/layers.js";
 import { DEFAULT_COLORS } from "../../theme/defaults.js";
 import {
   assertMarkAvailable,
+  applyLayeredMarkInheritance,
+  materializeInheritedMark,
+  resolveLayeredMarkInheritance,
   resolveMarkData,
   resolveMarkId,
   validateMarkOptions
@@ -81,19 +84,27 @@ const createRuleMark = action(
       markType: "rule",
       operation: "createRuleMark"
     });
-    const { data } = resolveMarkData(this, args);
+    const inherited = resolveLayeredMarkInheritance(this, args, "rule");
+    const { data } = resolveMarkData(this, {
+      ...args,
+      ...(args.data === undefined && this.context.currentData === undefined &&
+        inherited?.data !== undefined ? { data: inherited.data } : {})
+    });
     assertMarkAvailable(this, id);
 
-    return this
+    let created = this
       .editSemantic({ property: `layer[${id}].mark.type`, value: "rule" })
-      .editSemantic({ property: `layer[${id}].data`, value: data })
+      .editSemantic({ property: `layer[${id}].data`, value: data });
+    created = applyLayeredMarkInheritance(created, id, inherited);
+    created = created
       .createGraphics({
         id,
         type: "line",
         length: 0,
-        ...resolveMarkGraphicPlacement(this, { data, markType: "rule" })
+        ...resolveMarkGraphicPlacement(created, { data, markType: "rule" })
       })
       ._withMarkConfig(id, DEFAULT_RULE_CONFIG);
+    return materializeInheritedMark(created, id);
   }
 );
 

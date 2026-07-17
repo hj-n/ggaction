@@ -2405,6 +2405,18 @@ each type infers its ID and current dataset when those choices are unambiguous.
 | Bar | `createBarMark` | `editBarMark` | Rect collection |
 | Rule | `createRuleMark` | Encoding actions | Line collection |
 
+Use `removeMark({ target? })` to remove one complete stable mark owner. It also
+removes generated composite children, unreferenced generated datasets, owned
+legends, and selection/highlight state. Source data and resources shared by
+another mark remain:
+
+```javascript
+const barsOnly = layeredProgram.removeMark({ target: "points" });
+```
+
+Generated children such as regression lines cannot be removed directly;
+select their stable owner instead.
+
 Creation establishes semantic ownership but may leave an empty collection.
 Concrete graphics appear when the required encodings make the mark renderable.
 Later Canvas, scale, grouping, or appearance edits explicitly rematerialize
@@ -2417,9 +2429,13 @@ those graphics.
   `"area"`, `"bar"`, or `"rule"`.
 - A second mark of the same type requires an explicit ID.
 - A newly layered mark can inherit compatible data, coordinate, x, and y
-  encodings from one unambiguous source layer.
+  encodings from the current layer, or one unique source on the current dataset.
 - Mark-specific aggregate, bin, stack, and appearance policies are never copied
   implicitly.
+- Only field-based positions compatible with the new mark and existing scale
+  type are inherited. Incompatible channels remain unencoded.
+- Passing `data` explicitly starts independent mark assembly and disables
+  layered position inheritance.
 
 ## Related
 
@@ -3739,6 +3755,7 @@ be selected.
 | --- | --- | --- | --- |
 | `createTitle` | `createTitle({ text: "Title" })` | Top, plot-left alignment, default styles | Semantic text and concrete title graphics |
 | `editTitle` | `editTitle({ position: "bottom" })` | Preserves omitted text, layout, wrapping, and style | Rematerialized title graphics |
+| `removeTitle` | `removeTitle()` | Existing chart title | Title and subtitle resource removed |
 
 ## `createTitle(options)`
 
@@ -3823,6 +3840,17 @@ leaves. `text` and string `subtitle` replace semantic text. Use
 `subtitle: false` to remove the subtitle; a later string recreates it.
 Wrapping and layout changes rebuild the concrete text lines without changing
 unrelated chart state.
+
+## `removeTitle()`
+
+Remove the complete chart title resource, including subtitle text, concrete
+graphics, and stored layout settings:
+
+```javascript
+const untitled = program.removeTitle();
+```
+
+The action accepts no options and requires an existing title.
 
 ## Stored result
 
@@ -5295,6 +5323,7 @@ resources can be stored, but the current rendering slice is Cartesian.
 | `createAxes` | `createAxes()` | Encoded Cartesian channels, scales, coordinate, titles | Complete selected x/y axes |
 | `editXAxis` | `editXAxis({ line: { lineWidth: 2 } })` | Existing x-axis components | Selected x-axis components rematerialized |
 | `editYAxis` | `editYAxis({ position: "right" })` | Existing y-axis components | Existing y-axis components moved together |
+| `removeXAxis` / `removeYAxis` | `removeXAxis()` | Existing complete axis | Semantic, graphic, and stored axis state removed |
 
 ## `createAxes(options?)`
 
@@ -5419,6 +5448,20 @@ tick/label, and title edit actions. Omitted component objects remain unchanged.
 Changing `position` updates every existing component on that axis, including
 components omitted from the call.
 
+## Removing an axis
+
+`removeXAxis()` and `removeYAxis()` remove the complete axis: line, ticks,
+labels, title, semantic guide state, and stored materialization settings. Marks,
+scales, coordinates, and the opposite axis remain.
+
+```javascript
+const withoutXAxis = program.removeXAxis();
+const selected = program.removeYAxis({ scale: "y", coordinate: "main" });
+```
+
+Optional selectors must match the existing resource. A missing or mismatched
+axis throws before anything changes.
+
 | Option | Meaning |
 | --- | --- |
 | `position` | x: `"bottom"/"top"`; y: `"left"/"right"` |
@@ -5455,6 +5498,7 @@ axes) cannot be created simultaneously. Polar axes are unsupported.
 | --- | --- | --- | --- |
 | `createGrid` | `createGrid()` | Horizontal direction from y; vertical off | Concrete lines behind related marks |
 | `editGrid` | `editGrid({ horizontal: { count: 6 } })` | Existing selected directions | One or both directions rematerialized |
+| `removeGrid` | `removeGrid({ vertical: true })` | Existing selected directions | Semantic, graphic, and stored grid state removed |
 
 ## `createGrid(options?)`
 
@@ -5553,6 +5597,19 @@ directional actions, which remain available for focused edits.
 `createGuides()` selects this default horizontal grid automatically when a y
 encoding is present. Pass `createGuides({ grid: false })` to opt out.
 
+## Removing grids
+
+`removeGrid()` removes every existing direction. Select a subset with explicit
+booleans:
+
+```javascript
+const noGrid = program.removeGrid();
+const horizontalOnly = program.removeGrid({ vertical: true });
+```
+
+At least one direction must be selected; explicit false/false is an error.
+Scales, coordinates, marks, and axes remain.
+
 ## Errors and limitations
 
 Each selected direction requires one compatible resolved scale and Cartesian
@@ -5576,6 +5633,7 @@ coordinate. Ambiguous resources require explicit IDs.
 | `createLegend` | `createLegend()` | Current/unique compatible mark; right position | Categorical, size, gradient, interval, or opacity guide |
 | `editLegend` | `editLegend({ position: "left" })` | Unique existing legend; omitted properties retained | Rematerialized layout and appearance |
 | Focused edits | `editLegendLabels({ fontSize: 11 })` | Same target inference as `editLegend` | One legend component rematerialized |
+| `removeLegend` | `removeLegend({ target: "points" })` | Existing legend owner | All owned legend blocks removed |
 
 ## `createLegend(options?)`
 
@@ -5848,6 +5906,18 @@ legend is inferable. The actions use `editLegend` internally, so title modes,
 partial nested merges, legend-kind compatibility, layout errors, and
 rematerialization behavior remain identical. At least one component option is
 required.
+
+## Removing a legend
+
+`removeLegend()` removes every legend block associated with one mark, including
+combined categorical and size blocks. Mark encodings and scales remain.
+
+```javascript
+const withoutLegend = program.removeLegend({ target: "points" });
+```
+
+`target` may be omitted when exactly one legend owner exists. Independent
+legend owners require an explicit target.
 
 Canvas changes and relevant encoding actions explicitly rematerialize the
 legend from the latest ordinal domains and ranges. The renderer still reads
@@ -6360,7 +6430,9 @@ Each action entry starts with its callable signature and a concise observable
 effect. Follow the linked API page for required values, defaults and inference,
 semantic and graphic effects, rematerialization, and errors. Chart-authoring
 actions are the recommended workflow; advanced and extension actions are
-available when that workflow does not express the required control.
+available when that workflow does not express the required control. These
+headings correspond to the action catalog layers `user-facing`, `advanced`,
+and `primitive`, respectively.
 
 ## Quick navigation
 
@@ -6488,6 +6560,15 @@ editPointMark({ target?, shape?, fill?, opacity?, stroke?, strokeWidth? })
 ```
 
 Change constant point shape, fill, opacity, or outline appearance and rematerialize its concrete items. [Marks](../api/marks.md)
+
+### `removeMark`
+
+```javascript
+removeMark({ target? })
+```
+
+Remove one stable mark owner and its owned state while preserving source data
+and independently shared resources. [Marks](../api/marks.md)
 
 ### `createLineMark`
 
@@ -6968,6 +7049,15 @@ Edit one legend component without constructing the nested options accepted by
 rematerialization as `editLegend`. At least one component change is required.
 [Legends](../api/legends.md#focused-edits)
 
+### `removeLegend`
+
+```javascript
+removeLegend({ target? })
+```
+
+Remove every legend block owned by one mark while preserving mark encodings and
+scales. [Legends](../api/legends.md)
+
 ### `createTitle`
 
 ```javascript
@@ -6992,6 +7082,14 @@ editTitle({
 
 Partially edit the existing title. `subtitle: false` removes the subtitle;
 omitted properties remain unchanged. [Titles](../api/titles.md)
+
+### `removeTitle`
+
+```javascript
+removeTitle()
+```
+
+Remove the complete chart title and subtitle resource. [Titles](../api/titles.md)
 
 ## Advanced Chart API
 
@@ -7052,6 +7150,16 @@ editYAxis({ position?, line?, ticks?, labels?, ticksAndLabels?, title? })
 Complete-axis edits update only the selected components of an existing axis.
 Use `ticksAndLabels` for a coordinated tick/label edit, or `ticks` and
 `labels` for independent edits; do not combine both forms.
+
+### Complete axis removal
+
+```javascript
+removeXAxis({ coordinate?, scale? })
+removeYAxis({ coordinate?, scale? })
+```
+
+Remove one complete Cartesian axis. Optional selectors must match the existing
+resource. [Axes](../api/axes.md)
 
 ### Axis lines, ticks, and labels
 
@@ -7130,6 +7238,13 @@ editGrid({
 Directional grid edits require an existing grid. Their `values` option accepts
 an exact finite array or `"auto"` to restore current axis/scale inference.
 `editGrid` applies one or both directional edits through the same actions.
+
+```javascript
+removeGrid({ horizontal?, vertical? })
+```
+
+Remove all existing directions when omitted, or only directions selected with
+`true`.
 
 See [Coordinates](../api/coordinates.md) and
 [Advanced axis components](../advanced/axis-components.md).

@@ -1,6 +1,9 @@
 import { action } from "../../../core/action.js";
 import {
   assertMarkAvailable,
+  applyLayeredMarkInheritance,
+  materializeInheritedMark,
+  resolveLayeredMarkInheritance,
   resolveMarkId,
   resolveMarkData,
   validateMarkOptions
@@ -25,11 +28,16 @@ export const createBarMark = action(
       markType: "bar",
       operation: "createBarMark"
     });
-    const { data } = resolveMarkData(this, args);
+    const inherited = resolveLayeredMarkInheritance(this, args, "bar");
+    const { data } = resolveMarkData(this, {
+      ...args,
+      ...(args.data === undefined && this.context.currentData === undefined &&
+        inherited?.data !== undefined ? { data: inherited.data } : {})
+    });
 
     assertMarkAvailable(this, id);
 
-    const created = this
+    let created = this
       .editSemantic({
         property: `layer[${id}].mark.type`,
         value: "bar"
@@ -37,13 +45,16 @@ export const createBarMark = action(
       .editSemantic({
         property: `layer[${id}].data`,
         value: data
-      })
+      });
+    created = applyLayeredMarkInheritance(created, id, inherited);
+    created = created
       .createGraphics({
         id,
         type: "rect",
         length: 0,
-        ...resolveMarkGraphicPlacement(this, { data, markType: "bar" })
+        ...resolveMarkGraphicPlacement(created, { data, markType: "bar" })
       });
+    created = materializeInheritedMark(created, id);
     const appearance = Object.fromEntries(
       ["fill", "opacity", "stroke", "strokeWidth"]
         .filter(property => Object.hasOwn(args, property))

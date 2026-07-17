@@ -239,6 +239,23 @@ Focused actions는 별도 stored schema를 만들지 않고 `editLegend`의 targ
 config normalization과 rematerialization을 공유한다. Evidence:
 `test/unit/actions/guides/legend-edit-actions.test.js` and Roadmap 3 focused-editing Gate.
 
+## `removeLegend`
+
+- Signature: `removeLegend({ target? } = {})`.
+- One stable mark target에 속한 categorical, size, continuous color and opacity legend blocks를 complete
+  semantic/graphic/config resource 단위로 제거한다. A unique target may be inferred; independent legends require
+  `target`. Mark encodings and scales remain unchanged.
+
+### Formal values — `removeLegend`
+
+- Implemented: `removeLegend(options?: { target?: UserId })`.
+- Proposed (NOT IMPLEMENTED): —
+
+### Value coverage — `removeLegend`
+
+- ✅ Covered: inferred/explicit target, unknown target, complete categorical cleanup and Gate parity.
+- Evidence: `test/unit/actions/guides/remove-guides.test.js` and Roadmap 3 focused-editing Gate.
+
 ## `createGuides`
 
 - Signature: `createGuides({ axes?, grid?, legend? })`.
@@ -339,3 +356,19 @@ config normalization과 rematerialization을 공유한다. Evidence:
 - ✅ Covered: single/collection reconciliation, rotation-property reconciliation, trace and immutability.
 - ✅ Covered: Canvas/edit action-order convergence, insufficient margin, guide collision and exact variant equivalence.
 - Evidence: `test/unit/actions/guides/title-actions.test.js` and density-area wrapped-title variant tests.
+
+## `removeTitle`
+
+- Signature: `removeTitle()`.
+- Removes semantic title/subtitle, every concrete title graphic and stored title materialization config. It accepts
+  no options and requires an existing title resource.
+
+### Formal values — `removeTitle`
+
+- Implemented: `removeTitle(): ChartProgram`.
+- Proposed (NOT IMPLEMENTED): —
+
+### Value coverage — `removeTitle`
+
+- ✅ Covered: title/subtitle cleanup, no-options validation, missing-resource behavior and immutability.
+- Evidence: `test/unit/actions/guides/remove-guides.test.js` and Roadmap 3 focused-editing Gate.

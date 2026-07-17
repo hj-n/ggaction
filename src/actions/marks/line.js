@@ -9,6 +9,9 @@ import {
 } from "../../core/validation.js";
 import {
   assertMarkAvailable,
+  applyLayeredMarkInheritance,
+  materializeInheritedMark,
+  resolveLayeredMarkInheritance,
   resolveMarkId,
   resolveMarkData,
   validateMarkOptions
@@ -48,7 +51,12 @@ const createLineMark = action(
       markType: "line",
       operation: "createLineMark"
     });
-    const { data } = resolveMarkData(this, args);
+    const inherited = resolveLayeredMarkInheritance(this, args, "line");
+    const { data } = resolveMarkData(this, {
+      ...args,
+      ...(args.data === undefined && this.context.currentData === undefined &&
+        inherited?.data !== undefined ? { data: inherited.data } : {})
+    });
     const strokeWidth = validateNonNegativeFinite(
       args.strokeWidth ?? DEFAULT_LINE_WIDTH,
       "Line strokeWidth"
@@ -62,7 +70,7 @@ const createLineMark = action(
       : undefined;
     assertMarkAvailable(this, id);
 
-    const created = this
+    let created = this
       .editSemantic({
         property: `layer[${id}].mark.type`,
         value: "line"
@@ -70,12 +78,14 @@ const createLineMark = action(
       .editSemantic({
         property: `layer[${id}].data`,
         value: data
-      })
+      });
+    created = applyLayeredMarkInheritance(created, id, inherited);
+    created = created
       .createGraphics({
         id,
         type: "path",
         length: 0,
-        ...resolveMarkGraphicPlacement(this, { data, markType: "line" })
+        ...resolveMarkGraphicPlacement(created, { data, markType: "line" })
       })
       ._withMarkConfig(
         id,
@@ -84,6 +94,7 @@ const createLineMark = action(
           ...(Object.hasOwn(args, "curve") ? { curve } : {})
         }
       );
+    created = materializeInheritedMark(created, id);
     const appearance = {
       ...(stroke === undefined ? {} : { stroke }),
       ...(opacity === undefined ? {} : { opacity })

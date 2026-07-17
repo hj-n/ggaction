@@ -14,6 +14,18 @@ import {
 
 const AGGREGATE_OPTIONS = Object.freeze(["horizontal", "vertical"]);
 
+function removeDirection(program, direction) {
+  const operation = gridNames(direction);
+  let next = program.editSemantic({
+    property: `guide.grid.${direction}`,
+    remove: true
+  });
+  if (next.graphicSpec.objects[operation.graphic] !== undefined) {
+    next = next.editGraphics({ target: operation.graphic, remove: true });
+  }
+  return next._withoutMaterializationConfig(["guides", "grid", direction]);
+}
+
 function makeRematerialize(direction) {
   const operation = gridNames(direction);
   return action(
@@ -249,6 +261,46 @@ const rematerializeGrid = action(
   }
 );
 
+const removeGrid = action(
+  {
+    op: "removeGrid",
+    description: "Remove selected Cartesian grid directions."
+  },
+  function (args = {}) {
+    if (!isPlainObject(args)) {
+      throw new TypeError("removeGrid options must be a plain object.");
+    }
+    validateKeys(args, AGGREGATE_OPTIONS, "removeGrid");
+    for (const direction of AGGREGATE_OPTIONS) {
+      if (
+        Object.hasOwn(args, direction) &&
+        typeof args[direction] !== "boolean"
+      ) {
+        throw new TypeError(`removeGrid ${direction} must be a boolean.`);
+      }
+    }
+    const existing = AGGREGATE_OPTIONS.filter(direction =>
+      this.semanticSpec.guides.grid?.[direction] !== undefined ||
+      this.guideConfigs.grid?.[direction] !== undefined ||
+      this.graphicSpec.objects[gridNames(direction).graphic] !== undefined
+    );
+    const selected = Object.keys(args).length === 0
+      ? existing
+      : AGGREGATE_OPTIONS.filter(direction => args[direction] === true);
+    if (selected.length === 0) {
+      throw new Error("removeGrid requires at least one selected direction.");
+    }
+    for (const direction of selected) {
+      if (!existing.includes(direction)) {
+        throw new Error(`removeGrid requires an existing ${direction} grid.`);
+      }
+    }
+    let next = this;
+    for (const direction of selected) next = removeDirection(next, direction);
+    return next;
+  }
+);
+
 export function registerGridActions(ProgramClass) {
   ProgramClass.prototype.createGrid = createGrid;
   ProgramClass.prototype.createHorizontalGrid = createHorizontalGrid;
@@ -256,6 +308,7 @@ export function registerGridActions(ProgramClass) {
   ProgramClass.prototype.editHorizontalGrid = editHorizontalGrid;
   ProgramClass.prototype.editVerticalGrid = editVerticalGrid;
   ProgramClass.prototype.editGrid = editGrid;
+  ProgramClass.prototype.removeGrid = removeGrid;
   ProgramClass.prototype.rematerializeGrid = rematerializeGrid;
   ProgramClass.prototype.rematerializeHorizontalGrid =
     rematerializeHorizontalGrid;

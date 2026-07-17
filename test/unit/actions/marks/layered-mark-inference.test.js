@@ -78,9 +78,69 @@ test("prefers the current eligible layer and rejects an ambiguous fallback", () 
     twoSources.semanticSpec.layers.find(layer => layer.id === "firstOverlay").encoding
   );
 
-  const withoutEligibleCurrent = twoSources.createLineMark({ id: "pendingLine" });
+  const inheritedLine = twoSources.createLineMark({ id: "pendingLine" });
+  assert.deepEqual(
+    inheritedLine.semanticSpec.layers.find(layer => layer.id === "pendingLine").encoding,
+    {
+      y: twoSources.semanticSpec.layers.find(
+        layer => layer.id === "firstOverlay"
+      ).encoding.y
+    }
+  );
+
+  const withoutEligibleCurrent = twoSources
+    .createData({ id: "otherRows", values: rows })
+    .createRuleMark({ id: "pendingRule", data: "otherRows" })
+    ._withContext({ currentData: "rows" });
   assert.throws(
     () => withoutEligibleCurrent.createPointMark({ id: "ambiguousOverlay" }),
     /Layered mark inference is ambiguous/
   );
+});
+
+test("uses the shared compatible inheritance policy for every ordinary mark", () => {
+  const barSource = bars();
+  const point = barSource.createPointMark({ id: "pointLayer" });
+  const rule = barSource.createRuleMark({ id: "ruleLayer" });
+  const bar = barSource.createBarMark({ id: "barLayer" });
+  for (const [program, id] of [
+    [point, "pointLayer"],
+    [rule, "ruleLayer"],
+    [bar, "barLayer"]
+  ]) {
+    const layer = program.semanticSpec.layers.find(candidate => candidate.id === id);
+    assert.equal(layer.data, "rows", id);
+    assert.equal(layer.coordinate, "main", id);
+    assert.equal(layer.encoding.x.field, "country", id);
+    assert.equal(layer.encoding.y.field, "value", id);
+  }
+  assert.equal(
+    point.semanticSpec.layers.find(layer => layer.id === "pointLayer").encoding.y.aggregate,
+    undefined
+  );
+  assert.equal(
+    bar.semanticSpec.layers.find(layer => layer.id === "barLayer").encoding.y.aggregate,
+    "mean"
+  );
+  assert.ok(point.graphicSpec.objects.pointLayer.items.length > 0);
+  assert.ok(bar.graphicSpec.objects.barLayer.items.length > 0);
+
+  const scatter = chart()
+    .createCanvas({ width: 320, height: 220, margin: 40 })
+    .createData({ id: "xy", values: rows.map((row, index) => ({ x: index, y: row.value })) })
+    .createPointMark({ id: "source" })
+    .encodeX({ field: "x" })
+    .encodeY({ field: "y" });
+  const line = scatter.createLineMark({ id: "lineLayer" });
+  const area = scatter.createAreaMark({ id: "areaLayer" });
+  assert.deepEqual(
+    line.semanticSpec.layers.find(layer => layer.id === "lineLayer").encoding,
+    scatter.semanticSpec.layers.find(layer => layer.id === "source").encoding
+  );
+  assert.deepEqual(
+    area.semanticSpec.layers.find(layer => layer.id === "areaLayer").encoding,
+    scatter.semanticSpec.layers.find(layer => layer.id === "source").encoding
+  );
+  assert.ok(line.graphicSpec.objects.lineLayer.items.length > 0);
+  assert.equal(area.graphicSpec.objects.areaLayer.items.length, 0);
 });

@@ -461,6 +461,18 @@ export interface CreateGridOptions {
   vertical?: boolean | GridDirectionOptions;
 }
 
+export interface CreateGuidesOptions {
+  axes?: false | CreateAxesOptions;
+  grid?: false | CreateGridOptions;
+  legend?: false | LegendOptions;
+}
+
+export interface CreateCoordinateOptions {
+  id?: string;
+  type?: "cartesian" | "polar";
+  layers?: readonly string[];
+}
+
 export interface ScaleOptions {
   id?: string;
   type?: ScaleType;
@@ -481,6 +493,8 @@ export interface ScaleOptions {
   interpolate?: ContinuousColorInterpolation;
   unknown?: unknown;
 }
+
+export type CreateScaleOptions = ScaleOptions & { id: string };
 
 export interface EditScaleOptions {
   id?: string;
@@ -937,6 +951,37 @@ export interface RegressionBandOptions {
   curve?: CurveInterpolation;
 }
 
+export interface CreateRegressionBandOptions {
+  id: string;
+  data: string;
+  x: string;
+  lower: string;
+  upper: string;
+  groupBy?: string;
+  coordinate: string;
+  xScale: string;
+  yScale: string;
+  color?: string;
+  opacity?: number;
+  stroke?: string;
+  strokeWidth?: number;
+  curve?: CurveInterpolation;
+}
+
+export interface CreateRegressionLineOptions {
+  id: string;
+  data: string;
+  x: string;
+  y: string;
+  groupBy?: string;
+  coordinate: string;
+  xScale: string;
+  yScale: string;
+  colorScale?: string;
+  strokeWidth?: number;
+  curve?: CurveInterpolation;
+}
+
 type RegressionParameterOptions =
   | {
       method?: "linear";
@@ -997,6 +1042,24 @@ export interface EditRegressionOptions {
   interval?: RegressionInterval;
   band?: false | RegressionBandOptions;
   line?: { strokeWidth?: number; curve?: CurveInterpolation };
+}
+
+export interface RemoveAxisOptions {
+  coordinate?: string;
+  scale?: string;
+}
+
+export interface RemoveGridOptions {
+  horizontal?: boolean;
+  vertical?: boolean;
+}
+
+export interface RemoveLegendOptions {
+  target?: string;
+}
+
+export interface RemoveMarkOptions {
+  target?: string;
 }
 
 export interface LegendTextOptions {
@@ -1268,6 +1331,7 @@ export class ChartProgram {
   editErrorBandBoundary(options: EditErrorBandBoundaryOptions): ChartProgram;
   createBoxPlot(options?: BoxPlotOptions): ChartProgram;
   editBoxPlot(options: EditBoxPlotOptions): ChartProgram;
+  removeMark(options?: RemoveMarkOptions): ChartProgram;
   createAxes(options?: CreateAxesOptions): ChartProgram;
   createXAxis(options?: CompleteAxisOptions<XAxisPosition>): ChartProgram;
   createYAxis(options?: CompleteAxisOptions<YAxisPosition>): ChartProgram;
@@ -1293,12 +1357,15 @@ export class ChartProgram {
   editYAxisTitle(options?: Omit<AxisTitleOptions<YAxisPosition>, "scale">): ChartProgram;
   editXAxis(options: EditAxisOptions<XAxisPosition>): ChartProgram;
   editYAxis(options: EditAxisOptions<YAxisPosition>): ChartProgram;
+  removeXAxis(options?: RemoveAxisOptions): ChartProgram;
+  removeYAxis(options?: RemoveAxisOptions): ChartProgram;
   createGrid(options?: CreateGridOptions): ChartProgram;
   createHorizontalGrid(options?: GridDirectionOptions): ChartProgram;
   createVerticalGrid(options?: GridDirectionOptions): ChartProgram;
   editHorizontalGrid(options: EditGridOptions): ChartProgram;
   editVerticalGrid(options: EditGridOptions): ChartProgram;
   editGrid(options: EditGridDirectionsOptions): ChartProgram;
+  removeGrid(options?: RemoveGridOptions): ChartProgram;
   createLegend(options?: LegendOptions): ChartProgram;
   editLegend(options: EditLegendOptions): ChartProgram;
   editLegendLayout(options: EditLegendLayoutOptions): ChartProgram;
@@ -1306,20 +1373,17 @@ export class ChartProgram {
   editLegendTitle(options: EditLegendTitleOptions): ChartProgram;
   editLegendSymbols(options: EditLegendSymbolsOptions): ChartProgram;
   editLegendBorder(options: EditLegendBorderOptions): ChartProgram;
-  createGuides(options?: ActionOptions): ChartProgram;
+  removeLegend(options?: RemoveLegendOptions): ChartProgram;
+  createGuides(options?: CreateGuidesOptions): ChartProgram;
   createTitle(options: TitleOptions): ChartProgram;
   editTitle(options: EditTitleOptions): ChartProgram;
+  removeTitle(): ChartProgram;
 
-  createCoordinate(options?: ActionOptions): ChartProgram;
-  createScale(options: ActionOptions & { id: string }): ChartProgram;
+  createCoordinate(options?: CreateCoordinateOptions): ChartProgram;
+  createScale(options: CreateScaleOptions): ChartProgram;
   editScale(options: EditScaleOptions): ChartProgram;
   createDerivedData(options: CreateDerivedDataOptions): ChartProgram;
-  createRegressionBand(options: ActionOptions & {
-    id: string;
-    stroke?: string;
-    strokeWidth?: number;
-    curve?: CurveInterpolation;
-  }): ChartProgram;
+  createRegressionBand(options: CreateRegressionBandOptions): ChartProgram;
   editRegressionBand(options: {
     target?: string;
     color?: string;
@@ -1328,11 +1392,7 @@ export class ChartProgram {
     strokeWidth?: number;
     curve?: CurveInterpolation;
   }): ChartProgram;
-  createRegressionLine(options: ActionOptions & {
-    id: string;
-    strokeWidth?: number;
-    curve?: CurveInterpolation;
-  }): ChartProgram;
+  createRegressionLine(options: CreateRegressionLineOptions): ChartProgram;
   editRegressionLine(options: {
     target?: string;
     strokeWidth?: number;

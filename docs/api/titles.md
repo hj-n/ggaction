@@ -13,6 +13,7 @@ title: Titles
 | --- | --- | --- | --- |
 | `createTitle` | `createTitle({ text: "Title" })` | Top, plot-left alignment, default styles | Semantic text and concrete title graphics |
 | `editTitle` | `editTitle({ position: "bottom" })` | Preserves omitted text, layout, wrapping, and style | Rematerialized title graphics |
+| `removeTitle` | `removeTitle()` | Existing chart title | Title and subtitle resource removed |
 
 ## `createTitle(options)`
 
@@ -97,6 +98,17 @@ leaves. `text` and string `subtitle` replace semantic text. Use
 `subtitle: false` to remove the subtitle; a later string recreates it.
 Wrapping and layout changes rebuild the concrete text lines without changing
 unrelated chart state.
+
+## `removeTitle()`
+
+Remove the complete chart title resource, including subtitle text, concrete
+graphics, and stored layout settings:
+
+```javascript
+const untitled = program.removeTitle();
+```
+
+The action accepts no options and requires an existing title.
 
 ## Stored result
 

@@ -23,6 +23,8 @@ import {
 } from "../../grammar/scales.js";
 import {
   assertMarkAvailable,
+  applyLayeredMarkInheritance,
+  materializeInheritedMark,
   resolveLayeredMarkInheritance,
   resolveMarkId,
   resolveMarkData,
@@ -57,7 +59,7 @@ const createPointMark = action(
       markType: "point",
       operation: "createPointMark"
     });
-    const inherited = resolveLayeredMarkInheritance(this, args);
+    const inherited = resolveLayeredMarkInheritance(this, args, "point");
     const { data, dataset } = resolveMarkData(this, {
       ...args,
       ...(args.data === undefined &&
@@ -82,23 +84,7 @@ const createPointMark = action(
         property: `layer[${id}].data`,
         value: data
       });
-    if (inherited?.coordinate !== undefined) {
-      next = next.editSemantic({
-        property: `layer[${id}].coordinate`,
-        value: inherited.coordinate
-      });
-    }
-    for (const channel of ["x", "y"]) {
-      for (const [property, value] of Object.entries(
-        inherited?.encoding[channel] ?? {}
-      )) {
-        next = next.editSemantic({
-          property: `layer[${id}].encoding.${channel}.${property}`,
-          value
-        });
-      }
-    }
-    next = next
+    next = applyLayeredMarkInheritance(next, id, inherited)
       .createGraphics({
         id,
         type: graphicType,
@@ -106,14 +92,7 @@ const createPointMark = action(
         ...resolveMarkGraphicPlacement(next, { data, markType: "point" })
       })
       ._withMarkConfig(id, { shape });
-    const inheritedEncodings = Object.values(inherited?.encoding ?? {});
-    const canMaterializeInherited = inheritedEncodings.length > 0 &&
-      inheritedEncodings.every(encoding =>
-        encoding.scale !== undefined && next.resolvedScales[encoding.scale] !== undefined
-      );
-    const created = !canMaterializeInherited
-      ? next
-      : next.rematerializePointMark({ id });
+    const created = materializeInheritedMark(next, id);
     const appearance = Object.fromEntries(
       ["fill", "opacity", "stroke", "strokeWidth"]
         .filter(property => Object.hasOwn(args, property))

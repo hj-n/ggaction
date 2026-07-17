@@ -4,6 +4,9 @@ import {
 } from "../../core/identifiers.js";
 import { findDataset } from "../../selectors/datasets.js";
 import { findLayer, hasLayer } from "../../selectors/layers.js";
+import { findSemanticScale } from "../../selectors/scales.js";
+import { resolveMarkPositionPolicy } from "../encodings/position/policies/index.js";
+import { getMarkMaterializationStep } from "../../materialization/marks.js";
 
 export function validateMarkOptions(args, supported, operation) {
   for (const key of Object.keys(args)) {
@@ -61,29 +64,82 @@ export function assertMarkAvailable(program, id) {
 }
 
 function inheritedPositionEncoding(encoding) {
-  if (encoding === undefined) return undefined;
+  if (encoding?.field === undefined) return undefined;
   return Object.fromEntries(
-    ["field", "datum", "fieldType", "scale", "title"]
+    ["field", "fieldType", "scale", "title"]
       .filter(property => Object.hasOwn(encoding, property))
       .map(property => [property, encoding[property]])
   );
 }
 
-function eligibleLayeredSource(layer, requestedData) {
-  if (layer?.data === undefined) return false;
-  if (requestedData !== undefined && layer.data !== requestedData) return false;
-  return layer.encoding?.x !== undefined || layer.encoding?.y !== undefined;
+function scaleSupportsEncoding(program, markType, channel, encoding) {
+  const scale = findSemanticScale(program, encoding.scale);
+  if (scale === undefined) return false;
+  const categorical = ["nominal", "ordinal"].includes(encoding.fieldType);
+  if (categorical) {
+    if (markType === "bar") return scale.type === "band";
+    return ["ordinal", "band", "point"].includes(scale.type);
+  }
+  if (encoding.fieldType === "temporal") return scale.type === "time";
+  return ["linear", "log", "pow", "sqrt", "symlog"].includes(scale.type);
 }
 
-export function resolveLayeredMarkInheritance(program, requested = {}) {
-  const requestedData = Object.hasOwn(requested, "data")
-    ? validateUserId(requested.data, "Dataset id")
-    : undefined;
+function resolveCompatibleEncodings(program, source, markType) {
+  const dataset = findDataset(program, source.data);
+  if (dataset === undefined) return {};
+  const pending = new Map(["x", "y"].map(channel => [
+    channel,
+    inheritedPositionEncoding(source.encoding?.[channel])
+  ]).filter(([, encoding]) => encoding !== undefined));
+  const candidate = {
+    id: "layered-inference",
+    data: source.data,
+    mark: { type: markType },
+    encoding: {}
+  };
+
+  for (let pass = 0; pass < 2; pass += 1) {
+    for (const [channel, encoding] of pending) {
+      if (!scaleSupportsEncoding(program, markType, channel, encoding)) continue;
+      try {
+        const policy = resolveMarkPositionPolicy({
+          program,
+          layer: candidate,
+          dataset,
+          channel,
+          args: encoding,
+          field: encoding.field,
+          fieldType: encoding.fieldType
+        });
+        candidate.encoding[channel] = {
+          ...encoding,
+          ...Object.fromEntries(
+            Object.entries(policy).filter(([, value]) => value !== undefined)
+          )
+        };
+        pending.delete(channel);
+      } catch {
+        // Another compatible channel may make this policy resolvable next pass.
+      }
+    }
+  }
+  return candidate.encoding;
+}
+
+function eligibleLayeredSource(program, layer, requestedData, markType) {
+  if (layer?.data === undefined) return false;
+  if (requestedData !== undefined && layer.data !== requestedData) return false;
+  return Object.keys(resolveCompatibleEncodings(program, layer, markType)).length > 0;
+}
+
+export function resolveLayeredMarkInheritance(program, requested = {}, markType) {
+  if (Object.hasOwn(requested, "data")) return undefined;
+  const requestedData = program.context.currentData;
   const eligible = program.semanticSpec.layers.filter(layer =>
-    eligibleLayeredSource(layer, requestedData)
+    eligibleLayeredSource(program, layer, requestedData, markType)
   );
   const current = findLayer(program, program.context.currentMark);
-  const source = eligibleLayeredSource(current, requestedData)
+  const source = eligibleLayeredSource(program, current, requestedData, markType)
     ? current
     : eligible.length === 1
       ? eligible[0]
@@ -95,18 +151,53 @@ export function resolveLayeredMarkInheritance(program, requested = {}) {
     );
   }
   if (source === undefined) return undefined;
+  if (
+    markType === "bar" &&
+    (
+      source.encoding?.x?.bin !== undefined ||
+      source.encoding?.y?.bin !== undefined ||
+      (source.encoding?.x?.stack !== undefined && source.encoding.x.stack !== null) ||
+      (source.encoding?.y?.stack !== undefined && source.encoding.y.stack !== null) ||
+      source.encoding?.xOffset !== undefined ||
+      source.encoding?.color?.layout !== undefined
+    )
+  ) {
+    return undefined;
+  }
 
   return {
     source: source.id,
     data: source.data,
     coordinate: source.coordinate,
-    encoding: Object.fromEntries(
-      ["x", "y"]
-        .map(channel => [
-          channel,
-          inheritedPositionEncoding(source.encoding?.[channel])
-        ])
-        .filter(([, encoding]) => encoding !== undefined)
-    )
+    encoding: resolveCompatibleEncodings(program, source, markType)
   };
+}
+
+export function applyLayeredMarkInheritance(program, id, inherited) {
+  let next = program;
+  if (inherited?.coordinate !== undefined) {
+    next = next.editSemantic({
+      property: `layer[${id}].coordinate`,
+      value: inherited.coordinate
+    });
+  }
+  for (const channel of ["x", "y"]) {
+    for (const [property, value] of Object.entries(
+      inherited?.encoding[channel] ?? {}
+    )) {
+      next = next.editSemantic({
+        property: `layer[${id}].encoding.${channel}.${property}`,
+        value
+      });
+    }
+  }
+  return next;
+}
+
+export function materializeInheritedMark(program, id) {
+  const layer = findLayer(program, id);
+  const step = layer === undefined
+    ? undefined
+    : getMarkMaterializationStep(program, layer);
+  return step === undefined ? program : program[step.op](step.args);
 }

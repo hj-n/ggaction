@@ -13,6 +13,7 @@ title: Grids
 | --- | --- | --- | --- |
 | `createGrid` | `createGrid()` | Horizontal direction from y; vertical off | Concrete lines behind related marks |
 | `editGrid` | `editGrid({ horizontal: { count: 6 } })` | Existing selected directions | One or both directions rematerialized |
+| `removeGrid` | `removeGrid({ vertical: true })` | Existing selected directions | Semantic, graphic, and stored grid state removed |
 
 ## `createGrid(options?)`
 
@@ -110,6 +111,19 @@ directional actions, which remain available for focused edits.
 
 `createGuides()` selects this default horizontal grid automatically when a y
 encoding is present. Pass `createGuides({ grid: false })` to opt out.
+
+## Removing grids
+
+`removeGrid()` removes every existing direction. Select a subset with explicit
+booleans:
+
+```javascript
+const noGrid = program.removeGrid();
+const horizontalOnly = program.removeGrid({ vertical: true });
+```
+
+At least one direction must be selected; explicit false/false is an error.
+Scales, coordinates, marks, and axes remain.
 
 ## Errors and limitations
 

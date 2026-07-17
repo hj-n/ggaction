@@ -81,6 +81,10 @@ const GUIDE_PATHS = new Set([
 ]);
 
 const GUIDE_REMOVABLE_CONTAINERS = new Set([
+  "axis.x",
+  "axis.y",
+  "grid.horizontal",
+  "grid.vertical",
   "legend.color",
   "legend.size",
   "legend.opacity",

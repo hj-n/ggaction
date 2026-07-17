@@ -39,8 +39,7 @@ test("records the current missing Roadmap 3 public surface", () => {
     "createTextMark",
     "createRectMark",
     "createArcMark",
-    "facet",
-    "removeLegend"
+    "facet"
   ]) {
     assert.equal(program[name], undefined, name);
   }
@@ -67,7 +66,7 @@ test("stores a Polar resource without claiming Polar chart materialization", () 
   );
 });
 
-test("captures the current incompatible layer-inference order", () => {
+test("inherits only compatible positions from a layered rule", () => {
   const ruleFirst = canvas()
     .createData({ values: rows })
     .createRuleMark({ id: "stems" })
@@ -88,10 +87,15 @@ test("captures the current incompatible layer-inference order", () => {
       fieldType: "quantitative"
     });
 
-  assert.throws(
-    () => ruleFirst.createPointMark({ id: "points" }),
-    /Encoding field must be a non-empty string/
-  );
+  const point = ruleFirst
+    .createPointMark({ id: "points" })
+    .semanticSpec.layers.find(layer => layer.id === "points");
+  assert.deepEqual(point.encoding.x, {
+    field: "Horsepower",
+    fieldType: "quantitative",
+    scale: "x"
+  });
+  assert.equal(point.encoding.y, undefined);
 });
 
 test("captures the current layered bar and line scale-policy conflict", () => {

@@ -21,6 +21,12 @@ deterministic role ID `"point" | "line" | "bar" | "area" | "rule"`. A second mar
 explicit user ID; the library never invents numbered public-resource IDs. Explicit IDs retain the existing
 validation and uniqueness contract.
 
+When `data` is omitted, every ordinary mark family uses one shared layered-inference policy. The current eligible
+layer, otherwise one unique layer on the current dataset, may contribute its coordinate and compatible field-based
+x/y encodings. Datum endpoints and source mark policies such as bin, stack, offset and grouped color layout are not
+copied. The target mark re-resolves its own policy, incompatible field/scale pairs remain absent, and ambiguity is
+an error. Passing `data` explicitly opts into independent assembly and does not inherit position encodings.
+
 ## `createPointMark`
 
 - Signature: `createPointMark({ id?, data?, shape?, fill?, opacity?, stroke?, strokeWidth? } = {})`
@@ -86,6 +92,26 @@ validation and uniqueness contract.
   field-driven color conflict.
 - No proposal: radius and field-driven opacity remain owned by their corresponding encoding actions.
 - Evidence: `test/unit/actions/marks/edit-point-mark.test.js`.
+
+## `removeMark`
+
+- Signature: `removeMark({ target? } = {})`.
+- Resolves one stable user-authored mark owner. Generated composite children cannot be removed directly; their
+  owner must be selected. The action removes the owner, recursively owned layers and graphics, mark configs,
+  selection/highlight ownership, legends owned by the removed marks and unreferenced generated datasets.
+- User source datasets, coordinates and scales are preserved. Axes and grids are removed only when the removed
+  mark was their last position-scale consumer; shared guides remain.
+
+### Formal values — `removeMark`
+
+- Implemented: `removeMark(options?: { target?: UserId })`.
+- Proposed (NOT IMPLEMENTED): —
+
+### Value coverage — `removeMark`
+
+- ✅ Covered: explicit/current owner, unknown/generated-child target, ordinary shared-resource removal,
+  regression ownership closure, derived-data release, selection/highlight cleanup and immutability.
+- Evidence: `test/unit/actions/marks/remove-mark.test.js` and Roadmap 3 focused-editing Gate.
 
 ## `createLineMark`
 

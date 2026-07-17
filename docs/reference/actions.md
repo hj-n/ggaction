@@ -14,7 +14,9 @@ Each action entry starts with its callable signature and a concise observable
 effect. Follow the linked API page for required values, defaults and inference,
 semantic and graphic effects, rematerialization, and errors. Chart-authoring
 actions are the recommended workflow; advanced and extension actions are
-available when that workflow does not express the required control.
+available when that workflow does not express the required control. These
+headings correspond to the action catalog layers `user-facing`, `advanced`,
+and `primitive`, respectively.
 
 ## Quick navigation
 
@@ -142,6 +144,15 @@ editPointMark({ target?, shape?, fill?, opacity?, stroke?, strokeWidth? })
 ```
 
 Change constant point shape, fill, opacity, or outline appearance and rematerialize its concrete items. [Marks](../api/marks.md)
+
+### `removeMark`
+
+```javascript
+removeMark({ target? })
+```
+
+Remove one stable mark owner and its owned state while preserving source data
+and independently shared resources. [Marks](../api/marks.md)
 
 ### `createLineMark`
 
@@ -622,6 +633,15 @@ Edit one legend component without constructing the nested options accepted by
 rematerialization as `editLegend`. At least one component change is required.
 [Legends](../api/legends.md#focused-edits)
 
+### `removeLegend`
+
+```javascript
+removeLegend({ target? })
+```
+
+Remove every legend block owned by one mark while preserving mark encodings and
+scales. [Legends](../api/legends.md)
+
 ### `createTitle`
 
 ```javascript
@@ -646,6 +666,14 @@ editTitle({
 
 Partially edit the existing title. `subtitle: false` removes the subtitle;
 omitted properties remain unchanged. [Titles](../api/titles.md)
+
+### `removeTitle`
+
+```javascript
+removeTitle()
+```
+
+Remove the complete chart title and subtitle resource. [Titles](../api/titles.md)
 
 ## Advanced Chart API
 
@@ -706,6 +734,16 @@ editYAxis({ position?, line?, ticks?, labels?, ticksAndLabels?, title? })
 Complete-axis edits update only the selected components of an existing axis.
 Use `ticksAndLabels` for a coordinated tick/label edit, or `ticks` and
 `labels` for independent edits; do not combine both forms.
+
+### Complete axis removal
+
+```javascript
+removeXAxis({ coordinate?, scale? })
+removeYAxis({ coordinate?, scale? })
+```
+
+Remove one complete Cartesian axis. Optional selectors must match the existing
+resource. [Axes](../api/axes.md)
 
 ### Axis lines, ticks, and labels
 
@@ -784,6 +822,13 @@ editGrid({
 Directional grid edits require an existing grid. Their `values` option accepts
 an exact finite array or `"auto"` to restore current axis/scale inference.
 `editGrid` applies one or both directional edits through the same actions.
+
+```javascript
+removeGrid({ horizontal?, vertical? })
+```
+
+Remove all existing directions when omitted, or only directions selected with
+`true`.
 
 See [Coordinates](../api/coordinates.md) and
 [Advanced axis components](../advanced/axis-components.md).

@@ -17,6 +17,10 @@ const index = JSON.parse(readFileSync(path.join(
   "agent_docs/contract/ACTION_INDEX.json"
 ), "utf8"));
 const declarations = readFileSync(path.join(root, "types/program.d.ts"), "utf8");
+const declarationIndex = readFileSync(path.join(root, "types/index.d.ts"), "utf8");
+const actionReference = readFileSync(path.join(
+  root, "docs/reference/actions.md"
+), "utf8");
 
 const DIRECT_ACTIONS = Object.freeze([
   "editLegendLayout",
@@ -40,8 +44,8 @@ const DIRECT_ACTIONS = Object.freeze([
   "removeMark"
 ]);
 
-const CURRENT_FOCUSED_ACTIONS = Object.freeze(DIRECT_ACTIONS.slice(0, 13));
-const REMAINING_DIRECT_ACTIONS = Object.freeze(DIRECT_ACTIONS.slice(13));
+const CURRENT_FOCUSED_ACTIONS = DIRECT_ACTIONS;
+const REMAINING_DIRECT_ACTIONS = Object.freeze([]);
 
 const EXTENSIONS = Object.freeze([
   "point-create-appearance",
@@ -137,8 +141,49 @@ test("covers every Phase 1 public action in a Gate target", () => {
     });
     assert.equal(
       typeof target.userFacing,
-      index < 9 ? "function" : "undefined",
+      index < 11 ? "function" : "undefined",
       target.variant
     );
+  }
+});
+
+test("publishes exact current option types and aligns audience classifications", () => {
+  for (const name of [
+    "CreateGuidesOptions",
+    "CreateCoordinateOptions",
+    "CreateScaleOptions",
+    "CreateRegressionBandOptions",
+    "CreateRegressionLineOptions"
+  ]) {
+    assert.match(declarations, new RegExp(`export (?:interface|type) ${name}`), name);
+    assert.match(declarationIndex, new RegExp(`\\b${name},`), name);
+  }
+  for (const method of [
+    "createGuides",
+    "createCoordinate",
+    "createScale",
+    "createRegressionBand",
+    "createRegressionLine"
+  ]) {
+    assert.doesNotMatch(
+      declarations,
+      new RegExp(`^  ${method}\\([^\\n]*ActionOptions`, "m"),
+      method
+    );
+  }
+  assert.match(
+    actionReference,
+    /catalog layers `user-facing`, `advanced`,\s+and `primitive`, respectively/
+  );
+});
+
+test("closes every accepted Phase 1 action and capability out of Planned", () => {
+  const plannedActions = new Set(index.plannedActions.map(action => action.name));
+  const plannedCapabilities = new Set(
+    index.plannedCapabilities.map(capability => capability.id)
+  );
+  for (const action of DIRECT_ACTIONS) assert.equal(plannedActions.has(action), false, action);
+  for (const capability of [...CAPABILITIES, ...EXTENSIONS]) {
+    assert.equal(plannedCapabilities.has(capability), false, capability);
   }
 });

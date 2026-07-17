@@ -3,6 +3,7 @@ import { registerAreaMarkActions } from "./area.js";
 import { registerLineMarkActions } from "./line.js";
 import { registerPointMarkActions } from "./point.js";
 import { registerRuleMarkActions } from "./rule.js";
+import { removeMark } from "./remove.js";
 
 export function registerMarkActions(ProgramClass) {
   registerPointMarkActions(ProgramClass);
@@ -10,4 +11,5 @@ export function registerMarkActions(ProgramClass) {
   registerLineMarkActions(ProgramClass);
   registerBarMarkActions(ProgramClass);
   registerRuleMarkActions(ProgramClass);
+  ProgramClass.prototype.removeMark = removeMark;
 }

@@ -14,6 +14,7 @@ title: Legends
 | `createLegend` | `createLegend()` | Current/unique compatible mark; right position | Categorical, size, gradient, interval, or opacity guide |
 | `editLegend` | `editLegend({ position: "left" })` | Unique existing legend; omitted properties retained | Rematerialized layout and appearance |
 | Focused edits | `editLegendLabels({ fontSize: 11 })` | Same target inference as `editLegend` | One legend component rematerialized |
+| `removeLegend` | `removeLegend({ target: "points" })` | Existing legend owner | All owned legend blocks removed |
 
 ## `createLegend(options?)`
 
@@ -286,6 +287,18 @@ legend is inferable. The actions use `editLegend` internally, so title modes,
 partial nested merges, legend-kind compatibility, layout errors, and
 rematerialization behavior remain identical. At least one component option is
 required.
+
+## Removing a legend
+
+`removeLegend()` removes every legend block associated with one mark, including
+combined categorical and size blocks. Mark encodings and scales remain.
+
+```javascript
+const withoutLegend = program.removeLegend({ target: "points" });
+```
+
+`target` may be omitted when exactly one legend owner exists. Independent
+legend owners require an explicit target.
 
 Canvas changes and relevant encoding actions explicitly rematerialize the
 legend from the latest ordinal domains and ranges. The renderer still reads

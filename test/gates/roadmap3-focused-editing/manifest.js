@@ -137,6 +137,98 @@ function createFocusedLegendActions(rows) {
     });
 }
 
+function createGuideRemovalActions(rows) {
+  const validRows = rows.filter(row =>
+    Number.isFinite(row.Displacement) &&
+    typeof row.Origin === "string" &&
+    row.Origin.length > 0
+  );
+  return chart()
+    .createCanvas({
+      width: 432,
+      height: 460,
+      margin: { top: 80, right: 60, bottom: 130, left: 80 }
+    })
+    .createData({ values: validRows })
+    .createBarMark({ id: "bars" })
+    .encodeHistogram({
+      field: "Displacement",
+      maxBins: 10,
+      xScale: { nice: true, zero: false }
+    })
+    .encodeColor({ field: "Origin", scale: { palette: "tableau10" } })
+    .createGuides({ legend: { position: "bottom" } })
+    .createTitle({
+      text: "Displacement distribution",
+      subtitle: "by country",
+      align: "center"
+    })
+    .removeXAxis()
+    .removeYAxis()
+    .removeGrid()
+    .removeLegend({ target: "bars" })
+    .removeTitle();
+}
+
+function createMarkRemovalActions(rows) {
+  return chart()
+    .createCanvas({
+      width: 456,
+      height: 312,
+      margin: { top: 58, right: 22, bottom: 54, left: 70 }
+    })
+    .createData({ values: rows })
+    .filterData({
+      id: "gapminder2005",
+      field: "year",
+      predicate: { op: "eq", value: 2005 }
+    })
+    .filterData({
+      id: "selectedCountries",
+      field: "country",
+      oneOf: ["Chile", "Cuba", "Egypt", "Japan", "Kenya", "Peru"]
+    })
+    .createBarMark()
+    .encodeX({
+      field: "country",
+      fieldType: "nominal",
+      scale: {
+        type: "band",
+        paddingInner: 0.2,
+        paddingOuter: 0.1,
+        align: 0.5
+      }
+    })
+    .encodeY({
+      field: "pop",
+      aggregate: "mean",
+      scale: { nice: true, zero: true }
+    })
+    .encodeBarWidth({ band: 0.72 })
+    .editBarMark({ fill: "#cbd5e1" })
+    .createPointMark()
+    .encodeRadius({ value: 5 })
+    .editPointMark({ fill: "#2563eb", stroke: "white", strokeWidth: 1 })
+    .createGuides({
+      axes: {
+        x: { scale: "x", title: { text: "Country" } },
+        y: { scale: "y", title: { text: "Population" } }
+      },
+      grid: { horizontal: {}, vertical: false },
+      legend: false
+    })
+    .createTitle({
+      text: "Population by Country",
+      subtitle: "Band slots with aligned point centers · 2005",
+      offset: -7,
+      gap: 7,
+      titleStyle: { fontSize: 18, fontWeight: 700 },
+      subtitleStyle: { fontSize: 12 }
+    })
+    .editYAxis({ labels: { format: ".2e" }, title: { offset: 58 } })
+    .removeMark({ target: "point" });
+}
+
 function createCartesianGuideFacadeActions(rows) {
   const validRows = rows.filter(row =>
     Number.isFinite(row.Horsepower) &&
@@ -555,11 +647,16 @@ const guideRemovalCallChain = `chart()
   .createBarMark({ id: "bars" })
   .encodeHistogram({
     field: "Displacement",
-    groupBy: "Origin",
-    maxbins: 10
+    maxBins: 10,
+    xScale: { nice: true, zero: false }
   })
-  .createGuides()
-  .createTitle({ text: "Displacement distribution", subtitle: "by country" })
+  .encodeColor({ field: "Origin", scale: { palette: "tableau10" } })
+  .createGuides({ legend: { position: "bottom" } })
+  .createTitle({
+    text: "Displacement distribution",
+    subtitle: "by country",
+    align: "center"
+  })
   .removeXAxis()
   .removeYAxis()
   .removeGrid()
@@ -567,23 +664,58 @@ const guideRemovalCallChain = `chart()
   .removeTitle();`;
 
 const markRemovalCallChain = `chart()
-  .createCanvas({ width: 456, height: 312, margin: 60 })
+  .createCanvas({
+    width: 456,
+    height: 312,
+    margin: { top: 58, right: 22, bottom: 54, left: 70 }
+  })
   .createData({ values: gapminder })
-  .filterData({ id: "gapminder2005", field: "year", op: "eq", value: 2005 })
+  .filterData({
+    id: "gapminder2005",
+    field: "year",
+    predicate: { op: "eq", value: 2005 }
+  })
   .filterData({
     id: "selectedCountries",
     field: "country",
-    op: "oneOf",
-    values: ["China", "India", "United States", "Japan"]
+    oneOf: ["Chile", "Cuba", "Egypt", "Japan", "Kenya", "Peru"]
   })
-  .createBarMark({ id: "bar" })
-  .encodeX({ field: "country", fieldType: "nominal" })
-  .encodeY({ field: "pop", aggregate: "mean", scale: { zero: true } })
-  .createPointMark({ id: "point" })
-  .createGuides()
+  .createBarMark()
+  .encodeX({
+    field: "country",
+    fieldType: "nominal",
+    scale: {
+      type: "band",
+      paddingInner: 0.2,
+      paddingOuter: 0.1,
+      align: 0.5
+    }
+  })
+  .encodeY({
+    field: "pop",
+    aggregate: "mean",
+    scale: { nice: true, zero: true }
+  })
+  .encodeBarWidth({ band: 0.72 })
+  .editBarMark({ fill: "#cbd5e1" })
+  .createPointMark()
+  .encodeRadius({ value: 5 })
+  .editPointMark({ fill: "#2563eb", stroke: "white", strokeWidth: 1 })
+  .createGuides({
+    axes: {
+      x: { scale: "x", title: { text: "Country" } },
+      y: { scale: "y", title: { text: "Population" } }
+    },
+    grid: { horizontal: {}, vertical: false },
+    legend: false
+  })
   .createTitle({
     text: "Population by Country",
-    subtitle: "Band slots with aligned point centers · 2005"
+    subtitle: "Band slots with aligned point centers · 2005",
+    offset: -7,
+    gap: 7,
+    titleStyle: { fontSize: 18, fontWeight: 700 },
+    subtitleStyle: { fontSize: 12 }
   })
   .editYAxis({ labels: { format: ".2e" }, title: { offset: 58 } })
   .removeMark({ target: "point" });`;
@@ -716,6 +848,7 @@ export const visualVariants = Object.freeze([
     callChain: guideRemovalCallChain,
     artifact: artifact("domain-removal"),
     primitive: () => createGuideRemovalPrimitives(cars),
+    userFacing: () => createGuideRemovalActions(cars),
     width: 432,
     height: 460,
     colors: [],
@@ -728,6 +861,7 @@ export const visualVariants = Object.freeze([
     callChain: markRemovalCallChain,
     artifact: artifact("domain-removal"),
     primitive: () => createMarkRemovalPrimitives(gapminder),
+    userFacing: () => createMarkRemovalActions(gapminder),
     width: 456,
     height: 312,
     colors: [],

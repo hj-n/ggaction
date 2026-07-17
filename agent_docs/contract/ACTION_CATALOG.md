@@ -17,6 +17,7 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | user-facing | [`createIntervalData`](current/STATISTICS.md#createintervaldata) | statistics | Immutable create-only | Intentional | ✅ / ✅ / ✅ |
 | user-facing | [`createPointMark`](current/MARKS.md#createpointmark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editPointMark`](current/MARKS.md#editpointmark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
+| user-facing | [`removeMark`](current/MARKS.md#removemark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`createLineMark`](current/MARKS.md#createlinemark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editLineMark`](current/MARKS.md#editlinemark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`createBarMark`](current/MARKS.md#createbarmark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
@@ -78,12 +79,15 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | user-facing | [`editYAxisTitle`](current/AXES.md#edityaxistitle) | axes | Mutable resource | Complete | ✅ / ✅ / ⚠️ |
 | user-facing | [`editXAxis`](current/AXES.md#editxaxis) | axes | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editYAxis`](current/AXES.md#edityaxis) | axes | Mutable resource | Complete | ✅ / ✅ / ✅ |
+| user-facing | [`removeXAxis`](current/AXES.md#removexaxis) | axes | Mutable resource | Complete | ✅ / ✅ / ✅ |
+| user-facing | [`removeYAxis`](current/AXES.md#removeyaxis) | axes | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`createGrid`](current/GRID.md#creategrid) | grid | Aggregate create-only | Intentional; planned child edits | ✅ / ✅ / ✅ |
 | user-facing | [`createHorizontalGrid`](current/GRID.md#createhorizontalgrid) | grid | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`createVerticalGrid`](current/GRID.md#createverticalgrid) | grid | Mutable resource | Complete | ✅ / ✅ / ⚠️ |
 | user-facing | [`editHorizontalGrid`](current/GRID.md#edithorizontalgrid) | grid | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editVerticalGrid`](current/GRID.md#editverticalgrid) | grid | Mutable resource | Complete | ✅ / ✅ / ⚠️ |
 | user-facing | [`editGrid`](current/GRID.md#editgrid) | grid | Mutable resource | Complete | ✅ / ✅ / ✅ |
+| user-facing | [`removeGrid`](current/GRID.md#removegrid) | grid | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`createLegend`](current/LEGEND_AND_TITLE.md#createlegend) | legend_and_title | Mutable resource | Complete | ✅ / ✅ / ⚠️ |
 | user-facing | [`editLegend`](current/LEGEND_AND_TITLE.md#editlegend) | legend_and_title | Mutable resource | Complete | ✅ / ✅ / ⚠️ |
 | user-facing | [`editLegendLayout`](current/LEGEND_AND_TITLE.md#editlegendlayout) | legend_and_title | Mutable resource | Complete | ✅ / ✅ / ✅ |
@@ -92,8 +96,10 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | user-facing | [`editLegendSymbols`](current/LEGEND_AND_TITLE.md#editlegendsymbols) | legend_and_title | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editLegendBorder`](current/LEGEND_AND_TITLE.md#editlegendborder) | legend_and_title | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`createGuides`](current/LEGEND_AND_TITLE.md#createguides) | legend_and_title | Aggregate create-only | Intentional; child edit gaps remain | ✅ / ✅ / ⚠️ |
+| user-facing | [`removeLegend`](current/LEGEND_AND_TITLE.md#removelegend) | legend_and_title | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`createTitle`](current/LEGEND_AND_TITLE.md#createtitle) | legend_and_title | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editTitle`](current/LEGEND_AND_TITLE.md#edittitle) | legend_and_title | Mutable resource | Complete | ✅ / ✅ / ✅ |
+| user-facing | [`removeTitle`](current/LEGEND_AND_TITLE.md#removetitle) | legend_and_title | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`createCoordinate`](current/CORE.md#createcoordinate) | core | Structural create-only | Intentional | ✅ / ✅ / ✅ |
 | user-facing | [`createScale`](current/CORE.md#createscale) | core | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editScale`](current/CORE.md#editscale) | core | Mutable resource | Complete | ✅ / ✅ / ✅ |
@@ -113,12 +119,6 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 
 | Action | Readiness | Contract |
 | --- | --- | --- |
-| `removeXAxis` | accepted | [Open](planned/ROADMAP3_EDITING.md#domain-removal) |
-| `removeYAxis` | accepted | [Open](planned/ROADMAP3_EDITING.md#domain-removal) |
-| `removeGrid` | accepted | [Open](planned/ROADMAP3_EDITING.md#domain-removal) |
-| `removeLegend` | accepted | [Open](planned/ROADMAP3_EDITING.md#domain-removal) |
-| `removeTitle` | accepted | [Open](planned/ROADMAP3_EDITING.md#domain-removal) |
-| `removeMark` | accepted | [Open](planned/ROADMAP3_EDITING.md#domain-removal) |
 | `encodeTheta` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-position-actions) |
 | `encodeR` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-position-actions) |
 | `encodePointRadius` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-position-actions) |
@@ -159,10 +159,6 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | composition | Vertical program composition | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#program-composition) |
 | parameter | Closed Polar line option | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-line-radar) |
 | parameter | Facet scale resolution options | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#facet-resolution-and-derived-replay) |
-| behavior | Compatibility-aware layer inference | accepted | [Open](planned/ROADMAP3_EDITING.md#layer-inference-and-api-contract) |
-| behavior | Atomic domain removal | accepted | [Open](planned/ROADMAP3_EDITING.md#domain-removal) |
-| parameter | Exact public option types | accepted | [Open](planned/ROADMAP3_EDITING.md#layer-inference-and-api-contract) |
-| parameter | API layer classification alignment | accepted | [Open](planned/ROADMAP3_EDITING.md#layer-inference-and-api-contract) |
 | composition | Polar point chart vertical slice | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-position-actions) |
 | composition | Polar axes and grids | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-guide-actions) |
 | composition | Polar line and radar charts | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-line-radar) |

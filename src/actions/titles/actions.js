@@ -233,3 +233,31 @@ export const editTitle = action(
     return next.rematerializeTitle();
   }
 );
+
+export const removeTitle = action(
+  { op: "removeTitle", description: "Remove the complete chart title resource." },
+  function (args = {}) {
+    noOptions(args, "removeTitle");
+    if (
+      this.semanticSpec.title.text === undefined &&
+      this.titleConfig === undefined &&
+      this.graphicSpec.objects.chartTitle === undefined &&
+      this.graphicSpec.objects.chartSubtitle === undefined
+    ) {
+      throw new Error("removeTitle requires an existing chart title.");
+    }
+    let next = this;
+    if (next.semanticSpec.title.subtitle !== undefined) {
+      next = next.editSemantic({ property: "title.subtitle", remove: true });
+    }
+    if (next.semanticSpec.title.text !== undefined) {
+      next = next.editSemantic({ property: "title.text", remove: true });
+    }
+    for (const id of ["chartTitle", "chartSubtitle"]) {
+      if (next.graphicSpec.objects[id] !== undefined) {
+        next = next.editGraphics({ target: id, remove: true });
+      }
+    }
+    return next._withoutMaterializationConfig(["title"]);
+  }
+);

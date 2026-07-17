@@ -42,6 +42,18 @@ each type infers its ID and current dataset when those choices are unambiguous.
 | Bar | `createBarMark` | `editBarMark` | Rect collection |
 | Rule | `createRuleMark` | Encoding actions | Line collection |
 
+Use `removeMark({ target? })` to remove one complete stable mark owner. It also
+removes generated composite children, unreferenced generated datasets, owned
+legends, and selection/highlight state. Source data and resources shared by
+another mark remain:
+
+```javascript
+const barsOnly = layeredProgram.removeMark({ target: "points" });
+```
+
+Generated children such as regression lines cannot be removed directly;
+select their stable owner instead.
+
 Creation establishes semantic ownership but may leave an empty collection.
 Concrete graphics appear when the required encodings make the mark renderable.
 Later Canvas, scale, grouping, or appearance edits explicitly rematerialize
@@ -54,9 +66,13 @@ those graphics.
   `"area"`, `"bar"`, or `"rule"`.
 - A second mark of the same type requires an explicit ID.
 - A newly layered mark can inherit compatible data, coordinate, x, and y
-  encodings from one unambiguous source layer.
+  encodings from the current layer, or one unique source on the current dataset.
 - Mark-specific aggregate, bin, stack, and appearance policies are never copied
   implicitly.
+- Only field-based positions compatible with the new mark and existing scale
+  type are inherited. Incompatible channels remain unencoded.
+- Passing `data` explicitly starts independent mark assembly and disables
+  layered position inheritance.
 
 ## Related
 

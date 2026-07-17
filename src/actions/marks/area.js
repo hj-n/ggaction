@@ -13,6 +13,9 @@ import {
 import { mapContinuousScaleValues, mapOrdinalValues } from "../../grammar/scales.js";
 import {
   assertMarkAvailable,
+  applyLayeredMarkInheritance,
+  materializeInheritedMark,
+  resolveLayeredMarkInheritance,
   resolveMarkId,
   resolveMarkData,
   validateMarkOptions
@@ -67,20 +70,27 @@ const createAreaMark = action(
       markType: "area",
       operation: "createAreaMark"
     });
-    const { data } = resolveMarkData(this, args);
+    const inherited = resolveLayeredMarkInheritance(this, args, "area");
+    const { data } = resolveMarkData(this, {
+      ...args,
+      ...(args.data === undefined && this.context.currentData === undefined &&
+        inherited?.data !== undefined ? { data: inherited.data } : {})
+    });
     const fill = validateNonEmptyString(args.fill ?? DEFAULT_COLORS.mark, "Area fill");
     const opacity = validateUnitInterval(args.opacity ?? 0.2, "Area opacity");
     const curve = validateCurveInterpolation(args.curve ?? "linear");
     const { stroke, strokeWidth } = validateAreaCreateOutline(args);
     assertMarkAvailable(this, id);
-    return this
+    let created = this
       .editSemantic({ property: `layer[${id}].mark.type`, value: "area" })
-      .editSemantic({ property: `layer[${id}].data`, value: data })
+      .editSemantic({ property: `layer[${id}].data`, value: data });
+    created = applyLayeredMarkInheritance(created, id, inherited);
+    created = created
       .createGraphics({
         id,
         type: "path",
         length: 0,
-        ...resolveMarkGraphicPlacement(this, { data, markType: "area" })
+        ...resolveMarkGraphicPlacement(created, { data, markType: "area" })
       })
       ._withMarkConfig(id, {
         fill,
@@ -88,6 +98,7 @@ const createAreaMark = action(
         ...(Object.hasOwn(args, "curve") ? { curve } : {}),
         ...(stroke === undefined ? {} : { stroke, strokeWidth })
       });
+    return materializeInheritedMark(created, id);
   }
 );
 

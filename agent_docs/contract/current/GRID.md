@@ -156,3 +156,20 @@ type EditGridOptions = {
 
 - ✅ Covered: one/both directions, nested style/tick policy, child trace and immutable validation failure.
 - Evidence: `test/unit/actions/guides/grid-edit-actions.test.js` and Roadmap 3 focused-editing Gate.
+
+## `removeGrid`
+
+- Signature: `removeGrid({ horizontal?, vertical? } = {})`.
+- No options removes every existing direction. Explicit booleans select only `true` directions; an explicit
+  false/false selection is invalid. Each selected direction removes semantic guide state, concrete lines and
+  stored materialization config while preserving scales, coordinates and marks.
+
+### Formal values — `removeGrid`
+
+- Implemented: `removeGrid(options?: { horizontal?: boolean; vertical?: boolean })`.
+- Proposed (NOT IMPLEMENTED): —
+
+### Value coverage — `removeGrid`
+
+- ✅ Covered: all-direction default, one-direction removal, false/false error, recreation and immutability.
+- Evidence: `test/unit/actions/guides/remove-guides.test.js` and Roadmap 3 focused-editing Gate.

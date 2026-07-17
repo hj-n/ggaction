@@ -6,6 +6,7 @@ import { registerAxisTickActions } from "./ticks.js";
 import { registerAxisTitleActions } from "./titles.js";
 import { registerAxisActions } from "./axis.js";
 import { registerCompleteAxisEditActions } from "./edit.js";
+import { removeXAxis, removeYAxis } from "./remove.js";
 
 export function registerGuideAxisActions(ProgramClass) {
   registerAxisLineActions(ProgramClass);
@@ -16,4 +17,6 @@ export function registerGuideAxisActions(ProgramClass) {
   registerAxisActions(ProgramClass);
   registerAxisCollectionActions(ProgramClass);
   registerCompleteAxisEditActions(ProgramClass);
+  ProgramClass.prototype.removeXAxis = removeXAxis;
+  ProgramClass.prototype.removeYAxis = removeYAxis;
 }

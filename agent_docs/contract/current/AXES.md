@@ -610,3 +610,34 @@ type CompleteAxisOptions<P extends string> = {
 - ✅ Covered: right position, standalone labels, title offset/text, leaf hierarchy and exact Gate parity.
 - No proposal: scale and coordinate rebinding remain outside the edit facade.
 - Evidence: `test/unit/actions/guides/axis-actions.test.js` and Roadmap 3 focused-editing Gate.
+
+## `removeXAxis`
+
+- Signature: `removeXAxis({ coordinate?, scale? } = {})`.
+- Existing x-axis semantic branch, four concrete axis components and stored guide config를 함께 제거한다.
+- Optional selector는 제거할 resource와 정확히 일치해야 하며 missing resource는 오류다. Mark, scale,
+  coordinate와 independently shared resources는 보존한다.
+
+### Formal values — `removeXAxis`
+
+- Implemented: `removeXAxis(options?: { coordinate?: UserId; scale?: UserId })`.
+- Proposed (NOT IMPLEMENTED): —
+
+### Value coverage — `removeXAxis`
+
+- ✅ Covered: inferred target, explicit scale mismatch, complete semantic/graphic/config cleanup, immutability.
+- Evidence: `test/unit/actions/guides/remove-guides.test.js` and Roadmap 3 focused-editing Gate.
+
+## `removeYAxis`
+
+- `removeXAxis`와 같은 complete resource-removal contract를 y-axis에 적용한다.
+
+### Formal values — `removeYAxis`
+
+- Implemented: `removeYAxis(options?: { coordinate?: UserId; scale?: UserId })`.
+- Proposed (NOT IMPLEMENTED): —
+
+### Value coverage — `removeYAxis`
+
+- ✅ Covered: inferred target and complete cleanup in the shared removal suite and Gate.
+- Evidence: `test/unit/actions/guides/remove-guides.test.js`.

@@ -136,7 +136,7 @@ test("requires explicit choices for ambiguous sources and axis roles", () => {
     .encodeX({ target: "second", field: "Origin", fieldType: "ordinal" })
     .encodeY({ target: "second", field: "Acceleration" })
     .encodeRadius({ target: "second", value: 2 })
-    .createRuleMark({ id: "unencoded" });
+    .createRuleMark({ id: "unencoded", data: "data" });
 
   assert.throws(() => ambiguous.createErrorBar(), /target is ambiguous/);
   assert.equal(
