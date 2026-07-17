@@ -3,9 +3,9 @@
 ## 진행 상태
 
 - [x] STEP 1 — Phase 계약, target charts와 public option 확정
-- [ ] STEP 2 — Independent Polar line reference geometry
-- [ ] STEP 3 — Gapminder open Polar line primitive
-- [ ] STEP 4 — Jobs closed radar primitive
+- [x] STEP 2 — Independent Polar line reference geometry
+- [x] STEP 3 — Gapminder open Polar line primitive
+- [x] STEP 4 — Jobs closed radar primitive
 - [ ] STEP 5 — Gate E visual evidence와 사용자 승인
 - [ ] STEP 6 — Polar line series grammar와 command policy
 - [ ] STEP 7 — Polar line materialization과 `closed` lifecycle

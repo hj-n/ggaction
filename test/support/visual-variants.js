@@ -14,7 +14,9 @@ const DATA_ALIASES = Object.freeze([
   "shapeRows",
   "namedDashRows",
   "originAccelerationIntervals",
-  "ruleRows"
+  "ruleRows",
+  "trendRows",
+  "radarRows"
 ]);
 const VALUE_ALIASES = Object.freeze(["pointShapes"]);
 
