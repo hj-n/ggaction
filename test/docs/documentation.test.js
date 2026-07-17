@@ -6,6 +6,10 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { buildFullLlmDocumentation } from "../../scripts/generate-llm-docs.js";
+import {
+  buildSignatureSection,
+  declaredActionSignatures
+} from "../../scripts/generate-doc-signatures.js";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const docsRoot = path.join(root, "docs");
@@ -423,9 +427,23 @@ test("indexes documentation headings for section search", () => {
   assert.match(toc, /headings\.length > 30/);
 });
 
-test("classifies every declared ChartProgram action in the reference", () => {
+test("classifies every declared ChartProgram action in the reference", async () => {
   const reference = read("docs/reference/actions.md");
   const methods = declaredProgramMethods();
+  const generated = await buildSignatureSection();
+  const generatedStart = reference.indexOf("<!-- BEGIN GENERATED TYPESCRIPT SIGNATURES -->");
+  const generatedEnd = reference.indexOf("<!-- END GENERATED TYPESCRIPT SIGNATURES -->");
+
+  assert.notEqual(generatedStart, -1);
+  assert.notEqual(generatedEnd, -1);
+  assert.equal(
+    reference.slice(
+      generatedStart,
+      generatedEnd + "<!-- END GENERATED TYPESCRIPT SIGNATURES -->".length
+    ),
+    generated
+  );
+  assert.equal((await declaredActionSignatures()).length, methods.length);
 
   assert.equal(new Set(methods).size, methods.length);
   for (const method of methods) {

@@ -59,6 +59,8 @@
     "artifacts:gallery:test": "node scripts/test-roadmap-gallery.js",
     "docs:images": "node scripts/generate-doc-images.js",
     "docs:llms": "node scripts/generate-llm-docs.js",
+    "docs:signatures": "node scripts/generate-doc-signatures.js",
+    "docs:signatures:check": "node scripts/generate-doc-signatures.js --check",
     "contracts:catalog": "node scripts/generate-action-catalog.js",
     "contracts:catalog:check": "node scripts/generate-action-catalog.js --check",
     "package:check": "node scripts/package-artifact.js --check",
