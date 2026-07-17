@@ -82,7 +82,7 @@ export function resolvePositionEncoding(program, channel, args, operation) {
     program,
     args.target,
     POLAR_CHANNELS.includes(channel)
-      ? ["point"]
+      ? ["point", "line"]
       : ["point", "line", "bar", "area", "rule"]
   );
   validateCoordinateFamily(layer, channel, operation);

@@ -128,7 +128,10 @@ test("retains curve appearance across Canvas and grouping rematerialization", ()
 
 test("rejects invalid and ambiguous edits without changing prior programs", () => {
   const base = completeLineProgram();
-  assert.throws(() => base.editLineMark({}), /requires stroke, strokeWidth, opacity, or curve/);
+  assert.throws(
+    () => base.editLineMark({}),
+    /requires stroke, strokeWidth, opacity, curve, or closed/
+  );
   assert.throws(
     () => base.editLineMark({ curve: "smooth" }),
     /Unsupported curve interpolation/

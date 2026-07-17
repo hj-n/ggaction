@@ -35,6 +35,15 @@ export function canMaterializePoint(_program, layer) {
 export function canMaterializeLine(program, layer) {
   const dataset = findDataset(program, layer.data);
   const interval = dataset?.transform?.some(item => item.type === "interval");
+  if (hasPolarPositionScales(layer)) {
+    return (
+      layer.mark?.type === "line" &&
+      ["quantitative", "temporal", "ordinal", "nominal"].includes(
+        layer.encoding.theta.fieldType
+      ) &&
+      layer.encoding.radius.fieldType === "quantitative"
+    );
+  }
   return (
     layer.mark?.type === "line" &&
     hasPositionScales(layer) &&

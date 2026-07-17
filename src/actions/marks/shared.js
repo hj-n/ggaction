@@ -87,7 +87,11 @@ function scaleSupportsEncoding(program, markType, channel, encoding) {
 function resolveCompatibleEncodings(program, source, markType) {
   const dataset = findDataset(program, source.data);
   if (dataset === undefined) return {};
-  const pending = new Map(["x", "y"].map(channel => [
+  const channels = source.encoding?.theta !== undefined ||
+    source.encoding?.radius !== undefined
+    ? ["theta", "radius"]
+    : ["x", "y"];
+  const pending = new Map(channels.map(channel => [
     channel,
     inheritedPositionEncoding(source.encoding?.[channel])
   ]).filter(([, encoding]) => encoding !== undefined));
@@ -181,7 +185,7 @@ export function applyLayeredMarkInheritance(program, id, inherited) {
       value: inherited.coordinate
     });
   }
-  for (const channel of ["x", "y"]) {
+  for (const channel of ["x", "y", "theta", "radius"]) {
     for (const [property, value] of Object.entries(
       inherited?.encoding[channel] ?? {}
     )) {

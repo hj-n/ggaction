@@ -14,12 +14,28 @@ function rejectSharedOptions(args, channel) {
 }
 
 export function resolveLinePositionPolicy({
+  program,
   layer,
   dataset,
   channel,
   args,
   fieldType
 }) {
+  const polar = ["theta", "radius"].includes(channel);
+  const config = program.markConfigs[layer.id] ?? {};
+  if (polar) {
+    if (config.curve !== undefined && config.curve !== "linear") {
+      throw new Error("Polar line position currently requires curve \"linear\".");
+    }
+    rejectSharedOptions(args, channel);
+    if (args.aggregate !== undefined) {
+      throw new Error(`Line ${channel} encoding does not support aggregate.`);
+    }
+    return emptyPositionPolicy();
+  }
+  if (config.closed === true) {
+    throw new Error("Line closed requires theta/radius Polar position encodings.");
+  }
   const regression = dataset.transform?.some(item => item.type === "regression");
   const interval = dataset.transform?.some(item => item.type === "interval");
 

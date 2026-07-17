@@ -23,6 +23,9 @@ import {
   buildCurvePathCommands,
   validateCurveInterpolation
 } from "../../grammar/curveCommands.js";
+import { buildPolarLinePathCommands } from "../../grammar/polarLineCommands.js";
+import { resolvePolarFrame } from "../../grammar/polar.js";
+import { resolveGraphicBounds } from "../../layout/canvas.js";
 import { normalizeStrokeDashPattern } from "../../grammar/scales.js";
 import { canMaterializeLine } from "../../materialization/marks.js";
 import { resolveMarkGraphicPlacement } from
@@ -31,12 +34,31 @@ import { resolveMarkGraphicPlacement } from
 const DEFAULT_LINE_STROKE = DEFAULT_COLORS.mark;
 const DEFAULT_LINE_WIDTH = 2;
 const CREATE_OPTIONS = Object.freeze([
-  "id", "data", "stroke", "strokeWidth", "opacity", "curve"
+  "id", "data", "stroke", "strokeWidth", "opacity", "curve", "closed"
 ]);
 const EDIT_OPTIONS = Object.freeze([
-  "target", "stroke", "strokeWidth", "opacity", "curve"
+  "target", "stroke", "strokeWidth", "opacity", "curve", "closed"
 ]);
 const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);
+
+function validateClosed(value) {
+  if (typeof value !== "boolean") {
+    throw new TypeError("Line closed must be a boolean.");
+  }
+  return value;
+}
+
+function isPolarLine(layer) {
+  return layer.encoding?.theta !== undefined ||
+    layer.encoding?.radius !== undefined;
+}
+
+function validatePolarLineConfig(layer, config) {
+  if (!isPolarLine(layer)) return;
+  if ((config.curve ?? "linear") !== "linear") {
+    throw new Error("Polar line position currently requires curve \"linear\".");
+  }
+}
 
 const createLineMark = action(
   {
@@ -62,6 +84,9 @@ const createLineMark = action(
       "Line strokeWidth"
     );
     const curve = validateCurveInterpolation(args.curve ?? "linear");
+    const closed = Object.hasOwn(args, "closed")
+      ? validateClosed(args.closed)
+      : false;
     const stroke = Object.hasOwn(args, "stroke")
       ? validateNonEmptyString(args.stroke, "Line stroke")
       : undefined;
@@ -91,7 +116,8 @@ const createLineMark = action(
         id,
         {
           ...(Object.hasOwn(args, "strokeWidth") ? { strokeWidth } : {}),
-          ...(Object.hasOwn(args, "curve") ? { curve } : {})
+          ...(Object.hasOwn(args, "curve") ? { curve } : {}),
+          ...(Object.hasOwn(args, "closed") ? { closed } : {})
         }
       );
     created = materializeInheritedMark(created, id);
@@ -154,15 +180,31 @@ const rematerializeLineMark = action(
     const existingChildren = this.graphicSpec.objects[id].items;
     const xScaleId = layer.encoding?.x?.scale;
     const yScaleId = layer.encoding?.y?.scale;
-    const derived = deriveLineSeries(dataset.values, layer);
+    const thetaScaleId = layer.encoding?.theta?.scale;
+    const radiusScaleId = layer.encoding?.radius?.scale;
+    const polar = isPolarLine(layer);
+    const config = this.markConfigs[id] ?? {};
+    validatePolarLineConfig(layer, config);
 
-    if (xScaleId === undefined || yScaleId === undefined) {
-      throw new Error(`Line mark "${id}" requires x and y scales.`);
+    if (
+      polar
+        ? thetaScaleId === undefined || radiusScaleId === undefined
+        : xScaleId === undefined || yScaleId === undefined
+    ) {
+      throw new Error(
+        polar
+          ? `Line mark "${id}" requires theta and radius scales.`
+          : `Line mark "${id}" requires x and y scales.`
+      );
     }
 
-    let resolved = this
-      .rematerializeScale({ id: xScaleId })
-      .rematerializeScale({ id: yScaleId });
+    let resolved = polar
+      ? this
+          .rematerializeScale({ id: thetaScaleId })
+          .rematerializeScale({ id: radiusScaleId })
+      : this
+          .rematerializeScale({ id: xScaleId })
+          .rematerializeScale({ id: yScaleId });
 
     for (const channel of ["color", "strokeDash"]) {
       const scaleId = layer.encoding?.[channel]?.scale;
@@ -171,29 +213,43 @@ const rematerializeLineMark = action(
       }
     }
 
-    const xScale = resolved.resolvedScales[xScaleId];
-    const yScale = resolved.resolvedScales[yScaleId];
-    const commands = derived.series.map(series => {
-      const x = mapContinuousScaleValues(
-        series.values.map(value => value.x),
-        xScale
-      );
-      const y = mapContinuousScaleValues(
-        series.values.map(value => value.y),
-        yScale
-      );
+    const derived = deriveLineSeries(
+      dataset.values,
+      layer,
+      polar
+        ? { thetaDomain: resolved.resolvedScales[thetaScaleId].domain }
+        : undefined
+    );
+    const commands = polar
+      ? derived.series.map(series => buildPolarLinePathCommands({
+          series: series.values,
+          thetaFieldType: derived.thetaFieldType,
+          thetaScale: resolved.resolvedScales[thetaScaleId],
+          radiusScale: resolved.resolvedScales[radiusScaleId],
+          frame: resolvePolarFrame(resolveGraphicBounds(resolved)),
+          closed: config.closed ?? false
+        }))
+      : derived.series.map(series => {
+          const x = mapContinuousScaleValues(
+            series.values.map(value => value.x),
+            resolved.resolvedScales[xScaleId]
+          );
+          const y = mapContinuousScaleValues(
+            series.values.map(value => value.y),
+            resolved.resolvedScales[yScaleId]
+          );
 
-      return buildCurvePathCommands(
-        series.values.map((_, index) => ({ x: x[index], y: y[index] })),
-        this.markConfigs[id]?.curve ?? "linear"
-      );
-    });
+          return buildCurvePathCommands(
+            series.values.map((_, index) => ({ x: x[index], y: y[index] })),
+            config.curve ?? "linear"
+          );
+        });
     const colorEncoding = layer.encoding?.color;
     const dashEncoding = layer.encoding?.strokeDash;
     const strokes = colorEncoding?.scale === undefined
       ? commands.map(
           (_, index) =>
-            this.markConfigs[id]?.stroke ??
+            config.stroke ??
             existingChildren[index]?.properties.stroke ??
             DEFAULT_LINE_STROKE
         )
@@ -204,7 +260,7 @@ const rematerializeLineMark = action(
         );
     const strokeWidths = commands.map(
       (_, index) =>
-        this.markConfigs[id]?.strokeWidth ??
+        config.strokeWidth ??
         existingChildren[index]?.properties.strokeWidth ??
         DEFAULT_LINE_WIDTH
     );
@@ -230,11 +286,11 @@ const rematerializeLineMark = action(
         property: "strokeDash",
         value: strokeDashes
       });
-    if (this.markConfigs[id]?.opacity !== undefined) {
+    if (config.opacity !== undefined) {
       next = next.editGraphics({
         target: id,
         property: "opacity",
-        value: this.markConfigs[id].opacity
+        value: config.opacity
       });
     }
     return next;
@@ -252,9 +308,12 @@ const editLineMark = action(
       !Object.hasOwn(args, "stroke") &&
       !Object.hasOwn(args, "strokeWidth") &&
       !Object.hasOwn(args, "opacity") &&
-      !Object.hasOwn(args, "curve")
+      !Object.hasOwn(args, "curve") &&
+      !Object.hasOwn(args, "closed")
     ) {
-      throw new Error("editLineMark requires stroke, strokeWidth, opacity, or curve.");
+      throw new Error(
+        "editLineMark requires stroke, strokeWidth, opacity, curve, or closed."
+      );
     }
     const target = Object.hasOwn(args, "target")
       ? validateUserId(args.target, "Line mark id")
@@ -268,6 +327,14 @@ const editLineMark = action(
       throw new Error(
         "editLineMark stroke cannot be combined with a color encoding."
       );
+    }
+    if (Object.hasOwn(args, "closed") && args.closed === true &&
+        layer.encoding?.x !== undefined) {
+      throw new Error("Line closed requires theta/radius Polar position encodings.");
+    }
+    if (Object.hasOwn(args, "curve") && isPolarLine(layer) &&
+        args.curve !== "linear") {
+      throw new Error("Polar line position currently requires curve \"linear\".");
     }
     const config = {
       ...this.markConfigs[layer.id],
@@ -287,6 +354,9 @@ const editLineMark = action(
         : {}),
       ...(Object.hasOwn(args, "curve")
         ? { curve: validateCurveInterpolation(args.curve) }
+        : {}),
+      ...(Object.hasOwn(args, "closed")
+        ? { closed: validateClosed(args.closed) }
         : {})
     };
     const next = this._withMarkConfig(layer.id, config);
