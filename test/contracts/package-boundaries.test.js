@@ -4,6 +4,35 @@ import test from "node:test";
 
 import { chart, render } from "../../src/index.js";
 
+const PUBLIC_ENTRIES = Object.freeze({
+  ".": Object.freeze({
+    runtime: "./src/index.js",
+    types: "./types/index.d.ts",
+    values: Object.freeze(["chart", "render"])
+  }),
+  "./extension": Object.freeze({
+    runtime: "./src/extension.js",
+    types: "./types/extension.d.ts",
+    values: Object.freeze(["ChartProgram", "action"])
+  }),
+  "./png": Object.freeze({
+    runtime: "./src/renderers/png.js",
+    types: "./types/png.d.ts",
+    values: Object.freeze(["renderToPNG"])
+  })
+});
+
+function declarationValueExports(source) {
+  const declarations = [...source.matchAll(
+    /\bexport\s+(?:declare\s+)?(?:async\s+)?(?:function|class|const|let|var)\s+([A-Za-z_$][\w$]*)/g
+  )].map(match => match[1]);
+  const lists = [...source.matchAll(/\bexport\s*\{([^}]+)\}/g)]
+    .flatMap(match => match[1].split(","))
+    .map(value => value.trim().replace(/^type\s+/, "").split(/\s+as\s+/).at(-1))
+    .filter(Boolean);
+  return [...new Set([...declarations, ...lists])].sort();
+}
+
 test("exports the public module boundaries", () => {
   assert.equal(typeof chart, "function");
   assert.equal(typeof render, "function");
@@ -14,15 +43,30 @@ test("maps every public entry point to a declaration file", () => {
     new URL("../../package.json", import.meta.url),
     "utf8"
   ));
-  assert.equal(packageJson.types, "./types/index.d.ts");
-  assert.deepEqual(
-    Object.values(packageJson.exports).map(entry => entry.types),
-    [
-      "./types/index.d.ts",
-      "./types/extension.d.ts",
-      "./types/png.d.ts"
-    ]
-  );
+  assert.equal(packageJson.types, PUBLIC_ENTRIES["."].types);
+  assert.deepEqual(Object.keys(packageJson.exports), Object.keys(PUBLIC_ENTRIES));
+  for (const [specifier, expected] of Object.entries(PUBLIC_ENTRIES)) {
+    assert.deepEqual(packageJson.exports[specifier], {
+      types: expected.types,
+      default: expected.runtime
+    });
+  }
+});
+
+test("keeps runtime values and declarations in exact public-entry parity", async () => {
+  for (const [specifier, entry] of Object.entries(PUBLIC_ENTRIES)) {
+    const runtime = await import(new URL(`../../${entry.runtime.slice(2)}`, import.meta.url));
+    const declaration = readFileSync(
+      new URL(`../../${entry.types.slice(2)}`, import.meta.url),
+      "utf8"
+    );
+    assert.deepEqual(Object.keys(runtime).sort(), [...entry.values].sort(), specifier);
+    assert.deepEqual(
+      declarationValueExports(declaration),
+      [...entry.values].sort(),
+      `${specifier} declaration values`
+    );
+  }
 });
 
 test("keeps the public release identity and legal metadata consistent", () => {
