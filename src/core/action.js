@@ -100,10 +100,18 @@ export function action(metadata, implementation) {
     throw new TypeError("Action implementation must be a function.");
   }
 
+  const scope = metadata.scope ?? "unit";
+  if (!["unit", "composition", "any"].includes(scope)) {
+    throw new Error(`Unknown action scope "${scope}".`);
+  }
+
   return function wrappedAction(args = {}) {
     if (!isPlainObject(args)) {
       throw new TypeError("Action arguments must be a plain object.");
     }
+
+    if (scope === "unit") this._assertUnitProgram(metadata.op);
+    if (scope === "composition") this._assertCompositionProgram(metadata.op);
 
     const entered = this._enterAction({
       ...metadata,

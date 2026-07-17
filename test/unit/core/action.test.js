@@ -117,3 +117,40 @@ test("requires action implementations to return a ChartProgram", () => {
     /must return a ChartProgram/
   );
 });
+
+test("guards unit and composition action capabilities before tracing", () => {
+  const child = new TestProgram();
+  const composition = new TestProgram({
+    children: { left: child, right: child },
+    compositionSpec: {
+      id: "pair",
+      direction: "horizontal",
+      children: ["left", "right"],
+      gap: 16,
+      align: "center",
+      padding: { top: 0, right: 0, bottom: 0, left: 0 }
+    }
+  });
+  const compositionOnly = action(
+    {
+      op: "compositionOnly",
+      description: "Exercise a composition-only action.",
+      scope: "composition"
+    },
+    function () {
+      return this;
+    }
+  );
+
+  assert.throws(() => composition.setValue({ value: 1 }), /not available on a composition/);
+  assert.equal(composition.trace.children.length, 0);
+  assert.throws(
+    () => compositionOnly.call(new TestProgram()),
+    /requires a composition ChartProgram/
+  );
+  assert.equal(compositionOnly.call(composition).trace.children[0].op, "compositionOnly");
+  assert.throws(
+    () => action({ op: "bad", description: "Bad scope.", scope: "unknown" }, () => child),
+    /Unknown action scope/
+  );
+});

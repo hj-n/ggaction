@@ -102,7 +102,8 @@ function insertSibling(siblings, id, { before, after }) {
 const createGraphics = action(
   {
     op: "createGraphics",
-    description: "Create and optionally attach a concrete graphic."
+    description: "Create and optionally attach a concrete graphic.",
+    scope: "any"
   },
   function ({ id, type, length, parent, before, after } = {}) {
     if (typeof id !== "string" || !GRAPHIC_ID_PATTERN.test(id)) {

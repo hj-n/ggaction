@@ -134,7 +134,11 @@ function removeGraphicTree(graphicSpec, id) {
 }
 
 const editGraphics = action(
-  { op: "editGraphics", description: "Replace or remove concrete graphic state." },
+  {
+    op: "editGraphics",
+    description: "Replace or remove concrete graphic state.",
+    scope: "any"
+  },
   function ({ target, property, value, remove = false } = {}) {
     if (typeof target !== "string" || target.length === 0) {
       throw new TypeError("editGraphics requires a non-empty target string.");

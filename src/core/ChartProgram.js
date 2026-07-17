@@ -21,6 +21,88 @@ function ownState(value) {
   return isOwned(value) ? value : cloneAndFreeze(value);
 }
 
+function ownChildPrograms(children) {
+  if (!isPlainObject(children)) {
+    throw new TypeError("ChartProgram children must be a plain object.");
+  }
+  if (isOwned(children)) return children;
+  const owned = {};
+  for (const [id, program] of Object.entries(children)) {
+    if (typeof id !== "string" || id.length === 0) {
+      throw new TypeError("ChartProgram child IDs must be non-empty strings.");
+    }
+    if (!(program instanceof ChartProgram)) {
+      throw new TypeError(`ChartProgram child "${id}" must be a ChartProgram.`);
+    }
+    owned[id] = program;
+  }
+  return freezeOwned(owned);
+}
+
+function ownCompositionSpec(compositionSpec, children) {
+  const childIds = Object.keys(children);
+  if (compositionSpec === undefined) {
+    if (childIds.length > 0) {
+      throw new Error("ChartProgram children require a compositionSpec.");
+    }
+    return undefined;
+  }
+  if (!isPlainObject(compositionSpec)) {
+    throw new TypeError("ChartProgram compositionSpec must be a plain object.");
+  }
+  const allowed = ["id", "direction", "children", "gap", "align", "padding"];
+  const unknown = Object.keys(compositionSpec).find(key => !allowed.includes(key));
+  if (unknown !== undefined) {
+    throw new Error(`Unknown compositionSpec property "${unknown}".`);
+  }
+  if (typeof compositionSpec.id !== "string" || compositionSpec.id.length === 0) {
+    throw new TypeError("compositionSpec.id must be a non-empty string.");
+  }
+  if (!["horizontal", "vertical"].includes(compositionSpec.direction)) {
+    throw new Error("compositionSpec.direction must be horizontal or vertical.");
+  }
+  if (
+    !Array.isArray(compositionSpec.children) ||
+    compositionSpec.children.length < 2 ||
+    !compositionSpec.children.every(id => typeof id === "string" && id.length > 0)
+  ) {
+    throw new TypeError("compositionSpec.children requires at least two child IDs.");
+  }
+  if (new Set(compositionSpec.children).size !== compositionSpec.children.length) {
+    throw new Error("compositionSpec.children must not contain duplicate IDs.");
+  }
+  if (
+    compositionSpec.children.length !== childIds.length ||
+    compositionSpec.children.some(id => !Object.hasOwn(children, id))
+  ) {
+    throw new Error("compositionSpec.children must match ChartProgram children exactly.");
+  }
+  if (!Number.isFinite(compositionSpec.gap) || compositionSpec.gap < 0) {
+    throw new RangeError("compositionSpec.gap must be a non-negative finite number.");
+  }
+  if (!["start", "center", "end"].includes(compositionSpec.align)) {
+    throw new Error("compositionSpec.align must be start, center, or end.");
+  }
+  if (!isPlainObject(compositionSpec.padding)) {
+    throw new TypeError("compositionSpec.padding must be a plain object.");
+  }
+  for (const side of ["top", "right", "bottom", "left"]) {
+    if (!Number.isFinite(compositionSpec.padding[side]) || compositionSpec.padding[side] < 0) {
+      throw new RangeError(
+        `compositionSpec.padding.${side} must be a non-negative finite number.`
+      );
+    }
+  }
+  const paddingKeys = Object.keys(compositionSpec.padding);
+  if (
+    paddingKeys.length !== 4 ||
+    paddingKeys.some(key => !["top", "right", "bottom", "left"].includes(key))
+  ) {
+    throw new Error("compositionSpec.padding must contain exactly four sides.");
+  }
+  return ownState(compositionSpec);
+}
+
 function createMaterializationConfigs(
   markConfigs,
   guideConfigs,
@@ -54,6 +136,8 @@ export class ChartProgram {
     guideConfigs = {},
     titleConfig,
     canvasConfig,
+    children = {},
+    compositionSpec,
     context = {},
     trace = createTraceRoot(),
     actionStack = [],
@@ -70,6 +154,8 @@ export class ChartProgram {
           canvasConfig
         )
       : ownState(materializationConfigs);
+    this.children = ownChildPrograms(children);
+    this.compositionSpec = ownCompositionSpec(compositionSpec, this.children);
     this.context = ownState(context);
     this.trace = ownState(trace);
     this.actionStack = ownState(actionStack);
@@ -118,6 +204,8 @@ export class ChartProgram {
     graphicSpec = this.graphicSpec,
     resolvedScales = this.resolvedScales,
     materializationConfigs = this.materializationConfigs,
+    children = this.children,
+    compositionSpec = this.compositionSpec,
     context = this.context,
     trace = this.trace,
     actionStack = this.actionStack,
@@ -128,11 +216,29 @@ export class ChartProgram {
       graphicSpec,
       resolvedScales,
       materializationConfigs,
+      children,
+      compositionSpec,
       context,
       trace,
       actionStack,
       actionSequence
     });
+  }
+
+  _assertUnitProgram(operation) {
+    if (this.compositionSpec !== undefined) {
+      throw new Error(`${operation} is not available on a composition ChartProgram.`);
+    }
+  }
+
+  _assertCompositionProgram(operation) {
+    if (this.compositionSpec === undefined) {
+      throw new Error(`${operation} requires a composition ChartProgram.`);
+    }
+  }
+
+  _withCompositionState({ children, compositionSpec, graphicSpec = this.graphicSpec }) {
+    return this._clone({ children, compositionSpec, graphicSpec });
   }
 
   _withContext(patch = {}) {

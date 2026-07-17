@@ -27,13 +27,15 @@ test("creates an immutable program with canonical empty state", () => {
   assert.deepEqual(program.markConfigs, {});
   assert.deepEqual(program.guideConfigs, {});
   assert.equal(program.titleConfig, undefined);
-  assert.equal("children" in program, false);
+  assert.equal("children" in program, true);
   assert.equal(Object.hasOwn(program, "markConfigs"), false);
   assert.equal(Object.hasOwn(program, "guideConfigs"), false);
   assert.equal(Object.hasOwn(program, "titleConfig"), false);
   assert.equal(Object.hasOwn(program, "_actionSequence"), true);
   assert.equal(Object.keys(program).includes("_actionSequence"), false);
   assert.deepEqual(program.context, {});
+  assert.deepEqual(program.children, {});
+  assert.equal(program.compositionSpec, undefined);
   assert.deepEqual(program.trace, {
     id: "program",
     op: "program",
@@ -53,6 +55,64 @@ test("creates an immutable program with canonical empty state", () => {
   assert.equal(JSON.stringify(program).includes('"markConfigs"'), false);
   assert.equal(JSON.stringify(program).includes('"guideConfigs"'), false);
   assert.equal(JSON.stringify(program).includes('"titleConfig"'), false);
+});
+
+test("stores immutable composition children without cloning child programs", () => {
+  const left = chart();
+  const right = chart();
+  const children = { left, right };
+  const compositionSpec = {
+    id: "pair",
+    direction: "horizontal",
+    children: ["left", "right"],
+    gap: 12,
+    align: "center",
+    padding: { top: 1, right: 2, bottom: 3, left: 4 }
+  };
+  const program = new ChartProgram({ children, compositionSpec });
+  children.left = right;
+  compositionSpec.children.reverse();
+
+  assert.equal(program.children.left, left);
+  assert.equal(program.children.right, right);
+  assert.deepEqual(program.compositionSpec.children, ["left", "right"]);
+  assert.equal(Object.isFrozen(program.children), true);
+  assert.equal(Object.isFrozen(program.compositionSpec), true);
+  assert.equal(Object.isFrozen(program.compositionSpec.padding), true);
+
+  const cloned = program._withContext({ selected: "left" });
+  assert.equal(cloned.children, program.children);
+  assert.equal(cloned.compositionSpec, program.compositionSpec);
+});
+
+test("validates canonical composition state atomically", () => {
+  const child = chart();
+  const valid = {
+    id: "pair",
+    direction: "horizontal",
+    children: ["left", "right"],
+    gap: 0,
+    align: "start",
+    padding: { top: 0, right: 0, bottom: 0, left: 0 }
+  };
+  assert.throws(
+    () => new ChartProgram({ children: { left: child } }),
+    /require a compositionSpec/
+  );
+  assert.throws(
+    () => new ChartProgram({
+      children: { left: child, right: child },
+      compositionSpec: { ...valid, children: ["left", "missing"] }
+    }),
+    /must match ChartProgram children/
+  );
+  assert.throws(
+    () => new ChartProgram({
+      children: { left: {} },
+      compositionSpec: { ...valid, children: ["left", "right"] }
+    }),
+    /must be a ChartProgram/
+  );
 });
 
 test("creates independent empty programs", () => {
