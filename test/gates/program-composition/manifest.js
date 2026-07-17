@@ -8,6 +8,7 @@ import {
 } from "./primitive.program.js";
 import {
   createNestedDashboardPublic,
+  createReplacementPublic,
   createUnequalHorizontalPublic
 } from "./public.program.js";
 import { createCompositionGateValues } from "./reference-values.js";
@@ -89,6 +90,7 @@ export const visualVariants = Object.freeze([
     callChain: replacementTarget,
     artifact,
     primitive: () => createReplacementPrimitives(cars, jobs, gapminder),
+    userFacing: () => createReplacementPublic(cars, jobs, gapminder),
     width: values.replacement.width,
     height: values.replacement.height,
     colors: ["#4c78a8", "#f58518", "#e45756"],

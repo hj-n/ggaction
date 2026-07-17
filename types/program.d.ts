@@ -63,6 +63,15 @@ export interface CompositionOptions {
   align?: CompositionAlign;
   padding?: number | CompositionPadding;
 }
+export interface EditCompositionLayoutOptions {
+  gap?: number;
+  align?: CompositionAlign;
+  padding?: number | CompositionPadding;
+}
+export interface ReplaceCompositionChildOptions {
+  target: string;
+  program: ChartProgram;
+}
 export interface CompositionSpec {
   readonly id: string;
   readonly direction: "horizontal" | "vertical";
@@ -1594,6 +1603,9 @@ export class ChartProgram {
     strokeWidth?: number;
     curve?: CurveInterpolation;
   }): ChartProgram;
+
+  editCompositionLayout(options: EditCompositionLayoutOptions): ChartProgram;
+  replaceCompositionChild(options: ReplaceCompositionChildOptions): ChartProgram;
 
   editSemantic(options: EditSemanticOptions): ChartProgram;
   createGraphics(options: {

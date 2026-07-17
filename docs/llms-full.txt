@@ -7188,6 +7188,8 @@ interface ChartProgramActions {
   editRegressionBand(options: { target?: string; color?: string; opacity?: number; stroke?: string | false; strokeWidth?: number; curve?: CurveInterpolation; }): ChartProgram;
   createRegressionLine(options: CreateRegressionLineOptions): ChartProgram;
   editRegressionLine(options: { target?: string; strokeWidth?: number; curve?: CurveInterpolation; }): ChartProgram;
+  editCompositionLayout(options: EditCompositionLayoutOptions): ChartProgram;
+  replaceCompositionChild(options: ReplaceCompositionChildOptions): ChartProgram;
   editSemantic(options: EditSemanticOptions): ChartProgram;
   createGraphics(options: { id: string; type: GraphicType; length?: number; parent?: string; before?: string; after?: string; }): ChartProgram;
   editGraphics(options: EditGraphicsOptions): ChartProgram;
@@ -7214,6 +7216,25 @@ editCanvas({ width?, height?, background?, margin? })
 
 Edit Canvas properties and rematerialize connected consumers.
 [Canvas options](../api/canvas.md)
+
+### `editCompositionLayout`
+
+```javascript
+editCompositionLayout({ gap?, align?, padding? })
+```
+
+Edit spacing, cross-axis alignment, or outer padding on an existing composition.
+Omitted values are preserved, child identity is unchanged, and the parent snapshot
+is rebuilt from retained child programs.
+
+### `replaceCompositionChild`
+
+```javascript
+replaceCompositionChild({ target, program })
+```
+
+Replace one named child while preserving its slot ID and order. The replacement
+must already be a complete chart or composition program.
 
 ### `createData`
 

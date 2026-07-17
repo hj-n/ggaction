@@ -3,7 +3,10 @@ import { ChartProgram as CoreChartProgram } from "../../core/ChartProgram.js";
 import { freezeOwned, isPlainObject } from "../../core/immutable.js";
 import { validateUserId } from "../../core/identifiers.js";
 import { validateOptionObject } from "../../core/validation.js";
-import { resolveCompositionLayout } from "../../layout/composition.js";
+import {
+  normalizeCompositionPadding,
+  resolveCompositionLayout
+} from "../../layout/composition.js";
 import { namespaceGraphicSnapshot } from "../../materialization/compositionSnapshot.js";
 import { materializeCompositionGraphics } from
   "../../materialization/composition.js";
@@ -11,6 +14,8 @@ import { materializeCompositionGraphics } from
 const CONCAT_OPTIONS = Object.freeze([
   "id", "programs", "gap", "align", "padding"
 ]);
+const LAYOUT_EDIT_OPTIONS = Object.freeze(["gap", "align", "padding"]);
+const REPLACEMENT_OPTIONS = Object.freeze(["target", "program"]);
 
 function normalizeChildEntry(entry, index) {
   const fallbackId = `view-${index + 1}`;
@@ -137,7 +142,75 @@ function concatAction(direction, op) {
 export const hconcatAction = concatAction("horizontal", "hconcat");
 export const vconcatAction = concatAction("vertical", "vconcat");
 
+const editCompositionLayout = action(
+  {
+    op: "editCompositionLayout",
+    description: "Edit composition spacing and alignment.",
+    scope: "composition"
+  },
+  function (args = {}) {
+    validateOptionObject(args, LAYOUT_EDIT_OPTIONS, "editCompositionLayout");
+    if (!LAYOUT_EDIT_OPTIONS.some(option => Object.hasOwn(args, option))) {
+      throw new TypeError("editCompositionLayout requires at least one layout option.");
+    }
+    const current = this.compositionSpec;
+    const padding = Object.hasOwn(args, "padding")
+      ? normalizeCompositionPadding(args.padding, current.padding)
+      : current.padding;
+    const layout = resolveCompositionLayout({
+      direction: current.direction,
+      children: current.children.map(id => childDescriptor({
+        id,
+        program: this.children[id]
+      })),
+      gap: Object.hasOwn(args, "gap") ? args.gap : current.gap,
+      align: Object.hasOwn(args, "align") ? args.align : current.align,
+      padding
+    });
+    return this._withCompositionState({
+      children: this.children,
+      compositionSpec: {
+        ...current,
+        gap: layout.gap,
+        align: layout.align,
+        padding: layout.padding
+      }
+    }).materializeComposition();
+  }
+);
+
+const replaceCompositionChild = action(
+  {
+    op: "replaceCompositionChild",
+    description: "Replace one composition child without changing its slot.",
+    scope: "composition"
+  },
+  function (args = {}) {
+    validateOptionObject(args, REPLACEMENT_OPTIONS, "replaceCompositionChild");
+    const target = validateUserId(args.target, "Composition child target");
+    if (!Object.hasOwn(this.children, target)) {
+      throw new Error(`Unknown composition child "${target}".`);
+    }
+    if (!(args.program instanceof CoreChartProgram)) {
+      throw new TypeError("replaceCompositionChild program must be a ChartProgram.");
+    }
+    childDescriptor({ id: target, program: args.program });
+    const children = freezeOwned({
+      ...this.children,
+      [target]: args.program
+    });
+    return this._withCompositionState({
+      children,
+      compositionSpec: this.compositionSpec
+    })
+      .useProgram({ id: target })
+      .materializeComposition();
+  }
+);
+
 export function registerCompositionActions(ProgramClass) {
   ProgramClass.prototype.useProgram = useProgram;
   ProgramClass.prototype.materializeComposition = materializeComposition;
+  ProgramClass.prototype.editCompositionLayout = editCompositionLayout;
+  ProgramClass.prototype.replaceCompositionChild = replaceCompositionChild;
 }

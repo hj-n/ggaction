@@ -133,9 +133,14 @@ export function displayedActionOperations(source) {
 }
 
 export function assertDisplayedProgram(variant, program) {
+  const displayed = displayedActionOperations(variant.callChain);
+  const traced = program.trace.children.map(node => node.op);
+  const startsFromExistingProgram = /^[A-Za-z][A-Za-z0-9]*\s*\./.test(
+    variant.callChain.trim()
+  );
   assert.deepEqual(
-    displayedActionOperations(variant.callChain),
-    program.trace.children.map(node => node.op),
+    displayed,
+    startsFromExistingProgram ? traced.slice(-displayed.length) : traced,
     `${variant.chart}/${variant.variant} displayed action flow`
   );
 }

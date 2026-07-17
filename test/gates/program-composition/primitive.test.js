@@ -82,11 +82,13 @@ test("authors unequal, nested, and replacement results with explicit primitives"
   );
 });
 
-test("exposes only approved composition operations after Gate G", () => {
+test("exposes the approved composition operations after Gate G", () => {
   assert.equal(visualVariants.length, 3);
   assert.equal(typeof ggaction.hconcat, "function");
   assert.equal(typeof ggaction.vconcat, "function");
   assert.equal(typeof visualVariants[0].userFacing, "function");
   assert.equal(typeof visualVariants[1].userFacing, "function");
-  assert.equal(visualVariants[2].userFacing, undefined);
+  assert.equal(typeof visualVariants[2].userFacing, "function");
+  assert.equal(typeof ggaction.chart().editCompositionLayout, "function");
+  assert.equal(typeof ggaction.chart().replaceCompositionChild, "function");
 });

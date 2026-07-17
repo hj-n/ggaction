@@ -107,3 +107,20 @@ test("requires displayed actions to match the canonical executable trace", () =>
     /displayed action flow/
   );
 });
+
+test("matches a displayed suffix when a call chain starts from an existing program", () => {
+  const variant = {
+    chart: "dashboard",
+    variant: "replacement",
+    callChain: "overview.editCompositionLayout({ gap: 8 }).replaceCompositionChild({ target: 'detail', program });"
+  };
+  assert.doesNotThrow(() => assertDisplayedProgram(variant, {
+    trace: {
+      children: [
+        { op: "hconcat" },
+        { op: "editCompositionLayout" },
+        { op: "replaceCompositionChild" }
+      ]
+    }
+  }));
+});

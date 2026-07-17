@@ -178,3 +178,88 @@ test("validates every child before creating composition state", () => {
   );
   assert.equal(complete.compositionSpec, undefined);
 });
+
+test("edits layout atomically while preserving child identity", () => {
+  const left = child({ width: 200, height: 120, color: "red" });
+  const right = child({ width: 160, height: 80, color: "blue" });
+  const original = hconcat({
+    id: "pair",
+    programs: [{ id: "left", program: left }, { id: "right", program: right }],
+    padding: { top: 2, right: 3, bottom: 4, left: 5 }
+  });
+  const edited = original.editCompositionLayout({
+    gap: 8,
+    align: "end",
+    padding: { left: 10 }
+  });
+
+  assert.equal(edited.children.left, left);
+  assert.equal(edited.children.right, right);
+  assert.deepEqual(edited.compositionSpec.children, ["left", "right"]);
+  assert.deepEqual(edited.compositionSpec.padding, {
+    top: 2, right: 3, bottom: 4, left: 10
+  });
+  assert.deepEqual(edited.graphicSpec.objects.canvas.properties, {
+    width: 381,
+    height: 126,
+    background: "white"
+  });
+  assert.equal(nestedCanvases(edited)[1].properties.y, 42);
+  assert.equal(original.compositionSpec.gap, 16);
+  assert.deepEqual(original.compositionSpec.padding, {
+    top: 2, right: 3, bottom: 4, left: 5
+  });
+  assert.deepEqual(edited.trace.children.at(-1).children.map(node => node.op), [
+    "materializeComposition"
+  ]);
+});
+
+test("replaces one child while preserving its slot and earlier programs", () => {
+  const left = child({ width: 200, height: 120, color: "red" });
+  const right = child({ width: 160, height: 80, color: "blue" });
+  const replacement = child({ width: 90, height: 140, color: "green" });
+  const original = hconcat({
+    id: "pair",
+    programs: [{ id: "left", program: left }, { id: "right", program: right }]
+  });
+  const replaced = original.replaceCompositionChild({
+    target: "right",
+    program: replacement
+  });
+
+  assert.deepEqual(replaced.compositionSpec.children, ["left", "right"]);
+  assert.equal(replaced.children.left, left);
+  assert.equal(replaced.children.right, replacement);
+  assert.equal(original.children.right, right);
+  assert.equal(nestedCanvases(replaced)[1].properties.width, 90);
+  assert.deepEqual(replaced.trace.children.at(-1).children.map(node => node.op), [
+    "useProgram", "materializeComposition"
+  ]);
+});
+
+test("rejects invalid composition edits without changing the source", () => {
+  const complete = child({ width: 200, height: 120, color: "red" });
+  const pair = hconcat({ programs: [complete, complete] });
+  const trace = pair.trace;
+  const graphics = pair.graphicSpec;
+
+  assert.throws(() => pair.editCompositionLayout(), /at least one layout option/);
+  assert.throws(
+    () => pair.editCompositionLayout({ align: "middle" }),
+    /Unknown composition align/
+  );
+  assert.throws(
+    () => pair.replaceCompositionChild({ target: "missing", program: complete }),
+    /Unknown composition child/
+  );
+  assert.throws(
+    () => pair.replaceCompositionChild({ target: "view-1", program: chart() }),
+    /exactly one ordered canvas/
+  );
+  assert.throws(
+    () => complete.editCompositionLayout({ gap: 1 }),
+    /requires a composition ChartProgram/
+  );
+  assert.equal(pair.trace, trace);
+  assert.equal(pair.graphicSpec, graphics);
+});

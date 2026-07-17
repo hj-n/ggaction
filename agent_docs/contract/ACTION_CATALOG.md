@@ -137,13 +137,13 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | user-facing | [`createRadialGrid`](current/GRID.md#createRadialGrid) | grid | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editThetaGrid`](current/GRID.md#editThetaGrid) | grid | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editRadialGrid`](current/GRID.md#editRadialGrid) | grid | Mutable resource | Complete | ✅ / ✅ / ✅ |
+| user-facing | [`editCompositionLayout`](current/COMPOSITION.md#editCompositionLayout) | composition | Mutable resource | Complete | ✅ / ✅ / ✅ |
+| user-facing | [`replaceCompositionChild`](current/COMPOSITION.md#replaceCompositionChild) | composition | Mutable resource | Complete | ✅ / ✅ / ✅ |
 
 ## Planned direct actions
 
 | Action | Readiness | Contract |
 | --- | --- | --- |
-| `editCompositionLayout` | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#program-composition) |
-| `replaceCompositionChild` | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#program-composition) |
 | `facet` | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#facet) |
 | `editFacetHeaders` | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#facet) |
 | `encodeYOffset` | accepted | [Open](planned/ROADMAP3_DIRECTIONAL_MARKS.md#directional-offset) |
@@ -157,11 +157,7 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 
 | Kind | Capability | Readiness | Contract |
 | --- | --- | --- | --- |
-| composition | Horizontal program composition | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#program-composition) |
-| composition | Vertical program composition | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#program-composition) |
 | parameter | Facet scale resolution options | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#facet-resolution-and-derived-replay) |
-| composition | Program composition state | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#program-composition) |
-| composition | Nested Canvas rendering | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#program-composition) |
 | composition | Direct-source facet | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#facet) |
 | behavior | Derived facet dependency replay | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#facet-resolution-and-derived-replay) |
 | composition | Parent guide composition | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#facet-resolution-and-derived-replay) |

@@ -91,6 +91,19 @@ test("summarizes large action values without retaining the array", () => {
   assert.equal(summary.valueCount, 2);
 });
 
+test("summarizes non-plain action references without retaining them", () => {
+  class ChildProgramReference {}
+  const program = new ChildProgramReference();
+  const summary = summarizeArgs({ target: "detail", program });
+
+  assert.deepEqual(summary, {
+    target: "detail",
+    programType: "ChildProgramReference"
+  });
+  assert.equal(Object.isFrozen(summary), true);
+  assert.equal(Object.values(summary).includes(program), false);
+});
+
 test("rejects circular objects in action summaries", () => {
   const circular = {};
   circular.self = circular;

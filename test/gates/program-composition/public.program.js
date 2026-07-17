@@ -70,3 +70,25 @@ export function createNestedDashboardPublic(cars, jobs, gapminder) {
     padding: 14
   });
 }
+
+export function createReplacementPublic(cars, jobs, gapminder) {
+  const { values, main, detail } = childPrograms(cars, jobs, gapminder);
+  const overview = hconcat({
+    id: "overview",
+    programs: [
+      { id: "main", program: main },
+      { id: "detail", program: detail }
+    ],
+    gap: 20,
+    padding: 16
+  });
+  const donut = panel({
+    id: "donutContent",
+    width: 280,
+    height: 280,
+    items: values.donutItems
+  });
+  return overview
+    .editCompositionLayout({ gap: 28, align: "start", padding: 12 })
+    .replaceCompositionChild({ target: "detail", program: donut });
+}

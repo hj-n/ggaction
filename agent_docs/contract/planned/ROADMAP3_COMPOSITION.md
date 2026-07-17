@@ -2,24 +2,6 @@
 
 Gate A에서 승인된 Phase 6~8 계약이다. Composition intent는 `semanticSpec` layer grammar 밖에 둔다.
 
-## Program composition
-
-```typescript
-hconcat({ id?, programs, gap?, align?, padding? }): ChartProgram;
-vconcat({ id?, programs, gap?, align?, padding? }): ChartProgram;
-editCompositionLayout({ gap?, align?, padding? }): ChartProgram;
-replaceCompositionChild({ target, program }): ChartProgram;
-```
-
-- `hconcat`/`vconcat` are main-package named operations and require at least two complete programs.
-- Parent owns immutable `children` lookup plus ordered `compositionSpec.children`.
-- Defaults are `gap: 16`, `align: "center"`, zero four-side padding.
-- Parent `graphicSpec` contains namespaced child Canvas snapshots and concrete placement. Renderer does not read
-  child programs or semantics.
-- Nested Canvas uses save/translate/clip/background/children/restore and never resizes the physical backing store.
-- Layout edit preserves children; replacement preserves the target position/ID and atomically rebuilds the snapshot.
-- Status: Planned, NOT IMPLEMENTED. Roadmap 3 Phase 6.
-
 ## Facet
 
 ```typescript

@@ -4,6 +4,7 @@ import test from "node:test";
 import { loadCars, loadGapminder, loadJobs } from "../../support/data.js";
 import {
   createNestedDashboardPublic,
+  createReplacementPublic,
   createUnequalHorizontalPublic
 } from "./public.program.js";
 import { createCompositionGateValues } from "./reference-values.js";
@@ -35,5 +36,20 @@ test("builds the approved nested dashboard with vconcat", () => {
   assert.equal(program.graphicSpec.objects.canvas.properties.height, values.nested.height);
   assert.deepEqual(program.trace.children[0].children.map(node => node.op), [
     "useProgram", "useProgram", "materializeComposition"
+  ]);
+});
+
+test("edits layout and replaces the approved detail slot", () => {
+  const values = createCompositionGateValues({ cars, jobs, gapminder });
+  const program = createReplacementPublic(cars, jobs, gapminder);
+
+  assert.deepEqual(program.compositionSpec.children, ["main", "detail"]);
+  assert.equal(program.compositionSpec.gap, 28);
+  assert.equal(program.compositionSpec.align, "start");
+  assert.equal(program.children.detail.graphicSpec.objects.canvas.properties.width, 280);
+  assert.equal(program.graphicSpec.objects.canvas.properties.width, values.replacement.width);
+  assert.equal(program.graphicSpec.objects.canvas.properties.height, values.replacement.height);
+  assert.deepEqual(program.trace.children.map(node => node.op), [
+    "hconcat", "editCompositionLayout", "replaceCompositionChild"
   ]);
 });
