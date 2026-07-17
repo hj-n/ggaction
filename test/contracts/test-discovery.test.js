@@ -8,6 +8,7 @@ import {
   classifyTestFile,
   collectTestFiles
 } from "../../scripts/run-tests.js";
+import { collectReachableModules } from "../support/module-imports.js";
 
 const testRoot = fileURLToPath(new URL("../", import.meta.url));
 
@@ -49,6 +50,45 @@ test("does not discover programs or support modules as tests", () => {
       file.endsWith(".browser.js")
     ) continue;
     assert.equal(classifyTestFile(file, testRoot), undefined);
+  }
+});
+
+test("keeps every test module reachable from a suite or module-script entry", () => {
+  const moduleEntries = walk(testRoot).filter(file =>
+    file.endsWith(".html") || classifyTestFile(file, testRoot) !== undefined
+  );
+  const reachable = collectReachableModules(moduleEntries, { boundary: testRoot });
+  const modules = walk(testRoot).filter(file => file.endsWith(".js"));
+
+  assert.deepEqual(
+    modules.filter(file => !reachable.has(file)).map(file => path.relative(testRoot, file)),
+    []
+  );
+});
+
+test("requires every active gate to expose a complete reviewable slice", () => {
+  const gateRoot = path.join(testRoot, "gates");
+  const gates = readdirSync(gateRoot, { withFileTypes: true })
+    .filter(entry => entry.isDirectory())
+    .map(entry => ({ entry, files: walk(path.join(gateRoot, entry.name)) }))
+    .filter(gate => gate.files.length > 0);
+
+  for (const { entry: gate, files } of gates) {
+    assert.equal(
+      files.some(file => file.endsWith(".test.js")),
+      true,
+      `${gate.name} must contain an executable contract test`
+    );
+    assert.equal(
+      files.some(file => file.endsWith(".render.js")),
+      true,
+      `${gate.name} must contain an executable visual render entry`
+    );
+    assert.equal(
+      files.some(file => /(?:manifest|primitive\.program)\.js$/.test(file)),
+      true,
+      `${gate.name} must contain a manifest or primitive program`
+    );
   }
 });
 
