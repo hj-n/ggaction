@@ -40,3 +40,7 @@ Artifact track shape is owned by `test/support/artifact-schema.js`. Paths,
 metadata validation, render manifests, and gallery generation consume that
 registry so a later roadmap does not add independent conditionals across the
 test infrastructure.
+
+Reference datasets are registered lazily in `test/support/data.js`. Use
+`fixtureRows(id)` for a shared frozen oracle and `loadDataset(id)` or the named
+loaders when a test specifically needs caller-owned mutable rows.
