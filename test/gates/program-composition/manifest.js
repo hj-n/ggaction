@@ -35,7 +35,6 @@ export const nestedDashboardTarget = `vconcat({
     { id: "trend", program: gapminderLineChart }
   ],
   gap: 18,
-  align: "center",
   padding: 14
 });`;
 
@@ -74,7 +73,7 @@ export const visualVariants = Object.freeze([
     colors: ["#4c78a8", "#f58518", "#e45756", "#54a24b"],
     regions: [
       { name: "nested-overview", x: 14, y: 14, width: 792, height: 352, minimumInkPixels: 650 },
-      { name: "trend-panel", x: 110, y: 384, width: 600, height: 220, minimumInkPixels: 250 }
+      { name: "trend-panel", x: 14, y: 384, width: 792, height: 220, minimumInkPixels: 250 }
     ]
   }),
   defineVisualVariant({

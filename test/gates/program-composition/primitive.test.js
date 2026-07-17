@@ -31,7 +31,7 @@ test("locks the three approved layout targets to literal placement values", () =
   });
   assert.deepEqual(values.nested.children, [
     { id: "overview", width: 792, height: 352, x: 14, y: 14 },
-    { id: "trend", width: 600, height: 220, x: 110, y: 384 }
+    { id: "trend", width: 792, height: 220, x: 14, y: 384 }
   ]);
   assert.equal(values.nested.width, 820);
   assert.equal(values.nested.height, 618);
@@ -71,6 +71,7 @@ test("authors unequal, nested, and replacement results with explicit primitives"
     nested.graphicSpec.objects.nestedDetailCanvas.properties.height,
     320
   );
+  assert.equal(nested.graphicSpec.objects.trendCanvas.properties.width, 792);
   assert.deepEqual(replacement.graphicSpec.objects.revisedOverview.children, [
     "replacementMainCanvas", "replacementDetailCanvas"
   ]);

@@ -41,7 +41,6 @@ const dashboard = vconcat({
     { id: "trend", program: gapminderLineChart }
   ],
   gap: 18,
-  align: "center",
   padding: { top: 14, right: 14, bottom: 14, left: 14 }
 });
 ```
@@ -89,5 +88,5 @@ replaceCompositionChild
 ## Gate G visual variants
 
 1. `unequal-horizontal`: unequal-width scatterplot + grouped bar with equalized auto height
-2. `nested-dashboard`: horizontal overview 위에 Gapminder trend를 둔 vertical composition
+2. `nested-dashboard`: horizontal overview와 같은 auto width로 늘어난 Gapminder trend의 vertical composition
 3. `replacement`: 같은 `detail` slot에 Polar donut을 배치하고 start alignment와 새 gap을 적용

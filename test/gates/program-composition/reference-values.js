@@ -141,7 +141,7 @@ function createBarItems(jobs, { width, height }) {
   return items;
 }
 
-function createTrendItems(gapminder) {
+function createTrendItems(gapminder, { width }) {
   const countries = ["China", "India", "United States"];
   const rows = gapminder.filter(row =>
     countries.includes(row.country) &&
@@ -154,7 +154,7 @@ function createTrendItems(gapminder) {
       fontWeight: 700,
       textBaseline: "top"
     }),
-    line(48, 176, 580, 176, { stroke: "#64748b", strokeWidth: 1.2 }),
+    line(48, 176, width - 20, 176, { stroke: "#64748b", strokeWidth: 1.2 }),
     line(48, 38, 48, 176, { stroke: "#64748b", strokeWidth: 1.2 })
   ];
   for (const country of countries) {
@@ -162,7 +162,7 @@ function createTrendItems(gapminder) {
       .sort((left, right) => left.year - right.year);
     const commands = series.map((row, index) => ({
       op: index === 0 ? "M" : "L",
-      x: mapLinear(row.year, [1955, 2005], [52, 574]),
+      x: mapLinear(row.year, [1955, 2005], [52, width - 26]),
       y: mapLinear(row.life_expect, [25, 82], [170, 44])
     }));
     items.push({
@@ -177,7 +177,7 @@ function createTrendItems(gapminder) {
     });
   }
   countries.forEach((country, index) => {
-    items.push(text(country, 310 + index * 88, 28, {
+    items.push(text(country, width - 290 + index * 88, 28, {
       fill: COLORS[country],
       fontSize: 9
     }));
@@ -282,11 +282,15 @@ export function createCompositionGateValues({ cars, jobs, gapminder }) {
   const nested = resolveCompositionLayout({
     direction: "vertical",
     children: [
-      { id: "overview", width: overview.width, height: overview.height },
-      { id: "trend", width: 600, height: 220 }
+      {
+        id: "overview",
+        width: overview.width,
+        height: overview.height,
+        widthMode: "auto"
+      },
+      { id: "trend", width: 600, height: 220, widthMode: "auto" }
     ],
     gap: 18,
-    align: "center",
     padding: 14
   });
   const replacement = resolveCompositionLayout({
@@ -308,7 +312,10 @@ export function createCompositionGateValues({ cars, jobs, gapminder }) {
       jobs,
       overview.children.find(child => child.id === "detail")
     ),
-    trendItems: createTrendItems(gapminder),
+    trendItems: createTrendItems(
+      gapminder,
+      nested.children.find(child => child.id === "trend")
+    ),
     donutItems: createDonutItems(cars)
   });
 }
