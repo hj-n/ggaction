@@ -31,7 +31,7 @@ function read(relative) {
 }
 
 function isDocumentationMarkdown(file) {
-  return file.endsWith(".md") && path.basename(file) !== "AGENTS.md";
+  return file.endsWith(".md") && !["AGENTS.md", "README.md"].includes(path.basename(file));
 }
 
 function prettyUrl(file) {

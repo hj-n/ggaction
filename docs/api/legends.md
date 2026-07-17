@@ -31,10 +31,10 @@ editing page when changing an existing guide.
 ## Focused legend families
 
 <div class="docs-entry-grid docs-entry-grid--two">
-  <a href="./legends/categorical/"><strong>Categorical legends</strong><span>Create categorical, size, and interval guides and control their layout.</span></a>
-  <a href="./legends/continuous/"><strong>Continuous legends</strong><span>Gradient color and sampled opacity guides.</span></a>
-  <a href="./legends/composite/"><strong>Composite symbols</strong><span>Layered line, point, and swatch recipes plus optional borders.</span></a>
-  <a href="./legends/editing/"><strong>Edit and remove</strong><span>Atomic component edits, rematerialization, trace, and removal.</span></a>
+  <a href="{{ '/api/legends/categorical/' | relative_url }}"><strong>Categorical legends</strong><span>Create categorical, size, and interval guides and control their layout.</span></a>
+  <a href="{{ '/api/legends/continuous/' | relative_url }}"><strong>Continuous legends</strong><span>Gradient color and sampled opacity guides.</span></a>
+  <a href="{{ '/api/legends/composite/' | relative_url }}"><strong>Composite symbols</strong><span>Layered line, point, and swatch recipes plus optional borders.</span></a>
+  <a href="{{ '/api/legends/editing/' | relative_url }}"><strong>Edit and remove</strong><span>Atomic component edits, rematerialization, trace, and removal.</span></a>
 </div>
 
 ## Errors and limitations

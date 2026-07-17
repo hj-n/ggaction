@@ -85,19 +85,22 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Set up the documentation runtime
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2.6"
+          bundler-cache: true
       - name: Verify generated documentation artifacts
         run: |
+          npm run docs:signatures
           npm run docs:images
           npm run docs:llms
           npm run test:docs
-          git diff --exit-code -- docs/assets/images/manifest.json docs/llms-full.txt
+          git diff --exit-code -- docs/reference/actions.md docs/assets/images/manifest.json docs/llms-full.txt
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Build documentation with Jekyll
-        uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./docs
-          destination: ./_site
+        run: npm run docs:build
       - name: Check built documentation
         run: npm run test:docs:built
       - name: Install Chromium

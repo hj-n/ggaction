@@ -5,6 +5,11 @@ repository_url: https://github.com/hj-n/ggaction
 theme: minima
 markdown: kramdown
 permalink: pretty
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: true
 exclude:
   - README.md
   - AGENTS.md

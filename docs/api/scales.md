@@ -93,11 +93,11 @@ and guides. A band can be shared by bars and point centers, but changing it to
 ## Focused scale families
 
 <div class="docs-entry-grid docs-entry-grid--two">
-  <a href="./scales/position/"><strong>Position scales</strong><span>Linear, transformed, time, band, and point mappings.</span></a>
-  <a href="./scales/ordinal-and-dash/"><strong>Ordinal and dash scales</strong><span>Stable categorical domains and stroke-dash ranges.</span></a>
-  <a href="./scales/continuous-color/"><strong>Continuous color</strong><span>Named palettes and continuous quantitative color.</span></a>
-  <a href="./scales/discretized-color/"><strong>Discretized color</strong><span>Quantize, quantile, and threshold classes.</span></a>
-  <a href="./scales/missing-values/"><strong>Missing values</strong><span>Unknown fallbacks and compound-grain limits.</span></a>
+  <a href="{{ '/api/scales/position/' | relative_url }}"><strong>Position scales</strong><span>Linear, transformed, time, band, and point mappings.</span></a>
+  <a href="{{ '/api/scales/ordinal-and-dash/' | relative_url }}"><strong>Ordinal and dash scales</strong><span>Stable categorical domains and stroke-dash ranges.</span></a>
+  <a href="{{ '/api/scales/continuous-color/' | relative_url }}"><strong>Continuous color</strong><span>Named palettes and continuous quantitative color.</span></a>
+  <a href="{{ '/api/scales/discretized-color/' | relative_url }}"><strong>Discretized color</strong><span>Quantize, quantile, and threshold classes.</span></a>
+  <a href="{{ '/api/scales/missing-values/' | relative_url }}"><strong>Missing values</strong><span>Unknown fallbacks and compound-grain limits.</span></a>
 </div>
 
 ## Errors and limitations

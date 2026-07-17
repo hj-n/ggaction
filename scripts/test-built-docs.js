@@ -48,6 +48,11 @@ const imageManifest = JSON.parse(await readFile(
   "utf8"
 ));
 const expectedChartCount = Object.keys(imageManifest.charts).length;
+const chartCatalog = await readFile(
+  path.resolve("docs/_data/chart_examples.yml"),
+  "utf8"
+);
+const expectedTutorialCount = (chartCatalog.match(/^  tutorial_order:/gm) ?? []).length;
 await mkdir(artifactRoot, { recursive: true });
 
 async function files(directory) {
@@ -163,8 +168,14 @@ try {
   assert.deepEqual(desktopErrors, []);
 
   await desktop.goto(`${baseUrl}tutorials/`, { waitUntil: "networkidle" });
-  assert.equal(await desktop.locator(".docs-chart-index article").count(), 10);
-  assert.equal(await desktop.locator(".docs-chart-index img").count(), 10);
+  assert.equal(
+    await desktop.locator(".docs-chart-index article").count(),
+    expectedTutorialCount
+  );
+  assert.equal(
+    await desktop.locator(".docs-chart-index img").count(),
+    expectedTutorialCount
+  );
   await desktop.goto(`${baseUrl}getting-started/`, { waitUntil: "networkidle" });
   assert.equal(await desktop.locator(".docs-example-figure img").count(), 1);
   await desktop.goto(baseUrl, { waitUntil: "networkidle" });
@@ -249,7 +260,11 @@ try {
   assert.equal(await mobile.locator(".docs-heading-anchor").count() > 0, true);
   const actionHeadingCount = await mobile.locator(".docs-action-heading").count();
   assert.equal(actionHeadingCount > 0, true);
-  assert.equal(await mobile.locator(".docs-page-toc a").count(), 6);
+  assert.equal(await mobile.locator(".docs-page-toc a").count(), 7);
+  assert.equal(
+    await mobile.locator('.docs-page-toc a[href="#exact-typescript-signatures"]').count(),
+    1
+  );
   const actionFilter = mobile.locator("#docs-action-filter-input");
   assert.equal(await actionFilter.count(), 1);
   await actionFilter.fill("edit");

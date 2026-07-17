@@ -28,9 +28,9 @@ focused pages below for selection, point appearance, and mark-specific style.
 ## Focused appearance families
 
 <div class="docs-entry-grid docs-entry-grid--two">
-  <a href="./appearance/selection-and-highlighting/"><strong>Selection and highlighting</strong><span>Select final graphical items and apply durable emphasis.</span></a>
-  <a href="./appearance/point/"><strong>Point appearance</strong><span>Radius, size, shape, and opacity encodings.</span></a>
-  <a href="./appearance/mark-style/"><strong>Mark style</strong><span>Rule stroke and aggregate or ranged bar width.</span></a>
+  <a href="{{ '/api/appearance/selection-and-highlighting/' | relative_url }}"><strong>Selection and highlighting</strong><span>Select final graphical items and apply durable emphasis.</span></a>
+  <a href="{{ '/api/appearance/point/' | relative_url }}"><strong>Point appearance</strong><span>Radius, size, shape, and opacity encodings.</span></a>
+  <a href="{{ '/api/appearance/mark-style/' | relative_url }}"><strong>Mark style</strong><span>Rule stroke and aggregate or ranged bar width.</span></a>
 </div>
 
 ## Errors and limitations
@@ -49,4 +49,3 @@ selection or appearance state. Highlight appearance currently supports points on
 
 [Marks](./marks.md) · [Position encodings](./position-encodings.md) ·
 [Series encodings](./series-encodings.md) · [Legends](./legends.md)
-

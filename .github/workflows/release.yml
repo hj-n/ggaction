@@ -51,10 +51,11 @@ jobs:
       - name: Verify generated contracts and documentation
         run: |
           npm run contracts:catalog:check
+          npm run docs:signatures
           npm run docs:images
           npm run docs:llms
           npm run test:docs
-          git diff --exit-code -- docs/assets/images/manifest.json docs/llms-full.txt
+          git diff --exit-code -- docs/reference/actions.md docs/assets/images/manifest.json docs/llms-full.txt
       - name: Run unit, acceptance, and contract tests
         run: npm test
       - name: Set up the coverage and documentation runtime
@@ -67,11 +68,13 @@ jobs:
         run: npm run test:coverage
       - name: Test the installed packed-package consumers
         run: npm run test:package
-      - name: Build documentation with Jekyll
-        uses: actions/jekyll-build-pages@v1
+      - name: Set up the documentation runtime
+        uses: ruby/setup-ruby@v1
         with:
-          source: ./docs
-          destination: ./_site
+          ruby-version: "3.2.6"
+          bundler-cache: true
+      - name: Build documentation with Jekyll
+        run: npm run docs:build
       - name: Check built documentation
         run: npm run test:docs:built
       - name: Install Chromium

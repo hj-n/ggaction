@@ -21,8 +21,8 @@ that encoding.
 ## Focused series families
 
 <div class="docs-entry-grid docs-entry-grid--two">
-  <a href="./series/color/"><strong>Color</strong><span>Categorical and continuous color, grouping layouts, and aggregate bars.</span></a>
-  <a href="./series/stroke-dash/"><strong>Stroke dash</strong><span>Constant and field-driven dash patterns for lines and rules.</span></a>
+  <a href="{{ '/api/series/color/' | relative_url }}"><strong>Color</strong><span>Categorical and continuous color, grouping layouts, and aggregate bars.</span></a>
+  <a href="{{ '/api/series/stroke-dash/' | relative_url }}"><strong>Stroke dash</strong><span>Constant and field-driven dash patterns for lines and rules.</span></a>
 </div>
 
 ## Errors and limitations
@@ -35,4 +35,3 @@ Combined line legends also require matching ordered domains.
 
 [Scale options](./scales.md) · [Legends](./legends.md) ·
 [Position encodings](./position-encodings.md)
-
