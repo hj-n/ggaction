@@ -11,6 +11,14 @@ Scales map semantic field or datum values into concrete positions and
 appearance values. Encodings create compatible scales automatically; use
 `editScale` when the inferred mapping needs a documented revision.
 
+<div class="docs-concept-flow" role="img" aria-label="A semantic field and channel select a scale which resolves concrete positions, colors, or dash patterns">
+  <span><code>field + channel</code><strong>Semantic input</strong></span>
+  <b aria-hidden="true">→</b>
+  <span><code>domain → range</code><strong>Resolved scale</strong></span>
+  <b aria-hidden="true">→</b>
+  <span><code>x · fill · dash</code><strong>Concrete graphics</strong></span>
+</div>
+
 ## At a glance
 
 | Scale family | Default domain | Default range | Common controls |

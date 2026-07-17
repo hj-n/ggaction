@@ -7,6 +7,14 @@ title: Legends
 
 {% include chart-example.html id="density" %}
 
+<div class="docs-concept-flow" role="img" aria-label="Legend creation reads resolved encodings and scales, chooses a symbol recipe, and writes concrete guide graphics">
+  <span><code>encoding + scale</code><strong>Guide meaning</strong></span>
+  <b aria-hidden="true">→</b>
+  <span><code>symbol recipe</code><strong>Categorical, gradient, or composite</strong></span>
+  <b aria-hidden="true">→</b>
+  <span><code>rect · line · text</code><strong>Concrete guide graphics</strong></span>
+</div>
+
 ## At a glance
 
 | Action | Shortest call | Inference/defaults | Result |
@@ -45,4 +53,3 @@ instead of resizing the Canvas or dropping symbol layers.
 
 [Guides](./guides.md) · [Series encodings](./series-encodings.md) ·
 [Canvas](./canvas.md) · [Troubleshooting](../troubleshooting.md)
-

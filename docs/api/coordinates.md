@@ -15,6 +15,15 @@ title: Coordinates
 
 Position encoding actions normally manage coordinates automatically:
 
+<div class="docs-concept-flow" role="img" aria-label="Cartesian encodings map x and y to a Cartesian coordinate while Polar encodings map theta and radius to a Polar coordinate">
+  <span><code>encodeX + encodeY</code><strong>Cartesian channels</strong></span>
+  <b aria-hidden="true">→</b>
+  <span><code>main / cartesian</code><strong>Horizontal and vertical position</strong></span>
+  <span><code>encodeTheta + encodeR</code><strong>Polar channels</strong></span>
+  <b aria-hidden="true">→</b>
+  <span><code>polar / polar</code><strong>Angle and radial position</strong></span>
+</div>
+
 ```text
 encodeX / encodeY -> main / cartesian
 encodeTheta / encodeR -> polar / polar

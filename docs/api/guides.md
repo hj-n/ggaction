@@ -13,6 +13,14 @@ title: Guides
 | --- | --- | --- | --- |
 | `createGuides` | `createGuides()` | Applicable axes, horizontal grid, and legends | Wrapped guide child actions in deterministic order |
 
+<div class="docs-concept-flow" role="img" aria-label="createGuides infers applicable axes, grid, and legend actions from the current encodings">
+  <span><code>position encodings</code><strong>Axes</strong></span>
+  <span><code>position scales</code><strong>Grid</strong></span>
+  <span><code>appearance encodings</code><strong>Legend</strong></span>
+  <b aria-hidden="true">→</b>
+  <span><code>createGuides()</code><strong>Deterministic composition</strong></span>
+</div>
+
 ## `createGuides(options?)`
 
 Creates the applicable axes, Cartesian or Polar grid, and categorical legend supported

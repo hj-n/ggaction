@@ -10,20 +10,59 @@ chart-authoring API does not support that combination.
 
 ## Complete chart support
 
-| Capability | Scatterplot | Polar points | Polar line / radar | Line chart | Histogram | Bar chart | Regression scatterplot | Density area | Error bar | Error band | Box plot |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Semantic mark | point | point | line | line | bar | bar | point + area + line | area | rule | area | bar + rule + point |
-| Position | quantitative x/y | theta/radius | theta/radius | temporal x, aggregate y | binned x, count y | ordinal x, aggregate y | shared quantitative x/y | value + density x/y | categorical/temporal position on x or y; interval on the other axis | quantitative/temporal independent position; quantitative x/x2 or y/y2 interval | categorical x; quantitative y/y2 |
-| Nominal color | point fill | point fill | series stroke | series stroke | five bar layouts | five bar layouts | point fill + fit stroke | overlay/stack/fill/diverging area | — | grouped area fill | body fill through ranged-bar color |
-| Stroke dash | — | — | nominal or constant; 4 named styles | nominal or constant; 4 named styles | — | — | — | — | 4 named styles or custom pattern | — | — |
-| Constant appearance | radius | radius, opacity, shape | stroke width, opacity, open/closed | stroke width, 8 curves | — | band or logical-pixel width | opacity, band fill/outline, line width, 8 curves | opacity, 8 curves | stroke, width, dash, opacity, optional fixed-size caps | fill, opacity, 8 curves, styled boundaries | fixed defaults; 1.5px median/whiskers |
-| Automatic axes | linear | theta outer axis + radial axis | theta outer axis + radial axis | UTC time and linear | bin-aligned and linear | ordinal and linear | shared linear | source value + density | categorical/temporal position and linear interval axis | temporal or linear independent axis; linear interval axis | categorical x and linear y |
-| Automatic grid | horizontal | theta spokes + radial circles | theta spokes + radial circles | horizontal | horizontal | horizontal | shared horizontal | horizontal; vertical optional | perpendicular to the interval axis | perpendicular to the interval axis | horizontal |
-| Legend | point color + shape | point color + shape | categorical | categorical | categorical | categorical | composite color/shape/line + size | categorical top/right/bottom | — | categorical | optional ranged-bar color legend |
-| Chart title | optional | optional | optional | optional | optional | optional | optional | optional | optional | optional | optional |
-| Mark selection/highlight | selection + point highlight | selection + point highlight | series selection | series selection | final-bar selection | final-bar selection | layer selection + point highlight | series selection | rule selection | series selection | component selection |
-| Browser Canvas | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Node PNG | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+Every chart family below supports Browser Canvas, Node PNG, and an optional
+chart title. The smaller family tables keep the comparison readable on narrow
+screens.
+
+### Cartesian charts
+
+| Capability | Scatterplot | Line | Histogram | Bar |
+| --- | --- | --- | --- | --- |
+| Semantic mark | point | line | bar | bar |
+| Position | quantitative x/y | temporal x, aggregate y | binned x, count y | ordinal x, aggregate y |
+| Nominal color | point fill | series stroke | five bar layouts | five bar layouts |
+| Stroke dash | — | nominal or constant; 4 named styles | — | — |
+| Appearance | radius | stroke width, 8 curves | default bar geometry | band or logical-pixel width |
+| Automatic guides | linear axes; horizontal grid | UTC time/linear axes; horizontal grid | bin-aligned/linear axes; horizontal grid | ordinal/linear axes; horizontal grid |
+| Legend | point color + shape | categorical | categorical | categorical |
+| Selection/highlight | point | series | final bar | final bar |
+
+### Statistical layers
+
+| Capability | Regression scatterplot | Density area |
+| --- | --- | --- |
+| Semantic marks | point + area + line | area |
+| Position | shared quantitative x/y | value + density x/y |
+| Nominal color | point fill + fit stroke | overlay/stack/fill/diverging area |
+| Appearance | point opacity, band fill/outline, line width, 8 curves | opacity, 8 curves |
+| Automatic guides | shared linear axes and horizontal grid | source-value/density axes; horizontal grid, vertical optional |
+| Legend | composite color/shape/line + size | categorical top/right/bottom |
+| Selection/highlight | layer selection + point highlight | series |
+
+### Intervals and distributions
+
+| Capability | Error bar | Error band | Box plot |
+| --- | --- | --- | --- |
+| Semantic marks | rule | area | bar + rule + point |
+| Position | categorical/temporal independent axis; interval on the other | quantitative/temporal independent axis; x/x2 or y/y2 interval | categorical axis; quantitative interval axis |
+| Nominal color | — | grouped area fill | body fill through ranged-bar color |
+| Appearance | stroke, width, dash, opacity, optional caps | fill, opacity, 8 curves, styled boundaries | fixed defaults; 1.5px median/whiskers |
+| Automatic guides | interval and independent axes; perpendicular grid | interval and independent axes; perpendicular grid | categorical/linear axes; horizontal grid |
+| Legend | — | categorical | optional ranged-bar color legend |
+| Selection/highlight | rule | series | component |
+
+### Polar charts
+
+| Capability | Polar points | Polar line / radar |
+| --- | --- | --- |
+| Semantic mark | point | line |
+| Position | theta/radius | theta/radius |
+| Nominal color | point fill | series stroke |
+| Stroke dash | — | nominal or constant; 4 named styles |
+| Appearance | radius, opacity, shape | stroke width, opacity, open/closed |
+| Automatic guides | theta outer axis, radial axis, spokes, circles | theta outer axis, radial axis, spokes, circles |
+| Legend | point color + shape | categorical |
+| Selection/highlight | point | series |
 
 ## Shared foundations
 

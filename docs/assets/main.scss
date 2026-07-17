@@ -396,6 +396,18 @@ summary:focus-visible {
   -webkit-overflow-scrolling: touch;
 }
 
+.docs-content table th:first-child,
+.docs-content table td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--docs-surface, #fff);
+}
+
+.docs-content table th:first-child {
+  z-index: 2;
+}
+
 .docs-scroll-region {
   position: relative;
   max-width: 100%;
