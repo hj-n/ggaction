@@ -1,7 +1,7 @@
 {
   "version": 1,
   "gate": "A",
-  "status": "awaiting-approval",
+  "status": "approved",
   "evidence": {
     "baseline": "agent_docs/impl/roadmap3/phase0/STEP1.md",
     "capability-lab": "test/contracts/roadmap3-capability-baseline.test.js",
@@ -102,13 +102,13 @@
     { "id": "cross-feature-integration", "phase": "phase10", "evidence": "baseline" }
   ],
   "gateDecisions": [
-    { "id": "mark-removal-cascade", "recommended": "remove-owned-preserve-user-resources", "evidence": "lifecycle-audit" },
-    { "id": "grid-removal-syntax", "recommended": "direction-booleans-default-all", "evidence": "lifecycle-audit" },
-    { "id": "composite-edit-atomicity", "recommended": "single-preflight-single-rematerialization", "evidence": "lifecycle-audit" },
-    { "id": "error-band-boundary-selection", "recommended": "both-default-lower-upper-option", "evidence": "lifecycle-audit" },
-    { "id": "focused-legend-subsets", "recommended": "stable-component-owned-options", "evidence": "lifecycle-audit" },
-    { "id": "recreate-after-removal", "recommended": "allow-after-complete-cleanup", "evidence": "lifecycle-audit" },
-    { "id": "missing-removal-errors", "recommended": "missing-and-ambiguous-are-errors", "evidence": "lifecycle-audit" }
+    { "id": "mark-removal-cascade", "status": "approved", "recommended": "remove-owned-preserve-user-resources", "evidence": "lifecycle-audit" },
+    { "id": "grid-removal-syntax", "status": "approved", "recommended": "direction-booleans-default-all", "evidence": "lifecycle-audit" },
+    { "id": "composite-edit-atomicity", "status": "approved", "recommended": "single-preflight-single-rematerialization", "evidence": "lifecycle-audit" },
+    { "id": "error-band-boundary-selection", "status": "approved", "recommended": "both-default-lower-upper-option", "evidence": "lifecycle-audit" },
+    { "id": "focused-legend-subsets", "status": "approved", "recommended": "stable-component-owned-options", "evidence": "lifecycle-audit" },
+    { "id": "recreate-after-removal", "status": "approved", "recommended": "allow-after-complete-cleanup", "evidence": "lifecycle-audit" },
+    { "id": "missing-removal-errors", "status": "approved", "recommended": "missing-and-ambiguous-are-errors", "evidence": "lifecycle-audit" }
   ],
   "nonCandidates": [
     { "name": "editData", "reason": "source datasets remain immutable" },

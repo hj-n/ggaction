@@ -36,10 +36,10 @@ function assertCandidate(candidate, key) {
   assert.match(step, new RegExp(`\\b${candidate[key]}\\b`));
 }
 
-test("keeps the Gate A proposal machine-readable and awaiting approval", () => {
+test("keeps the approved Gate A package machine-readable", () => {
   assert.equal(inventory.version, 1);
   assert.equal(inventory.gate, "A");
-  assert.equal(inventory.status, "awaiting-approval");
+  assert.equal(inventory.status, "approved");
   assert.deepEqual(Object.keys(inventory).sort(), [
     "deferred",
     "evidence",
@@ -80,15 +80,21 @@ test("links every Gate A candidate to one owning phase and executable observatio
   assert.deepEqual(assignedPhases, phases);
 });
 
-test("keeps proposed direct names out of current and planned action contracts", () => {
+test("promotes approved direct names to Planned without making them Current", () => {
   const current = new Set(actionIndex.actions.map(action => action.name));
-  const planned = new Set(actionIndex.plannedActions.map(action => action.name));
+  const planned = actionIndex.plannedActions.map(action => action.name);
   for (const candidate of inventory.proposedActions) {
     assert.equal(current.has(candidate.name), false, candidate.name);
-    assert.equal(planned.has(candidate.name), false, candidate.name);
   }
-  assert.deepEqual(actionIndex.plannedActions, []);
-  assert.deepEqual(actionIndex.plannedCapabilities, []);
+  assert.deepEqual(planned, inventory.proposedActions.map(action => action.name));
+  assert.deepEqual(
+    actionIndex.plannedCapabilities.map(capability => capability.id),
+    [
+      ...inventory.proposedOperations.map(operation => operation.name),
+      ...inventory.parameterExtensions.map(extension => extension.id),
+      ...inventory.proposedCapabilities.map(capability => capability.id)
+    ]
+  );
 });
 
 test("covers the exact structural and focused API names requested at Gate A", () => {
@@ -150,7 +156,7 @@ test("keeps rejected and deferred work outside the active proposal sets", () => 
   for (const item of inventory.deferred) assert.equal(active.has(item.id), false);
 });
 
-test("records every unresolved lifecycle decision for explicit Gate A approval", () => {
+test("records every approved Gate A lifecycle decision", () => {
   assertUnique(inventory.gateDecisions, "id", "gate decisions");
   assert.deepEqual(
     inventory.gateDecisions.map(decision => decision.id),
@@ -165,6 +171,7 @@ test("records every unresolved lifecycle decision for explicit Gate A approval",
     ]
   );
   for (const decision of inventory.gateDecisions) {
+    assert.equal(decision.status, "approved");
     assert.equal(typeof decision.recommended, "string");
     assert.equal(Object.hasOwn(inventory.evidence, decision.evidence), true);
   }

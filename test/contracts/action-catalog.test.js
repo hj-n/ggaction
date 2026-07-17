@@ -16,10 +16,10 @@ const catalog = readFileSync(
   path.join(contractRoot, "ACTION_CATALOG.md"),
   "utf8"
 );
-const roadmap2 = readFileSync(
-  path.join(root, "agent_docs/impl/roadmap2/ROADMAP.md"),
+const roadmap3GateInventory = JSON.parse(readFileSync(
+  path.join(root, "agent_docs/impl/roadmap3/phase0/GATE_A_INVENTORY.json"),
   "utf8"
-);
+));
 
 function markdownFiles(directory) {
   return readdirSync(path.join(contractRoot, directory))
@@ -255,7 +255,10 @@ test("keeps primitives and internal wrapped actions in separate layers", () => {
 test("keeps planned direct actions and reassignment gaps explicit", () => {
   const names = index.plannedActions.map(action => action.name);
   assert.equal(new Set(names).size, names.length);
-  assert.deepEqual(names, []);
+  assert.deepEqual(
+    names,
+    roadmap3GateInventory.proposedActions.map(action => action.name)
+  );
   assert.equal(names.includes("editRuleMark"), false);
 
   for (const action of index.plannedActions) {
@@ -284,24 +287,34 @@ test("keeps planned direct actions and reassignment gaps explicit", () => {
     .filter(action => action.audit === "Reassignment — Planned")
     .map(action => action.name);
   const indexedReassignments = index.plannedCapabilities
-    .filter(capability => capability.kind === "behavior")
+    .filter(capability =>
+      capability.kind === "behavior" && capability.action !== undefined
+    )
     .map(capability => capability.action);
   assert.deepEqual(new Set(indexedReassignments), new Set(plannedReassignments));
 });
 
-test("maps every planned contract into Roadmap 2", () => {
+test("maps every planned contract into the approved Roadmap 3 Gate inventory", () => {
+  const approvedActions = new Set(
+    roadmap3GateInventory.proposedActions.map(action => action.name)
+  );
+  const approvedCapabilities = new Set([
+    ...roadmap3GateInventory.proposedOperations.map(operation => operation.name),
+    ...roadmap3GateInventory.parameterExtensions.map(extension => extension.id),
+    ...roadmap3GateInventory.proposedCapabilities.map(capability => capability.id)
+  ]);
   for (const action of index.plannedActions) {
     assert.equal(
-      roadmap2.includes(`\`${action.name}\``),
+      approvedActions.has(action.name),
       true,
-      `Roadmap 2 is missing planned action ${action.name}`
+      `Roadmap 3 Gate A is missing planned action ${action.name}`
     );
   }
   for (const capability of index.plannedCapabilities) {
     assert.equal(
-      roadmap2.includes(`\`${capability.id}\``),
+      approvedCapabilities.has(capability.id),
       true,
-      `Roadmap 2 is missing planned capability ${capability.id}`
+      `Roadmap 3 Gate A is missing planned capability ${capability.id}`
     );
   }
 });

@@ -100,11 +100,89 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 
 | Action | Readiness | Contract |
 | --- | --- | --- |
+| `editLegendLayout` | accepted | [Open](planned/ROADMAP3_EDITING.md#focused-legend-edits) |
+| `editLegendLabels` | accepted | [Open](planned/ROADMAP3_EDITING.md#focused-legend-edits) |
+| `editLegendTitle` | accepted | [Open](planned/ROADMAP3_EDITING.md#focused-legend-edits) |
+| `editLegendSymbols` | accepted | [Open](planned/ROADMAP3_EDITING.md#focused-legend-edits) |
+| `editLegendBorder` | accepted | [Open](planned/ROADMAP3_EDITING.md#focused-legend-edits) |
+| `editXAxis` | accepted | [Open](planned/ROADMAP3_EDITING.md#cartesian-guide-facades) |
+| `editYAxis` | accepted | [Open](planned/ROADMAP3_EDITING.md#cartesian-guide-facades) |
+| `editGrid` | accepted | [Open](planned/ROADMAP3_EDITING.md#cartesian-guide-facades) |
+| `editErrorBar` | accepted | [Open](planned/ROADMAP3_EDITING.md#composite-owner-edits) |
+| `editErrorBand` | accepted | [Open](planned/ROADMAP3_EDITING.md#composite-owner-edits) |
+| `editErrorBandBoundary` | accepted | [Open](planned/ROADMAP3_EDITING.md#composite-owner-edits) |
+| `editBoxPlot` | accepted | [Open](planned/ROADMAP3_EDITING.md#composite-owner-edits) |
+| `editRegression` | accepted | [Open](planned/ROADMAP3_EDITING.md#composite-owner-edits) |
+| `removeXAxis` | accepted | [Open](planned/ROADMAP3_EDITING.md#domain-removal) |
+| `removeYAxis` | accepted | [Open](planned/ROADMAP3_EDITING.md#domain-removal) |
+| `removeGrid` | accepted | [Open](planned/ROADMAP3_EDITING.md#domain-removal) |
+| `removeLegend` | accepted | [Open](planned/ROADMAP3_EDITING.md#domain-removal) |
+| `removeTitle` | accepted | [Open](planned/ROADMAP3_EDITING.md#domain-removal) |
+| `removeMark` | accepted | [Open](planned/ROADMAP3_EDITING.md#domain-removal) |
+| `encodeTheta` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-position-actions) |
+| `encodeR` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-position-actions) |
+| `encodePointRadius` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-position-actions) |
+| `createThetaAxis` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-guide-actions) |
+| `createRadialAxis` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-guide-actions) |
+| `createThetaGrid` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-guide-actions) |
+| `createRadialGrid` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-guide-actions) |
+| `editThetaAxisLine` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-guide-actions) |
+| `editRadialAxisLine` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-guide-actions) |
+| `editThetaAxisTicks` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-guide-actions) |
+| `editRadialAxisTicks` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-guide-actions) |
+| `editThetaAxisLabels` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-guide-actions) |
+| `editRadialAxisLabels` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-guide-actions) |
+| `editThetaAxisTitle` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-guide-actions) |
+| `editRadialAxisTitle` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-guide-actions) |
+| `editThetaGrid` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-guide-actions) |
+| `editRadialGrid` | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-guide-actions) |
+| `createArcMark` | accepted | [Open](planned/ROADMAP3_POLAR.md#arc-actions) |
+| `editArcMark` | accepted | [Open](planned/ROADMAP3_POLAR.md#arc-actions) |
+| `encodeTheta2` | accepted | [Open](planned/ROADMAP3_POLAR.md#arc-actions) |
+| `encodeR2` | accepted | [Open](planned/ROADMAP3_POLAR.md#arc-actions) |
+| `editCompositionLayout` | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#program-composition) |
+| `replaceCompositionChild` | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#program-composition) |
+| `facet` | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#facet) |
+| `editFacetHeaders` | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#facet) |
+| `encodeYOffset` | accepted | [Open](planned/ROADMAP3_DIRECTIONAL_MARKS.md#directional-offset) |
+| `createTextMark` | accepted | [Open](planned/ROADMAP3_DIRECTIONAL_MARKS.md#text-annotation) |
+| `encodeText` | accepted | [Open](planned/ROADMAP3_DIRECTIONAL_MARKS.md#text-annotation) |
+| `editTextMark` | accepted | [Open](planned/ROADMAP3_DIRECTIONAL_MARKS.md#text-annotation) |
+| `createRectMark` | accepted | [Open](planned/ROADMAP3_DIRECTIONAL_MARKS.md#rect-heatmap) |
+| `editRectMark` | accepted | [Open](planned/ROADMAP3_DIRECTIONAL_MARKS.md#rect-heatmap) |
 
 ## Planned capabilities
 
 | Kind | Capability | Readiness | Contract |
 | --- | --- | --- | --- |
+| composition | Horizontal program composition | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#program-composition) |
+| composition | Vertical program composition | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#program-composition) |
+| parameter | Point create appearance options | accepted | [Open](planned/ROADMAP3_EDITING.md#mark-appearance-and-scale-ergonomics) |
+| parameter | Bar create appearance options | accepted | [Open](planned/ROADMAP3_EDITING.md#mark-appearance-and-scale-ergonomics) |
+| parameter | Line constant appearance options | accepted | [Open](planned/ROADMAP3_EDITING.md#mark-appearance-and-scale-ergonomics) |
+| parameter | Top-level scale palette edit | accepted | [Open](planned/ROADMAP3_EDITING.md#mark-appearance-and-scale-ergonomics) |
+| parameter | Closed Polar line option | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-line-radar) |
+| parameter | Facet scale resolution options | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#facet-resolution-and-derived-replay) |
+| behavior | Compatibility-aware layer inference | accepted | [Open](planned/ROADMAP3_EDITING.md#layer-inference-and-api-contract) |
+| composition | Focused component editing | accepted | [Open](planned/ROADMAP3_EDITING.md#focused-legend-edits) |
+| behavior | Atomic domain removal | accepted | [Open](planned/ROADMAP3_EDITING.md#domain-removal) |
+| parameter | Exact public option types | accepted | [Open](planned/ROADMAP3_EDITING.md#layer-inference-and-api-contract) |
+| parameter | API layer classification alignment | accepted | [Open](planned/ROADMAP3_EDITING.md#layer-inference-and-api-contract) |
+| composition | Polar point chart vertical slice | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-position-actions) |
+| composition | Polar axes and grids | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-guide-actions) |
+| composition | Polar line and radar charts | accepted | [Open](planned/ROADMAP3_POLAR.md#polar-line-radar) |
+| composition | Arc donut and radial bar charts | accepted | [Open](planned/ROADMAP3_POLAR.md#arc-actions) |
+| behavior | Arc selection and highlight | accepted | [Open](planned/ROADMAP3_POLAR.md#arc-selection-highlight) |
+| composition | Program composition state | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#program-composition) |
+| composition | Nested Canvas rendering | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#program-composition) |
+| composition | Direct-source facet | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#facet) |
+| behavior | Derived facet dependency replay | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#facet-resolution-and-derived-replay) |
+| composition | Parent guide composition | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#facet-resolution-and-derived-replay) |
+| composition | Horizontal grouped bar | accepted | [Open](planned/ROADMAP3_DIRECTIONAL_MARKS.md#directional-offset) |
+| composition | Text annotation | accepted | [Open](planned/ROADMAP3_DIRECTIONAL_MARKS.md#text-annotation) |
+| composition | Rect heatmap | accepted | [Open](planned/ROADMAP3_DIRECTIONAL_MARKS.md#rect-heatmap) |
+| behavior | Shared position scale resolution | accepted | [Open](planned/ROADMAP3_EDITING.md#shared-position-scale-resolution) |
+| composition | Roadmap 3 cross-feature integration | accepted | [Open](planned/ROADMAP3_EDITING.md#cross-feature-integration) |
 
 ## Internal inventories
 
