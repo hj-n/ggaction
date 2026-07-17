@@ -3,7 +3,7 @@
 ## Chart 목표
 
 Phase 6의 representative dashboard는 서로 다른 데이터, coordinate와 Canvas 크기를 가진 완성 chart를
-결합한다. Composition 자체가 child chart의 semantic meaning을 바꾸지 않는지, nested placement와 child
+결합한다. Auto cross-axis Canvas 크기는 composition에서 맞추되, Composition 자체가 child chart의 semantic meaning을 바꾸지 않는지, nested placement와 child
 replacement가 concrete graphic tree만 결정하는지 검증한다.
 
 ## 사용 데이터와 child views
@@ -27,7 +27,6 @@ const overview = hconcat({
     { id: "detail", program: jobsGroupedBar }
   ],
   gap: 20,
-  align: "center",
   padding: 12
 });
 ```
@@ -89,7 +88,6 @@ replaceCompositionChild
 
 ## Gate G visual variants
 
-1. `unequal-horizontal`: center-aligned scatterplot + grouped bar
+1. `unequal-horizontal`: unequal-width scatterplot + grouped bar with equalized auto height
 2. `nested-dashboard`: horizontal overview 위에 Gapminder trend를 둔 vertical composition
 3. `replacement`: 같은 `detail` slot에 Polar donut을 배치하고 start alignment와 새 gap을 적용
-

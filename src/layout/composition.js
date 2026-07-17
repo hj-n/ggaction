@@ -2,6 +2,7 @@ import { cloneAndFreeze, isPlainObject } from "../core/immutable.js";
 
 const DIRECTIONS = Object.freeze(["horizontal", "vertical"]);
 const ALIGNMENTS = Object.freeze(["start", "center", "end"]);
+const SIZE_MODES = Object.freeze(["auto", "explicit"]);
 const PADDING_KEYS = Object.freeze(["top", "right", "bottom", "left"]);
 
 export const DEFAULT_COMPOSITION_LAYOUT = cloneAndFreeze({
@@ -85,7 +86,7 @@ function normalizeChildren(children) {
       throw new TypeError(`Composition child ${index} must be a plain object.`);
     }
     const unknown = Object.keys(child).find(
-      key => !["id", "width", "height"].includes(key)
+      key => !["id", "width", "height", "widthMode", "heightMode"].includes(key)
     );
     if (unknown !== undefined) {
       throw new Error(`Unknown composition child property "${unknown}".`);
@@ -103,9 +104,39 @@ function normalizeChildren(children) {
           `Composition child "${child.id}" ${dimension} must be a positive finite number.`
         );
       }
+      const mode = child[`${dimension}Mode`] ?? "explicit";
+      if (!SIZE_MODES.includes(mode)) {
+        throw new Error(
+          `Unknown composition child ${dimension} mode "${mode}"; expected auto or explicit.`
+        );
+      }
     }
-    return cloneAndFreeze(child);
+    return cloneAndFreeze({
+      id: child.id,
+      width: child.width,
+      height: child.height,
+      widthMode: child.widthMode ?? "explicit",
+      heightMode: child.heightMode ?? "explicit"
+    });
   });
+}
+
+function normalizeAutoCrossSize(children, horizontal) {
+  const dimension = horizontal ? "height" : "width";
+  const mode = `${dimension}Mode`;
+  const sharedSize = Math.max(...children.map(child => child[dimension]));
+  return children.map(child => cloneAndFreeze({
+    ...child,
+    [dimension]: child[mode] === "auto" ? sharedSize : child[dimension]
+  }));
+}
+
+function placementSize(child) {
+  return {
+    id: child.id,
+    width: child.width,
+    height: child.height
+  };
 }
 
 function crossOffset(remaining, align) {
@@ -127,19 +158,20 @@ export function resolveCompositionLayout({
   const resolvedAlign = normalizeAlign(align);
   const resolvedPadding = normalizeCompositionPadding(padding);
   const horizontal = resolvedDirection === "horizontal";
+  const sizedChildren = normalizeAutoCrossSize(resolvedChildren, horizontal);
   const contentWidth = horizontal
-    ? resolvedChildren.reduce((sum, child) => sum + child.width, 0) +
-      resolvedGap * (resolvedChildren.length - 1)
-    : Math.max(...resolvedChildren.map(child => child.width));
+    ? sizedChildren.reduce((sum, child) => sum + child.width, 0) +
+      resolvedGap * (sizedChildren.length - 1)
+    : Math.max(...sizedChildren.map(child => child.width));
   const contentHeight = horizontal
-    ? Math.max(...resolvedChildren.map(child => child.height))
-    : resolvedChildren.reduce((sum, child) => sum + child.height, 0) +
-      resolvedGap * (resolvedChildren.length - 1);
+    ? Math.max(...sizedChildren.map(child => child.height))
+    : sizedChildren.reduce((sum, child) => sum + child.height, 0) +
+      resolvedGap * (sizedChildren.length - 1);
   let cursor = horizontal ? resolvedPadding.left : resolvedPadding.top;
-  const placements = resolvedChildren.map(child => {
+  const placements = sizedChildren.map(child => {
     const placement = horizontal
       ? {
-          ...child,
+          ...placementSize(child),
           x: cursor,
           y: resolvedPadding.top + crossOffset(
             contentHeight - child.height,
@@ -147,7 +179,7 @@ export function resolveCompositionLayout({
           )
         }
       : {
-          ...child,
+          ...placementSize(child),
           x: resolvedPadding.left + crossOffset(
             contentWidth - child.width,
             resolvedAlign
@@ -167,4 +199,3 @@ export function resolveCompositionLayout({
     children: placements
   });
 }
-

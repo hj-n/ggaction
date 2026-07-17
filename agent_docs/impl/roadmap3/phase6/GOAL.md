@@ -56,6 +56,11 @@ replaceCompositionChild(options: {
 
 - `hconcat`/`vconcat`은 최소 두 개의 renderable program을 요구한다.
 - 기본값은 `gap: 16`, `align: "center"`, four-side zero padding이다.
+- Parent Canvas width/height는 normalized child extents, gap과 padding에서 자동 추론한다.
+- `hconcat`은 auto-height child를 가장 큰 cross-axis height로, `vconcat`은 auto-width child를 가장 큰
+  cross-axis width로 맞춘다. Explicit child dimension은 보존한다.
+- Cross-axis size가 바뀐 child는 snapshot 전에 Canvas, scale, guide와 mark를 함께 rematerialize한다.
+- `align`은 explicit dimension 때문에 normalized 뒤에도 남은 cross-axis 여백에만 적용한다.
 - 생략된 child ID는 deterministic opaque ID를 받는다. Stable replacement가 필요하면 explicit ID를 쓴다.
 - Replacement는 target slot ID와 순서를 유지하고 새 child 크기에 맞춰 전체 layout을 다시 계산한다.
 

@@ -63,6 +63,48 @@ test("matches an independent oracle for both directions and every alignment", ()
   }
 });
 
+test("equalizes only automatic cross-axis dimensions", () => {
+  assert.deepEqual(resolveCompositionLayout({
+    direction: "horizontal",
+    children: [
+      { id: "main", width: 420, height: 300, heightMode: "auto" },
+      { id: "detail", width: 260, height: 220, heightMode: "auto" }
+    ],
+    gap: 20,
+    padding: 10
+  }).children, [
+    { id: "main", width: 420, height: 300, x: 10, y: 10 },
+    { id: "detail", width: 260, height: 300, x: 450, y: 10 }
+  ]);
+
+  assert.deepEqual(resolveCompositionLayout({
+    direction: "vertical",
+    children: [
+      { id: "top", width: 420, height: 300, widthMode: "auto" },
+      { id: "bottom", width: 260, height: 220, widthMode: "auto" }
+    ],
+    gap: 20,
+    padding: 10
+  }).children, [
+    { id: "top", width: 420, height: 300, x: 10, y: 10 },
+    { id: "bottom", width: 420, height: 220, x: 10, y: 330 }
+  ]);
+});
+
+test("preserves explicit cross-axis dimensions while automatic siblings expand", () => {
+  assert.deepEqual(resolveCompositionLayout({
+    direction: "horizontal",
+    children: [
+      { id: "auto", width: 420, height: 220, heightMode: "auto" },
+      { id: "fixed", width: 260, height: 300, heightMode: "explicit" }
+    ],
+    align: "end"
+  }).children, [
+    { id: "auto", width: 420, height: 300, x: 0, y: 0 },
+    { id: "fixed", width: 260, height: 300, x: 436, y: 0 }
+  ]);
+});
+
 test("normalizes scalar and partial padding without mutating its base", () => {
   const base = Object.freeze({ top: 1, right: 2, bottom: 3, left: 4 });
   assert.deepEqual(normalizeCompositionPadding(8), {
@@ -127,6 +169,13 @@ test("rejects malformed composition layout inputs", () => {
     /width must be a positive finite number/
   );
   assert.throws(
+    () => resolveCompositionLayout({
+      direction: "horizontal",
+      children: [{ id: "bad", width: 10, height: 10, heightMode: "fluid" }]
+    }),
+    /expected auto or explicit/
+  );
+  assert.throws(
     () => resolveCompositionLayout({ direction: "horizontal", children, gap: -1 }),
     /gap must be a non-negative finite number/
   );
@@ -138,4 +187,3 @@ test("rejects malformed composition layout inputs", () => {
   assert.throws(() => normalizeCompositionPadding({ inline: 2 }), /Unknown composition padding/);
   assert.throws(() => normalizeCompositionPadding({ top: -2 }), /must be a non-negative/);
 });
-
