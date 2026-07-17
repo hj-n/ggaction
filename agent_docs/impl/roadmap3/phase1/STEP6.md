@@ -2,11 +2,11 @@
 
 ## 진행 상태
 
-- [ ] All primitive manifests normal suite 통과
-- [ ] Roadmap 3 high-DPI PNG 생성
-- [ ] Capability gallery에 exact target call chain 노출
-- [ ] Browser logical dimensions, console/page error 검증
-- [ ] Gate B 코드와 이미지 제시
+- [x] All primitive manifests normal suite 통과
+- [x] Roadmap 3 high-DPI PNG 생성
+- [x] Capability gallery에 exact target call chain 노출
+- [x] Browser logical dimensions, console/page error 검증
+- [x] Gate B 코드와 이미지 제시
 - [ ] 사용자 승인
 
 ## Gate 규칙

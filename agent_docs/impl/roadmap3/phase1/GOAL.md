@@ -2,11 +2,11 @@
 
 ## 진행 상태
 
-- [ ] STEP 1 — Phase contract, inventory와 Gate B target 확정
-- [ ] STEP 2 — Mark/scale create-edit symmetry primitive variants
-- [ ] STEP 3 — Focused legend, Cartesian axis와 grid primitive variants
-- [ ] STEP 4 — Composite owner edit primitive variants
-- [ ] STEP 5 — Domain removal primitive variants와 cleanup contract
+- [x] STEP 1 — Phase contract, inventory와 Gate B target 확정
+- [x] STEP 2 — Mark/scale create-edit symmetry primitive variants
+- [x] STEP 3 — Focused legend, Cartesian axis와 grid primitive variants
+- [x] STEP 4 — Composite owner edit primitive variants
+- [x] STEP 5 — Domain removal primitive variants와 cleanup contract
 - [ ] STEP 6 — PNG/gallery/browser 검증과 Gate B
 - [ ] STEP 7 — Internal rematerialization naming과 shared edit policy
 - [ ] STEP 8 — Public focused edit/removal actions와 action hierarchy

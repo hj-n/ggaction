@@ -2,10 +2,10 @@
 
 ## 진행 상태
 
-- [ ] Point create appearance와 palette edit target
-- [ ] Bar create appearance target
-- [ ] Line create/edit constant appearance target
-- [ ] Primitive state, render order와 PNG 검증
+- [x] Point create appearance와 palette edit target
+- [x] Bar create appearance target
+- [x] Line create/edit constant appearance target
+- [x] Primitive state, render order와 PNG 검증
 
 ## 구현
 

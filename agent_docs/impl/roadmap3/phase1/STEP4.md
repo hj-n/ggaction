@@ -2,11 +2,11 @@
 
 ## 진행 상태
 
-- [ ] Error bar owner edit target
-- [ ] Error band와 lower/upper boundary edit target
-- [ ] Regression statistical/component edit target
-- [ ] Box plot statistical/component edit target
-- [ ] Derived provenance와 final graphic hierarchy assertions
+- [x] Error bar owner edit target
+- [x] Error band와 lower/upper boundary edit target
+- [x] Regression statistical/component edit target
+- [x] Box plot statistical/component edit target
+- [x] Derived provenance와 final graphic hierarchy assertions
 
 ## 구현
 

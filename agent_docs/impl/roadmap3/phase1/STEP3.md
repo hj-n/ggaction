@@ -2,10 +2,10 @@
 
 ## 진행 상태
 
-- [ ] Legend layout/labels/title/symbols/border target
-- [ ] Whole x/y axis facade target
-- [ ] Horizontal grid facade target
-- [ ] Stable component identity와 plot/legend region 검증
+- [x] Legend layout/labels/title/symbols/border target
+- [x] Whole x/y axis facade target
+- [x] Horizontal grid facade target
+- [x] Stable component identity와 plot/legend region 검증
 
 ## 구현
 

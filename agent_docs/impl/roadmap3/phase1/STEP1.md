@@ -2,10 +2,10 @@
 
 ## 진행 상태
 
-- [ ] Phase 1 Planned assignment exact set 고정
-- [ ] Focused action signature와 inference/error policy 확정
-- [ ] Gate B visual variant manifest 작성
-- [ ] Gate 전 runtime/public API 불변 contract test 추가
+- [x] Phase 1 Planned assignment exact set 고정
+- [x] Focused action signature와 inference/error policy 확정
+- [x] Gate B visual variant manifest 작성
+- [x] Gate 전 runtime/public API 불변 contract test 추가
 
 ## 구현
 
