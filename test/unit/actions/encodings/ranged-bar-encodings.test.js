@@ -19,6 +19,60 @@ function rangedBar() {
     .encodeBarWidth({ target: "range", band: 0.5 });
 }
 
+test("materializes vertical ranged bars with the implicit default band", () => {
+  const options = { lower: "lower", upper: "upper" };
+  const snapshot = structuredClone(options);
+  const base = chart()
+    .createCanvas({ width: 150, height: 150 })
+    .createData({ values: rows })
+    .createBarMark({ id: "range" })
+    .encodeX({ target: "range", field: "group", fieldType: "ordinal" });
+  const ranged = base.encodeYRange({ target: "range", ...options });
+  const resized = ranged.editCanvas({ width: 250 });
+
+  assert.equal(base.graphicSpec.objects.range.items.length, 0);
+  assert.equal(ranged.graphicSpec.objects.range.items.length, rows.length);
+  assert.deepEqual(
+    ranged.graphicSpec.objects.range.items.map(item => item.properties.width),
+    ranged.graphicSpec.objects.range.items.map(
+      () => ranged.resolvedScales.x.bandwidth * 0.72
+    )
+  );
+  assert.notDeepEqual(
+    resized.graphicSpec.objects.range.items.map(item => item.properties.width),
+    ranged.graphicSpec.objects.range.items.map(item => item.properties.width)
+  );
+  assert.equal(ranged.markConfigs.range?.barWidth, undefined);
+  assert.deepEqual(options, snapshot);
+});
+
+test("materializes horizontal ranged bars before an explicit width assignment", () => {
+  const ranged = chart()
+    .createCanvas({ width: 180, height: 160 })
+    .createData({ values: rows })
+    .createBarMark({ id: "range" })
+    .encodeY({ target: "range", field: "group", fieldType: "nominal" })
+    .encodeXRange({ target: "range", lower: "lower", upper: "upper" });
+  const fixed = ranged.encodeBarWidth({ target: "range", pixels: 18 });
+  const resized = fixed.editCanvas({ height: 260 });
+
+  assert.equal(ranged.graphicSpec.objects.range.items.length, rows.length);
+  assert.deepEqual(
+    ranged.graphicSpec.objects.range.items.map(item => item.properties.height),
+    ranged.graphicSpec.objects.range.items.map(
+      () => ranged.resolvedScales.y.bandwidth * 0.72
+    )
+  );
+  assert.deepEqual(
+    fixed.graphicSpec.objects.range.items.map(item => item.properties.height),
+    [18, 18]
+  );
+  assert.deepEqual(
+    resized.graphicSpec.objects.range.items.map(item => item.properties.height),
+    [18, 18]
+  );
+});
+
 test("materializes a nominal-category ranged bar and removes stale aggregate state", () => {
   const program = rangedBar();
   const layer = program.semanticSpec.layers[0];

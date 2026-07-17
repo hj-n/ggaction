@@ -70,8 +70,8 @@ For an ordinal-x mean bar, `layout: "group"` is the default. It keeps
 `y.stack = null`, invokes `encodeXOffset` with the same field, and recomputes
 the y domain from zero and one mean per x/color cell. Negative and positive bars
 therefore extend in opposite directions from the same zero baseline, and a zero
-value has zero height. Color and xOffset scales are fully
-resolved, while concrete rects wait for bar width.
+value has zero height. Color and xOffset scales are fully resolved, and
+concrete rects use the implicit `0.72` band width immediately.
 
 ```javascript
 groupedBars.encodeColor({
@@ -109,7 +109,7 @@ without changing opacity, and `diverging` accumulates positive and negative
 values independently around zero. Ordinal aggregate bars support the same five
 values; their group and overlay layouts use zero as each rectangle's start
 endpoint and reject explicit measure domains that exclude zero. Call
-`encodeBarWidth` after color.
+`encodeBarWidth` after color only when the implicit `0.72` width is not desired.
 
 ```javascript
 histogram.encodeColor({ field: "Origin", layout: "fill" });

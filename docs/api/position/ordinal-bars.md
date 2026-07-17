@@ -68,8 +68,9 @@ as temporal line y encodings. Group and overlay bars start at the semantic value
 zero, so their automatic domain contains zero even when `scale.zero` is `false`.
 An explicit domain for either layout must contain zero; otherwise the encoding
 fails before creating extrapolated or clipped rectangles.
-Grouping and `encodeBarWidth` later supply enough information to materialize
-concrete rectangles.
+Once the category and measure encodings are complete, concrete rectangles use
+an implicit `0.72` category-band width. Grouping recomputes them within xOffset
+slots, and `encodeBarWidth` is an optional graphical override.
 
 ## Temporal and horizontal bars
 

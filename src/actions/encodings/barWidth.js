@@ -12,7 +12,7 @@ const OPTIONS = Object.freeze(["band", "pixels", "target"]);
 const encodeBarWidth = action(
   {
     op: "encodeBarWidth",
-    description: "Set aggregate bar width within each x band or xOffset slot."
+    description: "Override aggregate or ranged bar width within its category slot."
   },
   function (args = {}) {
     validateOptions(args, OPTIONS, "encodeBarWidth");

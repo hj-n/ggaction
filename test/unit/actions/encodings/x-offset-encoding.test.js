@@ -67,7 +67,8 @@ test("encodes a nominal xOffset inside each ordinal x band", () => {
     "editSemantic",
     "editSemantic",
     "createScale",
-    "rematerializeBarMark"
+    "rematerializeScale",
+    "editGraphics"
   ]);
 });
 

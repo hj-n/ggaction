@@ -763,19 +763,22 @@ encodeX2(options: RulePositionAssignment | AreaSecondaryXAssignment): ChartProgr
 - `band`: `(0, 1]` finite number. Resolved xOffset slot 중 rect가 차지하는 비율이다.
 - `pixels`: positive finite logical Canvas pixel width. `band`와 mutually exclusive이며 PNG `pixelRatio`와
   무관하다.
-- 첫 assignment에서 width mode를 생략하면 `{ band: 0.72 }`; reassignment에서 생략하면 current mode와
-  value를 유지한다. Group slot spacing은 `encodeXOffset`이 소유한다.
-- `target`: optional complete ordinal aggregate bar ID. Group layout은 matching xOffset를 추가로 요구한다.
+- Complete aggregate/ranged bar는 action 호출 전에도 implicit `{ band: 0.72 }`로 즉시 materialize된다.
+  첫 assignment에서 width mode를 생략하면 그 기본값을 config에 저장하고, reassignment에서 생략하면 current
+  mode와 value를 유지한다. Group slot spacing은 `encodeXOffset`이 소유한다.
+- `target`: optional complete ordinal aggregate 또는 categorical ranged bar ID. Group layout은 matching xOffset를
+  추가로 요구한다.
 - Effect: graphical mark config에 exactly one width mode를 저장하고 centered rect x/width를
   rematerialize한다. Band width는 Canvas resize에 반응하고 pixel width는 고정된다. Slot보다 큰 explicit
   pixel width와 overlap은 허용한다.
-- 오류: ordinal x, scalar aggregate y와 color가 완성되지 않으면 거부한다. Group layout은 matching
+- 오류: aggregate 또는 ranged category/measure pair가 완성되지 않으면 거부한다. Group layout은 matching
   color/xOffset가 완성되지 않으면 거부한다.
-- Coverage: grouped-bar semantic/reference tests가 default, explicit value, invalid range와 geometry를 검증한다.
+- Coverage: aggregate/grouped/ranged bar tests가 implicit default, explicit value, invalid range, both orientations와
+  resize geometry를 검증한다.
 
 ### Formal values — `encodeBarWidth`
 
-- Implemented: mutually exclusive `encodeBarWidth({ band?: number; pixels?: never; target?: UserId } | { band?: never; pixels: PositiveFinite; target?: UserId })`; first-assignment default `{ band: 0.72 }`.
+- Implemented: mutually exclusive `encodeBarWidth({ band?: number; pixels?: never; target?: UserId } | { band?: never; pixels: PositiveFinite; target?: UserId })`; complete bar implicit default and first-assignment default are both `{ band: 0.72 }`.
 - Planned (NOT IMPLEMENTED): —
 - Proposed (NOT IMPLEMENTED): —
 
@@ -787,7 +790,7 @@ encodeX2(options: RulePositionAssignment | AreaSecondaryXAssignment): ChartProgr
   - ✅ Covered: representative fixed width, slot보다 큰 overlap, zero/negative/non-finite rejection와
     `band` mutual exclusion.
 - `target`
-  - ✅ Covered: inferred/explicit grouped bar와 incomplete prerequisites.
+  - ✅ Covered: inferred/explicit aggregate/grouped/ranged bar, both ranged orientations와 incomplete prerequisites.
 - Reassignment
   - ✅ Covered: explicit mode switching, omitted-mode retention와 immutable concrete rematerialization.
 - Resize/order

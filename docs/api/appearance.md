@@ -219,8 +219,8 @@ an owning action replaces that appearance assignment immutably.
 
 ## `encodeBarWidth({ band?, pixels?, target? })`
 
-Set the fraction of each resolved x band—or xOffset slot for group layout—used
-by an aggregate bar and materialize concrete rectangles.
+Override the fraction of each resolved category band—or xOffset slot for group
+layout—used by an aggregate or ranged bar and rematerialize its rectangles.
 
 ```javascript
 program.encodeBarWidth({ band: 0.72 });
@@ -230,17 +230,20 @@ program.encodeBarWidth({ band: 0.72 });
 | --- | --- | --- |
 | `band` | finite number greater than `0` and at most `1` | first assignment: `0.72` |
 | `pixels` | positive finite logical Canvas pixels | none |
-| `target` | aggregate bar mark ID | current mark |
+| `target` | aggregate or ranged bar mark ID | current mark |
 
-`band` and `pixels` are mutually exclusive. A later empty call retains the
+`band` and `pixels` are mutually exclusive. Before this action is called,
+complete aggregate and ranged bars already use the same implicit `0.72` band
+default. A first empty call stores that default; a later empty call retains the
 current mode and value. Band widths respond to Canvas resizing; pixel widths
 remain fixed in logical coordinates and do not change with PNG `pixelRatio`.
 An explicit pixel width may be wider than its slot, allowing intentional overlap.
 
-The action requires ordinal x, aggregate y, and nominal color. Group layout also
-requires matching xOffset semantics. Width is the outer x bandwidth times `band`
-for stack, fill, overlay, and diverging, or xOffset bandwidth times `band` for
-group. Each bar is centered in its band; missing cells are omitted.
+The action requires a complete category/measure aggregate bar or a complete
+categorical ranged bar. Group layout also requires matching color and xOffset
+semantics. Width is the category bandwidth times `band` for stack, fill,
+overlay, diverging, and ranged bars, or xOffset bandwidth times `band` for
+group. Each bar is centered in its slot; missing cells are omitted.
 
 `band` is graphical layout rather than chart meaning, so it is not added to
 `semanticSpec`. The action stores immutable materialization config and writes

@@ -2508,8 +2508,9 @@ The first ID is `"bar"` and data defaults to current data. Creation starts with
 an empty rect collection because binning, aggregation, stacking, grouping, and
 width determine the final rectangle count and geometry.
 
-For an aggregate bar, combine an ordinal position, quantitative aggregate, and
-width:
+For an aggregate bar, combine an ordinal position and quantitative aggregate.
+Complete aggregate and ranged bars immediately use the default `0.72` band
+width; call `encodeBarWidth` only to override it:
 
 ```javascript
 program
@@ -2673,8 +2674,9 @@ Both range edges share one scale, whose domain includes lower and upper values.
 scale or guide.
 
 For a bar mark, the same range actions create one concrete rectangle per
-observed category. `encodeBarWidth({ band })` resolves its thickness from the
-category band; `pixels` keeps a fixed logical width across Canvas changes.
+observed category immediately, using `0.72` of the category band by default.
+`encodeBarWidth({ band })` overrides that fraction; `pixels` keeps a fixed
+logical width across Canvas changes.
 
 ## Atomic histogram
 
@@ -2753,8 +2755,9 @@ unchanged.
 series identity and concrete colors or dash patterns. On line marks they can
 split one aggregate path into multiple series. On complete histograms,
 `encodeColor` arranges each color partition with `stack`, `fill`, `group`,
-`overlay`, or `diverging`. On bars, group invokes `encodeXOffset`; aggregate
-bars remain empty until `encodeBarWidth({ band? | pixels? })` authors their width.
+`overlay`, or `diverging`. On bars, group invokes `encodeXOffset`; complete
+aggregate and ranged bars use an implicit `0.72` band width unless
+`encodeBarWidth` overrides it.
 Area marks accept every layout except group and require color to match the
 existing semantic group field.
 On area marks, color fills an already grouped path collection and must use the
@@ -3996,8 +3999,9 @@ as temporal line y encodings. Group and overlay bars start at the semantic value
 zero, so their automatic domain contains zero even when `scale.zero` is `false`.
 An explicit domain for either layout must contain zero; otherwise the encoding
 fails before creating extrapolated or clipped rectangles.
-Grouping and `encodeBarWidth` later supply enough information to materialize
-concrete rectangles.
+Once the category and measure encodings are complete, concrete rectangles use
+an implicit `0.72` category-band width. Grouping recomputes them within xOffset
+slots, and `encodeBarWidth` is an optional graphical override.
 
 ## Temporal and horizontal bars
 
@@ -4240,8 +4244,8 @@ For an ordinal-x mean bar, `layout: "group"` is the default. It keeps
 `y.stack = null`, invokes `encodeXOffset` with the same field, and recomputes
 the y domain from zero and one mean per x/color cell. Negative and positive bars
 therefore extend in opposite directions from the same zero baseline, and a zero
-value has zero height. Color and xOffset scales are fully
-resolved, while concrete rects wait for bar width.
+value has zero height. Color and xOffset scales are fully resolved, and
+concrete rects use the implicit `0.72` band width immediately.
 
 ```javascript
 groupedBars.encodeColor({
@@ -4279,7 +4283,7 @@ without changing opacity, and `diverging` accumulates positive and negative
 values independently around zero. Ordinal aggregate bars support the same five
 values; their group and overlay layouts use zero as each rectangle's start
 endpoint and reject explicit measure domains that exclude zero. Call
-`encodeBarWidth` after color.
+`encodeBarWidth` after color only when the implicit `0.72` width is not desired.
 
 ```javascript
 histogram.encodeColor({ field: "Origin", layout: "fill" });
@@ -4626,8 +4630,8 @@ an owning action replaces that appearance assignment immutably.
 
 ## `encodeBarWidth({ band?, pixels?, target? })`
 
-Set the fraction of each resolved x band—or xOffset slot for group layout—used
-by an aggregate bar and materialize concrete rectangles.
+Override the fraction of each resolved category band—or xOffset slot for group
+layout—used by an aggregate or ranged bar and rematerialize its rectangles.
 
 ```javascript
 program.encodeBarWidth({ band: 0.72 });
@@ -4637,17 +4641,20 @@ program.encodeBarWidth({ band: 0.72 });
 | --- | --- | --- |
 | `band` | finite number greater than `0` and at most `1` | first assignment: `0.72` |
 | `pixels` | positive finite logical Canvas pixels | none |
-| `target` | aggregate bar mark ID | current mark |
+| `target` | aggregate or ranged bar mark ID | current mark |
 
-`band` and `pixels` are mutually exclusive. A later empty call retains the
+`band` and `pixels` are mutually exclusive. Before this action is called,
+complete aggregate and ranged bars already use the same implicit `0.72` band
+default. A first empty call stores that default; a later empty call retains the
 current mode and value. Band widths respond to Canvas resizing; pixel widths
 remain fixed in logical coordinates and do not change with PNG `pixelRatio`.
 An explicit pixel width may be wider than its slot, allowing intentional overlap.
 
-The action requires ordinal x, aggregate y, and nominal color. Group layout also
-requires matching xOffset semantics. Width is the outer x bandwidth times `band`
-for stack, fill, overlay, and diverging, or xOffset bandwidth times `band` for
-group. Each bar is centered in its band; missing cells are omitted.
+The action requires a complete category/measure aggregate bar or a complete
+categorical ranged bar. Group layout also requires matching color and xOffset
+semantics. Width is the category bandwidth times `band` for stack, fill,
+overlay, diverging, and ranged bars, or xOffset bandwidth times `band` for
+group. Each bar is centered in its slot; missing cells are omitted.
 
 `band` is graphical layout rather than chart meaning, so it is not added to
 `semanticSpec`. The action stores immutable materialization config and writes

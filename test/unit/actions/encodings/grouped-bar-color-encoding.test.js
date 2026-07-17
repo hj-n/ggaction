@@ -44,7 +44,7 @@ test("encodes grouped bar color through a nested xOffset action", () => {
   assert.deepEqual(program.resolvedScales.color.domain, ["men", "women"]);
   assert.deepEqual(program.resolvedScales.xOffset.range, [0, 160]);
   assert.deepEqual(program.resolvedScales.y.domain, [0, 10]);
-  assert.deepEqual(program.graphicSpec.objects.bars.items, []);
+  assert.equal(program.graphicSpec.objects.bars.items.length, 4);
 
   const node = program.trace.children.at(-1);
   assert.equal(node.op, "encodeColor");
@@ -63,6 +63,13 @@ test("encodes grouped bar color through a nested xOffset action", () => {
     "rematerializeScale",
     "rematerializeScale",
     "rematerializeScale",
+    "editGraphics",
+    "editGraphics",
+    "editGraphics",
+    "editGraphics",
+    "editGraphics",
+    "editGraphics",
+    "editGraphics",
     "editGraphics"
   ]);
 });

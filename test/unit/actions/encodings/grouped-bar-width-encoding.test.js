@@ -48,7 +48,11 @@ test("materializes grouped rectangles with the default band", () => {
     "#4c78a8", "#f58518", "#4c78a8", "#f58518"
   ]);
   assert.deepEqual(rectangles.map(rect => rect.height), [22, 198, 44, 176]);
-  assert.equal(before.graphicSpec.objects.bars.items.length, 0);
+  assert.equal(before.graphicSpec.objects.bars.items.length, 4);
+  assert.deepEqual(
+    before.graphicSpec.objects.bars.items.map(child => child.properties.width),
+    program.graphicSpec.objects.bars.items.map(child => child.properties.width)
+  );
 
   const node = program.trace.children.at(-1);
   assert.equal(node.op, "encodeBarWidth");

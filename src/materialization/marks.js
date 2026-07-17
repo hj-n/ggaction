@@ -1,6 +1,10 @@
 import { findDataset } from "../selectors/datasets.js";
 import { isAggregate } from "../grammar/aggregate.js";
-import { BAR_GRAINS, resolveBarGrain } from "../grammar/bars/policy.js";
+import {
+  BAR_GRAINS,
+  resolveBarColorLayout,
+  resolveBarGrain
+} from "../grammar/bars/policy.js";
 import { resolveRuleMode } from "../grammar/rules.js";
 import { findUpstreamTransform } from "./dataProvenance.js";
 
@@ -55,10 +59,20 @@ export function canMaterializeBar(program, layer) {
     return false;
   }
   const grain = resolveBarGrain(layer);
-  return grain === BAR_GRAINS.histogram || (
-    [BAR_GRAINS.aggregate, BAR_GRAINS.ranged].includes(grain) &&
-    program.markConfigs[layer.id]?.barWidth !== undefined
-  );
+  if (![BAR_GRAINS.histogram, BAR_GRAINS.aggregate, BAR_GRAINS.ranged].includes(grain)) {
+    return false;
+  }
+  if (
+    grain === BAR_GRAINS.aggregate &&
+    resolveBarColorLayout(layer) === "group"
+  ) {
+    return (
+      layer.encoding?.color?.field !== undefined &&
+      layer.encoding?.xOffset?.field === layer.encoding.color.field &&
+      layer.encoding.xOffset.scale !== undefined
+    );
+  }
+  return true;
 }
 
 export function canMaterializeRule(program, layer) {

@@ -88,6 +88,11 @@ const encodeXOffset = action(
     next = applyEncodingScale(next, scale, requestedScale, {
       reassignment: layer.encoding?.xOffset?.scale === scale.id
     });
+    if (layer.encoding?.color === undefined) {
+      return next
+        .rematerializeScale({ id: scale.id })
+        .editGraphics({ target, property: "length", value: 0 });
+    }
     return applyMaterializationPlan(
       next,
       planEncodingRematerialization(next, {

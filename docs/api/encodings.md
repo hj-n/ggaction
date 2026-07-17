@@ -87,8 +87,9 @@ Both range edges share one scale, whose domain includes lower and upper values.
 scale or guide.
 
 For a bar mark, the same range actions create one concrete rectangle per
-observed category. `encodeBarWidth({ band })` resolves its thickness from the
-category band; `pixels` keeps a fixed logical width across Canvas changes.
+observed category immediately, using `0.72` of the category band by default.
+`encodeBarWidth({ band })` overrides that fraction; `pixels` keeps a fixed
+logical width across Canvas changes.
 
 ## Atomic histogram
 
@@ -167,8 +168,9 @@ unchanged.
 series identity and concrete colors or dash patterns. On line marks they can
 split one aggregate path into multiple series. On complete histograms,
 `encodeColor` arranges each color partition with `stack`, `fill`, `group`,
-`overlay`, or `diverging`. On bars, group invokes `encodeXOffset`; aggregate
-bars remain empty until `encodeBarWidth({ band? | pixels? })` authors their width.
+`overlay`, or `diverging`. On bars, group invokes `encodeXOffset`; complete
+aggregate and ranged bars use an implicit `0.72` band width unless
+`encodeBarWidth` overrides it.
 Area marks accept every layout except group and require color to match the
 existing semantic group field.
 On area marks, color fills an already grouped path collection and must use the
