@@ -127,12 +127,20 @@ function referenceArcCommands(frame, radius, startTheta, endTheta) {
     const control = 4 / 3 * Math.tan((endRadians - startRadians) / 4);
     const from = referencePolarPoint(frame, start, radius);
     const to = referencePolarPoint(frame, end, radius);
+    const fromDerivative = {
+      x: radius * Math.cos(startRadians),
+      y: radius * Math.sin(startRadians)
+    };
+    const toDerivative = {
+      x: radius * Math.cos(endRadians),
+      y: radius * Math.sin(endRadians)
+    };
     return Object.freeze({
       op: "C",
-      x1: from.x + control * radius * Math.cos(startRadians),
-      y1: from.y + control * radius * Math.sin(startRadians),
-      x2: to.x - control * radius * Math.cos(endRadians),
-      y2: to.y - control * radius * Math.sin(endRadians),
+      x1: from.x + control * fromDerivative.x,
+      y1: from.y + control * fromDerivative.y,
+      x2: to.x - control * toDerivative.x,
+      y2: to.y - control * toDerivative.y,
       x: to.x,
       y: to.y
     });
@@ -217,22 +225,29 @@ function perimeterLabel(frame, theta, radius, text) {
 }
 
 function legendLayout(target, domain, colors, title) {
-  const symbolX = target.width - target.margin.right + 42;
-  const titleY = target.margin.top + 56;
+  const symbolX = target.width - target.margin.right + 30;
+  const titleY = target.margin.top + 20;
   const itemY = domain.map((_, index) => titleY + 32 + index * 28);
   return Object.freeze({
     domain,
     colors,
     title,
     symbolX: domain.map(() => symbolX),
-    symbolY: itemY.map(value => value - 7),
+    symbolY: itemY.map(value => value - 6),
     symbolWidth: domain.map(() => 14),
-    symbolHeight: domain.map(() => 14),
-    labelX: domain.map(() => symbolX + 24),
+    symbolHeight: domain.map(() => 12),
+    labelX: domain.map(() => symbolX + 22),
     itemY: Object.freeze(itemY),
     titleX: symbolX,
     titleY
   });
+}
+
+function thetaTicks(frame, angles, length = 6) {
+  return Object.freeze(angles.map(theta => Object.freeze({
+    start: referencePolarPoint(frame, theta, frame.availableRadius),
+    end: referencePolarPoint(frame, theta, frame.availableRadius + length)
+  })));
 }
 
 function radialGuide(frame, ticks, domain, range) {
@@ -252,7 +267,7 @@ function radialGuide(frame, ticks, domain, range) {
     })),
     labels: Object.freeze(positions.map((position, index) => {
       const point = referencePolarPoint(frame, 90, position);
-      return Object.freeze({ x: point.x, y: point.y - 9, text: String(ticks[index]) });
+      return Object.freeze({ x: point.x, y: point.y - 10, text: String(ticks[index]) });
     }))
   });
 }
@@ -410,8 +425,11 @@ export function createNightingaleRoseReference(rows) {
   );
   const thetaLabels = MONTH_ORDER.map(month => {
     const band = categoricalBand(MONTH_ORDER, month);
-    return perimeterLabel(frame, band.center, frame.availableRadius + 22, month);
+    return perimeterLabel(frame, band.center, frame.availableRadius + 18, month);
   });
+  const thetaAngles = MONTH_ORDER.map(month =>
+    categoricalBand(MONTH_ORDER, month).center
+  );
   const radialGuideValues = radialGuide(
     frame,
     NIGHTINGALE_TARGET.radiusTicks,
@@ -424,6 +442,7 @@ export function createNightingaleRoseReference(rows) {
     sectors: Object.freeze(sectors),
     radialGridCommands: Object.freeze(radialGridCommands),
     thetaLabels: Object.freeze(thetaLabels),
+    thetaTicks: thetaTicks(frame, thetaAngles),
     thetaAxisCommands: buildReferenceCircleCommands(frame, frame.availableRadius),
     radialAxis: radialGuideValues.axis,
     radialTicks: radialGuideValues.ticks,
@@ -494,8 +513,11 @@ export function createGapminderRadialBarReference(rows) {
   );
   const thetaLabels = RADIAL_COUNTRY_ORDER.map(country => {
     const band = categoricalBand(RADIAL_COUNTRY_ORDER, country);
-    return perimeterLabel(frame, band.center, frame.availableRadius + 22, country);
+    return perimeterLabel(frame, band.center, frame.availableRadius + 18, country);
   });
+  const thetaAngles = RADIAL_COUNTRY_ORDER.map(country =>
+    categoricalBand(RADIAL_COUNTRY_ORDER, country).center
+  );
   const radialGuideValues = radialGuide(
     frame,
     GAPMINDER_RADIAL_TARGET.radiusTicks,
@@ -508,13 +530,14 @@ export function createGapminderRadialBarReference(rows) {
     sectors: Object.freeze(sectors),
     radialGridCommands: Object.freeze(radialGridCommands),
     thetaLabels: Object.freeze(thetaLabels),
+    thetaTicks: thetaTicks(frame, thetaAngles),
     thetaAxisCommands: buildReferenceCircleCommands(frame, frame.availableRadius),
     radialAxis: radialGuideValues.axis,
     radialTicks: radialGuideValues.ticks,
     radialLabels: radialGuideValues.labels,
     thetaTitle: Object.freeze({
       x: frame.centerX,
-      y: frame.centerY + frame.availableRadius + 54,
+      y: frame.centerY + frame.availableRadius + 42,
       text: "Country"
     }),
     radialTitle: referenceRadialAxisTitle({

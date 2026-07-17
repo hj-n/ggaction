@@ -1,13 +1,40 @@
 import { chart } from "../../../src/index.js";
 
 import {
+  CAUSE_ORDER,
   CARS_DONUT_TARGET,
   GAPMINDER_RADIAL_TARGET,
+  MONTH_ORDER,
   NIGHTINGALE_TARGET,
+  RADIAL_COUNTRY_ORDER,
   createCarsDonutReference,
   createGapminderRadialBarReference,
   createNightingaleRoseReference
 } from "./reference-values.js";
+
+function editProperties(program, prefix, values) {
+  let next = program;
+  for (const [property, value] of Object.entries(values)) {
+    next = next.editSemantic({ property: `${prefix}.${property}`, value });
+  }
+  return next;
+}
+
+function authorArcSemantics(program, semantic) {
+  let next = program
+    .editSemantic({ property: "coordinate[polar].type", value: "polar" })
+    .editSemantic({ property: "layer[arc].coordinate", value: "polar" });
+  for (const [id, definition] of Object.entries(semantic.scales)) {
+    next = editProperties(next, `scale[${id}]`, definition);
+  }
+  for (const [channel, definition] of Object.entries(semantic.encoding)) {
+    next = editProperties(next, `layer[arc].encoding.${channel}`, definition);
+  }
+  for (const [path, definition] of Object.entries(semantic.guides)) {
+    next = editProperties(next, `guide.${path}`, definition);
+  }
+  return next;
+}
 
 function createArcPrimitiveProgram(values, settings) {
   let program = chart()
@@ -16,13 +43,17 @@ function createArcPrimitiveProgram(values, settings) {
       height: settings.target.height,
       margin: settings.target.margin
     })
-    .createData({ values: values.rows });
+    .createData({ values: values.rows })
+    .createArcMark(settings.mark);
+
+  program = authorArcSemantics(program, settings.semantic);
 
   if (values.radialGridCommands !== undefined) {
     program = program
       .createGraphics({
         id: "radialGridCircles",
         parent: "plot-main",
+        before: "arc",
         type: "path",
         length: values.radialGridCommands.length
       })
@@ -41,39 +72,34 @@ function createArcPrimitiveProgram(values, settings) {
   }
 
   program = program
-    .createGraphics({
-      id: "arcSectors",
-      parent: "plot-main",
-      type: "path",
-      length: values.sectors.length
-    })
+    .editGraphics({ target: "arc", property: "length", value: values.sectors.length })
     .editGraphics({
-      target: "arcSectors",
+      target: "arc",
       property: "commands",
       value: values.sectors.map(sector => sector.commands)
     })
     .editGraphics({
-      target: "arcSectors",
+      target: "arc",
       property: "fill",
       value: values.sectors.map(sector => sector.fill)
     })
     .editGraphics({
-      target: "arcSectors",
+      target: "arc",
       property: "opacity",
       value: settings.opacity
     })
     .editGraphics({
-      target: "arcSectors",
+      target: "arc",
       property: "stroke",
       value: settings.sectorStroke
     })
     .editGraphics({
-      target: "arcSectors",
+      target: "arc",
       property: "strokeWidth",
       value: settings.sectorStrokeWidth
     })
     .editGraphics({
-      target: "arcSectors",
+      target: "arc",
       property: "strokeDash",
       value: values.sectors.map(() => [])
     });
@@ -86,7 +112,7 @@ function createArcPrimitiveProgram(values, settings) {
         property: "commands",
         value: values.thetaAxisCommands
       })
-      .editGraphics({ target: "thetaAxisLine", property: "stroke", value: "#64748b" })
+      .editGraphics({ target: "thetaAxisLine", property: "stroke", value: "#475569" })
       .editGraphics({ target: "thetaAxisLine", property: "strokeWidth", value: 1.25 });
   }
 
@@ -113,7 +139,7 @@ function createArcPrimitiveProgram(values, settings) {
         property: "y2",
         value: values.radialAxis.end.y
       })
-      .editGraphics({ target: "radialAxisLine", property: "stroke", value: "#64748b" })
+      .editGraphics({ target: "radialAxisLine", property: "stroke", value: "#475569" })
       .editGraphics({ target: "radialAxisLine", property: "strokeWidth", value: 1.25 })
       .createGraphics({
         id: "radialAxisTicks",
@@ -141,7 +167,7 @@ function createArcPrimitiveProgram(values, settings) {
         property: "y2",
         value: values.radialTicks.map(item => item.end.y)
       })
-      .editGraphics({ target: "radialAxisTicks", property: "stroke", value: "#64748b" })
+      .editGraphics({ target: "radialAxisTicks", property: "stroke", value: "#475569" })
       .editGraphics({ target: "radialAxisTicks", property: "strokeWidth", value: 1 })
       .createGraphics({
         id: "radialAxisLabels",
@@ -175,8 +201,38 @@ function createArcPrimitiveProgram(values, settings) {
   if (values.thetaLabels !== undefined) {
     program = program
       .createGraphics({
+        id: "thetaAxisTicks",
+        parent: "plot-main",
+        ...(values.radialAxis === undefined ? {} : { before: "radialAxisLine" }),
+        type: "line",
+        length: values.thetaTicks.length
+      })
+      .editGraphics({
+        target: "thetaAxisTicks",
+        property: "x1",
+        value: values.thetaTicks.map(item => item.start.x)
+      })
+      .editGraphics({
+        target: "thetaAxisTicks",
+        property: "y1",
+        value: values.thetaTicks.map(item => item.start.y)
+      })
+      .editGraphics({
+        target: "thetaAxisTicks",
+        property: "x2",
+        value: values.thetaTicks.map(item => item.end.x)
+      })
+      .editGraphics({
+        target: "thetaAxisTicks",
+        property: "y2",
+        value: values.thetaTicks.map(item => item.end.y)
+      })
+      .editGraphics({ target: "thetaAxisTicks", property: "stroke", value: "#475569" })
+      .editGraphics({ target: "thetaAxisTicks", property: "strokeWidth", value: 1 })
+      .createGraphics({
         id: "thetaAxisLabels",
         parent: "plot-main",
+        ...(values.radialAxis === undefined ? {} : { before: "radialAxisLine" }),
         type: "text",
         length: values.thetaLabels.length
       })
@@ -213,7 +269,12 @@ function createArcPrimitiveProgram(values, settings) {
 
   if (values.thetaTitle !== undefined) {
     program = program
-      .createGraphics({ id: "thetaAxisTitle", parent: "plot-main", type: "text" })
+      .createGraphics({
+        id: "thetaAxisTitle",
+        parent: "plot-main",
+        ...(values.radialAxis === undefined ? {} : { before: "radialAxisLine" }),
+        type: "text"
+      })
       .editGraphics({ target: "thetaAxisTitle", property: "x", value: values.thetaTitle.x })
       .editGraphics({ target: "thetaAxisTitle", property: "y", value: values.thetaTitle.y })
       .editGraphics({ target: "thetaAxisTitle", property: "text", value: values.thetaTitle.text })
@@ -222,7 +283,7 @@ function createArcPrimitiveProgram(values, settings) {
       .editGraphics({ target: "thetaAxisTitle", property: "fontFamily", value: "sans-serif" })
       .editGraphics({ target: "thetaAxisTitle", property: "fontWeight", value: 600 })
       .editGraphics({ target: "thetaAxisTitle", property: "textAlign", value: "center" })
-      .editGraphics({ target: "thetaAxisTitle", property: "textBaseline", value: "top" });
+      .editGraphics({ target: "thetaAxisTitle", property: "textBaseline", value: "middle" });
   }
 
   if (values.radialTitle !== undefined) {
@@ -250,43 +311,43 @@ function createArcPrimitiveProgram(values, settings) {
   const legend = values.legend;
   return program
     .createGraphics({
-      id: "legendSymbols",
+      id: "colorLegendSymbols",
       parent: "canvas",
       type: "rect",
       length: legend.domain.length
     })
-    .editGraphics({ target: "legendSymbols", property: "x", value: legend.symbolX })
-    .editGraphics({ target: "legendSymbols", property: "y", value: legend.symbolY })
-    .editGraphics({ target: "legendSymbols", property: "width", value: legend.symbolWidth })
-    .editGraphics({ target: "legendSymbols", property: "height", value: legend.symbolHeight })
-    .editGraphics({ target: "legendSymbols", property: "fill", value: legend.colors })
-    .editGraphics({ target: "legendSymbols", property: "stroke", value: "#ffffff" })
-    .editGraphics({ target: "legendSymbols", property: "strokeWidth", value: 0 })
+    .editGraphics({ target: "colorLegendSymbols", property: "x", value: legend.symbolX })
+    .editGraphics({ target: "colorLegendSymbols", property: "y", value: legend.symbolY })
+    .editGraphics({ target: "colorLegendSymbols", property: "width", value: legend.symbolWidth })
+    .editGraphics({ target: "colorLegendSymbols", property: "height", value: legend.symbolHeight })
+    .editGraphics({ target: "colorLegendSymbols", property: "fill", value: legend.colors })
+    .editGraphics({ target: "colorLegendSymbols", property: "stroke", value: "white" })
+    .editGraphics({ target: "colorLegendSymbols", property: "strokeWidth", value: 0.5 })
     .createGraphics({
-      id: "legendLabels",
+      id: "colorLegendLabels",
       parent: "canvas",
       type: "text",
       length: legend.domain.length
     })
-    .editGraphics({ target: "legendLabels", property: "x", value: legend.labelX })
-    .editGraphics({ target: "legendLabels", property: "y", value: legend.itemY })
-    .editGraphics({ target: "legendLabels", property: "text", value: legend.domain })
-    .editGraphics({ target: "legendLabels", property: "fill", value: "#334155" })
-    .editGraphics({ target: "legendLabels", property: "fontSize", value: 12 })
-    .editGraphics({ target: "legendLabels", property: "fontFamily", value: "sans-serif" })
-    .editGraphics({ target: "legendLabels", property: "fontWeight", value: "normal" })
-    .editGraphics({ target: "legendLabels", property: "textAlign", value: "left" })
-    .editGraphics({ target: "legendLabels", property: "textBaseline", value: "middle" })
-    .createGraphics({ id: "legendTitle", parent: "canvas", type: "text" })
-    .editGraphics({ target: "legendTitle", property: "x", value: legend.titleX })
-    .editGraphics({ target: "legendTitle", property: "y", value: legend.titleY })
-    .editGraphics({ target: "legendTitle", property: "text", value: legend.title })
-    .editGraphics({ target: "legendTitle", property: "fill", value: "#0f172a" })
-    .editGraphics({ target: "legendTitle", property: "fontSize", value: 13 })
-    .editGraphics({ target: "legendTitle", property: "fontFamily", value: "sans-serif" })
-    .editGraphics({ target: "legendTitle", property: "fontWeight", value: 600 })
-    .editGraphics({ target: "legendTitle", property: "textAlign", value: "left" })
-    .editGraphics({ target: "legendTitle", property: "textBaseline", value: "middle" });
+    .editGraphics({ target: "colorLegendLabels", property: "x", value: legend.labelX })
+    .editGraphics({ target: "colorLegendLabels", property: "y", value: legend.itemY })
+    .editGraphics({ target: "colorLegendLabels", property: "text", value: legend.domain })
+    .editGraphics({ target: "colorLegendLabels", property: "fill", value: "#334155" })
+    .editGraphics({ target: "colorLegendLabels", property: "fontSize", value: 12 })
+    .editGraphics({ target: "colorLegendLabels", property: "fontFamily", value: "sans-serif" })
+    .editGraphics({ target: "colorLegendLabels", property: "fontWeight", value: "normal" })
+    .editGraphics({ target: "colorLegendLabels", property: "textAlign", value: "left" })
+    .editGraphics({ target: "colorLegendLabels", property: "textBaseline", value: "middle" })
+    .createGraphics({ id: "colorLegendTitle", parent: "canvas", type: "text" })
+    .editGraphics({ target: "colorLegendTitle", property: "x", value: legend.titleX })
+    .editGraphics({ target: "colorLegendTitle", property: "y", value: legend.titleY })
+    .editGraphics({ target: "colorLegendTitle", property: "text", value: legend.title })
+    .editGraphics({ target: "colorLegendTitle", property: "fill", value: "#334155" })
+    .editGraphics({ target: "colorLegendTitle", property: "fontSize", value: 13 })
+    .editGraphics({ target: "colorLegendTitle", property: "fontFamily", value: "sans-serif" })
+    .editGraphics({ target: "colorLegendTitle", property: "fontWeight", value: 600 })
+    .editGraphics({ target: "colorLegendTitle", property: "textAlign", value: "left" })
+    .editGraphics({ target: "colorLegendTitle", property: "textBaseline", value: "middle" });
 }
 
 export function createCarsOriginDonutPrimitives(rows) {
@@ -295,7 +356,27 @@ export function createCarsOriginDonutPrimitives(rows) {
     opacity: 1,
     sectorStroke: "#ffffff",
     sectorStrokeWidth: 1,
-    thetaFontSize: 11
+    thetaFontSize: 11,
+    mark: { innerRadius: 0.56, padAngle: 1.5 },
+    semantic: {
+      scales: {
+        theta: {
+          type: "band", domain: "auto", range: "auto",
+          paddingInner: 0, paddingOuter: 0, align: 0.5
+        },
+        color: { type: "ordinal", domain: "auto", range: { palette: "tableau10" } }
+      },
+      encoding: {
+        theta: {
+          field: "Origin", fieldType: "nominal", scale: "theta",
+          aggregate: "count"
+        },
+        color: { field: "Origin", fieldType: "nominal", scale: "color" }
+      },
+      guides: {
+        "legend.color": { scale: "color", title: "Origin" }
+      }
+    }
   });
 }
 
@@ -305,7 +386,36 @@ export function createNightingaleRosePrimitives(rows) {
     opacity: 0.9,
     sectorStroke: "#ffffff",
     sectorStrokeWidth: 0.5,
-    thetaFontSize: 11
+    thetaFontSize: 11,
+    mark: { padAngle: 1, opacity: 0.9, strokeWidth: 0.5 },
+    semantic: {
+      scales: {
+        theta: {
+          type: "band", domain: MONTH_ORDER, range: "auto",
+          paddingInner: 0, paddingOuter: 0, align: 0.5
+        },
+        radius: { type: "linear", domain: [0, 6.5], range: "auto", zero: true },
+        color: {
+          type: "ordinal", domain: CAUSE_ORDER,
+          range: ["#599ad3", "#727272", "#f1595f"]
+        }
+      },
+      encoding: {
+        theta: { field: "month", fieldType: "ordinal", scale: "theta" },
+        radius: { field: "value", fieldType: "quantitative", scale: "radius" },
+        color: {
+          field: "cause", fieldType: "nominal", scale: "color", layout: "overlay"
+        }
+      },
+      guides: {
+        "axis.theta": { scale: "theta", coordinate: "polar" },
+        "axis.radius": {
+          scale: "radius", coordinate: "polar", title: "Mortality rate"
+        },
+        "grid.radial": { scale: "radius", coordinate: "polar" },
+        "legend.color": { scale: "color", title: "Cause" }
+      }
+    }
   });
 }
 
@@ -315,6 +425,34 @@ export function createGapminderRadialBarPrimitives(rows) {
     opacity: 0.94,
     sectorStroke: "#ffffff",
     sectorStrokeWidth: 1,
-    thetaFontSize: 10
+    thetaFontSize: 11,
+    mark: { innerRadius: 0.18, padAngle: 2, opacity: 0.94 },
+    semantic: {
+      scales: {
+        theta: {
+          type: "band", domain: RADIAL_COUNTRY_ORDER, range: "auto",
+          paddingInner: 0, paddingOuter: 0, align: 0.5
+        },
+        radius: { type: "linear", domain: [45, 85], range: "auto", zero: false },
+        color: { type: "ordinal", domain: "auto", range: { palette: "tableau10" } }
+      },
+      encoding: {
+        theta: { field: "country", fieldType: "nominal", scale: "theta" },
+        radius: {
+          field: "life_expect", fieldType: "quantitative", scale: "radius"
+        },
+        color: { field: "cluster", fieldType: "nominal", scale: "color" }
+      },
+      guides: {
+        "axis.theta": {
+          scale: "theta", coordinate: "polar", title: "Country"
+        },
+        "axis.radius": {
+          scale: "radius", coordinate: "polar", title: "Life expectancy"
+        },
+        "grid.radial": { scale: "radius", coordinate: "polar" },
+        "legend.color": { scale: "color", title: "Cluster" }
+      }
+    }
   });
 }

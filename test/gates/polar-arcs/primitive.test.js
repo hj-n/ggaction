@@ -33,19 +33,19 @@ test("authors the Cars Origin donut as three closed concrete paths", () => {
   const values = createCarsDonutReference(rows);
   const program = createCarsOriginDonutPrimitives(rows);
 
-  assert.deepEqual(program.graphicSpec.objects.arcSectors.items.map(
+  assert.deepEqual(program.graphicSpec.objects.arc.items.map(
     item => item.properties.commands
   ), values.sectors.map(sector => sector.commands));
-  assert.deepEqual(program.graphicSpec.objects.arcSectors.items.map(
+  assert.deepEqual(program.graphicSpec.objects.arc.items.map(
     item => item.properties.fill
   ), values.sectors.map(sector => sector.fill));
   assert.deepEqual(drawOrder(program), [
     "canvas",
     "plot-main",
-    "arcSectors",
-    "legendSymbols",
-    "legendLabels",
-    "legendTitle"
+    "arc",
+    "colorLegendSymbols",
+    "colorLegendLabels",
+    "colorLegendTitle"
   ]);
 });
 
@@ -55,8 +55,8 @@ test("authors larger-first Nightingale overlays and omits zero-area paths", () =
   const program = createNightingaleRosePrimitives(rows);
 
   assert.equal(program.semanticSpec.datasets[0].values.length, 36);
-  assert.equal(program.graphicSpec.objects.arcSectors.items.length, 32);
-  assert.deepEqual(program.graphicSpec.objects.arcSectors.items.map(
+  assert.equal(program.graphicSpec.objects.arc.items.length, 32);
+  assert.deepEqual(program.graphicSpec.objects.arc.items.map(
     item => item.properties.commands
   ), values.sectors.map(sector => sector.commands));
   assert.deepEqual(program.graphicSpec.objects.thetaAxisLabels.items.map(
@@ -66,16 +66,17 @@ test("authors larger-first Nightingale overlays and omits zero-area paths", () =
     "canvas",
     "plot-main",
     "radialGridCircles",
-    "arcSectors",
+    "arc",
     "thetaAxisLine",
+    "thetaAxisTicks",
+    "thetaAxisLabels",
     "radialAxisLine",
     "radialAxisTicks",
     "radialAxisLabels",
-    "thetaAxisLabels",
     "radialAxisTitle",
-    "legendSymbols",
-    "legendLabels",
-    "legendTitle"
+    "colorLegendSymbols",
+    "colorLegendLabels",
+    "colorLegendTitle"
   ]);
 });
 
@@ -85,27 +86,28 @@ test("authors one Gapminder radial bar for each selected 2005 country", () => {
   const program = createGapminderRadialBarPrimitives(rows);
 
   assert.equal(program.semanticSpec.datasets[0].values.length, 12);
-  assert.deepEqual(program.graphicSpec.objects.arcSectors.items.map(
+  assert.deepEqual(program.graphicSpec.objects.arc.items.map(
     item => item.properties.commands
   ), values.sectors.map(sector => sector.commands));
-  assert.deepEqual(program.graphicSpec.objects.legendLabels.items.map(
+  assert.deepEqual(program.graphicSpec.objects.colorLegendLabels.items.map(
     item => item.properties.text
   ), ["0", "1", "2", "3", "4", "5"]);
   assert.deepEqual(drawOrder(program), [
     "canvas",
     "plot-main",
     "radialGridCircles",
-    "arcSectors",
+    "arc",
     "thetaAxisLine",
+    "thetaAxisTicks",
+    "thetaAxisLabels",
+    "thetaAxisTitle",
     "radialAxisLine",
     "radialAxisTicks",
     "radialAxisLabels",
-    "thetaAxisLabels",
-    "thetaAxisTitle",
     "radialAxisTitle",
-    "legendSymbols",
-    "legendLabels",
-    "legendTitle"
+    "colorLegendSymbols",
+    "colorLegendLabels",
+    "colorLegendTitle"
   ]);
 });
 
@@ -118,7 +120,6 @@ test("keeps post-Gate arc actions out of every primitive trace", () => {
   for (const program of programs) {
     const trace = operations(program.trace);
     for (const operation of [
-      "createArcMark",
       "editArcMark",
       "encodeTheta",
       "encodeR",
@@ -138,7 +139,7 @@ test("owns input rows and stores only final path geometry", () => {
   rows[0].value = 99;
 
   assert.equal(program.semanticSpec.datasets[0].values[0].value, before);
-  for (const item of program.graphicSpec.objects.arcSectors.items) {
+  for (const item of program.graphicSpec.objects.arc.items) {
     assert.deepEqual(
       Object.keys(item.properties).sort(),
       ["commands", "fill", "opacity", "stroke", "strokeDash", "strokeWidth"]

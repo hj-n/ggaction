@@ -4,6 +4,12 @@ import {
   loadNightingaleRose
 } from "../../support/data.js";
 import { defineVisualVariant } from "../../support/visual-variants.js";
+import { createCarsOriginDonut } from
+  "../../../examples/cars-origin-donut/program.js";
+import { createGapminderRadialBars } from
+  "../../../examples/gapminder-radial-bars/program.js";
+import { createNightingaleRoseChart } from
+  "../../../examples/nightingale-rose-chart/program.js";
 import {
   createCarsOriginDonutPrimitives,
   createGapminderRadialBarPrimitives,
@@ -37,7 +43,7 @@ export const nightingaleTargetCallChain = `chart()
     margin: { top: 80, right: 210, bottom: 80, left: 80 }
   })
   .createData({ values: nightingale })
-  .createArcMark({ padAngle: 1, opacity: 0.9 })
+  .createArcMark({ padAngle: 1, opacity: 0.9, strokeWidth: 0.5 })
   .encodeTheta({
     field: "month",
     fieldType: "ordinal",
@@ -56,7 +62,7 @@ export const nightingaleTargetCallChain = `chart()
     axes: {
       theta: { title: false },
       radius: {
-        ticksAndLabels: { values: [0, 2, 4, 6] },
+        ticksAndLabels: { values: [2, 4, 6] },
         title: { text: "Mortality rate", position: "inside" }
       }
     },
@@ -71,7 +77,7 @@ export const gapminderRadialTargetCallChain = `chart()
     margin: { top: 75, right: 190, bottom: 75, left: 75 }
   })
   .createData({ values: countryRows })
-  .createArcMark({ innerRadius: 0.18, padAngle: 2 })
+  .createArcMark({ innerRadius: 0.18, padAngle: 2, opacity: 0.94 })
   .encodeTheta({
     field: "country",
     fieldType: "nominal",
@@ -106,6 +112,7 @@ export const visualVariants = Object.freeze([
       capability: "polar-arcs"
     },
     primitive: () => createCarsOriginDonutPrimitives(cars),
+    userFacing: () => createCarsOriginDonut(cars),
     width: 640,
     height: 500,
     colors: ["#4c78a8", "#f58518", "#e45756"],
@@ -129,6 +136,7 @@ export const visualVariants = Object.freeze([
       capability: "polar-arcs"
     },
     primitive: () => createNightingaleRosePrimitives(nightingale),
+    userFacing: () => createNightingaleRoseChart(nightingale),
     width: 780,
     height: 640,
     colors: ["#599ad3", "#727272", "#f1595f", "#d7e0ea"],
@@ -152,6 +160,7 @@ export const visualVariants = Object.freeze([
       capability: "polar-arcs"
     },
     primitive: () => createGapminderRadialBarPrimitives(gapminder),
+    userFacing: () => createGapminderRadialBars(gapminder),
     width: 780,
     height: 640,
     colors: ["#4c78a8", "#f58518", "#e45756", "#72b7b2", "#54a24b", "#eeca3b"],
