@@ -130,44 +130,63 @@ const MARK_MATERIALIZATION_POLICIES = Object.freeze({
   point: Object.freeze({
     canMaterialize: canMaterializePoint,
     op: "rematerializePointMark",
-    positionEncoding: Object.freeze({ incomplete: "mark", scaleFirst: true })
+    positionEncoding: Object.freeze({ incomplete: "mark", scaleFirst: true }),
+    encoding: Object.freeze({ scaleFirst: true }),
+    scaleApplication: Object.freeze({
+      deferWithMark: true,
+      position: "rematerialize",
+      deferredChannels: Object.freeze(["size", "shape"]),
+      default: "direct"
+    }),
+    rematerializeIncompleteExisting: true
   }),
   line: Object.freeze({
     canMaterialize: canMaterializeLine,
     op: "rematerializeLineMark",
-    positionEncoding: Object.freeze({ incomplete: "scale", scaleFirst: false })
+    positionEncoding: Object.freeze({ incomplete: "scale", scaleFirst: false }),
+    scaleApplication: Object.freeze({ default: "defer" })
   }),
   area: Object.freeze({
     canMaterialize: canMaterializeArea,
     op: "rematerializeAreaMark",
-    positionEncoding: Object.freeze({ incomplete: "scale", scaleFirst: true })
+    positionEncoding: Object.freeze({ incomplete: "scale", scaleFirst: true }),
+    encoding: Object.freeze({ sharedChannels: Object.freeze(["color"]) }),
+    scaleApplication: Object.freeze({ default: "defer" })
   }),
   arc: Object.freeze({
     canMaterialize: canMaterializeArc,
     op: "rematerializeArcMark",
-    positionEncoding: Object.freeze({ incomplete: "scale", scaleFirst: false })
+    positionEncoding: Object.freeze({ incomplete: "scale", scaleFirst: false }),
+    encoding: Object.freeze({ completeOnly: true }),
+    scaleApplication: Object.freeze({ default: "defer" })
   }),
   bar: Object.freeze({
     canMaterialize: canMaterializeBar,
     op: "rematerializeBarMark",
-    positionEncoding: Object.freeze({ incomplete: "scale", scaleFirst: false })
+    positionEncoding: Object.freeze({ incomplete: "scale", scaleFirst: false }),
+    scaleApplication: Object.freeze({ default: "defer" })
   }),
   rule: Object.freeze({
     canMaterialize: canMaterializeRule,
     op: "rematerializeRuleMark",
-    positionEncoding: Object.freeze({ incomplete: "mark", scaleFirst: false })
+    positionEncoding: Object.freeze({ incomplete: "mark", scaleFirst: false }),
+    scaleApplication: Object.freeze({ default: "defer" })
   })
 });
 
+function getMarkPolicy(layer) {
+  return MARK_MATERIALIZATION_POLICIES[layer.mark?.type];
+}
+
 export function getMarkRematerializationStep(layer) {
-  const policy = MARK_MATERIALIZATION_POLICIES[layer.mark?.type];
+  const policy = getMarkPolicy(layer);
   return policy === undefined
     ? undefined
     : { op: policy.op, args: { id: layer.id } };
 }
 
 export function getMarkMaterializationStep(program, layer) {
-  const policy = MARK_MATERIALIZATION_POLICIES[layer.mark?.type];
+  const policy = getMarkPolicy(layer);
   if (policy === undefined || !policy.canMaterialize(program, layer)) {
     return undefined;
   }
@@ -175,7 +194,7 @@ export function getMarkMaterializationStep(program, layer) {
 }
 
 export function getPositionEncodingMaterializationSteps(program, layer, scaleId) {
-  const policy = MARK_MATERIALIZATION_POLICIES[layer.mark?.type];
+  const policy = getMarkPolicy(layer);
   if (policy === undefined) return [];
   const scale = { op: "rematerializeScale", args: { id: scaleId } };
   const complete = policy.canMaterialize(program, layer);
@@ -188,12 +207,54 @@ export function getPositionEncodingMaterializationSteps(program, layer, scaleId)
 }
 
 export function getScaleConsumerMaterializationMode(layer, channel) {
-  if (layer.mark?.type === "point") {
-    if (POSITION_CHANNELS.includes(channel)) return "rematerialize";
-    if (["size", "shape"].includes(channel)) return "defer";
-    return "direct";
+  const policy = getMarkPolicy(layer);
+  if (policy === undefined) return "direct";
+  if (POSITION_CHANNELS.includes(channel)) {
+    return policy.scaleApplication.position ?? policy.scaleApplication.default;
   }
-  return MARK_MATERIALIZATION_POLICIES[layer.mark?.type] === undefined
-    ? "direct"
-    : "defer";
+  if (policy.scaleApplication.deferredChannels?.includes(channel)) {
+    return "defer";
+  }
+  return policy.scaleApplication.default;
+}
+
+export function canDeferScaleConsumerApplication(layer) {
+  return getMarkPolicy(layer)?.scaleApplication.deferWithMark === true;
+}
+
+export function getExistingMarkRematerializationStep(program, layer) {
+  const policy = getMarkPolicy(layer);
+  if (
+    policy?.rematerializeIncompleteExisting !== true ||
+    program.graphicSpec.objects[layer.id] === undefined
+  ) {
+    return undefined;
+  }
+  return getMarkRematerializationStep(layer);
+}
+
+export function getEncodingMaterializationStages(program, layer, channel, scale) {
+  const policy = getMarkPolicy(layer);
+  if (policy === undefined) return { scales: [], marks: [] };
+  const scales = policy.encoding?.scaleFirst === true && scale !== undefined
+    ? [{
+        op: "rematerializeScale",
+        args: { id: scale, guides: false, marks: false }
+      }]
+    : [];
+  const shared = policy.encoding?.sharedChannels?.includes(channel) === true &&
+    scale !== undefined;
+  const candidates = shared
+    ? program.semanticSpec.layers.filter(candidate =>
+        candidate.mark?.type === layer.mark?.type &&
+        candidate.encoding?.[channel]?.scale === scale
+      )
+    : [layer];
+  const marks = candidates.flatMap(candidate => {
+    const step = policy.encoding?.completeOnly === true
+      ? getMarkMaterializationStep(program, candidate)
+      : getMarkRematerializationStep(candidate);
+    return step === undefined ? [] : [step];
+  });
+  return { scales, marks };
 }

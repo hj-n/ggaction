@@ -153,3 +153,17 @@ test("routes exact named semantic resource lookup through selectors", () => {
     );
   }
 });
+
+test("keeps cross-cutting planners independent from concrete mark names", () => {
+  for (const relative of [
+    "materialization/dependencies.js",
+    "materialization/encodings.js"
+  ]) {
+    const source = readFileSync(path.join(root, relative), "utf8");
+    assert.equal(
+      /mark(?:\?)?\.type\s*===\s*["']/u.test(source),
+      false,
+      `${relative} must delegate mark-specific behavior to the mark policy registry`
+    );
+  }
+});

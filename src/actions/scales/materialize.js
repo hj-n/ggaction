@@ -7,8 +7,10 @@ import {
   applyMaterializationPlan,
   planScaleGuideRematerialization
 } from "../../materialization/dependencies.js";
-import { getScaleConsumerMaterializationMode } from
-  "../../materialization/marks.js";
+import {
+  canDeferScaleConsumerApplication,
+  getScaleConsumerMaterializationMode
+} from "../../materialization/marks.js";
 import { mapScaleConsumerValues } from
   "../../materialization/scales/map.js";
 import { resolveScaleMaterialization } from
@@ -77,7 +79,10 @@ export const rematerializeScale = action(
     let next = this._withResolvedScale(id, resolvedScale);
 
     for (const { consumer, values } of valuesByConsumer) {
-      if (consumer.layer.mark?.type === "point" && args.marks === false) {
+      if (
+        args.marks === false &&
+        canDeferScaleConsumerApplication(consumer.layer)
+      ) {
         continue;
       }
       const materializationMode = getScaleConsumerMaterializationMode(

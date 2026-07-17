@@ -1,8 +1,7 @@
 import { hasMaterializedLegend } from "./legends.js";
 import { requireLayer } from "../selectors/layers.js";
 import {
-  getMarkMaterializationStep,
-  getMarkRematerializationStep
+  getEncodingMaterializationStages
 } from "./marks.js";
 import { buildMaterializationPlan } from "./planner.js";
 
@@ -17,35 +16,12 @@ export function planEncodingRematerialization(program, {
     `Unknown encoding materialization target "${target}"`
   );
 
-  const scales = [];
-  if (layer.mark?.type === "point" && scale !== undefined) {
-    scales.push({
-      op: "rematerializeScale",
-      args: { id: scale, guides: false, marks: false }
-    });
-  }
-
-  const marks = [];
-  if (
-    layer.mark?.type === "area" &&
-    channel === "color" &&
-    scale !== undefined
-  ) {
-    for (const candidate of program.semanticSpec.layers) {
-      if (
-        candidate.mark?.type === "area" &&
-        candidate.encoding?.color?.scale === scale
-      ) {
-        const step = getMarkRematerializationStep(candidate);
-        if (step !== undefined) marks.push(step);
-      }
-    }
-  } else {
-    const step = layer.mark?.type === "arc"
-      ? getMarkMaterializationStep(program, layer)
-      : getMarkRematerializationStep(layer);
-    if (step !== undefined) marks.push(step);
-  }
+  const { scales, marks } = getEncodingMaterializationStages(
+    program,
+    layer,
+    channel,
+    scale
+  );
 
   const guides = [];
   if (hasMaterializedLegend(program)) {

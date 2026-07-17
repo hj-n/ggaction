@@ -1,4 +1,8 @@
-import { getMarkMaterializationStep } from "./marks.js";
+import {
+  canDeferScaleConsumerApplication,
+  getExistingMarkRematerializationStep,
+  getMarkMaterializationStep
+} from "./marks.js";
 import { requireLayer } from "../selectors/layers.js";
 import {
   applyMaterializationPlan,
@@ -54,22 +58,21 @@ export function planCanvasRematerialization(program) {
     const step = getMarkMaterializationStep(program, layer);
     if (step !== undefined) marks.push(step);
   }
-  const deferredPointIds = new Set(
+  const deferredMarkIds = new Set(
     marks
-      .filter(step => step.op === "rematerializePointMark")
       .map(step => step.args.id)
   );
   const scales = [];
   for (const scale of program.semanticSpec.scales) {
     if (needsCanvasScaleRematerialization(program, scale)) {
-      const pointConsumers = program.semanticSpec.layers.filter(layer =>
-        layer.mark?.type === "point" &&
+      const deferredConsumers = program.semanticSpec.layers.filter(layer =>
+        canDeferScaleConsumerApplication(layer) &&
         Object.values(layer.encoding ?? {}).some(
           encoding => encoding?.scale === scale.id
         )
       );
-      const canDeferMarks = pointConsumers.length === 0 ||
-        pointConsumers.every(layer => deferredPointIds.has(layer.id));
+      const canDeferMarks = deferredConsumers.length === 0 ||
+        deferredConsumers.every(layer => deferredMarkIds.has(layer.id));
       scales.push({
         op: "rematerializeScale",
         args: {
@@ -166,10 +169,10 @@ export function planLayerDataRematerialization(program, id) {
     );
     return buildMaterializationPlan({ scales, marks, guides });
   }
-  return buildMaterializationPlan({ marks: layer.mark?.type === "point" &&
-    program.graphicSpec.objects[layer.id] !== undefined
-    ? [{ op: "rematerializePointMark", args: { id: layer.id } }]
-    : [] });
+  const existingStep = getExistingMarkRematerializationStep(program, layer);
+  return buildMaterializationPlan({
+    marks: existingStep === undefined ? [] : [existingStep]
+  });
 }
 
 export function applyLayerDataRematerialization(program, id) {

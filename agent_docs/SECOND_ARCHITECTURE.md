@@ -1062,7 +1062,10 @@ aggregate와 stack을 동일한 순서로 기록한다. 이후 mark materializat
 상태에서 scale만 resolve할지, 빈 mark를 다시 만들지, complete mark보다 현재 scale을 먼저
 resolve할지를 결정한다. Scale materializer도 같은 policy registry에서 consumer가 direct
 property edit, full mark rematerialization 또는 상위 plan으로 defer되어야 하는지를 읽는다.
-따라서 position action과 scale action에 mark type 목록을 따로 복제하지 않는다.
+Encoding planner의 shared-consumer 범위와 incomplete-mark 처리, Canvas/data planner의
+deferred scale application과 existing incomplete mark 복구도 같은 registry가 소유한다.
+따라서 position action, scale action과 cross-cutting planner에 mark type 목록을 따로
+복제하지 않는다.
 
 ## Mark materialization policy
 
