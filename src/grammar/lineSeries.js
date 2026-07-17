@@ -81,7 +81,7 @@ function groupKey(values) {
   return JSON.stringify(values);
 }
 
-export function deriveLineSeries(rows, layer) {
+function deriveCartesianLineSeries(rows, layer) {
   const { x, y, isAggregate, directTemporal } = requireLineEncoding(layer);
   if (isAggregate) {
     validateAggregateFieldValues(rows, y.field, y.fieldType);
@@ -194,4 +194,107 @@ export function deriveLineSeries(rows, layer) {
     yValues: series.flatMap(item => item.values.map(value => value.y)),
     series
   });
+}
+
+function requirePolarLineEncoding(layer) {
+  if (layer?.mark?.type !== "line") {
+    throw new Error("Polar line series derivation requires a semantic line mark.");
+  }
+  const theta = layer.encoding?.theta;
+  const radius = layer.encoding?.radius;
+  if (theta === undefined || radius === undefined) {
+    throw new Error(
+      `Polar line mark "${layer.id}" requires theta and radius encodings.`
+    );
+  }
+  if (!["quantitative", "temporal", "ordinal", "nominal"].includes(
+    theta.fieldType
+  )) {
+    throw new Error(
+      `Polar line mark "${layer.id}" has unsupported theta field type.`
+    );
+  }
+  if (radius.fieldType !== "quantitative") {
+    throw new Error(
+      `Polar line mark "${layer.id}" requires a quantitative radius encoding.`
+    );
+  }
+  return { theta, radius };
+}
+
+function readThetaValues(rows, encoding) {
+  if (["nominal", "ordinal"].includes(encoding.fieldType)) {
+    return readNominalField(rows, encoding.field);
+  }
+  return encoding.fieldType === "temporal"
+    ? readTemporalField(rows, encoding.field)
+    : readQuantitativeField(rows, encoding.field);
+}
+
+function thetaOrder(values, fieldType, domain) {
+  if (!["nominal", "ordinal"].includes(fieldType)) return values;
+  const order = domain ?? [...new Set(values)];
+  const indices = new Map(order.map((value, index) => [value, index]));
+  for (const value of values) {
+    if (!indices.has(value)) {
+      throw new Error(`Polar line theta domain does not contain "${value}".`);
+    }
+  }
+  return values.map(value => indices.get(value));
+}
+
+export function derivePolarLineSeries(rows, layer, { thetaDomain } = {}) {
+  const { theta, radius } = requirePolarLineEncoding(layer);
+  const thetaValues = readThetaValues(rows, theta);
+  const radiusValues = readQuantitativeField(rows, radius.field);
+  const sortValues = thetaOrder(thetaValues, theta.fieldType, thetaDomain);
+  const seriesFields = readSeriesFields(rows, layer);
+  const groups = new Map();
+
+  for (let index = 0; index < rows.length; index += 1) {
+    const dimensions = seriesFields.fields.map(
+      field => seriesFields.values.get(field)[index]
+    );
+    const key = groupKey(dimensions);
+    const series = groups.get(key) ?? {
+      key: Object.fromEntries(
+        seriesFields.fields.map((field, item) => [field, dimensions[item]])
+      ),
+      values: []
+    };
+    series.values.push({
+      theta: thetaValues[index],
+      radius: radiusValues[index],
+      order: sortValues[index],
+      sourceIndex: index
+    });
+    groups.set(key, series);
+  }
+
+  const series = [...groups.values()].flatMap(item => {
+    const values = item.values.sort(
+      (left, right) => left.order - right.order ||
+        left.sourceIndex - right.sourceIndex
+    );
+    return values.length < 2 ? [] : [{ key: item.key, values }];
+  });
+  if (series.length === 0) {
+    throw new Error(
+      `Polar line series on mark "${layer.id}" requires at least two points.`
+    );
+  }
+  return cloneAndFreeze({
+    thetaFieldType: theta.fieldType,
+    thetaValues: series.flatMap(item => item.values.map(value => value.theta)),
+    radiusValues: series.flatMap(item => item.values.map(value => value.radius)),
+    series
+  });
+}
+
+export function deriveLineSeries(rows, layer, options) {
+  const polar = layer?.encoding?.theta !== undefined ||
+    layer?.encoding?.radius !== undefined;
+  return polar
+    ? derivePolarLineSeries(rows, layer, options)
+    : deriveCartesianLineSeries(rows, layer);
 }
