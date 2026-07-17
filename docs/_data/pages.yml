@@ -116,6 +116,10 @@
   url: /api/rendering/
   nav_group: chart-api
   nav_order: 6
+- title: Program Composition
+  url: /api/composition/
+  nav_group: chart-api
+  nav_order: 7
 - title: Position Encodings
   url: /api/position-encodings/
 - title: Quantitative Positions

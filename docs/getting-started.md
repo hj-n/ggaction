@@ -128,8 +128,9 @@ The source repository also contains complete modules for the
 [density area](https://github.com/hj-n/ggaction/tree/main/examples/cars-density-area/),
 [error bar](https://github.com/hj-n/ggaction/tree/main/examples/cars-error-bar/),
 [error band](https://github.com/hj-n/ggaction/tree/main/examples/gapminder-error-band/),
-[box plot](https://github.com/hj-n/ggaction/tree/main/examples/cars-box-plot/), and
-[mark selection](https://github.com/hj-n/ggaction/tree/main/examples/mark-selection/).
+[box plot](https://github.com/hj-n/ggaction/tree/main/examples/cars-box-plot/),
+[mark selection](https://github.com/hj-n/ggaction/tree/main/examples/mark-selection/), and
+[program composition](https://github.com/hj-n/ggaction/tree/main/examples/program-composition/).
 
 ## Next
 

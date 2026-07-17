@@ -68,7 +68,7 @@ screens.
 
 | Area | Supported now |
 | --- | --- |
-| Program model | Immutable `ChartProgram`, hierarchical action trace |
+| Program model | Immutable unit or composition `ChartProgram`, hierarchical trace, nested horizontal/vertical composition, and stable child replacement |
 | Canvas | Create/edit width, height, background, margin |
 | Data | Immutable arrays of plain row objects, named filters, grouped interval summaries, grouped linear/polynomial/LOESS regression, and grouped kernel-density derivations |
 | Coordinates | Named Cartesian and Polar resources; x/y use Cartesian and theta/radius use Polar for points, lines, and arcs |
@@ -82,9 +82,8 @@ screens.
 
 ## Current limitations
 
-Transforms beyond the documented filters, regressions, density derivations,
-facets, interactive legends, and program composition
-are not implemented.
+Transforms beyond the documented filters, regressions, and density derivations,
+as well as facets and interactive legends, are not implemented.
 Categorical legends support all four edges; point composite and size legends
 support right and left side layouts.
 Error bars support vertical and horizontal statistical intervals, existing

@@ -170,7 +170,8 @@ const EXPECTED_DRAW_ORDER = Object.freeze({
     "yAxisLine", "yAxisTicks", "yAxisLabels", "yAxisTitle",
     "seriesLegendSymbols", "seriesLegendLabels", "seriesLegendTitle",
     "chartTitle", "chartSubtitle"
-  ]
+  ],
+  "program-composition": []
 });
 
 function isCanvasOwned(id) {
@@ -189,6 +190,17 @@ test("locks the complete public graphic hierarchy inventory", () => {
     const drawOrder = [];
     walkGraphicDrawOrder(program.graphicSpec, ({ id }) => drawOrder.push(id));
     const expected = EXPECTED_DRAW_ORDER[chart.id];
+    if (chart.id === "program-composition") {
+      assert.deepEqual(program.graphicSpec.order, ["canvas"]);
+      assert.equal(program.graphicSpec.objects.canvas.children.length, 2);
+      for (const childId of program.graphicSpec.objects.canvas.children) {
+        assert.equal(program.graphicSpec.objects[childId].type, "canvas");
+        assert.equal(findGraphicParent(program.graphicSpec, childId).id, "canvas");
+      }
+      assert.equal(drawOrder[0], "canvas");
+      assert.equal(drawOrder.length, 7);
+      continue;
+    }
     const descendants = expected.slice(1);
     const canvasChildren = [
       "plot-main",

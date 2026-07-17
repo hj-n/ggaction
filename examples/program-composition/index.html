@@ -14,13 +14,15 @@
         font: 16px/1.5 system-ui, sans-serif;
       }
       main { padding: 24px; background: white; border-radius: 12px; }
-      h1 { margin: 0 0 16px; font-size: 20px; }
+      h1 { margin: 0 0 4px; font-size: 20px; }
+      p { margin: 0 0 16px; color: #64748b; }
       canvas { display: block; border: 1px solid #e2e8f0; }
     </style>
   </head>
   <body>
     <main>
       <h1>Program composition</h1>
+      <p id="status">Loading composition…</p>
       <canvas id="chart" aria-label="Two composed chart programs"></canvas>
     </main>
     <script type="module" src="./main.js"></script>

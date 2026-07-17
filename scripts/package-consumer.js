@@ -55,7 +55,7 @@ async function testNodeConsumer(directory) {
   const output = path.join(directory, "chart.png");
   const source = `
     import assert from "node:assert/strict";
-    import { chart, render } from "ggaction";
+    import { chart, hconcat, render, vconcat } from "ggaction";
     import { action, ChartProgram } from "ggaction/extension";
     import { renderToPNG } from "ggaction/png";
 
@@ -90,6 +90,17 @@ async function testNodeConsumer(directory) {
       ),
       true
     );
+    const pair = hconcat({
+      programs: [program, polar],
+      gap: 8
+    }).editCompositionLayout({ padding: 4 });
+    const replaced = pair.replaceCompositionChild({
+      target: "view-2",
+      program: arcs
+    });
+    const nested = vconcat({ programs: [pair, replaced] });
+    assert.equal(replaced.children["view-2"], arcs);
+    assert.equal(nested.compositionSpec.direction, "vertical");
     const result = await renderToPNG(program, {
       output: ${JSON.stringify(output)},
       pixelRatio: 1
@@ -117,7 +128,9 @@ async function testTypeScriptConsumer(directory) {
   await writeFile(path.join(directory, "consumer.ts"), `
     import {
       chart,
+      hconcat,
       render,
+      vconcat,
       type ChartProgram,
       type CreateDerivedDataOptions,
       type DatasetTransform
@@ -126,6 +139,12 @@ async function testTypeScriptConsumer(directory) {
     import { renderToPNG, type PNGRenderResult } from "ggaction/png";
 
     const program: ChartProgram = chart().createCanvas({ width: 100, height: 100 });
+    const composed: ChartProgram = hconcat({
+      programs: [program, program]
+    })
+      .editCompositionLayout({ gap: 8, padding: { left: 4 } })
+      .replaceCompositionChild({ target: "view-2", program });
+    const nested: ChartProgram = vconcat({ programs: [composed, program] });
     const draw: typeof render = render;
     const png: Promise<PNGRenderResult> = renderToPNG(program, { output: "chart.png" });
     const wrapped = action(
@@ -176,6 +195,8 @@ async function testTypeScriptConsumer(directory) {
     void draw;
     void png;
     void extensionProgram;
+    void composed;
+    void nested;
     void derived;
     void polar;
     void arcs;

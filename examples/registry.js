@@ -27,6 +27,8 @@ import { createJobsRadarChart } from "./jobs-radar-chart/program.js";
 import { createJobsGroupedBar } from "./jobs-grouped-bar/program.js";
 import { createNightingaleRoseChart } from
   "./nightingale-rose-chart/program.js";
+import { createProgramCompositionExample } from
+  "./program-composition/program.js";
 import {
   createGroupedMaximumPointHighlight,
   createJapanLineSeriesHighlight,
@@ -48,6 +50,15 @@ function example({ id, data, width, height, createProgram, ...options }) {
 }
 
 export const PUBLIC_CHARTS = Object.freeze([
+  example({
+    id: "program-composition",
+    data: "cars",
+    width: 528,
+    height: 224,
+    createProgram: createProgramCompositionExample,
+    docsGroup: "charts",
+    browser: { path: "program-composition/", canvas: "#chart" }
+  }),
   example({
     id: "cars-scatterplot",
     data: "cars",

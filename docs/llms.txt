@@ -95,5 +95,5 @@ It is distributed as the ESM-only `ggaction` npm package for Node 20 or later,
 renders through Browser Canvas and Node PNG, and provides TypeScript declarations
 for `ggaction`, `ggaction/extension`, and `ggaction/png`.
 
-Do not assume Polar arc marks, facets, program composition,
-SVG rendering, animation, or automatic semantic compilation are implemented.
+Program composition supports hconcat/vconcat, nested child Canvas snapshots,
+layout editing, and replacement. Do not assume facets, SVG, animation, or automatic semantic compilation.

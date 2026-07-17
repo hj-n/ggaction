@@ -158,7 +158,7 @@ test("keeps navigation and page order complete", async () => {
   assert.deepEqual(new Set(order), pageUrls);
   for (const url of navigation) assert.equal(pageUrls.has(url), true, url);
   assert.equal(navigation.includes("/api/"), true);
-  assert.equal(navigation.length, 22);
+  assert.equal(navigation.length, 23);
 
   assert.equal(
     registry.filter(page => page.nav_group).some(page => /Tutorial$/.test(page.title)),
@@ -334,7 +334,8 @@ test("links every public chart example from entry documentation", () => {
     "cars-error-bar",
     "gapminder-error-band",
     "cars-box-plot",
-    "mark-selection"
+    "mark-selection",
+    "program-composition"
   ]) {
     assert.match(readme, new RegExp(`examples/${name}`));
     assert.match(gettingStarted, new RegExp(`examples/${name}`));

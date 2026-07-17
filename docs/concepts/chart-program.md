@@ -5,9 +5,10 @@ title: ChartProgram and Immutability
 
 # ChartProgram and Immutability
 
-<div class="docs-concept-flow docs-concept-flow--state" role="img" aria-label="ChartProgram contains semantic specification, graphic specification, authoring context, and trace state">
+<div class="docs-concept-flow docs-concept-flow--state" role="img" aria-label="ChartProgram contains semantic specification, graphic specification, retained child programs, authoring context, and trace state">
   <span>semanticSpec<strong>meaning</strong></span>
   <span>graphicSpec<strong>drawing</strong></span>
+  <span>children<strong>composition</strong></span>
   <span>context<strong>next action</strong></span>
   <span>trace<strong>history</strong></span>
 </div>
@@ -35,6 +36,8 @@ not mutated.
 | `graphicSpec` | Fully materialized backend-neutral graphics |
 | `resolvedScales` | Resolved domains and concrete output ranges |
 | `materializationConfigs` | Immutable appearance and layout inputs needed for later rematerialization |
+| `children` | Named immutable child programs retained by a composition parent |
+| `compositionSpec` | Optional direction, ordered slots, gap, alignment, and padding for a composition parent |
 | `context` | Current authoring selections used to interpret omitted action targets |
 | `trace` | Hierarchical action history |
 
@@ -42,6 +45,10 @@ not mutated.
 dataset or mark. Canvas margin is canonical materialization state rather than
 transient context, and plot bounds are derived from it and the concrete Canvas
 dimensions. Rendering does not depend on `context` or `trace`.
+
+A unit program has empty `children` and no `compositionSpec`. Package-level
+`hconcat` and `vconcat` create a composition parent without merging child
+semantic state. See [Program composition](../api/composition.md).
 
 ## Inspecting authored and materialized state
 

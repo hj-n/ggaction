@@ -96,6 +96,8 @@ Tukey/min–max ranges, configurable factor and component appearance, and
 optional outlier rendering from categorical and quantitative field pairs.
 The [mark-selection example](https://github.com/hj-n/ggaction/tree/main/examples/mark-selection/) compares grouped point,
 complete stacked-bar, and line-series highlighting through one selector grammar.
+The [program-composition example](https://github.com/hj-n/ggaction/tree/main/examples/program-composition/) combines
+complete child programs, edits their inferred layout, and replaces one stable slot.
 Completed programs can also be exported through
 [`ggaction/png`](https://hyeonword.com/ggaction/api/rendering/#png-output).
 

@@ -3,6 +3,15 @@
   "pixelRatio": 2,
   "thumbnailMaxWidth": 640,
   "charts": {
+    "program-composition": {
+      "width": 1056,
+      "height": 448,
+      "thumbnail": {
+        "width": 640,
+        "height": 272
+      },
+      "sourceHash": "841b8908d778e23ae3f022a6bf13240fc91b190c3608224873f00a0f55e5278a"
+    },
     "cars-scatterplot": {
       "width": 1280,
       "height": 800,

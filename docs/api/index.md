@@ -17,6 +17,7 @@ overview no longer provides enough control.
   <a href="./encodings/"><strong>Encodings</strong><span>Map fields and constants to position, grouping, and appearance.</span></a>
   <a href="./coordinates/"><strong>Coordinates and scales</strong><span>Use Cartesian or Polar positions and customize their mappings.</span></a>
   <a href="./guides/"><strong>Guides and titles</strong><span>Create axes, grids, legends, and chart titles from existing encodings.</span></a>
+  <a href="./composition/"><strong>Program composition</strong><span>Arrange complete chart programs horizontally or vertically and replace stable child slots.</span></a>
   <a href="./rendering/"><strong>Rendering</strong><span>Render the fully materialized program to Browser Canvas or Node PNG.</span></a>
 </div>
 

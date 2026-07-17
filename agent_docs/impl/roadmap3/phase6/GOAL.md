@@ -11,7 +11,7 @@
 - [x] STEP 7 — Immutable child-program state와 concat materialization
 - [x] STEP 8 — Public `hconcat`/`vconcat`과 trace hierarchy
 - [x] STEP 9 — Layout edit, child replacement와 public surface
-- [ ] STEP 10 — Coverage, contracts, docs와 Phase closeout
+- [x] STEP 10 — Coverage, contracts, docs와 Phase closeout
 
 ## 목표
 

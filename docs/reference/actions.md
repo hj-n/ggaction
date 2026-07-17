@@ -24,6 +24,7 @@ and `primitive`, respectively.
 - [Advanced chart actions](#advanced-chart-api)
 - [Extension actions](#extension-api)
 - [Internal trace operations](#internal-trace-operations)
+- [Program functions](#program-functions)
 - [Rendering functions](#rendering-functions)
 - [Exact TypeScript signatures](#exact-typescript-signatures)
 
@@ -1226,6 +1227,19 @@ stable.
 Use the [Actions and trace trees](../concepts/actions-and-trace.md) page to
 inspect these nodes. Extension actions should compose the declared extension
 and advanced actions instead of calling an undeclared runtime method.
+
+## Program functions
+
+These package-level functions create programs but are not chainable actions.
+
+| Import | Signature |
+| --- | --- |
+| `ggaction` | `chart(): ChartProgram` |
+| `ggaction` | `hconcat(options: CompositionOptions): ChartProgram` |
+| `ggaction` | `vconcat(options: CompositionOptions): ChartProgram` |
+
+See [Program composition](../api/composition.md) for sizing, nesting, layout
+editing, and stable replacement rules.
 
 ## Rendering functions
 
