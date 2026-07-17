@@ -24,7 +24,7 @@ signature를 유지하고 재현 하나만 통과시키는 특수 처리 대신 
 - [x] F-002A — horizontal ranged-area color dispatch 수정
 - [x] F-002B — horizontal error-band boundary direct-path composition 수정
 - [x] F-003 — standalone size legend eligibility와 guide inference 수정
-- [ ] F-004 — interval-aware temporal tick formatting 수정
+- [x] F-004 — interval-aware temporal tick formatting 수정
 - [ ] F-005 — `createDerivedData` public input/type/documentation contract 보강
 - [ ] F-006 — public state inspection schema와 runnable docs 보강
 - [ ] 전체 외부 reproduction, ggaction suite, docs/browser/render/package verification 통과

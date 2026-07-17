@@ -25,6 +25,17 @@ function createTemporalLine() {
     });
 }
 
+function labelsFor(dates, axis = {}) {
+  const values = dates.map((date, index) => ({ date, value: index + 1 }));
+  return chart()
+    .createCanvas({ width: 420, height: 260, margin: 50 })
+    .createData({ values })
+    .createLineMark()
+    .encodeX({ field: "date", fieldType: "temporal" })
+    .encodeY({ field: "value", aggregate: "mean" })
+    .createXAxis(axis);
+}
+
 test("creates complete temporal x and aggregate linear y axes", () => {
   const before = createTemporalLine();
   const program = before.createAxes();
@@ -122,5 +133,36 @@ test("validates temporal axis formatting and explicit tick values", () => {
       ticksAndLabels: { values: [Date.UTC(1960, 0, 1)] }
     }),
     /inside the scale domain/
+  );
+});
+
+test("keeps automatic month and day tick labels distinct after rematerialization", () => {
+  const months = labelsFor(["2024-01-01", "2024-02-01", "2024-03-01"]);
+  const days = labelsFor(["2024-01-01", "2024-01-02", "2024-01-03"]);
+  const monthLabels = months.graphicSpec.objects.xAxisLabels.items.map(
+    item => item.properties.text
+  );
+  const dayLabels = days.graphicSpec.objects.xAxisLabels.items.map(
+    item => item.properties.text
+  );
+  const resized = months.editCanvas({ width: 520 });
+
+  assert.equal(new Set(monthLabels).size, monthLabels.length);
+  assert.equal(new Set(dayLabels).size, dayLabels.length);
+  assert.deepEqual(
+    resized.graphicSpec.objects.xAxisLabels.items.map(
+      item => item.properties.text
+    ),
+    monthLabels
+  );
+  const explicit = labelsFor(
+    ["2024-01-01", "2024-02-01", "2024-03-01"],
+    { ticksAndLabels: { labels: { format: "%Y-%m" } } }
+  );
+  assert.ok(
+    explicit.graphicSpec.objects.xAxisLabels.items.length >
+      new Set(explicit.graphicSpec.objects.xAxisLabels.items.map(
+        item => item.properties.text
+      )).size
   );
 });

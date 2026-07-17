@@ -48,9 +48,12 @@ or scales must be selected explicitly. `createAxes` reads stored coordinates;
 it never creates or repairs them.
 
 Linear scales create numeric nice ticks. Time scales choose a UTC calendar
-interval near the requested count and format labels automatically. For example,
-a 1970–1982 domain produces labels such as `1970`, `1972`, ..., `1982`.
-Explicit time values are finite timestamps.
+interval near the requested count and format labels automatically. Automatic
+formatting starts from the domain span, then raises precision only when two
+distinct resolved ticks would otherwise share a label. For example, a
+1970–1982 domain produces `1970`, `1972`, ..., `1982`, while sub-month ticks
+include the day needed to distinguish them. Explicit time values are finite
+timestamps.
 
 A band or point x scale uses its complete domain as the default tick and label
 values. Each value is placed at the shared band or point center and formatted
@@ -90,7 +93,8 @@ Numeric label formats are `.0f`, `.1f`, `.2f`, `.0%`, `.1%`, and `.2e`.
 UTC time formats are `%Y`, `%Y-%m`, and `%Y-%m-%d`. Numeric formats require a
 linear scale, time formats require a time scale, and ordinal labels use
 `"auto"`. The existing `{ decimals: nonNegativeInteger }` form remains
-available for linear labels.
+available for linear labels. Explicit formats remain exact and may intentionally
+produce repeated display strings.
 
 The selected coordinate ID is stored on each semantic axis. Canvas size and
 margin edits explicitly rematerialize positional scales and every connected

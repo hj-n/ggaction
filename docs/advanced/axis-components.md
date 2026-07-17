@@ -92,8 +92,10 @@ below. Default offsets are 18 for x and 12 for y; default font size is 12.
 | Ordinal | none; use `"auto"` |
 
 Automatic time labels select year, month, day, hour, minute, or second
-precision from the resolved domain span. Incompatible format/scale pairs are
-rejected before graphics are changed.
+precision from the resolved domain span, then minimally refine that precision
+when distinct tick values would collide. This handles UTC month lengths, leap
+days, and sub-day intervals without changing explicit format strings.
+Incompatible format/scale pairs are rejected before graphics are changed.
 
 Labels reuse existing tick values when count/values are omitted. Conflicting
 tick and label configurations produce an error.

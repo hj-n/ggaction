@@ -50,7 +50,8 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 - `color`: non-empty string; `fontSize`: positive finite; `fontFamily`: non-empty string;
   `fontWeight`: string 또는 finite number.
 - Effect: formatted text, aligned data-space coordinates와 font style을 text collection에 저장한다.
-  ticks와 count/values 정책이 충돌하면 거부한다.
+  Time `auto`는 domain-span precision에서 시작해 distinct resolved ticks가 같은 label이면 최소 한 단계씩
+  precision을 높인다. Explicit format은 그대로 유지한다. ticks와 count/values 정책이 충돌하면 거부한다.
 
 ## Shared ticks-and-labels contract
 
@@ -368,6 +369,8 @@ type CompleteAxisOptions<P extends string> = {
 - `format`
   - ✅ Covered: `"auto"`, `{ decimals: 0 }`, positive decimals, every closed numeric/UTC token,
     invalid objects and wrong-scale rejection.
+  - ✅ Covered: year/month/day/hour/minute/second spans, leap-day boundary, distinct auto labels, explicit
+    coarse-format preservation와 Canvas rematerialization stability.
 - `color`, `fontSize`, `fontFamily`, `fontWeight`
   - ✅ Covered: defaults, representative string/numeric weight and invalid classes.
 - Evidence: `test/unit/actions/guides/axis-label-actions.test.js`, temporal/ordinal axis tests.

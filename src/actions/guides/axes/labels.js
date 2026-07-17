@@ -13,7 +13,7 @@ import {
   formatTransformedTick,
   mapOrdinalPositionValues
 } from "../../../grammar/scales.js";
-import { formatTimeTick } from "../../../grammar/ticks.js";
+import { formatTimeTick, formatTimeTicks } from "../../../grammar/ticks.js";
 import { valuesFromTickConfig } from "../tickValues.js";
 import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from
   "../../../theme/defaults.js";
@@ -97,16 +97,18 @@ function resolve(program, channel, config) {
   const positions = discrete
     ? mapOrdinalPositionValues(values, scale)
     : mapContinuousScaleValues(values, scale);
-  const text = values.map(value => formatAxisValue(
-    value,
-    scale.type,
-    config.format,
-    item => scale.type === "time"
-      ? formatTimeTick(item, scale.domain)
-      : isTransformedScaleType(scale.type)
-        ? formatTransformedTick(scale.type, item)
-        : String(item)
-  ));
+  const text = scale.type === "time" && config.format === "auto"
+    ? formatTimeTicks(values, scale.domain)
+    : values.map(value => formatAxisValue(
+        value,
+        scale.type,
+        config.format,
+        item => scale.type === "time"
+          ? formatTimeTick(item, scale.domain)
+          : isTransformedScaleType(scale.type)
+            ? formatTransformedTick(scale.type, item)
+            : String(item)
+      ));
   const resolved = {
     values,
     text,

@@ -125,13 +125,7 @@ function pad(value) {
   return String(value).padStart(2, "0");
 }
 
-export function formatTimeTick(value, domain) {
-  if (!Number.isFinite(value)) {
-    throw new TypeError("Time tick value must be a finite timestamp.");
-  }
-
-  const [low, high] = validateTimeDomain(domain);
-  const span = high - low;
+function formatTimePrecision(value, precision) {
   const date = new Date(value);
   const year = String(date.getUTCFullYear()).padStart(4, "0");
   const month = pad(date.getUTCMonth() + 1);
@@ -139,11 +133,54 @@ export function formatTimeTick(value, domain) {
   const hour = pad(date.getUTCHours());
   const minute = pad(date.getUTCMinutes());
   const second = pad(date.getUTCSeconds());
+  const millisecond = String(date.getUTCMilliseconds()).padStart(3, "0");
 
-  if (span >= 2 * YEAR) return year;
-  if (span >= 60 * DAY) return `${year}-${month}`;
-  if (span >= 2 * DAY) return `${year}-${month}-${day}`;
-  if (span >= 2 * HOUR) return `${year}-${month}-${day} ${hour}:00`;
-  if (span >= 2 * MINUTE) return `${hour}:${minute}`;
-  return `${hour}:${minute}:${second}`;
+  if (precision === 0) return year;
+  if (precision === 1) return `${year}-${month}`;
+  if (precision === 2) return `${year}-${month}-${day}`;
+  if (precision === 3) return `${year}-${month}-${day} ${hour}:${minute}`;
+  if (precision === 4) return `${hour}:${minute}`;
+  if (precision === 5) return `${hour}:${minute}:${second}`;
+  return `${hour}:${minute}:${second}.${millisecond}`;
+}
+
+function timePrecision(domain) {
+  const [low, high] = validateTimeDomain(domain);
+  const span = high - low;
+
+  if (span >= 2 * YEAR) return 0;
+  if (span >= 60 * DAY) return 1;
+  if (span >= 2 * DAY) return 2;
+  if (span >= 2 * HOUR) return 3;
+  if (span >= 2 * MINUTE) return 4;
+  return 5;
+}
+
+export function formatTimeTick(value, domain) {
+  if (!Number.isFinite(value)) {
+    throw new TypeError("Time tick value must be a finite timestamp.");
+  }
+  return formatTimePrecision(value, timePrecision(domain));
+}
+
+function distinguishesTicks(values, labels) {
+  const timestamps = new Map();
+  for (let index = 0; index < values.length; index += 1) {
+    const previous = timestamps.get(labels[index]);
+    if (previous !== undefined && previous !== values[index]) return false;
+    timestamps.set(labels[index], values[index]);
+  }
+  return true;
+}
+
+export function formatTimeTicks(values, domain) {
+  if (!Array.isArray(values) || !values.every(Number.isFinite)) {
+    throw new TypeError("Time tick values must be finite timestamps.");
+  }
+  const initial = timePrecision(domain);
+  for (let precision = initial; precision <= 6; precision += 1) {
+    const labels = values.map(value => formatTimePrecision(value, precision));
+    if (distinguishesTicks(values, labels)) return cloneAndFreeze(labels);
+  }
+  return cloneAndFreeze(values.map(value => String(value)));
 }
