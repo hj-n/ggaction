@@ -55,7 +55,10 @@ export const nightingaleTargetCallChain = `chart()
   .createGuides({
     axes: {
       theta: { title: false },
-      radius: { ticksAndLabels: { values: [0, 2, 4, 6] }, title: false }
+      radius: {
+        ticksAndLabels: { values: [0, 2, 4, 6] },
+        title: { text: "Mortality rate", position: "inside" }
+      }
     },
     grid: { theta: false, radial: { values: [2, 4, 6] } },
     legend: { position: "right", title: "Cause" }
@@ -84,7 +87,7 @@ export const gapminderRadialTargetCallChain = `chart()
       theta: { title: { text: "Country" } },
       radius: {
         ticksAndLabels: { values: [50, 60, 70, 80] },
-        title: { text: "Life expectancy" }
+        title: { text: "Life expectancy", position: "inside" }
       }
     },
     grid: { theta: false, radial: { values: [50, 60, 70, 80] } },

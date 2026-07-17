@@ -72,6 +72,7 @@ test("authors larger-first Nightingale overlays and omits zero-area paths", () =
     "radialAxisTicks",
     "radialAxisLabels",
     "thetaAxisLabels",
+    "radialAxisTitle",
     "legendSymbols",
     "legendLabels",
     "legendTitle"

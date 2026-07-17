@@ -16,7 +16,8 @@ import {
   buildReferenceAnnularSectorCommands,
   createCarsDonutReference,
   createGapminderRadialBarReference,
-  createNightingaleRoseReference
+  createNightingaleRoseReference,
+  referenceRadialAxisTitle
 } from "./reference-values.js";
 
 function close(actual, expected, tolerance = 1e-9) {
@@ -88,6 +89,29 @@ test("applies symmetric padding and supports reverse sweeps", () => {
   close(reverse[1].x, 0);
   close(reverse[1].y, -80);
   assert.deepEqual(reverse.at(-1), { op: "Z" });
+});
+
+test("keeps radial titles inside by default and supports explicit outside placement", () => {
+  const frame = { centerX: 100, centerY: 80, availableRadius: 60 };
+  assert.deepEqual(referenceRadialAxisTitle({ frame, text: "Value" }), {
+    x: 130,
+    y: 88,
+    text: "Value",
+    textAlign: "center",
+    textBaseline: "top"
+  });
+  assert.deepEqual(referenceRadialAxisTitle({
+    frame,
+    text: "Value",
+    position: "outside",
+    offset: 12
+  }), {
+    x: 172,
+    y: 80,
+    text: "Value",
+    textAlign: "left",
+    textBaseline: "middle"
+  });
 });
 
 test("partitions all Cars rows into one normalized donut revolution", () => {

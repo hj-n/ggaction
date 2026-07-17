@@ -235,8 +235,16 @@ function createArcPrimitiveProgram(values, settings) {
       .editGraphics({ target: "radialAxisTitle", property: "fontSize", value: 13 })
       .editGraphics({ target: "radialAxisTitle", property: "fontFamily", value: "sans-serif" })
       .editGraphics({ target: "radialAxisTitle", property: "fontWeight", value: 600 })
-      .editGraphics({ target: "radialAxisTitle", property: "textAlign", value: "left" })
-      .editGraphics({ target: "radialAxisTitle", property: "textBaseline", value: "top" });
+      .editGraphics({
+        target: "radialAxisTitle",
+        property: "textAlign",
+        value: values.radialTitle.textAlign
+      })
+      .editGraphics({
+        target: "radialAxisTitle",
+        property: "textBaseline",
+        value: values.radialTitle.textBaseline
+      });
   }
 
   const legend = values.legend;

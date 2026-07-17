@@ -257,6 +257,42 @@ function radialGuide(frame, ticks, domain, range) {
   });
 }
 
+export function referenceRadialAxisTitle({
+  frame,
+  text,
+  angle = 90,
+  position = "inside",
+  offset = 8
+}) {
+  if (!Number.isFinite(angle) || !Number.isFinite(offset) || offset < 0) {
+    throw new TypeError("Radial-axis title requires a finite angle and offset.");
+  }
+  if (position !== "inside" && position !== "outside") {
+    throw new Error(`Unknown radial-axis title position "${position}".`);
+  }
+  const radians = angle * Math.PI / 180;
+  const direction = { x: Math.sin(radians), y: -Math.cos(radians) };
+  const normal = { x: Math.cos(radians), y: Math.sin(radians) };
+  if (position === "inside") {
+    return Object.freeze({
+      x: frame.centerX + direction.x * frame.availableRadius / 2 + normal.x * offset,
+      y: frame.centerY + direction.y * frame.availableRadius / 2 + normal.y * offset,
+      text,
+      textAlign: "center",
+      textBaseline: "top"
+    });
+  }
+  const horizontal = direction.x;
+  const vertical = direction.y;
+  return Object.freeze({
+    x: frame.centerX + direction.x * (frame.availableRadius + offset),
+    y: frame.centerY + direction.y * (frame.availableRadius + offset),
+    text,
+    textAlign: horizontal > 0.25 ? "left" : horizontal < -0.25 ? "right" : "center",
+    textBaseline: vertical > 0.25 ? "top" : vertical < -0.25 ? "bottom" : "middle"
+  });
+}
+
 function categoricalBand(domain, value) {
   const index = domain.indexOf(value);
   if (index < 0) throw new Error(`Unknown categorical theta value "${value}".`);
@@ -392,6 +428,11 @@ export function createNightingaleRoseReference(rows) {
     radialAxis: radialGuideValues.axis,
     radialTicks: radialGuideValues.ticks,
     radialLabels: radialGuideValues.labels,
+    radialTitle: referenceRadialAxisTitle({
+      frame,
+      text: "Mortality rate",
+      position: "inside"
+    }),
     legend: legendLayout(
       NIGHTINGALE_TARGET,
       CAUSE_ORDER,
@@ -476,10 +517,10 @@ export function createGapminderRadialBarReference(rows) {
       y: frame.centerY + frame.availableRadius + 54,
       text: "Country"
     }),
-    radialTitle: Object.freeze({
-      x: frame.centerX + frame.availableRadius + 12,
-      y: frame.centerY + 24,
-      text: "Life expectancy"
+    radialTitle: referenceRadialAxisTitle({
+      frame,
+      text: "Life expectancy",
+      position: "inside"
     }),
     legend: legendLayout(
       GAPMINDER_RADIAL_TARGET,

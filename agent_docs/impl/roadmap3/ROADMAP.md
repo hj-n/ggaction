@@ -336,6 +336,8 @@ chart()
 - 필요한 시점에 `encodeTheta2`/`encodeR2` endpoint contract를 별도 승인한다.
 - Arc, annular sector와 circle은 backend-neutral `M/L/C/Z` path commands로 materialize한다.
 - Selection/highlight는 final arc item grain과 concrete bounds/attachment를 소유하는 policy를 추가한다.
+- Polar radial-axis title은 기존 inside midpoint 배치를 default로 유지하고 explicit `position: "outside"`가
+  axis endpoint 바깥 배치를 선택한다.
 
 Gate F는 Cars Origin donut, Nightingale rose chart와 Gapminder radial bar의 graphical primitive를
 한 번에 승인한다. 세 chart는 각각 aggregate angular partition, overlaid radial sector, ordinary radial

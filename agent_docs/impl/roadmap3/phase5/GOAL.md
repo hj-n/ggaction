@@ -57,6 +57,9 @@ editArcMark(options?: {
 - Omitted `id`는 첫 arc mark의 stable role ID `"arc"`를 사용한다.
 - Appearance와 geometry intent는 mark materialization config가 소유한다.
 - Existing `encodeTheta`, `encodeR`, `encodeColor`를 확장하며 chart-specific action은 만들지 않는다.
+- Polar radial-axis title은 `position: "inside" | "outside"`를 받는다. Default는 기존 승인 baseline인
+  `"inside"`이며 radial baseline midpoint 아래에 놓인다. `"outside"`는 axis endpoint 바깥 방향에
+  title을 두고 `offset`을 endpoint와의 간격으로 해석한다.
 
 ## Gate F boundary
 

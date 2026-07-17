@@ -31,7 +31,7 @@ chart()
       theta: { title: { text: "Country" } },
       radius: {
         ticksAndLabels: { values: [50, 60, 70, 80] },
-        title: { text: "Life expectancy" }
+        title: { text: "Life expectancy", position: "inside" }
       }
     },
     grid: { theta: false, radial: { values: [50, 60, 70, 80] } },
