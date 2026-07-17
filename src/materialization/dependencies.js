@@ -8,10 +8,11 @@ import {
   hasMaterializedLegend,
   materializedLegendUsesScale
 } from "./legends.js";
+import { POSITION_ENCODING_CHANNELS } from "../core/vocabulary.js";
 
 function usesPositionalScale(program, id) {
   return program.semanticSpec.layers.some(layer =>
-    ["x", "y", "x2", "y2", "xOffset", "theta", "radius"].some(
+    POSITION_ENCODING_CHANNELS.some(
       channel => layer.encoding?.[channel]?.scale === id
     )
   );

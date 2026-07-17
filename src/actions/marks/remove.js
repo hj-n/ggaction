@@ -3,13 +3,17 @@ import { validateUserId } from "../../core/identifiers.js";
 import { validateKeys } from "../../core/validation.js";
 import { findDataset } from "../../selectors/datasets.js";
 import { findLayer } from "../../selectors/layers.js";
+import {
+  getPositionChannelDefinition,
+  POSITION_CHANNELS
+} from "../../core/vocabulary.js";
 
 const OPTIONS = Object.freeze(["target"]);
-const POSITION_GUIDES = Object.freeze({
-  x: Object.freeze({ removeAxis: "removeXAxis", grid: "vertical" }),
-  y: Object.freeze({ removeAxis: "removeYAxis", grid: "horizontal" }),
-  theta: Object.freeze({ removeAxis: "removeThetaAxis", grid: "theta" }),
-  radius: Object.freeze({ removeAxis: "removeRadialAxis", grid: "radial" })
+const REMOVE_AXIS = Object.freeze({
+  x: "removeXAxis",
+  y: "removeYAxis",
+  theta: "removeThetaAxis",
+  radius: "removeRadialAxis"
 });
 
 function ownedChildren(program, id) {
@@ -94,11 +98,11 @@ function ownedDerivedData(program, ids) {
 
 function usedPositionScales(program, ids) {
   const scales = Object.fromEntries(
-    Object.keys(POSITION_GUIDES).map(channel => [channel, new Set()])
+    POSITION_CHANNELS.map(channel => [channel, new Set()])
   );
   for (const id of ids) {
     const layer = findLayer(program, id);
-    for (const channel of Object.keys(POSITION_GUIDES)) {
+    for (const channel of POSITION_CHANNELS) {
       const scale = layer?.encoding?.[channel]?.scale;
       if (scale !== undefined) scales[channel].add(scale);
     }
@@ -136,25 +140,26 @@ function hasScaleConsumer(program, channel, scale) {
 
 function cleanupPositionGuides(program, scales) {
   let next = program;
-  for (const [channel, policy] of Object.entries(POSITION_GUIDES)) {
+  for (const channel of POSITION_CHANNELS) {
+    const definition = getPositionChannelDefinition(channel);
     const axis = next.semanticSpec.guides.axis?.[channel];
     if (
       axis !== undefined &&
       scales[channel].has(axis.scale) &&
       !hasScaleConsumer(next, channel, axis.scale)
     ) {
-      next = next[policy.removeAxis]({
+      next = next[REMOVE_AXIS[channel]]({
         scale: axis.scale,
         ...(axis.coordinate === undefined ? {} : { coordinate: axis.coordinate })
       });
     }
-    const grid = next.semanticSpec.guides.grid?.[policy.grid];
+    const grid = next.semanticSpec.guides.grid?.[definition.gridDirection];
     if (
       grid !== undefined &&
       scales[channel].has(grid.scale) &&
       !hasScaleConsumer(next, channel, grid.scale)
     ) {
-      next = next.removeGrid({ [policy.grid]: true });
+      next = next.removeGrid({ [definition.gridDirection]: true });
     }
   }
   return next;

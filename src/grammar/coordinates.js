@@ -1,10 +1,6 @@
+import { getPositionChannelDefinition } from "../core/vocabulary.js";
+
 const COORDINATE_TYPES = new Set(["cartesian", "polar"]);
-const POSITION_COORDINATES = Object.freeze({
-  x: Object.freeze({ id: "main", type: "cartesian" }),
-  y: Object.freeze({ id: "main", type: "cartesian" }),
-  theta: Object.freeze({ id: "polar", type: "polar" }),
-  radius: Object.freeze({ id: "polar", type: "polar" })
-});
 
 export function validateCoordinateType(value) {
   if (!COORDINATE_TYPES.has(value)) {
@@ -15,7 +11,7 @@ export function validateCoordinateType(value) {
 }
 
 export function getPositionCoordinateDefaults(channel) {
-  const coordinate = POSITION_COORDINATES[channel];
+  const coordinate = getPositionChannelDefinition(channel)?.coordinate;
 
   if (coordinate === undefined) {
     throw new Error(`Unknown positional channel "${channel}".`);

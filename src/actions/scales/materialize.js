@@ -50,6 +50,7 @@ import {
   applyMaterializationPlan,
   planScaleGuideRematerialization
 } from "../../materialization/dependencies.js";
+import { normalizePositionScaleChannel } from "../../core/vocabulary.js";
 
 const OPTIONS = Object.freeze(["id", "guides", "marks"]);
 
@@ -121,19 +122,13 @@ export const rematerializeScale = action(
       throw new Error(`Scale "${id}" has no supported consumers.`);
     }
     const channels = new Set(
-      consumers.map(consumer =>
-        consumer.channel === "x2"
-          ? "x"
-          : consumer.channel === "y2" ? "y" : consumer.channel
-      )
+      consumers.map(consumer => normalizePositionScaleChannel(consumer.channel))
     );
     if (channels.size !== 1) {
       throw new Error(`Scale "${id}" cannot be shared across channels.`);
     }
 
-    const channel = consumers[0].channel === "x2"
-      ? "x"
-      : consumers[0].channel === "y2" ? "y" : consumers[0].channel;
+    const channel = normalizePositionScaleChannel(consumers[0].channel);
     const valuesByConsumer = consumers.map(consumer => ({
       consumer,
       values: resolveConsumerValues(this, consumer)

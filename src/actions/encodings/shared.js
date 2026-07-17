@@ -4,6 +4,10 @@ import { resolveEligibleLayer } from "../../selectors/layers.js";
 import { hasMaterializedLegend } from "../../materialization/legends.js";
 import { findSemanticScale } from "../../selectors/scales.js";
 import { validateKeys } from "../../core/validation.js";
+import {
+  getMarkGraphicTypes,
+  getPositionChannelDefinition
+} from "../../core/vocabulary.js";
 
 export function validateOptions(args, supported, operation) {
   validateKeys(args, supported, operation);
@@ -65,17 +69,12 @@ export function rebindPositionGuides(
   nextScale,
   target
 ) {
-  if (!["x", "y", "theta", "radius"].includes(channel)) return program;
+  const definition = getPositionChannelDefinition(channel);
+  if (definition?.guideChannel === undefined) return program;
   if (previousScale === undefined || previousScale === nextScale) return program;
 
-  const axis = program.semanticSpec.guides.axis?.[channel];
-  const direction = channel === "x"
-    ? "vertical"
-    : channel === "y"
-      ? "horizontal"
-      : channel === "theta"
-        ? "theta"
-        : "radial";
+  const axis = program.semanticSpec.guides.axis?.[definition.guideChannel];
+  const direction = definition.gridDirection;
   const grid = program.semanticSpec.guides.grid?.[direction];
   const ownsAxis = axis?.scale === previousScale;
   const ownsGrid = grid?.scale === previousScale;
@@ -93,13 +92,13 @@ export function rebindPositionGuides(
   let next = program;
   if (ownsAxis) {
     next = next.editSemantic({
-      property: `guide.axis.${channel}.scale`,
+      property: `guide.axis.${definition.guideChannel}.scale`,
       value: nextScale
     });
     for (const component of ["line", "ticks", "labels", "title"]) {
-      const config = next.guideConfigs.axis?.[channel]?.[component];
+      const config = next.guideConfigs.axis?.[definition.guideChannel]?.[component];
       if (config?.scale === previousScale) {
-        next = next._withGuideConfig(channel, component, {
+        next = next._withGuideConfig(definition.guideChannel, component, {
           ...config,
           scale: nextScale
         });
@@ -148,22 +147,12 @@ export function resolveTarget(
     throw new Error(`Mark "${id}" requires an existing dataset.`);
   }
 
-  const expectedGraphic = {
-    point: ["circle", "rect", "collection"],
-    line: "path",
-    bar: "rect",
-    area: "path",
-    rule: "line"
-  }[layer.mark.type];
+  const expectedGraphic = getMarkGraphicTypes(layer.mark.type);
 
   const graphicType = program.graphicSpec.objects[id]?.type;
-  const matches = Array.isArray(expectedGraphic)
-    ? expectedGraphic.includes(graphicType)
-    : graphicType === expectedGraphic;
+  const matches = expectedGraphic?.includes(graphicType) === true;
   if (!matches) {
-    const label = Array.isArray(expectedGraphic)
-      ? expectedGraphic.join(" or ")
-      : expectedGraphic;
+    const label = expectedGraphic?.join(" or ") ?? "supported";
     throw new Error(`Mark "${id}" requires ${label} graphics.`);
   }
 

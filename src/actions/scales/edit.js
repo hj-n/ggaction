@@ -36,6 +36,7 @@ import {
   requireSemanticScale
 } from "../../selectors/scales.js";
 import { findScaleConsumers } from "./consumers.js";
+import { normalizePositionScaleChannel } from "../../core/vocabulary.js";
 
 const OPTIONS = Object.freeze([
   "id", "type", "domain", "range", "nice", "zero", "clamp", "reverse",
@@ -67,13 +68,9 @@ function resolveScaleId(program, requested) {
   );
 }
 
-function normalizeChannel(channel) {
-  return channel === "x2" ? "x" : channel === "y2" ? "y" : channel;
-}
-
 function resolveChannel(consumers, id) {
   const channels = new Set(
-    consumers.map(consumer => normalizeChannel(consumer.channel))
+    consumers.map(consumer => normalizePositionScaleChannel(consumer.channel))
   );
   if (channels.size > 1) {
     throw new Error(`Scale "${id}" cannot be shared across channels.`);

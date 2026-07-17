@@ -24,6 +24,7 @@ import { findDataset } from "../../selectors/datasets.js";
 import { requireSemanticScale } from "../../selectors/scales.js";
 import { isAggregate } from "../../grammar/aggregate.js";
 import { normalizeRuleDatum } from "../../grammar/rules.js";
+import { SCALED_ENCODING_CHANNELS } from "../../core/vocabulary.js";
 
 export function findScale(program, id) {
   return requireSemanticScale(program, id);
@@ -32,10 +33,7 @@ export function findScale(program, id) {
 export function findScaleConsumers(program, id) {
   const consumers = [];
   for (const layer of program.semanticSpec.layers) {
-    for (const channel of [
-      "x", "y", "x2", "y2", "xOffset", "theta", "radius", "color",
-      "strokeDash", "size", "shape", "opacity"
-    ]) {
+    for (const channel of SCALED_ENCODING_CHANNELS) {
       const encoding = layer.encoding?.[channel];
       if (encoding?.scale === id) consumers.push({ layer, channel, encoding });
     }

@@ -21,6 +21,7 @@ import {
   readQuantitativeField,
   readTemporalField
 } from "../../grammar/scales.js";
+import { POSITION_CHANNELS } from "../../core/vocabulary.js";
 import { polarToCartesian, resolvePolarFrame } from "../../grammar/polar.js";
 import { resolveGraphicBounds } from "../../layout/canvas.js";
 import {
@@ -139,7 +140,7 @@ function resolveMappedValues(program, layer, dataset, channel) {
     return mapDiscretizedColors(values, scale);
   }
   return ordinal
-    ? ["x", "y", "theta", "radius"].includes(channel)
+    ? POSITION_CHANNELS.includes(channel)
       ? mapOrdinalPositionValues(values, scale)
       : mapOrdinalValues(values, scale.domain, scale.range, {
           ...(Object.hasOwn(scale, "unknown") ? { unknown: scale.unknown } : {})

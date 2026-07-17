@@ -22,22 +22,21 @@ import {
 } from "../../../grammar/aggregate.js";
 import { normalizeRuleDatum } from "../../../grammar/rules.js";
 import { resolveMarkPositionPolicy } from "./policies/index.js";
+import {
+  getPositionChannelDefinition,
+  positionChannelsForFamily
+} from "../../../core/vocabulary.js";
 
 const POSITION_ENCODING_OPTIONS = Object.freeze([
   "field", "datum", "target", "fieldType", "scale", "coordinate",
   "aggregate", "bin", "stack"
 ]);
 
-const CARTESIAN_CHANNELS = Object.freeze(["x", "y"]);
-const POLAR_CHANNELS = Object.freeze(["theta", "radius"]);
-
 function validateCoordinateFamily(layer, channel, operation) {
-  const requestedFamily = POLAR_CHANNELS.includes(channel)
-    ? POLAR_CHANNELS
-    : CARTESIAN_CHANNELS;
-  const incompatible = requestedFamily === POLAR_CHANNELS
-    ? CARTESIAN_CHANNELS
-    : POLAR_CHANNELS;
+  const family = getPositionChannelDefinition(channel).family;
+  const incompatible = positionChannelsForFamily(
+    family === "polar" ? "cartesian" : "polar"
+  );
   const existing = incompatible.filter(name => layer.encoding?.[name] !== undefined);
   if (existing.length > 0) {
     throw new Error(
@@ -81,9 +80,7 @@ export function resolvePositionEncoding(program, channel, args, operation) {
   const { id: target, dataset, layer } = resolveTarget(
     program,
     args.target,
-    POLAR_CHANNELS.includes(channel)
-      ? ["point", "line"]
-      : ["point", "line", "bar", "area", "rule"]
+    getPositionChannelDefinition(channel).markTypes
   );
   validateCoordinateFamily(layer, channel, operation);
   const hasField = Object.hasOwn(args, "field");

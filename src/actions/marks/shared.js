@@ -7,6 +7,11 @@ import { findLayer, hasLayer } from "../../selectors/layers.js";
 import { findSemanticScale } from "../../selectors/scales.js";
 import { resolveMarkPositionPolicy } from "../encodings/position/policies/index.js";
 import { getMarkMaterializationStep } from "../../materialization/marks.js";
+import {
+  POLAR_POSITION_CHANNELS,
+  CARTESIAN_POSITION_CHANNELS,
+  POSITION_CHANNELS
+} from "../../core/vocabulary.js";
 
 export function validateMarkOptions(args, supported, operation) {
   for (const key of Object.keys(args)) {
@@ -87,10 +92,11 @@ function scaleSupportsEncoding(program, markType, channel, encoding) {
 function resolveCompatibleEncodings(program, source, markType) {
   const dataset = findDataset(program, source.data);
   if (dataset === undefined) return {};
-  const channels = source.encoding?.theta !== undefined ||
-    source.encoding?.radius !== undefined
-    ? ["theta", "radius"]
-    : ["x", "y"];
+  const channels = POLAR_POSITION_CHANNELS.some(
+    channel => source.encoding?.[channel] !== undefined
+  )
+    ? POLAR_POSITION_CHANNELS
+    : CARTESIAN_POSITION_CHANNELS;
   const pending = new Map(channels.map(channel => [
     channel,
     inheritedPositionEncoding(source.encoding?.[channel])
@@ -185,7 +191,7 @@ export function applyLayeredMarkInheritance(program, id, inherited) {
       value: inherited.coordinate
     });
   }
-  for (const channel of ["x", "y", "theta", "radius"]) {
+  for (const channel of POSITION_CHANNELS) {
     for (const [property, value] of Object.entries(
       inherited?.encoding[channel] ?? {}
     )) {

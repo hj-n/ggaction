@@ -400,10 +400,18 @@ semantic rule  → line collection
 
 ```text
 position       x, y, x2, y2, xOffset
-future polar   theta, radius
+polar position theta, radius
 appearance     color, strokeDash, size, shape, opacity
 grouping       group
 ```
+
+`src/core/vocabulary.js`의 positional-channel descriptor가 각 channel의 coordinate
+family, primary/secondary/offset role, shared scale channel, 기본 coordinate,
+guide/grid binding과 현재 허용 mark type을 한 번 소유한다. Coordinate inference,
+scale-consumer discovery, guide rebinding, layered inheritance와 removal cleanup은 이
+descriptor를 읽는다. 따라서 새 positional channel을 추가할 때 서로 다른 dispatch
+목록을 독립적으로 늘리지 않는다. Semantic mark type과 허용 concrete graphic type의
+대응도 같은 vocabulary boundary가 소유하며 target resolution은 그 계약을 사용한다.
 
 Field-driven mapping은 semantic encoding이다. Fixed radius, opacity, stroke width, fill
 같은 display constant는 graphical materialization config와 concrete graphic property다.

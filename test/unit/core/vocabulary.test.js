@@ -7,9 +7,15 @@ import {
   COLOR_LAYOUTS,
   ENCODING_CHANNELS,
   LEGEND_CONFIG_KINDS,
+  MARK_GRAPHIC_TYPES,
   MARK_TYPES,
+  getMarkGraphicTypes,
+  getPositionChannelDefinition,
+  normalizePositionScaleChannel,
   POLAR_POSITION_CHANNELS,
+  POSITION_ENCODING_CHANNELS,
   POSITION_CHANNELS,
+  positionChannelsForFamily,
   SCALED_ENCODING_CHANNELS,
   STACK_MODES
 } from "../../../src/core/vocabulary.js";
@@ -19,6 +25,18 @@ test("owns the implemented semantic and legend vocabularies in one module", () =
   assert.deepEqual(CARTESIAN_POSITION_CHANNELS, ["x", "y"]);
   assert.deepEqual(POLAR_POSITION_CHANNELS, ["theta", "radius"]);
   assert.deepEqual(POSITION_CHANNELS, ["x", "y", "theta", "radius"]);
+  assert.deepEqual(POSITION_ENCODING_CHANNELS, [
+    "x", "y", "x2", "y2", "xOffset", "theta", "radius"
+  ]);
+  assert.equal(getPositionChannelDefinition("theta").family, "polar");
+  assert.equal(getPositionChannelDefinition("x").gridDirection, "vertical");
+  assert.equal(normalizePositionScaleChannel("x2"), "x");
+  assert.equal(normalizePositionScaleChannel("color"), "color");
+  assert.deepEqual(positionChannelsForFamily("polar"), ["theta", "radius"]);
+  assert.deepEqual(getMarkGraphicTypes("point"), [
+    "circle", "rect", "path", "collection"
+  ]);
+  assert.equal(Object.isFrozen(MARK_GRAPHIC_TYPES), true);
   assert.deepEqual(CATEGORICAL_LEGEND_CHANNELS, [
     "color", "strokeDash", "shape"
   ]);
@@ -34,6 +52,7 @@ test("owns the implemented semantic and legend vocabularies in one module", () =
   assert.equal(SCALED_ENCODING_CHANNELS.includes("group"), false);
   for (const vocabulary of [
     MARK_TYPES,
+    POSITION_ENCODING_CHANNELS,
     CARTESIAN_POSITION_CHANNELS,
     POLAR_POSITION_CHANNELS,
     POSITION_CHANNELS,
