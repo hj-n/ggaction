@@ -60,7 +60,7 @@ test("places readable perimeter labels and titles inside the Canvas", () => {
   }
   assert.deepEqual(values.thetaTitle, {
     x: 310,
-    y: 600,
+    y: 570,
     text: "Acceleration"
   });
   assert.deepEqual(values.radialTitle, {

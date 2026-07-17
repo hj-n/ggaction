@@ -26,6 +26,7 @@ chart()
 - theta grid: one center-to-edge spoke per theta tick
 - radial grid: one concentric path per positive radius tick
 - theta axis: outer circular baseline, outward ticks and perimeter labels
+- theta title: centered directly below the outer circular baseline
 - radial axis: center-to-right baseline at `90°`, perpendicular ticks and labels
 - radial title: centered directly below the radial baseline
 - inferred titles: `Acceleration` and `Horsepower`
