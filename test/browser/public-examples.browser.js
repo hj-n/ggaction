@@ -5,6 +5,11 @@ import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 
 import { publicCharts } from "../../examples/registry.js";
+import {
+  assertNoBrowserErrors,
+  openBrowserPage,
+  windowValue
+} from "../support/browser.js";
 import { startStaticServer } from "../support/static-server.js";
 
 const repositoryRoot = fileURLToPath(new URL("../../", import.meta.url));
@@ -27,24 +32,16 @@ assert.equal(examples.length > 0, true);
 
 for (const example of examples) {
   test(`renders ${example.id} at its logical Canvas size`, async () => {
-    const page = await browser.newPage();
-    const errors = [];
-    const onConsole = message => {
-      if (message.type() === "error") errors.push(message.text());
-    };
-    const onPageError = error => errors.push(error.message);
-    page.on("console", onConsole);
-    page.on("pageerror", onPageError);
-
-    const response = await page.goto(
+    const { page, errors } = await openBrowserPage(
+      browser,
       new URL(`examples/${example.browser.path}`, server.baseUrl).href,
-      { waitUntil: "networkidle" }
+      {
+        waitFor: () => {
+          const status = document.querySelector("#status")?.textContent ?? "";
+          return status.length > 0 && !/^Loading\b/i.test(status);
+        }
+      }
     );
-    assert.equal(response.ok(), true, `${example.id} failed to load`);
-    await page.waitForFunction(() => {
-      const status = document.querySelector("#status")?.textContent ?? "";
-      return status.length > 0 && !/^Loading\b/i.test(status);
-    });
     const size = await page.locator(example.browser.canvas).evaluate(canvas => ({
       width: canvas.width,
       height: canvas.height
@@ -53,7 +50,14 @@ for (const example of examples) {
       width: example.width,
       height: example.height
     }, `${example.id} Canvas size`);
-    assert.deepEqual(errors, [], `${example.id} browser errors`);
+    if (example.browser.state) {
+      assert.deepEqual(
+        await windowValue(page, example.browser.state.global),
+        example.browser.state.expected,
+        `${example.id} browser state`
+      );
+    }
+    assertNoBrowserErrors(errors, example.id);
     await page.close();
   });
 }

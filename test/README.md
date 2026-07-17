@@ -23,6 +23,11 @@ npm run test:browser
 npm run test:render
 ```
 
+Browser tests share `test/support/browser.js` for navigation, readiness, and
+console/page error capture. Public example-specific state probes belong in the
+example registry so the shared browser suite can verify them without adding a
+new Chromium lifecycle per chart.
+
 `npm run test:gates` reports `No active gate tests.` and succeeds when every
 approved visual slice has graduated into `test/charts/`.
 

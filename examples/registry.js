@@ -72,7 +72,14 @@ export const PUBLIC_CHARTS = Object.freeze([
     programDirectory: "polar-guides",
     testDirectory: "polar-guides",
     docsGroup: "charts",
-    browser: { path: "polar-guides/", canvas: "#chart" }
+    browser: {
+      path: "polar-guides/",
+      canvas: "#chart",
+      state: {
+        global: "__polarGuides",
+        expected: { width: 620, height: 620, points: 400, thetaLabels: 6, radialLabels: 5 }
+      }
+    }
   }),
   example({
     id: "gapminder-polar-trends",
@@ -82,7 +89,14 @@ export const PUBLIC_CHARTS = Object.freeze([
     createProgram: createGapminderPolarTrends,
     testDirectory: "polar-line-radar",
     docsGroup: "charts",
-    browser: { path: "gapminder-polar-trends/", canvas: "#chart" }
+    browser: {
+      path: "gapminder-polar-trends/",
+      canvas: "#chart",
+      state: {
+        global: "__gapminderPolarTrends",
+        expected: { width: 760, height: 620, paths: 3, closed: false }
+      }
+    }
   }),
   example({
     id: "jobs-radar-chart",
@@ -92,7 +106,14 @@ export const PUBLIC_CHARTS = Object.freeze([
     createProgram: createJobsRadarChart,
     testDirectory: "polar-line-radar",
     docsGroup: "charts",
-    browser: { path: "jobs-radar-chart/", canvas: "#chart" }
+    browser: {
+      path: "jobs-radar-chart/",
+      canvas: "#chart",
+      state: {
+        global: "__jobsRadarChart",
+        expected: { width: 820, height: 650, paths: 2, closed: true }
+      }
+    }
   }),
   example({
     id: "cars-line-chart",

@@ -6,6 +6,11 @@ import test from "node:test";
 import { chromium } from "playwright";
 
 import { preparePackageConsumer } from "../../scripts/package-consumer.js";
+import {
+  assertNoBrowserErrors,
+  openBrowserPage,
+  windowValue
+} from "../support/browser.js";
 import { startStaticServer } from "../support/static-server.js";
 
 let browser;
@@ -45,20 +50,14 @@ test.after(async () => {
 });
 
 test("imports and renders the packed default entry in a browser", async () => {
-  const page = await browser.newPage();
-  const errors = [];
-  page.on("console", message => {
-    if (message.type() === "error") errors.push(message.text());
+  const { page, errors } = await openBrowserPage(browser, server.baseUrl, {
+    waitFor: () => window.__ggactionConsumer !== undefined
   });
-  page.on("pageerror", error => errors.push(error.message));
-  const response = await page.goto(server.baseUrl, { waitUntil: "networkidle" });
-  assert.equal(response.ok(), true);
-  await page.waitForFunction(() => window.__ggactionConsumer !== undefined);
-  assert.deepEqual(await page.evaluate(() => window.__ggactionConsumer), {
+  assert.deepEqual(await windowValue(page, "__ggactionConsumer"), {
     width: 160,
     height: 120,
     points: 2
   });
-  assert.deepEqual(errors, []);
+  assertNoBrowserErrors(errors, "packed consumer");
   await page.close();
 });
