@@ -30,7 +30,8 @@ test("partially edits a canvas and updates authoring bounds", () => {
     background: "white"
   });
   assert.deepEqual(next.materializationConfigs.canvas, {
-    margin: { top: 30, right: 30, bottom: 60, left: 80 }
+    margin: { top: 30, right: 30, bottom: 60, left: 80 },
+    size: { width: "explicit", height: "explicit" }
   });
   assert.deepEqual(resolveGraphicBounds(next), {
     x: 80, y: 30, width: 690, height: 310
@@ -53,6 +54,10 @@ test("updates margin-only materialization state without changing graphicSpec", (
     bottom: 20,
     left: 20
   });
+  assert.deepEqual(next.materializationConfigs.canvas.size, {
+    width: "explicit",
+    height: "explicit"
+  });
   assert.deepEqual(resolveGraphicBounds(next), {
     x: 20,
     y: 20,
@@ -60,6 +65,25 @@ test("updates margin-only materialization state without changing graphicSpec", (
     height: 360
   });
   assert.deepEqual(next.trace.children.at(-1).children, []);
+});
+
+test("preserves automatic size intent until a dimension is explicitly edited", () => {
+  const automatic = chart().createCanvas();
+  const background = automatic.editCanvas({ background: "#f8fafc" });
+  const resized = background.editCanvas({ width: 720 });
+
+  assert.deepEqual(automatic.materializationConfigs.canvas.size, {
+    width: "auto",
+    height: "auto"
+  });
+  assert.deepEqual(background.materializationConfigs.canvas.size, {
+    width: "auto",
+    height: "auto"
+  });
+  assert.deepEqual(resized.materializationConfigs.canvas.size, {
+    width: "explicit",
+    height: "auto"
+  });
 });
 
 test("rejects invalid editCanvas calls", () => {

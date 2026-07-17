@@ -41,8 +41,9 @@ function requireCanvas(program) {
 
 function resolveCanvasState(program, args) {
   const canvas = requireCanvas(program);
-  const baseMargin =
-    program.materializationConfigs.canvas?.margin ?? DEFAULT_MARGIN;
+  const canvasConfig = program.materializationConfigs.canvas;
+  const baseMargin = canvasConfig?.margin ?? DEFAULT_MARGIN;
+  const baseSize = canvasConfig?.size ?? { width: "explicit", height: "explicit" };
   const state = {
     width: Object.hasOwn(args, "width")
       ? args.width
@@ -55,7 +56,11 @@ function resolveCanvasState(program, args) {
       : canvas.properties.background,
     margin: Object.hasOwn(args, "margin")
       ? normalizeMargin(args.margin, baseMargin)
-      : baseMargin
+      : baseMargin,
+    size: {
+      width: Object.hasOwn(args, "width") ? "explicit" : baseSize.width,
+      height: Object.hasOwn(args, "height") ? "explicit" : baseSize.height
+    }
   };
 
   validateCanvasState(state);
@@ -82,7 +87,7 @@ export const editCanvas = action(
       }
     }
 
-    next = next._withCanvasConfig({ margin: state.margin });
+    next = next._withCanvasConfig({ margin: state.margin, size: state.size });
 
     if (
       Object.hasOwn(args, "width") ||
@@ -124,7 +129,7 @@ export const createCanvas = action(
         : DEFAULT_CANVAS.margin
     };
 
-    return this
+    const next = this
       .createGraphics({ id: CANVAS_GRAPHIC_ID, type: "canvas" })
       .createGraphics({
         id: PLOT_GRAPHIC_ID,
@@ -132,5 +137,12 @@ export const createCanvas = action(
         parent: CANVAS_GRAPHIC_ID
       })
       .editCanvas(options);
+    return next._withCanvasConfig({
+      ...next.materializationConfigs.canvas,
+      size: {
+        width: Object.hasOwn(args, "width") ? "explicit" : "auto",
+        height: Object.hasOwn(args, "height") ? "explicit" : "auto"
+      }
+    });
   }
 );

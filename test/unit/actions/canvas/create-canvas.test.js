@@ -24,7 +24,8 @@ test("creates a canvas with defaults through nested actions", () => {
   });
   assert.deepEqual(program.graphicSpec.order, ["canvas"]);
   assert.deepEqual(program.materializationConfigs.canvas, {
-    margin: { top: 30, right: 30, bottom: 60, left: 70 }
+    margin: { top: 30, right: 30, bottom: 60, left: 70 },
+    size: { width: "auto", height: "auto" }
   });
   assert.deepEqual(resolveGraphicBounds(program), {
     x: 70, y: 30, width: 540, height: 310
@@ -66,6 +67,10 @@ test("creates a canvas with explicit and partially specified options", () => {
     right: 30,
     bottom: 70,
     left: 80
+  });
+  assert.deepEqual(program.materializationConfigs.canvas.size, {
+    width: "explicit",
+    height: "explicit"
   });
   assert.deepEqual(resolveGraphicBounds(program), {
     x: 80,
