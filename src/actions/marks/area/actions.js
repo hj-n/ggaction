@@ -1,16 +1,16 @@
-import { action } from "../../core/action.js";
-import { validateUserId } from "../../core/identifiers.js";
+import { action } from "../../../core/action.js";
+import { validateUserId } from "../../../core/identifiers.js";
 import {
   validateNonEmptyString,
   validateNonNegativeFinite,
   validateUnitInterval
-} from "../../core/validation.js";
+} from "../../../core/validation.js";
 import {
   deriveAreaSeries,
   deriveDensityAreaSeries,
   layoutDensityAreaSeries
-} from "../../grammar/areaSeries.js";
-import { mapContinuousScaleValues, mapOrdinalValues } from "../../grammar/scales.js";
+} from "../../../grammar/areaSeries.js";
+import { mapContinuousScaleValues, mapOrdinalValues } from "../../../grammar/scales.js";
 import {
   assertMarkAvailable,
   applyLayeredMarkInheritance,
@@ -19,21 +19,21 @@ import {
   resolveMarkId,
   resolveMarkData,
   validateMarkOptions
-} from "./shared.js";
-import { DEFAULT_COLORS } from "../../theme/defaults.js";
-import { findDataset } from "../../selectors/datasets.js";
-import { findLayer } from "../../selectors/layers.js";
+} from "../shared.js";
+import { DEFAULT_COLORS } from "../../../theme/defaults.js";
+import { findDataset } from "../../../selectors/datasets.js";
+import { findLayer } from "../../../selectors/layers.js";
 import {
   buildAreaCurvePathCommands,
   validateCurveInterpolation
-} from "../../grammar/curveCommands.js";
-import { buildLinearPathCommands } from "../../grammar/pathCommands.js";
-import { resolveEligibleLayer } from "../../selectors/layers.js";
-import { canMaterializeArea } from "../../materialization/marks.js";
-import { findUpstreamTransform } from "../../materialization/dataProvenance.js";
+} from "../../../grammar/curveCommands.js";
+import { buildLinearPathCommands } from "../../../grammar/pathCommands.js";
+import { resolveEligibleLayer } from "../../../selectors/layers.js";
+import { canMaterializeArea } from "../../../materialization/marks.js";
+import { findUpstreamTransform } from "../../../materialization/dataProvenance.js";
 import { resolveMarkGraphicPlacement } from
-  "../../materialization/graphicHierarchy.js";
-import { rematerializeHighlightBaseline } from "./lifecycle.js";
+  "../../../materialization/graphicHierarchy.js";
+import { rematerializeHighlightBaseline } from "../lifecycle.js";
 
 const CREATE_OPTIONS = Object.freeze([
   "id", "data", "fill", "opacity", "stroke", "strokeWidth", "curve"

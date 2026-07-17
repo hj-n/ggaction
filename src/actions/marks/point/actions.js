@@ -1,15 +1,15 @@
-import { action } from "../../core/action.js";
-import { validateUserId } from "../../core/identifiers.js";
+import { action } from "../../../core/action.js";
+import { validateUserId } from "../../../core/identifiers.js";
 import {
   validateNonEmptyString,
   validateNonNegativeFinite,
   validateUnitInterval
-} from "../../core/validation.js";
-import { getPointGraphicType } from "../../grammar/schemas/mark.js";
+} from "../../../core/validation.js";
+import { getPointGraphicType } from "../../../grammar/schemas/mark.js";
 import {
   createPointShapeGraphic,
   validatePointShape
-} from "../../grammar/pointShapes.js";
+} from "../../../grammar/pointShapes.js";
 import {
   mapContinuousScaleValues,
   mapDiscretizedColors,
@@ -20,10 +20,10 @@ import {
   readNominalField,
   readQuantitativeField,
   readTemporalField
-} from "../../grammar/scales.js";
-import { POSITION_CHANNELS } from "../../core/vocabulary.js";
-import { polarToCartesian, resolvePolarFrame } from "../../grammar/polar.js";
-import { resolveGraphicBounds } from "../../layout/canvas.js";
+} from "../../../grammar/scales.js";
+import { POSITION_CHANNELS } from "../../../core/vocabulary.js";
+import { polarToCartesian, resolvePolarFrame } from "../../../grammar/polar.js";
+import { resolveGraphicBounds } from "../../../layout/canvas.js";
 import {
   assertMarkAvailable,
   applyLayeredMarkInheritance,
@@ -32,14 +32,14 @@ import {
   resolveMarkId,
   resolveMarkData,
   validateMarkOptions
-} from "./shared.js";
-import { DEFAULT_COLORS } from "../../theme/defaults.js";
-import { findDataset } from "../../selectors/datasets.js";
-import { findLayer } from "../../selectors/layers.js";
-import { rematerializeExistingLegend } from "../encodings/shared.js";
+} from "../shared.js";
+import { DEFAULT_COLORS } from "../../../theme/defaults.js";
+import { findDataset } from "../../../selectors/datasets.js";
+import { findLayer } from "../../../selectors/layers.js";
+import { rematerializeExistingLegend } from "../../encodings/shared.js";
 import { resolveMarkGraphicPlacement } from
-  "../../materialization/graphicHierarchy.js";
-import { rematerializeHighlightBaseline } from "./lifecycle.js";
+  "../../../materialization/graphicHierarchy.js";
+import { rematerializeHighlightBaseline } from "../lifecycle.js";
 
 const POINT_MARK_OPTIONS = Object.freeze([
   "id", "data", "shape", "fill", "opacity", "stroke", "strokeWidth"

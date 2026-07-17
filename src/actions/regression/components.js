@@ -8,7 +8,7 @@ import {
   REGRESSION_LOWER_FIELD,
   REGRESSION_UPPER_FIELD
 } from "../../grammar/regression.js";
-import { validateAreaCreateOutline } from "../marks/area.js";
+import { validateAreaCreateOutline } from "../marks/area/index.js";
 
 const BAND_OPTIONS = Object.freeze([
   "id", "data", "x", "lower", "upper", "groupBy", "coordinate", "xScale", "yScale",

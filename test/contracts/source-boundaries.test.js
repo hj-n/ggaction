@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
@@ -164,6 +164,21 @@ test("keeps cross-cutting planners independent from concrete mark names", () => 
       /mark(?:\?)?\.type\s*===\s*["']/u.test(source),
       false,
       `${relative} must delegate mark-specific behavior to the mark policy registry`
+    );
+  }
+});
+
+test("keeps every ordinary mark family behind a stable directory entry", () => {
+  for (const mark of ["point", "line", "area", "arc", "bar", "rule"]) {
+    assert.equal(
+      existsSync(path.join(root, "actions", "marks", mark, "index.js")),
+      true,
+      `${mark} must own a directory entry point`
+    );
+    assert.equal(
+      existsSync(path.join(root, "actions", "marks", `${mark}.js`)),
+      false,
+      `${mark} must not return to a flat mark module`
     );
   }
 });

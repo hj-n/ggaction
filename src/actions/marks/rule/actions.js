@@ -1,17 +1,17 @@
-import { action } from "../../core/action.js";
-import { validateUserId } from "../../core/identifiers.js";
-import { validatePositiveFinite } from "../../core/validation.js";
+import { action } from "../../../core/action.js";
+import { validateUserId } from "../../../core/identifiers.js";
+import { validatePositiveFinite } from "../../../core/validation.js";
 import {
   mapContinuousScaleValues,
   mapOrdinalPositionValues,
   mapOrdinalValues,
   normalizeStrokeDashPattern
-} from "../../grammar/scales.js";
-import { deriveRuleValues, resolveRuleMode } from "../../grammar/rules.js";
-import { resolveGraphicBounds } from "../../layout/canvas.js";
-import { findDataset } from "../../selectors/datasets.js";
-import { findLayer } from "../../selectors/layers.js";
-import { DEFAULT_COLORS } from "../../theme/defaults.js";
+} from "../../../grammar/scales.js";
+import { deriveRuleValues, resolveRuleMode } from "../../../grammar/rules.js";
+import { resolveGraphicBounds } from "../../../layout/canvas.js";
+import { findDataset } from "../../../selectors/datasets.js";
+import { findLayer } from "../../../selectors/layers.js";
+import { DEFAULT_COLORS } from "../../../theme/defaults.js";
 import {
   assertMarkAvailable,
   applyLayeredMarkInheritance,
@@ -20,10 +20,10 @@ import {
   resolveMarkData,
   resolveMarkId,
   validateMarkOptions
-} from "./shared.js";
+} from "../shared.js";
 import { resolveMarkGraphicPlacement } from
-  "../../materialization/graphicHierarchy.js";
-import { rematerializeHighlightBaseline } from "./lifecycle.js";
+  "../../../materialization/graphicHierarchy.js";
+import { rematerializeHighlightBaseline } from "../lifecycle.js";
 
 const CREATE_OPTIONS = Object.freeze(["id", "data"]);
 const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);

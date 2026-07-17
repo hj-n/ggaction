@@ -1552,7 +1552,7 @@ src/
 │  ├─ errorBands/      ranged-area interval aggregate orchestration
 │  ├─ intervals/       interval composite source/channel/scale inference
 │  ├─ guides/          axes, grids, categorical/continuous/size legends와 aggregate guides
-│  ├─ marks/           point, line, bar, area create/rematerialize
+│  ├─ marks/           mark별 directory entry, action ownership과 shared lifecycle
 │  ├─ primitives/      editSemantic/createGraphics/editGraphics와 stateful semantic validation
 │  ├─ regression/      regression aggregate, component actions와 inference policy
 │  ├─ scales/          semantic scale create/resolve/materialize
@@ -1573,6 +1573,11 @@ Chart example 이름에 따라 source implementation을 나누지 않는다. His
 bar, regression 같은 chart-level capability가 필요하더라도 reusable mark, encoding,
 transform, guide 책임으로 분해한다. Chart-specific 완성 flow는 example, test program,
 tutorial과 `agent_docs/impl/roadmapN/chart/` 계약에 둔다.
+
+Ordinary mark family는 `actions/marks/<mark>/index.js`를 stable internal entry로 사용한다.
+Registrar consumer는 이 entry만 import하고, mark-owned action implementation은 같은
+directory 안에 둔다. Mark 사이에서 재사용되는 inheritance, placement와 highlight
+lifecycle만 `actions/marks/` shared owner로 올린다.
 
 각 action category의 `index.js`는 registrar boundary다. `actions/index.js`가 모든 built-in
 registrar를 한 번 조립하고 top-level `ChartProgram.js`가 이를 core program subclass에 등록한다.

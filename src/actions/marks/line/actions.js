@@ -1,12 +1,12 @@
-import { action } from "../../core/action.js";
-import { deriveLineSeries } from "../../grammar/lineSeries.js";
-import { mapContinuousScaleValues, mapOrdinalValues } from "../../grammar/scales.js";
-import { validateUserId } from "../../core/identifiers.js";
+import { action } from "../../../core/action.js";
+import { deriveLineSeries } from "../../../grammar/lineSeries.js";
+import { mapContinuousScaleValues, mapOrdinalValues } from "../../../grammar/scales.js";
+import { validateUserId } from "../../../core/identifiers.js";
 import {
   validateNonEmptyString,
   validateNonNegativeFinite,
   validateUnitInterval
-} from "../../core/validation.js";
+} from "../../../core/validation.js";
 import {
   assertMarkAvailable,
   applyLayeredMarkInheritance,
@@ -15,22 +15,22 @@ import {
   resolveMarkId,
   resolveMarkData,
   validateMarkOptions
-} from "./shared.js";
-import { DEFAULT_COLORS } from "../../theme/defaults.js";
-import { findDataset } from "../../selectors/datasets.js";
-import { findLayer, resolveEligibleLayer } from "../../selectors/layers.js";
+} from "../shared.js";
+import { DEFAULT_COLORS } from "../../../theme/defaults.js";
+import { findDataset } from "../../../selectors/datasets.js";
+import { findLayer, resolveEligibleLayer } from "../../../selectors/layers.js";
 import {
   buildCurvePathCommands,
   validateCurveInterpolation
-} from "../../grammar/curveCommands.js";
-import { buildPolarLinePathCommands } from "../../grammar/polarLineCommands.js";
-import { resolvePolarFrame } from "../../grammar/polar.js";
-import { resolveGraphicBounds } from "../../layout/canvas.js";
-import { normalizeStrokeDashPattern } from "../../grammar/scales.js";
-import { canMaterializeLine } from "../../materialization/marks.js";
+} from "../../../grammar/curveCommands.js";
+import { buildPolarLinePathCommands } from "../../../grammar/polarLineCommands.js";
+import { resolvePolarFrame } from "../../../grammar/polar.js";
+import { resolveGraphicBounds } from "../../../layout/canvas.js";
+import { normalizeStrokeDashPattern } from "../../../grammar/scales.js";
+import { canMaterializeLine } from "../../../materialization/marks.js";
 import { resolveMarkGraphicPlacement } from
-  "../../materialization/graphicHierarchy.js";
-import { rematerializeHighlightBaseline } from "./lifecycle.js";
+  "../../../materialization/graphicHierarchy.js";
+import { rematerializeHighlightBaseline } from "../lifecycle.js";
 
 const DEFAULT_LINE_STROKE = DEFAULT_COLORS.mark;
 const DEFAULT_LINE_WIDTH = 2;

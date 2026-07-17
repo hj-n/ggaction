@@ -1,22 +1,22 @@
-import { action } from "../../core/action.js";
-import { validateUserId } from "../../core/identifiers.js";
+import { action } from "../../../core/action.js";
+import { validateUserId } from "../../../core/identifiers.js";
 import {
   validateNonEmptyString,
   validateNonNegativeFinite,
   validateUnitInterval
-} from "../../core/validation.js";
-import { deriveArcSectors } from "../../grammar/arcs.js";
-import { buildAnnularSectorCommands } from "../../grammar/polarPaths.js";
-import { resolvePolarFrame } from "../../grammar/polar.js";
-import { mapOrdinalValues } from "../../grammar/scales.js";
-import { resolveGraphicBounds } from "../../layout/canvas.js";
-import { canMaterializeArc } from "../../materialization/marks.js";
-import { findDataset } from "../../selectors/datasets.js";
-import { findLayer, resolveEligibleLayer } from "../../selectors/layers.js";
-import { DEFAULT_COLORS } from "../../theme/defaults.js";
+} from "../../../core/validation.js";
+import { deriveArcSectors } from "../../../grammar/arcs.js";
+import { buildAnnularSectorCommands } from "../../../grammar/polarPaths.js";
+import { resolvePolarFrame } from "../../../grammar/polar.js";
+import { mapOrdinalValues } from "../../../grammar/scales.js";
+import { resolveGraphicBounds } from "../../../layout/canvas.js";
+import { canMaterializeArc } from "../../../materialization/marks.js";
+import { findDataset } from "../../../selectors/datasets.js";
+import { findLayer, resolveEligibleLayer } from "../../../selectors/layers.js";
+import { DEFAULT_COLORS } from "../../../theme/defaults.js";
 import { resolveMarkGraphicPlacement } from
-  "../../materialization/graphicHierarchy.js";
-import { rematerializeHighlightBaseline } from "./lifecycle.js";
+  "../../../materialization/graphicHierarchy.js";
+import { rematerializeHighlightBaseline } from "../lifecycle.js";
 import {
   assertMarkAvailable,
   applyLayeredMarkInheritance,
@@ -25,7 +25,7 @@ import {
   resolveMarkData,
   resolveMarkId,
   validateMarkOptions
-} from "./shared.js";
+} from "../shared.js";
 
 const CREATE_OPTIONS = Object.freeze([
   "id", "data", "innerRadius", "padAngle", "fill", "opacity", "stroke",
