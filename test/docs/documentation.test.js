@@ -191,6 +191,17 @@ test("keeps repository source links and raw images verifiable", async () => {
   }
 });
 
+test("keeps the published documentation version aligned with the package", () => {
+  const packageJson = JSON.parse(read("package.json"));
+  const configVersion = read("docs/_config.yml").match(/^version:\s*(\S+)$/m)?.[1];
+  assert.equal(configVersion, packageJson.version);
+  assert.match(read("docs/index.md"), /experimental `\{\{ site\.version \}\}`/);
+  assert.equal(
+    read("README.md").includes(`**Status:** \`${packageJson.version}\``),
+    true
+  );
+});
+
 test("keeps task pages visual and chart figures canonical", async () => {
   const catalog = chartExampleCatalog();
   const manifest = JSON.parse(read("docs/assets/images/manifest.json"));
@@ -427,6 +438,9 @@ test("keeps concise and full LLM documentation synchronized", async () => {
   assert.equal(lines.length < 100, true);
   assert.match(index, /\.\/llms-full\.txt/);
   assert.match(index, /\.\/reference\/actions\.md/);
+  assert.match(index, /vertical or\s+horizontal grouped statistical\/explicit error bands/);
+  assert.match(index, /vertical or horizontal categorical and\s+quantitative pairings/);
+  assert.doesNotMatch(index, /Polar line\/arc marks/);
   assert.equal(
     read("docs/llms-full.txt"),
     await buildFullLlmDocumentation()
