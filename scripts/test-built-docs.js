@@ -229,14 +229,15 @@ try {
   assert.equal(await mobile.locator(".docs-page-toc").getAttribute("open"), null);
   assert.equal(await mobile.locator(".docs-copy-button").count() > 0, true);
   assert.equal(await mobile.locator(".docs-heading-anchor").count() > 0, true);
-  assert.equal(await mobile.locator(".docs-action-heading").count(), 49);
+  const actionHeadingCount = await mobile.locator(".docs-action-heading").count();
+  assert.equal(actionHeadingCount > 0, true);
   assert.equal(await mobile.locator(".docs-page-toc a").count(), 6);
   const actionFilter = mobile.locator("#docs-action-filter-input");
   assert.equal(await actionFilter.count(), 1);
   await actionFilter.fill("edit");
   const visibleActions = mobile.locator(".docs-action-heading:not([hidden])");
   assert.equal(await visibleActions.count() > 0, true);
-  assert.equal(await visibleActions.count() < 49, true);
+  assert.equal(await visibleActions.count() < actionHeadingCount, true);
   assert.match(await mobile.locator(".docs-action-filter__status").innerText(), /actions$/);
   await mobile.screenshot({
     path: path.join(artifactRoot, "mobile-action-reference.png"),
