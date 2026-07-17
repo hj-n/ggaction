@@ -65,10 +65,19 @@ export function resolvePolarScaleRange(range, channel, bounds) {
     : validateRadialRange(range, frame.availableRadius);
 }
 
-export function polarToCartesian({ theta, radius, frame }) {
+export function polarDirection(theta) {
   if (!Number.isFinite(theta)) {
     throw new TypeError("Polar theta must be a finite number of degrees.");
   }
+  const angle = theta * Math.PI / 180;
+  return cloneAndFreeze({
+    x: Math.sin(angle),
+    y: -Math.cos(angle)
+  });
+}
+
+export function polarToCartesian({ theta, radius, frame }) {
+  const direction = polarDirection(theta);
   if (!Number.isFinite(radius) || radius < 0) {
     throw new TypeError("Polar radius must be a non-negative finite number.");
   }
@@ -86,9 +95,8 @@ export function polarToCartesian({ theta, radius, frame }) {
       `Polar radius ${radius} exceeds the available radius ${resolvedFrame.availableRadius}.`
     );
   }
-  const angle = theta * Math.PI / 180;
   return cloneAndFreeze({
-    x: resolvedFrame.centerX + radius * Math.sin(angle),
-    y: resolvedFrame.centerY - radius * Math.cos(angle)
+    x: resolvedFrame.centerX + radius * direction.x,
+    y: resolvedFrame.centerY + radius * direction.y
   });
 }

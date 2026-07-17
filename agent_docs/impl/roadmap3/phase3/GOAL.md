@@ -6,7 +6,7 @@
 - [x] STEP 2 — Deterministic Polar guide reference geometry
 - [x] STEP 3 — Primitive Polar guide visual baseline
 - [x] STEP 4 — Gate D visual evidence와 사용자 승인
-- [ ] STEP 5 — Pure Polar guide grammar와 tick policy
+- [x] STEP 5 — Pure Polar guide grammar와 tick policy
 - [ ] STEP 6 — Polar guide semantic/config ownership
 - [ ] STEP 7 — Theta/radial grid actions
 - [ ] STEP 8 — Theta/radius axis actions

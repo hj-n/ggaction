@@ -2,12 +2,19 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  polarDirection,
   polarToCartesian,
   resolvePolarFrame,
   resolvePolarScaleRange,
   validateRadialRange,
   validateThetaRange
 } from "../../../src/grammar/polar.js";
+
+test("resolves the canonical Polar direction convention", () => {
+  assert.deepEqual(polarDirection(0), { x: 0, y: -1 });
+  assert.deepEqual(polarDirection(90), { x: 1, y: -Math.cos(Math.PI / 2) });
+  assert.throws(() => polarDirection(Infinity), /finite number/);
+});
 
 const bounds = Object.freeze({ x: 20, y: 40, width: 200, height: 120 });
 
