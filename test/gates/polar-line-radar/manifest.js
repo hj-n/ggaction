@@ -30,10 +30,12 @@ export const gapminderTargetCallChain = `chart()
   .createGuides({
     axes: {
       theta: {
-        ticksAndLabels: { values: [1955, 1965, 1975, 1985, 1995, 2005] }
+        ticksAndLabels: { values: [1955, 1965, 1975, 1985, 1995, 2005] },
+        title: { text: "Year" }
       },
       radius: {
-        ticksAndLabels: { values: [30, 40, 50, 60, 70, 80] }
+        ticksAndLabels: { values: [30, 40, 50, 60, 70, 80] },
+        title: { text: "Life expectancy" }
       }
     },
     grid: {

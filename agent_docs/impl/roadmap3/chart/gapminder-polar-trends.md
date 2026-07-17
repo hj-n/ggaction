@@ -28,8 +28,14 @@ chart()
   .encodeColor({ field: "country", palette: "tableau10" })
   .createGuides({
     axes: {
-      theta: { ticksAndLabels: { values: [1955, 1965, 1975, 1985, 1995, 2005] } },
-      radius: { ticksAndLabels: { values: [30, 40, 50, 60, 70, 80] } }
+      theta: {
+        ticksAndLabels: { values: [1955, 1965, 1975, 1985, 1995, 2005] },
+        title: { text: "Year" }
+      },
+      radius: {
+        ticksAndLabels: { values: [30, 40, 50, 60, 70, 80] },
+        title: { text: "Life expectancy" }
+      }
     },
     grid: {
       theta: { values: [1955, 1965, 1975, 1985, 1995, 2005] },

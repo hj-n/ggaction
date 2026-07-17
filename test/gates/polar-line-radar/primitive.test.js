@@ -73,7 +73,9 @@ test("authors two closed Jobs radar paths without duplicating the first point", 
     id: "theta",
     type: "point",
     domain: values.thetaLabels.map(label => label.text),
-    range: "auto"
+    range: "auto",
+    padding: 0.5,
+    align: 0.5
   });
   assert.equal(paths.length, 2);
   for (const path of paths) {

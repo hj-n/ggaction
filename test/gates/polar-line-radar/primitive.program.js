@@ -13,7 +13,7 @@ function createPolarLinePrimitiveProgram(values, settings) {
   const radius = values.radialLabels;
   const legend = values.legend;
 
-  return chart()
+  let program = chart()
     .createCanvas({
       width: settings.width,
       height: settings.height,
@@ -28,7 +28,19 @@ function createPolarLinePrimitiveProgram(values, settings) {
     .editSemantic({ property: "layer[line].coordinate", value: "polar" })
     .editSemantic({ property: "scale[theta].type", value: settings.thetaScaleType })
     .editSemantic({ property: "scale[theta].domain", value: settings.thetaDomain })
-    .editSemantic({ property: "scale[theta].range", value: settings.thetaRange })
+    .editSemantic({ property: "scale[theta].range", value: settings.thetaRange });
+  if (settings.thetaPadding !== undefined) {
+    program = program
+      .editSemantic({
+        property: "scale[theta].padding",
+        value: settings.thetaPadding
+      })
+      .editSemantic({
+        property: "scale[theta].align",
+        value: settings.thetaAlign
+      });
+  }
+  return program
     .editSemantic({ property: "scale[radius].type", value: "linear" })
     .editSemantic({ property: "scale[radius].domain", value: settings.radiusDomain })
     .editSemantic({ property: "scale[radius].range", value: "auto" })
@@ -387,6 +399,8 @@ export function createGapminderPolarLinePrimitives(rows) {
     thetaScaleType: "linear",
     thetaDomain: GAPMINDER_POLAR_TARGET.thetaDomain,
     thetaRange: GAPMINDER_POLAR_TARGET.thetaRange,
+    thetaPadding: undefined,
+    thetaAlign: undefined,
     radiusField: "life_expect",
     radiusDomain: GAPMINDER_POLAR_TARGET.radiusDomain,
     radiusZero: false,
@@ -411,6 +425,8 @@ export function createJobsRadarPrimitives(rows) {
     thetaScaleType: "point",
     thetaDomain: JOBS_RADAR_ROLES,
     thetaRange: "auto",
+    thetaPadding: 0.5,
+    thetaAlign: 0.5,
     radiusField: "share",
     radiusDomain: JOBS_RADAR_TARGET.radiusDomain,
     radiusZero: true,
