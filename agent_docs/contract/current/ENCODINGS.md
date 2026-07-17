@@ -759,7 +759,7 @@ encodeX2(options: RulePositionAssignment | AreaSecondaryXAssignment): ChartProgr
 
 ## `encodeTheta`
 
-- Signature: `encodeTheta({ field, target?, fieldType?, scale?, coordinate? })`
+- Signature: `encodeTheta({ field, target?, fieldType?, scale?, coordinate?, aggregate? })`
 - Public angle unit은 degree다. 0°는 12시 방향이고 양의 방향은 clockwise다.
 - `fieldType`은 quantitative, temporal, ordinal, nominal을 지원한다. Quantitative는 linear, temporal은 time,
   discrete 값은 point/band scale을 사용한다.
@@ -767,10 +767,12 @@ encodeX2(options: RulePositionAssignment | AreaSecondaryXAssignment): ChartProgr
 - 첫 Polar position action은 `polar` coordinate를 생성·저장한다. 같은 layer의 Cartesian x/y와 혼합할 수 없다.
 - Theta만 있는 incomplete point는 semantic과 resolved scale을 유지하지만 visible x/y geometry를 만들지 않는다.
 - Reassignment는 같은 action과 scale lifecycle을 사용한다.
+- Arc marks use a band scale for categorical theta. `aggregate: "count"` is arc-only, infers nominal field type
+  when omitted, and partitions the full theta range proportionally by category count.
 
 ### Formal values — `encodeTheta`
 
-- Implemented: `encodeTheta({ field: FieldName; target?: UserId; fieldType?: FieldType; scale?: ThetaScaleOptions; coordinate?: UserId })`
+- Implemented: `encodeTheta({ field: FieldName; target?: UserId; fieldType?: FieldType; scale?: ThetaScaleOptions; coordinate?: UserId; aggregate?: "count" })`
 - Theta scale type: `"linear" | "time" | "point" | "band"`.
 - Range: `"auto" | readonly [Finite, Finite]`, with absolute span `<= 360`.
 - Proposed (NOT IMPLEMENTED): —
@@ -779,6 +781,7 @@ encodeX2(options: RulePositionAssignment | AreaSecondaryXAssignment): ChartProgr
 
 - ✅ Covered: shortest call, quantitative and discrete mappings, explicit/reversed ranges, invalid span and type.
 - ✅ Covered: order independence, one-channel incomplete state, Cartesian conflict and immutable failure.
+- ✅ Covered: arc count partition, circular categorical bands, larger-first radial overlay and zero-radius omission.
 - Evidence: Polar grammar, encoding, chart, browser and render tests.
 
 ## `encodeR`

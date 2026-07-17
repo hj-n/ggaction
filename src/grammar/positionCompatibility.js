@@ -15,6 +15,10 @@ export const POSITION_FIELD_COMPATIBILITY = Object.freeze({
     x: Object.freeze(["quantitative", "temporal"]),
     y: Object.freeze(["quantitative", "temporal"])
   }),
+  arc: Object.freeze({
+    theta: Object.freeze(["ordinal", "nominal"]),
+    radius: Object.freeze(["quantitative"])
+  }),
   rule: Object.freeze({
     x: Object.freeze(["quantitative", "temporal", "ordinal", "nominal"]),
     y: Object.freeze(["quantitative", "temporal", "ordinal", "nominal"])

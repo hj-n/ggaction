@@ -52,6 +52,8 @@ interface ChartProgramActions {
   createBarMark(options?: { id?: string; data?: string; fill?: string; opacity?: number; stroke?: string; strokeWidth?: number; }): ChartProgram;
   editBarMark(options: { target?: string; fill?: string; opacity?: number; stroke?: string | false; strokeWidth?: number; }): ChartProgram;
   createAreaMark(options?: { id?: string; data?: string; fill?: string; opacity?: number; stroke?: string; strokeWidth?: number; curve?: CurveInterpolation; }): ChartProgram;
+  createArcMark(options?: { id?: string; data?: string; innerRadius?: number; padAngle?: number; fill?: string; opacity?: number; stroke?: string; strokeWidth?: number; }): ChartProgram;
+  editArcMark(options: { target?: string; innerRadius?: number; padAngle?: number; fill?: string; opacity?: number; stroke?: string; strokeWidth?: number; }): ChartProgram;
   createRuleMark(options?: { id?: string; data?: string }): ChartProgram;
   editAreaMark(options: { target?: string; fill?: string; opacity?: number; stroke?: string | false; strokeWidth?: number; curve?: CurveInterpolation; }): ChartProgram;
   encodeX(options: PositionEncodingOptions | RulePositionEncodingOptions): ChartProgram;
@@ -351,6 +353,25 @@ editAreaMark({ target?, fill?, opacity?, stroke?, strokeWidth?, curve? })
 
 Edit constant area appearance. `stroke: false` removes an existing outline.
 [Marks](../api/marks.md)
+
+### `createArcMark`
+
+```javascript
+createArcMark({ id?, data?, innerRadius?, padAngle?, fill?, opacity?, stroke?, strokeWidth? } = {})
+```
+
+Create a semantic arc mark and empty closed-path collection. Count theta
+materializes proportional pie or donut sectors; categorical theta plus radius
+materializes radial sectors. [Marks](../api/marks/line-area.md#arc-marks)
+
+### `editArcMark`
+
+```javascript
+editArcMark({ target?, innerRadius?, padAngle?, fill?, opacity?, stroke?, strokeWidth? })
+```
+
+Edit arc geometry or appearance and rematerialize complete sector paths.
+[Marks](../api/marks/line-area.md#arc-marks)
 
 ### `createRuleMark`
 

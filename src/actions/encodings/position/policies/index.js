@@ -1,6 +1,7 @@
 import { validatePositionFieldCompatibility } from
   "../../../../grammar/positionCompatibility.js";
 import { resolveAreaPositionPolicy } from "./area.js";
+import { resolveArcPositionPolicy } from "./arc.js";
 import { resolveBarPositionPolicy } from "./bar.js";
 import { resolveLinePositionPolicy } from "./line.js";
 import { resolvePointPositionPolicy } from "./point.js";
@@ -8,6 +9,7 @@ import { resolveRulePositionPolicy } from "./rule.js";
 
 const POSITION_POLICIES = Object.freeze({
   area: resolveAreaPositionPolicy,
+  arc: resolveArcPositionPolicy,
   bar: resolveBarPositionPolicy,
   line: resolveLinePositionPolicy,
   point: resolvePointPositionPolicy,

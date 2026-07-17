@@ -1,6 +1,9 @@
 import { hasMaterializedLegend } from "./legends.js";
 import { requireLayer } from "../selectors/layers.js";
-import { getMarkRematerializationStep } from "./marks.js";
+import {
+  getMarkMaterializationStep,
+  getMarkRematerializationStep
+} from "./marks.js";
 import { buildMaterializationPlan } from "./planner.js";
 
 export function planEncodingRematerialization(program, {
@@ -38,7 +41,9 @@ export function planEncodingRematerialization(program, {
       }
     }
   } else {
-    const step = getMarkRematerializationStep(layer);
+    const step = layer.mark?.type === "arc"
+      ? getMarkMaterializationStep(program, layer)
+      : getMarkRematerializationStep(layer);
     if (step !== undefined) marks.push(step);
   }
 

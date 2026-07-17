@@ -1981,6 +1981,8 @@
         "anchor": "editgraphics"
       }
     },
+    { "name": "createArcMark", "layer": "user-facing", "domain": "marks", "status": "implemented", "lifecycle": "Mutable resource", "update": "`editArcMark`", "audit": "Complete", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/MARKS.md", "anchor": "createarcmark" } },
+    { "name": "editArcMark", "layer": "user-facing", "domain": "marks", "status": "implemented", "lifecycle": "Mutable resource", "update": "Edits arc geometry and appearance", "audit": "Complete", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/MARKS.md", "anchor": "editarcmark" } },
     { "name": "createThetaAxis", "layer": "user-facing", "domain": "axes", "status": "implemented", "lifecycle": "Aggregate create-only", "update": "Focused theta-axis edits", "audit": "Complete", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/AXES.md", "anchor": "createThetaAxis" } },
     { "name": "createRadialAxis", "layer": "user-facing", "domain": "axes", "status": "implemented", "lifecycle": "Aggregate create-only", "update": "Focused radial-axis edits", "audit": "Complete", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/AXES.md", "anchor": "createRadialAxis" } },
     { "name": "editThetaAxis", "layer": "user-facing", "domain": "axes", "status": "implemented", "lifecycle": "Mutable resource", "update": "Edits selected theta-axis components", "audit": "Complete", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/AXES.md", "anchor": "editThetaAxis" } },
@@ -2001,8 +2003,6 @@
     { "name": "editRadialGrid", "layer": "user-facing", "domain": "grid", "status": "implemented", "lifecycle": "Mutable resource", "update": "Edits radial grid", "audit": "Complete", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/GRID.md", "anchor": "editRadialGrid" } }
   ],
   "plannedActions": [
-    { "name": "createArcMark", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_POLAR.md", "anchor": "arc-actions" } },
-    { "name": "editArcMark", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_POLAR.md", "anchor": "arc-actions" } },
     { "name": "encodeTheta2", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_POLAR.md", "anchor": "arc-actions" } },
     { "name": "encodeR2", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_POLAR.md", "anchor": "arc-actions" } },
     { "name": "editCompositionLayout", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/ROADMAP3_COMPOSITION.md", "anchor": "program-composition" } },
@@ -2044,6 +2044,7 @@
       "materializeIntervalData",
       "materializeRegressionData",
       "materializeRuleSpan",
+      "rematerializeArcMark",
       "rematerializeAreaMark",
       "rematerializeBarMark",
       "rematerializeErrorBandBoundary",

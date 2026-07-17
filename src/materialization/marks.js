@@ -77,6 +77,24 @@ export function canMaterializeArea(program, layer) {
   );
 }
 
+export function canMaterializeArc(_program, layer) {
+  if (
+    layer.mark?.type !== "arc" ||
+    layer.encoding?.theta?.scale === undefined ||
+    !["nominal", "ordinal"].includes(layer.encoding.theta.fieldType)
+  ) {
+    return false;
+  }
+  if (layer.encoding.theta.aggregate === "count") {
+    return layer.encoding?.radius === undefined;
+  }
+  return (
+    layer.encoding.theta.aggregate === undefined &&
+    layer.encoding?.radius?.scale !== undefined &&
+    layer.encoding.radius.fieldType === "quantitative"
+  );
+}
+
 export function canMaterializeBar(program, layer) {
   if (layer.mark?.type !== "bar" || !hasPositionScales(layer)) {
     return false;
@@ -123,6 +141,11 @@ const MARK_MATERIALIZATION_POLICIES = Object.freeze({
     canMaterialize: canMaterializeArea,
     op: "rematerializeAreaMark",
     positionEncoding: Object.freeze({ incomplete: "scale", scaleFirst: true })
+  }),
+  arc: Object.freeze({
+    canMaterialize: canMaterializeArc,
+    op: "rematerializeArcMark",
+    positionEncoding: Object.freeze({ incomplete: "scale", scaleFirst: false })
   }),
   bar: Object.freeze({
     canMaterialize: canMaterializeBar,

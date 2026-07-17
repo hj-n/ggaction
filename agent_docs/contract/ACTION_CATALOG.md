@@ -117,6 +117,8 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | primitive | [`editSemantic`](current/PRIMITIVES.md#editsemantic) | primitives | Primitive | Complete | ✅ / ✅ / ⚠️ |
 | primitive | [`createGraphics`](current/PRIMITIVES.md#creategraphics) | primitives | Primitive | Complete | ✅ / ✅ / ✅ |
 | primitive | [`editGraphics`](current/PRIMITIVES.md#editgraphics) | primitives | Primitive | Complete | ✅ / ✅ / ⚠️ |
+| user-facing | [`createArcMark`](current/MARKS.md#createarcmark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
+| user-facing | [`editArcMark`](current/MARKS.md#editarcmark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`createThetaAxis`](current/AXES.md#createThetaAxis) | axes | Aggregate create-only | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`createRadialAxis`](current/AXES.md#createRadialAxis) | axes | Aggregate create-only | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editThetaAxis`](current/AXES.md#editThetaAxis) | axes | Mutable resource | Complete | ✅ / ✅ / ✅ |
@@ -140,8 +142,6 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 
 | Action | Readiness | Contract |
 | --- | --- | --- |
-| `createArcMark` | accepted | [Open](planned/ROADMAP3_POLAR.md#arc-actions) |
-| `editArcMark` | accepted | [Open](planned/ROADMAP3_POLAR.md#arc-actions) |
 | `encodeTheta2` | accepted | [Open](planned/ROADMAP3_POLAR.md#arc-actions) |
 | `encodeR2` | accepted | [Open](planned/ROADMAP3_POLAR.md#arc-actions) |
 | `editCompositionLayout` | accepted | [Open](planned/ROADMAP3_COMPOSITION.md#program-composition) |

@@ -55,6 +55,8 @@ function assertNoConstantColor(program, layer) {
       ? config?.stroke !== undefined
       : layer.mark.type === "bar"
         ? config?.barAppearance?.fill !== undefined
+        : layer.mark.type === "arc"
+          ? config?.fill !== undefined
         : false;
   if (hasConstant) {
     throw new Error(
@@ -101,6 +103,13 @@ function resolveColorLayout(layer, requested, barGrain) {
     throw new Error('Area color layout does not support "group".');
   }
   if (
+    layer.mark.type === "arc" &&
+    layout !== undefined &&
+    layout !== "overlay"
+  ) {
+    throw new Error('Arc color layout currently supports only "overlay".');
+  }
+  if (
     isRangedArea(layer) &&
     layout !== "overlay"
   ) {
@@ -114,6 +123,7 @@ function applyColorLayoutCompanion(
   { target, layer, layout, scale, field }
 ) {
   if (layout === undefined) return program;
+  if (layer.mark.type === "arc") return program;
   if (layer.mark.type === "bar" && resolveBarGrain(layer) === BAR_GRAINS.ranged) return program;
   if (isRangedArea(layer)) {
     return program;
@@ -278,7 +288,7 @@ const encodeColor = action(
     const { id: target, dataset, layer } = resolveTarget(
       this,
       args.target,
-      ["point", "line", "bar", "area"],
+      ["point", "line", "bar", "area", "arc"],
       "color mark"
     );
     assertNoConstantColor(this, layer);

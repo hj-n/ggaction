@@ -21,7 +21,7 @@ import {
 } from "../../../src/core/vocabulary.js";
 
 test("owns the implemented semantic and legend vocabularies in one module", () => {
-  assert.deepEqual(MARK_TYPES, ["point", "line", "bar", "area", "rule"]);
+  assert.deepEqual(MARK_TYPES, ["point", "line", "bar", "area", "arc", "rule"]);
   assert.deepEqual(CARTESIAN_POSITION_CHANNELS, ["x", "y"]);
   assert.deepEqual(POLAR_POSITION_CHANNELS, ["theta", "radius"]);
   assert.deepEqual(POSITION_CHANNELS, ["x", "y", "theta", "radius"]);
@@ -36,6 +36,7 @@ test("owns the implemented semantic and legend vocabularies in one module", () =
   assert.deepEqual(getMarkGraphicTypes("point"), [
     "circle", "rect", "path", "collection"
   ]);
+  assert.deepEqual(getMarkGraphicTypes("arc"), ["path"]);
   assert.equal(Object.isFrozen(MARK_GRAPHIC_TYPES), true);
   assert.deepEqual(CATEGORICAL_LEGEND_CHANNELS, [
     "color", "strokeDash", "shape"

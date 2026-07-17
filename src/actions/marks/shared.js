@@ -83,6 +83,7 @@ function scaleSupportsEncoding(program, markType, channel, encoding) {
   const categorical = ["nominal", "ordinal"].includes(encoding.fieldType);
   if (categorical) {
     if (markType === "bar") return scale.type === "band";
+    if (markType === "arc") return scale.type === "band";
     return ["ordinal", "band", "point"].includes(scale.type);
   }
   if (encoding.fieldType === "temporal") return scale.type === "time";

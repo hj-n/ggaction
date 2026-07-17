@@ -103,6 +103,32 @@ requires an active outline. Constant fill cannot replace a field-driven color
 encoding. Complete paths rematerialize immediately; incomplete paths retain the
 configuration until their encodings become renderable.
 
+## Arc marks
+
+### `createArcMark({ id?, data?, innerRadius?, padAngle?, fill?, opacity?, stroke?, strokeWidth? } = {})`
+
+```javascript
+const donut = chart()
+  .createCanvas({ width: 640, height: 500, margin: 55 })
+  .createData({ values: cars })
+  .createArcMark({ innerRadius: 0.56, padAngle: 1.5 })
+  .encodeTheta({ field: "Origin", aggregate: "count" })
+  .encodeColor({ field: "Origin", palette: "tableau10" });
+```
+
+`innerRadius` is a ratio from `0` inclusive to `1` exclusive. `padAngle` uses
+degrees. Count theta creates proportional pie or donut sectors. Categorical
+theta plus quantitative `encodeR` creates equal-angle radial sectors; repeated
+rows in one angle band are drawn larger first so smaller overlays remain
+visible. Arc graphics are ordinary closed path commands, so renderers do not
+interpret Polar semantics.
+
+### `editArcMark({ target?, innerRadius?, padAngle?, fill?, opacity?, stroke?, strokeWidth? })`
+
+Geometry and appearance edits rebuild complete sectors. An incomplete arc
+retains the edited settings until both required encodings exist. Constant
+`fill` cannot replace a field-driven color encoding.
+
 ## Related
 
 [Position encodings](../position-encodings.md) · [Polar line tutorial](../../tutorials/polar-lines.md) ·

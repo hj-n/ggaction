@@ -635,6 +635,7 @@ export interface ThetaEncodingOptions {
   fieldType?: FieldType;
   scale?: ThetaScaleOptions;
   coordinate?: string;
+  aggregate?: "count";
 }
 
 export interface RadialEncodingOptions {
@@ -1393,6 +1394,25 @@ export class ChartProgram {
     stroke?: string;
     strokeWidth?: number;
     curve?: CurveInterpolation;
+  }): ChartProgram;
+  createArcMark(options?: {
+    id?: string;
+    data?: string;
+    innerRadius?: number;
+    padAngle?: number;
+    fill?: string;
+    opacity?: number;
+    stroke?: string;
+    strokeWidth?: number;
+  }): ChartProgram;
+  editArcMark(options: {
+    target?: string;
+    innerRadius?: number;
+    padAngle?: number;
+    fill?: string;
+    opacity?: number;
+    stroke?: string;
+    strokeWidth?: number;
   }): ChartProgram;
   createRuleMark(options?: { id?: string; data?: string }): ChartProgram;
   editAreaMark(options: {

@@ -301,6 +301,49 @@ an error. Passing `data` explicitly opts into independent assembly and does not 
 - Evidence: `test/unit/actions/marks/edit-area-mark.test.js` and
   `test/charts/cars-density-area/variants/primitive.test.js`.
 
+## `createArcMark`
+
+- Signature: `createArcMark({ id?, data?, innerRadius?, padAngle?, fill?, opacity?, stroke?, strokeWidth? } = {})`.
+- The first inferred ID is `"arc"`; data follows the shared current/explicit dataset contract.
+- `innerRadius` is a ratio in `[0, 1)` of the available Polar radius. `padAngle` is a non-negative degree value.
+- Default appearance is theme fill, opacity `1`, white stroke, and stroke width `1`.
+- Effect: creates semantic mark type `arc` and an empty path collection. Count theta alone completes a pie/donut;
+  categorical theta plus quantitative radius completes equal-band radial sectors. Concrete output contains only closed
+  `M/L/C/Z` commands and appearance properties.
+- Multiple rows in one theta band use stable larger-first overlay order. A mapped outer radius equal to the inner
+  baseline is omitted. Automatic radius range starts at `innerRadius * availableRadius`.
+
+### Formal values — `createArcMark`
+
+- Implemented: `createArcMark({ id?: UserId; data?: UserId; innerRadius?: number; padAngle?: NonNegativeFinite; fill?: NonEmptyString; opacity?: UnitInterval; stroke?: NonEmptyString; strokeWidth?: NonNegativeFinite } = {})`, where `0 <= innerRadius < 1`.
+- Proposed (NOT IMPLEMENTED): explicit secondary theta/radius endpoints.
+
+### Value coverage — `createArcMark`
+
+- ✅ Covered: inferred/explicit ID and data, empty initial path collection, duplicate role ambiguity and immutable trace.
+- ✅ Covered: count donut, categorical radial sectors, larger-first overlay, zero-radius omission and encoding order.
+- ✅ Covered: representative inner radius, pad, fill/opacity/stroke/width defaults and invalid geometry.
+- Evidence: `test/unit/actions/marks/create-arc-mark.test.js`, `test/unit/actions/marks/arc-mark.test.js`, and
+  `test/unit/grammar/arcs.test.js`.
+
+## `editArcMark`
+
+- Signature: `editArcMark({ target?, innerRadius?, padAngle?, fill?, opacity?, stroke?, strokeWidth? })`.
+- Target inference follows other focused mark editors. At least one edited property is required.
+- Complete arcs rematerialize immediately; incomplete arcs retain the configuration until their encodings complete.
+- Constant fill cannot replace a field-driven color encoding. Geometry edits re-resolve automatic radial ranges.
+
+### Formal values — `editArcMark`
+
+- Implemented: `editArcMark({ target?: UserId; innerRadius?: number; padAngle?: NonNegativeFinite; fill?: NonEmptyString; opacity?: UnitInterval; stroke?: NonEmptyString; strokeWidth?: NonNegativeFinite })`.
+- Proposed (NOT IMPLEMENTED): —
+
+### Value coverage — `editArcMark`
+
+- ✅ Covered: inferred target, geometry/appearance persistence, Canvas and scale rematerialization, color conflict,
+  invalid values and earlier-program immutability.
+- Evidence: `test/unit/actions/marks/arc-mark.test.js`.
+
 ## `createRuleMark`
 
 - Signature: `createRuleMark({ id?, data? } = {})`.

@@ -49,7 +49,8 @@ encodeR2({ target?, field?, datum?, fieldType?, scale?, coordinate? }): ChartPro
 - Secondary endpoints share the primary channel scale and coordinate and use assignment/reassignment lifecycle.
 - Pie/donut use normalized theta with inner radius; radial bar uses ordinal theta band and quantitative radial extent.
 - Concrete sectors are backend-neutral command paths.
-- Status: Planned, NOT IMPLEMENTED. Roadmap 3 Phase 5.
+- Status: `createArcMark` and `editArcMark` are implemented and owned by
+  [`../current/MARKS.md`](../current/MARKS.md#createarcmark). Secondary endpoint actions remain Planned.
 
 ## Arc selection highlight
 

@@ -30,6 +30,10 @@ each type infers its ID and current dataset when those choices are unambiguous.
     <strong>Rule marks</strong>
     <span>Full-span references, bounded intervals, and diagonal endpoints.</span>
   </a>
+  <a href="./line-area/#arc-marks">
+    <strong>Arc marks</strong>
+    <span>Donuts, rose overlays, and radial bars with Polar positions.</span>
+  </a>
 </div>
 
 ## At a glance
@@ -39,6 +43,7 @@ each type infers its ID and current dataset when those choices are unambiguous.
 | Point | `createPointMark` | `editPointMark` | Point collection |
 | Line | `createLineMark` | `editLineMark` | Path collection |
 | Area | `createAreaMark` | `editAreaMark` | Closed path collection |
+| Arc | `createArcMark` | `editArcMark` | Closed sector path collection |
 | Bar | `createBarMark` | `editBarMark` | Rect collection |
 | Rule | `createRuleMark` | Encoding actions | Line collection |
 
@@ -63,7 +68,7 @@ those graphics.
 
 - `data` defaults to the current dataset.
 - The first omitted mark ID uses the semantic role: `"point"`, `"line"`,
-  `"area"`, `"bar"`, or `"rule"`.
+  `"area"`, `"arc"`, `"bar"`, or `"rule"`.
 - A second mark of the same type requires an explicit ID.
 - A newly layered mark can inherit compatible data, coordinate, x, and y
   encodings from the current layer, or one unique source on the current dataset.

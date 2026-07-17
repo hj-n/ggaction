@@ -96,8 +96,11 @@ export function resolvePositionEncoding(program, channel, args, operation) {
     throw new Error(`${operation} does not support datum for a ${layer.mark.type} mark.`);
   }
   const previous = layer.encoding?.[channel];
-  const requestedFieldType =
-    args.fieldType ?? previous?.fieldType ?? "quantitative";
+  const requestedFieldType = args.fieldType ?? previous?.fieldType ?? (
+    layer.mark.type === "arc" && channel === "theta" && args.aggregate === "count"
+      ? "nominal"
+      : "quantitative"
+  );
   const fieldType = requestedFieldType === "nominal"
     ? "nominal"
     : validateFieldType(requestedFieldType);
@@ -128,7 +131,9 @@ export function resolvePositionEncoding(program, channel, args, operation) {
     throw new TypeError(`${operation} field must be a non-empty string.`);
   }
 
-  const aggregateOutput = isAggregate(policy.aggregate);
+  const aggregateOutput = isAggregate(policy.aggregate) && !(
+    layer.mark.type === "arc" && channel === "theta"
+  );
   const requestedScale = resolveReassignmentScaleOptions(
     previous,
     Object.hasOwn(args, "scale") ? args.scale : {}
@@ -149,9 +154,17 @@ export function resolvePositionEncoding(program, channel, args, operation) {
           ? { nice: true }
           : { discreteType: "band" }
       : ["ordinal", "nominal"].includes(fieldType)
-        ? { discreteType: "point" }
+        ? { discreteType: layer.mark.type === "arc" ? "band" : "point" }
         : {}
   );
+  if (
+    layer.mark.type === "arc" &&
+    channel === "theta" &&
+    ["ordinal", "nominal"].includes(fieldType) &&
+    scale.type !== "band"
+  ) {
+    throw new Error("Categorical arc theta position requires a band scale.");
+  }
   if (Object.hasOwn(scale, "unknown") && layer.mark.type !== "point") {
     throw new Error(
       "Position scale unknown currently requires a row-owned point mark."
