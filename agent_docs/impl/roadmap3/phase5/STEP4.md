@@ -2,7 +2,7 @@
 
 ## 진행 상태
 
-- [ ] Observable reference values and provenance fixture
+- [x] Observable reference values and provenance fixture
 - [ ] April-to-March equal theta bands
 - [ ] Three cause sectors per month from a shared center baseline
 - [ ] Larger-first stable overlay order

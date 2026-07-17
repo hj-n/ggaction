@@ -21,7 +21,14 @@ test("locks every reference dataset by row count, bytes, and sha256", () => {
   const report = datasetFixtureReport();
   assert.deepEqual(
     report.map(({ id }) => id),
-    ["cars", "jobs", "gapminder", "fashionTsne", "imdbTop1000"]
+    [
+      "cars",
+      "jobs",
+      "gapminder",
+      "nightingaleRose",
+      "fashionTsne",
+      "imdbTop1000"
+    ]
   );
   for (const item of report) {
     assert.deepEqual(

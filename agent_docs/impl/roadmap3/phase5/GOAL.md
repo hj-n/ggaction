@@ -3,7 +3,7 @@
 ## 진행 상태
 
 - [x] STEP 1 — Phase 계약, 세 target chart와 Gate boundary 확정
-- [ ] STEP 2 — Independent annular-sector geometry와 reference invariants
+- [x] STEP 2 — Independent annular-sector geometry와 reference invariants
 - [ ] STEP 3 — Cars Origin donut primitive
 - [ ] STEP 4 — Nightingale rose primitive
 - [ ] STEP 5 — Gapminder radial bar primitive

@@ -2,11 +2,11 @@
 
 ## 진행 상태
 
-- [ ] 12시 origin과 clockwise degree projection
-- [ ] Maximum 90-degree cubic segmentation
-- [ ] Pie center, annular inner edge와 full-circle seam
-- [ ] Angular padding and reverse sweep
-- [ ] Literal anchor values and geometry invariants
+- [x] 12시 origin과 clockwise degree projection
+- [x] Maximum 90-degree cubic segmentation
+- [x] Pie center, annular inner edge와 full-circle seam
+- [x] Angular padding and reverse sweep
+- [x] Literal anchor values and geometry invariants
 
 Test-owned reference geometry는 production `src/grammar/polarPaths.js`를 import하지 않는다. 각 sector는 outer
 arc를 따라간 뒤 center 또는 reverse inner arc로 돌아와 정확히 하나의 `Z`로 닫힌다. Literal quarter-sector

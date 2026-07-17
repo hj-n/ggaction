@@ -25,6 +25,13 @@ const FIXTURES = Object.freeze({
     bytes: 75201,
     sha256: "70630efd862153116c1518a098a5a3bc4ca8c9f037306f86fba282a2720909b9"
   }),
+  nightingaleRose: Object.freeze({
+    file: new URL("../../data/nightingale_rose.json", import.meta.url),
+    format: "json",
+    rows: 36,
+    bytes: 2885,
+    sha256: "ab332b25f7b26770f4fb1d782e774e9e7140c12b8af231da50643872d3c7f1b0"
+  }),
   fashionTsne: Object.freeze({
     file: new URL("../../data/fashion_mnist_tsne.csv", import.meta.url),
     format: "fashion-tsne-csv",
@@ -117,6 +124,10 @@ export function loadJobs() {
 
 export function loadGapminder() {
   return loadDataset("gapminder");
+}
+
+export function loadNightingaleRose() {
+  return loadDataset("nightingaleRose");
 }
 
 export function loadFashionTsne() {
