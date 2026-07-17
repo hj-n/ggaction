@@ -27,11 +27,12 @@
   </div>
 
   <nav class="docs-sidenav">
-    {% for group in site.data.navigation %}
+    {% for group in site.data.navigation_groups %}
       <details class="docs-nav-group" open>
-        <summary><h2>{{ group.title }}</h2></summary>
+        <summary><span class="docs-nav-group__title">{{ group.title }}</span></summary>
         <ul>
-          {% for item in group.items %}
+          {% assign group_items = site.data.pages | where: "nav_group", group.id | sort: "nav_order" %}
+          {% for item in group_items %}
             {% assign item_url = item.url | relative_url %}
             <li>
               <a

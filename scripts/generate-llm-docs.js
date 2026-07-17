@@ -4,7 +4,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const docsRoot = fileURLToPath(new URL("../docs/", import.meta.url));
 const pageOrder = fileURLToPath(
-  new URL("../docs/_data/page_order.yml", import.meta.url)
+  new URL("../docs/_data/pages.yml", import.meta.url)
 );
 const output = fileURLToPath(new URL("../docs/llms-full.txt", import.meta.url));
 

@@ -1,9 +1,15 @@
 - title: Overview
   url: /
+  nav_group: start
+  nav_order: 1
 - title: Getting Started
   url: /getting-started/
+  nav_group: start
+  nav_order: 2
 - title: Tutorials
   url: /tutorials/
+  nav_group: start
+  nav_order: 3
 - title: Scatterplot Tutorial
   url: /tutorials/scatterplot/
 - title: Polar Point Tutorial
@@ -28,6 +34,8 @@
   url: /tutorials/mark-selection/
 - title: Chart Recipes
   url: /recipes/
+  nav_group: start
+  nav_order: 4
 - title: Scatterplot Recipe
   url: /recipes/scatterplot/
 - title: Line Chart Recipe
@@ -48,12 +56,20 @@
   url: /recipes/box-plot/
 - title: Troubleshooting
   url: /troubleshooting/
+  nav_group: start
+  nav_order: 5
+- title: Chart API
+  url: /api/
+  nav_group: chart-api
+  nav_order: 1
 - title: Canvas
   url: /api/canvas/
 - title: Data
   url: /api/data/
 - title: Marks
   url: /api/marks/
+  nav_group: chart-api
+  nav_order: 2
 - title: Point Marks
   url: /api/marks/point/
 - title: Line and Area Marks
@@ -64,20 +80,34 @@
   url: /api/marks/rule/
 - title: Encodings
   url: /api/encodings/
+  nav_group: chart-api
+  nav_order: 3
 - title: Regression
   url: /api/regression/
+  nav_group: statistics
+  nav_order: 1
 - title: Error Bars
   url: /api/error-bars/
+  nav_group: statistics
+  nav_order: 2
 - title: Error Bands
   url: /api/error-bands/
+  nav_group: statistics
+  nav_order: 3
 - title: Box Plots
   url: /api/box-plots/
+  nav_group: statistics
+  nav_order: 4
 - title: Guides
   url: /api/guides/
+  nav_group: chart-api
+  nav_order: 5
 - title: Titles
   url: /api/titles/
 - title: Rendering
   url: /api/rendering/
+  nav_group: chart-api
+  nav_order: 6
 - title: Position Encodings
   url: /api/position-encodings/
 - title: Quantitative Positions
@@ -98,6 +128,8 @@
   url: /api/scales/
 - title: Coordinates
   url: /api/coordinates/
+  nav_group: chart-api
+  nav_order: 4
 - title: Axes
   url: /api/axes/
 - title: Grids
@@ -106,17 +138,32 @@
   url: /api/legends/
 - title: ChartProgram and Immutability
   url: /concepts/chart-program/
+  nav_group: concepts
+  nav_order: 1
 - title: Semantic and Graphical State
   url: /concepts/semantic-and-graphics/
+  nav_group: concepts
+  nav_order: 2
 - title: Actions and Trace Trees
   url: /concepts/actions-and-trace/
+  nav_group: concepts
+  nav_order: 3
 - title: Advanced Axis Components
   url: /advanced/axis-components/
 - title: Supported Features
   url: /supported-features/
+  nav_group: reference
+  nav_order: 1
 - title: Complete Action Reference
   url: /reference/actions/
+  nav_group: reference
+  nav_order: 2
 - title: Action Authoring
   url: /extension/action-authoring/
+  nav_group: reference
+  nav_order: 3
 - title: Primitive API
   url: /extension/primitives/
+  nav_group: reference
+  nav_order: 4
+

@@ -2,7 +2,7 @@
 {% assign next_page = nil %}
 {% assign previous_candidate = nil %}
 {% assign found_current = false %}
-{% for item in site.data.page_order %}
+{% for item in site.data.pages %}
   {% if found_current and next_page == nil %}
     {% assign next_page = item %}
   {% endif %}

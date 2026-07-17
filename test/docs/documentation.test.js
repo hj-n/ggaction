@@ -41,6 +41,17 @@ function dataUrls(relative) {
     .map(match => match[1]);
 }
 
+function pageRegistry() {
+  const source = read("docs/_data/pages.yml");
+  return [...source.matchAll(/^- title:\s+(.+)\n((?: {2}.+\n?)+)/gm)]
+    .map(match => ({
+      title: match[1],
+      ...Object.fromEntries([...match[2].matchAll(
+        /^ {2}([a-z_]+):\s*(.+)$/gm
+      )].map(property => [property[1], property[2]]))
+    }));
+}
+
 function chartExampleCatalog() {
   const source = read("docs/_data/chart_examples.yml");
   return new Map([...source.matchAll(/^- id:\s+([a-z][a-z0-9-]*)\n((?: {2}.+\n?)+)/gm)]
@@ -131,17 +142,22 @@ test("keeps every local Markdown link and anchor valid", async () => {
 test("keeps navigation and page order complete", async () => {
   const pages = (await files(docsRoot)).filter(isDocumentationMarkdown);
   const pageUrls = new Set(pages.map(prettyUrl));
-  const navigation = dataUrls("docs/_data/navigation.yml");
-  const order = dataUrls("docs/_data/page_order.yml");
+  const registry = pageRegistry();
+  const navigation = registry.filter(page => page.nav_group).map(page => page.url);
+  const order = registry.map(page => page.url);
 
   assert.equal(new Set(navigation).size, navigation.length);
   assert.equal(new Set(order).size, order.length);
   assert.deepEqual(new Set(order), pageUrls);
   for (const url of navigation) assert.equal(pageUrls.has(url), true, url);
-  assert.equal(navigation.includes("/api/grids/"), true);
+  assert.equal(navigation.includes("/api/"), true);
+  assert.equal(navigation.length, 22);
 
-  const navigationSource = read("docs/_data/navigation.yml");
-  assert.doesNotMatch(navigationSource, /title: (Regression|Density) Tutorial/);
+  assert.equal(
+    registry.filter(page => page.nav_group).some(page => /Tutorial$/.test(page.title)),
+    false
+  );
+  assert.equal(dataUrls("docs/_data/navigation_groups.yml").length, 0);
 
   const layout = read("docs/_layouts/default.html");
   assert.equal((layout.match(/class="docs-topnav"[\s\S]*?<\/nav>/)?.[0]
@@ -368,7 +384,9 @@ test("indexes documentation headings for section search", () => {
   assert.match(sidebar, /role="combobox"/);
   assert.match(sidebar, /role="listbox"/);
   assert.match(sidebar, /<details class="docs-nav-group" open>/);
-  assert.match(sidebar, /<summary><h2>/);
+  assert.match(sidebar, /docs-nav-group__title/);
+  assert.doesNotMatch(sidebar, /<summary><h2>/);
+  assert.match(sidebar, /site\.data\.pages/);
 
   const navigation = read("docs/assets/js/docs-navigation.js");
   assert.match(navigation, /aria-expanded/);

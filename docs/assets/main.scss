@@ -227,7 +227,8 @@ summary:focus-visible {
   display: none;
 }
 
-.docs-nav-group h2 {
+.docs-nav-group__title {
+  display: block;
   margin: 0 0 0.35rem;
   color: #0f172a;
   font-size: 0.72rem;
@@ -961,7 +962,7 @@ h3:hover .docs-heading-anchor,
     background: #f8fafc;
   }
 
-  .docs-nav-group h2 {
+  .docs-nav-group__title {
     margin: 0;
   }
 
