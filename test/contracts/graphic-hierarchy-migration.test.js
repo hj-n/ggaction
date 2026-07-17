@@ -6,12 +6,18 @@ import {
   findGraphicParent,
   walkGraphicDrawOrder
 } from "../../src/grammar/schemas/graphicTree.js";
-import { loadCars, loadGapminder, loadJobs } from "../support/data.js";
+import {
+  loadCars,
+  loadGapminder,
+  loadJobs,
+  loadNightingaleRose
+} from "../support/data.js";
 
 const LOADERS = Object.freeze({
   cars: loadCars,
   gapminder: loadGapminder,
-  jobs: loadJobs
+  jobs: loadJobs,
+  nightingaleRose: loadNightingaleRose
 });
 
 const EXPECTED_DRAW_ORDER = Object.freeze({
@@ -46,6 +52,24 @@ const EXPECTED_DRAW_ORDER = Object.freeze({
     "thetaAxisLine", "thetaAxisTicks", "thetaAxisLabels", "thetaAxisTitle",
     "radialAxisLine", "radialAxisTicks", "radialAxisLabels", "radialAxisTitle",
     "seriesLegendSymbols", "seriesLegendLabels", "seriesLegendTitle"
+  ],
+  "cars-origin-donut": [
+    "canvas", "arc",
+    "colorLegendSymbols", "colorLegendLabels", "colorLegendTitle"
+  ],
+  "nightingale-rose-chart": [
+    "canvas", "radialGridCircles", "arc",
+    "thetaAxisLine", "thetaAxisTicks", "thetaAxisLabels",
+    "radialAxisLine", "radialAxisTicks", "radialAxisLabels",
+    "radialAxisTitle",
+    "colorLegendSymbols", "colorLegendLabels", "colorLegendTitle"
+  ],
+  "gapminder-radial-bars": [
+    "canvas", "radialGridCircles", "arc",
+    "thetaAxisLine", "thetaAxisTicks", "thetaAxisLabels", "thetaAxisTitle",
+    "radialAxisLine", "radialAxisTicks", "radialAxisLabels",
+    "radialAxisTitle",
+    "colorLegendSymbols", "colorLegendLabels", "colorLegendTitle"
   ],
   "cars-histogram": [
     "canvas", "horizontalGridLines", "bars",

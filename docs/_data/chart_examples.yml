@@ -221,6 +221,52 @@
   url: /tutorials/polar-lines/#closed-radar-paths
   home_group: coordinates
   home_order: 4
+- id: donut
+  title: Donut chart
+  image: /assets/images/cars-origin-donut.png
+  alt: Donut chart showing the number of cars from each origin
+  width: 1280
+  height: 1000
+  thumbnail: /assets/images/cars-origin-donut-thumb.png
+  thumbnail_width: 640
+  thumbnail_height: 500
+  caption: Count aggregation mapped to annular sector angle.
+  summary: Build proportional sectors with an inferred categorical color legend.
+  actions: createArcMark · encodeTheta · encodeColor
+  url: /tutorials/polar-arcs/
+  home_group: coordinates
+  home_order: 5
+  tutorial_order: 4
+- id: rose
+  title: Rose chart
+  image: /assets/images/nightingale-rose-chart.png
+  alt: Rose chart comparing three mortality causes across twelve months
+  width: 1560
+  height: 1280
+  thumbnail: /assets/images/nightingale-rose-chart-thumb.png
+  thumbnail_width: 640
+  thumbnail_height: 525
+  caption: Equal theta bands with larger-first radial overlays.
+  summary: Compare radial magnitudes inside ordered categorical sectors.
+  actions: createArcMark · encodeTheta · encodeR
+  url: /tutorials/polar-arcs/#rose-overlays
+  home_group: coordinates
+  home_order: 6
+- id: radial-bars
+  title: Radial bars
+  image: /assets/images/gapminder-radial-bars.png
+  alt: Radial bars comparing life expectancy for twelve countries
+  width: 1560
+  height: 1280
+  thumbnail: /assets/images/gapminder-radial-bars-thumb.png
+  thumbnail_width: 640
+  thumbnail_height: 525
+  caption: Nominal theta bands and quantitative radius from an inner baseline.
+  summary: Compare values as equal-width sectors around a Polar coordinate.
+  actions: createArcMark · encodeTheta · encodeR
+  url: /tutorials/polar-arcs/#radial-bars
+  home_group: coordinates
+  home_order: 7
 - id: selection
   title: Mark selection and highlighting
   image: /assets/images/mark-selection-points.png
@@ -235,4 +281,3 @@
   actions: selectMarks · highlightMarks
   url: /tutorials/mark-selection/
   tutorial_order: 11
-

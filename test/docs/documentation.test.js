@@ -341,7 +341,7 @@ test("links every public chart example from entry documentation", () => {
   }
   assert.equal(
     [...catalog.values()].filter(example => example.tutorial_order).length,
-    11
+    12
   );
   assert.equal(
     [...catalog.values()].filter(example => example.recipe_order).length,

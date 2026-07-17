@@ -1,4 +1,5 @@
 import { createCarsBoxPlot } from "./cars-box-plot/program.js";
+import { createCarsOriginDonut } from "./cars-origin-donut/program.js";
 import { createCarsDensityArea } from "./cars-density-area/program.js";
 import { createCarsErrorBarOverlay } from "./cars-error-bar/program.js";
 import { createCarsHistogram } from "./cars-histogram/program.js";
@@ -12,6 +13,8 @@ import { createGapminderQuantizeColorScale } from
   "./gapminder-discretized-color-scales/program.js";
 import { createGapminderCurvedBoundaryErrorBand } from
   "./gapminder-error-band/program.js";
+import { createGapminderRadialBars } from
+  "./gapminder-radial-bars/program.js";
 import { createGapminderBandPointChart } from
   "./gapminder-temporal-discrete-scales/program.js";
 import { createGapminderTransformedScaleScatterplot } from
@@ -22,6 +25,8 @@ import { createGapminderPolarTrends } from
   "./gapminder-polar-trends/program.js";
 import { createJobsRadarChart } from "./jobs-radar-chart/program.js";
 import { createJobsGroupedBar } from "./jobs-grouped-bar/program.js";
+import { createNightingaleRoseChart } from
+  "./nightingale-rose-chart/program.js";
 import {
   createGroupedMaximumPointHighlight,
   createJapanLineSeriesHighlight,
@@ -112,6 +117,57 @@ export const PUBLIC_CHARTS = Object.freeze([
       state: {
         global: "__jobsRadarChart",
         expected: { width: 820, height: 650, paths: 2, closed: true }
+      }
+    }
+  }),
+  example({
+    id: "cars-origin-donut",
+    data: "cars",
+    width: 640,
+    height: 500,
+    createProgram: createCarsOriginDonut,
+    testDirectory: "polar-arcs",
+    docsGroup: "charts",
+    browser: {
+      path: "cars-origin-donut/",
+      canvas: "#chart",
+      state: {
+        global: "__carsOriginDonut",
+        expected: { width: 640, height: 500, paths: 3 }
+      }
+    }
+  }),
+  example({
+    id: "nightingale-rose-chart",
+    data: "nightingaleRose",
+    width: 780,
+    height: 640,
+    createProgram: createNightingaleRoseChart,
+    testDirectory: "polar-arcs",
+    docsGroup: "charts",
+    browser: {
+      path: "nightingale-rose-chart/",
+      canvas: "#chart",
+      state: {
+        global: "__nightingaleRoseChart",
+        expected: { width: 780, height: 640, paths: 32 }
+      }
+    }
+  }),
+  example({
+    id: "gapminder-radial-bars",
+    data: "gapminder",
+    width: 780,
+    height: 640,
+    createProgram: createGapminderRadialBars,
+    testDirectory: "polar-arcs",
+    docsGroup: "charts",
+    browser: {
+      path: "gapminder-radial-bars/",
+      canvas: "#chart",
+      state: {
+        global: "__gapminderRadialBars",
+        expected: { width: 780, height: 640, paths: 12 }
       }
     }
   }),
