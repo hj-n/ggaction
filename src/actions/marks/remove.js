@@ -5,6 +5,12 @@ import { findDataset } from "../../selectors/datasets.js";
 import { findLayer } from "../../selectors/layers.js";
 
 const OPTIONS = Object.freeze(["target"]);
+const POSITION_GUIDES = Object.freeze({
+  x: Object.freeze({ removeAxis: "removeXAxis", grid: "vertical" }),
+  y: Object.freeze({ removeAxis: "removeYAxis", grid: "horizontal" }),
+  theta: Object.freeze({ removeAxis: "removeThetaAxis", grid: "theta" }),
+  radius: Object.freeze({ removeAxis: "removeRadialAxis", grid: "radial" })
+});
 
 function ownedChildren(program, id) {
   const config = program.markConfigs[id] ?? {};
@@ -87,10 +93,12 @@ function ownedDerivedData(program, ids) {
 }
 
 function usedPositionScales(program, ids) {
-  const scales = { x: new Set(), y: new Set() };
+  const scales = Object.fromEntries(
+    Object.keys(POSITION_GUIDES).map(channel => [channel, new Set()])
+  );
   for (const id of ids) {
     const layer = findLayer(program, id);
-    for (const channel of ["x", "y"]) {
+    for (const channel of Object.keys(POSITION_GUIDES)) {
       const scale = layer?.encoding?.[channel]?.scale;
       if (scale !== undefined) scales[channel].add(scale);
     }
@@ -128,27 +136,25 @@ function hasScaleConsumer(program, channel, scale) {
 
 function cleanupPositionGuides(program, scales) {
   let next = program;
-  for (const channel of ["x", "y"]) {
+  for (const [channel, policy] of Object.entries(POSITION_GUIDES)) {
     const axis = next.semanticSpec.guides.axis?.[channel];
     if (
       axis !== undefined &&
       scales[channel].has(axis.scale) &&
       !hasScaleConsumer(next, channel, axis.scale)
     ) {
-      next = next[channel === "x" ? "removeXAxis" : "removeYAxis"]({
+      next = next[policy.removeAxis]({
         scale: axis.scale,
         ...(axis.coordinate === undefined ? {} : { coordinate: axis.coordinate })
       });
     }
-  }
-  for (const [direction, channel] of [["horizontal", "y"], ["vertical", "x"]]) {
-    const grid = next.semanticSpec.guides.grid?.[direction];
+    const grid = next.semanticSpec.guides.grid?.[policy.grid];
     if (
       grid !== undefined &&
       scales[channel].has(grid.scale) &&
       !hasScaleConsumer(next, channel, grid.scale)
     ) {
-      next = next.removeGrid({ [direction]: true });
+      next = next.removeGrid({ [policy.grid]: true });
     }
   }
   return next;

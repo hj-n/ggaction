@@ -81,6 +81,39 @@ test("cleans selection and highlight ownership with the removed mark", () => {
   assert.equal(after.context.currentSelection, undefined);
 });
 
+test("removes unreferenced Polar axes and grids with their mark", () => {
+  const before = chart()
+    .createCanvas({ width: 300, height: 300, margin: 30 })
+    .createData({ values: [
+      { angle: 0, distance: 0 },
+      { angle: 10, distance: 20 }
+    ] })
+    .createPointMark()
+    .encodeTheta({ field: "angle" })
+    .encodeR({ field: "distance", scale: { zero: true } })
+    .createGuides();
+  const after = before.removeMark();
+
+  assert.deepEqual(after.semanticSpec.layers, []);
+  assert.equal(after.semanticSpec.guides.axis, undefined);
+  assert.equal(after.semanticSpec.guides.grid, undefined);
+  for (const id of [
+    "thetaAxisLine",
+    "thetaAxisTicks",
+    "thetaAxisLabels",
+    "thetaAxisTitle",
+    "radialAxisLine",
+    "radialAxisTicks",
+    "radialAxisLabels",
+    "radialAxisTitle",
+    "thetaGridLines",
+    "radialGridCircles"
+  ]) {
+    assert.equal(after.graphicSpec.objects[id], undefined);
+    assert.ok(before.graphicSpec.objects[id]);
+  }
+});
+
 test("requires a stable unambiguous owner", () => {
   const program = layeredProgram();
   assert.throws(() => program.removeMark({ target: "missing" }), /Unknown mark target/);
