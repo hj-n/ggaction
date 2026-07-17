@@ -22,7 +22,7 @@ domain action은 semantic change와 필요한 graphical materialization을 명�
 - [x] Phase 1 — Focused edit, create/edit symmetry와 domain-level removal
 - [x] Phase 2 — Polar coordinate 기반과 point vertical slice
 - [x] Phase 3 — Polar axes, grids와 focused guide edits
-- [ ] Phase 4 — Polar line과 radar chart
+- [x] Phase 4 — Polar line과 radar chart
 - [ ] Phase 5 — Arc, pie, donut과 radial bar
 - [ ] Phase 6 — Child-program state와 `hconcat`/`vconcat`
 - [ ] Phase 7 — Chainable `.facet({ field })`와 direct-source facets
