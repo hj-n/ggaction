@@ -57,10 +57,41 @@ test("deduplicates equivalent arguments independent of object key order", () => 
   assert.equal(Object.isFrozen(plan[0].args), true);
 });
 
+test("owns nested array arguments and canonicalizes their object entries", () => {
+  const source = [{ z: 2, a: [1, true, null] }];
+  const plan = buildMaterializationPlan({
+    marks: [
+      { op: "materialize", args: { values: source } },
+      {
+        op: "materialize",
+        args: { values: [{ a: [1, true, null], z: 2 }] }
+      }
+    ]
+  });
+
+  source[0].z = 99;
+  assert.equal(plan.length, 1);
+  assert.deepEqual(plan[0].args.values, [{ z: 2, a: [1, true, null] }]);
+  assert.equal(Object.isFrozen(plan[0].args.values), true);
+  assert.equal(Object.isFrozen(plan[0].args.values[0].a), true);
+});
+
 test("rejects malformed plans and unavailable operations clearly", () => {
+  assert.throws(
+    () => buildMaterializationPlan(null),
+    /stages must be a plain object/
+  );
   assert.throws(
     () => buildMaterializationPlan({ unknown: [] }),
     /Unknown materialization stage "unknown"/
+  );
+  assert.throws(
+    () => buildMaterializationPlan({ marks: {} }),
+    /stages must be arrays/
+  );
+  assert.throws(
+    () => buildMaterializationPlan({ marks: [null] }),
+    /step 0 must be a plain object/
   );
   assert.throws(
     () => buildMaterializationPlan({ marks: [{ op: "" }] }),
@@ -69,6 +100,12 @@ test("rejects malformed plans and unavailable operations clearly", () => {
   assert.throws(
     () => buildMaterializationPlan({ marks: [{ op: "mark", args: [] }] }),
     /args must be a plain object/
+  );
+  assert.throws(
+    () => buildMaterializationPlan({
+      marks: [{ op: "mark", args: { value: Infinity } }]
+    }),
+    /finite JSON-compatible values/
   );
   assert.throws(
     () => applyMaterializationPlan({}, [{ op: "missing" }]),
