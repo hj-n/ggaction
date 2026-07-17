@@ -16,62 +16,35 @@ Build charts as immutable, traceable action programs. Start with a complete
 example, then use the API pages when you need to customize one part.
 The main, extension, and PNG entry points include TypeScript declarations.
 
-> **Release status:** This documentation describes the experimental `{{ site.version }}`
+> **Release status:** This documentation describes the experimental `0.0.2`
 > release. APIs may change before `1.0.0`; consult the
 > [changelog](https://github.com/hj-n/ggaction/blob/main/CHANGELOG.md) when
 > upgrading.
 
 ## Start here
 
-<div class="docs-entry-grid">
-  <a href="./getting-started/">
-    <strong>Build your first chart</strong>
-    <span>Install the package, render a complete chart, and understand the action chain.</span>
-  </a>
-  <a href="./recipes/">
-    <strong>Start from a chart type</strong>
-    <span>Copy the shortest supported scatterplot, line, bar, or area flow.</span>
-  </a>
-  <a href="./reference/actions/">
-    <strong>Find an action</strong>
-    <span>Look up exact signatures, defaults, inference, and related guides.</span>
-  </a>
-</div>
+    Build your first chart
+    Install the package, render a complete chart, and understand the action chain.
+
+    Start from a chart type
+    Copy the shortest supported scatterplot, line, bar, or area flow.
+
+    Find an action
+    Look up exact signatures, defaults, inference, and related guides.
 
 ## Essential charts
 
 Start with the most common Cartesian relationships before moving into
 statistical layers or alternate coordinates.
 
-<div class="docs-chart-gallery">
-  {% assign essential_charts = site.data.chart_examples | where: "home_group", "essentials" | sort: "home_order" %}
-  {% for example in essential_charts %}
-    {% include chart-gallery-card.html example=example eager=forloop.first %}
-  {% endfor %}
-</div>
-
 ## Statistical and layered charts
 
 Compose ordinary marks and derived data into higher-level statistical views.
-
-<div class="docs-chart-gallery docs-chart-gallery--secondary">
-  {% assign statistical_charts = site.data.chart_examples | where: "home_group", "statistical" | sort: "home_order" %}
-  {% for example in statistical_charts %}
-    {% include chart-gallery-card.html example=example %}
-  {% endfor %}
-</div>
 
 ## Coordinate extensions
 
 Use Polar coordinates when angle and radial distance express the relationship
 more directly than Cartesian x and y.
-
-<div class="docs-chart-gallery docs-chart-gallery--secondary">
-  {% assign coordinate_charts = site.data.chart_examples | where: "home_group", "coordinates" | sort: "home_order" %}
-  {% for example in coordinate_charts %}
-    {% include chart-gallery-card.html example=example %}
-  {% endfor %}
-</div>
 
 ## Go deeper
 
@@ -91,8 +64,6 @@ Source, issues, and development history are available on
 <!-- Source: /getting-started/ -->
 
 # Getting Started
-
-{% include chart-example.html id="scatterplot" %}
 
 This walkthrough installs `ggaction`, creates a complete scatterplot from an
 inline dataset, and renders it to Browser Canvas. Every action returns a new
@@ -246,13 +217,6 @@ The source repository also contains complete modules for the
 
 Tutorials build complete, runnable charts and explain what each action adds.
 Choose the visual relationship that matches the question you want to answer.
-
-<div class="docs-chart-index">
-  {% assign tutorial_charts = site.data.chart_examples | where_exp: "example", "example.tutorial_order" | sort: "tutorial_order" %}
-  {% for example in tutorial_charts %}
-    {% include chart-card.html id=example.id kind="tutorial" %}
-  {% endfor %}
-</div>
 
 The bar tutorial uses grouped bars as one layout of the general bar mark. The
 statistical tutorials compose ordinary data, marks, encodings, and guides rather
@@ -422,8 +386,6 @@ program
 
 # Polar Point Chart Tutorial
 
-{% include chart-example.html id="polar" %}
-
 This tutorial maps car acceleration to angle, horsepower to distance from the
 center, and origin to color. The public angle unit is degrees: `0` points to 12
 o'clock and positive angles move clockwise.
@@ -485,8 +447,6 @@ separate from semantic radial position in `encodeR`.
 
 ## Add Polar guides
 
-{% include chart-example.html id="polar-guides" %}
-
 Call `createGuides()` after both position encodings to infer theta/radius axes
 and grids:
 
@@ -530,8 +490,6 @@ points. The line stays open by default; `closed: true` turns each grouped series
 into a radar path.
 
 ## Open Polar trends
-
-{% include chart-example.html id="polar-line" %}
 
 This chart orders years around a partial circle and maps life expectancy to
 radial distance.
@@ -583,8 +541,6 @@ creates one path per country; color, dash, legends, filtering, selection, and
 highlighting all operate on those final series.
 
 ## Closed radar paths
-
-{% include chart-example.html id="radar" %}
 
 The radar chart uses nominal theta categories and normalized radial values:
 
@@ -1597,13 +1553,6 @@ Use a recipe when you know the chart type and want the shortest supported
 action flow. Each recipe separates the decisions you must provide from the
 resources, defaults, and guides that ggaction can infer.
 
-<div class="docs-chart-index">
-  {% assign recipe_charts = site.data.chart_examples | where_exp: "example", "example.recipe_order" | sort: "recipe_order" %}
-  {% for example in recipe_charts %}
-    {% include chart-card.html id=example.id kind="recipe" %}
-  {% endfor %}
-</div>
-
 Every flow begins with `createCanvas`, `createData`, and a semantic mark or
 composite action. Add explicit IDs only when the current program contains more
 than one compatible resource.
@@ -1611,8 +1560,6 @@ than one compatible resource.
 <!-- Source: /recipes/scatterplot/ -->
 
 # Scatterplot Recipe
-
-{% include chart-example.html id="scatterplot" %}
 
 ## Minimal flow
 
@@ -1656,8 +1603,6 @@ scale IDs.
 <!-- Source: /recipes/line-chart/ -->
 
 # Line Chart Recipe
-
-{% include chart-example.html id="line" %}
 
 ## Minimal flow
 
@@ -1715,8 +1660,6 @@ The accepted curve vocabulary is `linear`, `step`, `step-before`, `step-after`,
 
 # Histogram Recipe
 
-{% include chart-example.html id="histogram" %}
-
 ## Minimal flow
 
 ```javascript
@@ -1761,8 +1704,6 @@ used by the public tutorial.
 <!-- Source: /recipes/bar-chart/ -->
 
 # Bar Chart Recipe
-
-{% include chart-example.html id="bar" %}
 
 The current complete bar-chart example uses grouped bars. Grouping is a layout
 choice inside the bar chart, not a separate top-level chart type.
@@ -1812,8 +1753,6 @@ The current API does not synthesize zero bars or support horizontal bars.
 <!-- Source: /recipes/regression-scatterplot/ -->
 
 # Regression Scatterplot Recipe
-
-{% include chart-example.html id="regression" %}
 
 Use this pattern to layer grouped linear fits and mean-response confidence
 bands over a point chart.
@@ -1870,8 +1809,6 @@ Pass `target`, `x`, `y`, or `groupBy` only when inference is ambiguous.
 
 # Density Area Recipe
 
-{% include chart-example.html id="density" %}
-
 ## Minimal flow
 
 ```javascript
@@ -1914,8 +1851,6 @@ options only when that composition is intentional.
 
 # Error-Bar Recipe
 
-{% include chart-example.html id="error-bar" %}
-
 ## Minimal flow
 
 ```javascript
@@ -1953,8 +1888,6 @@ options to reuse its fields, data, coordinate, and scales.
 <!-- Source: /recipes/error-band/ -->
 
 # Error-Band Recipe
-
-{% include chart-example.html id="error-band" %}
 
 ## Minimal flow
 
@@ -1997,8 +1930,6 @@ axis is unambiguous.
 <!-- Source: /recipes/box-plot/ -->
 
 # Box-Plot Recipe
-
-{% include chart-example.html id="box" %}
 
 ## Minimal flow
 
@@ -2172,20 +2103,16 @@ the owning semantic layer. The map is named `graphicSpec.objects`, not
 
 # Chart API
 
-{% include chart-example.html id="scatterplot" %}
-
 Build a chart from a small set of domain actions. Start with the family that
 owns the decision you need to make; follow its focused pages only when the
 overview no longer provides enough control.
 
-<div class="docs-entry-grid docs-entry-grid--two">
-  <a href="./canvas/"><strong>Canvas and data</strong><span>Create the drawing surface, immutable source data, and derived transforms.</span></a>
-  <a href="./marks/"><strong>Marks</strong><span>Create point, line, area, bar, and rule layers.</span></a>
-  <a href="./encodings/"><strong>Encodings</strong><span>Map fields and constants to position, grouping, and appearance.</span></a>
-  <a href="./coordinates/"><strong>Coordinates and scales</strong><span>Use Cartesian or Polar positions and customize their mappings.</span></a>
-  <a href="./guides/"><strong>Guides and titles</strong><span>Create axes, grids, legends, and chart titles from existing encodings.</span></a>
-  <a href="./rendering/"><strong>Rendering</strong><span>Render the fully materialized program to Browser Canvas or Node PNG.</span></a>
-</div>
+  Canvas and data Create the drawing surface, immutable source data, and derived transforms.
+  Marks Create point, line, area, bar, and rule layers.
+  Encodings Map fields and constants to position, grouping, and appearance.
+  Coordinates and scales Use Cartesian or Polar positions and customize their mappings.
+  Guides and titles Create axes, grids, legends, and chart titles from existing encodings.
+  Rendering Render the fully materialized program to Browser Canvas or Node PNG.
 
 ## Statistical layers
 
@@ -2204,8 +2131,6 @@ internal trace operations.
 <!-- Source: /api/canvas/ -->
 
 # Canvas
-
-{% include chart-example.html id="scatterplot" %}
 
 ## At a glance
 
@@ -2269,8 +2194,6 @@ margins must leave positive plot bounds.
 
 # Data
 
-{% include chart-example.html id="regression" %}
-
 Data actions own immutable source rows, explicit derivation provenance, and
 statistical result datasets. Choose the focused page that matches the data
 operation; marks and renderers never mutate source values.
@@ -2305,10 +2228,6 @@ creating state, and a failed action leaves the earlier program unchanged.
 <!-- Source: /api/data/source-and-derived/ -->
 
 # Source and Derived Data
-
-{% include chart-example.html id="scatterplot" %}
-
-{% include chart-example.html id="scatterplot" %}
 
 ## `createData({ id?, values })`
 
@@ -2396,10 +2315,6 @@ transform owned by their corresponding higher-level action.
 <!-- Source: /api/data/filtering/ -->
 
 # Data and Mark Filtering
-
-{% include chart-example.html id="selection" %}
-
-{% include chart-example.html id="regression" %}
 
 ## `filterData({ id, source?, field, oneOf | predicate | range })`
 
@@ -2511,10 +2426,6 @@ creating derived state.
 
 # Statistical Data Transforms
 
-{% include chart-example.html id="regression" %}
-
-{% include chart-example.html id="regression" %}
-
 ## `createRegressionData({ id, source?, x, y, groupBy?, method?, degree?, span?, confidence?, interval? })`
 
 Create deterministic regression predictions from an existing dataset. This is
@@ -2620,32 +2531,23 @@ group's valid sample count. Source values remain unchanged.
 
 # Marks
 
-{% include chart-example.html id="scatterplot" %}
-
 Marks define the semantic form of a layer. Create a mark first, then connect it
 to data through position, grouping, and appearance encodings. The first mark of
 each type infers its ID and current dataset when those choices are unambiguous.
 
 ## Choose a mark family
 
-<div class="docs-entry-grid docs-entry-grid--two">
-  <a href="./point/">
-    <strong>Point marks</strong>
-    <span>Scatterplots, symbols, field-driven shape, size, and opacity.</span>
-  </a>
-  <a href="./line-area/">
-    <strong>Line and area marks</strong>
-    <span>Ordered paths, grouped series, ranged areas, and density geometry.</span>
-  </a>
-  <a href="./bar/">
-    <strong>Bar marks</strong>
-    <span>Histograms, aggregate bars, grouped layouts, and observed intervals.</span>
-  </a>
-  <a href="./rule/">
-    <strong>Rule marks</strong>
-    <span>Full-span references, bounded intervals, and diagonal endpoints.</span>
-  </a>
-</div>
+    Point marks
+    Scatterplots, symbols, field-driven shape, size, and opacity.
+
+    Line and area marks
+    Ordered paths, grouped series, ranged areas, and density geometry.
+
+    Bar marks
+    Histograms, aggregate bars, grouped layouts, and observed intervals.
+
+    Rule marks
+    Full-span references, bounded intervals, and diagonal endpoints.
 
 ## At a glance
 
@@ -2697,8 +2599,6 @@ those graphics.
 <!-- Source: /api/marks/point/ -->
 
 # Point Marks
-
-{% include chart-example.html id="scatterplot" %}
 
 Point marks represent individual observations or derived items. Their semantic
 type is `point`; circle, square, diamond, and other symbols are graphical
@@ -2762,8 +2662,6 @@ required by `editPointMark`.
 <!-- Source: /api/marks/line-area/ -->
 
 # Line and Area Marks
-
-{% include chart-example.html id="line" %}
 
 Line and area marks materialize ordered backend-neutral paths. Lines connect
 values; areas close two edges or one density edge against a baseline.
@@ -2871,8 +2769,6 @@ configuration until their encodings become renderable.
 
 # Bar Marks
 
-{% include chart-example.html id="bar" %}
-
 Bar marks represent binned counts, aggregate categories, grouped or stacked
 partitions, and observed quantitative intervals.
 
@@ -2934,8 +2830,6 @@ after Canvas or scale rematerialization.
 
 # Rule Marks
 
-{% include chart-example.html id="error-bar" %}
-
 Rule marks represent reference lines and intervals. They use concrete line
 primitives without exposing a renderer-specific path format.
 
@@ -2976,8 +2870,6 @@ it. Canvas and scale changes recompute all endpoints.
 <!-- Source: /api/encodings/ -->
 
 # Encodings
-
-{% include chart-example.html id="regression" %}
 
 Encoding actions connect data fields or constant values to chart channels.
 Only values that cannot be inferred safely are required; most target, scale,
@@ -3189,8 +3081,6 @@ combinations are rejected before partial state is authored.
 
 # Regression
 
-{% include chart-example.html id="regression" %}
-
 `createRegression()` layers grouped linear, polynomial, or LOESS fits over an
 existing quantitative point mark. Linear and polynomial fits can include mean
 or prediction interval bands; LOESS is line-only.
@@ -3334,8 +3224,6 @@ Failed calls leave the earlier immutable program unchanged.
 <!-- Source: /api/error-bars/ -->
 
 # Error Bars
-
-{% include chart-example.html id="error-bar" %}
 
 `createErrorBar()` materializes vertical or horizontal intervals from either
 grouped statistics or existing center/lower/upper fields. It can infer its
@@ -3550,8 +3438,6 @@ parameter revision are not part of the current edit action.
 
 # Error Bands
 
-{% include chart-example.html id="error-band" %}
-
 `createErrorBand()` creates a vertical or horizontal confidence or interval
 ribbon as one ordinary area layer. It can derive grouped interval rows or
 consume existing center/lower/upper fields.
@@ -3752,8 +3638,6 @@ boundary remains untouched. Omit `target` only when one owner is unambiguous.
 
 # Box Plots
 
-{% include chart-example.html id="box" %}
-
 `createBoxPlot` creates vertical or horizontal box plots from one categorical
 field and one quantitative field. It derives immutable summary data and
 composes ordinary ranged-bar, error-bar, rule, and optional point actions.
@@ -3892,21 +3776,17 @@ boxes, and custom whisker appearance are not implemented.
 
 # Guides
 
-{% include chart-example.html id="histogram" %}
-
 ## At a glance
 
 | Action | Shortest call | Inference/defaults | Result |
 | --- | --- | --- | --- |
 | `createGuides` | `createGuides()` | Applicable axes, horizontal grid, and legends | Wrapped guide child actions in deterministic order |
 
-<div class="docs-concept-flow" role="img" aria-label="createGuides infers applicable axes, grid, and legend actions from the current encodings">
-  <span><code>position encodings</code><strong>Axes</strong></span>
-  <span><code>position scales</code><strong>Grid</strong></span>
-  <span><code>appearance encodings</code><strong>Legend</strong></span>
-  <b aria-hidden="true">→</b>
-  <span><code>createGuides()</code><strong>Deterministic composition</strong></span>
-</div>
+  position encodings Axes
+  position scales Grid
+  appearance encodings Legend
+  →
+  createGuides() Deterministic composition
 
 ## `createGuides(options?)`
 
@@ -4035,8 +3915,6 @@ be selected.
 
 # Titles
 
-{% include chart-example.html id="line" %}
-
 ## At a glance
 
 | Action | Shortest call | Inference/defaults | Result |
@@ -4162,8 +4040,6 @@ font size. Missing margin space and same-edge guide collisions are errors.
 
 # Rendering
 
-{% include chart-example.html id="scatterplot" %}
-
 ## At a glance
 
 | Target | Shortest call | Density | Result |
@@ -4229,8 +4105,6 @@ concrete, and `pixelRatio` must be a positive finite number.
 <!-- Source: /api/position-encodings/ -->
 
 # Position Encodings
-
-{% include chart-example.html id="scatterplot" %}
 
 Choose the position family from the semantic mark and field relationship. All
 position actions infer the current mark, use or create a compatible coordinate,
@@ -4320,8 +4194,6 @@ Calling the same action again replaces only that endpoint.
 
 # Quantitative Positions
 
-{% include chart-example.html id="scatterplot" %}
-
 ## At a glance
 
 | Action | Shortest call | Required state | Result |
@@ -4374,8 +4246,6 @@ guide cannot be rebound away from a scale that still has another consumer.
 <!-- Source: /api/position/temporal/ -->
 
 # Temporal Line Positions
-
-{% include chart-example.html id="line" %}
 
 ## At a glance
 
@@ -4485,8 +4355,6 @@ outputs must be quantitative.
 
 # Bar Positions
 
-{% include chart-example.html id="bar" %}
-
 ## At a glance
 
 | Action | Shortest call | Required state | Result |
@@ -4588,8 +4456,6 @@ quantitative x measure.
 
 # Histogram Positions
 
-{% include chart-example.html id="histogram" %}
-
 ## At a glance
 
 | Action | Shortest call | Required state | Result |
@@ -4671,8 +4537,6 @@ zero-height rectangles. Grouped histograms require nominal color with
 
 # Ordinal Offsets
 
-{% include chart-example.html id="bar" %}
-
 ## At a glance
 
 | Action | Shortest call | Required state | Result |
@@ -4728,8 +4592,6 @@ consumer of one shared xOffset scale must use the same padding policy.
 
 # Series Encodings
 
-{% include chart-example.html id="line" %}
-
 ## At a glance
 
 | Action | Shortest call | Inference/defaults | Result |
@@ -4743,10 +4605,8 @@ that encoding.
 
 ## Focused series families
 
-<div class="docs-entry-grid docs-entry-grid--two">
-  <a href="./series/color/"><strong>Color</strong><span>Categorical and continuous color, grouping layouts, and aggregate bars.</span></a>
-  <a href="./series/stroke-dash/"><strong>Stroke dash</strong><span>Constant and field-driven dash patterns for lines and rules.</span></a>
-</div>
+  Color Categorical and continuous color, grouping layouts, and aggregate bars.
+  Stroke dash Constant and field-driven dash patterns for lines and rules.
 
 ## Errors and limitations
 
@@ -4762,8 +4622,6 @@ Combined line legends also require matching ordered domains.
 <!-- Source: /api/series/color/ -->
 
 # Color Encoding
-
-{% include chart-example.html id="line" %}
 
 ## `encodeColor(options)`
 
@@ -4929,8 +4787,6 @@ not part of this contract.
 
 # Stroke-Dash Encoding
 
-{% include chart-example.html id="line" %}
-
 ## `encodeStrokeDash(options)`
 
 Map a nominal field to line-series or rule dash patterns, or apply one constant pattern
@@ -4997,8 +4853,6 @@ See [Scale options](../scales.md) and [Legends](../legends.md).
 
 # Appearance Encodings
 
-{% include chart-example.html id="regression" %}
-
 ## At a glance
 
 | Action | Shortest call | Inference/defaults | Result |
@@ -5019,11 +4873,9 @@ focused pages below for selection, point appearance, and mark-specific style.
 
 ## Focused appearance families
 
-<div class="docs-entry-grid docs-entry-grid--two">
-  <a href="./appearance/selection-and-highlighting/"><strong>Selection and highlighting</strong><span>Select final graphical items and apply durable emphasis.</span></a>
-  <a href="./appearance/point/"><strong>Point appearance</strong><span>Radius, size, shape, and opacity encodings.</span></a>
-  <a href="./appearance/mark-style/"><strong>Mark style</strong><span>Rule stroke and aggregate or ranged bar width.</span></a>
-</div>
+  Selection and highlighting Select final graphical items and apply durable emphasis.
+  Point appearance Radius, size, shape, and opacity encodings.
+  Mark style Rule stroke and aggregate or ranged bar width.
 
 ## Errors and limitations
 
@@ -5045,8 +4897,6 @@ selection or appearance state. Highlight appearance currently supports points on
 <!-- Source: /api/appearance/selection-and-highlighting/ -->
 
 # Selection and Highlighting
-
-{% include chart-example.html id="selection" %}
 
 ## Mark selection and highlighting
 
@@ -5185,8 +5035,6 @@ the approved point, stacked-bar, and line-series examples.
 
 # Point Appearance
 
-{% include chart-example.html id="regression" %}
-
 ## `encodeRadius({ value, target? })`
 
 Broadcast a non-negative finite graphical radius to a point mark.
@@ -5253,8 +5101,6 @@ titles and styles remain unchanged.
 
 # Mark Style
 
-{% include chart-example.html id="bar" %}
-
 ## Rule appearance
 
 `encodeStroke({ value, target? })` assigns a required non-empty constant color
@@ -5308,19 +5154,15 @@ Canvas geometry changes explicitly rematerialize the scales and rectangles.
 
 # Scale Options
 
-{% include chart-example.html id="density" %}
-
 Scales map semantic field or datum values into concrete positions and
 appearance values. Encodings create compatible scales automatically; use
 `editScale` when the inferred mapping needs a documented revision.
 
-<div class="docs-concept-flow" role="img" aria-label="A semantic field and channel select a scale which resolves concrete positions, colors, or dash patterns">
-  <span><code>field + channel</code><strong>Semantic input</strong></span>
-  <b aria-hidden="true">→</b>
-  <span><code>domain → range</code><strong>Resolved scale</strong></span>
-  <b aria-hidden="true">→</b>
-  <span><code>x · fill · dash</code><strong>Concrete graphics</strong></span>
-</div>
+  field + channel Semantic input
+  →
+  domain → range Resolved scale
+  →
+  x · fill · dash Concrete graphics
 
 ## At a glance
 
@@ -5395,13 +5237,11 @@ and guides. A band can be shared by bars and point centers, but changing it to
 
 ## Focused scale families
 
-<div class="docs-entry-grid docs-entry-grid--two">
-  <a href="./scales/position/"><strong>Position scales</strong><span>Linear, transformed, time, band, and point mappings.</span></a>
-  <a href="./scales/ordinal-and-dash/"><strong>Ordinal and dash scales</strong><span>Stable categorical domains and stroke-dash ranges.</span></a>
-  <a href="./scales/continuous-color/"><strong>Continuous color</strong><span>Named palettes and continuous quantitative color.</span></a>
-  <a href="./scales/discretized-color/"><strong>Discretized color</strong><span>Quantize, quantile, and threshold classes.</span></a>
-  <a href="./scales/missing-values/"><strong>Missing values</strong><span>Unknown fallbacks and compound-grain limits.</span></a>
-</div>
+  Position scales Linear, transformed, time, band, and point mappings.
+  Ordinal and dash scales Stable categorical domains and stroke-dash ranges.
+  Continuous color Named palettes and continuous quantitative color.
+  Discretized color Quantize, quantile, and threshold classes.
+  Missing values Unknown fallbacks and compound-grain limits.
 
 ## Errors and limitations
 
@@ -5426,10 +5266,6 @@ color is rejected instead of silently replacing the guide.
 <!-- Source: /api/scales/position/ -->
 
 # Position Scales
-
-{% include chart-example.html id="scatterplot" %}
-
-{% include chart-example.html id="line" %}
 
 ## Compatibility matrix
 
@@ -5526,10 +5362,6 @@ semantics are available.
 
 # Ordinal and Stroke-Dash Scales
 
-{% include chart-example.html id="line" %}
-
-{% include chart-example.html id="line" %}
-
 ## Discrete and ordinal scales
 
 Band/point position, color, and stroke-dash encodings use ordered discrete
@@ -5582,10 +5414,6 @@ Canvas units and do not change with output pixel ratio.
 <!-- Source: /api/scales/continuous-color/ -->
 
 # Continuous Color Scales
-
-{% include chart-example.html id="density" %}
-
-{% include chart-example.html id="density" %}
 
 ## Named palettes
 
@@ -5653,10 +5481,6 @@ the unaggregated source rows.
 
 # Discretized Color Scales
 
-{% include chart-example.html id="scatterplot" %}
-
-{% include chart-example.html id="scatterplot" %}
-
 ## Discretized point color
 
 Quantitative point color can create concrete color classes instead of a
@@ -5695,10 +5519,6 @@ replacement definition before rematerializing its consumers.
 
 # Scale Missing Values
 
-{% include chart-example.html id="scatterplot" %}
-
-{% include chart-example.html id="scatterplot" %}
-
 ## Missing and invalid values
 
 Point encodings can provide an `unknown` fallback inside their scale options:
@@ -5732,8 +5552,6 @@ fallback and defers channel validation until attachment. Set
 
 # Coordinates
 
-{% include chart-example.html id="scatterplot" %}
-
 ## At a glance
 
 | Action | Shortest call | Inference/defaults | Result |
@@ -5742,14 +5560,12 @@ fallback and defers channel validation until attachment. Set
 
 Position encoding actions normally manage coordinates automatically:
 
-<div class="docs-concept-flow" role="img" aria-label="Cartesian encodings map x and y to a Cartesian coordinate while Polar encodings map theta and radius to a Polar coordinate">
-  <span><code>encodeX + encodeY</code><strong>Cartesian channels</strong></span>
-  <b aria-hidden="true">→</b>
-  <span><code>main / cartesian</code><strong>Horizontal and vertical position</strong></span>
-  <span><code>encodeTheta + encodeR</code><strong>Polar channels</strong></span>
-  <b aria-hidden="true">→</b>
-  <span><code>polar / polar</code><strong>Angle and radial position</strong></span>
-</div>
+  encodeX + encodeY Cartesian channels
+  →
+  main / cartesian Horizontal and vertical position
+  encodeTheta + encodeR Polar channels
+  →
+  polar / polar Angle and radial position
 
 ```text
 encodeX / encodeY -> main / cartesian
@@ -5801,8 +5617,6 @@ supported.
 <!-- Source: /api/axes/ -->
 
 # Axes
-
-{% include chart-example.html id="scatterplot" %}
 
 ## At a glance
 
@@ -5998,8 +5812,6 @@ has one semantic axis, so parallel duplicate axes cannot be created.
 
 # Grids
 
-{% include chart-example.html id="histogram" %}
-
 ## At a glance
 
 | Action | Shortest call | Inference/defaults | Result |
@@ -6145,15 +5957,11 @@ Cartesian or Polar coordinate. Ambiguous resources require explicit IDs.
 
 # Legends
 
-{% include chart-example.html id="density" %}
-
-<div class="docs-concept-flow" role="img" aria-label="Legend creation reads resolved encodings and scales, chooses a symbol recipe, and writes concrete guide graphics">
-  <span><code>encoding + scale</code><strong>Guide meaning</strong></span>
-  <b aria-hidden="true">→</b>
-  <span><code>symbol recipe</code><strong>Categorical, gradient, or composite</strong></span>
-  <b aria-hidden="true">→</b>
-  <span><code>rect · line · text</code><strong>Concrete guide graphics</strong></span>
-</div>
+  encoding + scale Guide meaning
+  →
+  symbol recipe Categorical, gradient, or composite
+  →
+  rect · line · text Concrete guide graphics
 
 ## At a glance
 
@@ -6170,12 +5978,10 @@ editing page when changing an existing guide.
 
 ## Focused legend families
 
-<div class="docs-entry-grid docs-entry-grid--two">
-  <a href="./legends/categorical/"><strong>Categorical legends</strong><span>Create categorical, size, and interval guides and control their layout.</span></a>
-  <a href="./legends/continuous/"><strong>Continuous legends</strong><span>Gradient color and sampled opacity guides.</span></a>
-  <a href="./legends/composite/"><strong>Composite symbols</strong><span>Layered line, point, and swatch recipes plus optional borders.</span></a>
-  <a href="./legends/editing/"><strong>Edit and remove</strong><span>Atomic component edits, rematerialization, trace, and removal.</span></a>
-</div>
+  Categorical legends Create categorical, size, and interval guides and control their layout.
+  Continuous legends Gradient color and sampled opacity guides.
+  Composite symbols Layered line, point, and swatch recipes plus optional borders.
+  Edit and remove Atomic component edits, rematerialization, trace, and removal.
 
 ## Errors and limitations
 
@@ -6197,8 +6003,6 @@ instead of resizing the Canvas or dropping symbol layers.
 <!-- Source: /api/legends/categorical/ -->
 
 # Categorical and Size Legends
-
-{% include chart-example.html id="line" %}
 
 ## `createLegend(options?)`
 
@@ -6292,8 +6096,6 @@ densityArea.createLegend({
 
 # Continuous Legends
 
-{% include chart-example.html id="density" %}
-
 ## Continuous color and opacity
 
 A point `color` encoding with a quantitative or temporal field produces a
@@ -6344,8 +6146,6 @@ program.createLegend({
 <!-- Source: /api/legends/composite/ -->
 
 # Composite Legend Symbols
-
-{% include chart-example.html id="regression" %}
 
 ## Layered symbols
 
@@ -6447,8 +6247,6 @@ The background is rendered before every symbol layer, label, and title.
 
 # Editing Legends
 
-{% include chart-example.html id="density" %}
-
 ## Updates and trace
 
 `editLegend()` updates one existing stable legend. Omit `target` when exactly
@@ -6548,12 +6346,10 @@ Pass `createGuides({ legend: false })` to opt out.
 
 # ChartProgram and Immutability
 
-<div class="docs-concept-flow docs-concept-flow--state" role="img" aria-label="ChartProgram contains semantic specification, graphic specification, authoring context, and trace state">
-  <span>semanticSpec<strong>meaning</strong></span>
-  <span>graphicSpec<strong>drawing</strong></span>
-  <span>context<strong>next action</strong></span>
-  <span>trace<strong>history</strong></span>
-</div>
+  semanticSpecmeaning
+  graphicSpecdrawing
+  contextnext action
+  tracehistory
 
 `chart()` returns an empty `ChartProgram`. A program contains the authored chart
 state and the history used to produce it.
@@ -6664,15 +6460,13 @@ boundary between intent and concrete output.
 
 # Semantic and Graphical State
 
-<div class="docs-concept-flow" role="img" aria-label="A domain action updates semantic meaning and concrete graphics, then the renderer reads only graphicSpec">
-  <span>semanticSpec<strong>meaning</strong></span>
-  <b aria-hidden="true">→</b>
-  <span>domain action<strong>materializes</strong></span>
-  <b aria-hidden="true">→</b>
-  <span>graphicSpec<strong>concrete nodes</strong></span>
-  <b aria-hidden="true">→</b>
-  <span>renderer<strong>draw only</strong></span>
-</div>
+  semanticSpecmeaning
+  →
+  domain actionmaterializes
+  →
+  graphicSpecconcrete nodes
+  →
+  rendererdraw only
 
 `ggaction` keeps chart meaning separate from its fully resolved graphics.
 
@@ -6740,13 +6534,11 @@ the values produced by applying them are graphical.
 
 # Actions and Trace Trees
 
-<div class="docs-concept-flow" role="img" aria-label="A high-level action contains domain actions, which contain primitive semantic and graphical edits">
-  <span>createAxes<strong>high level</strong></span>
-  <b aria-hidden="true">→</b>
-  <span>createXAxis<strong>domain action</strong></span>
-  <b aria-hidden="true">→</b>
-  <span>createGraphics / editGraphics<strong>primitives</strong></span>
-</div>
+  createAxeshigh level
+  →
+  createXAxisdomain action
+  →
+  createGraphics / editGraphicsprimitives
 
 Every chart-authoring method is an action. Calling a high-level action records
 that action and any wrapped actions it invokes as children.
@@ -6790,8 +6582,6 @@ Developers can define new wrapped actions with the
 <!-- Source: /advanced/axis-components/ -->
 
 # Advanced Axis Components
-
-{% include chart-example.html id="scatterplot" %}
 
 Use these actions when a complete `createAxes` call is not sufficient. All
 component actions require a resolved linear, time, or ordinal scale and Canvas
@@ -7064,7 +6854,6 @@ and `primitive`, respectively.
 - [Rendering functions](#rendering-functions)
 - [Exact TypeScript signatures](#exact-typescript-signatures)
 
-<!-- BEGIN GENERATED TYPESCRIPT SIGNATURES -->
 ## Exact TypeScript signatures
 
 This generated block is the exact callable contract from `types/program.d.ts`.
@@ -7201,7 +6990,6 @@ interface ChartProgramActions {
   editGraphics(options: EditGraphicsOptions): ChartProgram;
 }
 ```
-<!-- END GENERATED TYPESCRIPT SIGNATURES -->
 
 ## Chart Authoring API
 
@@ -8233,13 +8021,11 @@ Rendering functions are not actions and do not modify the trace.
 
 # Action Authoring
 
-<div class="docs-concept-flow" role="img" aria-label="An extension action wraps an implementation, calls lower-level actions, and records one trace hierarchy">
-  <span>action(metadata, fn)<strong>define</strong></span>
-  <b aria-hidden="true">→</b>
-  <span>wrapped calls<strong>compose</strong></span>
-  <b aria-hidden="true">→</b>
-  <span>trace subtree<strong>record</strong></span>
-</div>
+  action(metadata, fn)define
+  →
+  wrapped callscompose
+  →
+  trace subtreerecord
 
 The extension entry point is for developers adding traceable domain actions.
 
@@ -8289,11 +8075,9 @@ the enclosing action must invoke every required graphical operation.
 
 # Primitive Extension API
 
-<div class="docs-concept-flow" role="img" aria-label="Extension actions compose editSemantic, createGraphics, and editGraphics primitives">
-  <span>editSemantic<strong>meaning</strong></span>
-  <span>createGraphics<strong>identity</strong></span>
-  <span>editGraphics<strong>concrete value</strong></span>
-</div>
+  editSemanticmeaning
+  createGraphicsidentity
+  editGraphicsconcrete value
 
 These methods are the low-level public extension layer, not the recommended
 chart-authoring API.

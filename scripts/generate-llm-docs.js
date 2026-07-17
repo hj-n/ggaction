@@ -6,10 +6,29 @@ const docsRoot = fileURLToPath(new URL("../docs/", import.meta.url));
 const pageOrder = fileURLToPath(
   new URL("../docs/_data/pages.yml", import.meta.url)
 );
+const siteConfig = fileURLToPath(
+  new URL("../docs/_config.yml", import.meta.url)
+);
 const output = fileURLToPath(new URL("../docs/llms-full.txt", import.meta.url));
 
 function stripFrontMatter(markdown) {
   return markdown.replace(/^---\n[\s\S]*?\n---\n+/, "").trim();
+}
+
+export function sanitizeMarkdown(markdown, { version } = {}) {
+  return stripFrontMatter(markdown)
+    .replace(/\{\{\s*site\.version\s*\}\}/g, version ?? "current")
+    .replace(/\{%[\s\S]*?%\}/g, "")
+    .replace(/\{\{[\s\S]*?\}\}/g, "")
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/<\/(?:a|article|b|code|div|details|figcaption|figure|span|strong|summary)>/gi, " ")
+    .replace(/<(?:a|article|b|br|code|div|details|figcaption|figure|img|span|strong|summary)\b[^>]*>/gi, "")
+    .replace(/&rarr;/g, "→")
+    .replace(/&middot;/g, "·")
+    .replace(/&amp;/g, "&")
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
 async function pathForUrl(url) {
@@ -26,13 +45,15 @@ async function pathForUrl(url) {
 
 export async function buildFullLlmDocumentation() {
   const order = await readFile(pageOrder, "utf8");
+  const config = await readFile(siteConfig, "utf8");
+  const version = config.match(/^version:\s*(\S+)$/m)?.[1];
   const urls = [...order.matchAll(/^\s*url:\s+(\S+)\s*$/gm)]
     .map(match => match[1]);
   const sections = [];
 
   for (const url of urls) {
     const file = await pathForUrl(url);
-    const markdown = stripFrontMatter(await readFile(file, "utf8"));
+    const markdown = sanitizeMarkdown(await readFile(file, "utf8"), { version });
     sections.push(`<!-- Source: ${url} -->\n\n${markdown}`);
   }
 

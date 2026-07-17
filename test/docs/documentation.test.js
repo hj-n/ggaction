@@ -5,7 +5,10 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { buildFullLlmDocumentation } from "../../scripts/generate-llm-docs.js";
+import {
+  buildFullLlmDocumentation,
+  sanitizeMarkdown
+} from "../../scripts/generate-llm-docs.js";
 import {
   buildSignatureSection,
   declaredActionSignatures
@@ -483,5 +486,13 @@ test("keeps concise and full LLM documentation synchronized", async () => {
   assert.equal(
     read("docs/llms-full.txt"),
     await buildFullLlmDocumentation()
+  );
+  const full = read("docs/llms-full.txt");
+  assert.doesNotMatch(full, /\{%|\{\{/);
+  assert.doesNotMatch(full, /<(?:div|article|span|a|img|figure|details|summary)\b/i);
+  assert.match(full, /This documentation describes the experimental `0\.0\.2`\s+> release/);
+  assert.equal(
+    sanitizeMarkdown('<div><strong>Scale</strong><span>maps values</span></div>'),
+    "Scale maps values"
   );
 });
