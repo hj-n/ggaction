@@ -279,6 +279,19 @@ test("removes a named subtree and detaches it from its parent", () => {
   );
 });
 
+test("removes a nested Canvas subtree but preserves the root Canvas", () => {
+  const base = chart()
+    .createGraphics({ id: "canvas", type: "canvas" })
+    .createGraphics({ id: "panel", type: "canvas", parent: "canvas" })
+    .createGraphics({ id: "panelMark", type: "rect", parent: "panel" });
+  const removed = base.editGraphics({ target: "panel", remove: true });
+
+  assert.deepEqual(removed.graphicSpec.objects.canvas.children, []);
+  assert.equal(removed.graphicSpec.objects.panel, undefined);
+  assert.equal(removed.graphicSpec.objects.panelMark, undefined);
+  assert.ok(base.graphicSpec.objects.panel);
+});
+
 test("resizes a drawable collection while preserving existing children", () => {
   const onePoint = chart()
     .createGraphics({ id: "points", type: "circle", length: 1 })

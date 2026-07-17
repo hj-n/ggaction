@@ -107,6 +107,14 @@ export function createMockCanvasContext() {
       calls.push({ op: "beginPath" });
     },
 
+    rect(...args) {
+      calls.push({ op: "rect", args });
+    },
+
+    clip() {
+      calls.push({ op: "clip" });
+    },
+
     closePath() {
       calls.push({ op: "closePath" });
     },

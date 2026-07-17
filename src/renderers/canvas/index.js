@@ -49,6 +49,43 @@ function requireCanvasContext(context) {
   }
 }
 
+function requireContextMethod(context, method, label) {
+  if (typeof context[method] !== "function") {
+    throw new TypeError(`${label} requires Canvas context ${method}().`);
+  }
+}
+
+function fillCanvasBackground(context, id, canvas, width, height) {
+  if (canvas.properties.background === undefined) return;
+  if (typeof canvas.properties.background !== "string") {
+    throw new Error(
+      `Graphic "${id}" requires a string background property.`
+    );
+  }
+  context.globalAlpha = 1;
+  context.fillStyle = canvas.properties.background;
+  context.fillRect(0, 0, width, height);
+}
+
+function enterNestedCanvas(context, id, canvas) {
+  const properties = canvas.properties ?? {};
+  const x = requireFiniteProperty(properties, "x", id);
+  const y = requireFiniteProperty(properties, "y", id);
+  const width = requireFiniteProperty(properties, "width", id);
+  const height = requireFiniteProperty(properties, "height", id);
+  if (width < 0 || height < 0) {
+    throw new Error(`Nested Canvas "${id}" width and height must not be negative.`);
+  }
+  requireContextMethod(context, "rect", `Nested Canvas "${id}"`);
+  requireContextMethod(context, "clip", `Nested Canvas "${id}"`);
+  context.save();
+  context.translate(x, y);
+  context.beginPath();
+  context.rect(0, 0, width, height);
+  context.clip();
+  fillCanvasBackground(context, id, canvas, width, height);
+}
+
 export function render(program, context, { pixelRatio = 1 } = {}) {
   const graphicSpec = program?.graphicSpec;
 
@@ -89,21 +126,15 @@ export function render(program, context, { pixelRatio = 1 } = {}) {
     context.scale(pixelRatio, pixelRatio);
     context.clearRect(0, 0, width, height);
 
-    if (canvas.properties.background !== undefined) {
-      if (typeof canvas.properties.background !== "string") {
-        throw new Error(
-          `Graphic "${canvasId}" requires a string background property.`
-        );
-      }
-
-      context.globalAlpha = 1;
-      context.fillStyle = canvas.properties.background;
-      context.fillRect(0, 0, width, height);
-    }
+    fillCanvasBackground(context, canvasId, canvas, width, height);
 
     walkGraphicTreeEvents(graphicSpec, {
       enter({ id, object }) {
         if (id === canvasId) return;
+        if (object.type === "canvas") {
+          enterNestedCanvas(context, id, object);
+          return;
+        }
         if (object.type === "collection") {
           context.save();
           return;
@@ -119,7 +150,10 @@ export function render(program, context, { pixelRatio = 1 } = {}) {
         });
       },
       exit({ id, object }) {
-        if (id !== canvasId && object.type === "collection") {
+        if (
+          id !== canvasId &&
+          (object.type === "collection" || object.type === "canvas")
+        ) {
           context.restore();
         }
       }

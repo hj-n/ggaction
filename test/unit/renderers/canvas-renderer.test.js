@@ -149,6 +149,86 @@ test("renders attached named graphics in depth-first sibling order", () => {
   assert.equal(findCanvasCalls(context, "restore").length, 2);
 });
 
+test("renders nested Canvas scopes without resizing the physical backing store", () => {
+  const graphicSpec = {
+    objects: {
+      canvas: {
+        type: "canvas",
+        properties: { width: 500, height: 320, background: "#f1f5f9" },
+        children: ["leftPanel"]
+      },
+      leftPanel: {
+        type: "canvas",
+        properties: {
+          x: 24,
+          y: 30,
+          width: 220,
+          height: 180,
+          background: "white"
+        },
+        children: ["panelPoint"]
+      },
+      panelPoint: {
+        type: "circle",
+        properties: { x: 35, y: 42, radius: 4, fill: "#4c78a8" }
+      }
+    },
+    order: ["canvas"]
+  };
+  const context = createMockCanvasContext();
+
+  render({ graphicSpec }, context, { pixelRatio: 2 });
+
+  assert.equal(context.canvas.width, 1000);
+  assert.equal(context.canvas.height, 640);
+  assert.equal(findCanvasCalls(context, "clearRect").length, 1);
+  assert.deepEqual(findCanvasCalls(context, "translate").map(call => call.args), [
+    [24, 30]
+  ]);
+  assert.deepEqual(findCanvasCalls(context, "rect").map(call => call.args), [
+    [0, 0, 220, 180]
+  ]);
+  assert.equal(findCanvasCalls(context, "clip").length, 1);
+  assert.deepEqual(findCanvasCalls(context, "fillRect").map(call => call.args), [
+    [0, 0, 500, 320],
+    [0, 0, 220, 180]
+  ]);
+  assert.deepEqual(findCanvasCalls(context, "arc")[0].args.slice(0, 3), [
+    35, 42, 4
+  ]);
+  assert.equal(findCanvasCalls(context, "save").length, 2);
+  assert.equal(findCanvasCalls(context, "restore").length, 2);
+});
+
+test("requires complete nested Canvas geometry and clipping support", () => {
+  const base = {
+    objects: {
+      canvas: {
+        type: "canvas",
+        properties: { width: 100, height: 80 },
+        children: ["panel"]
+      },
+      panel: {
+        type: "canvas",
+        properties: { x: 1, y: 2, width: 40, height: 30 }
+      }
+    },
+    order: ["canvas"]
+  };
+  const missingX = structuredClone(base);
+  delete missingX.objects.panel.properties.x;
+  assert.throws(
+    () => render({ graphicSpec: missingX }, createMockCanvasContext()),
+    /requires a finite x/
+  );
+  const missingClip = createMockCanvasContext();
+  delete missingClip.clip;
+  assert.throws(
+    () => render({ graphicSpec: base }, missingClip),
+    /requires Canvas context clip/
+  );
+});
+
 test("rejects orphaned, duplicate, cyclic, and unknown graphic attachments", () => {
   const createTree = () => ({
     objects: {

@@ -217,6 +217,36 @@ test("attaches named graphics to canvas and collection parents", () => {
   );
 });
 
+test("attaches a nested Canvas beneath the ordered root Canvas", () => {
+  const program = chart()
+    .createGraphics({ id: "canvas", type: "canvas" })
+    .createGraphics({ id: "dashboard", type: "collection", parent: "canvas" })
+    .createGraphics({ id: "panel", type: "canvas", parent: "dashboard" })
+    .editGraphics({ target: "panel", property: "x", value: 12 })
+    .editGraphics({ target: "panel", property: "y", value: 18 })
+    .editGraphics({ target: "panel", property: "width", value: 240 })
+    .editGraphics({ target: "panel", property: "height", value: 160 })
+    .editGraphics({ target: "panel", property: "background", value: "white" })
+    .createGraphics({ id: "panelPoint", type: "circle", parent: "panel" });
+
+  assert.deepEqual(program.graphicSpec.order, ["canvas"]);
+  assert.deepEqual(program.graphicSpec.objects.dashboard.children, ["panel"]);
+  assert.deepEqual(program.graphicSpec.objects.panel.children, ["panelPoint"]);
+  assert.deepEqual(program.graphicSpec.objects.panel.properties, {
+    x: 12,
+    y: 18,
+    width: 240,
+    height: 160,
+    background: "white"
+  });
+  assert.throws(
+    () => chart()
+      .createGraphics({ id: "container", type: "collection" })
+      .createGraphics({ id: "panel", type: "canvas", parent: "container" }),
+    /requires an ordered root Canvas/
+  );
+});
+
 test("rejects invalid graphic parents and cross-parent placement", () => {
   const base = chart()
     .createGraphics({ id: "canvas", type: "canvas" })
@@ -242,6 +272,6 @@ test("rejects invalid graphic parents and cross-parent placement", () => {
   );
   assert.throws(
     () => base.createGraphics({ id: "otherCanvas", type: "canvas" }),
-    /exactly one canvas/
+    /exactly one ordered canvas/
   );
 });

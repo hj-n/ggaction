@@ -61,8 +61,11 @@ function resolvePlacement(graphicSpec, { id, type, parent, before, after }) {
     if (!isGraphicContainerType(parentGraphic.type)) {
       throw new Error(`Graphic parent "${parent}" must be a canvas or collection.`);
     }
-    if (type === "canvas") {
-      throw new Error("Canvas graphics cannot have a parent.");
+    if (
+      type === "canvas" &&
+      !graphicSpec.order.some(id => graphicSpec.objects[id]?.type === "canvas")
+    ) {
+      throw new Error("A nested Canvas requires an ordered root Canvas.");
     }
   }
   const anchor = before ?? after;
@@ -83,7 +86,7 @@ function resolvePlacement(graphicSpec, { id, type, parent, before, after }) {
   if (parent === undefined && before === "canvas") {
     throw new Error("createGraphics cannot place a graphic before the canvas.");
   }
-  if (type === "canvas") {
+  if (type === "canvas" && parent === undefined) {
     throw new Error("Canvas graphics do not accept before or after placement.");
   }
 }
@@ -131,9 +134,12 @@ const createGraphics = action(
     }
     if (
       validatedType === "canvas" &&
-      Object.values(this.graphicSpec.objects).some(graphic => graphic.type === "canvas")
+      parent === undefined &&
+      this.graphicSpec.order.some(
+        objectId => this.graphicSpec.objects[objectId]?.type === "canvas"
+      )
     ) {
-      throw new Error("graphicSpec supports exactly one canvas.");
+      throw new Error("graphicSpec supports exactly one ordered canvas.");
     }
 
     const objects = {

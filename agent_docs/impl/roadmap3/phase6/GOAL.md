@@ -5,7 +5,7 @@
 - [x] STEP 1 — Phase 계약과 target dashboard 확정
 - [x] STEP 2 — Pure concat layout grammar와 reference invariants
 - [x] STEP 3 — Namespaced child graphic snapshot
-- [ ] STEP 4 — Nested Canvas primitive와 renderer
+- [x] STEP 4 — Nested Canvas primitive와 renderer
 - [ ] STEP 5 — Gate G primitive dashboard variants
 - [ ] STEP 6 — Gate G visual evidence와 사용자 승인
 - [ ] STEP 7 — Immutable child-program state와 concat materialization

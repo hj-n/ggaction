@@ -11,7 +11,7 @@ const DRAWABLE_TYPES = new Set([
 ]);
 const STRUCTURAL_TYPES = new Set(["canvas"]);
 const GRAPHIC_PROPERTIES = Object.freeze({
-  canvas: new Set(["width", "height", "background"]),
+  canvas: new Set(["x", "y", "width", "height", "background"]),
   collection: new Set([
     "items",
     "x",

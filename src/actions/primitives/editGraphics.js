@@ -110,14 +110,17 @@ function editItems(owner, property, value, id) {
 }
 
 function removeGraphicTree(graphicSpec, id) {
-  if (graphicSpec.objects[id].type === "canvas") {
+  const parent = findGraphicParent(graphicSpec, id);
+  if (
+    graphicSpec.objects[id].type === "canvas" &&
+    parent?.kind !== "parent"
+  ) {
     throw new Error("The canvas root cannot be removed.");
   }
   const removedIds = new Set(collectGraphicSubtreeIds(graphicSpec, id));
   const objects = Object.fromEntries(
     Object.entries(graphicSpec.objects).filter(([objectId]) => !removedIds.has(objectId))
   );
-  const parent = findGraphicParent(graphicSpec, id);
   let order = graphicSpec.order;
   if (parent?.kind === "parent") {
     objects[parent.id] = freezeOwned({
