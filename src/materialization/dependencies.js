@@ -115,6 +115,15 @@ export function planScaleGuideRematerialization(program, id) {
       }
     }
   }
+  for (const channel of ["theta", "radius"]) {
+    const prefix = channel === "theta" ? "Theta" : "Radial";
+    for (const component of ["line", "ticks", "labels", "title"]) {
+      if (guideConfigs.axis?.[channel]?.[component]?.scale === id) {
+        const suffix = component[0].toUpperCase() + component.slice(1);
+        guides.push({ op: `edit${prefix}Axis${suffix}` });
+      }
+    }
+  }
   if (guideConfigs.grid?.horizontal?.scale === id) {
     guides.push({ op: "rematerializeHorizontalGrid" });
   }

@@ -104,7 +104,7 @@ test("createAxes requires explicit scale selection when a channel is ambiguous",
   assert.equal(resolved.semanticSpec.guides.axis.x.scale, "x");
 });
 
-test("createAxes rejects missing, disabled, Polar, and mixed channels", () => {
+test("createAxes rejects missing, disabled, incomplete Polar, and mixed channels", () => {
   const empty = chart();
   assert.throws(() => empty.createAxes(), /requires an x or y encoding/);
 
@@ -126,7 +126,7 @@ test("createAxes rejects missing, disabled, Polar, and mixed channels", () => {
       property: "layer[polarPoints].encoding.theta.field",
       value: "angle"
     });
-  assert.throws(() => polar.createAxes(), /does not yet support Polar axes/);
+  assert.throws(() => polar.createAxes(), /stored theta encoding/);
 
   const mixed = encoded.editSemantic({
     property: "layer[points].encoding.theta.field",

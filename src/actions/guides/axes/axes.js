@@ -3,8 +3,11 @@ import { isPlainObject } from "../../../core/immutable.js";
 import { validateUserId } from "../../../core/identifiers.js";
 import { validateKeys } from "../../../core/validation.js";
 import { findCoordinate } from "../../../selectors/coordinates.js";
+import { resolvePolarGuideResources } from "../polar/resolve.js";
 
-const TOP_OPTIONS = Object.freeze(["coordinate", "x", "y"]);
+const TOP_OPTIONS = Object.freeze([
+  "coordinate", "x", "y", "theta", "radius"
+]);
 const COORDINATE_OPTIONS = Object.freeze(["id", "type"]);
 const COORDINATE_API_TYPES = new Set(["auto", "cartesian", "polar"]);
 
@@ -22,6 +25,8 @@ function validateArgs(args) {
   validateKeys(args, TOP_OPTIONS, "createAxes");
   validateAxisOption(args.x, "x");
   validateAxisOption(args.y, "y");
+  validateAxisOption(args.theta, "theta");
+  validateAxisOption(args.radius, "radius");
 
   const coordinate = args.coordinate ?? {};
   if (!isPlainObject(coordinate)) {
@@ -60,14 +65,10 @@ function inspectChannels(layers) {
     );
   }
 
-  return { cartesianLayers, hasPolar: polarLayers.length > 0 };
+  return { cartesianLayers, polarLayers };
 }
 
-function resolveCoordinate(program, descriptor, cartesianLayers, hasPolar) {
-  if (hasPolar && cartesianLayers.length === 0) {
-    throw new Error("createAxes does not yet support Polar axes.");
-  }
-
+function resolveCoordinate(program, descriptor, cartesianLayers) {
   if (cartesianLayers.length === 0) {
     throw new Error("createAxes requires an x or y encoding.");
   }
@@ -124,6 +125,24 @@ function resolveCoordinate(program, descriptor, cartesianLayers, hasPolar) {
   return { id, layers };
 }
 
+function resolvePolarAxisArgs(program, layers, channel, option, descriptor) {
+  const selected = option === false
+    ? false
+    : option !== undefined || hasChannel(layers, channel);
+  if (!selected) return undefined;
+  const args = option ?? {};
+  const kind = channel === "theta" ? "theta" : "radius";
+  const resource = resolvePolarGuideResources(program, kind, {
+    ...args,
+    ...(descriptor.id === undefined ? {} : { coordinate: descriptor.id })
+  }, "createAxes");
+  return {
+    ...args,
+    scale: resource.scale,
+    coordinate: resource.coordinate
+  };
+}
+
 function hasChannel(layers, channel) {
   return layers.some(layer => layer.encoding?.[channel] !== undefined);
 }
@@ -170,14 +189,53 @@ const createAxes = action(
   },
   function (args = {}) {
     const coordinateDescriptor = validateArgs(args);
-    const { cartesianLayers, hasPolar } = inspectChannels(
+    const { cartesianLayers, polarLayers } = inspectChannels(
       this.semanticSpec.layers
     );
+    const requestedCoordinateType = coordinateDescriptor.id === undefined
+      ? undefined
+      : findCoordinate(this, coordinateDescriptor.id)?.type;
+    const explicitlyPolar = coordinateDescriptor.type === "polar" ||
+      requestedCoordinateType === "polar" ||
+      args.theta !== undefined || args.radius !== undefined;
+    if (polarLayers.length > 0 &&
+        (cartesianLayers.length === 0 || explicitlyPolar)) {
+      if (coordinateDescriptor.type === "cartesian") {
+        throw new Error("createAxes coordinate type conflicts with Polar encodings.");
+      }
+      if (args.x !== undefined || args.y !== undefined) {
+        throw new Error("createAxes x/y options require Cartesian encodings.");
+      }
+      const theta = resolvePolarAxisArgs(
+        this,
+        polarLayers,
+        "theta",
+        args.theta,
+        coordinateDescriptor
+      );
+      const radius = resolvePolarAxisArgs(
+        this,
+        polarLayers,
+        "radius",
+        args.radius,
+        coordinateDescriptor
+      );
+      if (theta === undefined && radius === undefined) {
+        throw new Error("createAxes requires at least one selected axis.");
+      }
+      let polarProgram = this;
+      if (theta !== undefined) {
+        polarProgram = polarProgram.createThetaAxis(theta);
+      }
+      if (radius !== undefined) {
+        polarProgram = polarProgram.createRadialAxis(radius);
+      }
+      return polarProgram;
+    }
     const coordinate = resolveCoordinate(
       this,
       coordinateDescriptor,
-      cartesianLayers,
-      hasPolar
+      cartesianLayers
     );
     const x = resolveAxisArgs(coordinate.layers, "x", args.x);
     const y = resolveAxisArgs(coordinate.layers, "y", args.y);

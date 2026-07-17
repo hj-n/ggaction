@@ -215,17 +215,17 @@ test("rematerializes Polar ranges and points after Canvas and scale edits", () =
   });
 });
 
-test("rejects Polar guide requests explicitly", () => {
+test("creates Polar axes through aggregate guide requests", () => {
   const program = base()
     .encodeTheta({ field: "angle" })
     .encodeR({ field: "distance" })
     .encodePointRadius({ value: 3 });
 
-  assert.throws(() => program.createAxes(), /does not yet support Polar axes/);
-  assert.throws(
-    () => program.createGuides({ axes: {} }),
-    /does not yet support Polar axes/
-  );
+  const axes = program.createAxes();
+  const guides = program.createGuides({ axes: {} });
+  assert.equal(axes.graphicSpec.objects.thetaAxisLine.type, "path");
+  assert.equal(axes.graphicSpec.objects.radialAxisLine.type, "line");
+  assert.equal(guides.graphicSpec.objects.thetaAxisTitle.properties.text, "angle");
 });
 
 test("rejects an explicit radial range that no longer fits Canvas bounds", () => {
