@@ -1502,10 +1502,12 @@ action의 semantic하지 않은 operation default는 그 action 또는 관련 la
 3. Logical width/height와 background를 읽는다.
 4. Physical Canvas 크기를 `logical × pixelRatio`로 설정한다.
 5. Context를 logical coordinate system으로 scale한다.
-6. Top-level order부터 named `children`을 depth-first sibling order로 순회한다.
+6. Top-level order부터 named `children`을 balanced enter/exit event가 있는 재귀
+   depth-first sibling order로 순회한다.
 7. Orphan, unknown child, duplicate attachment와 cycle이 있으면 draw를 건너뛰지 않고 거부한다.
 8. Graphic type dispatch table로 primitive drawer를 호출한다.
-9. Heterogeneous collection item은 item type별로 재귀 dispatch한다.
+9. Collection enter/exit마다 Canvas state scope를 열고 닫으며, heterogeneous item은
+   item type별로 dispatch한다.
 
 Primitive drawer는 `circle`, `rect`, `line`, `text`, `path`별 파일에 분리되어 있다.
 Drawer는 shared concrete schema와 draw completeness를 확인한 뒤 Canvas command를

@@ -22,7 +22,7 @@ import {
   resolveAxisTitleGeometry,
   validateAxisPosition
 } from "./policy.js";
-import { resolvePlotGraphicPlacement } from
+import { findCanvasGraphic, resolvePlotGraphicPlacement } from
   "../../../materialization/graphicHierarchy.js";
 
 const CREATE_OPTIONS = Object.freeze([
@@ -138,7 +138,7 @@ function resolveGeometry(program, channel, config) {
   const sine = Math.sin(config.rotation);
   const extentX = Math.abs(cosine) * width / 2 + Math.abs(sine) * height / 2;
   const extentY = Math.abs(sine) * width / 2 + Math.abs(cosine) * height / 2;
-  const canvas = program.graphicSpec.objects.canvas?.properties;
+  const canvas = findCanvasGraphic(program)?.properties;
   const newEdgeFits = config.position === "top"
     ? geometry.y - extentY >= 0
     : config.position === "right"

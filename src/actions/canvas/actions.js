@@ -13,6 +13,7 @@ import {
 import {
   assertCanvasHierarchyAvailable,
   CANVAS_GRAPHIC_ID,
+  findCanvasGraphic,
   PLOT_GRAPHIC_ID
 } from "../../materialization/graphicHierarchy.js";
 
@@ -38,7 +39,7 @@ function validateOptions(args, operation, { allowEmpty = false } = {}) {
 }
 
 function requireCanvas(program) {
-  const canvas = program.graphicSpec.objects.canvas;
+  const canvas = findCanvasGraphic(program);
 
   if (canvas?.type !== "canvas") {
     throw new Error("editCanvas requires an existing canvas.");

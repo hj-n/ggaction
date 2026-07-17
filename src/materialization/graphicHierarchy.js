@@ -7,6 +7,16 @@ import { findDataset } from "../selectors/datasets.js";
 export const CANVAS_GRAPHIC_ID = "canvas";
 export const PLOT_GRAPHIC_ID = "plot-main";
 
+export function findCanvasGraphic(program) {
+  const graphic = program.graphicSpec.objects[CANVAS_GRAPHIC_ID];
+  return graphic?.type === "canvas" ? graphic : undefined;
+}
+
+export function findPlotGraphic(program) {
+  const graphic = program.graphicSpec.objects[PLOT_GRAPHIC_ID];
+  return graphic?.type === "collection" ? graphic : undefined;
+}
+
 export function assertCanvasHierarchyAvailable(program) {
   const canvasByType = Object.entries(program.graphicSpec.objects).find(
     ([, graphic]) => graphic.type === "canvas"
@@ -22,8 +32,8 @@ export function assertCanvasHierarchyAvailable(program) {
 }
 
 export function resolvePlotGraphicPlacement(program, relative = {}) {
-  const canvas = program.graphicSpec.objects[CANVAS_GRAPHIC_ID];
-  const plot = program.graphicSpec.objects[PLOT_GRAPHIC_ID];
+  const canvas = findCanvasGraphic(program);
+  const plot = findPlotGraphic(program);
 
   if (canvas === undefined && plot === undefined) return relative;
   if (canvas?.type !== "canvas") {
@@ -74,15 +84,15 @@ export function resolveMarkGraphicPlacement(program, { data, markType }) {
 }
 
 export function resolveCanvasGraphicPlacement(program, relative = {}) {
-  const canvas = program.graphicSpec.objects[CANVAS_GRAPHIC_ID];
-  if (canvas?.type !== "canvas") {
+  const canvas = findCanvasGraphic(program);
+  if (canvas === undefined) {
     throw new Error("Canvas-owned graphics require the canonical canvas.");
   }
   return { parent: CANVAS_GRAPHIC_ID, ...relative };
 }
 
 export function resolveLegendGraphicPlacement(program, relative = {}) {
-  const title = program.graphicSpec.objects[CANVAS_GRAPHIC_ID]?.children?.find(
+  const title = findCanvasGraphic(program)?.children?.find(
     id => id === "chartTitle" || id === "chartSubtitle"
   );
   const hasRelativeAnchor = relative.before !== undefined ||

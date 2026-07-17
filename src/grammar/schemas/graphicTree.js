@@ -70,7 +70,7 @@ export function graphicSiblings(graphicSpec, target) {
   return graphicSpec.order;
 }
 
-function visitNamed(graphicSpec, id, visitor, path, visited) {
+function visitNamed(graphicSpec, id, visitors, path, visited) {
   if (path.includes(id)) {
     throw new Error(`Graphic attachment cycle includes "${id}".`);
   }
@@ -82,29 +82,37 @@ function visitNamed(graphicSpec, id, visitor, path, visited) {
     throw new Error(`Graphic "${id}" is attached more than once.`);
   }
   visited.add(id);
-  visitor({ id, object, kind: "object", depth: path.length });
+  const entry = { id, object, kind: "object", depth: path.length };
+  visitors.enter?.(entry);
   for (const item of object.items ?? []) {
-    visitor({
+    visitors.item?.({
       id: item.id,
       object: item,
       kind: "item",
       ownerId: id,
+      owner: object,
       depth: path.length + 1
     });
   }
   for (const childId of object.children ?? []) {
-    visitNamed(graphicSpec, childId, visitor, [...path, id], visited);
+    visitNamed(graphicSpec, childId, visitors, [...path, id], visited);
   }
+  visitors.exit?.(entry);
 }
 
-export function walkGraphicTree(graphicSpec, visitor) {
+export function walkGraphicTreeEvents(graphicSpec, visitors) {
   requireGraphicSpec(graphicSpec);
-  if (typeof visitor !== "function") {
-    throw new TypeError("walkGraphicTree requires a visitor function.");
+  if (!isPlainObject(visitors)) {
+    throw new TypeError("walkGraphicTreeEvents requires visitor callbacks.");
+  }
+  for (const name of ["enter", "item", "exit"]) {
+    if (visitors[name] !== undefined && typeof visitors[name] !== "function") {
+      throw new TypeError(`walkGraphicTreeEvents ${name} must be a function.`);
+    }
   }
   const visited = new Set();
   for (const id of graphicSpec.order) {
-    visitNamed(graphicSpec, id, visitor, [], visited);
+    visitNamed(graphicSpec, id, visitors, [], visited);
   }
   const orphan = Object.keys(graphicSpec.objects).find(id => !visited.has(id));
   if (orphan !== undefined) {
@@ -112,10 +120,36 @@ export function walkGraphicTree(graphicSpec, visitor) {
   }
 }
 
-export function walkGraphicDrawOrder(graphicSpec, visitor) {
-  walkGraphicTree(graphicSpec, entry => {
-    if (entry.kind === "object") visitor(entry);
+export function walkGraphicTree(graphicSpec, visitor) {
+  if (typeof visitor !== "function") {
+    throw new TypeError("walkGraphicTree requires a visitor function.");
+  }
+  walkGraphicTreeEvents(graphicSpec, {
+    enter: visitor,
+    item: visitor
   });
+}
+
+export function walkGraphicDrawOrder(graphicSpec, visitor) {
+  walkGraphicTreeEvents(graphicSpec, { enter: visitor });
+}
+
+export function findOrderedGraphicsByType(graphicSpec, type) {
+  requireGraphicSpec(graphicSpec);
+  return graphicSpec.order.flatMap(id => {
+    const object = graphicSpec.objects[id];
+    return object?.type === type ? [{ id, object }] : [];
+  });
+}
+
+export function requireSingleOrderedGraphicByType(graphicSpec, type) {
+  const matches = findOrderedGraphicsByType(graphicSpec, type);
+  if (matches.length !== 1) {
+    throw new Error(
+      `graphicSpec must contain exactly one ordered ${type}.`
+    );
+  }
+  return matches[0];
 }
 
 export function collectGraphicSubtreeIds(graphicSpec, target) {

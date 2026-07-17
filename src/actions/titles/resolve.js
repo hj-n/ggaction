@@ -15,6 +15,8 @@ import {
   unionTitleBounds
 } from "../../layout/title.js";
 import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from "../../theme/defaults.js";
+import { findCanvasGraphic } from
+  "../../materialization/graphicHierarchy.js";
 
 const OPTIONS = Object.freeze([
   "text", "subtitle", "position", "align", "offset", "gap", "titleStyle",
@@ -233,7 +235,7 @@ function validateLayout(program, position, titleBounds, plot, canvas) {
 
 export function resolveTitleLayout(program, config) {
   const plot = resolveGraphicBounds(program);
-  const canvas = program.graphicSpec.objects.canvas;
+  const canvas = findCanvasGraphic(program);
   if (
     plot === undefined ||
     ![plot.x, plot.y, plot.width, plot.height].every(Number.isFinite) ||

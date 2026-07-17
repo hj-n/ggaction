@@ -7,6 +7,8 @@ import {
   concreteGraphicSnapshot,
   graphicTreeSnapshot
 } from "../support/graphic-tree.js";
+import { walkGraphicTreeEvents } from
+  "../../src/grammar/schemas/graphicTree.js";
 
 function createFlatProgram() {
   return chart()
@@ -102,4 +104,25 @@ test("preserves extension-authored top-level graphics", () => {
     graphicTreeSnapshot(program).nodes.find(node => node.id === "extension-note").parent,
     null
   );
+});
+
+test("emits balanced recursive enter and exit events", () => {
+  const events = [];
+  walkGraphicTreeEvents(createNestedProgram().graphicSpec, {
+    enter: ({ id }) => events.push(`enter:${id}`),
+    exit: ({ id }) => events.push(`exit:${id}`)
+  });
+
+  assert.deepEqual(events, [
+    "enter:canvas",
+    "enter:plot-main",
+    "enter:grid",
+    "exit:grid",
+    "enter:points",
+    "exit:points",
+    "enter:axis",
+    "exit:axis",
+    "exit:plot-main",
+    "exit:canvas"
+  ]);
 });

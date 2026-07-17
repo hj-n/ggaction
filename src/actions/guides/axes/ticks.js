@@ -21,7 +21,7 @@ import {
   resolveAxisTickGeometry,
   validateAxisPosition
 } from "./policy.js";
-import { resolvePlotGraphicPlacement } from
+import { findCanvasGraphic, resolvePlotGraphicPlacement } from
   "../../../materialization/graphicHierarchy.js";
 
 const OPTIONS = Object.freeze(["scale", "position", "count", "values", "length", "color", "lineWidth"]);
@@ -84,7 +84,7 @@ function geometry(program, channel, config) {
       length: config.length
     })
   };
-  const canvas = program.graphicSpec.objects.canvas?.properties;
+  const canvas = findCanvasGraphic(program)?.properties;
   const coordinates = channel === "x"
     ? [...resolved.x1, ...resolved.x2, resolved.y1, resolved.y2]
     : [resolved.x1, resolved.x2, ...resolved.y1, ...resolved.y2];

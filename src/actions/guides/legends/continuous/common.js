@@ -10,6 +10,8 @@ import { resolveGraphicBounds } from "../../../../layout/canvas.js";
 import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from
   "../../../../theme/defaults.js";
 import { findLayer } from "../../../../selectors/layers.js";
+import { findCanvasGraphic } from
+  "../../../../materialization/graphicHierarchy.js";
 
 const OPTIONS = Object.freeze([
   "target", "channels", "position", "align", "offset", "title", "count",
@@ -199,7 +201,7 @@ export function requireResolvedLegendScale(program, id, type) {
 
 export function resolveContinuousBounds(program) {
   const plot = resolveGraphicBounds(program);
-  const canvas = program.graphicSpec.objects.canvas;
+  const canvas = findCanvasGraphic(program);
   if (
     plot === undefined ||
     ![plot.x, plot.y, plot.width, plot.height].every(Number.isFinite) ||

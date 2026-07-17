@@ -7,7 +7,7 @@ import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from
 import { resolveLayout as resolveCategoricalLayout } from
   "./categorical/layout.js";
 import { findLayer } from "../../../selectors/layers.js";
-import { resolveLegendGraphicPlacement } from
+import { findCanvasGraphic, resolveLegendGraphicPlacement } from
   "../../../materialization/graphicHierarchy.js";
 
 const SIZE_OPTIONS = Object.freeze(["target", "count"]);
@@ -45,7 +45,7 @@ function requireScale(program, id, type) {
 
 function bounds(program) {
   const value = resolveGraphicBounds(program);
-  const canvas = program.graphicSpec.objects.canvas;
+  const canvas = findCanvasGraphic(program);
   if (
     value === undefined ||
     ![value.x, value.y, value.width, value.height].every(Number.isFinite) ||

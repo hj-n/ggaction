@@ -145,6 +145,8 @@ test("renders attached named graphics in depth-first sibling order", () => {
     [10, 20, 3],
     [30, 40, 4]
   ]);
+  assert.equal(findCanvasCalls(context, "save").length, 2);
+  assert.equal(findCanvasCalls(context, "restore").length, 2);
 });
 
 test("rejects orphaned, duplicate, cyclic, and unknown graphic attachments", () => {

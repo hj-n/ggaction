@@ -24,7 +24,7 @@ import {
   validateAxisFormat,
   validateAxisPosition
 } from "./policy.js";
-import { resolvePlotGraphicPlacement } from
+import { findCanvasGraphic, resolvePlotGraphicPlacement } from
   "../../../materialization/graphicHierarchy.js";
 
 const OPTIONS = Object.freeze([
@@ -120,7 +120,7 @@ function resolve(program, channel, config) {
       offset: config.offset
     })
   };
-  const canvas = program.graphicSpec.objects.canvas?.properties;
+  const canvas = findCanvasGraphic(program)?.properties;
   const maximumTextWidth = Math.max(
     0,
     ...text.map(value => [...value].length * config.fontSize * 0.6)

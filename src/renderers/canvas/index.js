@@ -4,7 +4,10 @@ import { drawPathGraphic } from "./path.js";
 import { drawRectGraphic } from "./rect.js";
 import { drawTextGraphic } from "./text.js";
 import { requireFiniteProperty } from "./validation.js";
-import { walkGraphicDrawOrder } from "../../grammar/schemas/graphicTree.js";
+import {
+  requireSingleOrderedGraphicByType,
+  walkGraphicTreeEvents
+} from "../../grammar/schemas/graphicTree.js";
 
 const DRAWERS = Object.freeze({
   circle: drawCircleGraphic,
@@ -46,18 +49,6 @@ function requireCanvasContext(context) {
   }
 }
 
-function findCanvas(graphicSpec) {
-  const canvasIds = graphicSpec.order.filter(
-    id => graphicSpec.objects[id]?.type === "canvas"
-  );
-
-  if (canvasIds.length !== 1) {
-    throw new Error("graphicSpec must contain exactly one ordered canvas.");
-  }
-
-  return { id: canvasIds[0], graphic: graphicSpec.objects[canvasIds[0]] };
-}
-
 export function render(program, context, { pixelRatio = 1 } = {}) {
   const graphicSpec = program?.graphicSpec;
 
@@ -77,7 +68,8 @@ export function render(program, context, { pixelRatio = 1 } = {}) {
     throw new RangeError("render pixelRatio must be a positive finite number.");
   }
 
-  const { id: canvasId, graphic: canvas } = findCanvas(graphicSpec);
+  const { id: canvasId, object: canvas } =
+    requireSingleOrderedGraphicByType(graphicSpec, "canvas");
   const width = requireFiniteProperty(canvas.properties ?? {}, "width", canvasId);
   const height = requireFiniteProperty(
     canvas.properties ?? {},
@@ -109,8 +101,28 @@ export function render(program, context, { pixelRatio = 1 } = {}) {
       context.fillRect(0, 0, width, height);
     }
 
-    walkGraphicDrawOrder(graphicSpec, ({ id, object }) => {
-      if (id !== canvasId) drawConcreteGraphic(context, id, object);
+    walkGraphicTreeEvents(graphicSpec, {
+      enter({ id, object }) {
+        if (id === canvasId) return;
+        if (object.type === "collection") {
+          context.save();
+          return;
+        }
+        if (!Array.isArray(object.items)) {
+          drawConcreteGraphic(context, id, object);
+        }
+      },
+      item({ id, object, owner }) {
+        drawConcreteGraphic(context, id, {
+          ...object,
+          type: object.type ?? owner.type
+        });
+      },
+      exit({ id, object }) {
+        if (id !== canvasId && object.type === "collection") {
+          context.restore();
+        }
+      }
     });
   } finally {
     context.restore();

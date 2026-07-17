@@ -10,6 +10,8 @@ import {
   measureLegendTextWidth,
   resolveLegendGrid
 } from "../../../../layout/legend.js";
+import { findCanvasGraphic } from
+  "../../../../materialization/graphicHierarchy.js";
 
 export function activeConfig(program) {
   const entries = ["series", "color"]
@@ -366,7 +368,7 @@ function resolveCompactBottomLayout(bounds, canvas, config, width, count) {
 
 export function resolveLayout(program, config) {
   const bounds = resolveGraphicBounds(program);
-  const canvas = program.graphicSpec.objects.canvas;
+  const canvas = findCanvasGraphic(program);
   if (
     bounds === undefined ||
     ![bounds.x, bounds.y, bounds.width, bounds.height].every(Number.isFinite) ||
