@@ -5,84 +5,84 @@
     "cars-scatterplot": {
       "width": 1280,
       "height": 800,
-      "sourceHash": "4c27d050daa1edfd9b4c1dcf7e69a64808c5bcbfc3811f930ff22e4b2b8833c7"
+      "sourceHash": "3261a5c2d36348c48da1caa56a859e42cc56a65fd09f931c390a7a251ba13e79"
     },
     "cars-polar-scatterplot": {
       "width": 1040,
       "height": 1040,
-      "sourceHash": "af37345114f6414a43e86cc4f983f7cda1ea6f56a72a4940a2bab1b281184d0c"
+      "sourceHash": "cef1070450b3343bc88c04e59ca06c7e32e4470f6bb398abf3fbde18b32e91e8"
     },
     "cars-polar-guides": {
       "width": 1240,
       "height": 1240,
-      "sourceHash": "239e97037c3531e5fd68db6d8e2b9cf06f0e2b8f987be5b37f78f8e0aefea140"
+      "sourceHash": "9b07a08656001d5158bf41d2bf06f4db01c4dfbd0ee88e3697b99ba92c555ca0"
     },
     "gapminder-polar-trends": {
       "width": 1520,
       "height": 1240,
-      "sourceHash": "6142f976ad376c860ca9d2a1aa61cd81c2905dfe3ed5f994fd722df9e461db3f"
+      "sourceHash": "95752a51cebca9a621a4094f9df680ba6abe256afe872bfd619c2276c61e1233"
     },
     "jobs-radar-chart": {
       "width": 1640,
       "height": 1300,
-      "sourceHash": "c701c9bc1d77d9f7aeb82620dffce918b88c9b54fcb7d55d00b45429ea9f9b9b"
+      "sourceHash": "e4faeade699b0d3c0029173ddf5cf0b801ce3acd238965e3fbdfe6a92d5293f0"
     },
     "cars-line-chart": {
       "width": 1440,
       "height": 920,
-      "sourceHash": "e3fb1479b9328265102fee22eee3b08365131dc52ebfb239b26f7f973f7b0a65"
+      "sourceHash": "6ad55cf736435d9c8119515e644d3539846c89682b6171abb6997fac32e18b95"
     },
     "cars-histogram": {
       "width": 864,
       "height": 920,
-      "sourceHash": "187959ce5667883a43d28d121e1aacfd0d6f535fe62b79d1a2abfed307810cec"
+      "sourceHash": "49d89e11b4aa0f3501cd4ba68a980ad2b8d84f29e5c528cec74bc5d7fa4f4933"
     },
     "jobs-grouped-bar": {
       "width": 1440,
       "height": 920,
-      "sourceHash": "4d1d91880d3d74f9bcc314b6b73413090a05f3c9845cad6606a2579d0908b008"
+      "sourceHash": "b04d13e2ebe6eb7eb4d46670df99206a4e1775148ea01098a497f386e53f0a6e"
     },
     "cars-regression-scatterplot": {
       "width": 1520,
       "height": 960,
-      "sourceHash": "d2add387e4af2f77492fa9c96ad9aead9a22ad087c29eebd72b7a67a06b498b0"
+      "sourceHash": "45d2d4cc74a35c78df0a8a3e78ed4ccce911d0f2b8ff0dbe28d2b94e5c9498d2"
     },
     "cars-density-area": {
       "width": 1440,
       "height": 1000,
-      "sourceHash": "b31d461cb4cf6406df0ceb5ebb9a991448157ff89fbf3a82e2ccbbda426729b3"
+      "sourceHash": "29028973ffbde67dc7e9d2842c8f552258376b2f4d3502b151e9c482b77ecd08"
     },
     "cars-error-bar": {
       "width": 1440,
       "height": 920,
-      "sourceHash": "bef3a9c0d12aac7ae4c43565d2d59e37ca7b2bc5fdc45f6659f546126f0dbd23"
+      "sourceHash": "cc6b4ad41c6bf772711d7487094cc4744e1dc04f6c18804766c72e31c84589a6"
     },
     "cars-box-plot": {
       "width": 720,
       "height": 920,
-      "sourceHash": "d71a61748868cef9a4385786b255ad17f6b89788e32f655f5c81612e2b0a4e75"
+      "sourceHash": "354095cbc82c83e7d0569aee0f995214f440d66d5dd0b4a139e7ac4e5728c214"
     },
     "gapminder-error-band": {
       "width": 1520,
       "height": 960,
-      "sourceHash": "e2d52e182f408d5565be0df73a6b23c61653f3410c54a4273437dd48d8d73f9b"
+      "sourceHash": "74be49d3eb92afc1d5d353d1c75686a46c3a15adb1d1a3256f3218bda0cc7bbc"
     }
   },
   "tutorials": {
     "mark-selection-points": {
       "width": 1520,
       "height": 880,
-      "sourceHash": "c5a4d979bb5368b80498b289b62b701ff2d496f5b1d14476294e175a00f5c493"
+      "sourceHash": "e8559f0080bdffe6b0b54d971c5f7a7fab49a951cc735c0ec173587d8392fdfc"
     },
     "mark-selection-bars": {
       "width": 864,
       "height": 920,
-      "sourceHash": "df0fb6096ae3aef565b373835779eee288fb5b02a86d4930bd02955edfdf1633"
+      "sourceHash": "0f3ee250cee5b047f6047aa7fa9e46083dc188c4446ac6d0e44c133ecec5535a"
     },
     "mark-selection-lines": {
       "width": 1440,
       "height": 920,
-      "sourceHash": "3d6f4b40d150024e0750fcc6b9e5f92d11bb5f4010fde2fd6c9a7538c1807057"
+      "sourceHash": "c1d661807ac1c50f73ea6fca3ed6892ad279c6b7a9919d26c532bbd39c46742f"
     }
   }
 }

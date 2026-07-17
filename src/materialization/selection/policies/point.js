@@ -1,4 +1,4 @@
-import { resolvePointItems } from "../items.js";
+import { resolvePointItems } from "../items/index.js";
 import { normalizePointHighlightStyle } from "../styles.js";
 
 export const pointSelectionPolicy = Object.freeze({

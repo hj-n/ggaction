@@ -1,4 +1,4 @@
-import { resolveRuleItems } from "../items.js";
+import { resolveRuleItems } from "../items/index.js";
 import { normalizeStrokeHighlightStyle } from "../styles.js";
 
 export const ruleSelectionPolicy = Object.freeze({

@@ -210,6 +210,12 @@ highlight action과 owning rematerializer를 함께 소유한다. Selection orch
 복제하지 않고 이 policy를 조회한다. `highlights`는 그 selection에 적용할 graphical override intent의 owner다. 따라서 Canvas와
 scale range 변경 뒤 stale concrete child ID를 authoritative state로 사용하지 않는다.
 
+Item resolution은 `materialization/selection/items/` 아래에서 common finalization,
+point row, bar cell/stack, line-area path series와 rule row로 분리된다. 각 selection policy는
+자신의 resolver를 직접 소유한다. Path highlight action 역시 특정 mark 이름을 열거하지 않고
+policy가 `applyPathHighlight` operation을 선택했는지 확인하므로 이후 path 기반 mark가 같은
+selection grain과 style 계약을 재사용할 수 있다.
+
 현재 program-level child composition state는 구현되어 있지 않다. 초기 설계에 있던
 `children`, `hconcat`, `vconcat`, `facet`은 아직 현재 `ChartProgram` schema와 public
 package에 포함되지 않는다.

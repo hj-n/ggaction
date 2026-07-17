@@ -1,4 +1,4 @@
-import { resolveLineItems } from "../items.js";
+import { resolveLineItems } from "../items/index.js";
 import { normalizeStrokeHighlightStyle } from "../styles.js";
 
 export const lineSelectionPolicy = Object.freeze({

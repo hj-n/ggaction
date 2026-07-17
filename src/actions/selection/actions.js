@@ -152,8 +152,11 @@ export const applyPathHighlight = action(
     const resolved = resolveStoredSelection(this, args.selection);
     const keys = selectedKeys(args, resolved);
     const markType = resolved.items[0]?.markType;
-    if (!["line", "area"].includes(markType) && resolved.items.length > 0) {
-      throw new Error("applyPathHighlight requires a line or area selection.");
+    if (
+      resolved.items.length > 0 &&
+      requireSelectionPolicy(markType).applyHighlightOp !== "applyPathHighlight"
+    ) {
+      throw new Error("applyPathHighlight requires a path selection policy.");
     }
     if (keys.length === 0) return this;
     const selected = new Set(keys);

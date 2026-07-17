@@ -52,10 +52,30 @@ export const CRITICAL_COVERAGE_FLOORS = Object.freeze({
     branches: 75,
     functions: 100
   }),
-  "materialization/selection/items.js": Object.freeze({
-    lines: 90,
-    branches: 75,
+  "materialization/selection/items/common.js": Object.freeze({
+    lines: 85,
+    branches: 70,
     functions: 90
+  }),
+  "materialization/selection/items/bar.js": Object.freeze({
+    lines: 90,
+    branches: 70,
+    functions: 80
+  }),
+  "materialization/selection/items/path.js": Object.freeze({
+    lines: 90,
+    branches: 70,
+    functions: 100
+  }),
+  "materialization/selection/items/point.js": Object.freeze({
+    lines: 95,
+    branches: 90,
+    functions: 100
+  }),
+  "materialization/selection/items/rule.js": Object.freeze({
+    lines: 95,
+    branches: 85,
+    functions: 100
   }),
   "materialization/selection/policies/index.js": Object.freeze({
     lines: 90,

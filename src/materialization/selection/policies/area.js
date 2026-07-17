@@ -1,4 +1,4 @@
-import { resolveAreaItems } from "../items.js";
+import { resolveAreaItems } from "../items/index.js";
 import { normalizeAreaHighlightStyle } from "../styles.js";
 
 export const areaSelectionPolicy = Object.freeze({
