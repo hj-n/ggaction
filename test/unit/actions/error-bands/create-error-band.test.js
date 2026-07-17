@@ -318,6 +318,38 @@ test("colors statistical and explicit horizontal bands without stack dispatch", 
   }
 });
 
+test("creates quantitative horizontal boundaries from explicit interval rows", () => {
+  const rows = [
+    { position: 1, center: 2, lower: 1, upper: 3, group: "A" },
+    { position: 2, center: 3, lower: 2, upper: 4, group: "A" },
+    { position: 1, center: 4, lower: 3, upper: 5, group: "B" },
+    { position: 2, center: 5, lower: 4, upper: 6, group: "B" }
+  ];
+  const program = chart()
+    .createCanvas(canvas)
+    .createData({ values: rows })
+    .createErrorBand({
+      x: { center: "center", lower: "lower", upper: "upper" },
+      y: { field: "position" },
+      groupBy: "group",
+      boundaries: { stroke: "#334155" }
+    });
+
+  for (const id of [
+    "errorBandLowerBoundary",
+    "errorBandUpperBoundary"
+  ]) {
+    assert.equal(program.graphicSpec.objects[id].items.length, 2);
+    assert.equal(
+      program.graphicSpec.objects[id].items.every(
+        item => item.properties.commands.length === 2
+      ),
+      true
+    );
+    assert.equal(program.graphicSpec.objects[id].items[0].properties.stroke, "#334155");
+  }
+});
+
 test("rematerializes horizontal bands and boundaries after Canvas and scale edits", () => {
   const before = chart()
     .createCanvas({

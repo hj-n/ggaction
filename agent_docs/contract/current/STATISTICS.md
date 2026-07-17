@@ -131,7 +131,8 @@ the two boundaries need different styles.
 - ✅ Covered: source-layer data/coordinate/scale/group inference, vertical and horizontal statistical/explicit
   rows, horizontal x/x2 overlay-color composition, deterministic ID ownership and ambiguous quantitative roles.
 - ✅ Covered: atomic y/y2 and x/x2 reassignment, temporal area materialization, lower/upper boundary order,
-  basic stroke/width defaults and overrides, Canvas rematerialization, validation failure and immutability.
+  quantitative/temporal direct boundary positions, basic stroke/width defaults and overrides, Canvas
+  rematerialization, validation failure and immutability.
 - ✅ Covered: all area curve values, inherited/overridden boundary curves, dash/opacity/style validation,
   deterministic child order, Canvas/scale rematerialization, and approved primitive/public/pixel variants.
 - ✅ Covered: regression-band delegation through explicit interval mode with prior semantic, graphic, ordering,

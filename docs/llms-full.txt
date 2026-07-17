@@ -3211,7 +3211,9 @@ for the inferred axis title, while the closed area geometry uses lower and
 upper fields.
 
 Exactly one channel must describe the interval. A vertical band stores y/y2;
-a horizontal band stores x/x2. For example, a horizontal interval inferred
+a horizontal band stores x/x2. Quantitative and temporal independent positions
+are both supported, including on optional lower and upper boundary lines. For
+example, a horizontal interval inferred
 from an existing Cars scatterplot can be authored as:
 
 ```javascript
@@ -3242,7 +3244,8 @@ the matching atomic position-range action, and grouping children.
 
 `fill` and `opacity` default to the area defaults. Field-driven fill remains an
 explicit `encodeColor` call so color, grouping, and legend ownership stay
-separate.
+separate. The same grouped overlay-color composition applies to vertical y/y2
+and horizontal x/x2 bands.
 
 `curve` defaults to `"linear"` and accepts the shared eight-value line/area
 curve vocabulary.

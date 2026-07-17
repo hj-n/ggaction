@@ -30,6 +30,13 @@ test("dispatches point, rule, line, area, and bar position policies", () => {
     { bin: undefined, aggregate: undefined, stack: undefined }
   );
   assert.deepEqual(resolveMarkPositionPolicy(context(
+    "line",
+    "x",
+    "quantitative",
+    {},
+    { encoding: { y: { fieldType: "quantitative" } } }
+  )), { bin: undefined, aggregate: undefined, stack: undefined });
+  assert.deepEqual(resolveMarkPositionPolicy(context(
     "area",
     "y",
     "quantitative",

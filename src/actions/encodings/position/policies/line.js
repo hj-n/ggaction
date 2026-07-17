@@ -24,12 +24,13 @@ export function resolveLinePositionPolicy({
   const interval = dataset.transform?.some(item => item.type === "interval");
 
   if (channel === "x") {
-    const horizontalDirect =
-      layer.encoding?.y?.fieldType === "temporal" &&
+    const directPair =
+      layer.encoding?.y?.aggregate === undefined &&
+      ["quantitative", "temporal"].includes(layer.encoding?.y?.fieldType) &&
       fieldType === "quantitative";
     if (
       fieldType !== "temporal" &&
-      !((regression || interval || horizontalDirect) && fieldType === "quantitative")
+      !((regression || interval || directPair) && fieldType === "quantitative")
     ) {
       throw new Error(
         "Line x encoding requires a temporal field or a compatible derived quantitative field."
