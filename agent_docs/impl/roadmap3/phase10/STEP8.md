@@ -13,6 +13,6 @@ Gate K-B는 visual output뿐 아니라 integration matrix의 supported/error cla
 primitive facet Canvas sizing과 public auto sizing의 drift를 발견했다. Public behavior에 맞춘 동일 PNG pair를 다시
 확인한 뒤 STEP 9 closeout으로 진행한다.
 
-승인된 Gate source는 `test/charts/cross-feature-integration/`으로 승격되었고 complete target flow는
+Gate source는 `test/gates/cross-feature-integration/`에 있고 complete target flow는
 [`../chart/cross-feature-integration-dashboard.md`](../chart/cross-feature-integration-dashboard.md)에 있다.
 두 PNG는 nested Polar replacement와 existing outer-guide/shared-legend facet 계약을 각각 검증한다.

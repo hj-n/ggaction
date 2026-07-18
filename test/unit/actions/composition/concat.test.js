@@ -131,6 +131,36 @@ test("composes a nested dashboard and renders only the parent graphicSpec", () =
   assert.equal(trend.graphicSpec.objects.canvas.properties.width, 300);
 });
 
+test("centers an intrinsic nested composition inside an automatic cross-axis slot", () => {
+  const nested = hconcat({
+    id: "nested",
+    programs: [
+      child({ width: 100, height: 80, color: "red" }),
+      child({ width: 100, height: 80, color: "blue" })
+    ]
+  });
+  const wide = child({ width: 420, height: 100, color: "green" });
+  const dashboard = vconcat({
+    programs: [wide, nested],
+    align: "center"
+  });
+  const [, nestedCanvas] = nestedCanvases(dashboard);
+
+  assert.deepEqual(dashboard.graphicSpec.objects.canvas.properties, {
+    width: 420,
+    height: 196,
+    background: "white"
+  });
+  assert.deepEqual(nestedCanvas.properties, {
+    width: 216,
+    height: 80,
+    background: "white",
+    x: 102,
+    y: 116
+  });
+  assert.equal(nested.graphicSpec.objects.canvas.properties.width, 216);
+});
+
 test("preserves explicit cross sizes and applies alignment to remaining space", () => {
   const pair = hconcat({
     programs: [

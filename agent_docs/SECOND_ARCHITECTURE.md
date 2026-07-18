@@ -239,7 +239,9 @@ Package-level `hconcat()`과 `vconcat()`은 최소 두 complete child를 먼저 
 composition state를 만든다. 각 child는 wrapped `useProgram` node로 trace에 기록되고,
 `materializeComposition`이 layout을 해석해 parent canvas와 namespaced child snapshot을 concrete graphics로
 작성한다. Horizontal composition은 automatic child height를, vertical composition은 automatic child width를
-가장 큰 cross-axis 크기로 맞춘다. 명시적 child dimension은 보존하고 남은 차이는 `align`으로 배치한다.
+가장 큰 cross-axis slot 크기로 맞춘다. Unit child는 그 크기로 rematerialize한다. Nested composition child는
+root Canvas만 늘려 내부를 왼쪽/위쪽에 남기지 않고 intrinsic layout 전체를 outer `align`에 따라 slot 안에
+배치한다. 명시적 child dimension은 보존한다.
 Parent canvas 크기는 normalized child 크기, gap과 padding으로 결정되며 renderer는 이 완성된 parent
 `graphicSpec`만 읽는다. Nested composition도 동일한 snapshot protocol을 재귀적으로 사용한다.
 

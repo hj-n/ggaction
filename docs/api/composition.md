@@ -55,8 +55,11 @@ the deterministic slot name `view-1`, `view-2`, and so on. Use
 The parent Canvas size is inferred from child dimensions, gap, and padding.
 For `hconcat`, children whose height was omitted in `createCanvas` expand to the
 largest child height. For `vconcat`, children whose width was omitted expand to
-the largest child width. An explicitly authored child width or height is never
-overwritten; `align` places any remaining cross-axis difference.
+the largest child width. A unit child rematerializes against that resolved size.
+A nested composition keeps its intrinsic child layout and `align` places its
+complete snapshot inside the larger cross-axis slot; the outer composition does
+not stretch inner facet cells, gaps, or guide geometry. An explicitly authored
+child width or height is never overwritten.
 
 The parent background is white. Child Canvas backgrounds are preserved, and
 nested compositions keep independent clipping and coordinate scopes.

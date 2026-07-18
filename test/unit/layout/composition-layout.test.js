@@ -5,6 +5,7 @@ import {
   DEFAULT_COMPOSITION_LAYOUT,
   normalizeCompositionPadding,
   resolveCompositionLayout,
+  resolveCompositionSnapshotPlacement,
   resolvePlacedPlotBounds
 } from "../../../src/layout/composition.js";
 import { expectedConcatLayout } from "../../oracles/composition.js";
@@ -104,6 +105,32 @@ test("preserves explicit cross-axis dimensions while automatic siblings expand",
     { id: "auto", width: 420, height: 300, x: 0, y: 0 },
     { id: "fixed", width: 260, height: 300, x: 436, y: 0 }
   ]);
+});
+
+test("aligns an intrinsic nested snapshot inside an expanded cross-axis slot", () => {
+  const placement = { id: "nested", x: 10, y: 20, width: 420, height: 220 };
+
+  assert.deepEqual(resolveCompositionSnapshotPlacement({
+    direction: "vertical",
+    align: "center",
+    placement,
+    width: 260,
+    height: 220
+  }), { x: 90, y: 20, width: 260, height: 220 });
+  assert.deepEqual(resolveCompositionSnapshotPlacement({
+    direction: "vertical",
+    align: "end",
+    placement,
+    width: 260,
+    height: 220
+  }), { x: 170, y: 20, width: 260, height: 220 });
+  assert.deepEqual(resolveCompositionSnapshotPlacement({
+    direction: "horizontal",
+    align: "center",
+    placement: { id: "nested", x: 10, y: 20, width: 260, height: 300 },
+    width: 260,
+    height: 220
+  }), { x: 10, y: 60, width: 260, height: 220 });
 });
 
 test("normalizes scalar and partial padding without mutating its base", () => {
@@ -225,4 +252,14 @@ test("rejects malformed composition layout inputs", () => {
   assert.throws(() => normalizeCompositionPadding({}), /at least one side/);
   assert.throws(() => normalizeCompositionPadding({ inline: 2 }), /Unknown composition padding/);
   assert.throws(() => normalizeCompositionPadding({ top: -2 }), /must be a non-negative/);
+  assert.throws(
+    () => resolveCompositionSnapshotPlacement({
+      direction: "vertical",
+      align: "center",
+      placement: { id: "nested", x: 0, y: 0, width: 100, height: 80 },
+      width: 120,
+      height: 80
+    }),
+    /must fit its resolved placement/
+  );
 });

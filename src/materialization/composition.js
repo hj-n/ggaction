@@ -2,7 +2,10 @@ import { freezeOwned } from "../core/immutable.js";
 import {
   requireSingleOrderedGraphicByType
 } from "../grammar/schemas/graphicTree.js";
-import { resolveCompositionLayout } from "../layout/composition.js";
+import {
+  resolveCompositionLayout,
+  resolveCompositionSnapshotPlacement
+} from "../layout/composition.js";
 import { namespaceGraphicSnapshot } from "./compositionSnapshot.js";
 
 const ZERO_MARGIN = freezeOwned({ top: 0, right: 0, bottom: 0, left: 0 });
@@ -49,32 +52,28 @@ function resizeChildForSnapshot(program, placement) {
   const heightChanged = canvas.object.properties.height !== placement.height;
   if (!widthChanged && !heightChanged) return program;
 
-  if (program.compositionSpec === undefined) {
-    if (typeof program.editCanvas !== "function") {
-      throw new Error("Automatic composition sizing requires child editCanvas support.");
-    }
-    return program.editCanvas({
-      ...(widthChanged ? { width: placement.width } : {}),
-      ...(heightChanged ? { height: placement.height } : {})
-    });
+  if (program.compositionSpec !== undefined) {
+    return program;
   }
+  if (typeof program.editCanvas !== "function") {
+    throw new Error("Automatic composition sizing requires child editCanvas support.");
+  }
+  return program.editCanvas({
+    ...(widthChanged ? { width: placement.width } : {}),
+    ...(heightChanged ? { height: placement.height } : {})
+  });
+}
 
-  let resized = program;
-  if (widthChanged) {
-    resized = resized.editGraphics({
-      target: canvas.id,
-      property: "width",
-      value: placement.width
-    });
-  }
-  if (heightChanged) {
-    resized = resized.editGraphics({
-      target: canvas.id,
-      property: "height",
-      value: placement.height
-    });
-  }
-  return resized;
+function resolveSnapshotPlacement(program, placement, layout) {
+  if (program.compositionSpec === undefined) return placement;
+  const canvas = requireSingleOrderedGraphicByType(program.graphicSpec, "canvas");
+  return resolveCompositionSnapshotPlacement({
+    direction: layout.direction,
+    align: layout.align,
+    placement,
+    width: canvas.object.properties.width,
+    height: canvas.object.properties.height
+  });
 }
 
 function itemDefinitions(object) {
@@ -135,11 +134,13 @@ export function materializeCompositionGraphics(program) {
   }
 
   for (const placement of layout.children) {
-    const child = resizeChildForSnapshot(program.children[placement.id], placement);
+    const source = program.children[placement.id];
+    const child = resizeChildForSnapshot(source, placement);
+    const snapshotPlacement = resolveSnapshotPlacement(child, placement, layout);
     const snapshot = namespaceGraphicSnapshot(child.graphicSpec, {
       namespace: `${program.compositionSpec.id}-${placement.id}`,
-      x: placement.x,
-      y: placement.y
+      x: snapshotPlacement.x,
+      y: snapshotPlacement.y
     });
     next = attachSnapshotObject(next, snapshot, snapshot.order[0], "canvas");
   }

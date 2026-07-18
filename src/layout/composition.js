@@ -200,6 +200,38 @@ export function resolveCompositionLayout({
   });
 }
 
+export function resolveCompositionSnapshotPlacement({
+  direction,
+  align,
+  placement,
+  width,
+  height
+} = {}) {
+  const resolvedDirection = normalizeDirection(direction);
+  const resolvedAlign = normalizeCompositionAlign(align);
+  validatePlacedBounds(placement, "Composition snapshot placement");
+  if (!Number.isFinite(width) || width <= 0) {
+    throw new RangeError("Composition snapshot width must be a positive finite number.");
+  }
+  if (!Number.isFinite(height) || height <= 0) {
+    throw new RangeError("Composition snapshot height must be a positive finite number.");
+  }
+  if (width > placement.width || height > placement.height) {
+    throw new RangeError("Composition snapshot must fit its resolved placement.");
+  }
+  const horizontal = resolvedDirection === "horizontal";
+  return cloneAndFreeze({
+    x: placement.x + (horizontal
+      ? 0
+      : crossOffset(placement.width - width, resolvedAlign)),
+    y: placement.y + (horizontal
+      ? crossOffset(placement.height - height, resolvedAlign)
+      : 0),
+    width,
+    height
+  });
+}
+
 function validatePlacedBounds(value, label) {
   if (!isPlainObject(value)) {
     throw new TypeError(`${label} must be a plain object.`);
