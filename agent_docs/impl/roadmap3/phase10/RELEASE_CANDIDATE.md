@@ -7,14 +7,14 @@
 - [x] Normal, render, browser, coverage와 installed-package 검증
 - [x] Built documentation과 desktop/mobile 검증
 - [x] Release note 초안과 version recommendation
-- [ ] 사용자 release-candidate 승인
+- [x] 사용자 release-candidate 승인 (`0.0.3`)
 - [ ] Version 변경, tag, GitHub release와 npm publish
 
 ## 권고 version
 
-첫 Roadmap 3 release는 `0.1.0`을 권고한다. 현재 `0.0.2` 이후 Polar coordinate, program composition, facet,
-text/rect와 focused editing이라는 큰 public capability가 추가됐으므로 patch보다 pre-1.0 minor version이 의미에
-맞다. 이 문서를 작성한 시점에는 `package.json`과 lockfile version을 변경하지 않았다.
+사용자는 2026-07-19 Roadmap 3 release version을 `0.0.3`으로 확정하고 배포를 승인했다. 최초 권고는 큰 public
+capability 확장을 나타내는 `0.1.0`이었으나, 현재 experimental patch sequence를 이어가는 사용자 결정을 따른다.
+Candidate의 package, lockfile, docs와 changelog version은 `0.0.3`으로 통일한다.
 
 ## Release 범위
 

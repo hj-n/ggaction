@@ -491,7 +491,7 @@ test("keeps concise and full LLM documentation synchronized", async () => {
   const full = read("docs/llms-full.txt");
   assert.doesNotMatch(full, /\{%|\{\{/);
   assert.doesNotMatch(full, /<(?:div|article|span|a|img|figure|details|summary)\b/i);
-  assert.match(full, /This documentation describes the experimental `0\.0\.2`\s+> release/);
+  assert.match(full, /This documentation describes the experimental `0\.0\.3`\s+> release/);
   assert.equal(
     sanitizeMarkdown('<div><strong>Scale</strong><span>maps values</span></div>'),
     "Scale maps values"

@@ -4,6 +4,8 @@ All notable changes to `ggaction` are recorded in this file.
 
 ## Unreleased
 
+## [0.0.3] - 2026-07-19
+
 ### Added
 
 - Added complete Polar point, line/radar, arc/donut/rose/radial-bar authoring with theta/radius guides, selection,
@@ -56,5 +58,6 @@ All notable changes to `ggaction` are recorded in this file.
 - Cartesian charts are the complete current path. Polar semantic tokens exist only where explicitly documented and do
   not imply complete polar rendering.
 
+[0.0.3]: https://github.com/hj-n/ggaction/releases/tag/v0.0.3
 [0.0.2]: https://github.com/hj-n/ggaction/releases/tag/v0.0.2
 [0.0.1]: https://github.com/hj-n/ggaction/releases/tag/v0.0.1
