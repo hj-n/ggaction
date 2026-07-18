@@ -11,7 +11,7 @@
 - [x] STEP 7 — Immutable facet child derivation
 - [x] STEP 8 — Public `facet`과 composition materialization
 - [x] STEP 9 — `editFacetHeaders`, title promotion과 layout edits
-- [ ] STEP 10 — Coverage, contracts, docs와 Phase closeout
+- [x] STEP 10 — Coverage, contracts, docs와 Phase closeout
 
 ## 목표
 
