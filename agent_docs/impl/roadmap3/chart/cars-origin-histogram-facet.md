@@ -21,11 +21,17 @@ chart()
     maxBins: 8,
     xScale: { nice: true, zero: false }
   })
+  .encodeColor({
+    field: "Cylinders",
+    fieldType: "ordinal",
+    scale: { palette: "reds" }
+  })
   .createGuides({
     axes: {
       x: { title: { text: "Displacement" } },
       y: { title: { text: "Count" } }
     },
+    legend: { position: "right" },
     grid: { horizontal: true, vertical: false }
   })
   .createTitle({
@@ -33,7 +39,13 @@ chart()
     subtitle: "Faceted by Origin",
     align: "center"
   })
-  .facet({ field: "Origin", columns: 2, gap: 18, padding: 14 });
+  .facet({
+    field: "Origin",
+    columns: 2,
+    gap: 18,
+    padding: 14,
+    guides: { legend: "shared" }
+  });
 ```
 
 ## Action hierarchy
@@ -47,4 +59,5 @@ cell grain에서 다시 materialize하되 bin boundaries와 final y domain은 �
 - `columns: 2` resolves row-major positions `[(0,0), (1,0), (0,1)]`.
 - One global set of eight bin boundaries is applied to every cell.
 - Shared y domain contains the maximum cell/bin count; absent bins materialize no synthetic bars.
+- Every observed bin stacks Cylinders in shared domain order and one `reds` legend is owned by the parent.
 - Parent title and headers are not copied into child semantic programs.

@@ -32,6 +32,7 @@ facet(options: {
   columns?: number;
   gap?: number;
   align?: "start" | "center" | "end";
+  guides?: { legend?: "each" | "shared" };
   padding?: number | Partial<{
     top: number;
     right: number;
@@ -56,7 +57,8 @@ Defaults:
 - values: source first-appearance order
 - omitted `columns`: resolved value count, 즉 한 줄
 - `gap: 16`, `align: "center"`, four-side zero padding
-- shared scale domains, guides in every cell
+- shared scale domains and axes in every cell
+- explicit `guides.legend: "shared"` promotes one categorical legend to the parent
 - deterministic opaque child IDs
 
 ## First-slice boundary
@@ -73,7 +75,10 @@ STEP 6은 hard pause다. 승인 전에는 `ChartProgram.prototype.facet`, facet 
 
 1. Default one-row Cars Origin scatterplot facet
 2. `columns: 2` Cars Origin histogram facet wrapping
-3. Shared domains, per-cell axes, parent-owned title와 headers
+3. Shared domains, per-cell axes, one parent-owned Cylinders legend, title와 headers
+
+`guides.legend`은 Gate H feedback에서 추가된 phase-local API proposal이다. Exact syntax가 Gate H에서 승인된 뒤
+Planned contract와 Phase 8 assignment를 갱신한다.
 
 Gate H primitive package는 `test/gates/direct-source-facet/`에 있으며 public `facet`과
 `editFacetHeaders`가 아직 존재하지 않는 것도 normal Gate test가 확인한다.

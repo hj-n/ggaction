@@ -23,8 +23,8 @@ test("renders every Gate H direct-source facet primitive in a browser", async ()
       { waitFor: () => window.__directFacetGate !== undefined }
     );
     assert.deepEqual(await windowValue(page, "__directFacetGate"), {
-      scatterplot: { width: 782, height: 282, nestedCanvasCount: 3 },
-      histogram: { width: 606, height: 578, nestedCanvasCount: 3 }
+      scatterplot: { width: 932, height: 282, nestedCanvasCount: 3 },
+      histogram: { width: 756, height: 578, nestedCanvasCount: 3 }
     });
     assertNoBrowserErrors(errors, "Roadmap 3 direct-source facet Gate H");
     await page.close();

@@ -17,7 +17,7 @@ function nestedCanvases(program) {
 
 test("authors the one-row scatterplot facet with extension primitives", () => {
   const program = createCarsOriginScatterplotFacetPrimitives(loadCars());
-  assert.equal(program.graphicSpec.objects.canvas.properties.width, 782);
+  assert.equal(program.graphicSpec.objects.canvas.properties.width, 932);
   assert.equal(program.graphicSpec.objects.canvas.properties.height, 282);
   assert.equal(nestedCanvases(program).length, 3);
   assert.deepEqual(
@@ -30,7 +30,7 @@ test("authors the one-row scatterplot facet with extension primitives", () => {
 
 test("authors the wrapped histogram facet without synthetic empty-bin bars", () => {
   const program = createCarsOriginHistogramFacetPrimitives(loadCars());
-  assert.equal(program.graphicSpec.objects.canvas.properties.width, 606);
+  assert.equal(program.graphicSpec.objects.canvas.properties.width, 756);
   assert.equal(program.graphicSpec.objects.canvas.properties.height, 578);
   assert.deepEqual(
     nestedCanvases(program).map(canvas => [canvas.properties.x, canvas.properties.y]),
@@ -42,7 +42,24 @@ test("authors the wrapped histogram facet without synthetic empty-bin bars", () 
   const rectCounts = collections.map(collection =>
     collection.items.filter(child => child.type === "rect").length
   );
-  assert.deepEqual(rectCounts, [8, 3, 3]);
+  assert.deepEqual(rectCounts, [10, 6, 5]);
+});
+
+test("authors one parent legend instead of repeating it in facet cells", () => {
+  for (const program of [
+    createCarsOriginScatterplotFacetPrimitives(loadCars()),
+    createCarsOriginHistogramFacetPrimitives(loadCars())
+  ]) {
+    const legendIds = Object.keys(program.graphicSpec.objects)
+      .filter(id => id.endsWith("FacetLegend"));
+    assert.equal(legendIds.length, 1);
+    const legend = program.graphicSpec.objects[legendIds[0]];
+    assert.deepEqual(
+      legend.items.filter(item => item.type === "text")
+        .map(item => item.properties.text),
+      ["Cylinders", "8", "4", "6", "3", "5"]
+    );
+  }
 });
 
 test("keeps raw facet values out of primitive resource IDs", () => {

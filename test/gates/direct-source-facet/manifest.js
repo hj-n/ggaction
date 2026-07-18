@@ -32,18 +32,24 @@ export const scatterplotFacetTarget = `chart()
     scale: { nice: true, zero: false }
   })
   .encodeRadius({ value: 2.5 })
+  .encodeColor({
+    field: "Cylinders",
+    fieldType: "ordinal",
+    scale: { palette: "reds" }
+  })
   .createGuides({
     axes: {
       x: { title: { text: "Horsepower" } },
       y: { title: { text: "Miles per Gallon" } }
-    }
+    },
+    legend: { position: "right" }
   })
   .createTitle({
     text: "Horsepower and Fuel Economy",
     subtitle: "Faceted by Origin",
     align: "center"
   })
-  .facet({ field: "Origin" })
+  .facet({ field: "Origin", guides: { legend: "shared" } })
   .editFacetHeaders({ fontSize: 13, fontWeight: 700, offset: 10 });`;
 
 export const histogramFacetTarget = `chart()
@@ -59,11 +65,17 @@ export const histogramFacetTarget = `chart()
     maxBins: 8,
     xScale: { nice: true, zero: false }
   })
+  .encodeColor({
+    field: "Cylinders",
+    fieldType: "ordinal",
+    scale: { palette: "reds" }
+  })
   .createGuides({
     axes: {
       x: { title: { text: "Displacement" } },
       y: { title: { text: "Count" } }
     },
+    legend: { position: "right" },
     grid: { horizontal: true, vertical: false }
   })
   .createTitle({
@@ -71,7 +83,13 @@ export const histogramFacetTarget = `chart()
     subtitle: "Faceted by Origin",
     align: "center"
   })
-  .facet({ field: "Origin", columns: 2, gap: 18, padding: 14 });`;
+  .facet({
+    field: "Origin",
+    columns: 2,
+    gap: 18,
+    padding: 14,
+    guides: { legend: "shared" }
+  });`;
 
 export const visualVariants = Object.freeze([
   defineVisualVariant({
@@ -83,7 +101,7 @@ export const visualVariants = Object.freeze([
     primitive: () => createCarsOriginScatterplotFacetPrimitives(cars),
     width: values.scatter.width,
     height: values.scatter.height,
-    colors: ["#4c78a8"],
+    colors: values.colorRange,
     regions: values.scatter.cells.map(cell => ({
       name: `scatter-${cell.id}`,
       x: cell.x,
@@ -102,7 +120,7 @@ export const visualVariants = Object.freeze([
     primitive: () => createCarsOriginHistogramFacetPrimitives(cars),
     width: values.histogram.width,
     height: values.histogram.height,
-    colors: ["#4c78a8"],
+    colors: values.colorRange,
     regions: values.histogram.cells.map(cell => ({
       name: `histogram-${cell.id}`,
       x: cell.x,
@@ -113,4 +131,3 @@ export const visualVariants = Object.freeze([
     }))
   })
 ]);
-

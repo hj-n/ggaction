@@ -26,18 +26,24 @@ chart()
     scale: { nice: true, zero: false }
   })
   .encodeRadius({ value: 2.5 })
+  .encodeColor({
+    field: "Cylinders",
+    fieldType: "ordinal",
+    scale: { palette: "reds" }
+  })
   .createGuides({
     axes: {
       x: { title: { text: "Horsepower" } },
       y: { title: { text: "Miles per Gallon" } }
-    }
+    },
+    legend: { position: "right" }
   })
   .createTitle({
     text: "Horsepower and Fuel Economy",
     subtitle: "Faceted by Origin",
     align: "center"
   })
-  .facet({ field: "Origin" })
+  .facet({ field: "Origin", guides: { legend: "shared" } })
   .editFacetHeaders({ fontSize: 13, fontWeight: 700, offset: 10 });
 ```
 
@@ -61,6 +67,6 @@ facet
 - Facet values are `USA`, `Europe`, `Japan` in source first-appearance order.
 - Omitted columns resolves to `3`; all cells appear in one row.
 - Every child keeps an independent scale resource but resolves the same full-source x/y domain.
+- Cylinders uses shared ordinal domain `[8, 4, 6, 3, 5]` and one parent `reds` legend.
 - Title exists only on the composition parent; header text is parent-owned concrete graphics.
 - Raw Origin values never appear in generated child, dataset or graphic IDs.
-

@@ -19,6 +19,16 @@ export function createCarsOriginScatterplotFacetPrimitives(cars) {
       target: "scatterFacetTitle",
       property: "items",
       value: values.titleItems
+    })
+    .createGraphics({
+      id: "scatterFacetLegend",
+      type: "collection",
+      parent: "scatterFacet"
+    })
+    .editGraphics({
+      target: "scatterFacetLegend",
+      property: "items",
+      value: values.legendItems
     });
 
   for (const [index, cell] of values.cells.entries()) {
@@ -55,6 +65,16 @@ export function createCarsOriginHistogramFacetPrimitives(cars) {
       target: "histogramFacetTitle",
       property: "items",
       value: values.titleItems
+    })
+    .createGraphics({
+      id: "histogramFacetLegend",
+      type: "collection",
+      parent: "histogramFacet"
+    })
+    .editGraphics({
+      target: "histogramFacetLegend",
+      property: "items",
+      value: values.legendItems
     });
 
   for (const [index, cell] of values.cells.entries()) {

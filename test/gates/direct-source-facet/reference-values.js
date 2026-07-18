@@ -1,6 +1,13 @@
 const ORIGINS = Object.freeze(["USA", "Europe", "Japan"]);
+const CYLINDERS = Object.freeze([8, 4, 6, 3, 5]);
+const REDS = Object.freeze([
+  "#fdc9b4",
+  "#fc9374",
+  "#f6573f",
+  "#d22321",
+  "#970b13"
+]);
 const FONT_FAMILY = "Arial, sans-serif";
-const MARK_COLOR = "#4c78a8";
 const TEXT_COLOR = "#334155";
 const AXIS_COLOR = "#64748b";
 const GRID_COLOR = "#e2e8f0";
@@ -8,6 +15,8 @@ const GRID_COLOR = "#e2e8f0";
 const SCATTER_CELL = Object.freeze({ width: 250, height: 230 });
 const HISTOGRAM_CELL = Object.freeze({ width: 280, height: 240 });
 const TITLE_HEIGHT = 52;
+const LEGEND_GAP = 18;
+const LEGEND_WIDTH = 132;
 
 function assertCars(cars) {
   if (!Array.isArray(cars)) throw new TypeError("cars must be an array.");
@@ -62,14 +71,20 @@ function line(x1, y1, x2, y2, options = {}) {
   });
 }
 
-function circle(x, y) {
+function cylinderColor(value) {
+  const index = CYLINDERS.indexOf(value);
+  if (index < 0) throw new Error(`Unknown Cylinders value ${value}.`);
+  return REDS[index];
+}
+
+function circle(x, y, fill, radius = 2.5) {
   return Object.freeze({
     type: "circle",
     properties: Object.freeze({
       x,
       y,
-      radius: 2.5,
-      fill: MARK_COLOR,
+      radius,
+      fill,
       stroke: "#ffffff",
       strokeWidth: 0.35,
       opacity: 1
@@ -77,7 +92,7 @@ function circle(x, y) {
   });
 }
 
-function rect(x, y, width, height) {
+function rect(x, y, width, height, fill) {
   return Object.freeze({
     type: "rect",
     properties: Object.freeze({
@@ -85,12 +100,33 @@ function rect(x, y, width, height) {
       y,
       width,
       height,
-      fill: MARK_COLOR,
+      fill,
       stroke: "#ffffff",
       strokeWidth: 0.6,
       opacity: 1
     })
   });
+}
+
+function legendItems(x, y, symbol) {
+  const items = [text("Cylinders", x, y, {
+    fontSize: 12,
+    fontWeight: 700,
+    textBaseline: "top"
+  })];
+  CYLINDERS.forEach((value, index) => {
+    const itemY = y + 28 + index * 26;
+    if (symbol === "circle") {
+      items.push(circle(x + 7, itemY + 1, cylinderColor(value), 5.5));
+    } else {
+      items.push(rect(x + 1, itemY - 5, 12, 12, cylinderColor(value)));
+    }
+    items.push(text(value, x + 22, itemY + 1, {
+      fontSize: 10.5,
+      textBaseline: "middle"
+    }));
+  });
+  return Object.freeze(items);
 }
 
 function facetLayout({ valueCount, cell, columns, gap = 16, padding = 0 }) {
@@ -191,7 +227,8 @@ function scatterCellItems(rows, origin, domains) {
   for (const row of rows) {
     items.push(circle(
       mapLinear(row.Horsepower, domains.x, [plot.left, plot.right]),
-      mapLinear(row.Miles_per_Gallon, domains.y, [plot.bottom, plot.top])
+      mapLinear(row.Miles_per_Gallon, domains.y, [plot.bottom, plot.top]),
+      cylinderColor(row.Cylinders)
     ));
   }
   return Object.freeze(items);
@@ -222,7 +259,26 @@ function histogramCounts(rows, boundaries) {
   return Object.freeze(counts);
 }
 
-function histogramCellItems(origin, counts, domains) {
+function histogramStacks(rows, boundaries) {
+  const stacks = Array.from(
+    { length: boundaries.length - 1 },
+    () => Array(CYLINDERS.length).fill(0)
+  );
+  const start = boundaries[0];
+  const end = boundaries.at(-1);
+  const step = (end - start) / stacks.length;
+  for (const row of rows) {
+    let binIndex = Math.floor((row.Displacement - start) / step);
+    if (row.Displacement === end) binIndex = stacks.length - 1;
+    const cylinderIndex = CYLINDERS.indexOf(row.Cylinders);
+    if (binIndex >= 0 && binIndex < stacks.length && cylinderIndex >= 0) {
+      stacks[binIndex][cylinderIndex] += 1;
+    }
+  }
+  return Object.freeze(stacks.map(stack => Object.freeze(stack)));
+}
+
+function histogramCellItems(origin, stacks, domains) {
   const plot = Object.freeze({ left: 52, right: 262, top: 38, bottom: 190 });
   const yTicks = [0, 20, 40, 60];
   const xTicks = [50, 275, 500];
@@ -256,16 +312,23 @@ function histogramCellItems(origin, counts, domains) {
       textBaseline: "top"
     }));
   }
-  const slotWidth = (plot.right - plot.left) / counts.length;
-  counts.forEach((count, index) => {
-    if (count === 0) return;
-    const height = mapLinear(count, domains.y, [0, plot.bottom - plot.top]);
-    items.push(rect(
-      plot.left + index * slotWidth + 0.75,
-      plot.bottom - height,
-      slotWidth - 1.5,
-      height
-    ));
+  const slotWidth = (plot.right - plot.left) / stacks.length;
+  stacks.forEach((stack, index) => {
+    let start = 0;
+    stack.forEach((count, cylinderIndex) => {
+      if (count === 0) return;
+      const end = start + count;
+      const y = mapLinear(end, domains.y, [plot.bottom, plot.top]);
+      const baseline = mapLinear(start, domains.y, [plot.bottom, plot.top]);
+      items.push(rect(
+        plot.left + index * slotWidth + 0.75,
+        y,
+        slotWidth - 1.5,
+        baseline - y,
+        REDS[cylinderIndex]
+      ));
+      start = end;
+    });
   });
   items.push(text("Displacement", (plot.left + plot.right) / 2, 230, {
     fontSize: 10.5,
@@ -285,11 +348,13 @@ export function createDirectFacetGateValues(cars) {
   const scatterRows = cars.filter(row =>
     Number.isFinite(row.Horsepower) &&
     Number.isFinite(row.Miles_per_Gallon) &&
+    CYLINDERS.includes(row.Cylinders) &&
     typeof row.Origin === "string" &&
     row.Origin.length > 0
   );
   const histogramRows = cars.filter(row =>
     Number.isFinite(row.Displacement) &&
+    CYLINDERS.includes(row.Cylinders) &&
     typeof row.Origin === "string" &&
     row.Origin.length > 0
   );
@@ -299,6 +364,12 @@ export function createDirectFacetGateValues(cars) {
   if (origins.length === 0) throw new Error("Facet values must not be empty.");
   if (origins.join("\u0000") !== ORIGINS.join("\u0000")) {
     throw new Error("Cars Origin order changed from the Gate H fixture.");
+  }
+  const cylinders = Object.freeze(firstAppearance(cars
+    .map(row => row.Cylinders)
+    .filter(value => CYLINDERS.includes(value))));
+  if (cylinders.join("\u0000") !== CYLINDERS.join("\u0000")) {
+    throw new Error("Cars Cylinders order changed from the Gate H fixture.");
   }
 
   const scatterDomains = Object.freeze({
@@ -327,6 +398,10 @@ export function createDirectFacetGateValues(cars) {
     counts: histogramCounts(
       histogramRows.filter(row => row.Origin === origin),
       histogramBoundariesValue
+    ),
+    stacks: histogramStacks(
+      histogramRows.filter(row => row.Origin === origin),
+      histogramBoundariesValue
     )
   }));
   const maximumCount = Math.max(...histogramSeries.flatMap(series => series.counts));
@@ -349,23 +424,33 @@ export function createDirectFacetGateValues(cars) {
     value: series.origin,
     rows: series.rows,
     counts: series.counts,
-    items: histogramCellItems(series.origin, series.counts, histogramDomains)
+    stacks: series.stacks,
+    items: histogramCellItems(series.origin, series.stacks, histogramDomains)
   })));
 
   return Object.freeze({
     origins,
+    cylinders,
+    colorRange: REDS,
     scatter: Object.freeze({
       ...scatterLayout,
+      width: scatterLayout.width + LEGEND_GAP + LEGEND_WIDTH,
       cells: scatterCells,
       domains: scatterDomains,
       titleItems: titleItems(
         "Horsepower and Fuel Economy",
         "Faceted by Origin",
         scatterLayout.width
+      ),
+      legendItems: legendItems(
+        scatterLayout.width + LEGEND_GAP,
+        TITLE_HEIGHT + 30,
+        "circle"
       )
     }),
     histogram: Object.freeze({
       ...histogramLayout,
+      width: histogramLayout.width + LEGEND_GAP + LEGEND_WIDTH,
       cells: histogramCells,
       domains: histogramDomains,
       boundaries: histogramBoundariesValue,
@@ -373,6 +458,11 @@ export function createDirectFacetGateValues(cars) {
         "Displacement Distribution",
         "Faceted by Origin",
         histogramLayout.width
+      ),
+      legendItems: legendItems(
+        histogramLayout.width + LEGEND_GAP,
+        TITLE_HEIGHT + 44,
+        "rect"
       )
     })
   });
