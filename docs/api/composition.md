@@ -92,26 +92,32 @@ encoded fields. See the
 [repository example](https://github.com/hj-n/ggaction/tree/main/examples/cars-origin-scatterplot-facet)
 for the complete data preparation and guide options.
 
-`facet` uses field values in source first-appearance order. It infers the one
-direct source used by all repeated layers, shares scale domains, and keeps axes
-inside every cell. Omitted `columns` creates one row; a positive value wraps
-cells row-major.
+`facet` uses field values in source first-appearance order. It infers one
+common row-preserving dataset ancestor, then filters and replays supported
+derived data independently inside each cell. Omitted `columns` creates one row;
+a positive value wraps cells row-major.
 
 | Option | Default | Effect |
 | --- | --- | --- |
 | `id` | `"facet"` | Names the parent and deterministic child namespaces |
 | `field` | required | Direct-source field whose values define cells |
-| `data` | unique layer source | Selects the direct source explicitly |
+| `data` | unique common ancestor | Selects the row-preserving partition dataset explicitly |
 | `columns` | number of values | Sets the grid column count |
 | `gap` | `16` | Sets horizontal and vertical cell spacing |
 | `align` | `"center"` | Aligns unequal cells inside grid tracks |
 | `padding` | `0` on every side | Adds scalar or four-side parent padding |
+| `scales` | every channel `"shared"` | Sets `"shared"` or `"independent"` per `x`, `y`, `xOffset`, `color`, `size`, `shape`, `opacity`, or `strokeDash` |
 | `guides.legend` | `false` | `"shared"` creates one parent categorical color legend |
 
-The current direct-source slice supports complete point, histogram bar, and
-aggregate bar charts. Derived datasets, independent facet scales, outer-only
-axes, and non-categorical shared legends are not yet supported and produce a
-validation error instead of a partial chart.
+Shared auto domains use the full faceted result; independent auto domains are
+resolved from each cell. An explicit semantic domain always wins. Regression
+datasets are replayed after the cell filter, so each panel receives its own fit
+and confidence interval rather than a clipped copy of the full-chart model.
+
+The current slice supports direct point, histogram bar, and aggregate bar
+charts plus layered point/regression charts. Density, interval, and box-derived
+facet integration, outer-only axes, and non-categorical shared legends remain
+unsupported until their integration slice is complete.
 
 Create a chart title after `facet` so the title is owned directly by the
 parent. A title that already fits the unit Canvas is promoted for authoring

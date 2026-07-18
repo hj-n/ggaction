@@ -1,4 +1,8 @@
 import { cloneAndFreeze, isPlainObject } from "../../core/immutable.js";
+import {
+  FACET_SCALE_CHANNELS,
+  FACET_SCALE_RESOLUTIONS
+} from "../../core/vocabulary.js";
 import { resolveHistogramBins } from "../histogram.js";
 import {
   hasOrdinalDomain,
@@ -6,18 +10,9 @@ import {
   validateCompleteScaleType
 } from "../scales/types.js";
 
-export const FACET_SCALE_CHANNELS = Object.freeze([
-  "x",
-  "y",
-  "xOffset",
-  "color",
-  "size",
-  "shape",
-  "opacity",
-  "strokeDash"
-]);
+export { FACET_SCALE_CHANNELS } from "../../core/vocabulary.js";
 
-const RESOLUTION_VALUES = new Set(["shared", "independent"]);
+const RESOLUTION_VALUES = new Set(FACET_SCALE_RESOLUTIONS);
 
 function requireScaleDefinitions(semanticSpec) {
   if (!isPlainObject(semanticSpec)) {
@@ -88,6 +83,16 @@ export function normalizeFacetScalePolicies(semanticSpec, requested = {}) {
   const scales = requireScaleDefinitions(semanticSpec);
   const channels = normalizeRequestedPolicies(requested);
   const used = usedScaleChannels(semanticSpec, scales);
+  for (const channel of Object.keys(requested)) {
+    const applicable = semanticSpec.layers.some(
+      layer => layer.encoding?.[channel]?.scale !== undefined
+    );
+    if (!applicable) {
+      throw new Error(
+        `Facet scale channel "${channel}" is not used by an affected layer.`
+      );
+    }
+  }
   const scalePolicies = {};
   for (const [id, channelSet] of used) {
     const attached = [...channelSet];
@@ -142,8 +147,12 @@ function stableUnion(domains) {
   return output;
 }
 
-function sharedAutoDomain(scale, domains) {
-  if (hasOrdinalDomain(scale.type)) return stableUnion(domains);
+function sharedAutoDomain(scale, domains, baseResolved) {
+  if (hasOrdinalDomain(scale.type)) {
+    return Array.isArray(baseResolved?.domain)
+      ? baseResolved.domain
+      : stableUnion(domains);
+  }
   if (scale.type === "quantile") {
     const merged = domains.flat();
     if (!merged.every(Number.isFinite)) {
@@ -162,7 +171,8 @@ function sharedAutoDomain(scale, domains) {
 export function resolveFacetScaleDomains(
   semanticSpec,
   resolvedByChild,
-  requested = {}
+  requested = {},
+  baseResolved = undefined
 ) {
   const scales = requireScaleDefinitions(semanticSpec);
   const normalized = normalizeFacetScalePolicies(semanticSpec, requested);
@@ -184,7 +194,11 @@ export function resolveFacetScaleDomains(
     }
     const domain = explicit
       ? scale.domain
-      : sharedAutoDomain(scale, Object.values(observed));
+      : sharedAutoDomain(
+          scale,
+          Object.values(observed),
+          baseResolved?.[id]
+        );
     resolved[id] = {
       ...scalePolicy,
       domain,
@@ -238,4 +252,3 @@ export function resolveFacetHistogramBoundaries({
     ]))
   });
 }
-

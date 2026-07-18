@@ -15,7 +15,11 @@ import {
   createEmptySemanticSpec,
   createTraceRoot
 } from "./specs.js";
-import { LEGEND_CONFIG_KINDS } from "./vocabulary.js";
+import {
+  FACET_SCALE_CHANNELS,
+  FACET_SCALE_RESOLUTIONS,
+  LEGEND_CONFIG_KINDS
+} from "./vocabulary.js";
 
 function ownState(value) {
   return isOwned(value) ? value : cloneAndFreeze(value);
@@ -135,8 +139,18 @@ function ownCompositionSpec(compositionSpec, children) {
         "compositionSpec.facet.values must contain one unique scalar per child."
       );
     }
-    if (compositionSpec.facet.scales !== "shared") {
-      throw new Error('compositionSpec.facet.scales must be "shared".');
+    const scales = compositionSpec.facet.scales;
+    if (
+      !isPlainObject(scales) ||
+      Object.keys(scales).length !== FACET_SCALE_CHANNELS.length ||
+      FACET_SCALE_CHANNELS.some(channel =>
+        !FACET_SCALE_RESOLUTIONS.includes(scales[channel])
+      ) ||
+      Object.keys(scales).some(channel => !FACET_SCALE_CHANNELS.includes(channel))
+    ) {
+      throw new Error(
+        "compositionSpec.facet.scales requires one shared or independent policy per supported channel."
+      );
     }
     const guides = compositionSpec.facet.guides;
     if (

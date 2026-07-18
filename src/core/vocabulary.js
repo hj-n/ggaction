@@ -124,6 +124,22 @@ export const POSITION_CHANNELS = Object.freeze([
   ...POLAR_POSITION_CHANNELS
 ]);
 
+export const FACET_SCALE_CHANNELS = Object.freeze([
+  "x",
+  "y",
+  "xOffset",
+  "color",
+  "size",
+  "shape",
+  "opacity",
+  "strokeDash"
+]);
+
+export const FACET_SCALE_RESOLUTIONS = Object.freeze([
+  "shared",
+  "independent"
+]);
+
 export function getPositionChannelDefinition(channel) {
   return POSITION_CHANNEL_DEFINITIONS[channel];
 }

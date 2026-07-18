@@ -30,6 +30,12 @@ test("resolves direct-source facet values in first-appearance order", () => {
     data: "cars",
     field: "group",
     values: ["Japan", "USA", "Europe"],
+    dependencies: {
+      field: "group",
+      anchor: "cars",
+      replay: [],
+      layers: [{ id: "points", data: "cars" }]
+    },
     cells: [
       { id: "facet-cell-1", data: "facet-cell-1-data", value: "Japan" },
       { id: "facet-cell-2", data: "facet-cell-2-data", value: "USA" },
@@ -83,7 +89,7 @@ test("supports complete histogram and aggregate bar sources", () => {
   );
 });
 
-test("rejects transformed, ambiguous, unsupported, and incomplete sources", () => {
+test("supports row-preserving anchors and rejects unsupported or incomplete sources", () => {
   const transformed = pointProgram().filterData({
     id: "selected",
     source: "cars",
@@ -94,10 +100,11 @@ test("rejects transformed, ambiguous, unsupported, and incomplete sources", () =
     property: "layer[points].data",
     value: "selected"
   });
-  assert.throws(
-    () => resolveFacetDefinition(rebound.semanticSpec, { field: "group" }),
-    /direct source dataset/
-  );
+  const definition = resolveFacetDefinition(rebound.semanticSpec, {
+    field: "group"
+  });
+  assert.equal(definition.data, "selected");
+  assert.deepEqual(definition.values, ["Japan"]);
 
   const unsupported = chart()
     .createCanvas({ width: 240, height: 160, margin: 20 })
@@ -105,7 +112,7 @@ test("rejects transformed, ambiguous, unsupported, and incomplete sources", () =
     .createLineMark({ id: "line" });
   assert.throws(
     () => resolveFacetDefinition(unsupported.semanticSpec, { field: "group" }),
-    /supports point and complete bar marks/
+    /complete materializable Cartesian mark/
   );
 
   const incompleteBar = chart()
@@ -126,7 +133,7 @@ test("rejects invalid facet fields, values, and explicit dataset mismatches", ()
   );
   assert.throws(
     () => resolveFacetDefinition(program.semanticSpec, { field: "missing" }),
-    /nominal value/
+    /Facet field "missing" is missing/
   );
   assert.throws(
     () => resolveFacetDefinition(program.semanticSpec, {
@@ -147,6 +154,6 @@ test("rejects invalid facet fields, values, and explicit dataset mismatches", ()
       data: "missing",
       field: "group"
     }),
-    /must be used by every repeated layer/
+    /partition dataset "missing" does not exist/
   );
 });

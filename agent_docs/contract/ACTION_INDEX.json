@@ -2084,7 +2084,9 @@
       "createSizeLegend"
     ],
     "stateTransitions": [
+      "rebindLayerData",
       "releaseDerivedData",
+      "replayDerivedData",
       "setQuantitativeColorScale",
       "useProgram"
     ],

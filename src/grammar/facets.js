@@ -1,9 +1,10 @@
 import { cloneAndFreeze, isPlainObject } from "../core/immutable.js";
 import { validateUserId } from "../core/identifiers.js";
 import { BAR_GRAINS, resolveBarGrain } from "./bars/policy.js";
+import { planFacetDependencies } from "./facets/dependencies.js";
 import { readNominalField } from "./scales.js";
 
-const SUPPORTED_MARKS = new Set(["point", "bar"]);
+const SUPPORTED_MARKS = new Set(["point", "line", "area", "bar", "rule"]);
 const SUPPORTED_BAR_GRAINS = new Set([
   BAR_GRAINS.histogram,
   BAR_GRAINS.aggregate
@@ -19,7 +20,7 @@ function requireFacetField(field) {
 function requireSupportedLayer(layer) {
   if (!SUPPORTED_MARKS.has(layer.mark?.type)) {
     throw new Error(
-      `facet currently supports point and complete bar marks; mark "${layer.id}" is ${layer.mark?.type ?? "incomplete"}.`
+      `facet does not support mark "${layer.id}" of type ${layer.mark?.type ?? "incomplete"}.`
     );
   }
   if (
@@ -30,45 +31,30 @@ function requireSupportedLayer(layer) {
       `facet requires bar mark "${layer.id}" to be a complete histogram or aggregate bar.`
     );
   }
+  if (
+    layer.encoding?.x?.scale === undefined ||
+    layer.encoding?.y?.scale === undefined
+  ) {
+    throw new Error(
+      `Facet layer "${layer.id}" must be a complete materializable Cartesian mark.`
+    );
+  }
   if (typeof layer.data !== "string" || layer.data.length === 0) {
     throw new Error(`Facet layer "${layer.id}" requires a dataset.`);
   }
 }
 
-function resolveSourceId(semanticSpec, requested) {
+function requireSupportedLayers(semanticSpec) {
   if (!Array.isArray(semanticSpec.layers) || semanticSpec.layers.length === 0) {
     throw new Error("facet requires at least one materializable layer.");
   }
   for (const layer of semanticSpec.layers) requireSupportedLayer(layer);
-  const layerData = [...new Set(semanticSpec.layers.map(layer => layer.data))];
-  const data = requested === undefined
-    ? layerData.length === 1 ? layerData[0] : undefined
-    : validateUserId(requested, "Facet dataset id");
-  if (data === undefined) {
-    throw new Error(
-      "facet cannot infer one source dataset from layers that use multiple datasets."
-    );
-  }
-  if (layerData.some(id => id !== data)) {
-    throw new Error(
-      `facet dataset "${data}" must be used by every repeated layer.`
-    );
-  }
-  return data;
 }
 
-function requireDirectDataset(semanticSpec, id) {
+function requirePartitionDataset(semanticSpec, id) {
   const dataset = semanticSpec.datasets?.find(candidate => candidate.id === id);
   if (dataset === undefined) {
     throw new Error(`Facet dataset "${id}" does not exist.`);
-  }
-  if (
-    dataset.source !== undefined ||
-    (Array.isArray(dataset.transform) && dataset.transform.length > 0)
-  ) {
-    throw new Error(
-      `facet first slice requires direct source dataset "${id}" without transforms.`
-    );
   }
   if (!Array.isArray(dataset.values)) {
     throw new TypeError(`Facet dataset "${id}" requires array values.`);
@@ -108,8 +94,13 @@ export function resolveFacetDefinition(semanticSpec, options = {}) {
   }
   const field = requireFacetField(options.field);
   const id = validateUserId(options.id ?? "facet", "Facet id");
-  const data = resolveSourceId(semanticSpec, options.data);
-  const dataset = requireDirectDataset(semanticSpec, data);
+  requireSupportedLayers(semanticSpec);
+  const dependencies = planFacetDependencies(semanticSpec, {
+    field,
+    ...(options.data === undefined ? {} : { data: options.data })
+  });
+  const data = dependencies.anchor;
+  const dataset = requirePartitionDataset(semanticSpec, data);
   const observed = uniqueInOrder(readNominalField(dataset.values, field));
   if (observed.length === 0) {
     throw new Error(`facet field "${field}" has no values.`);
@@ -120,6 +111,7 @@ export function resolveFacetDefinition(semanticSpec, options = {}) {
     data,
     field,
     values,
+    dependencies,
     cells: values.map((value, index) => ({
       id: `${id}-cell-${index + 1}`,
       data: `${id}-cell-${index + 1}-data`,

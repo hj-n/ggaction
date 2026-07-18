@@ -72,6 +72,17 @@ export interface ReplaceCompositionChildOptions {
   target: string;
   program: ChartProgram;
 }
+export type FacetScaleResolution = "shared" | "independent";
+export interface FacetScaleResolutions {
+  x?: FacetScaleResolution;
+  y?: FacetScaleResolution;
+  xOffset?: FacetScaleResolution;
+  color?: FacetScaleResolution;
+  size?: FacetScaleResolution;
+  shape?: FacetScaleResolution;
+  opacity?: FacetScaleResolution;
+  strokeDash?: FacetScaleResolution;
+}
 export interface FacetOptions {
   id?: string;
   field: string;
@@ -80,6 +91,7 @@ export interface FacetOptions {
   gap?: number;
   align?: CompositionAlign;
   padding?: number | CompositionPadding;
+  scales?: FacetScaleResolutions;
   guides?: { legend?: false | "shared" };
 }
 export interface EditFacetHeadersOptions {
@@ -109,7 +121,7 @@ export interface FacetCompositionSpec {
     readonly data: string;
     readonly field: string;
     readonly values: readonly DatasetScalar[];
-    readonly scales: "shared";
+    readonly scales: Readonly<Required<FacetScaleResolutions>>;
     readonly guides: {
       readonly axes: "each";
       readonly legend: false | "shared";

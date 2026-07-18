@@ -2,11 +2,15 @@
 
 ## `facet`
 
-- Signature: `facet({ id?, field, data?, columns?, gap?, align?, padding?, guides? })`.
-- `field` is required. Omitted `data` resolves only when every eligible repeated layer uses one unique direct source.
-- Supported first-slice sources are complete point, histogram bar, and aggregate bar programs without derived transforms.
+- Signature: `facet({ id?, field, data?, columns?, gap?, align?, padding?, scales?, guides? })`.
+- `field` is required. Omitted `data` resolves only when every eligible repeated layer has one unique common row-preserving ancestor.
+- Supported sources are complete point, histogram bar, aggregate bar, and layered point/regression programs.
 - Facet values use source first-appearance order. Omitted `columns` creates one row; a positive integer wraps cells row-major.
-- Position and appearance scales share one resolved domain across cells. Histogram children also share one bin-boundary set.
+- Omitted scale policies are shared. `x`, `y`, `xOffset`, `color`, `size`, `shape`, `opacity`, and `strokeDash`
+  accept `"shared" | "independent"` when the channel is used. Explicit semantic domains override either policy.
+  Histogram children share one bin-boundary set only when x is shared.
+- Regression dependencies replay from each filtered cell source through `replayDerivedData`, then every affected
+  layer is explicitly rebound through `rebindLayerData` before one deduplicated rematerialization plan runs.
 - `guides.legend` is `false` by default. `"shared"` creates one parent-owned categorical color legend while axes remain in each cell.
 - The result is a composition parent whose `children` retain immutable filtered programs and whose `graphicSpec` contains the complete namespaced nested-Canvas snapshot.
 - Canonical title order is `.facet(...).createTitle(...)`. A valid title authored before `facet` is promoted once to the parent.
@@ -15,14 +19,24 @@
 
 ### Formal values — `facet`
 
-- Implemented: `facet({ id?: UserId; field: NonEmptyString; data?: ExistingDirectDatasetId; columns?: PositiveInteger; gap?: NonNegativeFinite; align?: "start" | "center" | "end"; padding?: NonNegativeFinite | Partial<FourSidePadding>; guides?: { legend?: false | "shared" } }): ChartProgram`.
-- Proposed (NOT IMPLEMENTED): independent per-channel scales, derived-data replay, outer-only axes, and non-categorical shared legends.
-- Current limitation: independent scales, derived-data replay, outer-only axes, and non-categorical shared legends are not implemented.
+- Implemented: `facet({ id?: UserId; field: NonEmptyString; data?: ExistingRowPreservingDatasetId; columns?: PositiveInteger; gap?: NonNegativeFinite; align?: "start" | "center" | "end"; padding?: NonNegativeFinite | Partial<FourSidePadding>; scales?: Partial<Record<FacetScaleChannel, "shared" | "independent">>; guides?: { legend?: false | "shared" } }): ChartProgram`.
+- Proposed (NOT IMPLEMENTED): outer-only axes and non-categorical shared legends.
+- Planned (NOT YET INTEGRATED): density, interval/error-band and box dependency replay, outer-only axes, and
+  non-categorical shared legends.
+- Current limitation: Polar channels, remaining statistical transform families, outer-only axes, and
+  non-categorical shared legends are not implemented in public facet composition.
 
 ### Value coverage — `facet`
 
-- ✅ Covered: source and value inference, explicit source, one-row and wrapped layout, point/histogram/aggregate-bar eligibility, shared continuous and ordinal domains, shared histogram boundaries, parent categorical legend, title promotion, child-plot-aligned parent title and headers, renderer isolation, immutable base/children, invalid and ambiguous source rejection.
-- Evidence: `test/unit/grammar/facets.test.js`, `test/unit/actions/composition/facet-derivation.test.js`, `test/unit/actions/composition/facet.test.js`, `test/gates/direct-source-facet/public.test.js`.
+- ✅ Covered: source and value inference, explicit common ancestor, one-row and wrapped layout,
+  point/histogram/aggregate-bar eligibility, regression dependency replay, shared/independent continuous domains,
+  explicit-domain precedence, shared ordinal order, shared/independent histogram policy, parent categorical legend,
+  title promotion, child-plot-aligned parent title and headers, renderer isolation, immutable base/children, invalid
+  channel, dependency, and ambiguous-source rejection.
+- Evidence: `test/unit/grammar/facets.test.js`, `test/unit/grammar/facet-dependencies.test.js`,
+  `test/unit/grammar/facet-scales.test.js`, `test/unit/actions/composition/facet-derivation.test.js`,
+  `test/unit/actions/composition/facet.test.js`, `test/gates/direct-source-facet/public.test.js`,
+  `test/gates/facet-resolution/public.test.js`.
 
 ## `editFacetHeaders`
 

@@ -2,8 +2,8 @@ import { freezeOwned } from "../../core/immutable.js";
 import { resolveHistogramBins } from "../../grammar/histogram.js";
 import { readQuantitativeField } from "../../grammar/scales.js";
 import { BAR_GRAINS, resolveBarGrain } from "../../grammar/bars/policy.js";
+import { resolveFacetScaleDomains } from "../../grammar/facets/scales.js";
 import {
-  applyLayerDataRematerialization,
   applyMaterializationPlan,
   planScaleGuideRematerialization
 } from "../../materialization/dependencies.js";
@@ -12,16 +12,6 @@ import { buildMaterializationPlan } from "../../materialization/planner.js";
 import { requireDataset } from "../../selectors/datasets.js";
 import { requireLayer } from "../../selectors/layers.js";
 import { findSemanticScale } from "../../selectors/scales.js";
-
-const DISCRETE_SCALE_TYPES = new Set(["ordinal", "band", "point"]);
-
-function sharedScaleIds(program) {
-  return [...new Set(program.semanticSpec.layers.flatMap(layer =>
-    Object.values(layer.encoding ?? {})
-      .map(encoding => encoding?.scale)
-      .filter(id => id !== undefined)
-  ))];
-}
 
 function sharedHistogramBoundaries(program) {
   const boundaries = new Map();
@@ -65,6 +55,23 @@ function applySharedHistogramBoundaries(program, layerId, boundaries) {
   });
 }
 
+function replayDatasetId(cell, owner) {
+  return `${cell.id}-${owner}-data`;
+}
+
+function cellMaterializationPlan(program) {
+  const scaleIds = [...new Set(program.semanticSpec.layers.flatMap(layer =>
+    Object.values(layer.encoding ?? {})
+      .map(encoding => encoding?.scale)
+      .filter(id => id !== undefined)
+  ))];
+  const scales = scaleIds.map(id => ({
+    op: "rematerializeScale",
+    args: { id, guides: false, marks: false }
+  }));
+  return buildMaterializationPlan({ scales });
+}
+
 function deriveCellProgram(base, definition, cell, histogramBoundaries) {
   let child = base.filterData({
     id: cell.data,
@@ -72,74 +79,63 @@ function deriveCellProgram(base, definition, cell, histogramBoundaries) {
     field: definition.field,
     oneOf: [cell.value]
   });
-  for (const layer of base.semanticSpec.layers) {
-    child = child.editSemantic({
-      property: `layer[${layer.id}].data`,
-      value: cell.data
+  const datasets = new Map([[definition.data, cell.data]]);
+  for (const replay of definition.dependencies.replay) {
+    const source = datasets.get(replay.source);
+    if (source === undefined) {
+      throw new Error(
+        `Facet replay source "${replay.source}" is not available in cell "${cell.id}".`
+      );
+    }
+    const id = replayDatasetId(cell, replay.id);
+    child = child.replayDerivedData({
+      id,
+      source,
+      transform: replay.transform
     });
+    datasets.set(replay.id, id);
+  }
+  for (const layer of definition.dependencies.layers) {
+    const data = datasets.get(layer.data);
+    if (data === undefined) {
+      throw new Error(
+        `Facet layer "${layer.id}" has no replayed dataset in cell "${cell.id}".`
+      );
+    }
+    child = child.rebindLayerData({ id: layer.id, data });
     child = applySharedHistogramBoundaries(
       child,
       layer.id,
       histogramBoundaries.get(layer.id)
     );
   }
-  for (const layer of base.semanticSpec.layers) {
-    child = applyLayerDataRematerialization(child, layer.id);
-  }
-  return child;
+  return applyMaterializationPlan(child, cellMaterializationPlan(child));
 }
 
-function continuousUnion(domains, id) {
-  if (!domains.every(domain =>
-    Array.isArray(domain) &&
-    domain.length === 2 &&
-    domain.every(Number.isFinite)
-  )) {
-    throw new Error(`Facet shared scale "${id}" requires numeric pair domains.`);
-  }
-  return freezeOwned([
-    Math.min(...domains.map(domain => Math.min(...domain))),
-    Math.max(...domains.map(domain => Math.max(...domain)))
-  ]);
-}
-
-export function resolveFacetSharedScales(base, children) {
-  const entries = Object.values(children);
-  if (entries.length === 0) {
-    throw new Error("Facet shared scales require at least one child.");
-  }
-  const resolved = {};
-  for (const id of sharedScaleIds(base)) {
-    const scale = findSemanticScale(base, id);
-    const baseResolved = base.resolvedScales[id];
-    if (scale === undefined || baseResolved === undefined) {
-      throw new Error(`Facet shared scale "${id}" is not fully resolved.`);
-    }
-    const childScales = entries.map(child => child.resolvedScales[id]);
-    if (childScales.some(childScale => childScale === undefined)) {
-      throw new Error(`Facet child is missing resolved scale "${id}".`);
-    }
-    const domain = scale.domain !== "auto" || DISCRETE_SCALE_TYPES.has(scale.type)
-      ? baseResolved.domain
-      : continuousUnion(childScales.map(childScale => childScale.domain), id);
-    resolved[id] = freezeOwned({ ...baseResolved, domain });
-  }
-  return freezeOwned(resolved);
-}
-
-function applySharedScales(program, sharedScales) {
+function applyResolvedDomains(program, childId, resolution, baseResolved) {
   let next = program;
-  for (const [id, scale] of Object.entries(sharedScales)) {
-    next = next._withResolvedScale(id, scale);
+  for (const [id, scaleResolution] of Object.entries(resolution.scales)) {
+    const current = next.resolvedScales[id];
+    if (current === undefined) {
+      throw new Error(`Facet child "${childId}" is missing resolved scale "${id}".`);
+    }
+    const shared = scaleResolution.policy === "shared"
+      ? baseResolved?.[id]
+      : undefined;
+    next = next._withResolvedScale(id, {
+      ...current,
+      ...shared,
+      domain: scaleResolution.childDomains[childId]
+    });
   }
   const marks = next.semanticSpec.layers.flatMap(layer => {
     const step = getMarkMaterializationStep(next, layer);
     if (step === undefined) return [];
-    return layer.mark?.type === "bar"
+    return ["bar", "line", "area"].includes(layer.mark?.type)
       ? [{ ...step, args: { ...step.args, scales: false } }]
       : [step];
   });
-  const guides = Object.keys(sharedScales).flatMap(id =>
+  const guides = Object.keys(resolution.scales).flatMap(id =>
     planScaleGuideRematerialization(next, id)
   );
   return applyMaterializationPlan(
@@ -151,26 +147,54 @@ function applySharedScales(program, sharedScales) {
 export function deriveFacetChildren(
   base,
   definition,
-  { closeInheritedAction = false, stripTitle = false } = {}
+  {
+    closeInheritedAction = false,
+    stripTitle = false,
+    scales = {}
+  } = {}
 ) {
   const template = stripTitle && base.semanticSpec.title.text !== undefined
     ? base.removeTitle()
     : base;
-  const bins = sharedHistogramBoundaries(template);
+  const resolutionRequest = scales ?? {};
+  const xPolicy = resolutionRequest.x ?? "shared";
+  const bins = xPolicy === "shared"
+    ? sharedHistogramBoundaries(template)
+    : new Map();
   const independentlyResolved = Object.fromEntries(definition.cells.map(cell => [
     cell.id,
     deriveCellProgram(template, definition, cell, bins)
   ]));
-  const sharedScales = resolveFacetSharedScales(template, independentlyResolved);
+  const resolution = resolveFacetScaleDomains(
+    template.semanticSpec,
+    Object.fromEntries(Object.entries(independentlyResolved).map(([id, child]) => [
+      id,
+      child.resolvedScales
+    ])),
+    resolutionRequest,
+    template.resolvedScales
+  );
+  const resolvedChildren = Object.fromEntries(
+    Object.entries(independentlyResolved).map(([id, child]) => [
+      id,
+      applyResolvedDomains(child, id, resolution, template.resolvedScales)
+    ])
+  );
+  const sharedScales = Object.fromEntries(
+    Object.entries(resolution.scales)
+      .filter(([, value]) => value.policy === "shared")
+      .map(([id]) => [id, resolvedChildren[definition.cells[0].id].resolvedScales[id]])
+  );
   return freezeOwned({
     children: freezeOwned(Object.fromEntries(
-      Object.entries(independentlyResolved).map(([id, child]) => [
+      Object.entries(resolvedChildren).map(([id, child]) => [
         id,
         closeInheritedAction
-          ? applySharedScales(child, sharedScales)._exitAction()
-          : applySharedScales(child, sharedScales)
+          ? child._exitAction()
+          : child
       ])
     )),
-    sharedScales
+    sharedScales: freezeOwned(sharedScales),
+    resolution
   });
 }

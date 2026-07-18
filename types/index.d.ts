@@ -65,6 +65,8 @@ export type {
   FieldType,
   FacetCompositionSpec,
   FacetOptions,
+  FacetScaleResolution,
+  FacetScaleResolutions,
   GraphicObject,
   GraphicSpec,
   GraphicType,

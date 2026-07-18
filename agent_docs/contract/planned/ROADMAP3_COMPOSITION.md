@@ -15,8 +15,8 @@ Phase 7 direct-source facet은 Current로 승격되었다. 이 문서는 Phase 8
   Explicit domains take precedence.
 - Omitted scale channels remain shared. Phase 8 accepts channel policies for `x`, `y`, `xOffset`, `color`, `size`,
   `shape`, `opacity` and `strokeDash`; Polar channel integration remains Phase 10 scope.
-- Regression, density, interval/error band and box dependencies replay their registered immutable transform DAG per
-  cell.
+- Regression replay and channel-level scale resolution are implemented after Gate I-A. Density, interval/error band,
+  and box integration remain part of the Phase 8 completion scope.
 - Density preserves requested auto bandwidth/extent separately from each revision's resolved values so cell replay
   can recompute statistical defaults rather than copying the base result.
 - `guides.axes: "outer"` keeps x axes on each column's bottommost occupied cell and y axes on each row's leftmost
@@ -25,4 +25,5 @@ Phase 7 direct-source facet은 Current로 승격되었다. 이 문서는 Phase 8
   opacity shared legends without merging child semantics. Guide sharing remains independent from scale resolution and
   requires concretely compatible represented scales.
 - Phase 8 has two hard pauses: Gate I-A for scale/derived behavior and Gate I-B for guide composition.
-- Status: Planned, NOT IMPLEMENTED. Roadmap 3 Phase 8.
+- Status: Partially implemented after Gate I-A; guide composition and remaining transform-family integration remain
+  Planned for Roadmap 3 Phase 8.

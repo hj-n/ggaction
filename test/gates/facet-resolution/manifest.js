@@ -5,6 +5,7 @@ import { createGapminderRegressionFacetPrimitives } from
   "./primitive.program.js";
 import { createGapminderRegressionFacetValues } from
   "./reference-values.js";
+import { createGapminderRegressionFacet } from "./public.program.js";
 
 const rows = loadGapminder();
 const shared = createGapminderRegressionFacetValues(rows);
@@ -40,30 +41,68 @@ const baseTarget = `chart()
     band: { opacity: 0.14 },
     line: { strokeWidth: 2.5 }
   })
+  .editLineMark({ target: "pointRegressionLines", stroke: "#111827" })
   .createGuides({
     axes: {
-      x: { title: { text: "Fertility" } },
-      y: { title: { text: "Life expectancy" } }
+      x: {
+        line: { color: "#64748b", lineWidth: 1.2 },
+        ticksAndLabels: {
+          ticks: { color: "#64748b", lineWidth: 1, length: 4 },
+          labels: { offset: 9, fontSize: 9.5 }
+        },
+        title: {
+          text: "Fertility", offset: 40, color: "#0f172a", fontSize: 11, fontWeight: 500
+        }
+      },
+      y: {
+        line: { color: "#64748b", lineWidth: 1.2 },
+        ticksAndLabels: {
+          ticks: { color: "#64748b", lineWidth: 1, length: 4 },
+          labels: { offset: 8, fontSize: 9.5 }
+        },
+        title: {
+          text: "Life expectancy", offset: 45, color: "#0f172a", fontSize: 11, fontWeight: 500
+        }
+      }
     },
     legend: false
   })`;
 
 export const sharedScalesTarget = `${baseTarget}
-  .facet({ field: "cluster", columns: 3 })
+  .facet({
+    field: "cluster",
+    columns: 3,
+    gap: 20,
+    padding: { top: 25, right: 14, bottom: 14, left: 14 }
+  })
+  .editFacetHeaders({ fontSize: 12.5, fontWeight: 700 })
   .createTitle({
     text: "Fertility and Life Expectancy",
-    subtitle: "Regression recomputed by cluster · shared scales"
+    subtitle: "Regression recomputed by cluster · shared scales",
+    align: "center",
+    offset: 1.5,
+    gap: 8.5,
+    titleStyle: { fontSize: 19 },
+    subtitleStyle: { fontSize: 12 }
   });`;
 
 export const independentXTarget = `${baseTarget}
   .facet({
     field: "cluster",
     columns: 3,
+    gap: 20,
+    padding: { top: 25, right: 14, bottom: 14, left: 14 },
     scales: { x: "independent", y: "shared", color: "shared" }
   })
+  .editFacetHeaders({ fontSize: 12.5, fontWeight: 700 })
   .createTitle({
     text: "Fertility and Life Expectancy",
-    subtitle: "Regression recomputed by cluster · independent fertility scales"
+    subtitle: "Regression recomputed by cluster · independent fertility scales",
+    align: "center",
+    offset: 1.5,
+    gap: 8.5,
+    titleStyle: { fontSize: 19 },
+    subtitleStyle: { fontSize: 12 }
   });`;
 
 const regions = shared.cells.map(cell => ({
@@ -83,6 +122,7 @@ export const visualVariants = Object.freeze([
     callChain: sharedScalesTarget,
     artifact,
     primitive: () => createGapminderRegressionFacetPrimitives(rows),
+    userFacing: () => createGapminderRegressionFacet(rows),
     width: shared.width,
     height: shared.height,
     colors: ["#111827"],
@@ -95,6 +135,9 @@ export const visualVariants = Object.freeze([
     callChain: independentXTarget,
     artifact,
     primitive: () => createGapminderRegressionFacetPrimitives(rows, {
+      xResolution: "independent"
+    }),
+    userFacing: () => createGapminderRegressionFacet(rows, {
       xResolution: "independent"
     }),
     width: shared.width,

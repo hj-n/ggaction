@@ -115,7 +115,7 @@ test("keeps meaningful derivation and rematerialization steps in child traces", 
   const operations = child.trace.children.map(node => node.op);
 
   assert.ok(operations.includes("filterData"));
-  assert.ok(operations.includes("editSemantic"));
+  assert.ok(operations.includes("rebindLayerData"));
   assert.ok(operations.includes("rematerializePointMark"));
   assert.equal(child.actionStack.length, 0);
   assert.equal(base.actionStack.length, 0);

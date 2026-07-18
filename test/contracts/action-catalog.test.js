@@ -228,7 +228,9 @@ test("keeps primitives and internal wrapped actions in separate layers", () => {
     "createSizeLegend"
   ]);
   assert.deepEqual(index.internal.stateTransitions, [
+    "rebindLayerData",
     "releaseDerivedData",
+    "replayDerivedData",
     "setQuantitativeColorScale",
     "useProgram"
   ]);

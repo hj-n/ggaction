@@ -40,7 +40,7 @@ const CREATE_OPTIONS = Object.freeze([
 const EDIT_OPTIONS = Object.freeze([
   "target", "stroke", "strokeWidth", "opacity", "curve", "closed"
 ]);
-const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);
+const REMATERIALIZE_OPTIONS = Object.freeze(["id", "scales"]);
 
 function validateClosed(value) {
   if (typeof value !== "boolean") {
@@ -84,6 +84,9 @@ const createLineMark = action(
       args.strokeWidth ?? DEFAULT_LINE_WIDTH,
       "Line strokeWidth"
     );
+    if (args.scales !== undefined && typeof args.scales !== "boolean") {
+      throw new TypeError("rematerializeLineMark scales must be a boolean.");
+    }
     const curve = validateCurveInterpolation(args.curve ?? "linear");
     const closed = Object.hasOwn(args, "closed")
       ? validateClosed(args.closed)
@@ -193,15 +196,17 @@ const rematerializeLineMark = action(
       );
     }
 
-    let resolved = polar
+    let resolved = args.scales === false
       ? this
-          .rematerializeScale({ id: thetaScaleId })
-          .rematerializeScale({ id: radiusScaleId })
-      : this
-          .rematerializeScale({ id: xScaleId })
-          .rematerializeScale({ id: yScaleId });
+      : polar
+        ? this
+            .rematerializeScale({ id: thetaScaleId })
+            .rematerializeScale({ id: radiusScaleId })
+        : this
+            .rematerializeScale({ id: xScaleId })
+            .rematerializeScale({ id: yScaleId });
 
-    for (const channel of ["color", "strokeDash"]) {
+    for (const channel of args.scales === false ? [] : ["color", "strokeDash"]) {
       const scaleId = layer.encoding?.[channel]?.scale;
       if (scaleId !== undefined) {
         resolved = resolved.rematerializeScale({ id: scaleId });

@@ -48,7 +48,16 @@ test("facets one direct-source point chart into immutable shared-scale children"
       data: "data",
       field: "group",
       values: ["A", "B"],
-      scales: "shared",
+      scales: {
+        x: "shared",
+        y: "shared",
+        xOffset: "shared",
+        color: "shared",
+        size: "shared",
+        shape: "shared",
+        opacity: "shared",
+        strokeDash: "shared"
+      },
       guides: { axes: "each", legend: "shared" }
     }
   });
@@ -88,7 +97,7 @@ test("facets one direct-source point chart into immutable shared-scale children"
   const childOps = faceted.children["facet-cell-1"].trace.children.at(-1)
     .children.map(node => node.op);
   assert.ok(childOps.includes("filterData"));
-  assert.ok(childOps.includes("editSemantic"));
+  assert.ok(childOps.includes("rebindLayerData"));
   assert.ok(childOps.includes("rematerializePointMark"));
 });
 
@@ -227,7 +236,7 @@ test("validates facet scope, sources, guides, and structural edits atomically", 
   assert.throws(() => base.facet(), /non-empty field/);
   assert.throws(
     () => base.facet({ field: "missing" }),
-    /Field "missing" must contain a nominal value/
+    /Facet field "missing" is missing/
   );
   assert.throws(
     () => base.facet({ field: "group", guides: { legend: true } }),

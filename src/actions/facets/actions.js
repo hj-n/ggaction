@@ -7,14 +7,18 @@ import {
   validatePositiveFinite
 } from "../../core/validation.js";
 import { resolveFacetDefinition } from "../../grammar/facets.js";
+import { normalizeFacetScalePolicies } from
+  "../../grammar/facets/scales.js";
 import { resolveFacetLayout } from "../../layout/facets.js";
 import { compositionChildDescriptor } from
   "../../materialization/composition.js";
 import { DEFAULT_COLORS, DEFAULT_FONT_FAMILY } from "../../theme/defaults.js";
 import { deriveFacetChildren } from "./derive.js";
+import { rebindLayerData, replayDerivedData } from "./replay.js";
 
 const FACET_OPTIONS = Object.freeze([
-  "id", "field", "data", "columns", "gap", "align", "padding", "guides"
+  "id", "field", "data", "columns", "gap", "align", "padding", "scales",
+  "guides"
 ]);
 const GUIDE_OPTIONS = Object.freeze(["legend"]);
 const HEADER_OPTIONS = Object.freeze([
@@ -73,9 +77,14 @@ export const facet = action(
     validateOptionObject(args, FACET_OPTIONS, "facet");
     const guides = normalizeGuides(args.guides);
     const definition = resolveFacetDefinition(this.semanticSpec, args);
+    const scalePolicies = normalizeFacetScalePolicies(
+      this.semanticSpec,
+      args.scales ?? {}
+    );
     const derived = deriveFacetChildren(this, definition, {
       closeInheritedAction: true,
-      stripTitle: true
+      stripTitle: true,
+      scales: args.scales ?? {}
     });
     const preflight = resolveFacetLayout({
       children: definition.cells.map(cell => ({
@@ -100,7 +109,7 @@ export const facet = action(
         data: definition.data,
         field: definition.field,
         values: definition.values,
-        scales: "shared",
+        scales: scalePolicies.channels,
         guides
       }
     };
@@ -140,6 +149,8 @@ export const editFacetHeaders = action(
 );
 
 export function registerFacetActions(ProgramClass) {
+  ProgramClass.prototype.replayDerivedData = replayDerivedData;
+  ProgramClass.prototype.rebindLayerData = rebindLayerData;
   ProgramClass.prototype.facet = facet;
   ProgramClass.prototype.editFacetHeaders = editFacetHeaders;
 }

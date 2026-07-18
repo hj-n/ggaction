@@ -216,13 +216,15 @@ must already be a complete chart or composition program.
 ### `facet`
 
 ```javascript
-facet({ id?, field, data?, columns?, gap?, align?, padding?, guides? })
+facet({ id?, field, data?, columns?, gap?, align?, padding?, scales?, guides? })
 ```
 
-Repeat one complete direct-source point or bar chart by source field value.
-Values preserve source first appearance, scales are shared, axes remain in each
-cell, and `guides: { legend: "shared" }` creates one parent categorical color
-legend. See [Program composition](../api/composition.md#repeat-the-current-chart-by-a-field).
+Repeat one complete chart by a field on its common row-preserving dataset
+ancestor. Values preserve source first appearance; scale policies can be
+`"shared"` or `"independent"` by supported channel, and layered regression
+data is recomputed per cell. Axes remain in each cell, while
+`guides: { legend: "shared" }` creates one parent categorical color legend.
+See [Program composition](../api/composition.md#repeat-the-current-chart-by-a-field).
 
 ### `editFacetHeaders`
 

@@ -60,6 +60,10 @@ test("normalizes omitted channels to shared and owns closed keys", () => {
     () => normalizeFacetScalePolicies(semanticSpec, { x: "free" }),
     /must be shared or independent/
   );
+  assert.throws(
+    () => normalizeFacetScalePolicies(semanticSpec, { size: "independent" }),
+    /is not used by an affected layer/
+  );
 });
 
 test("resolves continuous and discrete shared unions with explicit precedence", () => {

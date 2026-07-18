@@ -41,7 +41,7 @@ const CREATE_OPTIONS = Object.freeze([
 const EDIT_OPTIONS = Object.freeze([
   "target", "fill", "opacity", "stroke", "strokeWidth", "curve"
 ]);
-const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);
+const REMATERIALIZE_OPTIONS = Object.freeze(["id", "scales"]);
 
 export function validateAreaCreateOutline(args, operation = "createAreaMark") {
   if (Object.hasOwn(args, "strokeWidth") && !Object.hasOwn(args, "stroke")) {
@@ -110,6 +110,9 @@ const rematerializeAreaMark = action(
   },
   function (args = {}) {
     validateMarkOptions(args, REMATERIALIZE_OPTIONS, "rematerializeAreaMark");
+    if (args.scales !== undefined && typeof args.scales !== "boolean") {
+      throw new TypeError("rematerializeAreaMark scales must be a boolean.");
+    }
     const id = validateUserId(args.id, "Area mark id");
     const highlighted = rematerializeHighlightBaseline(this, {
       target: id,
@@ -154,10 +157,12 @@ const rematerializeAreaMark = action(
     const derived = densityTransform === undefined
       ? rawDerived
       : layoutDensityAreaSeries(rawDerived, layout);
-    let resolved = this
-      .rematerializeScale({ id: xScaleId })
-      .rematerializeScale({ id: yScaleId });
-    if (colorEncoding?.scale !== undefined) {
+    let resolved = args.scales === false
+      ? this
+      : this
+          .rematerializeScale({ id: xScaleId })
+          .rematerializeScale({ id: yScaleId });
+    if (args.scales !== false && colorEncoding?.scale !== undefined) {
       resolved = resolved.rematerializeScale({ id: colorEncoding.scale });
     }
     const xScale = resolved.resolvedScales[xScaleId];

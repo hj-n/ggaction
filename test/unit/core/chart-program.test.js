@@ -129,7 +129,16 @@ test("stores and validates canonical facet composition state", () => {
       data: "cars",
       field: "Origin",
       values: ["USA"],
-      scales: "shared",
+      scales: {
+        x: "shared",
+        y: "shared",
+        xOffset: "shared",
+        color: "shared",
+        size: "shared",
+        shape: "shared",
+        opacity: "shared",
+        strokeDash: "shared"
+      },
       guides: { axes: "each", legend: "shared" }
     }
   };

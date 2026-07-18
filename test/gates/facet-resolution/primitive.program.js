@@ -203,7 +203,7 @@ export function createGapminderRegressionFacetPrimitives(rows, options = {}) {
   }
   program = graphic(program, "facetHeaders", "collection", {
     items: values.cells.map(cell => textItem(
-      `Cluster ${cell.cluster}`,
+      String(cell.cluster),
       cell.x + values.bounds.x + values.bounds.width / 2,
       cell.y + 10,
       { fontSize: 12.5, fontWeight: 700, textBaseline: "top" }
