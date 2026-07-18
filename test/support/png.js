@@ -98,16 +98,18 @@ export async function assertRenderedPNG(
       `${label} ink ratio ${compactSignature.inkRatio} left its approved range`
     );
     const tolerance = visualSignature.inkBounds.tolerance ?? 0;
-    for (const key of ["x", "y", "width", "height"]) {
-      const actual = compactSignature.inkBounds[key];
-      const expected = visualSignature.inkBounds[key];
-      assert.equal(
-        Math.abs(actual - expected) <= tolerance,
-        true,
-        `${label} ink bound ${key} changed from its approved signature ` +
-          `(actual ${actual}, expected ${expected} ± ${tolerance})`
-      );
-    }
+    const mismatchedBounds = ["x", "y", "width", "height"].filter(key =>
+      Math.abs(
+        compactSignature.inkBounds[key] - visualSignature.inkBounds[key]
+      ) > tolerance
+    );
+    assert.deepEqual(
+      mismatchedBounds,
+      [],
+      `${label} ink bounds changed from its approved signature ` +
+        `(actual ${JSON.stringify(compactSignature.inkBounds)}, ` +
+        `expected ${JSON.stringify(visualSignature.inkBounds)} ± ${tolerance})`
+    );
   }
 
   const regionResults = regions.map(region => {
