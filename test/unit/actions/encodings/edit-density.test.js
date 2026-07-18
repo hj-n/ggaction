@@ -54,7 +54,11 @@ test("creates, rebinds, and materializes one immutable density revision", () => 
     kernel: "triangular",
     normalization: "count",
     as: ["Acceleration_value", "Acceleration_density"],
-    resolve: "shared"
+    resolve: "shared",
+    resolved: {
+      bandwidth: 0.9,
+      extent: [8, 24.8]
+    }
   });
   assert.deepEqual(revised.values, expected.densityRows);
   assert.deepEqual(after.resolvedScales.y.domain, [0, 40]);
@@ -100,6 +104,29 @@ test("increments revision ids and preserves omitted density decisions", () => {
   assert.equal(transform.kernel, "gaussian");
   assert.equal(transform.normalization, "unit");
   assert.equal(first.semanticSpec.datasets[1].id, "densitiesDensityDataRevision1");
+});
+
+test("keeps auto intent while each density revision owns resolved parameters", () => {
+  const initial = chart()
+    .createCanvas({ width: 360, height: 240, margin: 30 })
+    .createData({ id: "cars", values: loadCars() })
+    .createAreaMark({ id: "densities" })
+    .encodeDensity({
+      target: "densities",
+      field: "Acceleration",
+      groupBy: "Origin"
+    });
+  const revised = initial.editDensity({ target: "densities", steps: 24 });
+  const before = initial.semanticSpec.datasets[1].transform[0];
+  const after = revised.semanticSpec.datasets[1].transform[0];
+
+  assert.equal(before.bandwidth, "auto");
+  assert.equal(after.bandwidth, "auto");
+  assert.equal(before.extent, "auto");
+  assert.equal(after.extent, "auto");
+  assert.deepEqual(after.resolved, before.resolved);
+  assert.notEqual(after.resolved, before.resolved);
+  assert.equal(after.steps, 24);
 });
 
 test("retains a previous revision while another layer still consumes it", () => {

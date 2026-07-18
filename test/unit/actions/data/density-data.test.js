@@ -88,7 +88,11 @@ test("creates immutable density provenance and concrete values", () => {
       kernel: "gaussian",
       normalization: "unit",
       as: ["Acceleration_value", "Acceleration_density"],
-      resolve: "shared"
+      resolve: "shared",
+      resolved: {
+        bandwidth: 0.6,
+        extent: [8, 24.8]
+      }
     }],
     values: createCarsDensityAreaValues(cars).densityRows
   });
@@ -104,7 +108,7 @@ test("creates immutable density provenance and concrete values", () => {
   );
 });
 
-test("resolves and stores a deterministic automatic bandwidth", () => {
+test("preserves automatic density intent beside deterministic resolved provenance", () => {
   const values = [
     { value: 1, group: "A" },
     { value: 2, group: "A" },
@@ -122,8 +126,14 @@ test("resolves and stores a deterministic automatic bandwidth", () => {
     });
   const transform = program.semanticSpec.datasets[1].transform[0];
 
-  assert.equal(transform.bandwidth, estimateDensityBandwidth([1, 2, 4, 8]));
-  assert.ok(Number.isFinite(transform.bandwidth));
+  assert.equal(transform.bandwidth, "auto");
+  assert.equal(
+    transform.resolved.bandwidth,
+    estimateDensityBandwidth([1, 2, 4, 8])
+  );
+  assert.deepEqual(transform.extent, "auto");
+  assert.deepEqual(transform.resolved.extent, [1, 8]);
+  assert.equal(Object.isFrozen(transform.resolved), true);
   assert.equal(program.semanticSpec.datasets[1].values.length, 10);
 });
 
@@ -151,6 +161,10 @@ test("forwards explicit kernel and normalization into immutable provenance", () 
 
   assert.equal(dataset.transform[0].kernel, "epanechnikov");
   assert.equal(dataset.transform[0].normalization, "count");
+  assert.deepEqual(dataset.transform[0].resolved, {
+    bandwidth: 0.5,
+    extent: [0, 1]
+  });
   assert.deepEqual(
     dataset.values,
     deriveKernelDensity(program.semanticSpec.datasets[0].values, {
@@ -330,6 +344,23 @@ test("validates density derivation and action options", () => {
       }]
     }),
     /Unsupported density resolve/
+  );
+  assert.throws(
+    () => source.createDerivedData({
+      id: "invalidResolved",
+      source: "source",
+      transform: [{
+        type: "density",
+        field: "value",
+        bandwidth: "auto",
+        extent: "auto",
+        steps: 10,
+        as: ["sample", "density"],
+        resolve: "shared",
+        resolved: { bandwidth: 0, extent: [1, 2] }
+      }]
+    }),
+    /resolved provenance/
   );
 });
 

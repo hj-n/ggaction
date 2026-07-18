@@ -154,7 +154,11 @@ test("authors a deterministic triangular count density revision target", () => {
     as: ["Acceleration_value", "Acceleration_density"],
     resolve: "shared",
     kernel: "triangular",
-    normalization: "count"
+    normalization: "count",
+    resolved: {
+      bandwidth: 0.9,
+      extent: [8, 24.8]
+    }
   });
   assert.deepEqual(dataset.values, expected.densityRows);
   assertDensityGraphicTarget(program, expected);

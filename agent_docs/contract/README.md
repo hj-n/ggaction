@@ -125,6 +125,10 @@ type GaussianDensityTransform = {
   extent: "auto" | OrderedFinitePair;
   steps: IntegerAtLeast2;
   as: readonly [FieldName, FieldName];
+  resolved?: {
+    bandwidth: PositiveFinite;
+    extent: OrderedFinitePair;
+  };
 };
 type PositionScale = {
   id?: UserId;

@@ -2,11 +2,11 @@
 
 ## 진행 상태
 
-- [ ] Density transform schema extension
-- [ ] Auto bandwidth/extent requested intent preservation
-- [ ] Resolved parameter storage
-- [ ] `editDensity` revision compatibility
-- [ ] Numeric and immutability regression tests
+- [x] Density transform schema extension
+- [x] Auto bandwidth/extent requested intent preservation
+- [x] Resolved parameter storage
+- [x] `editDensity` revision compatibility
+- [x] Numeric and immutability regression tests
 
 Density transform은 requested values와 one materialized revision의 resolved values를 함께 기록한다.
 `"auto"`를 숫자로 덮어쓰지 않는다. Existing explicit parameters remain unchanged, while auto values are

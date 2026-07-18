@@ -263,6 +263,11 @@ Advanced facet replay를 준비하는 pure dataset dependency planner는 visible
 작성하고 wrapped replay를 실행하기 전의 validation/resolution boundary다. Pure planner의 존재 자체는 derived replay가
 public facet runtime에 연결되었다는 의미가 아니다.
 
+Density provenance는 requested policy와 materialized revision 결과를 분리한다. `bandwidth`와 `extent`의
+`"auto"` intent는 transform에 그대로 남고, 해당 revision에서 계산한 concrete 값은
+`resolved: { bandwidth, extent }`에 저장된다. 따라서 derived replay와 `editDensity`는 새 source rows마다
+자동 policy를 다시 계산하면서도 각 immutable revision의 실제 계산값을 해석할 수 있다.
+
 ## Immutability와 ownership
 
 `ChartProgram`은 생성이 끝나면 freeze된다. 모든 public action과 internal wrapped

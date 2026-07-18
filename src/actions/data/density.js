@@ -22,7 +22,13 @@ export const materializeDensityData = action(
     return this
       .editSemantic({
         property: `dataset[${id}].transform`,
-        value: [{ ...transform, bandwidth: result.bandwidth }]
+        value: [{
+          ...transform,
+          resolved: {
+            bandwidth: result.bandwidth,
+            extent: result.extent
+          }
+        }]
       })
       .editSemantic({
         property: `dataset[${id}].values`,

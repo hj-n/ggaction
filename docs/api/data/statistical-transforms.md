@@ -101,8 +101,10 @@ program.createDensityData({
 | `as` | two distinct output field names | `<field>_value`, `<field>_density` |
 
 Grouped densities use one shared extent and inclusive sample grid. Group order
-follows first appearance. The resolved automatic bandwidth, kernel, and
-normalization are stored in transform provenance. Unit normalization integrates
+follows first appearance. Transform provenance keeps the requested `bandwidth`
+and `extent` values—including `"auto"`—and stores the materialized revision's
+concrete values separately as `resolved: { bandwidth, extent }`. Kernel and
+normalization defaults are stored directly. Unit normalization integrates
 each complete group density to one; count normalization scales it by that
 group's valid sample count. Source values remain unchanged.
 

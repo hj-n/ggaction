@@ -188,6 +188,10 @@ export interface DatasetDensityTransform {
   normalization?: DensityNormalization;
   as: readonly [string, string];
   resolve: "shared";
+  resolved?: {
+    readonly bandwidth: number;
+    readonly extent: readonly [number, number];
+  };
 }
 export interface DatasetIntervalOutputFields {
   center: string;

@@ -70,14 +70,16 @@ corresponding higher-level action when the library should materialize values:
 | --- | --- | --- |
 | `"filter"` | `{ type, field, oneOf }`, `{ type, field, predicate }`, or `{ type, field, range }` | `filterData` |
 | `"regression"` | `{ type, method, x, y, groupBy?, ...methodParameters }` | `createRegressionData` |
-| `"density"` | `{ type, field, groupBy?, bandwidth, extent, steps, kernel?, normalization?, as, resolve: "shared" }` | `createDensityData` |
+| `"density"` | `{ type, field, groupBy?, bandwidth, extent, steps, kernel?, normalization?, as, resolve: "shared", resolved? }` | `createDensityData` |
 | `"interval"` | `{ type, field, groupBy, center, extent, level?, as }` | `createIntervalData` |
 
 For regression, linear and polynomial transforms require `confidence` and
 `interval`; polynomial also requires `degree`. LOESS requires `span` and does
 not accept interval properties. Density `as` is a two-field tuple. Interval
 `as` contains distinct `center`, `lower`, and `upper` field names; mean CI
-requires `level`, while median pairs only with IQR. See the higher-level action
+requires `level`, while median pairs only with IQR. A materialized density
+revision adds `resolved: { bandwidth, extent }` without replacing requested
+`"auto"` values. See the higher-level action
 sections below for accepted values and defaults before constructing normalized
 provenance directly.
 

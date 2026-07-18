@@ -46,7 +46,11 @@ test("authors and renders the complete primitive density area chart", () => {
           kernel: "gaussian",
           normalization: "unit",
           as: ["Acceleration_value", "Acceleration_density"],
-          resolve: "shared"
+          resolve: "shared",
+          resolved: {
+            bandwidth: 0.6,
+            extent: [8, 24.8]
+          }
         }],
         valueCount: 300
       }

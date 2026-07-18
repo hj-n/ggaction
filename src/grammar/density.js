@@ -35,7 +35,7 @@ function requireField(value, label) {
 export function validateDensityTransform(transform) {
   const supported = [
     "type", "field", "groupBy", "bandwidth", "extent", "steps", "as",
-    "resolve", "kernel", "normalization"
+    "resolve", "kernel", "normalization", "resolved"
   ];
   const unknown = Object.keys(transform).find(key => !supported.includes(key));
   if (unknown !== undefined) {
@@ -91,6 +91,25 @@ export function validateDensityTransform(transform) {
   }
   if (transform.resolve !== "shared") {
     throw new Error(`Unsupported density resolve "${transform.resolve}".`);
+  }
+  if (transform.resolved !== undefined) {
+    const resolved = transform.resolved;
+    if (
+      resolved === null ||
+      typeof resolved !== "object" ||
+      Array.isArray(resolved) ||
+      Object.keys(resolved).some(key => !["bandwidth", "extent"].includes(key)) ||
+      !Number.isFinite(resolved.bandwidth) ||
+      resolved.bandwidth <= 0 ||
+      !Array.isArray(resolved.extent) ||
+      resolved.extent.length !== 2 ||
+      !resolved.extent.every(Number.isFinite) ||
+      resolved.extent[0] >= resolved.extent[1]
+    ) {
+      throw new TypeError(
+        "Density resolved provenance requires a positive bandwidth and ascending finite extent."
+      );
+    }
   }
   return transform;
 }
