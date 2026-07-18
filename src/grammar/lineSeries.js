@@ -64,8 +64,13 @@ function readSeriesFields(rows, layer) {
     const encoding = layer.encoding?.[channel];
 
     if (encoding?.field === undefined) continue;
-    if (encoding.fieldType !== "nominal") {
-      throw new Error(`Line ${channel} encoding on mark "${layer.id}" must be nominal.`);
+    const categorical = channel === "color"
+      ? ["nominal", "ordinal"].includes(encoding.fieldType)
+      : encoding.fieldType === "nominal";
+    if (!categorical) {
+      throw new Error(
+        `Line ${channel} encoding on mark "${layer.id}" must be categorical.`
+      );
     }
 
     if (!values.has(encoding.field)) {

@@ -76,7 +76,7 @@ Explicit fields must match the binned x field. `maxBins`, `binStep`, and
 contain the data and use zero-anchored step multiples. Explicit boundaries
 must contain the complete data extent; a separate domain must match their
 first and last values. Empty intervals remain meaningful but do not create
-zero-height rectangles. Grouped histograms require nominal color with
+zero-height rectangles. Grouped histograms require categorical color with
 `layout: "group"`; the color action creates the matching xOffset companion.
 
 ## Related

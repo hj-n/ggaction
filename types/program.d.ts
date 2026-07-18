@@ -733,7 +733,7 @@ export type HistogramEncodingOptions = {
 export interface CategoricalEncodingOptions {
   field: string;
   target?: string;
-  fieldType?: "nominal";
+  fieldType?: "nominal" | "ordinal";
   scale?: ScaleOptions;
   palette?: Palette;
   layout?: ColorLayout;

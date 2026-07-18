@@ -40,7 +40,7 @@ export function deriveBarAggregates(rows, layer) {
   let colorAggregate;
 
   if (color !== undefined) {
-    if (color.fieldType === "nominal") {
+    if (["nominal", "ordinal"].includes(color.fieldType)) {
       colorValues = readNominalField(rows, color.field);
     } else if (color.fieldType === "quantitative") {
       colorAggregate = color.aggregate;
@@ -48,7 +48,7 @@ export function deriveBarAggregates(rows, layer) {
       validateAggregateFieldValues(rows, color.field, color.fieldType);
     } else {
       throw new Error(
-        `Bar color encoding on mark "${layer.id}" must be nominal or aggregate quantitative.`
+        `Bar color encoding on mark "${layer.id}" must be categorical or aggregate quantitative.`
       );
     }
   }

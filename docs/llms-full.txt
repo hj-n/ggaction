@@ -3216,7 +3216,7 @@ unchanged.
 
 ## Series
 
-[`encodeColor` and `encodeStrokeDash`](./series-encodings.md) create nominal
+[`encodeColor` and `encodeStrokeDash`](./series-encodings.md) create categorical
 series identity and concrete colors or dash patterns. On line marks they can
 split one aggregate path into multiple series. On complete histograms,
 `encodeColor` arranges each color partition with `stack`, `fill`, `group`,
@@ -4817,7 +4817,7 @@ Explicit fields must match the binned x field. `maxBins`, `binStep`, and
 contain the data and use zero-anchored step multiples. Explicit boundaries
 must contain the complete data extent; a separate domain must match their
 first and last values. Empty intervals remain meaningful but do not create
-zero-height rectangles. Grouped histograms require nominal color with
+zero-height rectangles. Grouped histograms require categorical color with
 `layout: "group"`; the color action creates the matching xOffset companion.
 
 ## Related
@@ -4888,7 +4888,7 @@ consumer of one shared xOffset scale must use the same padding policy.
 
 | Action | Shortest call | Inference/defaults | Result |
 | --- | --- | --- | --- |
-| `encodeColor` | `encodeColor({ field: "group" })` | Current mark, nominal field type, color scale | Semantic grouping and concrete color |
+| `encodeColor` | `encodeColor({ field: "group" })` | Current mark, nominal default or explicit ordinal field type, color scale | Semantic grouping and concrete color |
 | `encodeStrokeDash` | `encodeStrokeDash({ field: "group" })` | Current line/rule mark and dash scale | Field-driven or constant concrete dash |
 
 Series appearance is authored through color and stroke-dash families. Each
@@ -4902,8 +4902,9 @@ that encoding.
 
 ## Errors and limitations
 
-Series fields must be nominal. Area color must match its group encoding. Line
-group, color, and field-driven stroke dash must use one compatible field.
+Stroke-dash and explicit group fields must be nominal. Color fields may be
+nominal or ordinal. Area color must match its group encoding. Line group,
+color, and field-driven stroke dash must use one compatible field.
 Combined line legends also require matching ordered domains.
 
 ## Related
@@ -4917,17 +4918,18 @@ Combined line legends also require matching ordered domains.
 
 ## `encodeColor(options)`
 
-Map a nominal field to point fills, line-series strokes, area fills, or bar
-fills. Quantitative or temporal point fields use continuous or discretized
+Map a nominal or ordinal field to point fills, line-series strokes, area fills,
+or bar fills. Ordinal fields may contain ordered numeric categories such as
+engine cylinder counts. Quantitative or temporal point fields use continuous or discretized
 color scales. Aggregate bars additionally support one aggregate quantitative
-color value per final rectangle. Line and nominal bar materializers may use
+color value per final rectangle. Line and categorical bar materializers may use
 the field for grouping. Area color must match an existing `encodeGroup` field.
 
 | Option | Type | Default |
 | --- | --- | --- |
 | `field` | non-empty string | required |
 | `target` | point, line, area, or bar mark ID | current mark |
-| `fieldType` | `"nominal"`, `"quantitative"`, or `"temporal"` | `"nominal"` |
+| `fieldType` | `"nominal"`, `"ordinal"`, `"quantitative"`, or `"temporal"` | `"nominal"` |
 | `aggregate` | aggregate operation; quantitative aggregate bars only | matching measure aggregate |
 | `layout` | `"stack"`, `"fill"`, `"group"`, `"overlay"`, or `"diverging"` | mark policy |
 | `palette` | palette name or `{ name, count?, extent? }`; shorthand for `scale.palette` | omitted |
@@ -4948,7 +4950,19 @@ Top-level `palette` is a shorthand for `scale.palette`, and `scale.palette` is t
 concise form of `scale.range: { palette: "tableau10" }`. Provide only one of these
 forms. Automatic domains preserve first-appearance order.
 
-Calling `encodeColor` again for the same target replaces the nominal field.
+Use `fieldType: "ordinal"` when the values are ordered categories rather than
+continuous magnitudes. They still receive discrete palette colors and legend
+entries:
+
+```javascript
+program.encodeColor({
+  field: "Cylinders",
+  fieldType: "ordinal",
+  scale: { palette: "reds" }
+});
+```
+
+Calling `encodeColor` again for the same target replaces the categorical field.
 Without `scale.id`, the current color scale is reused and its domain, marks,
 and existing legend are recomputed. An explicit new ID retains the previous
 named scale. Inferred legend titles follow the new field; explicit titles and
@@ -4983,7 +4997,7 @@ groupedBars.encodeColor({
 });
 ```
 
-Calling grouped color again with a new nominal field atomically updates color
+Calling grouped color again with a new categorical field atomically updates color
 and xOffset to one matching first-appearance domain. Existing legends are
 rematerialized; inferred titles follow the field while explicit titles and
 styles remain unchanged.
@@ -5570,7 +5584,7 @@ color is rejected instead of silently replacing the guide.
 | `time` | Temporal x/y on compatible marks; UTC normalization, ticks, and labels |
 | `band` | Discrete category position that needs positive bandwidth, especially bars |
 | `point` | Discrete point/rule centers and compatible shared centers; never bar width |
-| `ordinal` | Nominal color, shape, stroke dash, and xOffset lookup |
+| `ordinal` | Nominal or ordinal color, nominal shape/stroke dash, and xOffset lookup |
 | `sequential` | Quantitative/temporal point color and quantitative aggregate-bar color |
 | `quantize`, `quantile`, `threshold` | Quantitative point color |
 | `unknown` fallback | Row-owned point x/y/color/size/shape/opacity only |
@@ -5662,6 +5676,8 @@ semantics are available.
 Band/point position, color, and stroke-dash encodings use ordered discrete
 domains. Automatic domains preserve first-appearance order. `ordinal` remains
 the appearance and offset lookup type; position uses explicit `band` or `point`.
+Color accepts both nominal and ordinal fields; ordinal is useful for discrete,
+ordered numeric categories and does not turn them into a continuous gradient.
 
 A band or point position scale uses `"auto"` or a numeric pair as its range.
 Automatic ranges use the plot bounds. Resolved band scales record signed
@@ -7675,10 +7691,11 @@ encodeColor({ field, target?, fieldType?, palette?, layout?, aggregate?, scale? 
 ```
 
 Create or compatibly replace point fill, line-series color, grouped area fill,
-or bar color. Nominal bar layout accepts `stack`, `fill`, `group`, `overlay`,
+or bar color. Nominal and ordinal categories share an ordinal palette scale;
+ordinal fields may contain ordered numeric categories. Categorical bar layout accepts `stack`, `fill`, `group`, `overlay`,
 and `diverging`; area accepts all except `group`. Quantitative and temporal
 point fields use a sequential scale; quantitative point fields also accept
-`quantize`, `quantile`, and `threshold` color classes. Nominal
+`quantize`, `quantile`, and `threshold` color classes. Categorical
 grouped bars record `encodeXOffset` as a child. Reassigning grouped color also
 atomically reassigns xOffset and rematerializes an existing legend. Aggregate
 bars accept quantitative sequential color: a matching measure field inherits

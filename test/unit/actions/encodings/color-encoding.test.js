@@ -309,9 +309,10 @@ test("validates color encoding inputs", () => {
     () => program.encodeColor({ field: "origin", fieldType: "quantitative" }),
     /finite number/
   );
-  assert.throws(
-    () => program.encodeColor({ field: "origin", fieldType: "ordinal" }),
-    /Unsupported color field type/
+  assert.equal(
+    program.encodeColor({ field: "origin", fieldType: "ordinal" })
+      .semanticSpec.layers[0].encoding.color.fieldType,
+    "ordinal"
   );
   assert.throws(
     () => program.encodeColor({ field: "origin", scale: { type: "linear" } }),

@@ -22,6 +22,13 @@ export function validateNominalFieldType(fieldType) {
   return fieldType;
 }
 
+export function validateCategoricalFieldType(fieldType) {
+  if (!["nominal", "ordinal"].includes(fieldType)) {
+    throw new Error(`Unsupported categorical field type "${fieldType}".`);
+  }
+  return fieldType;
+}
+
 export function validateSemanticFieldType(fieldType) {
   if (!["quantitative", "nominal", "ordinal", "temporal"].includes(fieldType)) {
     throw new Error(`Unsupported semantic field type "${fieldType}".`);

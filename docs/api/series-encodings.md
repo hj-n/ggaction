@@ -11,7 +11,7 @@ title: Series Encodings
 
 | Action | Shortest call | Inference/defaults | Result |
 | --- | --- | --- | --- |
-| `encodeColor` | `encodeColor({ field: "group" })` | Current mark, nominal field type, color scale | Semantic grouping and concrete color |
+| `encodeColor` | `encodeColor({ field: "group" })` | Current mark, nominal default or explicit ordinal field type, color scale | Semantic grouping and concrete color |
 | `encodeStrokeDash` | `encodeStrokeDash({ field: "group" })` | Current line/rule mark and dash scale | Field-driven or constant concrete dash |
 
 Series appearance is authored through color and stroke-dash families. Each
@@ -27,8 +27,9 @@ that encoding.
 
 ## Errors and limitations
 
-Series fields must be nominal. Area color must match its group encoding. Line
-group, color, and field-driven stroke dash must use one compatible field.
+Stroke-dash and explicit group fields must be nominal. Color fields may be
+nominal or ordinal. Area color must match its group encoding. Line group,
+color, and field-driven stroke dash must use one compatible field.
 Combined line legends also require matching ordered domains.
 
 ## Related

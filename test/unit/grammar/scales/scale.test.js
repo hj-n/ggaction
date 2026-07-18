@@ -22,6 +22,7 @@ import {
   normalizeStrokeDashPattern,
   validateFieldType,
   validateColorRange,
+  validateCategoricalFieldType,
   validateNominalFieldType,
   validateOrdinalDomain,
   validatePositionChannel,
@@ -350,12 +351,15 @@ test("resolves nominal domains and tableau10 color ranges", () => {
 
 test("validates nominal fields, ordinal domains, and color ranges", () => {
   assert.equal(validateNominalFieldType("nominal"), "nominal");
+  assert.equal(validateCategoricalFieldType("nominal"), "nominal");
+  assert.equal(validateCategoricalFieldType("ordinal"), "ordinal");
   assert.deepEqual(validateOrdinalDomain(["USA", "Europe"]), [
     "USA",
     "Europe"
   ]);
   assert.deepEqual(validateColorRange(["red", "blue"]), ["red", "blue"]);
   assert.throws(() => validateNominalFieldType("quantitative"), /Unsupported/);
+  assert.throws(() => validateCategoricalFieldType("temporal"), /Unsupported/);
   assert.throws(() => validateOrdinalDomain(["USA", "USA"]), /unique/);
   assert.throws(() => validateColorRange([]), /non-empty color strings/);
   assert.throws(

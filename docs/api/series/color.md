@@ -9,17 +9,18 @@ title: Color Encoding
 
 ## `encodeColor(options)`
 
-Map a nominal field to point fills, line-series strokes, area fills, or bar
-fills. Quantitative or temporal point fields use continuous or discretized
+Map a nominal or ordinal field to point fills, line-series strokes, area fills,
+or bar fills. Ordinal fields may contain ordered numeric categories such as
+engine cylinder counts. Quantitative or temporal point fields use continuous or discretized
 color scales. Aggregate bars additionally support one aggregate quantitative
-color value per final rectangle. Line and nominal bar materializers may use
+color value per final rectangle. Line and categorical bar materializers may use
 the field for grouping. Area color must match an existing `encodeGroup` field.
 
 | Option | Type | Default |
 | --- | --- | --- |
 | `field` | non-empty string | required |
 | `target` | point, line, area, or bar mark ID | current mark |
-| `fieldType` | `"nominal"`, `"quantitative"`, or `"temporal"` | `"nominal"` |
+| `fieldType` | `"nominal"`, `"ordinal"`, `"quantitative"`, or `"temporal"` | `"nominal"` |
 | `aggregate` | aggregate operation; quantitative aggregate bars only | matching measure aggregate |
 | `layout` | `"stack"`, `"fill"`, `"group"`, `"overlay"`, or `"diverging"` | mark policy |
 | `palette` | palette name or `{ name, count?, extent? }`; shorthand for `scale.palette` | omitted |
@@ -40,7 +41,19 @@ Top-level `palette` is a shorthand for `scale.palette`, and `scale.palette` is t
 concise form of `scale.range: { palette: "tableau10" }`. Provide only one of these
 forms. Automatic domains preserve first-appearance order.
 
-Calling `encodeColor` again for the same target replaces the nominal field.
+Use `fieldType: "ordinal"` when the values are ordered categories rather than
+continuous magnitudes. They still receive discrete palette colors and legend
+entries:
+
+```javascript
+program.encodeColor({
+  field: "Cylinders",
+  fieldType: "ordinal",
+  scale: { palette: "reds" }
+});
+```
+
+Calling `encodeColor` again for the same target replaces the categorical field.
 Without `scale.id`, the current color scale is reused and its domain, marks,
 and existing legend are recomputed. An explicit new ID retains the previous
 named scale. Inferred legend titles follow the new field; explicit titles and
@@ -75,7 +88,7 @@ groupedBars.encodeColor({
 });
 ```
 
-Calling grouped color again with a new nominal field atomically updates color
+Calling grouped color again with a new categorical field atomically updates color
 and xOffset to one matching first-appearance domain. Existing legends are
 rematerialized; inferred titles follow the field while explicit titles and
 styles remain unchanged.

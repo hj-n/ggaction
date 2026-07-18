@@ -4,7 +4,7 @@ import {
   readQuantitativeField,
   readScaleField,
   readTemporalField,
-  validateNominalFieldType
+  validateCategoricalFieldType
 } from "../../grammar/scales.js";
 import {
   BAR_GRAINS,
@@ -194,7 +194,7 @@ function encodeContinuousColor(program, args) {
   }
   if (
     layer.mark.type === "bar" &&
-    layer.encoding?.color?.fieldType === "nominal"
+    ["nominal", "ordinal"].includes(layer.encoding?.color?.fieldType)
   ) {
     throw new Error(
       "Continuous bar color cannot replace an existing nominal color layout."
@@ -275,16 +275,16 @@ const encodeColor = action(
   function (args = {}) {
     validateOptions(args, COLOR_ENCODING_OPTIONS, "encodeColor");
     const requestedFieldType = args.fieldType ?? "nominal";
-    if (requestedFieldType !== "nominal") {
+    if (!["nominal", "ordinal"].includes(requestedFieldType)) {
       return encodeContinuousColor(this, {
         ...args,
         fieldType: requestedFieldType
       });
     }
     if (args.aggregate !== undefined) {
-      throw new Error("Nominal color does not support aggregate.");
+      throw new Error("Categorical color does not support aggregate.");
     }
-    const fieldType = validateNominalFieldType(requestedFieldType);
+    const fieldType = validateCategoricalFieldType(requestedFieldType);
     const { id: target, dataset, layer } = resolveTarget(
       this,
       args.target,
@@ -317,7 +317,7 @@ const encodeColor = action(
     const scale = resolveColorScaleDefinition(this, requestedScale);
     if (Object.hasOwn(scale, "unknown") && layer.mark.type !== "point") {
       throw new Error(
-        "Nominal color scale unknown currently requires a row-owned point mark."
+        "Categorical color scale unknown currently requires a row-owned point mark."
       );
     }
     if (Object.hasOwn(scale, "unknown")) {

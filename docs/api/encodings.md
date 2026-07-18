@@ -164,7 +164,7 @@ unchanged.
 
 ## Series
 
-[`encodeColor` and `encodeStrokeDash`](./series-encodings.md) create nominal
+[`encodeColor` and `encodeStrokeDash`](./series-encodings.md) create categorical
 series identity and concrete colors or dash patterns. On line marks they can
 split one aggregate path into multiple series. On complete histograms,
 `encodeColor` arranges each color partition with `stack`, `fill`, `group`,

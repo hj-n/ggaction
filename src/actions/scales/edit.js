@@ -102,7 +102,7 @@ function validateTypeTransition(scale, nextType, channel, consumers) {
   if (nextType === "sequential" || isDiscretizedColorScaleType(nextType)) {
     const discretized = isDiscretizedColorScaleType(nextType);
     if (channel !== "color" || consumers.some(consumer =>
-      consumer.encoding.fieldType === "nominal" ||
+      ["nominal", "ordinal"].includes(consumer.encoding.fieldType) ||
       (discretized && (
         consumer.encoding.fieldType !== "quantitative" ||
         consumer.layer.mark?.type !== "point"

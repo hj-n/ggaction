@@ -47,7 +47,9 @@ export function inferRegressionGroup(layer, args) {
   }
   const candidates = [...new Set(
     [layer.encoding?.color, layer.encoding?.shape]
-      .filter(encoding => encoding?.fieldType === "nominal")
+      .filter(encoding =>
+        ["nominal", "ordinal"].includes(encoding?.fieldType)
+      )
       .map(encoding => encoding.field)
   )];
   if (candidates.length > 1) {

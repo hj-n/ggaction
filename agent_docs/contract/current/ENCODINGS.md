@@ -539,10 +539,11 @@ encodeX2(options: RulePositionAssignment | AreaSecondaryXAssignment): ChartProgr
 ## `encodeColor`
 
 - Signature: `encodeColor({ field, target?, fieldType?, layout?, aggregate?, scale? })`
-- `field`: 필수 field. nominal은 모든 current mark contract에, quantitative/temporal은 point에 사용하며
+- `field`: 필수 field. nominal/ordinal은 categorical color contract에, quantitative/temporal은 point에 사용하며
   aggregate bar는 quantitative field를 지원한다.
 - `target`: point, line, bar 또는 area ID; current/unique inference를 지원한다.
-- `fieldType`: `"nominal" | "quantitative" | "temporal"`; 기본값은 nominal이다.
+- `fieldType`: `"nominal" | "ordinal" | "quantitative" | "temporal"`; 기본값은 nominal이다.
+  Ordinal은 숫자를 포함한 ordered category를 categorical palette와 first-appearance domain으로 매핑한다.
 - `layout`: bar는 `"stack" | "fill" | "group" | "overlay" | "diverging"`, area는 group을 제외한
   네 layout을 지원한다. Histogram default는 stack, ordinal aggregate bar default는 group, area default는
   overlay다. Point/line과 continuous color는 layout을 거부하며 `"center"`는 Proposed다.
@@ -563,7 +564,7 @@ encodeX2(options: RulePositionAssignment | AreaSecondaryXAssignment): ChartProgr
   wrapped `encodeY({ stack: "normalize" })`, overlay는 non-stacked y, stack/diverging은 zero-stack y를
   사용한다. Aggregate bar group/overlay의 semantic start endpoint는 0이며 scale domain과 concrete rect가
   같은 endpoint를 소비한다. Bar는 rect, area는 closed path로 concrete materialize한다.
-- Reassignment: 같은 target의 nominal color field를 교체한다. omitted scale ID는 current color scale을
+- Reassignment: 같은 target의 categorical color field를 교체한다. omitted scale ID는 current color scale을
   재사용하고 explicit new ID는 새 scale을 만든다. Existing compatible legend의 domain, symbols,
   labels와 inferred title을 갱신하며 custom title/layout/style은 보존한다.
 - Grouped-bar reassignment는 color semantic을 먼저 교체한 뒤 wrapped `encodeXOffset`으로 matching field와
@@ -574,7 +575,7 @@ encodeX2(options: RulePositionAssignment | AreaSecondaryXAssignment): ChartProgr
 
 ### Formal values — `encodeColor`
 
-- Implemented: `encodeColor({ field: FieldName; target?: UserId; fieldType?: "nominal"; layout?: "stack" | "fill" | "group" | "overlay" | "diverging"; scale?: ColorScale } | { field: FieldName; target?: UserId; fieldType: "quantitative" | "temporal"; aggregate?: AggregateOperation; scale?: SequentialColorScale | DiscretizedColorScale })`; discretized scales require quantitative point color, aggregate is valid only for quantitative aggregate bars, and mark compatibility narrows the nominal layout set.
+- Implemented: `encodeColor({ field: FieldName; target?: UserId; fieldType?: "nominal" | "ordinal"; layout?: "stack" | "fill" | "group" | "overlay" | "diverging"; scale?: ColorScale } | { field: FieldName; target?: UserId; fieldType: "quantitative" | "temporal"; aggregate?: AggregateOperation; scale?: SequentialColorScale | DiscretizedColorScale })`; ordinal supports ordered categorical values including finite numbers, discretized scales require quantitative point color, aggregate is valid only for quantitative aggregate bars, and mark compatibility narrows the categorical layout set.
 - Proposed (NOT IMPLEMENTED): `{ layout?: "center" }`.
 
 ### Value coverage — `encodeColor`
@@ -582,7 +583,8 @@ encodeX2(options: RulePositionAssignment | AreaSecondaryXAssignment): ChartProgr
 - `field`, `target`
   - ✅ Covered: point/line/bar/area, inferred/explicit target, missing/invalid nominal values.
 - `fieldType`
-  - ✅ Covered: nominal, quantitative/temporal point color, quantitative aggregate-bar color와 invalid alternatives.
+  - ✅ Covered: nominal, numeric ordinal point/histogram color, quantitative/temporal point color,
+    quantitative aggregate-bar color와 invalid alternatives.
 - `aggregate`
   - ✅ Covered: matching-field inheritance, explicit alternate-field aggregate, ambiguous omission and invalid operation.
 - `layout`
@@ -591,7 +593,7 @@ encodeX2(options: RulePositionAssignment | AreaSecondaryXAssignment): ChartProgr
     no-auto-opacity overlay, invalid transition atomicity와 `encodeGroup`과의 distinct ownership.
   - 🟣 Proposed: `"center"` streamgraph layout.
 - `scale.id/type/domain`
-  - ✅ Covered: ordinal default, explicit ID/order, incomplete explicit domain rejection.
+  - ✅ Covered: ordinal scale default, nominal/ordinal field types, explicit ID/order, incomplete explicit domain rejection.
 - `scale.range/palette`
   - ✅ Covered: explicit color array, all 68 named palettes, `{ name, count?, extent? }`, conflict와 invalid values.
   - ✅ Covered: categorical/continuous-family sampling, cycling, reverse and mark/legend parity.

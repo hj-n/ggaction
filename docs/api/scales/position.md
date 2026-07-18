@@ -17,7 +17,7 @@ title: Position Scales
 | `time` | Temporal x/y on compatible marks; UTC normalization, ticks, and labels |
 | `band` | Discrete category position that needs positive bandwidth, especially bars |
 | `point` | Discrete point/rule centers and compatible shared centers; never bar width |
-| `ordinal` | Nominal color, shape, stroke dash, and xOffset lookup |
+| `ordinal` | Nominal or ordinal color, nominal shape/stroke dash, and xOffset lookup |
 | `sequential` | Quantitative/temporal point color and quantitative aggregate-bar color |
 | `quantize`, `quantile`, `threshold` | Quantitative point color |
 | `unknown` fallback | Row-owned point x/y/color/size/shape/opacity only |

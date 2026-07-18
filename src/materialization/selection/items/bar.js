@@ -31,7 +31,7 @@ function aggregateMembers(rows, layer, cell, channels) {
   const categories = categoryValues(rows, category);
   const categoryValue = cell[channels.category];
   const color = layer.encoding?.color;
-  const colors = color?.fieldType !== "nominal"
+  const colors = !["nominal", "ordinal"].includes(color?.fieldType)
     ? undefined
     : readNominalField(rows, color.field);
   return rows.filter((_, index) =>
