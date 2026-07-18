@@ -2,10 +2,10 @@
 
 ## 진행 상태
 
-- [ ] Gapminder cell fixture and independent geometry oracle
-- [ ] Explicit heatmap primitive with continuous color guide
-- [ ] Discrete-cell and ranged-cell variants
-- [ ] Optional text-overlay primitive
+- [x] Gapminder cell fixture and independent geometry oracle
+- [x] Explicit heatmap primitive with continuous color guide
+- [x] Discrete-cell and ranged-cell variants
+- [x] Optional text-overlay primitive
 - [ ] Gate J-C user approval
 
 Representative heatmap은 selected Gapminder countries × year cell에 `life_expect` color를 매핑한다. Cell bounds는
