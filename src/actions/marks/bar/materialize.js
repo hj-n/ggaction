@@ -8,7 +8,7 @@ import { deriveRangedRectangles } from "../../../materialization/bars/ranged.js"
 import { BAR_GRAINS } from "../../../grammar/bars/policy.js";
 import { rematerializeHighlightBaseline } from "../lifecycle.js";
 
-const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);
+const REMATERIALIZE_OPTIONS = Object.freeze(["id", "scales"]);
 
 function editRectangles(program, id, rectangles) {
   let next = program
@@ -70,6 +70,9 @@ export const rematerializeBarMark = action(
       "rematerializeBarMark"
     );
     const id = validateUserId(args.id, "Bar mark id");
+    if (args.scales !== undefined && typeof args.scales !== "boolean") {
+      throw new TypeError("rematerializeBarMark scales must be a boolean.");
+    }
     const highlighted = rematerializeHighlightBaseline(this, {
       target: id,
       operation: "rematerializeBarMark",
@@ -78,18 +81,21 @@ export const rematerializeBarMark = action(
     });
     if (highlighted !== undefined) return highlighted;
     const required = requireCompleteBar(this, id);
-    let resolved = this
-      .rematerializeScale({ id: required.xEncoding.scale })
-      .rematerializeScale({ id: required.yEncoding.scale });
+    let resolved = this;
+    if (args.scales !== false) {
+      resolved = resolved
+        .rematerializeScale({ id: required.xEncoding.scale })
+        .rematerializeScale({ id: required.yEncoding.scale });
+    }
 
     const colorScaleId = required.layer.encoding?.color?.scale;
-    if (colorScaleId !== undefined) {
+    if (colorScaleId !== undefined && args.scales !== false) {
       resolved = resolved.rematerializeScale({ id: colorScaleId });
     }
 
     if (required.materialization === "aggregate") {
       const offsetScaleId = required.layer.encoding?.xOffset?.scale;
-      if (offsetScaleId !== undefined) {
+      if (offsetScaleId !== undefined && args.scales !== false) {
         resolved = resolved.rematerializeScale({ id: offsetScaleId });
       }
       const width = resolved.markConfigs[id]?.barWidth;

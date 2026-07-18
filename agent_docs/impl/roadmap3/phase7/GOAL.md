@@ -8,7 +8,7 @@
 - [x] STEP 4 — Cars Origin scatterplot facet primitive
 - [x] STEP 5 — Cars Origin histogram facet primitive
 - [x] STEP 6 — Gate H visual evidence와 사용자 승인
-- [ ] STEP 7 — Immutable facet child derivation
+- [x] STEP 7 — Immutable facet child derivation
 - [ ] STEP 8 — Public `facet`과 composition materialization
 - [ ] STEP 9 — `editFacetHeaders`, title promotion과 layout edits
 - [ ] STEP 10 — Coverage, contracts, docs와 Phase closeout

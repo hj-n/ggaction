@@ -107,6 +107,7 @@ export function resolveFacetDefinition(semanticSpec, options = {}) {
     throw new TypeError("Facet options must be a plain object.");
   }
   const field = requireFacetField(options.field);
+  const id = validateUserId(options.id ?? "facet", "Facet id");
   const data = resolveSourceId(semanticSpec, options.data);
   const dataset = requireDirectDataset(semanticSpec, data);
   const observed = uniqueInOrder(readNominalField(dataset.values, field));
@@ -115,12 +116,13 @@ export function resolveFacetDefinition(semanticSpec, options = {}) {
   }
   const values = resolveValues(observed, options.values);
   return cloneAndFreeze({
+    id,
     data,
     field,
     values,
     cells: values.map((value, index) => ({
-      id: `facet-cell-${index + 1}`,
-      data: `facet-cell-${index + 1}-data`,
+      id: `${id}-cell-${index + 1}`,
+      data: `${id}-cell-${index + 1}-data`,
       value
     }))
   });

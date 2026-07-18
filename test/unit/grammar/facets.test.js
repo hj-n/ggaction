@@ -26,6 +26,7 @@ test("resolves direct-source facet values in first-appearance order", () => {
   });
 
   assert.deepEqual(definition, {
+    id: "facet",
     data: "cars",
     field: "group",
     values: ["Japan", "USA", "Europe"],
@@ -50,6 +51,13 @@ test("preserves an explicit observed facet order without mutating its input", ()
   values.reverse();
   assert.deepEqual(definition.values, ["Europe", "Japan"]);
   assert.deepEqual(definition.cells.map(cell => cell.value), ["Europe", "Japan"]);
+
+  const named = resolveFacetDefinition(pointProgram().semanticSpec, {
+    id: "originFacet",
+    field: "group"
+  });
+  assert.equal(named.cells[0].id, "originFacet-cell-1");
+  assert.equal(named.cells[0].data, "originFacet-cell-1-data");
 });
 
 test("supports complete histogram and aggregate bar sources", () => {
