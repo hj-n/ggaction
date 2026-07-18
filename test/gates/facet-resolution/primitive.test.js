@@ -22,6 +22,10 @@ test("authors both Gate I-A variants through concrete graphical primitives", () 
     assert.equal(program.graphicSpec.objects.chartTitle.properties.x, 474);
     assert.equal(program.graphicSpec.objects.chartSubtitle.properties.x, 474);
     assert.deepEqual(
+      program.graphicSpec.objects.facetHeaders.items.map(item => item.properties.x),
+      [174, 474, 774, 174, 474, 774]
+    );
+    assert.deepEqual(
       [...new Set(program.trace.children.map(node => node.op))].sort(),
       ["createGraphics", "editGraphics"]
     );

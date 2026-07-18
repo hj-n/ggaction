@@ -117,6 +117,11 @@ Create a chart title after `facet` so the title is owned directly by the
 parent. A title that already fits the unit Canvas is promoted for authoring
 order compatibility rather than repeated in every cell.
 
+The parent title aligns to the union of the child plot bounds, excluding cell
+margins and the shared legend. Each repeated header is likewise centered on
+its own child plot—not on the complete child Canvas—so asymmetric axis space
+does not visually offset panel titles.
+
 Edit the repeated header style without addressing generated graphic IDs:
 
 ```javascript
@@ -143,7 +148,8 @@ a partial padding object updates only the named sides. The action preserves all
 child IDs and references and rebuilds the parent snapshot.
 
 Facet parents use this same action for `gap`, `align`, and `padding`; derived
-cell programs and facet value order remain unchanged.
+cell programs and facet value order remain unchanged. Parent-title and header
+anchors are recomputed from the newly translated child plot bounds.
 
 ## Replace one stable slot
 

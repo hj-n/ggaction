@@ -10,6 +10,8 @@
 - `guides.legend` is `false` by default. `"shared"` creates one parent-owned categorical color legend while axes remain in each cell.
 - The result is a composition parent whose `children` retain immutable filtered programs and whose `graphicSpec` contains the complete namespaced nested-Canvas snapshot.
 - Canonical title order is `.facet(...).createTitle(...)`. A valid title authored before `facet` is promoted once to the parent.
+- Parent title alignment uses the translated child-plot union. Each facet header is centered on its own translated
+  child plot; neither anchor uses the child Canvas, axis-reserved margin, facet padding, or shared legend extent.
 
 ### Formal values — `facet`
 
@@ -19,14 +21,16 @@
 
 ### Value coverage — `facet`
 
-- ✅ Covered: source and value inference, explicit source, one-row and wrapped layout, point/histogram/aggregate-bar eligibility, shared continuous and ordinal domains, shared histogram boundaries, parent categorical legend, title promotion, renderer isolation, immutable base/children, invalid and ambiguous source rejection.
+- ✅ Covered: source and value inference, explicit source, one-row and wrapped layout, point/histogram/aggregate-bar eligibility, shared continuous and ordinal domains, shared histogram boundaries, parent categorical legend, title promotion, child-plot-aligned parent title and headers, renderer isolation, immutable base/children, invalid and ambiguous source rejection.
 - Evidence: `test/unit/grammar/facets.test.js`, `test/unit/actions/composition/facet-derivation.test.js`, `test/unit/actions/composition/facet.test.js`, `test/gates/direct-source-facet/public.test.js`.
 
 ## `editFacetHeaders`
 
 - Signature: `editFacetHeaders({ fontSize?, fontFamily?, fontWeight?, color?, offset? })`.
 - Requires a facet composition and at least one appearance change.
-- Headers are one parent-owned repeated concrete resource. Editing them preserves child identity, semantic facet values, shared scales, and layout order, then rematerializes the parent snapshot.
+- Headers are one parent-owned repeated concrete resource. Each header is centered on its child plot bounds. Editing
+  them preserves child identity, semantic facet values, shared scales, and layout order, then rematerializes the
+  parent snapshot.
 
 ### Formal values — `editFacetHeaders`
 
@@ -35,7 +39,8 @@
 
 ### Value coverage — `editFacetHeaders`
 
-- ✅ Covered: partial edit, immutable prior state, layout-edit convergence, empty edit rejection, and non-facet rejection.
+- ✅ Covered: child-plot centering, partial edit, immutable prior state, layout-edit convergence, empty edit rejection,
+  and non-facet rejection.
 - Evidence: `test/unit/actions/composition/facet.test.js`, `test/gates/direct-source-facet/public.test.js`.
 
 ## `editCompositionLayout`

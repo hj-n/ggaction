@@ -69,20 +69,27 @@ function collection(program, id, items) {
     .editGraphics({ target: id, property: "items", value: items });
 }
 
-function materializeHeaders(program, layout, config) {
-  const items = layout.children.map(cell => textItem(
-    cell.value,
-    cell.x + cell.width / 2,
-    cell.y + config.offset,
-    {
-      color: config.color,
-      fontSize: config.fontSize,
-      fontFamily: config.fontFamily,
-      fontWeight: config.fontWeight,
-      textAlign: "center",
-      textBaseline: "top"
+function materializeHeaders(program, layout, plots, config) {
+  const plotById = new Map(plots.map(plot => [plot.id, plot]));
+  const items = layout.children.map(cell => {
+    const plot = plotById.get(cell.id);
+    if (plot === undefined) {
+      throw new Error(`Facet header requires plot bounds for "${cell.id}".`);
     }
-  ));
+    return textItem(
+      cell.value,
+      cell.x + plot.x + plot.width / 2,
+      cell.y + config.offset,
+      {
+        color: config.color,
+        fontSize: config.fontSize,
+        fontFamily: config.fontFamily,
+        fontWeight: config.fontWeight,
+        textAlign: "center",
+        textBaseline: "top"
+      }
+    );
+  });
   return collection(program, `${program.compositionSpec.id}-headers`, items);
 }
 
@@ -233,18 +240,19 @@ export function resolveFacetProgramLayout(program) {
     titleHeight: title.height,
     sharedLegend: spec.facet.guides.legend === "shared"
   });
+  const plots = spec.children.map(id => ({
+    id,
+    ...resolveGraphicBounds(program.children[id])
+  }));
   const plot = resolvePlacedPlotBounds({
     placements: layout.children,
-    plots: spec.children.map(id => ({
-      id,
-      ...resolveGraphicBounds(program.children[id])
-    }))
+    plots
   });
-  return { layout, title, plot };
+  return { layout, title, plot, plots };
 }
 
 export function materializeFacetGraphics(program) {
-  const { layout, title, plot } = resolveFacetProgramLayout(program);
+  const { layout, title, plot, plots } = resolveFacetProgramLayout(program);
   const config = facetConfig(program);
   let next = clearCompositionChildren(program);
   if (next.graphicSpec.objects.canvas === undefined) {
@@ -266,7 +274,7 @@ export function materializeFacetGraphics(program) {
     });
     next = attachSnapshotObject(next, snapshot, snapshot.order[0], "canvas");
   }
-  next = materializeHeaders(next, layout, config.headers);
+  next = materializeHeaders(next, layout, plots, config.headers);
   if (program.compositionSpec.facet.guides.legend === "shared") {
     next = materializeLegend(next, layout);
   }

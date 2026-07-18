@@ -115,5 +115,6 @@ facet
   cell of each row.
 - The parent title is aligned to the union of translated child plot bounds, excluding cell margins, axis text,
   facet padding and shared guides.
+- Every cluster header is centered on that cell's translated x-axis plot span rather than the cell Canvas.
 - Primitive and public programs produce the same concrete Canvas calls and exact same-run pixels.
 - Earlier source, base chart and every sibling child remain unchanged.

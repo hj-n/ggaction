@@ -150,10 +150,22 @@ test("aligns facet titles to the union of child plots instead of the parent Canv
   });
 
   assert.equal(centered.graphicSpec.objects.canvas.properties.width, 456);
+  assert.deepEqual(
+    centered.graphicSpec.objects["facet-headers"].items.map(item =>
+      item.properties.x
+    ),
+    [125, 361]
+  );
   assert.equal(centered.graphicSpec.objects.chartTitle.properties.x, 243);
   assert.equal(left.graphicSpec.objects.chartTitle.properties.x, 40);
   assert.equal(right.graphicSpec.objects.chartTitle.properties.x, 446);
   assert.equal(relaid.graphicSpec.objects.chartTitle.properties.x, 253);
+  assert.deepEqual(
+    relaid.graphicSpec.objects["facet-headers"].items.map(item =>
+      item.properties.x
+    ),
+    [135, 371]
+  );
   assert.notEqual(centered.graphicSpec.objects.chartTitle.properties.x, 228);
 });
 

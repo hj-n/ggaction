@@ -23,6 +23,10 @@ test("authors the one-row scatterplot facet with extension primitives", () => {
   assert.equal(program.graphicSpec.objects.chartTitle.properties.x, 409);
   assert.equal(program.graphicSpec.objects.chartSubtitle.properties.x, 409);
   assert.deepEqual(
+    program.graphicSpec.objects["facet-headers"].items.map(item => item.properties.x),
+    [143, 409, 675]
+  );
+  assert.deepEqual(
     nestedCanvases(program).map(canvas => [canvas.properties.x, canvas.properties.y]),
     [[0, 52], [266, 52], [532, 52]]
   );
@@ -36,6 +40,10 @@ test("authors the wrapped histogram facet without synthetic empty-bin bars", () 
   assert.equal(program.graphicSpec.objects.canvas.properties.height, 578);
   assert.equal(program.graphicSpec.objects.chartTitle.properties.x, 320);
   assert.equal(program.graphicSpec.objects.chartSubtitle.properties.x, 320);
+  assert.deepEqual(
+    program.graphicSpec.objects["facet-headers"].items.map(item => item.properties.x),
+    [171, 469, 171]
+  );
   assert.deepEqual(
     nestedCanvases(program).map(canvas => [canvas.properties.x, canvas.properties.y]),
     [[14, 66], [312, 66], [14, 324]]

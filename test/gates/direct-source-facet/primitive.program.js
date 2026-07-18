@@ -46,6 +46,10 @@ function textItem(text, x, y, options = {}) {
 }
 
 function addHeaders(program, cells, options = {}) {
+  const plot = options.plot;
+  if (plot === undefined) {
+    throw new Error("Facet primitive headers require local plot bounds.");
+  }
   return program
     .createGraphics({ id: "facet-headers", type: "collection", parent: "canvas" })
     .editGraphics({
@@ -53,7 +57,7 @@ function addHeaders(program, cells, options = {}) {
       property: "items",
       value: cells.map(cell => textItem(
         cell.value,
-        cell.x + cell.width / 2,
+        cell.x + (plot.left + plot.right) / 2,
         cell.y + (options.offset ?? 10),
         {
           fontSize: options.fontSize ?? 12,
@@ -218,6 +222,7 @@ export function createCarsOriginScatterplotFacetPrimitives(cars) {
     program = attachChild(program, scatterCell(cell.rows, values), cell);
   }
   program = addHeaders(program, values.scatter.cells, {
+    plot: values.scatter.cellPlot,
     fontSize: 13,
     fontWeight: 700,
     offset: 10
@@ -243,7 +248,9 @@ export function createCarsOriginHistogramFacetPrimitives(cars) {
   for (const cell of values.histogram.cells) {
     program = attachChild(program, histogramCell(cell.rows, values), cell);
   }
-  program = addHeaders(program, values.histogram.cells);
+  program = addHeaders(program, values.histogram.cells, {
+    plot: values.histogram.cellPlot
+  });
   program = addLegend(program, {
     x: values.histogram.width - 132,
     y: 96,

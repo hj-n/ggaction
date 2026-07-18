@@ -187,7 +187,7 @@ function scatterCellItems(rows, origin, domains) {
   const xTicks = [50, 100, 150, 200];
   const yTicks = [10, 20, 30, 40];
   const items = [
-    text(origin, SCATTER_CELL.width / 2, 10, {
+    text(origin, (plot.left + plot.right) / 2, 10, {
       fontSize: 13,
       fontWeight: 700,
       textAlign: "center",
@@ -285,7 +285,7 @@ function histogramCellItems(origin, stacks, domains) {
   const yTicks = [0, 20, 40, 60];
   const xTicks = [50, 275, 500];
   const items = [
-    text(origin, HISTOGRAM_CELL.width / 2, 10, {
+    text(origin, (plot.left + plot.right) / 2, 10, {
       fontSize: 13,
       fontWeight: 700,
       textAlign: "center",
@@ -453,6 +453,7 @@ export function createDirectFacetGateValues(cars) {
       width: scatterLayout.width + LEGEND_GAP + LEGEND_WIDTH,
       cells: scatterCells,
       domains: scatterDomains,
+      cellPlot: SCATTER_PLOT,
       plot: scatterPlot,
       titleItems: titleItems(
         "Horsepower and Fuel Economy",
@@ -471,6 +472,7 @@ export function createDirectFacetGateValues(cars) {
       cells: histogramCells,
       domains: histogramDomains,
       boundaries: histogramBoundariesValue,
+      cellPlot: HISTOGRAM_PLOT,
       plot: histogramPlot,
       titleItems: titleItems(
         "Displacement Distribution",

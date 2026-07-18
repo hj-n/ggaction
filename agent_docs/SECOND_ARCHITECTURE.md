@@ -256,6 +256,7 @@ title은 parent-owned concrete graphics다. Canonical title order는 `facet(...)
 title은 cell에서 제거하고 parent에 한 번 promote한다. `editFacetHeaders`와 facet-compatible
 `editCompositionLayout`은 child identity를 보존한 채 parent snapshot만 다시 materialize한다. Renderer는 concat과
 마찬가지로 완성된 parent `graphicSpec`만 읽는다.
+각 repeated header의 horizontal anchor는 child Canvas center가 아니라 translated child plot center다.
 
 Advanced facet replay를 준비하는 pure dataset dependency planner는 visible layer에서 source 방향으로 ancestry를
 검증하고, 모든 branch가 공유하는 latest row-preserving partition anchor와 deterministic topological replay order를
@@ -1384,7 +1385,8 @@ materialization config가 소유한다.
 Title alignment span은 Canvas나 guide-inclusive container가 아니라 실제 plot bounds다. Unit chart는 Canvas
 margin으로 정해진 plot bounds를 사용하고 facet parent는 translated child plot bounds의 union을 사용한다.
 따라서 child margin, axis label/title, facet padding과 shared legend는 left/center/right anchor를 이동시키지
-않는다. Layout이나 Canvas 변경은 이 span을 다시 계산해 title을 rematerialize한다.
+않는다. Facet header도 같은 원칙으로 각 child plot center를 사용한다. Layout이나 Canvas 변경은 parent title
+span과 모든 header anchor를 다시 계산해 rematerialize한다.
 
 Top/bottom title은 horizontal block이고 left/right title은 complete reading block을 각각
 `-Math.PI / 2`, `Math.PI / 2`로 회전한다. `maxWidth`가 있으면 shared deterministic text
