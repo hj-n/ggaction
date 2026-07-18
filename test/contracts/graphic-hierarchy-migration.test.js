@@ -8,6 +8,7 @@ import {
 } from "../../src/grammar/schemas/graphicTree.js";
 import {
   loadCars,
+  loadFashionTsne,
   loadGapminder,
   loadImdbSelected,
   loadJobs,
@@ -16,6 +17,7 @@ import {
 
 const LOADERS = Object.freeze({
   cars: loadCars,
+  fashionTsne: loadFashionTsne,
   gapminder: loadGapminder,
   jobs: loadJobs,
   nightingaleRose: loadNightingaleRose,
@@ -200,8 +202,22 @@ const EXPECTED_DRAW_ORDER = Object.freeze({
     "chartTitle", "chartSubtitle"
   ],
   "program-composition": [],
-  "cars-origin-scatterplot-facet": []
+  "cars-origin-scatterplot-facet": [],
+  "cross-feature-dashboard": []
 });
+
+const EXPECTED_COMPOSITION_DRAW_LENGTH = Object.freeze({
+  "program-composition": 7,
+  "cross-feature-dashboard": 52
+});
+
+function loadChartData(data) {
+  if (typeof data === "string") return LOADERS[data]();
+  return Object.fromEntries(Object.entries(data).map(([key, dataset]) => [
+    key,
+    LOADERS[dataset]()
+  ]));
+}
 
 function isCanvasOwned(id) {
   return id.includes("Legend") || id.includes("Gradient") ||
@@ -215,11 +231,11 @@ test("locks the complete public graphic hierarchy inventory", () => {
   );
 
   for (const chart of PUBLIC_CHARTS) {
-    const program = chart.createProgram(LOADERS[chart.data]());
+    const program = chart.createProgram(loadChartData(chart.data));
     const drawOrder = [];
     walkGraphicDrawOrder(program.graphicSpec, ({ id }) => drawOrder.push(id));
     const expected = EXPECTED_DRAW_ORDER[chart.id];
-    if (chart.id === "program-composition") {
+    if (program.compositionSpec?.direction) {
       assert.deepEqual(program.graphicSpec.order, ["canvas"]);
       assert.equal(program.graphicSpec.objects.canvas.children.length, 2);
       for (const childId of program.graphicSpec.objects.canvas.children) {
@@ -227,7 +243,7 @@ test("locks the complete public graphic hierarchy inventory", () => {
         assert.equal(findGraphicParent(program.graphicSpec, childId).id, "canvas");
       }
       assert.equal(drawOrder[0], "canvas");
-      assert.equal(drawOrder.length, 7);
+      assert.equal(drawOrder.length, EXPECTED_COMPOSITION_DRAW_LENGTH[chart.id]);
       continue;
     }
     if (program.compositionSpec?.type === "facet") {

@@ -9,7 +9,7 @@
 - [x] STEP 5 — Shared position scale-resolution 구현
 - [x] STEP 6 — Polar, facet와 nested composition integration
 - [x] STEP 7 — Transitive rematerialization matrix
-- [ ] STEP 8 — Gate K-B cross-feature integration approval
+- [x] STEP 8 — Gate K-B cross-feature integration approval
 - [ ] STEP 9 — Package, TypeScript, docs와 architecture audit
 - [ ] STEP 10 — Roadmap 3 closeout와 release-candidate Gate
 

@@ -37,6 +37,8 @@ import { createJobsHorizontalGroupedBar } from
   "./jobs-horizontal-grouped-bar/program.js";
 import { createNightingaleRoseChart } from
   "./nightingale-rose-chart/program.js";
+import { createCrossFeatureDashboard } from
+  "./cross-feature-dashboard/program.js";
 import { createProgramCompositionExample } from
   "./program-composition/program.js";
 import {
@@ -48,7 +50,7 @@ import {
 function example({ id, data, width, height, createProgram, ...options }) {
   return Object.freeze({
     id,
-    data,
+    data: data && typeof data === "object" ? Object.freeze({ ...data }) : data,
     width,
     height,
     createProgram,
@@ -60,6 +62,18 @@ function example({ id, data, width, height, createProgram, ...options }) {
 }
 
 export const PUBLIC_CHARTS = Object.freeze([
+  example({
+    id: "cross-feature-dashboard",
+    data: {
+      cars: "cars",
+      nightingale: "nightingaleRose",
+      fashionRows: "fashionTsne"
+    },
+    width: 1220,
+    height: 866,
+    createProgram: createCrossFeatureDashboard,
+    testDirectory: "cross-feature-integration"
+  }),
   example({
     id: "program-composition",
     data: "cars",
