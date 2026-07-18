@@ -8,7 +8,7 @@
 - [x] STEP 4 — Shared/independent scale-resolution grammar
 - [x] STEP 5 — Outer-axis와 shared-guide layout grammar
 - [x] STEP 6 — Shared/independent regression facet primitives
-- [ ] STEP 7 — Gate I-A visual approval
+- [x] STEP 7 — Gate I-A visual approval
 - [ ] STEP 8 — Derived replay와 scale-resolution public implementation
 - [ ] STEP 9 — Outer axes와 shared gradient legend primitive
 - [ ] STEP 10 — Gate I-B visual approval
