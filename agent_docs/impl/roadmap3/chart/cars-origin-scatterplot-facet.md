@@ -9,13 +9,20 @@ first-appearance order, default one-row layout, shared quantitative domains, per
 ## 최종 user-facing API
 
 ```javascript
+const rows = cars.filter(row =>
+  Number.isFinite(row.Horsepower) &&
+  Number.isFinite(row.Miles_per_Gallon) &&
+  Number.isFinite(row.Cylinders) &&
+  typeof row.Origin === "string"
+);
+
 chart()
   .createCanvas({
     width: 250,
     height: 230,
     margin: { top: 34, right: 16, bottom: 48, left: 52 }
   })
-  .createData({ values: cars })
+  .createData({ values: rows })
   .createPointMark()
   .encodeX({
     field: "Horsepower",
@@ -36,7 +43,7 @@ chart()
       x: { title: { text: "Horsepower" } },
       y: { title: { text: "Miles per Gallon" } }
     },
-    legend: { position: "right" }
+    legend: false
   })
   .createTitle({
     text: "Horsepower and Fuel Economy",

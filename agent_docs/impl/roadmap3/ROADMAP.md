@@ -395,8 +395,9 @@ const faceted = chart()
   .createPointMark()
   .encodeX({ field: "Horsepower" })
   .encodeY({ field: "Miles_per_Gallon" })
-  .createGuides()
-  .facet({ field: "Origin" })
+  .encodeColor({ field: "Cylinders", fieldType: "ordinal", scale: { palette: "reds" } })
+  .createGuides({ legend: false })
+  .facet({ field: "Origin", guides: { legend: "shared" } })
   .editFacetHeaders({ fontSize: 12 })
   .editCompositionLayout({ gap: 16 });
 ```
@@ -407,7 +408,8 @@ Shortest-call inference:
 - Dataset은 all affected visible layers가 하나의 source dependency로 귀결될 때만 추론한다.
 - Facet values는 source의 deterministic first-appearance order다.
 - Child IDs는 deterministic하게 자동 생성한다.
-- Facet scale default는 shared, guide default는 each cell이다.
+- Facet scale default는 shared, axes default는 each cell이다. Shared categorical legend는 explicit
+  `guides.legend: "shared"`로 parent에 만든다.
 - Column count와 wrapping default는 Phase contract의 visual Gate에서 확정한다.
 
 Action hierarchy:
@@ -461,9 +463,9 @@ Derived facet은 transform dependency registry를 통해 각 cell의 source DAG�
 - Interval/error band
 - Box plot
 
-Guide composition은 repeated guide baseline을 먼저 보존한 뒤 별도 visual Gate에서 shared legend와
-outer-only axes를 검토한다. Shared guide를 지원할 때는 child semantic state를 merge하지 않고 parent
-composition action이 representative concrete guide를 명시적으로 materialize한다.
+Guide composition은 repeated guide baseline을 먼저 보존한 뒤 별도 visual Gate에서 outer-only axes와
+remaining non-categorical legend families를 검토한다. Shared guide를 지원할 때는 child semantic state를
+merge하지 않고 parent composition action이 representative concrete guide를 명시적으로 materialize한다.
 
 Gate I는 filtered child data에서 regression 또는 density statistic이 독립적으로 다시 계산되는지와
 shared/independent visual difference를 승인한다.

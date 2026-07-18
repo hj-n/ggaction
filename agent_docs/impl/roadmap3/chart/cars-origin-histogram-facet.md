@@ -8,13 +8,19 @@ boundaries, shared count domain과 explicit two-column wrapping을 검증한다.
 ## 최종 user-facing API
 
 ```javascript
+const rows = cars.filter(row =>
+  Number.isFinite(row.Displacement) &&
+  Number.isFinite(row.Cylinders) &&
+  typeof row.Origin === "string"
+);
+
 chart()
   .createCanvas({
     width: 280,
     height: 240,
     margin: { top: 34, right: 18, bottom: 50, left: 52 }
   })
-  .createData({ values: cars })
+  .createData({ values: rows })
   .createBarMark()
   .encodeHistogram({
     field: "Displacement",
@@ -31,7 +37,7 @@ chart()
       x: { title: { text: "Displacement" } },
       y: { title: { text: "Count" } }
     },
-    legend: { position: "right" },
+    legend: false,
     grid: { horizontal: true, vertical: false }
   })
   .createTitle({

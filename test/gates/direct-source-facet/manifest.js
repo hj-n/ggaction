@@ -21,7 +21,7 @@ export const scatterplotFacetTarget = `chart()
     height: 230,
     margin: { top: 34, right: 16, bottom: 48, left: 52 }
   })
-  .createData({ values: cars })
+  .createData({ values: rows })
   .createPointMark()
   .encodeX({
     field: "Horsepower",
@@ -42,7 +42,7 @@ export const scatterplotFacetTarget = `chart()
       x: { title: { text: "Horsepower" } },
       y: { title: { text: "Miles per Gallon" } }
     },
-    legend: { position: "right" }
+    legend: false
   })
   .createTitle({
     text: "Horsepower and Fuel Economy",
@@ -58,7 +58,7 @@ export const histogramFacetTarget = `chart()
     height: 240,
     margin: { top: 34, right: 18, bottom: 50, left: 52 }
   })
-  .createData({ values: cars })
+  .createData({ values: rows })
   .createBarMark()
   .encodeHistogram({
     field: "Displacement",
@@ -75,7 +75,7 @@ export const histogramFacetTarget = `chart()
       x: { title: { text: "Displacement" } },
       y: { title: { text: "Count" } }
     },
-    legend: { position: "right" },
+    legend: false,
     grid: { horizontal: true, vertical: false }
   })
   .createTitle({

@@ -6,10 +6,13 @@
 - [x] Independent reference assertions 제시
 - [x] 두 primitive source와 PNG 제시
 - [x] Browser Canvas 검증 제시
-- [ ] 사용자 승인 기록
+- [x] 사용자 승인 기록
 
 Gate H는 hard pause다. 사용자 승인 전에는 public facet flow 또는 post-Gate stored-state 구현을 시작하지
 않는다.
+
+Gate H는 2026-07-18 승인되었다. 승인된 ownership은 child `createGuides({ legend: false })`와 parent
+`facet({ guides: { legend: "shared" } })`를 분리한다.
 
 Gate evidence:
 

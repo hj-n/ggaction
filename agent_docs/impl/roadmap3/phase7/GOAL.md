@@ -7,7 +7,7 @@
 - [x] STEP 3 — Facet grid, header와 parent title reference layout
 - [x] STEP 4 — Cars Origin scatterplot facet primitive
 - [x] STEP 5 — Cars Origin histogram facet primitive
-- [ ] STEP 6 — Gate H visual evidence와 사용자 승인
+- [x] STEP 6 — Gate H visual evidence와 사용자 승인
 - [ ] STEP 7 — Immutable facet child derivation
 - [ ] STEP 8 — Public `facet`과 composition materialization
 - [ ] STEP 9 — `editFacetHeaders`, title promotion과 layout edits
@@ -58,7 +58,8 @@ Defaults:
 - omitted `columns`: resolved value count, 즉 한 줄
 - `gap: 16`, `align: "center"`, four-side zero padding
 - shared scale domains and axes in every cell
-- explicit `guides.legend: "shared"` promotes one categorical legend to the parent
+- explicit `guides.legend: "shared"` creates one categorical legend on the parent; the base `createGuides` call
+  uses `legend: false` because a shared legend is not a child-owned guide
 - deterministic opaque child IDs
 
 ## First-slice boundary
@@ -77,8 +78,7 @@ STEP 6은 hard pause다. 승인 전에는 `ChartProgram.prototype.facet`, facet 
 2. `columns: 2` Cars Origin histogram facet wrapping
 3. Shared domains, per-cell axes, one parent-owned Cylinders legend, title와 headers
 
-`guides.legend`은 Gate H feedback에서 추가된 phase-local API proposal이다. Exact syntax가 Gate H에서 승인된 뒤
-Planned contract와 Phase 8 assignment를 갱신한다.
+`guides.legend` exact syntax와 parent ownership은 2026-07-18 Gate H feedback에서 승인되었다.
 
 Gate H primitive package는 `test/gates/direct-source-facet/`에 있으며 public `facet`과
 `editFacetHeaders`가 아직 존재하지 않는 것도 normal Gate test가 확인한다.
