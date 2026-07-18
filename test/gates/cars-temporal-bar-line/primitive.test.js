@@ -4,6 +4,8 @@ import test from "node:test";
 import { render } from "../../../src/index.js";
 import { createMockCanvasContext } from "../../support/canvas.js";
 import { loadCars } from "../../support/data.js";
+import { displayedActionOperations } from "../../support/visual-variants.js";
+import { carsTemporalBarLineTarget } from "./manifest.js";
 import { createCarsTemporalBarLinePrimitives } from "./primitive.program.js";
 
 test("authors Gate K-A only through semantic and graphic primitives", () => {
@@ -41,5 +43,14 @@ test("aligns every bar center and top with the shared line vertex", () => {
   });
   assert.deepEqual(program.graphicSpec.objects["plot-main"].children.slice(0, 3), [
     "horizontalGridLines", "bars", "trend"
+  ]);
+});
+
+test("keeps the target flow free of a redundant trend encodeY call", () => {
+  const operations = displayedActionOperations(carsTemporalBarLineTarget);
+
+  assert.equal(operations.filter(operation => operation === "encodeY").length, 1);
+  assert.deepEqual(operations.slice(2, 7), [
+    "createBarMark", "encodeX", "encodeY", "createLineMark", "createGuides"
   ]);
 });

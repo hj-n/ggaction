@@ -30,6 +30,8 @@ Gate K-A는 shared temporal x scale의 concrete 결과만 승인한다.
 
 - Bar center와 line vertex는 같은 temporal value에서 정확히 같은 x를 가진다.
 - Bar bandwidth는 mark layout 결과이고 shared semantic scale의 별도 identity가 아니다.
+- `createLineMark`는 두 mark가 모두 지원하는 x/y encoding과 `mean` aggregate를 함께 추론하므로 반복
+  `encodeY` 호출을 요구하지 않는다.
 - Shared x/y axes는 한 번만 생성된다.
 - Line을 위해 별도 `xLine` scale이나 두 번째 axis를 만들지 않는다.
 - Aggregate field와 y scale이 같으면 bar top과 line vertex가 일치한다.

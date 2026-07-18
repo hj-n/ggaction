@@ -18,12 +18,6 @@ export const carsTemporalBarLineTarget = `chart()
   .encodeX({ field: "Year", fieldType: "temporal" })
   .encodeY({ field: "Acceleration", aggregate: "mean" })
   .createLineMark({ id: "trend", stroke: "#1d4ed8", strokeWidth: 3 })
-  .encodeY({
-    target: "trend",
-    field: "Acceleration",
-    aggregate: "mean",
-    scale: { id: "y" }
-  })
   .createGuides({
     axes: {
       x: { title: { text: "Year" } },
