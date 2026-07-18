@@ -257,6 +257,12 @@ title은 cell에서 제거하고 parent에 한 번 promote한다. `editFacetHead
 `editCompositionLayout`은 child identity를 보존한 채 parent snapshot만 다시 materialize한다. Renderer는 concat과
 마찬가지로 완성된 parent `graphicSpec`만 읽는다.
 
+Advanced facet replay를 준비하는 pure dataset dependency planner는 visible layer에서 source 방향으로 ancestry를
+검증하고, 모든 branch가 공유하는 latest row-preserving partition anchor와 deterministic topological replay order를
+반환한다. 이 planner는 semantic state를 수정하거나 trace를 만들지 않으며, public facet action이 실제 cell dataset을
+작성하고 wrapped replay를 실행하기 전의 validation/resolution boundary다. Pure planner의 존재 자체는 derived replay가
+public facet runtime에 연결되었다는 의미가 아니다.
+
 ## Immutability와 ownership
 
 `ChartProgram`은 생성이 끝나면 freeze된다. 모든 public action과 internal wrapped
