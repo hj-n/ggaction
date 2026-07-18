@@ -260,7 +260,21 @@ try {
   assert.equal(await mobile.locator(".docs-heading-anchor").count() > 0, true);
   const actionHeadingCount = await mobile.locator(".docs-action-heading").count();
   assert.equal(actionHeadingCount > 0, true);
-  assert.equal(await mobile.locator(".docs-page-toc a").count(), 7);
+  assert.deepEqual(
+    await mobile.locator(".docs-page-toc a").evaluateAll(links =>
+      links.map(link => link.getAttribute("href"))
+    ),
+    [
+      "#quick-navigation",
+      "#exact-typescript-signatures",
+      "#chart-authoring-api",
+      "#advanced-chart-api",
+      "#extension-api",
+      "#internal-trace-operations",
+      "#program-functions",
+      "#rendering-functions"
+    ]
+  );
   assert.equal(
     await mobile.locator('.docs-page-toc a[href="#exact-typescript-signatures"]').count(),
     1

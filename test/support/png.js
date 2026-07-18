@@ -99,11 +99,13 @@ export async function assertRenderedPNG(
     );
     const tolerance = visualSignature.inkBounds.tolerance ?? 0;
     for (const key of ["x", "y", "width", "height"]) {
+      const actual = compactSignature.inkBounds[key];
+      const expected = visualSignature.inkBounds[key];
       assert.equal(
-        Math.abs(compactSignature.inkBounds[key] - visualSignature.inkBounds[key]) <=
-          tolerance,
+        Math.abs(actual - expected) <= tolerance,
         true,
-        `${label} ink bound ${key} changed from its approved signature`
+        `${label} ink bound ${key} changed from its approved signature ` +
+          `(actual ${actual}, expected ${expected} ± ${tolerance})`
       );
     }
   }
