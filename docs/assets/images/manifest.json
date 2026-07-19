@@ -4,13 +4,13 @@
   "thumbnailMaxWidth": 640,
   "charts": {
     "program-composition": {
-      "width": 1056,
-      "height": 448,
+      "width": 1176,
+      "height": 488,
       "thumbnail": {
         "width": 640,
-        "height": 272
+        "height": 266
       },
-      "sourceHash": "de1a6a7da1d25279ad5e45088982d603c42a76f844872895e3559cea1a5d4fed"
+      "sourceHash": "e8eb1b0c062d9e27e9f5a72c283ee667deffa1ee8a0e467d3e5f76732bb7ea1e"
     },
     "cars-origin-scatterplot-facet": {
       "width": 1864,

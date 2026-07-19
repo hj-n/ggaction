@@ -13,12 +13,12 @@ registerVisualVariantTests([{
   .replaceCompositionChild({ target: "detail", program: replacement });`,
   primitive: createProgramCompositionPrimitives,
   userFacing: createProgramCompositionExample,
-  width: 528,
-  height: 224,
-  colors: ["#4c78a8", "#54a24b"],
+  width: 588,
+  height: 244,
+  colors: ["#eff6ff", "#fff7ed", "#4c78a8", "#f58518", "#0f172a"],
   regions: [
-    { name: "main", x: 12, y: 12, width: 260, height: 200 },
-    { name: "detail", x: 296, y: 12, width: 220, height: 200 }
+    { name: "main", x: 12, y: 12, width: 280, height: 220 },
+    { name: "detail", x: 316, y: 12, width: 260, height: 220 }
   ],
   artifact: false
 }]);

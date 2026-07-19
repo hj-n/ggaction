@@ -4683,6 +4683,13 @@ must each be a complete program with one materialized Canvas. See the
 [runnable repository example](https://github.com/hj-n/ggaction/tree/main/examples/program-composition)
 for complete child construction and Browser Canvas rendering.
 
+The representative output deliberately keeps two different final grammars:
+the `main` slot contains a titled point chart on a blue panel, while the
+`detail` slot contains the titled orange bar chart installed by
+`replaceCompositionChild`. Distinct child backgrounds and the visible parent
+gap make the retained slot, replacement slot, and parent layout observable in
+the full image and its gallery thumbnail.
+
 Both functions require at least two programs. A direct `ChartProgram` receives
 the deterministic slot name `view-1`, `view-2`, and so on. Use
 `{ id, program }` when later code must replace a stable slot.

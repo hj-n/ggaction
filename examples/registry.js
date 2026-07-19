@@ -77,8 +77,8 @@ export const PUBLIC_CHARTS = Object.freeze([
   example({
     id: "program-composition",
     data: "cars",
-    width: 528,
-    height: 224,
+    width: 588,
+    height: 244,
     createProgram: createProgramCompositionExample,
     docsGroup: "charts",
     browser: { path: "program-composition/", canvas: "#chart" }

@@ -207,7 +207,7 @@ const EXPECTED_DRAW_ORDER = Object.freeze({
 });
 
 const EXPECTED_COMPOSITION_DRAW_LENGTH = Object.freeze({
-  "program-composition": 7,
+  "program-composition": 9,
   "cross-feature-dashboard": 52
 });
 

@@ -1,14 +1,14 @@
 - id: composition
   title: Program composition
   image: /assets/images/program-composition.png
-  alt: Two complete chart programs aligned in one horizontal dashboard
-  width: 1056
-  height: 448
+  alt: Blue point panel and orange replacement bar panel aligned in one horizontal dashboard
+  width: 1176
+  height: 488
   thumbnail: /assets/images/program-composition-thumb.png
   thumbnail_width: 640
-  thumbnail_height: 271
-  caption: Immutable child programs placed in one concrete parent Canvas.
-  summary: Combine complete charts, edit their layout, and replace one stable slot.
+  thumbnail_height: 266
+  caption: The stable main slot retains points while the detail slot shows its replacement bars.
+  summary: Compare distinct child panels, edit their layout, and replace one stable slot.
   actions: hconcat · editCompositionLayout · replaceCompositionChild
   url: /api/composition/
   home_group: essentials

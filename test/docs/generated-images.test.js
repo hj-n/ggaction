@@ -4,6 +4,8 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
+import { createCanvas, loadImage } from "@napi-rs/canvas";
+
 import {
   buildDocImageManifest,
   chartImages,
@@ -79,4 +81,46 @@ test("keeps generated mark-selection tutorial images canonical and fresh", () =>
   assert.match(tutorial, /filterMarks/);
   assert.match(tutorial, /selectMarks/);
   assert.match(tutorial, /highlightMarks/);
+});
+
+test("keeps the composition asset legible as two distinct child panels", async () => {
+  const definition = chartImages.find(chart => chart.id === "program-composition");
+  const program = definition.createProgram();
+  const childCanvases = program.graphicSpec.objects.canvas.children.map(
+    id => program.graphicSpec.objects[id]
+  );
+  assert.deepEqual(
+    childCanvases.map(canvas => canvas.properties.background),
+    ["#eff6ff", "#fff7ed"]
+  );
+  assert.deepEqual(
+    childCanvases.map(canvas => canvas.children
+      .map(id => program.graphicSpec.objects[id])
+      .find(graphic => graphic.type === "text")?.properties.text),
+    ["Observed points", "Replacement bars"]
+  );
+  assert.equal(
+    Object.values(program.graphicSpec.objects).some(graphic => graphic.type === "circle"),
+    true
+  );
+  assert.equal(
+    Object.values(program.graphicSpec.objects).some(graphic => graphic.type === "rect"),
+    true
+  );
+
+  const image = await loadImage(path.join(
+    root,
+    "docs/assets/images/program-composition.png"
+  ));
+  const canvas = createCanvas(image.width, image.height);
+  const context = canvas.getContext("2d");
+  context.drawImage(image, 0, 0);
+  const pixel = (x, y) => [...context.getImageData(x, y, 1, 1).data];
+  assert.deepEqual(pixel(30, 450), [239, 246, 255, 255]);
+  assert.deepEqual(pixel(1140, 450), [255, 247, 237, 255]);
+  assert.deepEqual(pixel(608, 244), [255, 255, 255, 255]);
+
+  const catalog = read("docs/_data/chart_examples.yml");
+  assert.match(catalog, /alt: Blue point panel and orange replacement bar panel/);
+  assert.match(catalog, /stable main slot retains points/);
 });
