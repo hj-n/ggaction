@@ -19,6 +19,9 @@ Apply these instructions to architecture records, implementation plans, roadmaps
 - Verify that the action calls displayed by roadmap variant metadata match the user-facing program's top-level trace; gallery code must not drift into an unexecutable description.
 - Preserve `agent_docs/INITIAL_ARCHITECTURE.md` as an initial design record unless the user explicitly asks to revise it; it does not need to mirror every later implementation decision.
 - Keep historical design references distinct from documentation of the current behavior.
+- Dispatch protected release workflows from the exact annotated tag ref, never from a branch while synthesizing
+  `GITHUB_REF`. Gate evidence must identify the canonical-runtime artifact that the publish job will reuse; a locally
+  packed archive with identical extracted files is not byte-level evidence for a cross-platform registry artifact.
 
 ## Action Contract Catalog
 

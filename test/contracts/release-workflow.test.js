@@ -8,6 +8,7 @@ test("keeps publishing manual, immutable-tag-bound, protected, and non-concurren
   assert.match(workflow, /^\s{2}workflow_dispatch:/m);
   assert.doesNotMatch(workflow, /^\s{2}(push|release):/m);
   assert.match(workflow, /ref: \$\{\{ inputs\.tag \}\}/);
+  assert.match(workflow, /test "\$GITHUB_REF" = "refs\/tags\/\$RELEASE_TAG"/);
   assert.match(workflow, /git cat-file -t "refs\/tags\/\$RELEASE_TAG"/);
   assert.match(workflow, /git rev-parse "refs\/tags\/\$RELEASE_TAG\^\{commit\}"/);
   assert.match(workflow, /environment:\s*\n\s+name: npm-release/);
@@ -35,8 +36,7 @@ test("qualifies, retains, verifies, and publishes one exact artifact", () => {
     "npm run test:docs:browser"
   ]) assert.match(workflow, new RegExp(command.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   assert.match(workflow, /node scripts\/release-candidate\.js "\$RELEASE_TAG"/);
-  assert.equal((workflow.match(/EFFECTIVE_RELEASE_REF: refs\/tags\/\$\{\{ inputs\.tag \}\}/g) ?? []).length, 2);
-  assert.equal((workflow.match(/GITHUB_REF="\$EFFECTIVE_RELEASE_REF"/g) ?? []).length, 2);
+  assert.doesNotMatch(workflow, /EFFECTIVE_RELEASE_REF|GITHUB_REF="\$EFFECTIVE/);
   assert.match(workflow, /actions\/upload-artifact@v4/);
   assert.match(workflow, /release-candidate\.js --verify/);
   assert.match(workflow, /npm publish "\$TARBALL" --access public --tag latest/);
