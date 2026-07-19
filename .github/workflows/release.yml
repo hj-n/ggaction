@@ -52,10 +52,11 @@ jobs:
         run: |
           npm run contracts:catalog:check
           npm run docs:signatures
+          npm run docs:capabilities
           npm run docs:images
           npm run docs:llms
           npm run test:docs
-          git diff --exit-code -- docs/reference/actions.md docs/assets/images/manifest.json docs/llms-full.txt
+          git diff --exit-code -- docs/reference/actions.md docs/assets/images/manifest.json docs/llms.txt docs/llms-full.txt
       - name: Run unit, acceptance, and contract tests
         run: npm test
       - name: Set up the coverage and documentation runtime

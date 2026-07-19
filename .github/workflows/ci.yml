@@ -73,10 +73,6 @@ jobs:
 
   documentation:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
@@ -92,15 +88,11 @@ jobs:
         with:
           ruby-version: "3.2.6"
           bundler-cache: true
-      - name: Verify generated documentation artifacts
+      - name: Verify release-scoped documentation sources
         run: |
-          npm run docs:signatures
-          npm run docs:images
-          npm run docs:llms
+          npm run docs:signatures:check
+          npm run docs:capabilities:check
           npm run test:docs
-          git diff --exit-code -- docs/reference/actions.md docs/assets/images/manifest.json docs/llms.txt docs/llms-full.txt
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
       - name: Build documentation with Jekyll
         run: npm run docs:build
       - name: Check built documentation
