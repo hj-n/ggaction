@@ -165,3 +165,56 @@ jobs:
           else
             gh release create "$RELEASE_TAG" --verify-tag --title "ggaction $VERSION" --notes-file "$NOTES"
           fi
+
+  pages-build:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out the approved tag
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+      - name: Verify the documentation source commit
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: test "$(git rev-parse HEAD)" = "$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")"
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Set up the documentation runtime
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2.6"
+          bundler-cache: true
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Build the exact release documentation
+        run: npm run docs:build
+      - name: Check the built documentation
+        run: npm run test:docs:built
+      - name: Upload the GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  pages-deploy:
+    needs: pages-build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy the approved release documentation
+        id: deployment
+        uses: actions/deploy-pages@v4
