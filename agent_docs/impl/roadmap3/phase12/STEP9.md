@@ -6,7 +6,7 @@
 - [x] Target `ggaction/ggaction`과 관리자 권한 확인
 - [x] Actions, environments, ruleset, Pages와 release 권한 inventory
 - [x] npm trusted publisher의 current repository binding 확인
-- [ ] Transfer 후 canonical Pages URL 결정
+- [x] Transfer 후 canonical Pages URL 결정
 - [ ] Transfer/rollback/redirect checklist와 Gate C 승인
 
 Organization이 생성되기 전에는 transfer mutation을 시도하지 않는다.
@@ -63,6 +63,10 @@ redirect하지 않는다. 현재 repository에는 own custom domain이 없으므
 3. **`https://hyeonword.com/ggaction/` 유지.** Organization repository와 personal Pages
    deployment target을 분리하는 cross-repository deployment/credential 구조가 필요하다. 이 구조는
    release process에 불필요한 결합을 추가하므로 권장하지 않는다.
+
+결정: `https://ggaction.github.io/ggaction/`를 canonical Pages URL로 사용한다. Repository
+이름은 package identity와 같은 `ggaction`으로 유지하고 organization-site repository인
+`ggaction.github.io`로 rename하지 않는다.
 
 ## Gate C execution checklist
 
