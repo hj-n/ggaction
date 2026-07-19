@@ -1662,23 +1662,37 @@ src/
 │  ├─ boxPlots/        box option/target resolution, wrapped components와 materialization orchestration
 │  ├─ coordinates/     coordinate authoring
 │  ├─ data/            source/derived data actions
-│  ├─ encodings/       position, color, stroke-dash, ranged, atomic encoding actions
+│  ├─ encodings/       channel registrar와 encoding orchestration
+│  │  ├─ color/    categorical/continuous color policy, layout과 action assembly
+│  │  └─ position/ channel resolution, mark policy dispatch와 semantic application
 │  ├─ errorBars/       rule-based interval aggregate와 cap components
 │  ├─ errorBands/      ranged-area interval aggregate orchestration
 │  ├─ intervals/       interval composite source/channel/scale inference
 │  ├─ guides/          axes, grids, categorical/continuous/size legends와 aggregate guides
+│  │  └─ polar/axes/ Polar axis registrar boundary
 │  ├─ marks/           mark별 directory entry, action ownership과 shared lifecycle
 │  ├─ primitives/      editSemantic/createGraphics/editGraphics와 stateful semantic validation
 │  ├─ regression/      regression aggregate, component actions와 inference policy
 │  ├─ scales/          semantic scale create/resolve/materialize
+│  │  └─ consumers/ common consumer discovery, mark family과 series layout policy
 │  └─ titles/          chart title actions
 ├─ core/               action-free ChartProgram, action wrapper, immutable ownership, empty specs
+│  ├─ programState.js immutable spec/context/trace transition
+│  ├─ compositionState.js child program과 composition transition
+│  ├─ materializationState.js resolved scale/config transition
 │  └─ vocabulary.js    implemented mark/channel/legend closed vocabulary
 ├─ grammar/            pure Grammar-of-Graphics/statistical/schema calculations
-│  └─ bars/            bar grain policy와 aggregate 계산
+│  ├─ bars/            bar grain policy와 aggregate 계산
+│  ├─ facets/          facet dependency, scale resolution과 guide plan
+│  ├─ regression/      parameter validation, model fitting과 derived rows
+│  ├─ scales/          scale definition, validation, resolution과 mapping
+│  └─ statistics/      shared statistical kernels
 ├─ layout/             Canvas/plot bounds와 deterministic text layout
 ├─ materialization/    mark completeness policy와 cross-cutting dependency plan
-│  └─ bars/            bar completeness와 concrete rectangle 계산
+│  ├─ bars/            bar completeness와 concrete rectangle 계산
+│  ├─ facetGuides/     legacy categorical, preparation과 placement stages
+│  ├─ marks/           capability registry와 rematerialization policies
+│  └─ scaleGuideDependencies.js scale-to-guide dependency descriptors
 ├─ renderers/          Canvas primitive renderer와 PNG adapter
 ├─ selectors/          named semantic resource lookup
 └─ theme/              shared built-in visual token
@@ -1707,6 +1721,32 @@ action module과 registrar를 가진다.
 Composite domain action도 registrar에 구현을 두지 않는다. Regression은 target/group inference,
 band·line component action, top-level orchestration을 별도 module로 유지하고 `index.js`는 등록과
 re-export만 담당한다.
+
+Core state transition은 상태 소유권을 기준으로 나눈다. `programState.js`는 spec,
+context와 trace, `compositionState.js`는 child/composition, `materializationState.js`는
+resolved scale과 graphical authoring config를 소유한다. `core/ChartProgram.js`는 이 transition을
+조립하는 runtime class boundary이며 각 상태 규칙을 다시 구현하지 않는다.
+
+File/directory가 같은 module name을 동시에 소유하지 않는다. Scale, facet, regression,
+position, color와 Polar axis처럼 하위 module을 가진 family는 directory `index.js`를 canonical
+internal entry로 사용한다. Consumer는 family 내부 file이 아니라 이 entry를 import한다.
+
+Shared statistical formula는 domain-specific module에 복제하지 않는다. Confidence interval과
+regression이 공유하는 Student t kernel은 `grammar/statistics/studentT.js`가 소유하고,
+각 domain wrapper는 input contract과 결과 interpretation만 소유한다. Regression family의
+parameter validation, model fitting, derived-row assembly도 각각 분리되어 pure dependency direction을 유지한다.
+
+Materialization의 cross-cutting policy도 descriptor owner와 consumer executor를 나눈다.
+`materialization/marks/` 는 mark capability와 rematerialization policy,
+`scaleGuideDependencies.js`는 scale이 어떤 guide에 영향을 주는지,
+`actions/scales/consumers/`는 실제 consumer discovery와 family dispatch를 소유한다. Facet guide는
+legacy categorical compatibility, child preparation, final placement의 세 stage로 분리하되 한
+public composition flow에서 순서대로 실행된다.
+
+Renderer boundary는 이 Phase에서 추가 abstraction을 생성하지 않았다. Canvas primitive
+dispatch와 PNG adapter가 이미 `graphicSpec`-only contract과 package export boundary를 명확히
+유지했기 때문이다. 책임이 충분히 단일하면 no-op review를 허용하고, 단지 대칭적인
+directory 구조를 만들기 위한 분할은 하지 않는다.
 
 Guide module은 concrete recipe 기준으로 나눈다. Continuous legend의 공통 validation/layout
 utility, gradient strip recipe, opacity symbol recipe를 분리하며, quantitative size legend는 generic

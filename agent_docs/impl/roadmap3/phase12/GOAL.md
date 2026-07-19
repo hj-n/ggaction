@@ -9,7 +9,7 @@
 - [x] STEP 5 — Scale consumer와 materialization policy 정리
 - [x] STEP 6 — Guide, layout와 facet composition 정리
 - [x] STEP 7 — Renderer와 source package boundary 정리
-- [ ] STEP 8 — Comprehensive integration과 Gate B
+- [x] STEP 8 — Comprehensive integration과 Gate B 준비
 - [ ] STEP 9 — GitHub organization/transfer preflight
 - [ ] STEP 10 — Repository transfer와 Gate C
 - [ ] STEP 11 — `0.0.4` release candidate, release-only docs와 Gate D
