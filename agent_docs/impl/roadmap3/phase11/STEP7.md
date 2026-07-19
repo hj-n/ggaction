@@ -5,9 +5,9 @@
 - [x] Composition representative asset 기준선 확인
 - [x] 두 child와 replacement slot을 식별할 수 있는 fixture 구현
 - [x] Docs image와 thumbnail semantic/visual 회귀 추가
-- [ ] 전체 normal, coverage, package, browser, render와 docs 검증
-- [ ] Finding별 결과표, semver 영향과 재평가 우선순위 기록
-- [ ] Roadmap 3 Phase 11 closeout
+- [x] 전체 normal, coverage, package, browser, render와 docs 검증
+- [x] Finding별 결과표, semver 영향과 재평가 우선순위 기록
+- [x] Roadmap 3 Phase 11 closeout
 
 Composition runtime을 변경하지 않고 대표 program과 asset이 parent/child 구조를 전달하도록 개선한다. 마지막에는
 8개 finding을 fixed, partial 또는 blocked로 분류하고 exact 검증 명령과 다음 배포의 재평가 범위를 기록한다.
@@ -29,3 +29,18 @@ Composition runtime을 변경하지 않고 대표 program과 asset이 parent/chi
 - `npm run test:charts -- chart:program-composition`: 2개 통과
 - `node scripts/run-tests.js render chart:program-composition`: 1개 통과
 - `npm run test:docs -- generated-images`: 3개 통과
+
+## 전체 검증
+
+- `npm test`: 1,541개 통과
+- `npm run test:coverage`: line 94.88%, branch 90.16%, function 98.53%; critical floor 52개 통과
+- `npm run test:package`: 실제 생성 tarball의 Node, extension, PNG, strict TypeScript, tutorial consumer를 포함한
+  9개 소비 경로 통과
+- `npm run test:browser`: 29개 통과
+- `npm run test:render`: 113개 PNG와 Roadmap 2/3 gallery 통과
+- `npm run test:docs`: 27개 통과
+- `docs:signatures:check`, `docs:capabilities:check`, `contracts:catalog:check`, `package:check` 통과
+- GitHub CI run `29670231627`: Node 20/22/24 package matrix, normal/browser/render, coverage와 Ruby 3.2
+  documentation build/browser job 모두 통과
+
+Finding별 원인, 회귀와 호환성 판단은 [`REPORT.md`](REPORT.md)에 정리한다.
