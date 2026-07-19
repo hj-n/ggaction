@@ -8,6 +8,8 @@ All notable changes to `ggaction` are recorded in this file.
 
 - Normalized numeric Canvas font weights before rendering so valid intermediate values such as `650` retain normal
   text geometry in both Browser Canvas and Node PNG output.
+- Applied right categorical legend offsets from the plot boundary consistently during creation and focused layout
+  edits, including labels, titles, and optional backgrounds.
 
 ## [0.0.3] - 2026-07-19
 

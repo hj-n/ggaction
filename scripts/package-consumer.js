@@ -135,6 +135,36 @@ async function testNodeConsumer(directory) {
       output: ${JSON.stringify(fontWeightOutput)}
     });
 
+    const legendBase = chart()
+      .createCanvas({
+        width: 720,
+        height: 620,
+        margin: { top: 180, right: 220, bottom: 180, left: 220 }
+      })
+      .createData({ values: [
+        { x: 1, y: 4, group: "Alpha" },
+        { x: 2, y: 6, group: "Beta" }
+      ] })
+      .createPointMark()
+      .encodeX({ field: "x" })
+      .encodeY({ field: "y" })
+      .encodeColor({ field: "group" });
+    const nearLegend = legendBase.createLegend({
+      position: "right",
+      offset: 8,
+      border: true
+    });
+    const farLegend = legendBase.createLegend({
+      position: "right",
+      offset: 80,
+      border: true
+    });
+    const editedLegend = nearLegend.editLegendLayout({ offset: 80 });
+    const legendX = candidate => Object.entries(candidate.graphicSpec.objects)
+      .find(([id]) => id.endsWith("LegendTitle"))?.[1].properties.x;
+    assert.equal(legendX(farLegend) - legendX(nearLegend), 72);
+    assert.deepEqual(editedLegend.graphicSpec, farLegend.graphicSpec);
+
     class ConsumerProgram extends ChartProgram {}
     const passthrough = action(
       { op: "passthrough", description: "Return one extension program." },
@@ -292,6 +322,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
       "extension",
       "png",
       "numeric-font-weight",
+      "right-categorical-legend-offset",
       "typescript",
       "private-export-rejection"
     ]

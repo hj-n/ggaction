@@ -293,7 +293,7 @@ function buildGuides({
 
 function buildLegend(target, domain, title, colors) {
   const plotRight = target.width - target.margin.right;
-  const x = plotRight + 30;
+  const x = plotRight + 8;
   return {
     domain,
     title,

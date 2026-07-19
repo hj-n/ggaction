@@ -382,7 +382,9 @@ export function resolveLayout(program, config) {
   const count = config.domain.length;
   const width = symbolWidth(config);
   if (config.position === "right") {
-    const symbolX = Array(count).fill(bounds.x + bounds.width + 30);
+    const symbolX = Array(count).fill(
+      bounds.x + bounds.width + config.offset
+    );
     const itemY = Array.from(
       { length: count },
       (_, index) => bounds.y + 52 + index * config.itemGap

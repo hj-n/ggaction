@@ -246,7 +246,7 @@ test("collects grouped bar axes, grid, and right legend", () => {
   );
   assert.equal(
     program.graphicSpec.objects.colorLegendSymbols.items[0].properties.x,
-    610
+    588
   );
   assert.equal(
     graphicDrawOrder(program).indexOf("horizontalGridLines") <
@@ -276,11 +276,11 @@ test("forwards grouped guide options, supports opt-out, and rematerializes", () 
   );
   assert.equal(
     before.graphicSpec.objects.colorLegendSymbols.items[0].properties.x,
-    610
+    588
   );
   assert.equal(
     after.graphicSpec.objects.colorLegendSymbols.items[0].properties.x,
-    710
+    688
   );
   assert.notEqual(
     before.graphicSpec.objects.xAxisLabels.items[0].properties.x,

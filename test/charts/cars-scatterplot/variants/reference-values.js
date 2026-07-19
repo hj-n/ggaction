@@ -263,7 +263,7 @@ export function createShapeVocabularyPrimitiveValues(cars) {
   const selected = selectShapeRows(baseline);
   const pointArea = Math.PI * 7 ** 2;
   const legendArea = Math.PI * 5 ** 2;
-  const legendX = 645;
+  const legendX = 623;
   const legendStartY = 82;
   const legendGap = 24;
   return Object.freeze({
@@ -279,7 +279,7 @@ export function createShapeVocabularyPrimitiveValues(cars) {
       })
     )),
     legend: Object.freeze({
-      title: Object.freeze({ x: 640, y: 50, text: "Shape" }),
+      title: Object.freeze({ x: 618, y: 50, text: "Shape" }),
       symbols: Object.freeze(POINT_SHAPES.map((shape, index) =>
         createShapeGraphic(shape, {
           x: legendX,
@@ -291,7 +291,7 @@ export function createShapeVocabularyPrimitiveValues(cars) {
         })
       )),
       labels: Object.freeze(POINT_SHAPES.map((shape, index) => ({
-        x: 660,
+        x: 638,
         y: legendStartY + index * legendGap,
         text: shape
       })))
@@ -313,9 +313,9 @@ export function createCategoricalPalettePrimitiveValues(cars) {
       baseline.validCars.map(row => SET2_ORIGIN_COLORS[row.Origin])
     ),
     legend: Object.freeze({
-      title: Object.freeze({ x: 640, y: 50, text: "Origin" }),
+      title: Object.freeze({ x: 618, y: 50, text: "Origin" }),
       symbols: Object.freeze(domain.map((value, index) => ({
-        x: 640,
+        x: 618,
         y: itemStartY + index * itemGap,
         width: 14,
         height: 12,
@@ -324,7 +324,7 @@ export function createCategoricalPalettePrimitiveValues(cars) {
         strokeWidth: 0.5
       }))),
       labels: Object.freeze(domain.map((value, index) => ({
-        x: 662,
+        x: 640,
         y: itemStartY + 6 + index * itemGap,
         text: value
       })))

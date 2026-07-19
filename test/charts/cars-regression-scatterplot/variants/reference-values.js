@@ -49,21 +49,22 @@ function translateSymbol(symbol, delta) {
 export function createLeftLegendPrimitiveValues(cars) {
   const chart = createCarsRegressionScatterplotValues(cars, LAYOUT);
   const sourceOriginX = chart.legends.origin.title.x;
-  const delta = LEGEND.originX - sourceOriginX;
+  const originDelta = LEGEND.originX - sourceOriginX;
+  const sizeDelta = LEGEND.originX - chart.legends.size.title.x;
   const originItems = chart.legends.origin.items.map(item => ({
     ...item,
     line: {
       ...item.line,
-      x1: item.line.x1 + delta,
-      x2: item.line.x2 + delta
+      x1: item.line.x1 + originDelta,
+      x2: item.line.x2 + originDelta
     },
-    symbol: translateSymbol(item.symbol, delta),
-    label: { ...item.label, x: item.label.x + delta }
+    symbol: translateSymbol(item.symbol, originDelta),
+    label: { ...item.label, x: item.label.x + originDelta }
   }));
   const sizeItems = chart.legends.size.items.map(item => ({
     ...item,
-    symbol: { ...item.symbol, x: item.symbol.x + delta },
-    label: { ...item.label, x: item.label.x + delta }
+    symbol: { ...item.symbol, x: item.symbol.x + sizeDelta },
+    label: { ...item.label, x: item.label.x + sizeDelta }
   }));
 
   return Object.freeze({

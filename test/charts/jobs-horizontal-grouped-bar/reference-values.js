@@ -157,7 +157,7 @@ export function createHorizontalGroupedBarValues(
     label: String(value),
     position: bounds.y + (index + 0.5) * categoryStep
   }));
-  const legendX = bounds.x + bounds.width + 30;
+  const legendX = bounds.x + bounds.width + 8;
   const legendY = bounds.y + 20;
 
   return deepFreeze({

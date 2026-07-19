@@ -253,7 +253,7 @@ export function createJobsGroupedBarValues(
     position: mapValue(value, yScale.domain, yRange),
     label: formatTick(value, yScale.step)
   }));
-  const legendX = bounds.x + bounds.width + 30;
+  const legendX = bounds.x + bounds.width + 8;
   const legendItems = groups.map((group, index) => ({
     label: group,
     color: COLORS[index % COLORS.length],

@@ -764,7 +764,8 @@ export function createCarsRegressionScatterplotValues(
     position: mapValue(value, yDomain, yRange),
     label: String(value)
   }));
-  const originLegendX = bounds.x + bounds.width + 30;
+  const originLegendX = bounds.x + bounds.width + 8;
+  const sizeLegendX = bounds.x + bounds.width + 30;
   const originLegendItems = groupDomain.map((group, index) => {
     const y = bounds.y + 52 + index * 28;
     const radius = Math.sqrt(64 / Math.PI);
@@ -843,14 +844,14 @@ export function createCarsRegressionScatterplotValues(
     return {
       value,
       symbol: {
-        x: originLegendX + 16,
+        x: sizeLegendX + 16,
         y,
         radius: Math.sqrt(area / Math.PI),
         fill: "#94a3b8",
         opacity: 0.7
       },
       label: {
-        x: originLegendX + 44,
+        x: sizeLegendX + 44,
         y,
         text: String(+value.toPrecision(3))
       }
@@ -940,7 +941,7 @@ export function createCarsRegressionScatterplotValues(
         items: originLegendItems
       },
       size: {
-        title: { x: originLegendX, y: sizeLegendTitleY, text: yField },
+        title: { x: sizeLegendX, y: sizeLegendTitleY, text: yField },
         items: sizeLegendItems
       }
     }

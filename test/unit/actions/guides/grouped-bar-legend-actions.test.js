@@ -38,7 +38,7 @@ test("creates an inferred right-side grouped bar legend", () => {
   });
   assert.deepEqual(symbols.map(child => child.properties), [
     {
-      x: 610,
+      x: 588,
       y: 86,
       width: 14,
       height: 12,
@@ -47,7 +47,7 @@ test("creates an inferred right-side grouped bar legend", () => {
       strokeWidth: 0.5
     },
     {
-      x: 610,
+      x: 588,
       y: 114,
       width: 14,
       height: 12,
@@ -57,9 +57,9 @@ test("creates an inferred right-side grouped bar legend", () => {
     }
   ]);
   assert.deepEqual(labels.map(child => child.properties.text), ["men", "women"]);
-  assert.deepEqual(labels.map(child => child.properties.x), [632, 632]);
+  assert.deepEqual(labels.map(child => child.properties.x), [610, 610]);
   assert.deepEqual(labels.map(child => child.properties.y), [92, 120]);
-  assert.equal(program.graphicSpec.objects.colorLegendTitle.properties.x, 610);
+  assert.equal(program.graphicSpec.objects.colorLegendTitle.properties.x, 588);
   assert.equal(program.graphicSpec.objects.colorLegendTitle.properties.y, 60);
   assert.equal(before.semanticSpec.guides.legend, undefined);
 });
@@ -70,11 +70,11 @@ test("rematerializes grouped legend layout after Canvas edits", () => {
 
   assert.equal(
     after.graphicSpec.objects.colorLegendSymbols.items[0].properties.x,
-    710
+    688
   );
   assert.equal(
     before.graphicSpec.objects.colorLegendSymbols.items[0].properties.x,
-    610
+    588
   );
 });
 

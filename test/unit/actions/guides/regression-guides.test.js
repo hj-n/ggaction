@@ -98,7 +98,7 @@ test("rematerializes both legend blocks after Canvas edits", () => {
   const after = before.editCanvas({ width: 860 });
   assert.equal(
     after.graphicSpec.objects.seriesLegendSymbolLines.items[0].properties.x1,
-    700
+    678
   );
   assert.equal(
     after.graphicSpec.objects.sizeLegendSymbols.items[0].properties.x,

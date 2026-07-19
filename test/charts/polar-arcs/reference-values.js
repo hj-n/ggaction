@@ -225,7 +225,7 @@ function perimeterLabel(frame, theta, radius, text) {
 }
 
 function legendLayout(target, domain, colors, title) {
-  const symbolX = target.width - target.margin.right + 30;
+  const symbolX = target.width - target.margin.right + 8;
   const titleY = target.margin.top + 20;
   const itemY = domain.map((_, index) => titleY + 32 + index * 28);
   return Object.freeze({

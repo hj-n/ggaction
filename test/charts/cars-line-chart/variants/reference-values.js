@@ -272,10 +272,10 @@ function createSeriesValues(
       y: Object.freeze({ domain: yDomain, range: yRange })
     }),
     legend: Object.freeze({
-      x1: 580,
-      x2: 612,
-      labelX: 622,
-      titleX: 580,
+      x1: 558,
+      x2: 590,
+      labelX: 600,
+      titleX: 558,
       titleY: 100,
       itemY: legendY
     })

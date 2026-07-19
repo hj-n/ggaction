@@ -164,15 +164,15 @@ export function createCarsLineChartValues(cars, { width, height, margin }) {
     label: String(value)
   }));
   const legend = {
-    title: { x: width - margin.right + 30, y: bounds.y + 20, text: "Origin" },
+    title: { x: width - margin.right + 8, y: bounds.y + 20, text: "Origin" },
     items: series.map((item, index) => ({
       origin: item.origin,
       color: item.color,
       strokeDash: item.strokeDash,
-      x1: width - margin.right + 30,
-      x2: width - margin.right + 62,
+      x1: width - margin.right + 8,
+      x2: width - margin.right + 40,
       y: bounds.y + 52 + index * 28,
-      labelX: width - margin.right + 72
+      labelX: width - margin.right + 50
     }))
   };
   const title = {

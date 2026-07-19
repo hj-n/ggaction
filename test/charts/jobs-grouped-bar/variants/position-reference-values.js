@@ -79,7 +79,7 @@ function aggregate(rows, categoryField) {
 }
 
 function legend(groups, bounds, title = "sex") {
-  const x = bounds.x + bounds.width + 30;
+  const x = bounds.x + bounds.width + 8;
   return {
     title: { x, y: bounds.y + 20, text: title },
     items: groups.map((group, index) => ({

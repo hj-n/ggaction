@@ -74,18 +74,18 @@ test("creates a combined series legend from color and strokeDash", () => {
     child => child.properties
   ), [
     {
-      x1: 310,
+      x1: 288,
       y1: 72,
-      x2: 342,
+      x2: 320,
       y2: 72,
       stroke: "#4c78a8",
       strokeWidth: 2,
       strokeDash: []
     },
     {
-      x1: 310,
+      x1: 288,
       y1: 100,
-      x2: 342,
+      x2: 320,
       y2: 100,
       stroke: "#f58518",
       strokeWidth: 2,
@@ -305,9 +305,9 @@ test("creates and renders an optional background before legend content", () => {
   assert.deepEqual(program.graphicSpec.objects.seriesLegendBackground, {
     type: "rect",
     properties: {
-      x: 298,
+      x: 276,
       y: 28,
-      width: 90,
+      width: 112,
       height: 84,
       fill: "white",
       stroke: "#94a3b8",
@@ -332,15 +332,15 @@ test("rematerializes legend and border layout after Canvas edits", () => {
 
   assert.equal(
     program.graphicSpec.objects.seriesLegendSymbols.items[0].properties.x1,
-    410
+    388
   );
   assert.equal(
     program.graphicSpec.objects.seriesLegendBackground.properties.x,
-    398
+    376
   );
   assert.equal(
     program.graphicSpec.objects.seriesLegendBackground.properties.width,
-    90
+    112
   );
   assert.equal(
     program.trace.children.at(-1).children.filter(
@@ -350,7 +350,7 @@ test("rematerializes legend and border layout after Canvas edits", () => {
   );
   assert.equal(
     before.graphicSpec.objects.seriesLegendSymbols.items[0].properties.x1,
-    310
+    288
   );
 });
 

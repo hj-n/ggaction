@@ -42,7 +42,7 @@ test("creates an inferred right-side histogram color legend", () => {
     labels.map(child => child.properties.text),
     ["USA", "Europe", "Japan"]
   );
-  assert.equal(program.graphicSpec.objects.colorLegendTitle.properties.x, 322);
+  assert.equal(program.graphicSpec.objects.colorLegendTitle.properties.x, 300);
   assert.equal(program.graphicSpec.objects.colorLegendTitle.properties.y, 100);
   assert.equal(symbols.every((child, index) =>
     child.properties.y === 126 + index * 28

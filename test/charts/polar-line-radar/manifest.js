@@ -109,10 +109,10 @@ export const visualVariants = Object.freeze([
     visualSignature: {
       inkRatio: { min: 0.0388, max: 0.0475 },
       inkBounds: {
-        x: 39.5,
-        y: 41.25,
-        width: 671,
-        height: 555,
+        x: 42.5,
+        y: 41.5,
+        width: 638.5,
+        height: 554.5,
         tolerance: { x: 3.5, y: 1, width: 11, height: 1 }
       }
     },
@@ -143,10 +143,10 @@ export const visualVariants = Object.freeze([
     visualSignature: {
       inkRatio: { min: 0.0264, max: 0.0324 },
       inkBounds: {
-        x: 71.5,
+        x: 78,
         y: 80,
-        width: 670.5,
-        height: 528.5,
+        width: 638.5,
+        height: 528,
         tolerance: { x: 7, y: 1, width: 10.5, height: 1 }
       }
     },

@@ -180,7 +180,7 @@ export function createGapminderErrorBandReferenceValues(gapminder, {
       label: String(value)
     })
   ));
-  const legendSymbolX = bounds.x + bounds.width + 30;
+  const legendSymbolX = bounds.x + bounds.width + 8;
   const legendItems = Object.freeze(clusters.map((cluster, index) => {
     const centerY = bounds.y + 52 + index * 28;
     return Object.freeze({

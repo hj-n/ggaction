@@ -4,7 +4,7 @@
 
 - [x] STEP 1 — 평가 기준선, finding 우선순위와 재현 절차 확정
 - [x] STEP 2 — F-012 Node PNG numeric `fontWeight`
-- [ ] STEP 3 — F-013 right categorical legend `offset`
+- [x] STEP 3 — F-013 right categorical legend `offset`
 - [ ] STEP 4 — F-015 sequential `palette.count`와 F-014 strict TypeScript extension
 - [ ] STEP 5 — F-008 LLM route와 fragment integrity
 - [ ] STEP 6 — F-009 tutorial portability와 F-010 capability drift
