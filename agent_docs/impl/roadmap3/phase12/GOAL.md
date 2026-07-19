@@ -3,8 +3,8 @@
 ## 진행 상태
 
 - [x] STEP 1 — Source baseline audit와 Gate A refactor contract
-- [ ] STEP 2 — Core program state와 immutable transition 분리
-- [ ] STEP 3 — Grammar ownership, statistics와 충돌 경로 정리
+- [x] STEP 2 — Core program state와 immutable transition 분리
+- [x] STEP 3 — Grammar ownership, statistics와 충돌 경로 정리
 - [ ] STEP 4 — Mark와 encoding orchestration 정리
 - [ ] STEP 5 — Scale consumer와 materialization policy 정리
 - [ ] STEP 6 — Guide, layout와 facet composition 정리
