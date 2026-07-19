@@ -551,7 +551,14 @@ test("keeps concise and full LLM documentation synchronized", async () => {
   assert.match(index, /vertical or horizontal categorical and\s+quantitative pairings/);
   assert.doesNotMatch(index, /Polar line\/arc marks/);
   assert.equal(index, await buildConciseLlmDocumentation());
-  assert.match(read(".github/workflows/ci.yml"), /docs\/llms\.txt docs\/llms-full\.txt/);
+  assert.doesNotMatch(
+    read(".github/workflows/ci.yml"),
+    /npm run docs:(?:signatures|capabilities|images|llms)\s*$/m
+  );
+  assert.match(
+    read(".github/workflows/release.yml"),
+    /npm run docs:llms/
+  );
   assert.equal(
     read("docs/llms-full.txt"),
     await buildFullLlmDocumentation()
