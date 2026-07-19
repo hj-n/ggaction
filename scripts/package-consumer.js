@@ -4,6 +4,8 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { createCanvas, loadImage } from "@napi-rs/canvas";
+
 import { createPackageArtifact } from "./package-artifact.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
@@ -53,6 +55,7 @@ export async function preparePackageConsumer({
 
 async function testNodeConsumer(directory) {
   const output = path.join(directory, "chart.png");
+  const fontWeightOutput = path.join(directory, "font-weight.png");
   const source = `
     import assert from "node:assert/strict";
     import { chart, hconcat, render, vconcat } from "ggaction";
@@ -116,6 +119,22 @@ async function testNodeConsumer(directory) {
     assert.equal(result.width, 160);
     assert.equal(result.height, 120);
 
+    const fontWeightProgram = chart()
+      .createCanvas({ width: 160, height: 80, margin: 12 })
+      .createData({ id: "labels", values: [{ x: 0.5, y: 0.5 }] })
+      .createTextMark({
+        id: "labels",
+        data: "labels",
+        text: "Sample",
+        fontSize: 12,
+        fontWeight: 650
+      })
+      .encodeX({ target: "labels", field: "x", scale: { domain: [0, 1] } })
+      .encodeY({ target: "labels", field: "y", scale: { domain: [0, 1] } });
+    await renderToPNG(fontWeightProgram, {
+      output: ${JSON.stringify(fontWeightOutput)}
+    });
+
     class ConsumerProgram extends ChartProgram {}
     const passthrough = action(
       { op: "passthrough", description: "Return one extension program." },
@@ -130,6 +149,26 @@ async function testNodeConsumer(directory) {
   run(process.execPath, [file], directory);
   const bytes = await readFile(output);
   if (bytes.length === 0) throw new Error("Installed PNG consumer wrote an empty file.");
+
+  const fontWeightImage = await loadImage(fontWeightOutput);
+  const canvas = createCanvas(fontWeightImage.width, fontWeightImage.height);
+  const context = canvas.getContext("2d");
+  context.drawImage(fontWeightImage, 0, 0);
+  const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+  let firstInkY = Infinity;
+  let lastInkY = -1;
+  for (let y = 0; y < canvas.height; y += 1) {
+    for (let x = 0; x < canvas.width; x += 1) {
+      const offset = (y * canvas.width + x) * 4;
+      if (pixels[offset] < 250 || pixels[offset + 1] < 250 || pixels[offset + 2] < 250) {
+        firstInkY = Math.min(firstInkY, y);
+        lastInkY = Math.max(lastInkY, y);
+      }
+    }
+  }
+  if (lastInkY === -1 || lastInkY - firstInkY + 1 > 24) {
+    throw new Error("Installed PNG consumer rendered an oversized numeric font weight.");
+  }
 }
 
 async function testTypeScriptConsumer(directory) {
@@ -248,6 +287,13 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
     package: `${result.installedManifest.name}@${result.installedManifest.version}`,
     source: packageSpec ?? result.artifact.filename,
     ...(result.artifact ? { sha256: result.artifact.sha256 } : {}),
-    checks: ["node", "extension", "png", "typescript", "private-export-rejection"]
+    checks: [
+      "node",
+      "extension",
+      "png",
+      "numeric-font-weight",
+      "typescript",
+      "private-export-rejection"
+    ]
   }, null, 2)}\n`);
 }

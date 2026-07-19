@@ -190,6 +190,9 @@ axis throws before anything changes.
 | `ticksAndLabels` | `{ count?, values?, ticks?, labels? }` |
 | `title` | `{ text?, at?, offset?, rotation?, color?, fontSize?, fontFamily?, fontWeight? }` |
 
+Axis label and title weights follow the shared
+[Canvas font-weight policy](./marks/text.md#font-weights).
+
 Use either `ticksAndLabels` or the independent `ticks`/`labels` options in one
 call. The action validates the entire request before editing any component, so
 an invalid later component cannot leave a partial result.

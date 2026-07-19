@@ -3134,6 +3134,15 @@ Creation options are `id`, `data`, `text`, `fill`, `opacity`, `fontSize`,
 `fontFamily`, `fontWeight`, `align`, `baseline`, `rotation`, `dx`, and `dy`.
 The `text` option is constant-content shorthand.
 
+## Font weights
+
+`fontWeight` accepts a non-empty CSS weight string or a finite number. To keep
+Browser Canvas and Node PNG output consistent, numeric values are rounded to the
+nearest 100 and clamped to the backend-safe `100`–`900` range before rendering.
+For example, `650` renders as `700`. The authored value remains unchanged in the
+program state. Titles, facet headers, legends, and Cartesian or Polar axis text
+use this same renderer policy.
+
 ## `encodeText({ target?, field?, value?, format? })`
 
 Provide exactly one of `field` or `value`. `format` defaults to `"auto"`; fixed
@@ -4338,6 +4347,7 @@ program.createTitle({
 | `subtitleStyle` | text style object | default subtitle style |
 
 Both style objects accept `color`, `fontSize`, `fontFamily`, and `fontWeight`.
+Numeric weights follow the shared [Canvas font-weight policy](./marks/text.md#font-weights).
 The defaults are:
 
 ```javascript
@@ -4663,6 +4673,9 @@ const emphasized = faceted.editFacetHeaders({
   offset: 10
 });
 ```
+
+Facet-header weights follow the shared
+[Canvas font-weight policy](./marks/text.md#font-weights).
 
 ## Edit the layout
 
@@ -6441,6 +6454,9 @@ axis throws before anything changes.
 | `ticksAndLabels` | `{ count?, values?, ticks?, labels? }` |
 | `title` | `{ text?, at?, offset?, rotation?, color?, fontSize?, fontFamily?, fontWeight? }` |
 
+Axis label and title weights follow the shared
+[Canvas font-weight policy](./marks/text.md#font-weights).
+
 Use either `ticksAndLabels` or the independent `ticks`/`labels` options in one
 call. The action validates the entire request before editing any component, so
 an invalid later component cannot leave a partial result.
@@ -6948,6 +6964,9 @@ partial nested merges, legend-kind compatibility, layout errors, and
 rematerialization behavior remain identical. At least one component option is
 required.
 
+Legend label and title weights follow the shared
+[Canvas font-weight policy](../marks/text.md#font-weights).
+
 ## Removing a legend
 
 `removeLegend()` removes every legend block associated with one mark, including
@@ -7376,6 +7395,9 @@ program.editXAxisTitle({ text: "Engine horsepower", at: "start" });
 Default title placement is centered. x uses offset 42 and rotation 0. y uses
 offset 52 with rotation `-Math.PI / 2` on the left or `Math.PI / 2` on the
 right. An explicit rotation remains unchanged when the position is edited.
+
+Cartesian and Polar axis typography follows the shared
+[Canvas font-weight policy](../api/marks/text.md#font-weights).
 
 Top/right components extend outward and require sufficient top/right Canvas
 margin. Component edits and Canvas/scale rematerialization preserve the chosen

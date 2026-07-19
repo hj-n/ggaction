@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+import { createCanvas as createNativeCanvas } from "@napi-rs/canvas";
+
 import { ChartProgram } from "../../../src/ChartProgram.js";
 import { render } from "../../../src/renderers/canvas/index.js";
 import { drawTextGraphic } from "../../../src/renderers/canvas/text.js";
@@ -82,6 +84,87 @@ test("renders a text collection with distributed positions and values", () => {
     findCanvasCalls(context, "fillText").map(call => call.args[0]),
     ["A", "B"]
   );
+});
+
+test("normalizes numeric font weights before assigning the Canvas font", () => {
+  const cases = [
+    [600, "600 12px sans-serif"],
+    [650, "700 12px sans-serif"],
+    [700, "700 12px sans-serif"],
+    [1, "100 12px sans-serif"],
+    [1000, "900 12px sans-serif"],
+    ["normal", "normal 12px sans-serif"],
+    ["bold", "bold 12px sans-serif"]
+  ];
+
+  for (const [fontWeight, expected] of cases) {
+    const context = createMockCanvasContext();
+    drawTextGraphic(context, "label", {
+      type: "text",
+      properties: {
+        x: 10,
+        y: 10,
+        text: "Sample",
+        fill: "#000000",
+        fontSize: 12,
+        fontFamily: "sans-serif",
+        fontWeight,
+        textAlign: "left",
+        textBaseline: "top"
+      }
+    });
+    assert.equal(findCanvasCalls(context, "fillText")[0].font, expected);
+  }
+});
+
+test("keeps numeric font-weight glyphs bounded on the Node Canvas backend", () => {
+  const surfaces = [
+    "text-mark",
+    "title",
+    "facet-header",
+    "categorical-legend",
+    "cartesian-axis-label",
+    "polar-axis-label"
+  ];
+
+  for (const surface of surfaces) {
+    for (const fontWeight of [650, 700]) {
+      const canvas = createNativeCanvas(160, 48);
+      const context = canvas.getContext("2d");
+      drawTextGraphic(context, surface, {
+        type: "text",
+        properties: {
+          x: 4,
+          y: 4,
+          text: surface,
+          fill: "#000000",
+          fontSize: 12,
+          fontFamily: "sans-serif",
+          fontWeight,
+          textAlign: "left",
+          textBaseline: "top"
+        }
+      });
+
+      const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+      let firstInkY = Infinity;
+      let lastInkY = -1;
+      for (let y = 0; y < canvas.height; y += 1) {
+        for (let x = 0; x < canvas.width; x += 1) {
+          if (pixels[(y * canvas.width + x) * 4 + 3] > 0) {
+            firstInkY = Math.min(firstInkY, y);
+            lastInkY = Math.max(lastInkY, y);
+          }
+        }
+      }
+
+      assert.notEqual(lastInkY, -1, `${surface} ${fontWeight} should draw ink`);
+      assert.ok(
+        lastInkY - firstInkY + 1 <= 24,
+        `${surface} ${fontWeight} glyph height should stay within 2× fontSize`
+      );
+    }
+  }
 });
 
 test("draws a prepared text collection through the primitive drawer", () => {

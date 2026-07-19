@@ -381,6 +381,25 @@ test("keeps tutorial modules runnable from a repository checkout", () => {
   );
 });
 
+test("documents one shared numeric font-weight rendering policy", () => {
+  const text = read("docs/api/marks/text.md");
+  assert.match(text, /^## Font weights$/m);
+  assert.match(text, /rounded to the\s+nearest 100/);
+  assert.match(text, /`650` renders as `700`/);
+  assert.match(text, /Titles, facet headers, legends, and Cartesian or Polar axis text/);
+
+  for (const page of [
+    "docs/api/titles.md",
+    "docs/api/legends/editing.md",
+    "docs/api/axes.md",
+    "docs/advanced/axis-components.md",
+    "docs/api/composition.md"
+  ]) {
+    assert.match(read(page), /font-weight policy/);
+    assert.match(read(page), /#font-weights/);
+  }
+});
+
 test("indexes documentation headings for section search", () => {
   const index = read("docs/_includes/search-index.html");
   const indexPage = read("docs/search-index.json");

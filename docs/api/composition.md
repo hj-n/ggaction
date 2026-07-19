@@ -175,6 +175,9 @@ const emphasized = faceted.editFacetHeaders({
 });
 ```
 
+Facet-header weights follow the shared
+[Canvas font-weight policy](./marks/text.md#font-weights).
+
 ## Edit the layout
 
 ```javascript

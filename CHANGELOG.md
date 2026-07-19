@@ -4,6 +4,11 @@ All notable changes to `ggaction` are recorded in this file.
 
 ## Unreleased
 
+### Fixed
+
+- Normalized numeric Canvas font weights before rendering so valid intermediate values such as `650` retain normal
+  text geometry in both Browser Canvas and Node PNG output.
+
 ## [0.0.3] - 2026-07-19
 
 ### Added

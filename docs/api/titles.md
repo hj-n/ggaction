@@ -41,6 +41,7 @@ program.createTitle({
 | `subtitleStyle` | text style object | default subtitle style |
 
 Both style objects accept `color`, `fontSize`, `fontFamily`, and `fontWeight`.
+Numeric weights follow the shared [Canvas font-weight policy](./marks/text.md#font-weights).
 The defaults are:
 
 ```javascript

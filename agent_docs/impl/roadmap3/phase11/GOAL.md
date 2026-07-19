@@ -3,7 +3,7 @@
 ## 진행 상태
 
 - [x] STEP 1 — 평가 기준선, finding 우선순위와 재현 절차 확정
-- [ ] STEP 2 — F-012 Node PNG numeric `fontWeight`
+- [x] STEP 2 — F-012 Node PNG numeric `fontWeight`
 - [ ] STEP 3 — F-013 right categorical legend `offset`
 - [ ] STEP 4 — F-015 sequential `palette.count`와 F-014 strict TypeScript extension
 - [ ] STEP 5 — F-008 LLM route와 fragment integrity

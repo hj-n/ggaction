@@ -2,6 +2,18 @@ import { requireFiniteProperty, requireStringProperty } from "./validation.js";
 import { validateConcreteGraphicProperties } from
   "../../grammar/schemas/concreteGraphic.js";
 
+const MIN_CANVAS_NUMERIC_FONT_WEIGHT = 100;
+const MAX_CANVAS_NUMERIC_FONT_WEIGHT = 900;
+
+export function normalizeCanvasFontWeight(fontWeight) {
+  if (typeof fontWeight !== "number") return fontWeight;
+  const rounded = Math.round(fontWeight / 100) * 100;
+  return Math.min(
+    MAX_CANVAS_NUMERIC_FONT_WEIGHT,
+    Math.max(MIN_CANVAS_NUMERIC_FONT_WEIGHT, rounded)
+  );
+}
+
 function drawText(context, child, collectionId) {
   const properties = child.properties ?? {};
   const graphicId = child.id ?? collectionId;
@@ -73,7 +85,8 @@ function drawText(context, child, collectionId) {
   try {
     context.fillStyle = fill;
     context.globalAlpha = opacity;
-    context.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+    const canvasFontWeight = normalizeCanvasFontWeight(fontWeight);
+    context.font = `${canvasFontWeight} ${fontSize}px ${fontFamily}`;
     context.textAlign = textAlign;
     context.textBaseline = textBaseline;
     context.translate(x, y);

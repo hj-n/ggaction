@@ -60,6 +60,9 @@ partial nested merges, legend-kind compatibility, layout errors, and
 rematerialization behavior remain identical. At least one component option is
 required.
 
+Legend label and title weights follow the shared
+[Canvas font-weight policy](../marks/text.md#font-weights).
+
 ## Removing a legend
 
 `removeLegend()` removes every legend block associated with one mark, including

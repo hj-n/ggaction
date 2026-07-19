@@ -144,6 +144,9 @@ Default title placement is centered. x uses offset 42 and rotation 0. y uses
 offset 52 with rotation `-Math.PI / 2` on the left or `Math.PI / 2` on the
 right. An explicit rotation remains unchanged when the position is edited.
 
+Cartesian and Polar axis typography follows the shared
+[Canvas font-weight policy](../api/marks/text.md#font-weights).
+
 Top/right components extend outward and require sufficient top/right Canvas
 margin. Component edits and Canvas/scale rematerialization preserve the chosen
 edge, values, formats, and appearance.
