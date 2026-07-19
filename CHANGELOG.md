@@ -14,6 +14,8 @@ All notable changes to `ggaction` are recorded in this file.
   top-level palette shorthands, nested ranges, encodings, direct scales, and scale edits.
 - Preserved concrete `ChartProgram` subclasses in the TypeScript signature of wrapped extension actions and added
   a strict NodeNext declaration-merging authoring pattern.
+- Routed every selective `llms.txt` target to a deployed HTML page, stabilized action fragments, and made built-site
+  checks validate both HTTP targets and DOM IDs.
 
 ## [0.0.3] - 2026-07-19
 

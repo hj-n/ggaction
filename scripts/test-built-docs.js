@@ -73,6 +73,12 @@ function routeFor(file) {
   return `${baseUrl}${relative}`;
 }
 
+function llmReferences(source) {
+  return [...source.matchAll(
+    /\.\/(?:llms-full\.txt|(?:[A-Za-z0-9_-]+\/)*(?:#[A-Za-z0-9_-]+)?)/g
+  )].map(match => match[0]);
+}
+
 async function assertResponsiveContainment(page, file, width) {
   const response = await page.goto(routeFor(file), { waitUntil: "networkidle" });
   assert.equal(response.ok(), true, `${file} at ${width}px`);
@@ -166,6 +172,26 @@ try {
   await desktop.keyboard.press("Escape");
   assert.equal(await search.getAttribute("aria-expanded"), "false");
   assert.deepEqual(desktopErrors, []);
+
+  const llmsResponse = await fetch(`${baseUrl}llms.txt`);
+  assert.equal(llmsResponse.ok, true);
+  const llmsTargets = llmReferences(await llmsResponse.text());
+  assert.equal(llmsTargets.length, 40);
+  for (const target of llmsTargets) {
+    const url = new URL(target, `${baseUrl}llms.txt`);
+    const fragment = url.hash.slice(1);
+    url.hash = "";
+    const targeted = await fetch(url);
+    assert.equal(targeted.ok, true, target);
+    if (fragment.length > 0) {
+      const html = await targeted.text();
+      assert.match(
+        html,
+        new RegExp(`\\sid=["']${fragment.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&")}["']`),
+        target
+      );
+    }
+  }
 
   await desktop.goto(`${baseUrl}tutorials/`, { waitUntil: "networkidle" });
   assert.equal(

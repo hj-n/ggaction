@@ -6,6 +6,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import {
+  buildConciseLlmDocumentation,
   buildFullLlmDocumentation,
   sanitizeMarkdown
 } from "../../scripts/generate-llm-docs.js";
@@ -71,14 +72,16 @@ function chartExampleCatalog() {
 }
 
 function headingIds(markdown) {
-  return new Set([...markdown.matchAll(/^#{1,6}\s+(.+)$/gm)].map(match =>
-    match[1]
+  return new Set([...markdown.matchAll(/^#{1,6}\s+(.+)$/gm)].map(match => {
+    const explicit = match[1].match(/\{#([A-Za-z][A-Za-z0-9_-]*)\}\s*$/)?.[1];
+    if (explicit !== undefined) return explicit;
+    return match[1]
       .replace(/`/g, "")
       .toLowerCase()
       .replace(/[^a-z0-9\s-]/g, "")
       .trim()
-      .replace(/\s+/g, "-")
-  ));
+      .replace(/\s+/g, "-");
+  }));
 }
 
 function actionFlow(source, start) {
@@ -522,13 +525,20 @@ test("classifies every declared ChartProgram action in the reference", async () 
 test("keeps concise and full LLM documentation synchronized", async () => {
   const index = read("docs/llms.txt");
   const lines = index.trim().split("\n");
+  const targets = [...index.matchAll(
+    /\.\/(?:llms-full\.txt|(?:[A-Za-z0-9_-]+\/)*(?:#[A-Za-z0-9_-]+)?)/g
+  )].map(match => match[0]);
 
   assert.equal(lines.length < 100, true);
   assert.match(index, /\.\/llms-full\.txt/);
-  assert.match(index, /\.\/reference\/actions\.md/);
+  assert.match(index, /\.\/reference\/actions\/#chart-authoring-api/);
+  assert.doesNotMatch(index, /\.md(?:#|\b)/);
+  assert.equal(targets.length, 40);
   assert.match(index, /vertical or\s+horizontal grouped statistical\/explicit error bands/);
   assert.match(index, /vertical or horizontal categorical and\s+quantitative pairings/);
   assert.doesNotMatch(index, /Polar line\/arc marks/);
+  assert.equal(index, await buildConciseLlmDocumentation());
+  assert.match(read(".github/workflows/ci.yml"), /docs\/llms\.txt docs\/llms-full\.txt/);
   assert.equal(
     read("docs/llms-full.txt"),
     await buildFullLlmDocumentation()

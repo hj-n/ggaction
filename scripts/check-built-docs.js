@@ -21,21 +21,47 @@ function stripSiteBase(value) {
 
 function targetPath(source, value) {
   const local = stripSiteBase(value);
+  if (local.length === 0) return source;
   if (local.startsWith("/")) return path.join(siteRoot, local);
   return path.resolve(path.dirname(source), decodeURIComponent(local));
+}
+
+const idCache = new Map();
+
+async function documentIds(file) {
+  if (!idCache.has(file)) {
+    const html = await readFile(file, "utf8");
+    idCache.set(file, new Set(
+      [...html.matchAll(/\sid=["']([^"']+)["']/g)].map(match => match[1])
+    ));
+  }
+  return idCache.get(file);
 }
 
 async function assertTarget(source, value) {
   if (
     !value ||
-    value.startsWith("#") ||
     /^(?:https?:|mailto:|data:|javascript:)/.test(value)
   ) return;
 
   let target = targetPath(source, value);
-  if (value.split(/[?#]/)[0].endsWith("/")) target = path.join(target, "index.html");
+  const [reference, fragment] = value.split("#");
+  if (reference.endsWith("/")) target = path.join(target, "index.html");
   assert.equal(target.startsWith(siteRoot), true, `${source} escapes the built site: ${value}`);
   await assert.doesNotReject(access(target), `${source} links to missing ${value}`);
+  if (fragment !== undefined) {
+    assert.equal(
+      (await documentIds(target)).has(decodeURIComponent(fragment)),
+      true,
+      `${source} links to missing fragment ${value}`
+    );
+  }
+}
+
+function llmReferences(source) {
+  return [...source.matchAll(
+    /\.\/(?:llms-full\.txt|(?:[A-Za-z0-9_-]+\/)*(?:#[A-Za-z0-9_-]+)?)/g
+  )].map(match => match[0]);
 }
 
 const builtFiles = await files(siteRoot);
@@ -56,6 +82,11 @@ for (const file of htmlFiles) {
     await assertTarget(file, match[1]);
   }
 }
+
+const llmsFile = path.join(siteRoot, "llms.txt");
+const llmsTargets = llmReferences(await readFile(llmsFile, "utf8"));
+assert.equal(llmsTargets.length, 40, "Expected every selective LLM documentation target.");
+for (const target of llmsTargets) await assertTarget(llmsFile, target);
 
 const searchIndex = JSON.parse(await readFile(path.join(siteRoot, "search-index.json"), "utf8"));
 assert.equal(searchIndex.length > 40, true, "Expected every titled page in search.");

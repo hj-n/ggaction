@@ -44,7 +44,7 @@ bars or `encodeYOffset` for horizontal bars internally.
 Observed interval bars instead combine one categorical axis with `encodeYRange`
 or `encodeXRange`.
 
-## `editBarMark({ target?, fill?, opacity?, stroke?, strokeWidth? })`
+## `editBarMark({ target?, fill?, opacity?, stroke?, strokeWidth? })` {#edit-bar-mark}
 
 ```javascript
 program.editBarMark({

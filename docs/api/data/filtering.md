@@ -65,7 +65,7 @@ program.filterData({
 });
 ```
 
-## `filterMarks({ target?, ...selector })`
+## `filterMarks({ target?, ...selector })` {#filter-marks}
 
 Filter existing final mark items without changing the source dataset.
 `filterMarks` uses the same selector grammar as `selectMarks`, infers the current

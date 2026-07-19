@@ -43,7 +43,7 @@ and observed unique x order. Linear and polynomial output includes fixed
 `__regression_ci_lower` / `__regression_ci_upper` fields; LOESS is line-only.
 Source values remain unchanged.
 
-## `createIntervalData({ id, source?, field, groupBy?, center?, extent?, level?, as? })`
+## `createIntervalData({ id, source?, field, groupBy?, center?, extent?, level?, as? })` {#create-interval-data}
 
 Create immutable grouped interval-summary rows independently from an error-bar
 mark.

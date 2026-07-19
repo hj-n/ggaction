@@ -1183,7 +1183,7 @@ layers normally owned by `createRegression`.
 does not materialize values. Its public `DatasetTransform` union supports
 `filter`, `regression`, `density`, and `interval` objects. A single object or
 empty array is invalid. See the runnable filter example and exact transform
-requirements in [Source and derived data](../api/data/source-and-derived.md#createderiveddata-id-source-transform).
+requirements in [Source and derived data](../api/data/source-and-derived.md#create-derived-data).
 
 ### Complete single-channel axes
 

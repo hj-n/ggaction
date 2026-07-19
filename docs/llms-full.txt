@@ -1699,8 +1699,8 @@ data-cardinality changes. It does not store stale item IDs.
 
 - Serve the repository root and open `examples/mark-selection/`.
 - Read the complete [selector and appearance tables](../api/appearance/selection-and-highlighting.md#mark-selection-and-highlighting).
-- Use [`filterMarks`](../api/data/filtering.md#filtermarks-target-selector) when matching items should replace the target mark's data.
-- Use [`editBarMark`](../api/marks/bar.md#editbarmark-target-fill-opacity-stroke-strokewidth) for whole-bar appearance rather than selected items.
+- Use [`filterMarks`](../api/data/filtering.md#filter-marks) when matching items should replace the target mark's data.
+- Use [`editBarMark`](../api/marks/bar.md#edit-bar-mark) for whole-bar appearance rather than selected items.
 
 <!-- Source: /recipes/ -->
 
@@ -2427,7 +2427,7 @@ The most recently created dataset becomes the default for `createPointMark`,
 `createLineMark`, or `createBarMark`. Creating data records semantic state only
 and produces no graphics.
 
-## `createDerivedData({ id, source, transform })`
+## `createDerivedData({ id, source, transform })` {#create-derived-data}
 
 `createDerivedData` is the advanced provenance-assembly action behind the
 higher-level data actions. `transform` must be a non-empty array of supported
@@ -2545,7 +2545,7 @@ program.filterData({
 });
 ```
 
-## `filterMarks({ target?, ...selector })`
+## `filterMarks({ target?, ...selector })` {#filter-marks}
 
 Filter existing final mark items without changing the source dataset.
 `filterMarks` uses the same selector grammar as `selectMarks`, infers the current
@@ -2633,7 +2633,7 @@ and observed unique x order. Linear and polynomial output includes fixed
 `__regression_ci_lower` / `__regression_ci_upper` fields; LOESS is line-only.
 Source values remain unchanged.
 
-## `createIntervalData({ id, source?, field, groupBy?, center?, extent?, level?, as? })`
+## `createIntervalData({ id, source?, field, groupBy?, center?, extent?, level?, as? })` {#create-interval-data}
 
 Create immutable grouped interval-summary rows independently from an error-bar
 mark.
@@ -3040,7 +3040,7 @@ bars or `encodeYOffset` for horizontal bars internally.
 Observed interval bars instead combine one categorical axis with `encodeYRange`
 or `encodeXRange`.
 
-## `editBarMark({ target?, fill?, opacity?, stroke?, strokeWidth? })`
+## `editBarMark({ target?, fill?, opacity?, stroke?, strokeWidth? })` {#edit-bar-mark}
 
 ```javascript
 program.editBarMark({
@@ -3824,7 +3824,7 @@ parameter revision are not part of the current edit action.
 ## Related
 
 [Error-bar tutorial](../tutorials/error-bar.md) ·
-[Interval data](./data/statistical-transforms.md#createintervaldata-id-source-field-groupby-center-extent-level-as) ·
+[Interval data](./data/statistical-transforms.md#create-interval-data) ·
 [Rule marks](./marks.md) · [Guides](./guides.md)
 
 <!-- Source: /api/error-bands/ -->
@@ -8701,7 +8701,7 @@ layers normally owned by `createRegression`.
 does not materialize values. Its public `DatasetTransform` union supports
 `filter`, `regression`, `density`, and `interval` objects. A single object or
 empty array is invalid. See the runnable filter example and exact transform
-requirements in [Source and derived data](../api/data/source-and-derived.md#createderiveddata-id-source-transform).
+requirements in [Source and derived data](../api/data/source-and-derived.md#create-derived-data).
 
 ### Complete single-channel axes
 

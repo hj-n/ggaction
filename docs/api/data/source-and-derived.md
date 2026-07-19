@@ -36,7 +36,7 @@ The most recently created dataset becomes the default for `createPointMark`,
 `createLineMark`, or `createBarMark`. Creating data records semantic state only
 and produces no graphics.
 
-## `createDerivedData({ id, source, transform })`
+## `createDerivedData({ id, source, transform })` {#create-derived-data}
 
 `createDerivedData` is the advanced provenance-assembly action behind the
 higher-level data actions. `transform` must be a non-empty array of supported

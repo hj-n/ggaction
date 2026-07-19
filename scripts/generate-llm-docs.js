@@ -1,5 +1,5 @@
 import { access, readFile, writeFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { relative as relativePath, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const docsRoot = fileURLToPath(new URL("../docs/", import.meta.url));
@@ -10,6 +10,7 @@ const siteConfig = fileURLToPath(
   new URL("../docs/_config.yml", import.meta.url)
 );
 const output = fileURLToPath(new URL("../docs/llms-full.txt", import.meta.url));
+const conciseOutput = fileURLToPath(new URL("../docs/llms.txt", import.meta.url));
 
 function stripFrontMatter(markdown) {
   return markdown.replace(/^---\n[\s\S]*?\n---\n+/, "").trim();
@@ -43,6 +44,70 @@ async function pathForUrl(url) {
   }
 }
 
+function headingIds(markdown) {
+  return new Set([...markdown.matchAll(/^#{1,6}\s+(.+)$/gm)].map(match => {
+    const explicit = match[1].match(/\{#([A-Za-z][A-Za-z0-9_-]*)\}\s*$/)?.[1];
+    if (explicit !== undefined) return explicit;
+    return match[1]
+      .replace(/`/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .trim()
+      .replace(/\s+/g, "-");
+  }));
+}
+
+async function pageRegistry() {
+  const order = await readFile(pageOrder, "utf8");
+  const urls = [...order.matchAll(/^\s*url:\s+(\S+)\s*$/gm)]
+    .map(match => match[1]);
+  const routes = new Map();
+  for (const url of urls) {
+    const file = await pathForUrl(url);
+    const relative = relativePath(docsRoot, file).replaceAll("\\", "/");
+    routes.set(relative, url);
+  }
+  return { urls: new Set(urls), routes };
+}
+
+function routeToken(url) {
+  return url === "/" ? "./" : `.${url}`;
+}
+
+export async function buildConciseLlmDocumentation() {
+  const source = await readFile(conciseOutput, "utf8");
+  const registry = await pageRegistry();
+  const canonical = source.replace(
+    /\.\/([A-Za-z0-9_./-]+\.md)(#[A-Za-z0-9_-]+)?/g,
+    (match, relative, fragment = "") => {
+      const url = registry.routes.get(relative);
+      if (url === undefined) {
+        throw new Error(`LLM index references an unregistered page: ${relative}`);
+      }
+      return `${routeToken(url)}${fragment}`;
+    }
+  );
+  const targets = [...canonical.matchAll(
+    /\.\/(?:llms-full\.txt|(?:[A-Za-z0-9_-]+\/)*(?:#[A-Za-z0-9_-]+)?)/g
+  )].map(match => match[0]);
+
+  for (const target of targets) {
+    if (target === "./llms-full.txt") continue;
+    const [route, fragment] = target.split("#");
+    const url = route === "./" ? "/" : `/${route.slice(2)}`;
+    if (!registry.urls.has(url)) {
+      throw new Error(`LLM index references an unknown route: ${route}`);
+    }
+    if (fragment !== undefined) {
+      const markdown = await readFile(await pathForUrl(url), "utf8");
+      if (!headingIds(markdown).has(fragment)) {
+        throw new Error(`LLM index references a missing fragment: ${target}`);
+      }
+    }
+  }
+  return canonical;
+}
+
 export async function buildFullLlmDocumentation() {
   const order = await readFile(pageOrder, "utf8");
   const config = await readFile(siteConfig, "utf8");
@@ -68,8 +133,15 @@ export async function buildFullLlmDocumentation() {
 }
 
 export async function generateFullLlmDocumentation() {
-  await writeFile(output, await buildFullLlmDocumentation());
-  process.stdout.write("generated docs/llms-full.txt\n");
+  const [concise, full] = await Promise.all([
+    buildConciseLlmDocumentation(),
+    buildFullLlmDocumentation()
+  ]);
+  await Promise.all([
+    writeFile(conciseOutput, concise),
+    writeFile(output, full)
+  ]);
+  process.stdout.write("generated docs/llms.txt and docs/llms-full.txt\n");
 }
 
 if (
