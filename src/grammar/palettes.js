@@ -190,16 +190,14 @@ export function resolvePalette(value, domainCount) {
 }
 
 export function resolveContinuousPalette(value, count = 31) {
-  if (!Number.isInteger(count) || count < 2) {
+  const palette = normalizePalette(value);
+  const resolvedCount = palette.count ?? count;
+  if (!Number.isInteger(resolvedCount) || resolvedCount < 2) {
     throw new RangeError("Continuous palette count must be an integer of at least 2.");
   }
-  const palette = normalizePalette(value);
-  if (palette.count !== undefined) {
-    throw new Error("Continuous palette does not accept count.");
-  }
   const discrete = DISCRETE[palette.name];
-  if (discrete !== undefined) return discrete;
-  return resolvePalette({ ...palette, count }, count);
+  if (discrete !== undefined && palette.count === undefined) return discrete;
+  return resolvePalette({ ...palette, count: resolvedCount }, resolvedCount);
 }
 
 export function paletteFamily(name) {

@@ -337,7 +337,9 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 - `band`는 `paddingInner` 기본 `0`, `paddingOuter` 기본 `0`, `align` 기본 `0.5`; `point`는
   `padding` 기본 `0.5`, `align` 기본 `0.5`를 저장한다. Bandwidth는 band만 positive다.
 - `palette`는 sequential/discretized color range descriptor이며 explicit `range`와 mutually exclusive다.
-  `interpolate`는 sequential 전용이고 기본은 `"rgb"`다.
+  Sequential descriptor의 `count`는 2 이상의 gradient-stop count이며 top-level `palette`와
+  `range.palette`가 같은 validation과 resolution을 사용한다. `interpolate`는 sequential 전용이고
+  기본은 `"rgb"`다.
 - `unknown`은 direct unattached scale에서는 channel을 알 수 없으므로 그대로 저장한다. Consumer가 attach될 때
   concrete channel fallback validation과 supported item-grain policy를 적용한다.
 - Effect: semantic definition만 저장한다. equivalent repeated call은 idempotent, conflicting definition은 오류다.

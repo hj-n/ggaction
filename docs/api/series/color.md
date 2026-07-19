@@ -61,8 +61,10 @@ legend appearance remain unchanged.
 
 Named palettes use a frozen 68-name vocabulary. Categorical palettes keep their
 native order; `count` selects or deterministically cycles colors. Continuous,
-diverging, and cyclical palettes are sampled to the domain size unless `count`
-is supplied, and accept an optional two-value `extent` within `[0, 1]`.
+diverging, and cyclical palettes used for ordinal mappings are sampled to the
+domain size unless `count` is supplied. On a sequential scale, `count` must be
+at least `2` and controls the concrete gradient-stop count. Non-categorical
+palettes also accept an optional two-value `extent` within `[0, 1]`.
 
 ```javascript
 program.encodeColor({

@@ -31,9 +31,11 @@ Accepted names are fixed by the ggaction contract:
 
 `count` must be a positive integer. Categorical palettes use a prefix when the
 count is shorter and cycle deterministically when it is longer. Other families
-are sampled to `count`, or to the resolved domain size when omitted. `extent`
-is accepted only for non-categorical palettes and contains two distinct values
-within `[0, 1]`; descending values reverse the sampling direction. Scale
+used for an ordinal mapping are sampled to `count`, or to the resolved domain
+size when omitted. On a sequential scale, `count` must be at least `2` and sets
+the number of concrete gradient stops; omission uses the default stop count.
+`extent` is accepted only for non-categorical palettes and contains two distinct
+values within `[0, 1]`; descending values reverse the sampling direction. Scale
 `reverse` is applied afterward.
 
 The semantic scale stores the palette descriptor. Materialized scales, marks,
@@ -46,8 +48,10 @@ Quantitative or temporal point color uses `fieldType: "quantitative"` or
 `"temporal"` and an internal sequential scale. Aggregate bars support
 quantitative sequential color with one aggregate value per final rectangle.
 The default palette is
-`viridis`; an explicit palette may use `extent`, while an explicit range needs
-at least two colors. `interpolate` accepts `rgb`, `hsl`, `hsl-long`, `lab`,
+`viridis`; an explicit palette may use `count` and `extent`, while an explicit
+range needs at least two colors. `count` controls the stored gradient stops;
+the scale still interpolates continuously between them. `interpolate` accepts
+`rgb`, `hsl`, `hsl-long`, `lab`,
 `hcl`, `hcl-long`, `cubehelix`, or `cubehelix-long`. `clamp` and `reverse`
 affect both points and a connected gradient legend.
 
@@ -55,7 +59,10 @@ affect both points and a connected gradient legend.
 program.encodeColor({
   field: "Acceleration",
   fieldType: "quantitative",
-  scale: { palette: "viridis", interpolate: "rgb" }
+  scale: {
+    palette: { name: "viridis", count: 5 },
+    interpolate: "rgb"
+  }
 });
 ```
 

@@ -277,8 +277,10 @@ export function validateSequentialColorRange(value) {
     throw new TypeError("Sequential color range requires colors or a palette descriptor.");
   }
   const palette = normalizePalette(value.palette);
-  if (palette.count !== undefined) {
-    throw new Error("Continuous palette does not accept count.");
+  if (palette.count !== undefined && palette.count < 2) {
+    throw new RangeError(
+      "Sequential palette count must be an integer of at least 2."
+    );
   }
   return cloneAndFreeze({ palette });
 }

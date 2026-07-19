@@ -225,6 +225,17 @@ test("keeps the published documentation version aligned with the package", () =>
   );
 });
 
+test("documents sequential palette count consistently across scale surfaces", () => {
+  const overview = read("docs/api/scales.md");
+  const focused = read("docs/api/scales/continuous-color.md");
+  const encoding = read("docs/api/series/color.md");
+
+  assert.match(overview, /number of concrete gradient stops/);
+  assert.match(overview, /integer of at least `2`/);
+  assert.match(focused, /number of concrete gradient stops/);
+  assert.match(encoding, /controls the concrete gradient-stop count/);
+});
+
 test("keeps task pages visual and chart figures canonical", async () => {
   const catalog = chartExampleCatalog();
   const manifest = JSON.parse(read("docs/assets/images/manifest.json"));

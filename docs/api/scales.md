@@ -53,9 +53,13 @@ const program = chart().createScale({
   id: "temperature",
   type: "sequential",
   domain: [0, 100],
-  palette: "viridis"
+  palette: { name: "viridis", count: 5 }
 });
 ```
+
+For sequential scales, `count` is the number of concrete gradient stops and
+must be an integer of at least `2`. The same descriptor is accepted as
+`range: { palette: { name: "viridis", count: 5 } }`.
 
 The accepted types are `linear`, `log`, `pow`, `sqrt`, `symlog`, `time`,
 `band`, `point`, `ordinal`, `sequential`, `quantize`, `quantile`, and

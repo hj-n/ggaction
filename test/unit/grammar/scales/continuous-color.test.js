@@ -56,9 +56,13 @@ test("resolves every named palette for continuous use", () => {
     resolveContinuousPalette({ name: "viridis", extent: [1, 0] }, 3),
     ["#fde725", "#21918d", "#440154"]
   );
-  assert.throws(
-    () => resolveContinuousPalette({ name: "viridis", count: 3 }),
-    /does not accept count/
+  assert.deepEqual(
+    resolveContinuousPalette({ name: "viridis", count: 3 }),
+    ["#440154", "#21918d", "#fde725"]
+  );
+  assert.deepEqual(
+    resolveContinuousPalette({ name: "set2", count: 3 }),
+    ["#66c2a5", "#fc8d62", "#8da0cb"]
   );
 });
 
@@ -94,9 +98,13 @@ test("rejects invalid continuous color options", () => {
     () => validateSequentialColorRange(["not-a-color", "blue"]),
     /Unsupported continuous color/
   );
+  assert.deepEqual(
+    validateSequentialColorRange({ palette: { name: "viridis", count: 2 } }),
+    { palette: { name: "viridis", count: 2 } }
+  );
   assert.throws(
-    () => validateSequentialColorRange({ palette: { name: "viridis", count: 2 } }),
-    /does not accept count/
+    () => validateSequentialColorRange({ palette: { name: "viridis", count: 1 } }),
+    /at least 2/
   );
   assert.throws(
     () => mapSequentialColors([NaN], [0, 1], ["#000000", "#ffffff"]),

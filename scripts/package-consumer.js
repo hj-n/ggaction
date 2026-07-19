@@ -165,6 +165,36 @@ async function testNodeConsumer(directory) {
     assert.equal(legendX(farLegend) - legendX(nearLegend), 72);
     assert.deepEqual(editedLegend.graphicSpec, farLegend.graphicSpec);
 
+    const sequentialCount = chart()
+      .createCanvas({ width: 240, height: 160, margin: 30 })
+      .createData({ values: [
+        { x: 1, y: 2, value: 0 },
+        { x: 2, y: 4, value: 0.3 },
+        { x: 3, y: 6, value: 1 }
+      ] })
+      .createPointMark()
+      .encodeX({ field: "x" })
+      .encodeY({ field: "y" })
+      .encodeColor({
+        field: "value",
+        fieldType: "quantitative",
+        scale: { palette: { name: "viridis", count: 5 } }
+      });
+    assert.equal(sequentialCount.resolvedScales.color.range.length, 5);
+    const directSequentialCount = chart().createScale({
+      id: "temperature",
+      type: "sequential",
+      domain: [0, 1],
+      palette: { name: "viridis", count: 5 }
+    });
+    const nestedSequentialCount = chart().createScale({
+      id: "temperature",
+      type: "sequential",
+      domain: [0, 1],
+      range: { palette: { name: "viridis", count: 5 } }
+    });
+    assert.deepEqual(directSequentialCount.semanticSpec, nestedSequentialCount.semanticSpec);
+
     class ConsumerProgram extends ChartProgram {}
     const passthrough = action(
       { op: "passthrough", description: "Return one extension program." },
@@ -323,6 +353,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
       "png",
       "numeric-font-weight",
       "right-categorical-legend-offset",
+      "sequential-palette-count",
       "typescript",
       "private-export-rejection"
     ]

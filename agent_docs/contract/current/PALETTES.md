@@ -40,7 +40,8 @@ type Palette =
 - Continuous, diverging, and cyclical schemes are sampled as concrete colors for an ordinal domain. Without
   `count`, the resolved domain cardinality is used.
 - `count` is a positive integer. Categorical counts shorter than the native range select a prefix; longer counts
-  cycle deterministically.
+  cycle deterministically. Sequential scales require at least two and use it as the concrete gradient-stop count;
+  top-level `palette` and `range.palette` resolve identically.
 - `extent` is accepted only for non-categorical schemes. Its two endpoints are distinct finite values in
   `[0, 1]`; descending extent reverses sampling direction.
 - Scale `reverse` applies after palette resolution, including a descending extent, so two reversals intentionally
@@ -52,7 +53,8 @@ type Palette =
 ## Coverage
 
 - ✅ Covered: all 68 names, exact Set2 order, categorical and continuous family resolution.
-- ✅ Covered: count, extent, descending extent, invalid family options and frozen returned arrays.
+- ✅ Covered: ordinal and sequential count, top-level/range descriptor parity, extent, descending extent,
+  invalid family options and frozen returned arrays.
 - ✅ Covered: color encoding range conflict, ordinal cycling, scale reverse, point fill and legend parity.
 - Evidence: `test/unit/grammar/scales/palettes.test.js`,
   `test/unit/actions/encodings/color-encoding.test.js`, and Roadmap 2 cars scatterplot variants.
