@@ -6,7 +6,7 @@
 - [x] HTML과 LLM index가 공유하는 canonical route/slug owner 확정
 - [x] 모든 targeted route를 deployed artifact로 제공
 - [x] Built HTTP status와 fragment DOM 전수 회귀 추가
-- [ ] Clean built-site desktop/mobile 검증
+- [x] Clean built-site desktop/mobile 검증
 
 짧은 `llms.txt`는 selective retrieval index로 유지한다. 모든 target은 실제 배포 artifact에서 200을 반환하고,
 fragment가 있으면 HTML DOM의 실제 heading ID와 일치해야 한다.
@@ -22,4 +22,4 @@ fragment가 있으면 HTML DOM의 실제 heading ID와 일치해야 한다.
 - Built filesystem 검사는 모든 HTML link와 40개 LLM target의 file/fragment를 확인한다. Browser 검사는
   임시 HTTP server에서 같은 40개 target의 status와 DOM ID를 전수 확인한다.
 - 현재 공개 사이트의 새 route 집합은 40/40 HTTP 200이며, 전체 1,534개 source/docs test가 통과했다.
-  Clean Jekyll/browser 확인은 Ruby 3.2 GitHub documentation job에서 완료한다.
+  Ruby 3.2 GitHub documentation job과 Pages deployment도 `c1f949d`에서 통과했다.

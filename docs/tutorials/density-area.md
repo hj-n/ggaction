@@ -10,16 +10,25 @@ title: Density Area Chart Tutorial
 This chart estimates the distribution of car acceleration separately for each
 Origin. The source rows remain immutable; `encodeDensity` creates a named
 derived dataset and materializes one translucent, zero-baseline area per
-group. The complete repository-mode module below runs directly from the
-checkout; after npm publication, replace the relative import with `"ggaction"`.
-The repository contains a
+group. The complete module below uses the public npm package. The repository
+also contains a
 [runnable browser example](https://github.com/hj-n/ggaction/tree/main/examples/cars-density-area)
 and its [complete program](https://github.com/hj-n/ggaction/blob/main/examples/cars-density-area/program.js).
 
-```javascript
-import { chart, render } from "../../src/index.js";
+Start with the Vite project from [Getting Started](../getting-started.md), then
+place the tutorial dataset in Vite's public directory:
 
-const response = await fetch("../../data/cars.json");
+```bash
+mkdir -p public
+curl --fail --location https://raw.githubusercontent.com/hj-n/ggaction/main/data/cars.json --output public/cars.json
+```
+
+## Complete program
+
+```javascript
+import { chart, render } from "ggaction";
+
+const response = await fetch("/cars.json");
 if (!response.ok) throw new Error(`Failed to load cars: ${response.status}`);
 const cars = await response.json();
 

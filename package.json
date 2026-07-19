@@ -87,6 +87,7 @@
     "es-module-lexer": "^1.7.0",
     "gifenc": "^1.0.3",
     "playwright": "^1.61.1",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vite": "^6.4.3"
   }
 }

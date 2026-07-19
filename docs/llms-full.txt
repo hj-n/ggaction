@@ -229,16 +229,24 @@ than introducing a separate renderer path.
 
 ![Horsepower versus miles per gallon](../assets/images/cars-scatterplot.png)
 
-This tutorial uses the chart-authoring API directly from the repository build.
-After npm publication, only the import path changes to `"ggaction"`. The
-repository contains a
+This tutorial uses the public npm package. The repository also contains a
 [runnable browser example](https://github.com/hj-n/ggaction/tree/main/examples/cars-scatterplot)
 and its [canonical program](https://github.com/hj-n/ggaction/blob/main/examples/cars-scatterplot/program.js).
 
-```javascript
-import { chart, render } from "../../src/index.js";
+Start with the Vite project from [Getting Started](../getting-started.md), then
+place the tutorial dataset in Vite's public directory:
 
-const response = await fetch("../../data/cars.json");
+```bash
+mkdir -p public
+curl --fail --location https://raw.githubusercontent.com/hj-n/ggaction/main/data/cars.json --output public/cars.json
+```
+
+## Complete program
+
+```javascript
+import { chart, render } from "ggaction";
+
+const response = await fetch("/cars.json");
 if (!response.ok) throw new Error(`Failed to load cars: ${response.status}`);
 const cars = await response.json();
 const rows = cars.filter(
@@ -391,12 +399,21 @@ This tutorial maps car acceleration to angle, horsepower to distance from the
 center, and origin to color. The public angle unit is degrees: `0` points to 12
 o'clock and positive angles move clockwise.
 
+Start with the Vite project from [Getting Started](../getting-started.md), then
+place the tutorial dataset in Vite's public directory:
+
+```bash
+mkdir -p public
+curl --fail --location https://raw.githubusercontent.com/hj-n/ggaction/main/data/cars.json --output public/cars.json
+```
+
 ## Complete program
 
 ```javascript
 import { chart, render } from "ggaction";
 
-const response = await fetch("./cars.json");
+const response = await fetch("/cars.json");
+if (!response.ok) throw new Error(`Failed to load cars: ${response.status}`);
 const cars = await response.json();
 const rows = cars.filter(row =>
   Number.isFinite(row.Acceleration) &&
@@ -495,10 +512,21 @@ into a radar path.
 This chart orders years around a partial circle and maps life expectancy to
 radial distance.
 
+Start with the Vite project from [Getting Started](../getting-started.md), then
+place the tutorial dataset in Vite's public directory:
+
+```bash
+mkdir -p public
+curl --fail --location https://raw.githubusercontent.com/hj-n/ggaction/main/data/gapminder.json --output public/gapminder.json
+```
+
+## Complete program
+
 ```javascript
 import { chart, render } from "ggaction";
 
-const response = await fetch("./gapminder.json");
+const response = await fetch("/gapminder.json");
+if (!response.ok) throw new Error(`Failed to load gapminder data: ${response.status}`);
 const gapminder = await response.json();
 const countries = ["India", "Japan", "South Africa"];
 const rows = gapminder.filter(row =>
@@ -596,10 +624,21 @@ quantitative radius for rose charts and radial bars.
 The shortest donut flow needs a dataset, an arc mark with a nonzero inner
 radius, a count-based theta encoding, and color:
 
+Start with the Vite project from [Getting Started](../getting-started.md), then
+place the tutorial dataset in Vite's public directory:
+
+```bash
+mkdir -p public
+curl --fail --location https://raw.githubusercontent.com/hj-n/ggaction/main/data/cars.json --output public/cars.json
+```
+
+## Complete program
+
 ```javascript
 import { chart, render } from "ggaction";
 
-const response = await fetch("./cars.json");
+const response = await fetch("/cars.json");
+if (!response.ok) throw new Error(`Failed to load cars: ${response.status}`);
 const cars = await response.json();
 
 const program = chart()
@@ -746,15 +785,24 @@ const tighter = radialBars.editArcMark({
 ![Mean acceleration by year, grouped by origin](../assets/images/cars-line-chart.png)
 
 This chart shows mean acceleration over time for each origin. The complete
-repository-mode module below uses only the chart-authoring API. After npm
-publication, replace the relative import with `"ggaction"`. The repository contains a
+module below uses the public npm package. The repository also contains a
 [runnable browser example](https://github.com/hj-n/ggaction/tree/main/examples/cars-line-chart)
 and its [complete program](https://github.com/hj-n/ggaction/blob/main/examples/cars-line-chart/program.js).
 
-```javascript
-import { chart, render } from "../../src/index.js";
+Start with the Vite project from [Getting Started](../getting-started.md), then
+place the tutorial dataset in Vite's public directory:
 
-const response = await fetch("../../data/cars.json");
+```bash
+mkdir -p public
+curl --fail --location https://raw.githubusercontent.com/hj-n/ggaction/main/data/cars.json --output public/cars.json
+```
+
+## Complete program
+
+```javascript
+import { chart, render } from "ggaction";
+
+const response = await fetch("/cars.json");
 if (!response.ok) throw new Error(`Failed to load cars: ${response.status}`);
 const cars = await response.json();
 
@@ -895,16 +943,25 @@ program
 ![Displacement distribution grouped by origin](../assets/images/cars-histogram.png)
 
 This chart bins car displacement, counts the rows in each bin, and stacks those
-counts by origin. The complete repository-mode module uses only the
-chart-authoring API. After npm publication, replace the relative import with
-`"ggaction"`. The repository contains a
+counts by origin. The complete module uses the public npm package. The
+repository also contains a
 [runnable browser example](https://github.com/hj-n/ggaction/tree/main/examples/cars-histogram)
 and its [complete program](https://github.com/hj-n/ggaction/blob/main/examples/cars-histogram/program.js).
 
-```javascript
-import { chart, render } from "../../src/index.js";
+Start with the Vite project from [Getting Started](../getting-started.md), then
+place the tutorial dataset in Vite's public directory:
 
-const response = await fetch("../../data/cars.json");
+```bash
+mkdir -p public
+curl --fail --location https://raw.githubusercontent.com/hj-n/ggaction/main/data/cars.json --output public/cars.json
+```
+
+## Complete program
+
+```javascript
+import { chart, render } from "ggaction";
+
+const response = await fetch("/cars.json");
 if (!response.ok) throw new Error(`Failed to load cars: ${response.status}`);
 const cars = await response.json();
 
@@ -1009,15 +1066,24 @@ program
 
 This tutorial uses a grouped bar chart as one concrete bar-chart layout. It
 aggregates job percentages by year and places the mean for men and women side
-by side. The complete repository-mode module uses only the chart-authoring API.
-After npm publication, replace the relative import with `"ggaction"`. The repository contains a
+by side. The complete module uses the public npm package. The repository also contains a
 [runnable browser example](https://github.com/hj-n/ggaction/tree/main/examples/jobs-grouped-bar)
 and its [complete program](https://github.com/hj-n/ggaction/blob/main/examples/jobs-grouped-bar/program.js).
 
-```javascript
-import { chart, render } from "../../src/index.js";
+Start with the Vite project from [Getting Started](../getting-started.md), then
+place the tutorial dataset in Vite's public directory:
 
-const response = await fetch("../../data/jobs.json");
+```bash
+mkdir -p public
+curl --fail --location https://raw.githubusercontent.com/hj-n/ggaction/main/data/jobs.json --output public/jobs.json
+```
+
+## Complete program
+
+```javascript
+import { chart, render } from "ggaction";
+
+const response = await fetch("/jobs.json");
 if (!response.ok) throw new Error(`Failed to load jobs: ${response.status}`);
 const jobs = await response.json();
 
@@ -1133,16 +1199,25 @@ program
 
 This tutorial filters the cars dataset to Japan and the USA, maps point size to
 Acceleration and point color/shape to Origin, then adds one linear fit and 95%
-mean-response confidence band per Origin. The complete repository-mode module
-uses only the chart-authoring API. After npm publication, replace the relative
-import with `"ggaction"`. The repository contains a
+mean-response confidence band per Origin. The complete module uses the public
+npm package. The repository also contains a
 [runnable browser example](https://github.com/hj-n/ggaction/tree/main/examples/cars-regression-scatterplot)
 and its [complete program](https://github.com/hj-n/ggaction/blob/main/examples/cars-regression-scatterplot/program.js).
 
-```javascript
-import { chart, render } from "../../src/index.js";
+Start with the Vite project from [Getting Started](../getting-started.md), then
+place the tutorial dataset in Vite's public directory:
 
-const response = await fetch("../../data/cars.json");
+```bash
+mkdir -p public
+curl --fail --location https://raw.githubusercontent.com/hj-n/ggaction/main/data/cars.json --output public/cars.json
+```
+
+## Complete program
+
+```javascript
+import { chart, render } from "ggaction";
+
+const response = await fetch("/cars.json");
 if (!response.ok) throw new Error(`Failed to load cars: ${response.status}`);
 const cars = await response.json();
 
@@ -1245,16 +1320,25 @@ program
 This chart estimates the distribution of car acceleration separately for each
 Origin. The source rows remain immutable; `encodeDensity` creates a named
 derived dataset and materializes one translucent, zero-baseline area per
-group. The complete repository-mode module below runs directly from the
-checkout; after npm publication, replace the relative import with `"ggaction"`.
-The repository contains a
+group. The complete module below uses the public npm package. The repository
+also contains a
 [runnable browser example](https://github.com/hj-n/ggaction/tree/main/examples/cars-density-area)
 and its [complete program](https://github.com/hj-n/ggaction/blob/main/examples/cars-density-area/program.js).
 
-```javascript
-import { chart, render } from "../../src/index.js";
+Start with the Vite project from [Getting Started](../getting-started.md), then
+place the tutorial dataset in Vite's public directory:
 
-const response = await fetch("../../data/cars.json");
+```bash
+mkdir -p public
+curl --fail --location https://raw.githubusercontent.com/hj-n/ggaction/main/data/cars.json --output public/cars.json
+```
+
+## Complete program
+
+```javascript
+import { chart, render } from "ggaction";
+
+const response = await fetch("/cars.json");
 if (!response.ok) throw new Error(`Failed to load cars: ${response.status}`);
 const cars = await response.json();
 
@@ -1389,10 +1473,20 @@ The repository contains a
 [runnable browser example](https://github.com/hj-n/ggaction/tree/main/examples/cars-error-bar)
 and its [complete program](https://github.com/hj-n/ggaction/blob/main/examples/cars-error-bar/program.js).
 
-```javascript
-import { chart, render } from "../../src/index.js";
+Start with the Vite project from [Getting Started](../getting-started.md), then
+place the tutorial dataset in Vite's public directory:
 
-const response = await fetch("../../data/cars.json");
+```bash
+mkdir -p public
+curl --fail --location https://raw.githubusercontent.com/hj-n/ggaction/main/data/cars.json --output public/cars.json
+```
+
+## Complete program
+
+```javascript
+import { chart, render } from "ggaction";
+
+const response = await fetch("/cars.json");
 if (!response.ok) throw new Error(`Failed to load cars: ${response.status}`);
 const cars = await response.json();
 
@@ -1484,10 +1578,20 @@ The repository contains a
 [runnable browser example](https://github.com/hj-n/ggaction/tree/main/examples/gapminder-error-band)
 and its [complete program](https://github.com/hj-n/ggaction/blob/main/examples/gapminder-error-band/program.js).
 
-```javascript
-import { chart, render } from "../../src/index.js";
+Start with the Vite project from [Getting Started](../getting-started.md), then
+place the tutorial dataset in Vite's public directory:
 
-const response = await fetch("../../data/gapminder.json");
+```bash
+mkdir -p public
+curl --fail --location https://raw.githubusercontent.com/hj-n/ggaction/main/data/gapminder.json --output public/gapminder.json
+```
+
+## Complete program
+
+```javascript
+import { chart, render } from "ggaction";
+
+const response = await fetch("/gapminder.json");
 if (!response.ok) throw new Error(`Failed to load gapminder data: ${response.status}`);
 const gapminder = await response.json();
 

@@ -16,10 +16,21 @@ quantitative radius for rose charts and radial bars.
 The shortest donut flow needs a dataset, an arc mark with a nonzero inner
 radius, a count-based theta encoding, and color:
 
+Start with the Vite project from [Getting Started](../getting-started.md), then
+place the tutorial dataset in Vite's public directory:
+
+```bash
+mkdir -p public
+curl --fail --location https://raw.githubusercontent.com/hj-n/ggaction/main/data/cars.json --output public/cars.json
+```
+
+## Complete program
+
 ```javascript
 import { chart, render } from "ggaction";
 
-const response = await fetch("./cars.json");
+const response = await fetch("/cars.json");
+if (!response.ok) throw new Error(`Failed to load cars: ${response.status}`);
 const cars = await response.json();
 
 const program = chart()

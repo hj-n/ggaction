@@ -11,12 +11,21 @@ This tutorial maps car acceleration to angle, horsepower to distance from the
 center, and origin to color. The public angle unit is degrees: `0` points to 12
 o'clock and positive angles move clockwise.
 
+Start with the Vite project from [Getting Started](../getting-started.md), then
+place the tutorial dataset in Vite's public directory:
+
+```bash
+mkdir -p public
+curl --fail --location https://raw.githubusercontent.com/hj-n/ggaction/main/data/cars.json --output public/cars.json
+```
+
 ## Complete program
 
 ```javascript
 import { chart, render } from "ggaction";
 
-const response = await fetch("./cars.json");
+const response = await fetch("/cars.json");
+if (!response.ok) throw new Error(`Failed to load cars: ${response.status}`);
 const cars = await response.json();
 const rows = cars.filter(row =>
   Number.isFinite(row.Acceleration) &&

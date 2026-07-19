@@ -8,16 +8,25 @@ title: Cars Histogram Tutorial
 ![Displacement distribution grouped by origin](../assets/images/cars-histogram.png)
 
 This chart bins car displacement, counts the rows in each bin, and stacks those
-counts by origin. The complete repository-mode module uses only the
-chart-authoring API. After npm publication, replace the relative import with
-`"ggaction"`. The repository contains a
+counts by origin. The complete module uses the public npm package. The
+repository also contains a
 [runnable browser example](https://github.com/hj-n/ggaction/tree/main/examples/cars-histogram)
 and its [complete program](https://github.com/hj-n/ggaction/blob/main/examples/cars-histogram/program.js).
 
-```javascript
-import { chart, render } from "../../src/index.js";
+Start with the Vite project from [Getting Started](../getting-started.md), then
+place the tutorial dataset in Vite's public directory:
 
-const response = await fetch("../../data/cars.json");
+```bash
+mkdir -p public
+curl --fail --location https://raw.githubusercontent.com/hj-n/ggaction/main/data/cars.json --output public/cars.json
+```
+
+## Complete program
+
+```javascript
+import { chart, render } from "ggaction";
+
+const response = await fetch("/cars.json");
 if (!response.ok) throw new Error(`Failed to load cars: ${response.status}`);
 const cars = await response.json();
 

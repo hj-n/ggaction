@@ -383,7 +383,7 @@ test("routes entry documentation to the canonical example indexes", () => {
   assert.match(gettingStarted, /examples\/getting-started/);
 });
 
-test("keeps tutorial modules runnable from a repository checkout", () => {
+test("keeps complete tutorial programs portable to package consumers", () => {
   const tutorials = {
     "scatterplot": "cars",
     "line-chart": "cars",
@@ -392,14 +392,27 @@ test("keeps tutorial modules runnable from a repository checkout", () => {
     "regression-scatterplot": "cars",
     "density-area": "cars",
     "error-bar": "cars",
-    "error-band": "gapminder"
+    "error-band": "gapminder",
+    "polar-points": "cars",
+    "polar-lines": "gapminder",
+    "polar-arcs": "cars"
   };
 
   for (const [name, dataset] of Object.entries(tutorials)) {
     const source = read(`docs/tutorials/${name}.md`);
-    assert.match(source, /from "\.\.\/\.\.\/src\/index\.js"/);
+    assert.match(source, /^## Complete program$/m);
+    assert.match(source, /from "ggaction"/);
+    assert.doesNotMatch(source, /from "\.\.\/\.\.\/src\/index\.js"/);
+    assert.match(source, new RegExp(`fetch\\("/${dataset}\\.json"\\)`));
     assert.match(source, new RegExp(`const ${dataset} = await response\\.json\\(\\)`));
     assert.match(source, /if \(!response\.ok\) throw new Error/);
+    assert.match(
+      source,
+      new RegExp(
+        `curl --fail --location https://raw\\.githubusercontent\\.com/` +
+        `hj-n/ggaction/main/data/${dataset}\\.json --output public/${dataset}\\.json`
+      )
+    );
   }
 
   assert.doesNotMatch(

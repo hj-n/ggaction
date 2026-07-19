@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 
 import { createPackageArtifact } from "./package-artifact.js";
+import { testTutorialConsumers } from "./tutorial-consumer.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
@@ -360,6 +361,7 @@ export async function testPackageConsumer(options) {
   try {
     await testNodeConsumer(consumer.directory);
     await testTypeScriptConsumer(consumer.directory);
+    await testTutorialConsumers(consumer.directory);
     return consumer;
   } finally {
     await consumer.cleanup();
@@ -381,6 +383,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
       "right-categorical-legend-offset",
       "sequential-palette-count",
       "typescript",
+      "tutorial-consumers",
       "private-export-rejection"
     ]
   }, null, 2)}\n`);

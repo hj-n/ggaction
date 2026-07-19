@@ -15,10 +15,20 @@ The repository contains a
 [runnable browser example](https://github.com/hj-n/ggaction/tree/main/examples/gapminder-error-band)
 and its [complete program](https://github.com/hj-n/ggaction/blob/main/examples/gapminder-error-band/program.js).
 
-```javascript
-import { chart, render } from "../../src/index.js";
+Start with the Vite project from [Getting Started](../getting-started.md), then
+place the tutorial dataset in Vite's public directory:
 
-const response = await fetch("../../data/gapminder.json");
+```bash
+mkdir -p public
+curl --fail --location https://raw.githubusercontent.com/hj-n/ggaction/main/data/gapminder.json --output public/gapminder.json
+```
+
+## Complete program
+
+```javascript
+import { chart, render } from "ggaction";
+
+const response = await fetch("/gapminder.json");
 if (!response.ok) throw new Error(`Failed to load gapminder data: ${response.status}`);
 const gapminder = await response.json();
 

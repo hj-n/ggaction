@@ -7,16 +7,24 @@ title: Cars Scatterplot Tutorial
 
 ![Horsepower versus miles per gallon](../assets/images/cars-scatterplot.png)
 
-This tutorial uses the chart-authoring API directly from the repository build.
-After npm publication, only the import path changes to `"ggaction"`. The
-repository contains a
+This tutorial uses the public npm package. The repository also contains a
 [runnable browser example](https://github.com/hj-n/ggaction/tree/main/examples/cars-scatterplot)
 and its [canonical program](https://github.com/hj-n/ggaction/blob/main/examples/cars-scatterplot/program.js).
 
-```javascript
-import { chart, render } from "../../src/index.js";
+Start with the Vite project from [Getting Started](../getting-started.md), then
+place the tutorial dataset in Vite's public directory:
 
-const response = await fetch("../../data/cars.json");
+```bash
+mkdir -p public
+curl --fail --location https://raw.githubusercontent.com/hj-n/ggaction/main/data/cars.json --output public/cars.json
+```
+
+## Complete program
+
+```javascript
+import { chart, render } from "ggaction";
+
+const response = await fetch("/cars.json");
 if (!response.ok) throw new Error(`Failed to load cars: ${response.status}`);
 const cars = await response.json();
 const rows = cars.filter(
