@@ -13,8 +13,9 @@ title: Series Encodings
 | --- | --- | --- | --- |
 | `encodeColor` | `encodeColor({ field: "group" })` | Current mark, nominal default or explicit ordinal field type, color scale | Semantic grouping and concrete color |
 | `encodeStrokeDash` | `encodeStrokeDash({ field: "group" })` | Current line/rule mark and dash scale | Field-driven or constant concrete dash |
+| `encodeStrokeWidth` | `encodeStrokeWidth({ field: "weight" })` | Current line/rule; independent quantitative scale | Rule-item or line-series widths |
 
-Series appearance is authored through color and stroke-dash families. Each
+Series appearance is authored through color, stroke-dash, and stroke-width families. Each
 focused page owns the complete options, replacement behavior, and errors for
 that encoding.
 
@@ -31,6 +32,9 @@ Stroke-dash and explicit group fields must be nominal. Color fields may be
 nominal or ordinal. Area color must match its group encoding. Line group,
 color, and field-driven stroke dash must use one compatible field.
 Combined line legends also require matching ordered domains.
+Stroke width is quantitative and independent of point size. A line series must
+have exactly one width value across all contributing rows; segment-local and
+tapered widths are unsupported.
 
 ## Related
 

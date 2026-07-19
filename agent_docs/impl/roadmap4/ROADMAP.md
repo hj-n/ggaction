@@ -120,7 +120,7 @@ existing createBoxPlot({ ... })
 | 0 | completed | 저장소·build·test 기준선과 Roadmap 4 확정 |
 | 1 | completed | B-002/B-001/B-004와 P1-A/P1-B/P1-C/P1-Exit 승인 |
 | 2 | completed | P2-A/P2-B/P2-C/P2-D/P2-Exit 승인, Basic Chart facade closeout 완료 |
-| 3 | planned | P-004 weighted theta, P-008 field stroke width |
+| 3 | in-progress | P-004 weighted theta approved, P-008 field stroke width at P3-B review |
 | 4 | planned | NCP-003 deterministic jitter |
 | 5 | planned | P-001 window, P-002 2D bin과 binned heatmap |
 | 6 | planned | NCP-002 linear gradient fill과 gradient interval facade |

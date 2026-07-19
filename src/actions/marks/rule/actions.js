@@ -153,7 +153,7 @@ const rematerializeRuleMark = action(
     }
 
     const scaleIds = [...new Set(
-      ["x", "y", "x2", "y2", "strokeDash", "opacity"]
+      ["x", "y", "x2", "y2", "strokeDash", "strokeWidth", "opacity"]
         .map(channel => layer.encoding?.[channel]?.scale)
         .filter(scale => scale !== undefined)
     )];
@@ -163,6 +163,11 @@ const rematerializeRuleMark = action(
     }
 
     const derived = deriveRuleValues(dataset.values, layer);
+    if (derived.values.strokeWidth?.some(value => value < 0)) {
+      throw new RangeError(
+        `Rule strokeWidth field "${layer.encoding.strokeWidth.field}" cannot contain negative values.`
+      );
+    }
     const mapped = {};
     for (const channel of ["x", "y", "x2", "y2"]) {
       const encoding = layer.encoding?.[channel];
@@ -236,6 +241,7 @@ const rematerializeRuleMark = action(
     const resolvedConfig = resolved.markConfigs[id] ?? DEFAULT_RULE_CONFIG;
     const dashEncoding = layer.encoding?.strokeDash;
     const opacityEncoding = layer.encoding?.opacity;
+    const strokeWidthEncoding = layer.encoding?.strokeWidth;
     const strokeDash = dashEncoding?.scale === undefined
       ? Array.from(
           { length: derived.length },
@@ -254,6 +260,12 @@ const rematerializeRuleMark = action(
           derived.values.opacity,
           resolved.resolvedScales[opacityEncoding.scale]
         );
+    const strokeWidth = strokeWidthEncoding?.scale === undefined
+      ? resolvedConfig.strokeWidth
+      : mapContinuousScaleValues(
+          derived.values.strokeWidth,
+          resolved.resolvedScales[strokeWidthEncoding.scale]
+        );
 
     return resolved
       .editGraphics({ target: id, property: "length", value: derived.length })
@@ -265,7 +277,7 @@ const rematerializeRuleMark = action(
       .editGraphics({
         target: id,
         property: "strokeWidth",
-        value: resolvedConfig.strokeWidth
+        value: strokeWidth
       })
       .editGraphics({ target: id, property: "strokeDash", value: strokeDash })
       .editGraphics({ target: id, property: "opacity", value: opacity });

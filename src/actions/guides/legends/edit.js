@@ -284,6 +284,11 @@ export const editLegend = action(
     if (configs.interval?.target === target) {
       return editInterval(this, configs.interval, args);
     }
+    if (configs.strokeWidth?.target === target) {
+      throw new Error(
+        "editLegend does not yet support stroke-width legends; edit the owning scale instead."
+      );
+    }
     const continuousKind = ["gradient", "opacity"].find(
       kind => configs[kind]?.target === target
     );

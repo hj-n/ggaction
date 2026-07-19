@@ -70,7 +70,7 @@ export const rematerializeScale = action(
       channel,
       consumers,
       valuesByConsumer,
-      bounds: ["color", "strokeDash", "shape", "size", "opacity", "xOffset", "yOffset"]
+      bounds: ["color", "strokeDash", "strokeWidth", "shape", "size", "opacity", "xOffset", "yOffset"]
         .includes(channel)
         ? undefined
         : resolveGraphicBounds(this),

@@ -43,14 +43,14 @@ test("keeps weighted theta as one immutable encodeTheta vertical slice", () => {
   assert.equal(theta.children.some(child => child.op === "rematerializeArcMark"), true);
 });
 
-test("keeps P3-B field-driven stroke width behind its hard gate", () => {
+test("opens the approved P3-B field-driven stroke-width contract", () => {
   const declarations = read("types/program.d.ts");
   assert.match(
     declarations,
-    /encodeStrokeWidth\(options: \{ target\?: string; value: number \}\)/
+    /encodeStrokeWidth\(options: StrokeWidthEncodingOptions\)/
   );
-  assert.doesNotMatch(
+  assert.match(
     declarations,
-    /encodeStrokeWidth\(options: \{[^}]*field:/
+    /export type StrokeWidthEncodingOptions =/
   );
 });

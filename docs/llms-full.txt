@@ -3465,6 +3465,11 @@ editor:
 - `encodeStrokeDash`
 - `encodeOpacity`
 
+`encodeStrokeWidth({ field, scale? })` maps a non-negative quantitative field
+to one concrete width per rule item. Use `createLegend({ channels:
+["strokeWidth"] })` for a sampled quantitative guide. Constant
+`encodeStrokeWidth({ value })` remains available and removes the field binding.
+
 Every complete rule stores concrete `x1`, `y1`, `x2`, and `y2` values. An
 incomplete endpoint combination remains empty until another encoding completes
 it. Canvas and scale changes recompute all endpoints.
@@ -3673,7 +3678,7 @@ The tables below are generated from the same reviewed capability registry used b
 | Categorical | point, line, area, bar, rect, arc | color, shape, strokeDash, or compatible composites |
 | Continuous gradient | point, aggregate bar, rect | sequential color |
 | Discretized interval | point | quantize, quantile, or threshold color |
-| Sampled | point | field opacity or size |
+| Sampled | point, line, rule | field opacity, size, or strokeWidth |
 
 | Axis family | Create | Edit | Editable components |
 | --- | --- | --- | --- |
@@ -5667,8 +5672,9 @@ shared offset scale must use the same padding policy and parent bandwidth.
 | --- | --- | --- | --- |
 | `encodeColor` | `encodeColor({ field: "group" })` | Current mark, nominal default or explicit ordinal field type, color scale | Semantic grouping and concrete color |
 | `encodeStrokeDash` | `encodeStrokeDash({ field: "group" })` | Current line/rule mark and dash scale | Field-driven or constant concrete dash |
+| `encodeStrokeWidth` | `encodeStrokeWidth({ field: "weight" })` | Current line/rule; independent quantitative scale | Rule-item or line-series widths |
 
-Series appearance is authored through color and stroke-dash families. Each
+Series appearance is authored through color, stroke-dash, and stroke-width families. Each
 focused page owns the complete options, replacement behavior, and errors for
 that encoding.
 
@@ -5683,6 +5689,9 @@ Stroke-dash and explicit group fields must be nominal. Color fields may be
 nominal or ordinal. Area color must match its group encoding. Line group,
 color, and field-driven stroke dash must use one compatible field.
 Combined line legends also require matching ordered domains.
+Stroke width is quantitative and independent of point size. A line series must
+have exactly one width value across all contributing rows; segment-local and
+tapered widths are unsupported.
 
 ## Related
 
@@ -5955,6 +5964,7 @@ See [Scale options](../scales.md) and [Legends](../legends.md).
 | `encodeOpacity` | `encodeOpacity({ field: "Acceleration" })` | Current point; linear scale; range `[0.2, 1]` | Semantic field opacity and concrete values |
 | `encodeStroke` | `encodeStroke({ value: "#334155" })` | Current rule mark | Constant concrete line color |
 | `encodeStrokeWidth` | `encodeStrokeWidth({ value: 3 })` | Current rule mark | Constant concrete line width |
+| `encodeStrokeWidth` | `encodeStrokeWidth({ field: "weight" })` | Current line/rule; quantitative scale; width range `[1, 8]` | Field-driven rule items or line series |
 | `encodeBarWidth` | `encodeBarWidth()` | Current aggregate bar; first assignment uses band `0.72` | Concrete rectangles |
 | `selectMarks` | `selectMarks({ field: "Horsepower", op: "max" })` | Current or unique mark; deterministic selection ID | Reusable semantic final-item selection |
 | `highlightMarks` | `highlightMarks({ select: { field: "Horsepower", op: "max" } })` | Current point/bar/path/rule; red accent; selected-last | Concrete selected-item emphasis |
@@ -5976,8 +5986,8 @@ focused pages below for selection, point appearance, and mark-specific style.
 
 ## Errors and limitations
 
-Radius, rule stroke/width, constant opacity, and both bar width modes are graphical constants. Field opacity
-is a semantic encoding.
+Radius, rule stroke, constant rule width, constant opacity, and both bar width modes are graphical constants.
+Field opacity and field-driven stroke width are semantic encodings.
 Size cannot be combined with a constant radius. A constant `editPointMark`
 shape cannot be combined with field-driven `encodeShape`. Bar width
 requires complete ordinal x, aggregate y, and color semantics; group additionally
@@ -6206,8 +6216,27 @@ titles and styles remain unchanged.
 
 `encodeStroke({ value, target? })` assigns a required non-empty constant color
 string to a rule. `encodeStrokeWidth({ value, target? })` assigns a
-non-negative finite logical Canvas width. Both infer the current or only rule,
-create no scale or legend, and rematerialize every concrete line child.
+non-negative finite logical Canvas width to every child of the current rule.
+These constant modes create no scale or legend.
+
+`encodeStrokeWidth({ field, target?, fieldType?, scale? })` instead creates an
+independent quantitative width scale for a line or rule. Rules receive one
+width per source row. Lines receive one width per complete series, so all rows
+in one series must contain the same field value. No implicit mean, sum, or
+representative row is selected. The default concrete width range is `[1, 8]`.
+
+```javascript
+program
+  .encodeStrokeWidth({
+    field: "weight",
+    scale: { domain: [0, 100], range: [1, 8] }
+  })
+  .createLegend({ channels: ["strokeWidth"] });
+```
+
+Field values, domains, and ranges must be finite and non-negative. `value` and
+`field` are mutually exclusive. `editScale` rematerializes both marks and an
+active sampled stroke-width legend.
 
 Rules also reuse `encodeStrokeDash` in constant or nominal-field mode and
 `encodeOpacity` in constant or quantitative-field mode. Field modes produce
@@ -7091,7 +7120,7 @@ Cartesian or Polar coordinate. Ambiguous resources require explicit IDs.
 
 | Action | Shortest call | Inference/defaults | Result |
 | --- | --- | --- | --- |
-| `createLegend` | `createLegend()` | Current/unique compatible mark; right position | Categorical, size, gradient, interval, or opacity guide |
+| `createLegend` | `createLegend()` | Current/unique compatible mark; right position | Categorical, size, stroke-width, gradient, interval, or opacity guide |
 | `editLegend` | `editLegend({ position: "left" })` | Unique existing legend; omitted properties retained | Rematerialized layout and appearance |
 | Focused edits | `editLegendLabels({ fontSize: 11 })` | Same target inference as `editLegend` | One legend component rematerialized |
 | `removeLegend` | `removeLegend({ target: "points" })` | Existing legend owner | All owned legend blocks removed |
@@ -7107,7 +7136,7 @@ editing page when changing an existing guide.
 | Categorical | point, line, area, bar, rect, arc | color, shape, strokeDash, or compatible composites |
 | Continuous gradient | point, aggregate bar, rect | sequential color |
 | Discretized interval | point | quantize, quantile, or threshold color |
-| Sampled | point | field opacity or size |
+| Sampled | point, line, rule | field opacity, size, or strokeWidth |
 
 ## Focused legend families
 
@@ -7123,6 +7152,10 @@ opacity and discretized continuous legends remain point-only. Interactive legend
 Combined point-series and quantitative-size legends require a right or left
 side position so both blocks remain in one vertical stack. A left block must
 fit outside any left y-axis guides; use sufficient margin and offset.
+Standalone stroke-width legends currently use the right side and accept
+`count` when created. Edit their quantitative mapping through `editScale`;
+`editLegend` support for that sampled block is not yet part of the public
+contract.
 Right-side layout requires sufficient right margin; bottom layout requires
 sufficient bottom margin; top layout requires enough top margin for its title,
 item grid, offset, and optional border. The library reports a layout error
@@ -8078,7 +8111,7 @@ interface ChartProgramActions {
   editDensity(options: EditDensityOptions): ChartProgram;
   encodeBarWidth(options?: BarWidthOptions): ChartProgram;
   encodeStroke(options: { target?: string; value: string }): ChartProgram;
-  encodeStrokeWidth(options: { target?: string; value: number }): ChartProgram;
+  encodeStrokeWidth(options: StrokeWidthEncodingOptions): ChartProgram;
   createRegression(options?: RegressionOptions): ChartProgram;
   editRegression(options: EditRegressionOptions): ChartProgram;
   createErrorBar(options?: ErrorBarOptions): ChartProgram;

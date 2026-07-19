@@ -229,7 +229,8 @@ test("keeps primitives and internal wrapped actions in separate layers", () => {
     "createOpacityLegend",
     "removeCategoricalLegend",
     "removeOpacityLegend",
-    "createSizeLegend"
+    "createSizeLegend",
+    "createStrokeWidthLegend"
   ]);
   assert.deepEqual(index.internal.stateTransitions, [
     "composeFacetGuides",

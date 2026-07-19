@@ -58,7 +58,7 @@ The tables below are generated from the same reviewed capability registry used b
 | Categorical | point, line, area, bar, rect, arc | color, shape, strokeDash, or compatible composites |
 | Continuous gradient | point, aggregate bar, rect | sequential color |
 | Discretized interval | point | quantize, quantile, or threshold color |
-| Sampled | point | field opacity or size |
+| Sampled | point, line, rule | field opacity, size, or strokeWidth |
 
 | Axis family | Create | Edit | Editable components |
 | --- | --- | --- | --- |

@@ -12,7 +12,8 @@ const SEMANTIC_KIND = Object.freeze({
   size: "size",
   gradient: "color",
   interval: "color",
-  opacity: "opacity"
+  opacity: "opacity",
+  strokeWidth: "strokeWidth"
 });
 
 export const removeLegend = action(

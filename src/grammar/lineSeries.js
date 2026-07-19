@@ -303,3 +303,21 @@ export function deriveLineSeries(rows, layer, options) {
     ? derivePolarLineSeries(rows, layer, options)
     : deriveCartesianLineSeries(rows, layer);
 }
+
+export function deriveLineSeriesFieldValues(rows, layer, derived, field) {
+  const values = readQuantitativeField(rows, field);
+  if (values.some(value => value < 0)) {
+    throw new RangeError(`Line strokeWidth field "${field}" cannot contain negative values.`);
+  }
+  return cloneAndFreeze(derived.series.map(series => {
+    const matching = values.filter((_, index) => Object.entries(series.key)
+      .every(([key, value]) => rows[index]?.[key] === value));
+    const unique = [...new Set(matching)];
+    if (unique.length !== 1) {
+      throw new Error(
+        `Line strokeWidth field "${field}" must have one value within each series.`
+      );
+    }
+    return unique[0];
+  }));
+}

@@ -366,25 +366,40 @@ encodeX2(options: RulePositionAssignment | AreaSecondaryXAssignment): ChartProgr
 
 ## `encodeStrokeWidth`
 
-- Signature: `encodeStrokeWidth({ target?, value })`.
-- `target`: current or uniquely eligible rule mark; ambiguity requires an explicit ID.
-- `value`: required non-negative finite logical Canvas width. It is graphical and creates no scale or legend.
-- Effect: updates immutable rule materialization config and invokes wrapped `rematerializeRuleMark`.
-- Existing `encodeStrokeDash`와 `encodeOpacity`의 value/field modes also support rule marks; field mode
-  materializes one concrete appearance value per rule child.
+- Signature: `encodeStrokeWidth({ target?, value })` or
+  `encodeStrokeWidth({ target?, field, fieldType?, scale? })`.
+- Constant mode preserves the existing rule-only behavior: `value` is a non-negative finite logical Canvas
+  width, creates no scale or legend, and rematerializes every rule child.
+- Field mode targets a line or rule, defaults `fieldType` to `"quantitative"`, creates an independent
+  `strokeWidth` scale, and maps to concrete logical Canvas widths. Default range is `[1, 8]`; explicit range
+  must be an ascending pair of non-negative finite widths.
+- Rule grain is one source row per concrete line. Line grain is one complete series path. Every source row
+  contributing to a line series must have the same field value; the action never chooses or aggregates a
+  representative value implicitly.
+- Field values are finite and non-negative. Missing, non-finite, negative, ambiguous-target, and unequal
+  within-series values fail atomically. Zero is valid.
+- `value` and `field` are mutually exclusive. Reassignment structurally replaces the semantic field binding;
+  returning a rule to constant mode removes the `strokeWidth` encoding and its standalone legend.
+- Field mode participates in `editScale`, `createLegend({ channels: ["strokeWidth"] })`, Canvas
+  rematerialization, immutable state, and wrapped action trace. The scale is not shared with point `size`.
 
 ### Formal values — `encodeStrokeWidth`
 
-- Implemented: `encodeStrokeWidth({ target?: UserId; value: NonNegativeFinite })`.
+- Implemented: `encodeStrokeWidth({ target?: UserId; value: NonNegativeFinite } | { target?: UserId; field: FieldName; fieldType?: "quantitative"; scale?: StrokeWidthScale })`.
+- `StrokeWidthScale = { id?, type?: "linear" | "log" | "pow" | "sqrt" | "symlog", domain?: "auto" | [NonNegativeFinite, NonNegativeFinite], range?: "auto" | [NonNegativeFinite, NonNegativeFinite], nice?, zero?, clamp?, reverse?, base?, exponent?, constant? }`.
 - Planned (NOT IMPLEMENTED): —
-- Proposed (NOT IMPLEMENTED): field-driven rule width remains outside the current contract.
+- Proposed (NOT IMPLEMENTED): tapered, segment-local width and ribbon geometry remain outside this encoding.
 
 ### Value coverage — `encodeStrokeWidth`
 
-- ✅ Covered: zero/positive replacement, negative/non-finite rejection, dash/opacity interoperability,
-  Canvas rematerialization and primitive/public parity.
-- Evidence: `test/unit/actions/encodings/rule-appearance-encodings.test.js` and
-  `test/charts/cars-error-bar/primitive.test.js`.
+- ✅ Covered: constant compatibility; item-level rule mapping; series-level line mapping; zero and explicit
+  ranges; missing/non-finite/negative and unequal-series rejection; field reassignment and constant restore;
+  scale edit, standalone sampled legend, Canvas/PNG rendering, immutable earlier state, and primitive/public
+  parity.
+- Evidence: `test/unit/actions/encodings/rule-appearance-encodings.test.js`,
+  `test/unit/actions/encodings/line-series-encodings.test.js`,
+  `test/unit/actions/guides/stroke-width-legend.test.js`, and
+  `test/gates/field-stroke-width/`.
 
 ## `encodeYRange`
 

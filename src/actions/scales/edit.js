@@ -15,6 +15,7 @@ import {
   validateShapeRange,
   validateSizeRange,
   validateStrokeDashRange,
+  validateStrokeWidthRange,
   validateSequentialColorRange,
   validateScaleUnknown,
   isDiscretizedColorScaleType,
@@ -92,6 +93,7 @@ function validateRangeForChannel(scale, channel, value) {
   if (channel === "shape") return validateShapeRange(value);
   if (channel === "strokeDash") return validateStrokeDashRange(value);
   if (channel === "size") return validateSizeRange(value);
+  if (channel === "strokeWidth") return validateStrokeWidthRange(value);
   return validateScaleRange(value);
 }
 
@@ -150,7 +152,7 @@ function validateTypeTransition(scale, nextType, channel, consumers) {
   const quantitative = nextType === "linear" || isTransformedScaleType(nextType);
   if (
     !quantitative ||
-    (consumers.length > 0 && !["x", "y", "theta", "radius"].includes(channel))
+    (consumers.length > 0 && !["x", "y", "theta", "radius", "strokeWidth"].includes(channel))
   ) {
     throw new Error(
       "editScale type transition currently requires a quantitative position scale."
@@ -159,6 +161,15 @@ function validateTypeTransition(scale, nextType, channel, consumers) {
   validateScaleTypeForRole(nextType, SCALE_ROLES.quantitativePosition);
   if (channel === "theta" && nextType !== "linear") {
     throw new Error("Theta quantitative position currently requires a linear scale.");
+  }
+  if (
+    channel === "strokeWidth" &&
+    consumers.some(consumer => consumer.layer.mark?.type !== "line" &&
+      consumer.layer.mark?.type !== "rule")
+  ) {
+    throw new Error(
+      `Scale "${scale.id}" has a consumer incompatible with type "${nextType}".`
+    );
   }
   if (consumers.some(consumer => consumer.encoding.fieldType !== "quantitative")) {
     throw new Error(
@@ -206,6 +217,13 @@ function normalizeDefinition(scale, channel, consumers, args) {
     validateRange: (scaleType, value) =>
       validateRangeForChannel({ type: scaleType }, channel, value)
   });
+  if (
+    channel === "strokeWidth" &&
+    definition.domain !== "auto" &&
+    definition.domain.some(value => value < 0)
+  ) {
+    throw new RangeError("StrokeWidth scale domain cannot contain negative values.");
+  }
   const typeChanged = type !== scale.type;
   const unknown = Object.hasOwn(args, "unknown")
     ? args.unknown

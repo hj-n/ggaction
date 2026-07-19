@@ -18,6 +18,7 @@ import {
   resolveShapeRange,
   resolveSizeRange,
   resolveStrokeDashRange,
+  resolveStrokeWidthRange,
   resolveTransformedDomain,
   SCALE_ROLES,
   validateLinearScaleType,
@@ -92,6 +93,7 @@ function resolveRange({
   if (channel === "shape") return resolveShapeRange(scale.range);
   if (channel === "size") return resolveSizeRange(scale.range);
   if (channel === "opacity") return resolveOpacityRange(scale.range);
+  if (channel === "strokeWidth") return resolveStrokeWidthRange(scale.range);
   if (isOrdinalOffset) return undefined;
   return resolveArcAutoPositionRange({
     consumers,

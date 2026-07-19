@@ -13,6 +13,7 @@ import {
   validateShapeRange,
   validateSizeRange,
   validateStrokeDashRange,
+  validateStrokeWidthRange,
   validateSequentialColorRange,
   validateDiscretizedColorDomain,
   validateDiscretizedColorRange,
@@ -312,6 +313,35 @@ export function resolveOpacityScaleDefinition(program, options) {
   if (clamp !== undefined) scale.clamp = clamp;
   if (reverse !== undefined) scale.reverse = reverse;
   return withScaleUnknown(scale, { ...existing, ...options }, "opacity");
+}
+
+export function resolveStrokeWidthScaleDefinition(program, options) {
+  optionsObject(options);
+  validateKeys(options, OPACITY_OPTIONS, "scale");
+  const id = validateUserId(options.id ?? "strokeWidth", "Scale id");
+  const existing = findSemanticScale(program, id);
+  const type = options.type ?? existing?.type ?? "linear";
+  validateScaleTypeForRole(type, SCALE_ROLES.quantitativePosition);
+  for (const property of ["nice", "zero", "clamp", "reverse"]) {
+    if (options[property] !== undefined && typeof options[property] !== "boolean") {
+      throw new TypeError(`Scale ${property} must be a boolean.`);
+    }
+  }
+  const domain = validateScaleDomain(options.domain ?? existing?.domain ?? "auto");
+  if (domain !== "auto" && domain.some(value => value < 0)) {
+    throw new RangeError("StrokeWidth scale domain cannot contain negative values.");
+  }
+  const scale = {
+    id,
+    type,
+    domain,
+    range: validateStrokeWidthRange(options.range ?? existing?.range ?? "auto")
+  };
+  for (const property of ["nice", "zero", "clamp", "reverse", "base", "exponent", "constant"]) {
+    const value = options[property] ?? existing?.[property];
+    if (value !== undefined) scale[property] = value;
+  }
+  return scale;
 }
 
 export function resolveOffsetScaleDefinition(program, options, channel = "xOffset") {

@@ -20,6 +20,7 @@ export const NAMED_DASH_PATTERNS = cloneAndFreeze({
 export { POINT_SHAPES } from "../pointShapes.js";
 export const DEFAULT_SIZE_RANGE = cloneAndFreeze([24, 196]);
 export const DEFAULT_OPACITY_RANGE = cloneAndFreeze([0.2, 1]);
+export const DEFAULT_STROKE_WIDTH_RANGE = cloneAndFreeze([1, 8]);
 
 export function validateColorRange(range) {
   if (range === "auto") return range;
@@ -123,6 +124,21 @@ export function validateOpacityRange(range) {
   return cloneAndFreeze(range);
 }
 
+export function validateStrokeWidthRange(range) {
+  if (range === "auto") return range;
+  if (
+    !Array.isArray(range) ||
+    range.length !== 2 ||
+    !range.every(value => Number.isFinite(value) && value >= 0) ||
+    range[0] > range[1]
+  ) {
+    throw new TypeError(
+      "StrokeWidth range must be an ascending pair of non-negative finite widths."
+    );
+  }
+  return cloneAndFreeze(range);
+}
+
 export function validateOpacityValue(value, label = "Opacity") {
   return validateUnitInterval(value, label);
 }
@@ -164,6 +180,11 @@ export function resolveSizeRange(range) {
 export function resolveOpacityRange(range) {
   const validated = validateOpacityRange(range);
   return validated === "auto" ? DEFAULT_OPACITY_RANGE : validated;
+}
+
+export function resolveStrokeWidthRange(range) {
+  const validated = validateStrokeWidthRange(range);
+  return validated === "auto" ? DEFAULT_STROKE_WIDTH_RANGE : validated;
 }
 
 export function mapOrdinalValues(values, domain, range, options = {}) {

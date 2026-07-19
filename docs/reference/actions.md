@@ -85,7 +85,7 @@ interface ChartProgramActions {
   editDensity(options: EditDensityOptions): ChartProgram;
   encodeBarWidth(options?: BarWidthOptions): ChartProgram;
   encodeStroke(options: { target?: string; value: string }): ChartProgram;
-  encodeStrokeWidth(options: { target?: string; value: number }): ChartProgram;
+  encodeStrokeWidth(options: StrokeWidthEncodingOptions): ChartProgram;
   createRegression(options?: RegressionOptions): ChartProgram;
   editRegression(options: EditRegressionOptions): ChartProgram;
   createErrorBar(options?: ErrorBarOptions): ChartProgram;

@@ -145,6 +145,24 @@ async function testNodeConsumer(directory) {
       ),
       true
     );
+    const weightedRules = chart()
+      .createCanvas({ width: 240, height: 160, margin: 30 })
+      .createData({ values: [
+        { x: 1, x2: 3, y: 2, weight: 0 },
+        { x: 2, x2: 4, y: 4, weight: 10 }
+      ] })
+      .createRuleMark()
+      .encodeX({ field: "x", fieldType: "quantitative" })
+      .encodeX2({ field: "x2", fieldType: "quantitative" })
+      .encodeY({ field: "y", fieldType: "quantitative" })
+      .encodeStrokeWidth({ field: "weight", scale: { range: [1, 6] } })
+      .createLegend({ channels: ["strokeWidth"] });
+    assert.deepEqual(
+      weightedRules.graphicSpec.objects.rule.items.map(
+        item => item.properties.strokeWidth
+      ),
+      [1, 6]
+    );
     const pair = hconcat({
       programs: [program, polar],
       gap: 8
@@ -323,7 +341,8 @@ async function testTypeScriptConsumer(directory) {
       type CreateLinePlotOptions,
       type CreateDerivedDataOptions,
       type CreateScatterPlotOptions,
-      type DatasetTransform
+      type DatasetTransform,
+      type StrokeWidthEncodingOptions
     } from "ggaction";
     import { action, ChartProgram as ExtensionProgram } from "ggaction/extension";
     import { renderToPNG, type PNGRenderResult } from "ggaction/png";
@@ -426,6 +445,22 @@ async function testTypeScriptConsumer(directory) {
       .encodeTheta({ field: "group", aggregate: "count" })
       .encodeColor({ field: "group" })
       .editArcMark({ padAngle: 2 });
+    const strokeWidthOptions: StrokeWidthEncodingOptions = {
+      field: "weight",
+      scale: { domain: [0, 10], range: [1, 6] }
+    };
+    const weightedRules: ChartProgram = chart()
+      .createCanvas()
+      .createData({ values: [
+        { x: 1, x2: 2, y: 3, weight: 0 },
+        { x: 2, x2: 3, y: 4, weight: 10 }
+      ] })
+      .createRuleMark()
+      .encodeX({ field: "x", fieldType: "quantitative" })
+      .encodeX2({ field: "x2", fieldType: "quantitative" })
+      .encodeY({ field: "y", fieldType: "quantitative" })
+      .encodeStrokeWidth(strokeWidthOptions)
+      .createLegend({ channels: ["strokeWidth"] });
     const pointLayer = inspected.semanticSpec.layers.find(
       layer => layer.id === "points"
     );
@@ -447,6 +482,7 @@ async function testTypeScriptConsumer(directory) {
     void derived;
     void polar;
     void arcs;
+    void weightedRules;
     void pointLayer;
     void pointItems;
     void lastAction;

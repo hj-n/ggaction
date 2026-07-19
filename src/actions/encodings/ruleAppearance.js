@@ -3,9 +3,22 @@ import {
   validateRuleStroke,
   validateRuleStrokeWidth
 } from "../../grammar/ruleAppearance.js";
-import { resolveTarget, validateOptions } from "./shared.js";
+import { readQuantitativeField } from "../../grammar/scales/index.js";
+import { resolveStrokeWidthScaleDefinition } from "../scales/definitions.js";
+import {
+  applyEncodingScale,
+  resolveReassignmentScaleOptions,
+  resolveTarget,
+  validateOptions
+} from "./shared.js";
+import { applyMaterializationPlan } from "../../materialization/dependencies.js";
+import { planEncodingRematerialization } from "../../materialization/encodings.js";
+import { findLayer } from "../../selectors/layers.js";
 
-const OPTIONS = Object.freeze(["target", "value"]);
+const STROKE_OPTIONS = Object.freeze(["target", "value"]);
+const WIDTH_OPTIONS = Object.freeze([
+  "target", "value", "field", "fieldType", "scale"
+]);
 
 const encodeStroke = action(
   {
@@ -13,7 +26,7 @@ const encodeStroke = action(
     description: "Set a constant graphical stroke on a rule mark."
   },
   function (args = {}) {
-    validateOptions(args, OPTIONS, "encodeStroke");
+    validateOptions(args, STROKE_OPTIONS, "encodeStroke");
     const { id } = resolveTarget(this, args.target, ["rule"], "rule mark");
     return this
       ._withMarkConfig(id, {
@@ -30,14 +43,79 @@ const encodeStrokeWidth = action(
     description: "Set a constant graphical stroke width on a rule mark."
   },
   function (args = {}) {
-    validateOptions(args, OPTIONS, "encodeStrokeWidth");
-    const { id } = resolveTarget(this, args.target, ["rule"], "rule mark");
-    return this
-      ._withMarkConfig(id, {
-        ...this.markConfigs[id],
-        strokeWidth: validateRuleStrokeWidth(args.value)
+    validateOptions(args, WIDTH_OPTIONS, "encodeStrokeWidth");
+    const hasValue = Object.hasOwn(args, "value");
+    const hasField = Object.hasOwn(args, "field");
+    if (hasValue === hasField) {
+      throw new Error("encodeStrokeWidth requires exactly one of value or field.");
+    }
+    if (hasValue) {
+      const { id } = resolveTarget(this, args.target, ["rule"], "rule mark");
+      let next = this.guideConfigs.legend?.strokeWidth?.target === id
+        ? this.removeLegend({ target: id })
+        : this;
+      if (findLayer(next, id)?.encoding?.strokeWidth !== undefined) {
+        next = next.editSemantic({
+          property: `layer[${id}].encoding.strokeWidth`,
+          remove: true
+        });
+      }
+      return next
+        ._withMarkConfig(id, {
+          ...next.markConfigs[id],
+          strokeWidth: validateRuleStrokeWidth(args.value)
+        })
+        .rematerializeRuleMark({ id });
+    }
+    const { id, dataset, layer } = resolveTarget(
+      this,
+      args.target,
+      ["rule", "line"],
+      "rule or line mark"
+    );
+    const fieldType = args.fieldType ?? "quantitative";
+    if (fieldType !== "quantitative") {
+      throw new Error("encodeStrokeWidth requires a quantitative field.");
+    }
+    const values = readQuantitativeField(dataset.values, args.field);
+    if (values.some(value => value < 0)) {
+      throw new RangeError(
+        `encodeStrokeWidth field "${args.field}" cannot contain negative values.`
+      );
+    }
+    const previous = layer.encoding?.strokeWidth;
+    const requestedScale = resolveReassignmentScaleOptions(
+      previous,
+      args.scale ?? {}
+    );
+    const scale = resolveStrokeWidthScaleDefinition(this, requestedScale);
+    const { strokeWidth, ...config } = this.markConfigs[id] ?? {};
+    void strokeWidth;
+    let next = this
+      ._withMarkConfig(id, config)
+      .editSemantic({
+        property: `layer[${id}].encoding.strokeWidth.field`,
+        value: args.field
       })
-      .rematerializeRuleMark({ id });
+      .editSemantic({
+        property: `layer[${id}].encoding.strokeWidth.fieldType`,
+        value: fieldType
+      })
+      .editSemantic({
+        property: `layer[${id}].encoding.strokeWidth.scale`,
+        value: scale.id
+      });
+    next = applyEncodingScale(next, scale, requestedScale, {
+      reassignment: previous?.scale === scale.id
+    });
+    return applyMaterializationPlan(
+      next,
+      planEncodingRematerialization(next, {
+        target: id,
+        channel: "strokeWidth",
+        scale: scale.id
+      })
+    );
   }
 );
 

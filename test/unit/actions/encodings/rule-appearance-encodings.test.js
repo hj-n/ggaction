@@ -63,6 +63,66 @@ test("maps field-driven dash and opacity per concrete rule", () => {
   assert.equal(program.semanticSpec.layers[0].encoding.opacity.field, "amount");
 });
 
+test("maps a quantitative field to concrete rule stroke widths", () => {
+  const before = encodedRule();
+  const program = before.encodeStrokeWidth({
+    field: "amount",
+    scale: { range: [1, 5] }
+  });
+
+  assert.deepEqual(program.semanticSpec.layers[0].encoding.strokeWidth, {
+    field: "amount",
+    fieldType: "quantitative",
+    scale: "strokeWidth"
+  });
+  assert.deepEqual(program.resolvedScales.strokeWidth, {
+    type: "linear",
+    domain: [0, 10],
+    range: [1, 5]
+  });
+  assert.deepEqual(
+    program.graphicSpec.objects.intervals.items.map(
+      child => child.properties.strokeWidth
+    ),
+    [1, 5]
+  );
+  assert.equal(before.semanticSpec.layers[0].encoding.strokeWidth, undefined);
+});
+
+test("reassigns rule stroke-width fields and restores the constant variant", () => {
+  const field = encodedRule().encodeStrokeWidth({
+    field: "amount",
+    scale: { range: [1, 5] }
+  });
+  const constant = field.encodeStrokeWidth({ value: 3 });
+
+  assert.equal(constant.semanticSpec.layers[0].encoding.strokeWidth, undefined);
+  assert.deepEqual(
+    constant.graphicSpec.objects.intervals.items.map(
+      child => child.properties.strokeWidth
+    ),
+    [3, 3]
+  );
+  assert.equal(field.graphicSpec.objects.intervals.items[0].properties.strokeWidth, 1);
+});
+
+test("removes the standalone width legend when a rule returns to constant mode", () => {
+  const field = encodedRule()
+    .encodeStrokeWidth({ field: "amount" })
+    .createLegend({ channels: ["strokeWidth"] });
+  const constant = field.encodeStrokeWidth({ value: 2 });
+
+  assert.equal(constant.semanticSpec.guides.legend, undefined);
+  assert.equal(constant.graphicSpec.objects.strokeWidthLegendSymbols, undefined);
+  assert.equal(constant.semanticSpec.layers[0].encoding.strokeWidth, undefined);
+  assert.deepEqual(
+    constant.graphicSpec.objects.intervals.items.map(
+      child => child.properties.strokeWidth
+    ),
+    [2, 2]
+  );
+});
+
 test("restores constant appearance after field-driven assignments", () => {
   const fields = encodedRule()
     .encodeStrokeDash({ field: "row" })
@@ -95,6 +155,32 @@ test("validates rule appearance without mutating earlier output", () => {
   assert.throws(() => program.encodeStroke({ value: "" }), /non-empty/);
   assert.throws(() => program.encodeStrokeWidth({ value: -1 }), /non-negative/);
   assert.throws(() => program.encodeStrokeWidth({ value: Infinity }), /finite/);
+  assert.throws(
+    () => program.encodeStrokeWidth({ value: 1, field: "amount" }),
+    /exactly one/
+  );
+  assert.throws(() => program.encodeStrokeWidth({}), /exactly one/);
+  assert.throws(
+    () => program.encodeStrokeWidth({
+      field: "amount",
+      fieldType: "nominal"
+    }),
+    /quantitative field/
+  );
+  assert.throws(
+    () => program.encodeStrokeWidth({
+      field: "amount",
+      scale: { range: [-1, 5] }
+    }),
+    /non-negative finite widths/
+  );
+  assert.throws(
+    () => program.encodeStrokeWidth({
+      field: "amount",
+      scale: { domain: [-1, 10] }
+    }),
+    /cannot contain negative/
+  );
   assert.throws(() => program.encodeStroke({}), /non-empty/);
   assert.throws(
     () => program.encodeStrokeDash({ value: [1] }),

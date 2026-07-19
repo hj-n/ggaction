@@ -31,6 +31,7 @@ export const ENCODING_CHANNELS = Object.freeze([
   "radius",
   "color",
   "strokeDash",
+  "strokeWidth",
   "size",
   "shape",
   "group",
@@ -200,7 +201,8 @@ export const LEGEND_CONFIG_KINDS = Object.freeze([
   "size",
   "gradient",
   "interval",
-  "opacity"
+  "opacity",
+  "strokeWidth"
 ]);
 
 export function includesVocabulary(vocabulary, value) {

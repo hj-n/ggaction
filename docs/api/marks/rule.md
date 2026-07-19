@@ -35,6 +35,11 @@ editor:
 - `encodeStrokeDash`
 - `encodeOpacity`
 
+`encodeStrokeWidth({ field, scale? })` maps a non-negative quantitative field
+to one concrete width per rule item. Use `createLegend({ channels:
+["strokeWidth"] })` for a sampled quantitative guide. Constant
+`encodeStrokeWidth({ value })` remains available and removes the field binding.
+
 Every complete rule stores concrete `x1`, `y1`, `x2`, and `y2` values. An
 incomplete endpoint combination remains empty until another encoding completes
 it. Canvas and scale changes recompute all endpoints.

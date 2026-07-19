@@ -1,5 +1,8 @@
 import { action } from "../../../core/action.js";
-import { deriveLineSeries } from "../../../grammar/lineSeries.js";
+import {
+  deriveLineSeries,
+  deriveLineSeriesFieldValues
+} from "../../../grammar/lineSeries.js";
 import { mapContinuousScaleValues, mapOrdinalValues } from "../../../grammar/scales/index.js";
 import { validateUserId } from "../../../core/identifiers.js";
 import {
@@ -206,7 +209,7 @@ const rematerializeLineMark = action(
             .rematerializeScale({ id: xScaleId })
             .rematerializeScale({ id: yScaleId });
 
-    for (const channel of args.scales === false ? [] : ["color", "strokeDash"]) {
+    for (const channel of args.scales === false ? [] : ["color", "strokeDash", "strokeWidth"]) {
       const scaleId = layer.encoding?.[channel]?.scale;
       if (scaleId !== undefined) {
         resolved = resolved.rematerializeScale({ id: scaleId });
@@ -258,12 +261,23 @@ const rematerializeLineMark = action(
           resolved.resolvedScales[colorEncoding.scale].domain,
           resolved.resolvedScales[colorEncoding.scale].range
         );
-    const strokeWidths = commands.map(
-      (_, index) =>
-        config.strokeWidth ??
-        existingChildren[index]?.properties.strokeWidth ??
-        DEFAULT_LINE_WIDTH
-    );
+    const widthEncoding = layer.encoding?.strokeWidth;
+    const strokeWidths = widthEncoding?.scale === undefined
+      ? commands.map(
+          (_, index) =>
+            config.strokeWidth ??
+            existingChildren[index]?.properties.strokeWidth ??
+            DEFAULT_LINE_WIDTH
+        )
+      : mapContinuousScaleValues(
+          deriveLineSeriesFieldValues(
+            dataset.values,
+            layer,
+            derived,
+            widthEncoding.field
+          ),
+          resolved.resolvedScales[widthEncoding.scale]
+        );
     const strokeDashes = dashEncoding?.datum !== undefined
       ? commands.map(() => normalizeStrokeDashPattern(dashEncoding.datum))
       : dashEncoding?.scale === undefined

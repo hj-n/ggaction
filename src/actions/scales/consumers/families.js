@@ -3,7 +3,10 @@ import {
   BAR_GRAINS,
   resolveBarGrain
 } from "../../../grammar/bars/policy.js";
-import { deriveLineSeries } from "../../../grammar/lineSeries.js";
+import {
+  deriveLineSeries,
+  deriveLineSeriesFieldValues
+} from "../../../grammar/lineSeries.js";
 import { isAggregate } from "../../../grammar/aggregate.js";
 import {
   resolveRectConsumerValues
@@ -22,12 +25,20 @@ export function resolveMarkFamilyConsumerValues(consumer, dataset) {
   }
   if (
     consumer.layer.mark?.type === "line" &&
-    isAggregate(consumer.layer.encoding?.y?.aggregate)
+    (isAggregate(consumer.layer.encoding?.y?.aggregate) ||
+      consumer.channel === "strokeWidth")
   ) {
     const derived = deriveLineSeries(dataset.values, consumer.layer);
     return {
       matched: true,
-      values: consumer.channel === "x" ? derived.xValues : derived.yValues
+      values: consumer.channel === "strokeWidth"
+        ? deriveLineSeriesFieldValues(
+            dataset.values,
+            consumer.layer,
+            derived,
+            consumer.encoding.field
+          )
+        : consumer.channel === "x" ? derived.xValues : derived.yValues
     };
   }
   if (resolveBarGrain(consumer.layer) === BAR_GRAINS.aggregate) {

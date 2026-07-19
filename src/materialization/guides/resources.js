@@ -25,6 +25,10 @@ const LEGEND_GRAPHICS = Object.freeze({
   opacity: Object.freeze([
     "opacityLegendBackground", "opacityLegendSymbols", "opacityLegendLabels",
     "opacityLegendTitle"
+  ]),
+  strokeWidth: Object.freeze([
+    "strokeWidthLegendSymbols", "strokeWidthLegendLabels",
+    "strokeWidthLegendTitle"
   ])
 });
 

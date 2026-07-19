@@ -475,7 +475,7 @@
       "domain": "encodings",
       "status": "implemented",
       "lifecycle": "Assignment",
-      "update": "Same action replaces the constant rule stroke width",
+      "update": "Same action replaces constant rule width or field-driven line/rule width",
       "audit": "Reassignment — Implemented",
       "coverage": {
         "contract": "complete",
@@ -2127,6 +2127,7 @@
       "rematerializeTextMark",
       "rematerializeScale",
       "rematerializeSizeLegend",
+      "rematerializeStrokeWidthLegend",
       "rematerializeThetaGrid",
       "rematerializeTitle",
       "rematerializeVerticalGrid"
@@ -2147,6 +2148,7 @@
       "removeCategoricalLegend",
       "removeOpacityLegend",
       "createSizeLegend"
+      ,"createStrokeWidthLegend"
     ],
     "stateTransitions": [
       "composeFacetGuides",

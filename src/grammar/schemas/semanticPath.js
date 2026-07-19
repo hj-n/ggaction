@@ -79,6 +79,8 @@ const GUIDE_PATHS = new Set([
   "legend.color.title",
   "legend.size.scale",
   "legend.size.title",
+  "legend.strokeWidth.scale",
+  "legend.strokeWidth.title",
   "legend.opacity.scale",
   "legend.opacity.title",
   "legend.series.channels",
@@ -105,6 +107,7 @@ const GUIDE_REMOVABLE_CONTAINERS = new Set([
   "grid.radial",
   "legend.color",
   "legend.size",
+  "legend.strokeWidth",
   "legend.opacity",
   "legend.series"
 ]);

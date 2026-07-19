@@ -12,6 +12,7 @@ const ENDPOINT_CHANNELS = Object.freeze(["x", "y", "x2", "y2"]);
 const VALUE_CHANNELS = Object.freeze([
   ...ENDPOINT_CHANNELS,
   "strokeDash",
+  "strokeWidth",
   "opacity"
 ]);
 

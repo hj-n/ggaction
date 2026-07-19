@@ -118,6 +118,8 @@ export type {
   SemanticSpec,
   SelectMarksOptions,
   StrokeDashEncodingOptions,
+  StrokeWidthEncodingOptions,
+  StrokeWidthScaleOptions,
   TraceNode,
   TitleOptions,
   EditTitleOptions,

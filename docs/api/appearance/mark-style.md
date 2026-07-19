@@ -11,8 +11,27 @@ title: Mark Style
 
 `encodeStroke({ value, target? })` assigns a required non-empty constant color
 string to a rule. `encodeStrokeWidth({ value, target? })` assigns a
-non-negative finite logical Canvas width. Both infer the current or only rule,
-create no scale or legend, and rematerialize every concrete line child.
+non-negative finite logical Canvas width to every child of the current rule.
+These constant modes create no scale or legend.
+
+`encodeStrokeWidth({ field, target?, fieldType?, scale? })` instead creates an
+independent quantitative width scale for a line or rule. Rules receive one
+width per source row. Lines receive one width per complete series, so all rows
+in one series must contain the same field value. No implicit mean, sum, or
+representative row is selected. The default concrete width range is `[1, 8]`.
+
+```javascript
+program
+  .encodeStrokeWidth({
+    field: "weight",
+    scale: { domain: [0, 100], range: [1, 8] }
+  })
+  .createLegend({ channels: ["strokeWidth"] });
+```
+
+Field values, domains, and ranges must be finite and non-negative. `value` and
+`field` are mutually exclusive. `editScale` rematerializes both marks and an
+active sampled stroke-width legend.
 
 Rules also reuse `encodeStrokeDash` in constant or nominal-field mode and
 `encodeOpacity` in constant or quantitative-field mode. Field modes produce

@@ -5,6 +5,7 @@ import { normalizeOptions } from "./options.js";
 import { findLayer } from "../../../../selectors/layers.js";
 import { findSemanticScale } from "../../../../selectors/scales.js";
 import { isSizeLegendPoint } from "../size.js";
+import { isStrokeWidthLegendLayer } from "../strokeWidth.js";
 import {
   resolveCurrentDefinition,
   resolveDefinition,
@@ -82,6 +83,9 @@ export const rematerializeLegend = action(
     }
     if (this.guideConfigs.legend?.size !== undefined) {
       next = next.rematerializeSizeLegend();
+    }
+    if (this.guideConfigs.legend?.strokeWidth !== undefined) {
+      next = next.rematerializeStrokeWidthLegend();
     }
     if (this.guideConfigs.legend?.gradient !== undefined) {
       next = next.rematerializeGradientLegend();
@@ -177,6 +181,8 @@ export const createLegend = action(
       throw new TypeError("createLegend channels must be an array.");
     }
     const explicitSize = channels?.length === 1 && channels[0] === "size";
+    const explicitStrokeWidth = channels?.length === 1 &&
+      channels[0] === "strokeWidth";
     const requestedSizeLayer = args.target === undefined
       ? undefined
       : findLayer(this, args.target);
@@ -212,6 +218,42 @@ export const createLegend = action(
         throw new Error('Standalone size legends currently require position "right".');
       }
       return this.createSizeLegend({
+        ...(target === undefined ? {} : { target }),
+        ...(count === undefined ? {} : { count })
+      });
+    }
+    const strokeWidthCandidates = this.semanticSpec.layers.filter(
+      isStrokeWidthLegendLayer
+    );
+    const requestedStrokeWidthLayer = args.target === undefined
+      ? undefined
+      : findLayer(this, args.target);
+    const hasOtherStrokeWidthLegendCandidate = this.semanticSpec.layers.some(
+      layer => ["color", "shape", "strokeDash", "size", "opacity"].some(
+        channel => layer.encoding?.[channel]?.scale !== undefined
+      )
+    );
+    const inferredStrokeWidth = channels === undefined && (
+      (args.target !== undefined &&
+        isStrokeWidthLegendLayer(requestedStrokeWidthLayer) &&
+        !hasNonSizeLegendEncoding(requestedStrokeWidthLayer)) ||
+      (args.target === undefined && strokeWidthCandidates.length === 1 &&
+        !hasOtherStrokeWidthLegendCandidate)
+    );
+    if (explicitStrokeWidth || inferredStrokeWidth) {
+      const { target, count, position, channels: _channels, ...unsupported } = args;
+      const unsupportedKeys = Object.keys(unsupported);
+      if (unsupportedKeys.length > 0) {
+        throw new Error(
+          `Standalone stroke-width legend does not support option "${unsupportedKeys[0]}".`
+        );
+      }
+      if (position !== undefined && position !== "right") {
+        throw new Error(
+          'Standalone stroke-width legends currently require position "right".'
+        );
+      }
+      return this.createStrokeWidthLegend({
         ...(target === undefined ? {} : { target }),
         ...(count === undefined ? {} : { count })
       });

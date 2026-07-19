@@ -1318,6 +1318,36 @@ export type OpacityEncodingOptions =
       scale?: OpacityScaleOptions;
     };
 
+export interface StrokeWidthScaleOptions {
+  id?: string;
+  type?: "linear" | "log" | "pow" | "sqrt" | "symlog";
+  domain?: "auto" | readonly [number, number];
+  range?: "auto" | readonly [number, number];
+  nice?: boolean;
+  zero?: boolean;
+  clamp?: boolean;
+  reverse?: boolean;
+  base?: number;
+  exponent?: number;
+  constant?: number;
+}
+
+export type StrokeWidthEncodingOptions =
+  | {
+      value: number;
+      field?: never;
+      target?: string;
+      fieldType?: never;
+      scale?: never;
+    }
+  | {
+      field: string;
+      value?: never;
+      target?: string;
+      fieldType?: "quantitative";
+      scale?: StrokeWidthScaleOptions;
+    };
+
 export type RegressionMethod = "linear" | "polynomial" | "loess";
 export type RegressionInterval = "mean" | "prediction";
 
@@ -1490,7 +1520,7 @@ export interface LegendBorderOptions {
 
 export interface LegendOptions {
   target?: string;
-  channels?: readonly ("color" | "strokeDash" | "shape" | "size" | "opacity")[];
+  channels?: readonly ("color" | "strokeDash" | "strokeWidth" | "shape" | "size" | "opacity")[];
   position?: "right" | "left" | "bottom" | "top";
   align?: "left" | "center" | "right";
   direction?: "horizontal" | "vertical";
@@ -1732,7 +1762,7 @@ export class ChartProgram {
   editDensity(options: EditDensityOptions): ChartProgram;
   encodeBarWidth(options?: BarWidthOptions): ChartProgram;
   encodeStroke(options: { target?: string; value: string }): ChartProgram;
-  encodeStrokeWidth(options: { target?: string; value: number }): ChartProgram;
+  encodeStrokeWidth(options: StrokeWidthEncodingOptions): ChartProgram;
 
   createRegression(options?: RegressionOptions): ChartProgram;
   editRegression(options: EditRegressionOptions): ChartProgram;

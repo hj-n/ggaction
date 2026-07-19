@@ -44,7 +44,8 @@ test("owns the implemented semantic and legend vocabularies in one module", () =
     "color", "strokeDash", "shape"
   ]);
   assert.deepEqual(LEGEND_CONFIG_KINDS, [
-    "series", "color", "size", "gradient", "interval", "opacity"
+    "series", "color", "size", "gradient", "interval", "opacity",
+    "strokeWidth"
   ]);
   assert.deepEqual(COLOR_LAYOUTS, [
     "stack", "fill", "group", "overlay", "diverging"
@@ -52,6 +53,7 @@ test("owns the implemented semantic and legend vocabularies in one module", () =
   assert.deepEqual(STACK_MODES, ["zero", "normalize"]);
   assert.equal(ENCODING_CHANNELS.includes("group"), true);
   assert.equal(ENCODING_CHANNELS.includes("x2"), true);
+  assert.equal(ENCODING_CHANNELS.includes("strokeWidth"), true);
   assert.equal(SCALED_ENCODING_CHANNELS.includes("group"), false);
   assert.equal(SCALED_ENCODING_CHANNELS.includes("text"), false);
   for (const vocabulary of [

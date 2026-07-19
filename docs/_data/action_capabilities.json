@@ -112,8 +112,8 @@
     },
     {
       "family": "Sampled",
-      "marks": ["point"],
-      "channels": "field opacity or size"
+      "marks": ["point", "line", "rule"],
+      "channels": "field opacity, size, or strokeWidth"
     }
   ],
   "axes": [
