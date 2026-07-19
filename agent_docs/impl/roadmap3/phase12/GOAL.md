@@ -12,8 +12,8 @@
 - [x] STEP 8 — Comprehensive integration과 Gate B 승인
 - [x] STEP 9 — GitHub organization/transfer preflight
 - [x] STEP 10 — Repository transfer와 Gate C
-- [ ] STEP 11 — `0.0.4` release candidate, release-only docs와 Gate D
-- [ ] STEP 12 — npm publish, GitHub Release, Pages와 Roadmap 3 closeout
+- [x] STEP 11 — `0.0.4` release candidate, release-only docs와 Gate D
+- [x] STEP 12 — npm publish, GitHub Release, Pages와 Roadmap 3 closeout
 
 ## 목표
 
@@ -70,3 +70,7 @@ Exact tag commit, public docs, metadata, changelog, tarball hash, fresh consumer
 - `ggaction/ggaction`이 canonical repository이고 이전 URL redirect와 package metadata가 정확하다.
 - Public documentation은 exact `0.0.4` release에서만 배포된다.
 - npm `ggaction@0.0.4`, annotated tag, GitHub Release, Pages와 provenance가 같은 commit을 가리킨다.
+
+`0.0.4` closeout에는 npm provenance의 workflow source ref가 `main` dispatch commit을 가리키는 한 가지 명시적
+예외가 있다. Package content와 release source는 approved tag commit으로 검증됐으며, 후속 release contract는
+exact tag-ref dispatch를 강제해 같은 예외의 재발을 차단한다. 자세한 근거는 `STEP12.md`에 기록한다.
