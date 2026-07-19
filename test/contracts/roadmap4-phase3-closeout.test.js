@@ -35,6 +35,14 @@ test("closes every Phase 3 capability into Current and out of Planned", () => {
     read("agent_docs/contract/planned/ENCODINGS.md"),
     /encodeStrokeWidth|aggregate:\s*"sum"|weight\?: FieldName/
   );
+  assert.match(
+    read("agent_docs/impl/roadmap4/ROADMAP.md"),
+    /\| 3 \| completed \| P-004 weighted theta와 P-008 field stroke width, P3-Exit 승인 완료 \|/
+  );
+  assert.match(
+    read("agent_docs/impl/roadmap4/phase3/GATE_EXIT.md"),
+    /Gate 상태: `approved`/
+  );
 });
 
 test("exports the complete Phase 3 strict option surface", () => {

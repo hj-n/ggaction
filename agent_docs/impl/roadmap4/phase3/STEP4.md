@@ -6,7 +6,7 @@
 - [x] Current action contract와 inventory 동기화
 - [x] public docs와 generated references 동기화
 - [x] full tests, coverage, render와 packed-package consumer
-- [ ] P3-Exit 사용자 승인
+- [x] P3-Exit 사용자 승인
 
 P3-B 사용자 승인 전에는 시작하지 않는다.
 

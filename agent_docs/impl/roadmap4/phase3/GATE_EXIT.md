@@ -10,9 +10,9 @@
 - [x] Browser Canvas와 2x Node PNG
 - [x] public docs와 generated references
 - [x] full tests, coverage와 installed-package consumer
-- [ ] 사용자 승인
+- [x] 사용자 승인
 
-Gate 상태: `ready-for-review`
+Gate 상태: `approved` (2026-07-20)
 
 Closeout checkpoint: `73b3118` (`origin/main`)
 
@@ -99,7 +99,7 @@ weightedRules
 - Field stroke width:
   `.artifacts/test/png/roadmap4/field-stroke-width/cars-weighted-rules/field-stroke-width/user-facing.png`
 
-## 승인 후
+## 승인 결과
 
-P3-Exit 승인 후 Phase 3를 `completed`로 전환하고 Phase 4 deterministic jitter 진입 조건을 연다.
-승인 전에는 Phase 4를 시작하지 않는다.
+2026-07-20 사용자 승인으로 Phase 3를 `completed`로 전환했고 Phase 4 deterministic jitter의
+진입 조건을 열었다. Phase 4 구현은 별도 시작 요청 전까지 진행하지 않는다.
