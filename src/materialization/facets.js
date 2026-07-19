@@ -6,7 +6,7 @@ import {
 } from "../layout/title.js";
 import { resolveFacetLayout } from "../layout/facets.js";
 import { namespaceGraphicSnapshot } from "./compositionSnapshot.js";
-import { prepareSharedFacetLegend } from "./facetGuides.js";
+import { prepareSharedFacetLegend } from "./facetGuides/index.js";
 import {
   attachSnapshotObject,
   clearCompositionChildren,

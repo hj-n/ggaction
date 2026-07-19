@@ -1,5 +1,4 @@
 import { action } from "../../../core/action.js";
-import { validateUserId } from "../../../core/identifiers.js";
 import { validateOptionObject } from "../../../core/validation.js";
 import { normalizeOptions } from "./categorical/options.js";
 import { symbolGraphic } from "./categorical/layout.js";
@@ -12,6 +11,7 @@ import { normalizeIntervalLegend } from "./continuous/interval.js";
 import { findLayer } from "../../../selectors/layers.js";
 import { resolveLegendGraphicPlacement } from
   "../../../materialization/graphicHierarchy.js";
+import { resolveLegendTarget } from "./target.js";
 
 const OPTIONS = Object.freeze([
   "target", "position", "align", "direction", "columns", "offset",
@@ -29,24 +29,6 @@ function mergeBorder(previous, patch) {
   if (patch === undefined) return previous;
   if (patch === false || patch === true) return patch;
   return previous === false ? patch : { ...previous, ...patch };
-}
-
-function resolveTarget(program, requested) {
-  const configs = program.guideConfigs.legend ?? {};
-  const targets = [...new Set(Object.values(configs)
-    .map(config => config?.target)
-    .filter(Boolean))];
-  if (requested !== undefined) {
-    const target = validateUserId(requested, "Legend target id");
-    if (!targets.includes(target)) {
-      throw new Error(`Unknown legend target "${target}".`);
-    }
-    return target;
-  }
-  if (targets.length !== 1) {
-    throw new Error("editLegend requires target when the legend is ambiguous.");
-  }
-  return targets[0];
 }
 
 function reconcileGraphic(program, id, shouldExist, definition) {
@@ -285,7 +267,7 @@ export const editLegend = action(
     )) {
       throw new TypeError('editLegend title must be a non-empty string, "auto", or false.');
     }
-    const target = resolveTarget(this, args.target);
+    const target = resolveLegendTarget(this, args.target, "editLegend");
     const configs = this.guideConfigs.legend ?? {};
     const categoricalKind = ["series", "color"].find(
       kind => configs[kind]?.target === target

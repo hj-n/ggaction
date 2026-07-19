@@ -1,28 +1,10 @@
 import { action } from "../../../core/action.js";
-import { validateUserId } from "../../../core/identifiers.js";
 import { validateKeys } from "../../../core/validation.js";
 import { legendGraphicIds } from
   "../../../materialization/guides/resources.js";
+import { resolveLegendTarget } from "./target.js";
 
 const OPTIONS = Object.freeze(["target"]);
-
-function resolveTarget(program, requested) {
-  const targets = [...new Set(Object.values(program.guideConfigs.legend ?? {})
-    .map(config => config?.target)
-    .filter(Boolean))];
-  if (requested !== undefined) {
-    const target = validateUserId(requested, "Legend target id");
-    if (!targets.includes(target)) {
-      throw new Error(`Unknown legend target "${target}".`);
-    }
-    return target;
-  }
-  if (targets.length === 0) throw new Error("removeLegend requires an existing legend.");
-  if (targets.length > 1) {
-    throw new Error("removeLegend requires target when the legend is ambiguous.");
-  }
-  return targets[0];
-}
 
 const SEMANTIC_KIND = Object.freeze({
   series: "series",
@@ -37,7 +19,7 @@ export const removeLegend = action(
   { op: "removeLegend", description: "Remove every legend block owned by one mark." },
   function (args = {}) {
     validateKeys(args, OPTIONS, "removeLegend");
-    const target = resolveTarget(this, args.target);
+    const target = resolveLegendTarget(this, args.target, "removeLegend");
     const kinds = Object.entries(this.guideConfigs.legend ?? {})
       .filter(([, config]) => config?.target === target)
       .map(([kind]) => kind);

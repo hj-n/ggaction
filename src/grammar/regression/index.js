@@ -2,9 +2,10 @@ import { studentTCriticalValue } from "../statistics/studentT.js";
 
 export {
   REGRESSION_LOWER_FIELD,
-  REGRESSION_UPPER_FIELD
-} from "./fields.js";
-export { deriveLinearRegression, deriveRegression } from "./derive.js";
+  REGRESSION_UPPER_FIELD,
+  deriveLinearRegression,
+  deriveRegression
+} from "./derive.js";
 export {
   normalizeRegressionParameters,
   validateRegressionTransform

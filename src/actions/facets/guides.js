@@ -1,7 +1,7 @@
 import { action } from "../../core/action.js";
 import { validateKeys } from "../../core/validation.js";
 import { applyFacetGuideComposition } from
-  "../../materialization/facetGuides.js";
+  "../../materialization/facetGuides/index.js";
 
 export const composeFacetGuides = action(
   {
