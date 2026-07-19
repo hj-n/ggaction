@@ -1,6 +1,6 @@
 import { registerAppearanceEncodingAction } from "./appearance.js";
 import { registerBarWidthEncodingAction } from "./barWidth.js";
-import { registerColorEncodingAction } from "./color.js";
+import { registerColorEncodingAction } from "./color/index.js";
 import { registerDensityEncodingAction } from "./density.js";
 import { registerHistogramEncodingAction } from "./histogram.js";
 import { registerOffsetEncodingAction } from "./offset.js";
