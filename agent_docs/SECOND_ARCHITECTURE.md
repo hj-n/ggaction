@@ -1723,6 +1723,11 @@ Point mark는 create, edit와 materialize orchestration을 각각 `create.js`, `
 이 분리는 wrapped action identity나 trace hierarchy를 바꾸지 않고 한 mark family 안의
 authoring lifecycle 책임만 분명하게 한다.
 
+Scale edit의 완성된 후보 definition 계산과 모든 consumer/guide 호환성 preflight는
+`actions/scales/editPolicy.js`가 소유한다. `editScale` action은 resource resolution,
+primitive semantic edits와 materialization orchestration만 담당하며, 검증이 끝나기 전에
+부분 semantic update를 만들지 않는다.
+
 각 action category의 `index.js`는 registrar boundary다. `actions/index.js`가 모든 built-in
 registrar를 한 번 조립하고 top-level `ChartProgram.js`가 이를 core program subclass에 등록한다.
 따라서 `core/`는 `actions/`를 import하지 않는다. `grammar/`는 core utility와 다른 pure grammar만,
