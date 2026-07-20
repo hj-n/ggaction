@@ -159,8 +159,11 @@ try {
   const resultCount = await results.count();
   assert.equal(resultCount > 0 && resultCount <= 8, true);
   assert.equal(await desktop.locator(".docs-search-snippet").count(), resultCount);
-  const urls = await results.evaluateAll(links => links.map(link => link.href.split("#")[0]));
+  const urls = await results.evaluateAll(links => links.map(link => link.href));
   assert.equal(new Set(urls).size, urls.length);
+  await search.fill("edit legend");
+  await results.first().waitFor({ state: "visible" });
+  assert.match(await results.first().getAttribute("href"), /#editlegend$/);
   await desktop.keyboard.press("ArrowDown");
   assert.equal(await search.evaluate(element => element === document.activeElement), true);
   const activeResult = await search.getAttribute("aria-activedescendant");

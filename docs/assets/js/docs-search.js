@@ -9,33 +9,12 @@
   let loading;
   let activeIndex = -1;
 
-  function buildSections(pages) {
-    return pages.flatMap(page => {
-      const documentFragment = new DOMParser().parseFromString(page.html, "text/html");
-      const pageText = documentFragment.body.textContent.replace(/\s+/g, " ").trim();
-      const entries = [{
-        pageTitle: page.title,
-        sectionTitle: undefined,
-        url: page.url,
-        content: pageText
-      }];
-
-      for (const heading of documentFragment.querySelectorAll("h2[id], h3[id]")) {
-        const content = [];
-        let sibling = heading.nextElementSibling;
-        while (sibling && !["H2", "H3"].includes(sibling.tagName)) {
-          content.push(sibling.textContent);
-          sibling = sibling.nextElementSibling;
-        }
-        entries.push({
-          pageTitle: page.title,
-          sectionTitle: heading.textContent.trim(),
-          url: `${page.url}#${heading.id}`,
-          content: content.join(" ").replace(/\s+/g, " ").trim()
-        });
-      }
-      return entries;
-    });
+  function searchable(value) {
+    return value
+      .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
   }
 
   function setBusy(busy) {
@@ -52,9 +31,9 @@
     }).then(response => {
       if (!response.ok) throw new Error(`Search index request failed: ${response.status}`);
       return response.json();
-    }).then(pages => {
-      if (!Array.isArray(pages)) throw new Error("Search index must be an array.");
-      sections = buildSections(pages);
+    }).then(index => {
+      if (!Array.isArray(index)) throw new Error("Search index must be an array.");
+      sections = index;
       return sections;
     }).catch(() => {
       input.disabled = true;
@@ -103,31 +82,40 @@
   }, { once: true });
 
   input.addEventListener("input", async () => {
-    const query = input.value.trim().toLowerCase();
+    const query = searchable(input.value);
     if (query.length < 2) {
       clearResults();
       return;
     }
 
     const searchableSections = await loadSections();
-    if (query !== input.value.trim().toLowerCase()) return;
+    if (query !== searchable(input.value)) return;
+
+    const queryCompact = query.replaceAll(" ", "");
+    const queryTokens = query.split(" ");
 
     const ranked = searchableSections
       .map(section => {
-        const pageTitle = section.pageTitle.toLowerCase();
-        const sectionTitle = section.sectionTitle?.toLowerCase();
-        const content = section.content.toLowerCase();
-        const score = sectionTitle === query
-          ? 5
-          : sectionTitle?.includes(query)
-            ? 4
-            : pageTitle === query
-              ? 3
-              : pageTitle.includes(query)
-                ? 2
-                : content.includes(query)
-                  ? 1
-                  : 0;
+        const pageTitle = searchable(section.pageTitle);
+        const sectionTitle = searchable(section.sectionTitle ?? "");
+        const keywords = searchable(section.keywords.join(" "));
+        const content = searchable(section.summary);
+        const combined = `${sectionTitle} ${pageTitle} ${keywords} ${content}`;
+        const compact = combined.replaceAll(" ", "");
+        const allTokens = queryTokens.every(token => combined.includes(token));
+        const score = sectionTitle === query || sectionTitle.replaceAll(" ", "") === queryCompact
+          ? 8
+          : keywords.split(" ").includes(query) || keywords.replaceAll(" ", "").includes(queryCompact)
+            ? 7
+            : sectionTitle.includes(query) || sectionTitle.replaceAll(" ", "").includes(queryCompact)
+              ? 6
+              : pageTitle === query
+                ? 5
+                : pageTitle.includes(query)
+                  ? 4
+                  : allTokens || compact.includes(queryCompact)
+                    ? 2
+                    : 0;
         return { ...section, score };
       })
       .filter(section => section.score > 0)
@@ -137,10 +125,12 @@
         (left.sectionTitle ?? "").localeCompare(right.sectionTitle ?? "")
       );
 
-    const seenPages = new Set();
+    const pageCounts = new Map();
     const matches = ranked.filter(section => {
-      if (seenPages.has(section.url.split("#")[0])) return false;
-      seenPages.add(section.url.split("#")[0]);
+      const pageUrl = section.url.split("#")[0];
+      const count = pageCounts.get(pageUrl) ?? 0;
+      if (count >= 3) return false;
+      pageCounts.set(pageUrl, count + 1);
       return true;
     }).slice(0, 8);
 
@@ -165,7 +155,7 @@
           : match.pageTitle;
         const preview = document.createElement("span");
         preview.className = "docs-search-snippet";
-        preview.textContent = excerpt(match.content, query);
+        preview.textContent = excerpt(match.summary, query);
         link.append(preview);
         item.append(link);
         results.append(item);

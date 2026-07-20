@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { access, readFile, readdir } from "node:fs/promises";
+import { access, readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 
 const siteRoot = path.resolve(process.argv[2] ?? "_site");
@@ -92,10 +92,12 @@ const searchIndex = JSON.parse(await readFile(path.join(siteRoot, "search-index.
 assert.equal(searchIndex.length > 40, true, "Expected every titled page in search.");
 assert.equal(new Set(searchIndex.map(entry => entry.url)).size, searchIndex.length);
 for (const entry of searchIndex) {
-  assert.equal(typeof entry.title === "string" && entry.title.length > 0, true);
+  assert.equal(typeof entry.pageTitle === "string" && entry.pageTitle.length > 0, true);
   assert.equal(typeof entry.url === "string" && entry.url.length > 0, true);
-  assert.equal(typeof entry.html === "string" && entry.html.length > 0, true);
+  assert.equal(typeof entry.summary === "string", true);
+  assert.equal(Array.isArray(entry.keywords) && entry.keywords.length > 0, true);
 }
+assert.equal((await stat(path.join(siteRoot, "search-index.json"))).size < 400_000, true);
 
 for (const expected of [
   "index.html",

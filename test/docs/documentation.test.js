@@ -18,6 +18,10 @@ import {
   buildDocActionMetadata,
   generateDocActionMetadata
 } from "../../scripts/generate-doc-action-metadata.js";
+import {
+  buildDocSearchIndex,
+  generateDocSearchIndex
+} from "../../scripts/generate-doc-search-index.js";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const docsRoot = path.join(root, "docs");
@@ -460,13 +464,11 @@ test("indexes documentation headings for section search", () => {
 
   assert.match(index, /data-index-url/);
   assert.doesNotMatch(index, /entry\.content \| markdownify/);
-  assert.match(indexPage, /entry\.content \| markdownify/);
-  assert.match(indexPage, /layout: null/);
+  assert.doesNotMatch(indexPage, /entry\.content \| markdownify|layout: null|<html/i);
   assert.match(search, /fetch\(config\.dataset\.indexUrl/);
   assert.match(search, /input\.addEventListener\("focus"/);
-  assert.match(search, /querySelectorAll\("h2\[id\], h3\[id\]"\)/);
   assert.match(search, /sectionTitle/);
-  assert.match(search, /seenPages/);
+  assert.match(search, /pageCounts/);
   assert.match(search, /docs-search-snippet/);
   assert.match(search, /aria-activedescendant/);
   assert.match(search, /aria-selected/);
@@ -510,6 +512,16 @@ test("indexes documentation headings for section search", () => {
   const toc = read("docs/assets/js/docs-toc.js");
   assert.match(toc, /heading\.dataset\.tocLabel/);
   assert.match(toc, /headings\.length > 30/);
+});
+
+test("keeps the compact search index generated and action-aware", async () => {
+  await generateDocSearchIndex({ check: true });
+  const index = await buildDocSearchIndex();
+  assert.equal(index.length > 100, true);
+  assert.equal(JSON.stringify(index).length < 400_000, true);
+  assert.equal(index.every(entry => !Object.hasOwn(entry, "html")), true);
+  assert.equal(index.some(entry => entry.url === "/reference/actions/#editlegend"), true);
+  assert.equal(index.some(entry => entry.keywords.includes("removeLegend")), true);
 });
 
 test("keeps every public action available to documentation interactions", async () => {
