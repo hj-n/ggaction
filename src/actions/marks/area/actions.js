@@ -34,6 +34,8 @@ import { findUpstreamTransform } from "../../../materialization/dataProvenance.j
 import { resolveMarkGraphicPlacement } from
   "../../../materialization/graphicHierarchy.js";
 import { rematerializeHighlightBaseline } from "../lifecycle.js";
+import { buildCategoricalDensityPaths } from
+  "../../../grammar/categoricalDensity.js";
 
 const CREATE_OPTIONS = Object.freeze([
   "id", "data", "fill", "opacity", "stroke", "strokeWidth", "curve"
@@ -42,6 +44,7 @@ const EDIT_OPTIONS = Object.freeze([
   "target", "fill", "opacity", "stroke", "strokeWidth", "curve"
 ]);
 const REMATERIALIZE_OPTIONS = Object.freeze(["id", "scales"]);
+const STROKE_FROM_FILL_OPTIONS = Object.freeze(["id", "strokeWidth"]);
 
 export function validateAreaCreateOutline(args, operation = "createAreaMark") {
   if (Object.hasOwn(args, "strokeWidth") && !Object.hasOwn(args, "stroke")) {
@@ -103,6 +106,35 @@ const createAreaMark = action(
   }
 );
 
+const configureAreaStrokeFromFill = action(
+  {
+    op: "configureAreaStrokeFromFill",
+    description: "Use each area path fill as its outline color."
+  },
+  function (args = {}) {
+    validateMarkOptions(
+      args,
+      STROKE_FROM_FILL_OPTIONS,
+      "configureAreaStrokeFromFill"
+    );
+    const id = validateUserId(args.id, "Area mark id");
+    const layer = findLayer(this, id);
+    if (layer?.mark?.type !== "area") {
+      throw new Error(`Unknown area mark "${id}".`);
+    }
+    const { stroke: _stroke, ...config } = this.markConfigs[id] ?? {};
+    void _stroke;
+    return this._withMarkConfig(id, {
+      ...config,
+      strokeFromFill: true,
+      strokeWidth: validateNonNegativeFinite(
+        args.strokeWidth ?? 1,
+        "Area strokeWidth"
+      )
+    });
+  }
+);
+
 const rematerializeAreaMark = action(
   {
     op: "rematerializeAreaMark",
@@ -154,7 +186,8 @@ const rematerializeAreaMark = action(
       : deriveDensityAreaSeries(dataset.values, layer, densityTransform);
     const colorEncoding = layer.encoding?.color;
     const layout = colorEncoding?.layout ?? "overlay";
-    const derived = densityTransform === undefined
+    const categoricalDensity = densityTransform?.placement?.type === "category";
+    const derived = densityTransform === undefined || categoricalDensity
       ? rawDerived
       : layoutDensityAreaSeries(rawDerived, layout);
     let resolved = args.scales === false
@@ -167,7 +200,7 @@ const rematerializeAreaMark = action(
     }
     const xScale = resolved.resolvedScales[xScaleId];
     const yScale = resolved.resolvedScales[yScaleId];
-    const densityScale = densityTransform === undefined
+    const densityScale = densityTransform === undefined || categoricalDensity
       ? undefined
       : derived.mode === "y-density" ? yScale : xScale;
     if (
@@ -176,8 +209,18 @@ const rematerializeAreaMark = action(
     ) {
       throw new Error(`Density area mark "${id}" requires a scale domain containing zero.`);
     }
-    const paths = derived.series.map(series => {
-      const curve = this.markConfigs[id]?.curve ?? "linear";
+    const curve = this.markConfigs[id]?.curve ?? "linear";
+    const paths = categoricalDensity
+      ? buildCategoricalDensityPaths(derived, {
+          categoryScale: densityTransform.placement.channel === "x"
+            ? xScale
+            : yScale,
+          valueScale: densityTransform.placement.channel === "x"
+            ? yScale
+            : xScale,
+          curve
+        })
+      : derived.series.map(series => {
       if (densityTransform === undefined && derived.orientation === "horizontal") {
         const y = mapContinuousScaleValues(
           series.values.map(value => value.y),
@@ -268,7 +311,7 @@ const rematerializeAreaMark = action(
         x.map((value, index) => ({ x: value, y: upper[index] })),
         curve
       );
-    });
+      });
     const config = this.markConfigs[id];
     const fills = config.errorBand?.fill !== undefined
       ? paths.map(() => config.errorBand.fill)
@@ -280,7 +323,8 @@ const rematerializeAreaMark = action(
           resolved.resolvedScales[colorEncoding.scale].range
         );
     const existingChildren = resolved.graphicSpec.objects[id].items ?? [];
-    const removesOutline = config.stroke === undefined && existingChildren.some(
+    const hasOutline = config.stroke !== undefined || config.strokeFromFill === true;
+    const removesOutline = !hasOutline && existingChildren.some(
       child => child.properties.stroke !== undefined
     );
     let next = removesOutline
@@ -292,9 +336,13 @@ const rematerializeAreaMark = action(
       .editGraphics({ target: id, property: "commands", value: paths })
       .editGraphics({ target: id, property: "fill", value: fills })
       .editGraphics({ target: id, property: "opacity", value: config.opacity });
-    if (config.stroke !== undefined) {
+    if (hasOutline) {
       next = next
-        .editGraphics({ target: id, property: "stroke", value: config.stroke })
+        .editGraphics({
+          target: id,
+          property: "stroke",
+          value: config.strokeFromFill === true ? fills : config.stroke
+        })
         .editGraphics({
           target: id,
           property: "strokeWidth",
@@ -347,12 +395,21 @@ const editAreaMark = action(
     }
     if (Object.hasOwn(args, "stroke")) {
       if (args.stroke === false) {
-        const { stroke: removedStroke, strokeWidth: removedWidth, ...rest } = config;
+        const {
+          stroke: removedStroke,
+          strokeFromFill: removedStrokeFromFill,
+          strokeWidth: removedWidth,
+          ...rest
+        } = config;
         void removedStroke;
+        void removedStrokeFromFill;
         void removedWidth;
         config = rest;
       } else {
-        const hadStroke = config.stroke !== undefined;
+        const hadStroke = config.stroke !== undefined || config.strokeFromFill === true;
+        const { strokeFromFill: _strokeFromFill, ...withoutFillStroke } = config;
+        void _strokeFromFill;
+        config = withoutFillStroke;
         config.stroke = validateNonEmptyString(args.stroke, "Area stroke");
         config.strokeWidth = Object.hasOwn(args, "strokeWidth")
           ? validateNonNegativeFinite(args.strokeWidth, "Area strokeWidth")
@@ -377,6 +434,8 @@ const editAreaMark = action(
 
 export function registerAreaMarkActions(ProgramClass) {
   ProgramClass.prototype.createAreaMark = createAreaMark;
+  ProgramClass.prototype.configureAreaStrokeFromFill =
+    configureAreaStrokeFromFill;
   ProgramClass.prototype.editAreaMark = editAreaMark;
   ProgramClass.prototype.rematerializeAreaMark = rematerializeAreaMark;
 }

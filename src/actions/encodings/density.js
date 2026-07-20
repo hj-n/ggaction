@@ -4,6 +4,7 @@ import { isPlainObject } from "../../core/immutable.js";
 import {
   findDataset,
   findLayer,
+  findSemanticScale,
   hasDataset,
   resolveEligibleLayer
 } from "../../selectors/index.js";
@@ -14,14 +15,16 @@ import { planDensityRematerialization } from
 import { planDerivedDataRevision } from
   "../../materialization/dataProvenance.js";
 import { validateOptions } from "./shared.js";
+import { normalizeDensityPlacement } from "../../grammar/density.js";
 
 const OPTIONS = Object.freeze([
   "field", "target", "source", "groupBy", "bandwidth", "extent", "steps",
   "kernel", "normalization", "as", "densityChannel", "coordinate",
-  "valueScale", "densityScale"
+  "valueScale", "densityScale", "placement"
 ]);
 const EDIT_OPTIONS = Object.freeze([
-  "target", "bandwidth", "extent", "steps", "kernel", "normalization"
+  "target", "bandwidth", "extent", "steps", "kernel", "normalization",
+  "placement"
 ]);
 const EDITABLE = Object.freeze(EDIT_OPTIONS.filter(option => option !== "target"));
 
@@ -58,6 +61,124 @@ function scaleOptions(value, defaults, label) {
   return { ...defaults, ...(value ?? {}) };
 }
 
+function categoryScaleOptions(value, fallbackId) {
+  const scale = scaleOptions(value, { type: "band" }, "Density placement scale");
+  if ((scale.type ?? "band") !== "band") {
+    throw new Error('Density category placement requires scale type "band".');
+  }
+  return {
+    ...(fallbackId === undefined ? {} : { id: fallbackId }),
+    ...scale,
+    type: "band"
+  };
+}
+
+const SCALE_EDIT_PROPERTIES = Object.freeze([
+  "type", "domain", "range", "nice", "zero", "clamp", "reverse",
+  "base", "exponent", "constant", "paddingInner", "paddingOuter",
+  "padding", "align", "interpolate", "unknown"
+]);
+
+function scaleEdit(id, definition) {
+  return {
+    id,
+    ...Object.fromEntries(SCALE_EDIT_PROPERTIES
+      .filter(property => Object.hasOwn(definition, property))
+      .map(property => [property, definition[property]]))
+  };
+}
+
+function valueScaleForTransition(program, layer, transform) {
+  const densityChannel = transform.placement?.channel ?? (
+    layer.encoding.x.field === transform.as[1] ? "x" : "y"
+  );
+  const valueChannel = densityChannel === "x" ? "y" : "x";
+  return findSemanticScale(program, layer.encoding[valueChannel].scale);
+}
+
+function transitionScaleDefinitions(program, layer, transform, placement, rawPlacement) {
+  const valueScale = valueScaleForTransition(program, layer, transform);
+  if (valueScale === undefined) {
+    throw new Error(`Density area "${layer.id}" requires its value scale.`);
+  }
+  const { id: _valueId, range: _valueRange, ...valueDefinition } = valueScale;
+  void _valueId;
+  void _valueRange;
+  const valueChannel = placement?.channel === "x" ? "y" : "x";
+  const companionChannel = valueChannel === "x" ? "y" : "x";
+  const companionDefinition = placement === undefined
+    ? { type: "linear", domain: "auto", range: "auto", nice: true, zero: true }
+    : categoryScaleOptions(rawPlacement.scale);
+  return {
+    [valueChannel]: {
+      ...valueDefinition,
+      range: "auto"
+    },
+    [companionChannel]: companionDefinition
+  };
+}
+
+function densityPositionDefinition({
+  layer,
+  output,
+  groupBy,
+  placement,
+  coordinate,
+  valueScale,
+  densityScale,
+  placementScale
+}) {
+  if (placement === undefined) {
+    const xIsDensity = layer.densityChannel === "x";
+    return {
+      x: {
+        field: output[xIsDensity ? 1 : 0],
+        fieldType: "quantitative",
+        scale: xIsDensity ? densityScale : valueScale,
+        coordinate
+      },
+      y: {
+        field: output[xIsDensity ? 0 : 1],
+        fieldType: "quantitative",
+        scale: xIsDensity ? valueScale : densityScale,
+        coordinate
+      }
+    };
+  }
+  const category = {
+    field: placement.categoryField,
+    fieldType: "nominal",
+    scale: placementScale,
+    coordinate
+  };
+  const value = {
+    field: output[0],
+    fieldType: "quantitative",
+    scale: valueScale,
+    coordinate
+  };
+  return placement.channel === "x"
+    ? { x: category, y: value }
+    : { x: value, y: category };
+}
+
+function applyDensityPosition(program, layerId, definition, groupBy) {
+  const withCoordinate = value => ({
+    target: layerId,
+    field: value.field,
+    fieldType: value.fieldType,
+    scale: value.scale,
+    ...(value.coordinate === undefined ? {} : { coordinate: value.coordinate })
+  });
+  let next = program
+    .encodeX(withCoordinate(definition.x))
+    .encodeY(withCoordinate(definition.y));
+  if (groupBy !== undefined) {
+    next = next.encodeGroup({ target: layerId, field: groupBy });
+  }
+  return next;
+}
+
 const encodeDensity = action(
   {
     op: "encodeDensity",
@@ -84,7 +205,8 @@ const encodeDensity = action(
         `Density area target "${layer.id}" already has positional or group encodings.`
       );
     }
-    const densityChannel = args.densityChannel ?? "y";
+    const categoryPlacement = args.placement?.type === "category";
+    const densityChannel = args.densityChannel ?? (categoryPlacement ? "x" : "y");
     if (!["x", "y"].includes(densityChannel)) {
       throw new Error(`Unsupported densityChannel "${densityChannel}".`);
     }
@@ -101,51 +223,62 @@ const encodeDensity = action(
       { nice: false, zero: false },
       "Density valueScale"
     );
-    const densityScale = scaleOptions(
-      args.densityScale,
-      { nice: true, zero: true },
-      "Density densityScale"
-    );
-    const xIsDensity = densityChannel === "x";
-    const xField = output[xIsDensity ? 1 : 0];
-    const yField = output[xIsDensity ? 0 : 1];
-    const xScale = xIsDensity ? densityScale : valueScale;
-    const yScale = xIsDensity ? valueScale : densityScale;
+    const placement = args.placement === undefined
+      ? undefined
+      : normalizeDensityPlacement(args.placement, {
+          densityChannel,
+          groupBy,
+          categoryField: groupBy ?? `${layer.id}DensityCategory`
+        });
+    if (placement !== undefined && args.densityScale !== undefined) {
+      throw new Error(
+        "Density category placement cannot be combined with densityScale."
+      );
+    }
+    const densityScale = placement === undefined
+      ? scaleOptions(
+          args.densityScale,
+          { nice: true, zero: true },
+          "Density densityScale"
+        )
+      : undefined;
+    const placementScale = placement === undefined
+      ? undefined
+      : categoryScaleOptions(args.placement.scale);
 
-    let next = this
-      .createDensityData({
-        id: derivedId,
-        source,
-        field,
-        ...(groupBy === undefined ? {} : { groupBy }),
-        ...(args.bandwidth === undefined ? {} : { bandwidth: args.bandwidth }),
-        ...(args.extent === undefined ? {} : { extent: args.extent }),
-        ...(args.steps === undefined ? {} : { steps: args.steps }),
-        ...(args.kernel === undefined ? {} : { kernel: args.kernel }),
-        ...(args.normalization === undefined
-          ? {}
-          : { normalization: args.normalization }),
-        ...(args.as === undefined ? {} : { as: args.as })
-      })
+    const dataArgs = {
+      id: derivedId,
+      source,
+      field,
+      ...(groupBy === undefined ? {} : { groupBy }),
+      ...(args.bandwidth === undefined ? {} : { bandwidth: args.bandwidth }),
+      ...(args.extent === undefined ? {} : { extent: args.extent }),
+      ...(args.steps === undefined ? {} : { steps: args.steps }),
+      ...(args.kernel === undefined ? {} : { kernel: args.kernel }),
+      ...(args.normalization === undefined
+        ? {}
+        : { normalization: args.normalization }),
+      ...(args.as === undefined ? {} : { as: args.as }),
+      ...(placement === undefined ? {} : { placement })
+    };
+    let next = placement === undefined
+      ? this.createDensityData(dataArgs)
+      : this.createCategoricalDensityData(dataArgs);
+    next = next
       .editSemantic({
         property: `layer[${layer.id}].data`,
         value: derivedId
-      })
-      .encodeX({
-        target: layer.id,
-        field: xField,
-        ...(args.coordinate === undefined ? {} : { coordinate: args.coordinate }),
-        scale: xScale
-      })
-      .encodeY({
-        target: layer.id,
-        field: yField,
-        ...(args.coordinate === undefined ? {} : { coordinate: args.coordinate }),
-        scale: yScale
       });
-    if (groupBy !== undefined) {
-      next = next.encodeGroup({ target: layer.id, field: groupBy });
-    }
+    next = applyDensityPosition(next, layer.id, densityPositionDefinition({
+      layer: { densityChannel },
+      output,
+      groupBy,
+      placement,
+      coordinate: args.coordinate,
+      valueScale,
+      densityScale,
+      placementScale
+    }), groupBy);
     return next.rematerializeAreaMark({ id: layer.id });
   }
 );
@@ -179,6 +312,25 @@ const editDensity = action(
     const layer = findDensityArea(this, args.target);
     const previous = findDataset(this, layer.data);
     const transform = previous.transform[0];
+    const requestedPlacement = Object.hasOwn(args, "placement")
+      ? normalizeDensityPlacement(args.placement, {
+          densityChannel: transform.placement?.channel ?? "x",
+          groupBy: transform.groupBy,
+          categoryField: transform.groupBy ??
+            transform.placement?.categoryField ??
+            `${layer.id}DensityCategory`
+        })
+      : transform.placement;
+    const colorField = layer.encoding?.color?.field;
+    const availableColorFields = [
+      transform.groupBy,
+      requestedPlacement?.split?.field
+    ].filter(Boolean);
+    if (colorField !== undefined && !availableColorFields.includes(colorField)) {
+      throw new Error(
+        `editDensity placement would remove color field "${colorField}" from the density series.`
+      );
+    }
     const revision = planDerivedDataRevision(this, {
       owner: layer.id,
       role: "DensityData",
@@ -189,23 +341,86 @@ const editDensity = action(
       ? args[property]
       : transform[property];
 
-    let next = this
-      .createDensityData({
-        id: revision.id,
-        source: previous.source,
-        field: transform.field,
-        ...(transform.groupBy === undefined
-          ? {}
-          : { groupBy: transform.groupBy }),
-        bandwidth: option("bandwidth"),
-        extent: option("extent"),
-        steps: option("steps"),
-        kernel: option("kernel") ?? "gaussian",
-        normalization: option("normalization") ?? "unit",
-        as: transform.as
-      })
-      .rebindLayerData(revision.rebinds[0])
+    const dataArgs = {
+      id: revision.id,
+      source: previous.source,
+      field: transform.field,
+      ...(transform.groupBy === undefined
+        ? {}
+        : { groupBy: transform.groupBy }),
+      bandwidth: option("bandwidth"),
+      extent: option("extent"),
+      steps: option("steps"),
+      kernel: option("kernel") ?? "gaussian",
+      normalization: option("normalization") ?? "unit",
+      as: transform.as,
+      ...(requestedPlacement === undefined
+        ? {}
+        : { placement: requestedPlacement })
+    };
+    let next = requestedPlacement === undefined
+      ? this.createDensityData(dataArgs)
+      : this.createCategoricalDensityData(dataArgs);
+    next = next.rebindLayerData(revision.rebinds[0])
       .releaseDerivedData(revision.release);
+
+    const changesPlacementMode = Object.hasOwn(args, "placement") &&
+      (transform.placement === undefined) !== (requestedPlacement === undefined);
+    if (changesPlacementMode) {
+      const xScaleId = layer.encoding?.x?.scale;
+      const yScaleId = layer.encoding?.y?.scale;
+      const scaleDefinitions = transitionScaleDefinitions(
+        this,
+        layer,
+        transform,
+        requestedPlacement,
+        args.placement
+      );
+      next = next
+        .editSemantic({ property: `layer[${layer.id}].encoding.x`, remove: true })
+        .editSemantic({ property: `layer[${layer.id}].encoding.y`, remove: true });
+      next = next
+        .editScale(scaleEdit(xScaleId, scaleDefinitions.x))
+        .editScale(scaleEdit(yScaleId, scaleDefinitions.y));
+      const densityChannel = requestedPlacement?.channel ?? (
+        layer.encoding.x.field === transform.as[1] ? "x" : "y"
+      );
+      const definition = densityPositionDefinition({
+        layer: { densityChannel },
+        output: transform.as,
+        groupBy: transform.groupBy,
+        placement: requestedPlacement,
+        coordinate: layer.coordinate,
+        valueScale: {
+          id: requestedPlacement?.channel === "x" ? yScaleId : xScaleId,
+          ...scaleDefinitions[requestedPlacement?.channel === "x" ? "y" : "x"]
+        },
+        densityScale: requestedPlacement === undefined
+          ? {
+              id: densityChannel === "x" ? xScaleId : yScaleId,
+              ...scaleDefinitions[densityChannel]
+            }
+          : undefined,
+        placementScale: requestedPlacement === undefined
+          ? undefined
+          : {
+              id: requestedPlacement.channel === "x" ? xScaleId : yScaleId,
+              ...scaleDefinitions[requestedPlacement.channel]
+            }
+      });
+      next = applyDensityPosition(next, layer.id, definition);
+    } else if (
+      requestedPlacement !== undefined &&
+      Object.hasOwn(args.placement ?? {}, "scale")
+    ) {
+      const channel = requestedPlacement.channel;
+      const scaleId = layer.encoding[channel].scale;
+      const requestedScale = categoryScaleOptions(args.placement.scale, scaleId);
+      if (requestedScale.id !== scaleId) {
+        throw new Error("editDensity placement scale cannot change its id.");
+      }
+      next = next.editScale(scaleEdit(scaleId, requestedScale));
+    }
 
     next = applyMaterializationPlan(
       next,

@@ -1,6 +1,37 @@
 import { validateStack, emptyPositionPolicy } from "./common.js";
 
-export function resolveAreaPositionPolicy({ dataset, channel, args, fieldType }) {
+export function isCategoricalDensityPosition({
+  layer,
+  dataset,
+  channel,
+  fieldType,
+  field
+}) {
+  const density = dataset.transform?.find(transform => transform.type === "density");
+  return layer.mark?.type === "area" &&
+    ["nominal", "ordinal"].includes(fieldType) &&
+    density?.placement?.type === "category" &&
+    density.placement.channel === channel &&
+    density.placement.categoryField === field;
+}
+
+export function resolveAreaPositionPolicy({ dataset, channel, args, fieldType, field }) {
+  const density = dataset.transform?.find(transform => transform.type === "density");
+  if (["nominal", "ordinal"].includes(fieldType)) {
+    if (
+      density?.placement?.type !== "category" ||
+      density.placement.channel !== channel ||
+      density.placement.categoryField !== field
+    ) {
+      throw new Error(
+        "Categorical area position requires a matching category density placement."
+      );
+    }
+    if (args.aggregate !== undefined || args.bin !== undefined || args.stack !== undefined) {
+      throw new Error("Categorical density position does not support aggregate, bin, or stack.");
+    }
+    return emptyPositionPolicy();
+  }
   if (!["quantitative", "temporal"].includes(fieldType)) {
     throw new Error(
       "Area position encoding requires quantitative or temporal fields."
@@ -12,7 +43,7 @@ export function resolveAreaPositionPolicy({ dataset, channel, args, fieldType })
   if (args.stack === undefined) return emptyPositionPolicy();
   if (
     channel !== "y" ||
-    !dataset.transform?.some(transform => transform.type === "density")
+    density === undefined
   ) {
     throw new Error("Area stack currently requires a density y encoding.");
   }

@@ -100,7 +100,7 @@ function legend(layout) {
   const x = layout.width - layout.margin.right + 28;
   const y = layout.margin.top + 44;
   return Object.freeze({
-    title: Object.freeze({ x, y: y - 28, text: "Model era" }),
+    title: Object.freeze({ x, y: y - 24, text: "Model era" }),
     items: Object.freeze(ERA_DOMAIN.map((label, index) => Object.freeze({
       label,
       fill: ERA_COLORS[index],

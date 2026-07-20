@@ -56,10 +56,19 @@ const encodeColor = action(
       "color mark"
     );
     assertNoConstantColor(this, layer);
+    const densityTransform = dataset.transform?.length === 1 &&
+      dataset.transform[0].type === "density"
+      ? dataset.transform[0]
+      : undefined;
+    const densitySeriesFields = densityTransform?.placement?.type === "category"
+      ? [densityTransform.groupBy, densityTransform.placement.split?.field]
+          .filter(Boolean)
+      : [];
     if (
       layer.mark.type === "area" &&
       (layer.encoding?.group?.field === undefined ||
-        layer.encoding.group.field !== args.field)
+        layer.encoding.group.field !== args.field) &&
+      !densitySeriesFields.includes(args.field)
     ) {
       throw new Error(
         "Area color encoding must match an existing group encoding."

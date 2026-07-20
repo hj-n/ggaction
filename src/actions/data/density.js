@@ -8,6 +8,23 @@ const OPTIONS = Object.freeze([
   "id", "source", "field", "groupBy", "bandwidth", "extent", "steps",
   "kernel", "normalization", "as"
 ]);
+const CATEGORICAL_OPTIONS = Object.freeze([...OPTIONS, "placement"]);
+
+function densityTransform(args, placement) {
+  return {
+    type: "density",
+    field: args.field,
+    ...(args.groupBy === undefined ? {} : { groupBy: args.groupBy }),
+    bandwidth: args.bandwidth ?? "auto",
+    extent: args.extent ?? "auto",
+    steps: args.steps ?? 100,
+    kernel: args.kernel ?? "gaussian",
+    normalization: args.normalization ?? "unit",
+    as: args.as ?? [`${args.field}_value`, `${args.field}_density`],
+    resolve: "shared",
+    ...(placement === undefined ? {} : { placement })
+  };
+}
 
 export const materializeDensityData = action(
   { op: "materializeDensityData", description: "Materialize one grouped kernel-density dataset." },
@@ -26,7 +43,10 @@ export const materializeDensityData = action(
           ...transform,
           resolved: {
             bandwidth: result.bandwidth,
-            extent: result.extent
+            extent: result.extent,
+            ...(result.splitDomain === undefined
+              ? {}
+              : { splitDomain: result.splitDomain })
           }
         }]
       })
@@ -49,20 +69,41 @@ export const createDensityData = action(
     if (typeof args.field !== "string" || args.field.length === 0) {
       throw new TypeError("createDensityData requires a non-empty field string.");
     }
-    const transform = {
-      type: "density",
-      field: args.field,
-      ...(args.groupBy === undefined ? {} : { groupBy: args.groupBy }),
-      bandwidth: args.bandwidth ?? "auto",
-      extent: args.extent ?? "auto",
-      steps: args.steps ?? 100,
-      kernel: args.kernel ?? "gaussian",
-      normalization: args.normalization ?? "unit",
-      as: args.as ?? [`${args.field}_value`, `${args.field}_density`],
-      resolve: "shared"
-    };
+    const transform = densityTransform(args);
     return this
       .createDerivedData({ id, source, transform: [transform] })
+      .materializeDensityData({ id });
+  }
+);
+
+export const createCategoricalDensityData = action(
+  {
+    op: "createCategoricalDensityData",
+    description: "Create category-placed kernel-density values."
+  },
+  function (args = {}) {
+    validateKeys(args, CATEGORICAL_OPTIONS, "createCategoricalDensityData");
+    const id = validateUserId(args.id, "Density dataset id");
+    const source = validateUserId(
+      args.source ?? this.context.currentData,
+      "Source dataset id"
+    );
+    if (typeof args.field !== "string" || args.field.length === 0) {
+      throw new TypeError(
+        "createCategoricalDensityData requires a non-empty field string."
+      );
+    }
+    if (args.placement?.type !== "category") {
+      throw new Error(
+        "createCategoricalDensityData requires normalized category placement."
+      );
+    }
+    return this
+      .createDerivedData({
+        id,
+        source,
+        transform: [densityTransform(args, args.placement)]
+      })
       .materializeDensityData({ id });
   }
 );

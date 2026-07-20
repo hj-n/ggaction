@@ -24,6 +24,26 @@ function densityProgram(id = "densities") {
     });
 }
 
+function categoricalDensityProgram() {
+  return chart()
+    .createCanvas({ width: 520, height: 360, margin: 60 })
+    .createData({ id: "values", values: [
+      { category: "A", split: "early", value: 1 },
+      { category: "A", split: "late", value: 2 },
+      { category: "B", split: "early", value: 3 },
+      { category: "B", split: "late", value: 4 }
+    ] })
+    .createAreaMark({ id: "violins" })
+    .encodeDensity({
+      field: "value",
+      groupBy: "category",
+      bandwidth: 1,
+      extent: [0, 5],
+      steps: 12,
+      placement: { type: "category" }
+    });
+}
+
 test("creates, rebinds, and materializes one immutable density revision", () => {
   const before = densityProgram();
   const after = before.editDensity({
@@ -209,4 +229,77 @@ test("validates selection and edits atomically", () => {
     () => ambiguous.editDensity({ steps: 20 }),
     /target is ambiguous/
   );
+});
+
+test("revises categorical width and split without replacing position roles", () => {
+  const before = categoricalDensityProgram();
+  const after = before.editDensity({
+    placement: {
+      type: "category",
+      split: { field: "split", domain: ["early", "late"] },
+      width: { band: 0.5, resolve: "independent" }
+    }
+  });
+  const transform = after.semanticSpec.datasets[1].transform[0];
+
+  assert.equal(after.semanticSpec.datasets[1].id, "violinsDensityDataRevision1");
+  assert.deepEqual(transform.placement, {
+    type: "category",
+    channel: "x",
+    categoryField: "category",
+    width: { band: 0.5, resolve: "independent" },
+    split: { field: "split", domain: ["early", "late"] }
+  });
+  assert.equal(after.graphicSpec.objects.violins.items.length, 4);
+  assert.deepEqual(after.semanticSpec.layers[0].encoding, before.semanticSpec.layers[0].encoding);
+  assert.equal(before.graphicSpec.objects.violins.items.length, 2);
+});
+
+test("transitions category placement to baseline and back without stale scales", () => {
+  const category = categoricalDensityProgram();
+  const baseline = category.editDensity({ placement: { type: "baseline" } });
+  const restored = baseline.editDensity({ placement: { type: "category" } });
+
+  assert.equal(baseline.semanticSpec.datasets[1].transform[0].placement, undefined);
+  assert.deepEqual(baseline.semanticSpec.layers[0].encoding, {
+    group: { field: "category", fieldType: "nominal" },
+    x: { field: "value_value", fieldType: "quantitative", scale: "x" },
+    y: { field: "value_density", fieldType: "quantitative", scale: "y" }
+  });
+  assert.deepEqual(baseline.semanticSpec.scales.map(scale => scale.type), [
+    "linear", "linear"
+  ]);
+  assert.deepEqual(restored.semanticSpec.layers[0].encoding, {
+    group: { field: "category", fieldType: "nominal" },
+    x: { field: "category", fieldType: "nominal", scale: "x" },
+    y: { field: "value_value", fieldType: "quantitative", scale: "y" }
+  });
+  assert.deepEqual(restored.semanticSpec.scales.map(scale => scale.type), [
+    "band", "linear"
+  ]);
+  assert.deepEqual(restored.semanticSpec.datasets.map(dataset => dataset.id), [
+    "values", "violinsDensityDataRevision2"
+  ]);
+  assert.equal(category.semanticSpec.scales[0].type, "band");
+});
+
+test("edits the category scale through placement while preserving its id", () => {
+  const before = categoricalDensityProgram();
+  const after = before.editDensity({
+    placement: {
+      type: "category",
+      scale: { paddingInner: 0.2, paddingOuter: 0.1 }
+    }
+  });
+
+  assert.equal(after.semanticSpec.layers[0].encoding.x.scale, "x");
+  assert.equal(after.semanticSpec.scales[0].paddingInner, 0.2);
+  assert.equal(after.semanticSpec.scales[0].paddingOuter, 0.1);
+  assert.throws(
+    () => before.editDensity({
+      placement: { type: "category", scale: { id: "category" } }
+    }),
+    /cannot change its id/
+  );
+  assert.equal(before.semanticSpec.scales[0].paddingInner, 0);
 });

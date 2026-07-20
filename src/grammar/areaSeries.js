@@ -9,6 +9,7 @@ import {
   validateColorLayout
 } from "./seriesLayout.js";
 import { stableOrderPathValues } from "./pathOrder.js";
+import { deriveCategoricalDensitySeries } from "./categoricalDensity.js";
 
 export function deriveAreaSeries(rows, layer) {
   if (layer?.mark?.type !== "area") {
@@ -116,6 +117,9 @@ export function deriveDensityAreaSeries(rows, layer, transform) {
   }
   if (transform?.type !== "density" || !Array.isArray(transform.as)) {
     throw new Error(`Area mark "${layer.id}" requires density provenance.`);
+  }
+  if (transform.placement?.type === "category") {
+    return deriveCategoricalDensitySeries(rows, layer, transform);
   }
   const { x, y, group } = layer.encoding ?? {};
   if (

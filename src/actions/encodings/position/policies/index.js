@@ -1,6 +1,9 @@
 import { validatePositionFieldCompatibility } from
   "../../../../grammar/positionCompatibility.js";
-import { resolveAreaPositionPolicy } from "./area.js";
+import {
+  isCategoricalDensityPosition,
+  resolveAreaPositionPolicy
+} from "./area.js";
 import { resolveArcPositionPolicy } from "./arc.js";
 import { resolveBarPositionPolicy } from "./bar.js";
 import { resolveLinePositionPolicy } from "./line.js";
@@ -20,7 +23,9 @@ const POSITION_POLICIES = Object.freeze({
 
 export function resolveMarkPositionPolicy(context) {
   const { layer, channel, fieldType } = context;
-  validatePositionFieldCompatibility(layer.mark.type, channel, fieldType);
+  if (!isCategoricalDensityPosition(context)) {
+    validatePositionFieldCompatibility(layer.mark.type, channel, fieldType);
+  }
   const policy = POSITION_POLICIES[layer.mark.type];
   if (policy === undefined) {
     throw new Error(`Unsupported position policy for mark "${layer.mark.type}".`);

@@ -18,6 +18,14 @@ export function applyColorLayoutCompanion(
   ) {
     return program;
   }
+  if (
+    layer.mark.type === "area" &&
+    [layer.encoding?.x, layer.encoding?.y].some(
+      encoding => ["nominal", "ordinal"].includes(encoding?.fieldType)
+    )
+  ) {
+    return program;
+  }
   if (isRangedArea(layer)) return program;
   const channels = layer.mark.type === "bar"
     ? resolveBarChannels(layer)
