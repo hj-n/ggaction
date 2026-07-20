@@ -4,7 +4,7 @@
 
 - Gate: `P5-B`
 - 상태: `ready-for-review`
-- 검토 대상 remote checkpoint: `68f7456` (`origin/main`)
+- 검토 대상 remote checkpoint: `416843b` (`origin/main`)
 - 승인 전 차단: `createBin2DData`, binned `createHeatmap`와 Phase 5 후속 Step
 
 ## 승인 대상 public API
