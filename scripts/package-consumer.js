@@ -70,6 +70,20 @@ async function testNodeConsumer(directory) {
       .encodeX({ field: "x" })
       .encodeY({ field: "y" })
       .encodeRadius({ value: 3 });
+    const jittered = program.jitterPoints({
+      channel: "x",
+      maxOffset: { pixels: 2 },
+      seed: "package-consumer",
+      key: "x"
+    });
+    assert.notDeepEqual(
+      jittered.graphicSpec.objects.point.items.map(item => item.properties.x),
+      program.graphicSpec.objects.point.items.map(item => item.properties.x)
+    );
+    assert.deepEqual(
+      jittered.removeJitter().graphicSpec.objects.point.items,
+      program.graphicSpec.objects.point.items
+    );
     assert.equal(typeof render, "function");
     assert.equal(program.graphicSpec.objects.point.items.length, 2);
     const scatterFacade = chart()
@@ -353,6 +367,9 @@ async function testTypeScriptConsumer(directory) {
       type CreateDerivedDataOptions,
       type CreateScatterPlotOptions,
       type DatasetTransform,
+      type JitterMaxOffset,
+      type JitterPointsOptions,
+      type RemoveJitterOptions,
       type StrokeWidthEncodingOptions,
       type ThetaEncodingOptions,
       type ThetaScaleOptions
@@ -494,6 +511,21 @@ async function testTypeScriptConsumer(directory) {
       .encodeY({ field: "y", fieldType: "quantitative" })
       .encodeStrokeWidth(strokeWidthOptions)
       .createLegend({ channels: ["strokeWidth"] });
+    const jitterOffset: JitterMaxOffset = { pixels: 2 };
+    const jitterOptions: JitterPointsOptions = {
+      channel: "x",
+      maxOffset: jitterOffset,
+      key: "x"
+    };
+    const removeJitterOptions: RemoveJitterOptions = {};
+    const jittered: ChartProgram = chart()
+      .createCanvas()
+      .createData({ values: [{ x: 1, y: 2 }, { x: 2, y: 3 }] })
+      .createPointMark()
+      .encodeX({ field: "x" })
+      .encodeY({ field: "y" })
+      .jitterPoints(jitterOptions)
+      .removeJitter(removeJitterOptions);
     const pointLayer = inspected.semanticSpec.layers.find(
       layer => layer.id === "points"
     );
@@ -517,6 +549,7 @@ async function testTypeScriptConsumer(directory) {
     void arcs;
     void weightedArcs;
     void weightedRules;
+    void jittered;
     void pointLayer;
     void pointItems;
     void lastAction;
@@ -561,6 +594,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
       "extension",
       "png",
       "numeric-font-weight",
+      "point-jitter",
       "right-categorical-legend-offset",
       "sequential-palette-count",
       "typescript",

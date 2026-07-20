@@ -3,7 +3,7 @@
 ## 상태
 
 - Gate: `P4-B`
-- 상태: `ready-for-review`
+- 상태: `approved` (2026-07-20)
 - 검토 대상 remote checkpoint: `c4d26d3`
 - P4-B 승인 전 차단: Phase 4 closeout, executable closeout audit와 `P4-Exit`
 
@@ -79,8 +79,8 @@ Canonical executable source는 `examples/point-jitter/program.js`다. 검토할 
 - Package artifact: `330` entries, `290084` packed bytes, `1352842` unpacked bytes.
 - Installed-package runtime/TypeScript consumer: pass.
 - Public docs source/link/action classification: `27/27` pass.
-- Local built-site verification은 system Ruby `2.6.10`과 현재 locked gems의 Ruby `>=3.2` 요구가 맞지 않아
-  실행하지 못했다. 구현 또는 문서 source failure가 아니며 P4-Exit의 release-compatible Ruby 환경에서 재실행한다.
+- P4-Exit follow-up에서 `.ruby-version`과 일치하는 `mise` Ruby `3.2.6`으로 Jekyll build, built-link 검증과
+  전체 85 pages의 desktop/mobile browser 검증을 완료했다.
 
 ## API와 문서 영향
 
@@ -89,7 +89,8 @@ Canonical executable source는 `examples/point-jitter/program.js`다. 검토할 
   point API page, complete action reference, supported-features와 generated LLM docs를 동기화했다.
 - Canonical public examples 두 개를 registry와 complete vertical-slice tests에 연결했다.
 
-## 승인 질문
+## 승인 결과
 
-`c4d26d3`의 public `jitterPoints` / `removeJitter` API, graphical-only state ownership,
-replacement/removal lifecycle, rematerialization integration과 두 exact visual 결과를 P4-B로 승인할지 검토한다.
+2026-07-20 사용자 승인으로 `c4d26d3`의 public `jitterPoints` / `removeJitter` API,
+graphical-only state ownership, replacement/removal lifecycle, rematerialization integration과 두 exact visual
+결과를 확정했다. Phase 4 closeout과 P4-Exit 검증이 열렸다.

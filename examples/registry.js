@@ -113,7 +113,8 @@ export const PUBLIC_CHARTS = Object.freeze([
     height: 440,
     createProgram: createCarsOriginJitter,
     programDirectory: "point-jitter",
-    testDirectory: "point-jitter"
+    testDirectory: "point-jitter",
+    browser: { path: "point-jitter/", canvas: "#chart" }
   }),
   example({
     id: "gapminder-cluster-jitter",
