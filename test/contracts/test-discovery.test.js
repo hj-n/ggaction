@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
@@ -69,7 +69,9 @@ test("keeps every test module reachable from a suite or module-script entry", ()
 
 test("requires every active gate to expose a complete reviewable slice", () => {
   const gateRoot = path.join(testRoot, "gates");
-  const gates = readdirSync(gateRoot, { withFileTypes: true })
+  const gates = (existsSync(gateRoot)
+    ? readdirSync(gateRoot, { withFileTypes: true })
+    : [])
     .filter(entry => entry.isDirectory())
     .map(entry => ({ entry, files: walk(path.join(gateRoot, entry.name)) }))
     .filter(gate => gate.files.length > 0);
