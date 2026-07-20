@@ -53,6 +53,8 @@ program.createWindowData({
 ```
 
 - `id`는 downstream에서 참조하는 advanced named resource이므로 required다.
+- `createWindowData`는 immutable create-only다. 같은 `id`가 이미 있으면 오류를 내며 기존 dataset이나
+  consumer를 교체하지 않는다. 향후 parameter edit가 필요하면 별도 revision-owning action으로 설계한다.
 - `source`는 current dataset이 유일할 때만 추론한다.
 - `partitionBy`는 string 또는 string array이며 생략하면 전체 row가 한 partition이다.
 - `sortBy`는 stable multi-field sort다. `rank`와 `denseRank`는 non-empty `sortBy`를 요구한다.
@@ -161,7 +163,7 @@ createHeatmap(bin)
 
 - transform request/provenance: `semanticSpec.datasets[id].transform`
 - immutable derived values/revision: named dataset registry
-- dependency/rebind metadata: canonical transform registry와 generated resource lifecycle
+- dependency/replay metadata: canonical transform registry와 generated resource lifecycle
 - concrete cell geometry/color: `graphicSpec`
 - renderer: materialized rect와 guides만 읽으며 bin 계산을 하지 않는다.
 

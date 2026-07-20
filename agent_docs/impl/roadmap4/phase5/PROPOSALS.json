@@ -9,7 +9,7 @@
       "status": "proposed",
       "required": ["id", "operations"],
       "optional": ["source", "partitionBy", "sortBy"],
-      "replacement": "recreating the same derived id replaces its revision and rematerializes consumers",
+      "replacement": "immutable create-only; a duplicate id is rejected without changing consumers",
       "stateOwner": "named derived dataset and canonical transform registry"
     },
     {
