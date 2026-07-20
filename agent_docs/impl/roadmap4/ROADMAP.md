@@ -122,7 +122,7 @@ existing createBoxPlot({ ... })
 | 2 | completed | P2-A/P2-B/P2-C/P2-D/P2-Exit 승인, Basic Chart facade closeout 완료 |
 | 3 | completed | P-004 weighted theta와 P-008 field stroke width, P3-Exit 승인 완료 |
 | 4 | completed | NCP-003 deterministic bounded point jitter, P4-Exit 승인 완료 |
-| 5 | in-progress | P-001 window, P-002 2D bin과 binned heatmap |
+| 5 | completed | P-001 window, P-002 2D bin과 binned heatmap; P5-Exit 승인 완료 |
 | 6 | planned | NCP-002 linear gradient fill과 gradient interval facade |
 | 7 | planned | P-003 ordered path |
 | 8 | planned | NCP-001 categorical density placement |

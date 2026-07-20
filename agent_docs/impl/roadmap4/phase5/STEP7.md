@@ -7,6 +7,6 @@
 - [x] full source/test/docs/package/build 검증
 - [x] `SECOND_ARCHITECTURE.md` 변경 필요성 평가
 - [x] Roadmap/contract status를 실제 구현과 일치
-- [ ] P5-Exit exact checkpoint commit/push와 사용자 승인
+- [x] P5-Exit exact checkpoint commit/push와 사용자 승인
 
 P5-Exit 승인 전에는 Phase 6 linear gradient implementation을 시작하지 않는다.

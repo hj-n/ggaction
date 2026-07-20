@@ -3,7 +3,8 @@
 ## 상태
 
 - Gate: `P5-Exit`
-- 상태: `ready-for-review`
+- 상태: `approved`
+- 사용자 승인: `2026-07-20`
 - 검토 대상 remote checkpoint: `5a31adc` (`origin/main`)
 - 승인 전 차단: Phase 6 linear-gradient 구현
 
