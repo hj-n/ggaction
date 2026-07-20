@@ -4,7 +4,7 @@
 
 - Gate: `P5-C`
 - 상태: `ready-for-review`
-- 검토 대상 remote checkpoint: pending
+- 검토 대상 remote checkpoint: `0cc3cc3` (`origin/main`)
 - 승인 전 차단: binned `createHeatmap` facade와 Phase 5 후속 Step
 
 ## 승인 대상 public API
