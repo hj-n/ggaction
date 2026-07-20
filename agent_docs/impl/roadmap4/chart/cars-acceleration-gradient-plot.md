@@ -2,7 +2,8 @@
 
 ## 상태
 
-`planned` — Roadmap 4 Phase 6의 primitive-first visual contract다. Exact paint schema와 defaults는 P6-A에서 승인한다.
+`planned` — Roadmap 4 Phase 6의 primitive-first visual contract다. Exact `FillPaint` schema와 defaults는 P6-A에서
+승인한다.
 
 ## 차트 목표
 
@@ -67,7 +68,10 @@ Shortest direct call은 x/y만 필요하다. Compatible encoded owner가 하나 
 - Category order는 first eligible source appearance다.
 - Shared value extent에서 category별 density를 계산하고 one global density range로 intensity를 비교한다.
 - Generated profile dataset은 category당 한 row를 가지며 value/intensity samples, lower/upper와 center를 저장한다.
-  Palette color와 normalized paint endpoints는 저장하지 않는다.
+  Palette color와 normalized paint endpoints는 semantic dataset에 저장하지 않는다.
+- Stable GradientPlot config가 palette/opacity intent를 소유하고, materializer가 resolved value scale과 final rect
+  bounds를 사용해 category별 concrete `LinearGradientPaint` stops를 만든다. Reversed scale이면 physical endpoint도
+  함께 뒤집힌다.
 - Concrete gradient body는 category당 rect 하나다. Median은 optional rule child이며 `center: false`이면 관련
   semantic, config, graphic과 trace child가 모두 없다.
 - Grid는 mark 뒤가 아니라 gradient body 뒤쪽 plot sibling으로 explicit placement되고 axes/legend/title은 위에 온다.
@@ -82,7 +86,7 @@ createGradientPlot
 ├─ createRectMark
 ├─ encode category position
 ├─ encode quantitative lower/upper range
-├─ materializeGradientPlotFill
+├─ materializeGradientPlotFill (`FillPaint` value 작성)
 ├─ createRuleMark + position encodings (center enabled)
 └─ createGuides (unless disabled)
 ```
@@ -101,7 +105,7 @@ editGradientPlot
 - Independent density/profile oracle와 literal Cars category vectors
 - Category당 한 profile row/rect, count/area/non-negativity/order invariants
 - Primitive/public semantic, graphic tree, draw order, Canvas-call과 decoded-pixel exact parity
-- String fill regression과 vertical/horizontal/reversed/hard-stop/multi-stop paint fixtures
+- String fill regression, paint-as-scalar distribution과 vertical/horizontal/reversed/hard-stop/multi-stop paint fixtures
 - create-before-encode/encode-before-create, explicit/target-inferred calls와 ambiguity errors
 - Density edit revision/rebind/release, appearance-only revision retention, center disable/restore
 - Canvas/scale/data rematerialization, selection grain, Browser Canvas, Node PNG, package and docs parity

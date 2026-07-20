@@ -17,7 +17,11 @@
 - [x] 기능 ID, 의존 관계, 예상 수정 영역과 exit gate를 Roadmap 4에 배정
 - [x] NCP-006/NCP-007 제외와 `encodeParallelCoordinates` 이름 고정
 - [x] Basic Chart facade 계층과 `createScatterPlot`, `createLinePlot`, `createBarPlot`,
-  `createHistogram`, `createHeatmap`, `createGradientIntervalPlot`, `createParallelCoordinates` 범위 통합
+  `createHistogram`, `createHeatmap`, `createGradientPlot`, `createParallelCoordinates` 범위 통합
+
+Phase 0 당시 검토한 interval-oriented gradient facade는 후속 설계에서 폐기했다. 현재 Phase 6 계약은
+BoxPlot-compatible categorical distribution facade인 `createGradientPlot`/`editGradientPlot`과 범용 concrete
+`FillPaint`의 첫 linear-gradient variant다.
 
 ## 산출물
 

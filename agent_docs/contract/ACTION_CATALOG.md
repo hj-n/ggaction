@@ -168,7 +168,7 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 
 | Kind | Capability | Readiness | Contract |
 | --- | --- | --- | --- |
-| parameter | LinearGradientPaint fill value | pending-parameter-review | [Open](planned/GRADIENT_PLOTS.md#lineargradientpaint) |
+| parameter | FillPaint with LinearGradientPaint variant | pending-parameter-review | [Open](planned/GRADIENT_PLOTS.md#fillpaint) |
 | behavior | Categorical uncertainty chart family | accepted | [Open](planned/GRADIENT_PLOTS.md#categorical-uncertainty-family) |
 
 ## Internal inventories

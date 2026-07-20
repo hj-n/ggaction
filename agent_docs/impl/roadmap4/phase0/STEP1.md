@@ -12,8 +12,8 @@
 - [x] local Browser/Chromium sandbox 제약을 제품 failure와 분리 기록했다.
 - [x] Roadmap 4 scope ledger와 dependency graph를 작성했다.
 - [x] Existing `createBoxPlot`과 대칭적인 Basic Chart facade 계획을 통합했다.
-- [x] Linear gradient capability와 별개로 명확한 interval geometry를 소유하는
-  `createGradientIntervalPlot` facade를 Phase 6과 Phase 14에 배정했다.
+- [x] 초기에는 interval geometry facade를 검토했고, 후속 설계에서 Phase 6을 BoxPlot-compatible
+  `createGradientPlot`/`editGradientPlot`과 범용 `FillPaint`의 첫 linear-gradient variant로 대체했다.
 
 ## 조사 결과
 

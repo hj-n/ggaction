@@ -67,7 +67,8 @@ existing createBoxPlot({ ... })
 - Complete chart facade는 기본적으로 applicable guides를 생성하며 `guides: false`로 끌 수 있다.
 - Binned heatmap은 `bin`을 명시하면 `createBin2DData`를 호출하고 color 생략 시 count를 사용한다.
 - Gradient plot은 BoxPlot과 같은 categorical/quantitative x/y 계약을 사용한다. Raw distribution을 category별
-  density profile로 요약하고 one-strip-per-category `LinearGradientPaint`와 optional center rule로 materialize한다.
+  density profile로 요약하고 one-strip-per-category `FillPaint`의 `LinearGradientPaint` variant와 optional center
+  rule로 materialize한다. Gradient 종류별 action은 만들지 않는다.
 - `createParallelCoordinates`는 coordinate와 line mark를 만들고 내부에서
   `encodeParallelCoordinates`를 호출한다. 두 API는 high-level facade와 advanced encoding으로 구분한다.
 - `editScatterPlot` 같은 aggregate edit action은 만들지 않는다. 생성 후에는 encoding, scale, mark,
@@ -124,7 +125,7 @@ existing createBoxPlot({ ... })
 | 3 | completed | P-004 weighted theta와 P-008 field stroke width, P3-Exit 승인 완료 |
 | 4 | completed | NCP-003 deterministic bounded point jitter, P4-Exit 승인 완료 |
 | 5 | completed | P-001 window, P-002 2D bin과 binned heatmap; P5-Exit 승인 완료 |
-| 6 | planned | NCP-002 linear gradient fill과 categorical gradient-distribution facade |
+| 6 | planned | NCP-002 FillPaint linear-gradient variant와 categorical gradient-distribution facade |
 | 7 | planned | P-003 ordered path |
 | 8 | planned | NCP-001 categorical density placement |
 | 9 | planned | NCP-005 Horizon encoding |
@@ -420,11 +421,12 @@ derived-dataset lifecycle 위에 구현하고 Phase 2의 `createHeatmap`에 binn
 - Exit: pure numeric oracle, transform provenance, downstream rect/path chart와 Browser/PNG가 모두 통과함.
 - 위험: source row order 손실, floating edge 비결정성, 큰 members payload, operation output field 충돌.
 
-## Phase 6 — Backend-neutral linear gradient fill과 categorical gradient plot
+## Phase 6 — Backend-neutral FillPaint linear-gradient variant와 categorical gradient plot
 
 ### 목표와 포함 ID
 
-NCP-002 `LinearGradientPaint`를 rect/bar/area/closed-path의 item-local fill value로 추가하고,
+NCP-002를 `FillPaint = string | LinearGradientPaint`로 모델링하고 `LinearGradientPaint`를
+rect/bar/area/closed-path의 item-local fill value로 추가한다. Paint 종류별 public action은 만들지 않으며,
 BoxPlot과 같은 categorical/quantitative x/y 계약을 사용하는 high-level `createGradientPlot`과
 stable owner edit인 `editGradientPlot`을 함께 구현한다.
 
@@ -436,9 +438,11 @@ stable owner edit인 `editGradientPlot`을 함께 구현한다.
 
 ### 산출물과 테스트
 
-- `FillPaint = string | LinearGradientPaint`, normalized endpoints, ordered stops, opacity.
+- One concrete `fill` property owner, `FillPaint = string | LinearGradientPaint`, normalized endpoints, ordered stops,
+  opacity와 renderer-local backend object.
 - string→paint→string edit, low-level per-item paint, highlight override, JSON round trip.
-- horizontal/vertical/reversed/hard-stop/multi-stop sample-color oracle와 item-local bounds.
+- Paint object/stops를 scalar value로 보존하는 collection distribution.
+- horizontal/vertical/reversed-scale/hard-stop/multi-stop sample-color oracle와 item-local bounds.
 - Browser/Node logical parity; first release는 fill only, stroke/radial/conic/user-space는 non-goal.
 - Shortest direct call은 category와 measure를 x/y에 배치한다. Eligible encoded layer가 있으면
   `createGradientPlot()`만으로 둘을 추론하고, create-before-encode와 encode-before-create가 같은 final state로
@@ -457,7 +461,8 @@ stable owner edit인 `editGradientPlot`을 함께 구현한다.
 - 진입: shared concrete graphic contract와 current string fill regression이 green.
 - Exit: 기존 string snapshots가 동일하고 category당 한 gradient item으로 density fill이 양 renderer에서 재현되며,
   GradientPlot의 최소 호출, deferred encoding과 explicit chain이 동등함.
-- 위험: backend object를 state에 저장, renderer마다 다른 validation, path bounds에 stroke를 섞음.
+- 위험: backend object를 state에 저장, renderer마다 다른 validation, paint 내부 배열을 item distribution으로 오인,
+  path bounds에 stroke를 섞음.
 
 ## Phase 7 — Explicit ordered path
 

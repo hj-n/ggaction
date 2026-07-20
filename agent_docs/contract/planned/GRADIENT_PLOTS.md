@@ -1,10 +1,11 @@
 # Planned categorical gradient plots
 
 이 문서는 Roadmap 4 Phase 6에서 승인된 API 방향과 P6-A에서 확정할 parameter contract를 분리한다.
-`createGradientPlot`/`editGradientPlot`의 이름, BoxPlot-compatible x/y family와 stable edit owner는 Planned다.
-Paint property names와 exact visual defaults는 아직 구현되지 않았으며 P6-A parameter review 전까지 Current가 아니다.
+`createGradientPlot`/`editGradientPlot`의 이름, BoxPlot-compatible x/y family, stable edit owner와 범용 `FillPaint`
+경계는 Planned다. Exact paint validation과 visual defaults는 아직 구현되지 않았으며 P6-A parameter review 전까지
+Current가 아니다.
 
-## LinearGradientPaint
+## FillPaint
 
 ```typescript
 type FillPaint = NonEmptyString | LinearGradientPaint;
@@ -21,12 +22,24 @@ type LinearGradientPaint = {
 };
 ```
 
+- `FillPaint`는 concrete graphical `fill` property의 값 계약이지 user-facing action이 아니다. 별도
+  `createLinearGradientFill`/`editLinearGradientFill` action은 만들지 않는다.
+- Solid fill은 기존 string을 그대로 사용한다. 첫 structured variant만 `LinearGradientPaint`이며 radial, conic,
+  pattern variant는 실제 요구가 생기기 전까지 public union에 추가하지 않는다.
+- 여기서 `linear`는 density 함수가 선형이라는 뜻이 아니라 색이 item-local 직선 축을 따라 진행한다는 뜻이다.
+  비선형 density profile은 ordered stop의 offset/color/opacity가 piecewise하게 표현한다.
 - `from`/`to`는 item-local bounds에 대한 normalized 좌표이며 서로 달라야 한다.
 - Stop은 offset ascending으로 저장한다. Equal adjacent offsets는 hard stop을 뜻하고 다른 역순은 거부한다.
 - Caller object를 보존하고 normalized paint와 stops를 immutable graphical state에 저장한다.
-- Rect/bar/area/closed-path fill만 첫 범위다. Stroke, radial/conic gradient와 user-space coordinates는 제외한다.
+- Paint object와 그 안의 `stops` 배열은 하나의 scalar fill 값이다. `editGraphics` collection value distribution이
+  paint 내부 배열을 item별 값으로 잘못 분배해서는 안 된다.
+- Rect/bar/area/closed-path fill만 첫 범위다. Open path, stroke, radial/conic gradient와 user-space coordinates는 제외한다.
 - Browser와 Node renderer는 같은 concrete schema를 읽으며 backend gradient object는 program state에 저장하지 않는다.
-- Exact property spelling과 hard-stop duplicate policy는 P6-A에서 primitive source와 image를 함께 승인한다.
+- Renderer는 final item bounds에서 normalized endpoints를 concrete 좌표로 바꾸고 backend gradient를 일시적으로 만든다.
+  Graphic state에는 backend object나 renderer command를 저장하지 않는다.
+- Existing resource-specific appearance action이 fill을 소유하면 string과 paint를 같은 property에서 교체한다. Advanced
+  action author는 public extension primitive `editGraphics`로 같은 concrete value contract를 사용할 수 있다.
+- Exact validation, endpoint orientation과 hard-stop duplicate policy는 P6-A에서 primitive source와 image를 함께 승인한다.
 
 ## createGradientPlot
 
@@ -70,6 +83,9 @@ createGradientPlot({
   and center meaning, not renderer colors or backend gradient objects.
 - A shared value extent and one global resolved density range make intensity comparable across categories. Empty categories
   are not synthesized; category order follows first eligible source appearance.
+- Profile samples are ordered by quantitative value. Materialization projects those samples through the resolved value scale,
+  converts the resulting physical positions into item-local stop offsets, and flips the paint endpoints when the scale range is
+  reversed. It does not assume that equal value steps have equal pixel steps.
 - When input rows are observations, the plot describes their distribution. It represents inferential uncertainty only when
   rows are uncertainty draws such as bootstrap or posterior samples; documentation must not conflate those meanings.
 
@@ -90,6 +106,8 @@ editGradientPlot({
   only orphaned old revisions. Width, palette, opacity and center appearance retain the current profile revision.
 - `center: false` removes the complete optional center layer/graphic/config; a later center object recreates it deterministically.
 - Canvas/scale edits rematerialize strips, gradient endpoints, center rules and guides from the stable owner.
+- Selection/highlight treats each category strip as one final item. Opacity/offset overrides preserve the baseline paint;
+  explicit fill replacement may use either a string or `FillPaint`, and unhighlight restores the exact baseline paint.
 - Category/measure reassignment, subgroup offsets, multiple density overlays and independent per-category intensity domains
   are not in the first implementation.
 

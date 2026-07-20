@@ -2179,17 +2179,21 @@
   ],
   "plannedCapabilities": [
     {
-      "name": "LinearGradientPaint fill value",
+      "id": "fill-paint-linear-gradient",
+      "name": "FillPaint with LinearGradientPaint variant",
       "kind": "parameter",
+      "status": "planned",
       "readiness": "pending-parameter-review",
       "contract": {
         "file": "agent_docs/contract/planned/GRADIENT_PLOTS.md",
-        "anchor": "lineargradientpaint"
+        "anchor": "fillpaint"
       }
     },
     {
+      "id": "categorical-uncertainty-family",
       "name": "Categorical uncertainty chart family",
       "kind": "behavior",
+      "status": "planned",
       "readiness": "accepted",
       "contract": {
         "file": "agent_docs/contract/planned/GRADIENT_PLOTS.md",
