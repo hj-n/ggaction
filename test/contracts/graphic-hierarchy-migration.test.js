@@ -25,6 +25,20 @@ const LOADERS = Object.freeze({
 });
 
 const EXPECTED_DRAW_ORDER = Object.freeze({
+  "cars-binned-heatmap": [
+    "canvas", "heatmap",
+    "xAxisLine", "xAxisTicks", "xAxisLabels", "xAxisTitle",
+    "yAxisLine", "yAxisTicks", "yAxisLabels", "yAxisTitle",
+    "colorGradientStrips", "colorGradientTicks", "colorGradientLabels",
+    "colorGradientTitle", "chartTitle", "chartSubtitle"
+  ],
+  "cars-window-rank-scatterplot": [
+    "canvas", "horizontalGridLines", "rankedCarsPlot",
+    "xAxisLine", "xAxisTicks", "xAxisLabels", "xAxisTitle",
+    "yAxisLine", "yAxisTicks", "yAxisLabels", "yAxisTitle",
+    "seriesLegendSymbolPoints", "seriesLegendLabels", "seriesLegendTitle",
+    "chartTitle", "chartSubtitle"
+  ],
   "cars-origin-jitter": [
     "canvas", "horizontalGridLines", "observations",
     "xAxisLine", "xAxisTicks", "xAxisLabels", "xAxisTitle",

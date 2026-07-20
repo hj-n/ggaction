@@ -1,13 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { createCarsWindowRankScatterplot } from
-  "../../../examples/cars-window-rank-scatterplot/program.js";
+import { createCarsWindowRankScatterplot } from "./public.program.js";
 import { assertChartProgramsEquivalent } from
   "../../support/chart-equivalence.js";
 import { loadCars } from "../../support/data.js";
-import { createCarsWindowRankPrimitives } from
-  "./window-chart.primitive.program.js";
+import { createCarsWindowRankPrimitives } from "./primitive.program.js";
 
 test("matches the window-rank primitive with the public action chain", () => {
   const cars = loadCars();

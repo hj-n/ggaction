@@ -26,7 +26,7 @@ const options = Object.freeze({
   ])
 });
 
-test("public createWindowData exactly matches the independent oracle", () => {
+test("public createWindowData exactly matches the independent window oracle", () => {
   const expected = createWindowReference(rows, options);
   const program = chart()
     .createData({ id: "source", values: rows })

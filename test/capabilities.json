@@ -8,6 +8,8 @@
     ],
     "data": [
       "unit/actions/data/",
+      "charts/cars-binned-heatmap/",
+      "charts/cars-window-rank-scatterplot/",
       "contracts/dataset-fixtures.test.js",
       "contracts/transform-registry.test.js"
     ],

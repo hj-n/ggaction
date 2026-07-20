@@ -330,7 +330,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   - ✅ Covered: source inference, duplicate ID rejection, source immutability, trace hierarchy, registry dispatch,
     facet replay, direct `createDerivedData` validation and packaged TypeScript/runtime consumption.
 - Evidence: `test/unit/grammar/transforms/window.test.js`, `test/unit/actions/data/window-data.test.js`,
-  `test/unit/actions/data/derived-data.test.js`, `test/gates/cars-binned-heatmap/window-public.test.js`,
+  `test/unit/actions/data/derived-data.test.js`, `test/charts/cars-window-rank-scatterplot/data.test.js`,
   `scripts/package-consumer.js`.
 
 ## `createBin2DData`
@@ -375,7 +375,7 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
   - ✅ Covered: source inference, filtered source, repeated immutable revision, direct mark/scale/guide rematerialization,
     release, facet replay, direct transform schema, runtime and strict TypeScript package consumption.
 - Evidence: `test/unit/grammar/transforms/bin2d.test.js`, `test/unit/actions/data/bin2d-data.test.js`,
-  `test/unit/actions/data/derived-data.test.js`, `test/gates/cars-binned-heatmap/bin2d-public.test.js`,
+  `test/unit/actions/data/derived-data.test.js`, `test/charts/cars-binned-heatmap/data.test.js`,
   `scripts/package-consumer.js`.
 
 ## `createCoordinate`

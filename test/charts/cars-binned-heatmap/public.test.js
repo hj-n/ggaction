@@ -7,7 +7,7 @@ import { loadCars } from "../../support/data.js";
 import { createCarsBinnedHeatmapPrimitives } from "./primitive.program.js";
 import { createCarsBinnedHeatmap } from "./public.program.js";
 
-test("matches the approved binned Cars heatmap primitive exactly", () => {
+test("matches the binned Cars heatmap primitive exactly", () => {
   const cars = loadCars();
   const primitive = createCarsBinnedHeatmapPrimitives(cars);
   const program = createCarsBinnedHeatmap(cars);

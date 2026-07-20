@@ -5,7 +5,7 @@ import {
   WINDOW_RANK_LAYOUT,
   WINDOW_RANK_TRANSFORM,
   createWindowRankSourceRows
-} from "./window-chart.fixture.js";
+} from "./reference-values.js";
 
 export function createCarsWindowRankPrimitives(cars) {
   const rows = createWindowRankSourceRows(cars);

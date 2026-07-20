@@ -7,9 +7,9 @@ import { loadCars } from "../../support/data.js";
 import {
   BINNED_HEATMAP_FIELDS,
   BINNED_HEATMAP_LAYOUT
-} from "./fixture.js";
+} from "./reference-values.js";
 
-test("public createBin2DData exactly matches the independent Cars oracle", () => {
+test("public createBin2DData exactly matches the independent Cars heatmap oracle", () => {
   const cars = loadCars();
   const expected = createBin2DReference(cars, {
     id: "carsWeightMpg",

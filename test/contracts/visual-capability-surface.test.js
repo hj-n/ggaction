@@ -8,6 +8,8 @@ import { visualVariants as annotationVariants } from "../charts/annotated-imdb-s
 import { visualVariants as facetVariants } from "../charts/cars-origin-scatterplot-facet/manifest.js";
 import { visualVariants as resolutionVariants } from "../charts/cross-feature-integration/variants/facet-resolution/manifest.js";
 import { visualVariants as heatmapVariants } from "../charts/gapminder-life-expectancy-heatmap/manifest.js";
+import { visualVariants as binnedHeatmapVariants } from "../charts/cars-binned-heatmap/manifest.js";
+import { visualVariants as windowVariants } from "../charts/cars-window-rank-scatterplot/manifest.js";
 import { visualVariants as arcVariants } from "../charts/polar-arcs/manifest.js";
 import { visualVariants as lineVariants } from "../charts/polar-line-radar/manifest.js";
 import { visualVariants as pointVariants } from "../charts/polar-points/variants/manifest.js";
@@ -24,7 +26,7 @@ const ACTIONS = Object.freeze([
 const EXPECTED_CAPABILITIES = new Set([
   "polar-point", "polar-line-radar", "polar-arcs", "weighted-theta",
   "program-composition", "direct-source-facet", "facet-resolution",
-  "text-annotation", "rect-heatmap"
+  "text-annotation", "rect-heatmap", "window-data"
 ]);
 
 test("keeps the implemented visual actions Current, callable, and typed", () => {
@@ -54,7 +56,9 @@ test("keeps approved visual evidence owned by current capabilities", () => {
     ...facetVariants,
     ...resolutionVariants,
     ...annotationVariants,
-    ...heatmapVariants
+    ...heatmapVariants,
+    ...binnedHeatmapVariants,
+    ...windowVariants
   ];
   const capabilities = new Set(variants.map(variant => variant.artifact.capability));
   for (const capability of EXPECTED_CAPABILITIES) {

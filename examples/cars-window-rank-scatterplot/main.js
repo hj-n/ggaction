@@ -12,3 +12,8 @@ render(program, canvas.getContext("2d"), {
 });
 document.querySelector("#status").textContent =
   `${program.graphicSpec.objects.rankedCarsPlot.items.length} ranked cars rendered`;
+window.__carsWindowRankScatterplot = Object.freeze({
+  width: 760,
+  height: 500,
+  points: program.graphicSpec.objects.rankedCarsPlot.items.length
+});

@@ -5,7 +5,7 @@ import { loadCars } from "../../support/data.js";
 import {
   BINNED_HEATMAP_FIELDS,
   createCarsBinnedHeatmapReference
-} from "./fixture.js";
+} from "./reference-values.js";
 import { createCarsBinnedHeatmapPrimitives } from "./primitive.program.js";
 
 test("authors 80 ranged rects from the fixed Cars 2D-bin reference", () => {

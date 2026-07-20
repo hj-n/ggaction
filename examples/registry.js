@@ -9,6 +9,9 @@ import { createCarsTemporalBarLine } from
 import { createCarsRegressionScatterplot } from
   "./cars-regression-scatterplot/program.js";
 import { createCarsScatterplot } from "./cars-scatterplot/program.js";
+import { createCarsBinnedHeatmap } from "./cars-binned-heatmap/program.js";
+import { createCarsWindowRankScatterplot } from
+  "./cars-window-rank-scatterplot/program.js";
 import {
   createCarsOriginJitter,
   createGapminderClusterJitter
@@ -68,6 +71,36 @@ function example({ id, data, width, height, createProgram, ...options }) {
 }
 
 export const PUBLIC_CHARTS = Object.freeze([
+  example({
+    id: "cars-binned-heatmap",
+    data: "cars",
+    width: 700,
+    height: 500,
+    createProgram: createCarsBinnedHeatmap,
+    browser: {
+      path: "cars-binned-heatmap/",
+      canvas: "#chart",
+      state: {
+        global: "__carsBinnedHeatmap",
+        expected: { width: 700, height: 500, cells: 80 }
+      }
+    }
+  }),
+  example({
+    id: "cars-window-rank-scatterplot",
+    data: "cars",
+    width: 760,
+    height: 500,
+    createProgram: createCarsWindowRankScatterplot,
+    browser: {
+      path: "cars-window-rank-scatterplot/",
+      canvas: "#chart",
+      state: {
+        global: "__carsWindowRankScatterplot",
+        expected: { width: 760, height: 500, points: 47 }
+      }
+    }
+  }),
   example({
     id: "cross-feature-dashboard",
     data: {

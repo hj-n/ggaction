@@ -1976,6 +1976,10 @@ interval containment을 deterministic invariant로 검증한다.
    band width, box/median/outlier appearance와 optional outlier removal을 지원하는 Cars box plot
 10. Theta count partition, equal-angle rose overlay와 quantitative radial extent를 각각 검증하는 Cars donut,
     Nightingale rose와 Gapminder radial-bar chart
+11. Partition-local window rank를 source order로 저장한 뒤 filtered point consumer에 연결하는 Cars
+    window-rank scatterplot
+12. Raw quantitative x/y rows를 immutable 2D-bin revision으로 만들고 ranged rect와 count color에 연결하는
+    Cars binned heatmap
 
 이 목록은 chart type별 별도 compiler가 있다는 뜻이 아니다. 같은 data, scale, mark,
 encoding, guide, layout, materialization primitive가 여러 vertical slice에서 재사용된다는

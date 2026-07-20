@@ -48,6 +48,18 @@ Open <http://localhost:8000/examples/gapminder-life-expectancy-heatmap/>. This
 chart uses `createHeatmap` for observed pre-gridded cells, then adds a text layer
 for the displayed values.
 
+## Cars binned heatmap
+
+Open <http://localhost:8000/examples/cars-binned-heatmap/>. This chart passes
+raw Cars rows to `createHeatmap({ bin })`, which derives a 10 × 8 rectangular
+count grid before materializing ranged cells and a continuous color legend.
+
+## Cars window-rank scatterplot
+
+Open <http://localhost:8000/examples/cars-window-rank-scatterplot/>. This chart
+uses `createWindowData` to rank horsepower within each origin, filters to the
+top ranks, and then authors the resulting scatterplot.
+
 ## Gapminder population donut
 
 The `gapminder-population-donut` program filters one year, then uses

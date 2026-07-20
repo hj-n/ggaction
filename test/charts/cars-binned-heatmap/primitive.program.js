@@ -5,7 +5,7 @@ import {
   BINNED_HEATMAP_DATA_ID,
   BINNED_HEATMAP_LAYOUT,
   createCarsBinnedHeatmapReference
-} from "./fixture.js";
+} from "./reference-values.js";
 
 export function createCarsBinnedHeatmapPrimitives(cars) {
   const reference = createCarsBinnedHeatmapReference(cars);
