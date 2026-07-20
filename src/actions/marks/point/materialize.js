@@ -1,10 +1,5 @@
 import { action } from "../../../core/action.js";
 import { validateUserId } from "../../../core/identifiers.js";
-import {
-  validateNonEmptyString,
-  validateNonNegativeFinite,
-  validateUnitInterval
-} from "../../../core/validation.js";
 import { getPointGraphicType } from "../../../grammar/schemas/mark.js";
 import {
   createPointShapeGraphic,
@@ -18,94 +13,19 @@ import {
 } from "../../../grammar/jitter.js";
 import { polarToCartesian, resolvePolarFrame } from "../../../grammar/polar.js";
 import { resolveGraphicBounds } from "../../../layout/canvas.js";
-import {
-  assertMarkAvailable,
-  applyLayeredMarkInheritance,
-  materializeInheritedMark,
-  resolveLayeredMarkInheritance,
-  resolveMarkId,
-  resolveMarkData,
-  validateMarkOptions
-} from "../shared.js";
+import { validateMarkOptions } from "../shared.js";
 import {
   DEFAULT_COLORS,
   DEFAULT_POINT_RADIUS
 } from "../../../theme/defaults.js";
 import { findDataset } from "../../../selectors/datasets.js";
 import { findLayer } from "../../../selectors/layers.js";
-import { rematerializeExistingLegend } from "../../encodings/shared.js";
-import { resolveMarkGraphicPlacement } from
-  "../../../materialization/graphicHierarchy.js";
 import { rematerializeHighlightBaseline } from "../lifecycle.js";
 import { resolveRowEncodingValues } from
   "../../../materialization/rowEncoding.js";
 
-const POINT_MARK_OPTIONS = Object.freeze([
-  "id", "data", "shape", "fill", "opacity", "stroke", "strokeWidth"
-]);
-const EDIT_POINT_OPTIONS = Object.freeze([
-  "target", "shape", "fill", "opacity", "stroke", "strokeWidth"
-]);
 const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);
 const DEFAULT_POINT_FILL = DEFAULT_COLORS.mark;
-
-const createPointMark = action(
-  {
-    op: "createPointMark",
-    description: "Create a semantic point mark and concrete point graphics."
-  },
-  function (args = {}) {
-    validateMarkOptions(args, POINT_MARK_OPTIONS, "createPointMark");
-    const id = resolveMarkId(this, args.id, {
-      defaultId: "point",
-      label: "Point mark id",
-      markType: "point",
-      operation: "createPointMark"
-    });
-    const inherited = resolveLayeredMarkInheritance(this, args, "point");
-    const { data, dataset } = resolveMarkData(this, {
-      ...args,
-      ...(args.data === undefined &&
-        this.context.currentData === undefined &&
-        inherited?.data !== undefined
-        ? { data: inherited.data }
-        : {})
-    });
-    const shape = Object.hasOwn(args, "shape") ? args.shape : "circle";
-    validatePointShape(shape);
-    const resolvedType = getPointGraphicType(shape);
-    const graphicType = resolvedType === "path" ? "circle" : resolvedType;
-
-    assertMarkAvailable(this, id);
-
-    let next = this
-      .editSemantic({
-        property: `layer[${id}].mark.type`,
-        value: "point"
-      })
-      .editSemantic({
-        property: `layer[${id}].data`,
-        value: data
-      });
-    next = applyLayeredMarkInheritance(next, id, inherited)
-      .createGraphics({
-        id,
-        type: graphicType,
-        length: dataset.values.length,
-        ...resolveMarkGraphicPlacement(next, { data, markType: "point" })
-      })
-      ._withMarkConfig(id, { shape });
-    const created = materializeInheritedMark(next, id);
-    const appearance = Object.fromEntries(
-      ["fill", "opacity", "stroke", "strokeWidth"]
-        .filter(property => Object.hasOwn(args, property))
-        .map(property => [property, args[property]])
-    );
-    return Object.keys(appearance).length === 0
-      ? created
-      : created.editPointMark({ target: id, ...appearance });
-  }
-);
 
 function resolvePointPositions(program, layer, dataset) {
   const hasPolar = layer.encoding?.theta !== undefined ||
@@ -278,7 +198,7 @@ function applyPointJitter(program, {
   };
 }
 
-const rematerializePointMark = action(
+export const rematerializePointMark = action(
   {
     op: "rematerializePointMark",
     description: "Recompute concrete point geometry and appearance."
@@ -462,79 +382,3 @@ const rematerializePointMark = action(
     return next;
   }
 );
-
-const editPointMark = action(
-  {
-    op: "editPointMark",
-    description: "Edit constant point-mark appearance."
-  },
-  function (args = {}) {
-    validateMarkOptions(args, EDIT_POINT_OPTIONS, "editPointMark");
-    const editable = ["shape", "fill", "opacity", "stroke", "strokeWidth"];
-    if (!editable.some(property => Object.hasOwn(args, property))) {
-      throw new Error(
-        "editPointMark requires shape, fill, opacity, stroke, or strokeWidth."
-      );
-    }
-    const candidates = this.semanticSpec.layers.filter(
-      layer => layer.mark?.type === "point"
-    );
-    const current = findLayer(this, this.context.currentMark);
-    const requested = args.target ??
-      (current?.mark?.type === "point" ? current.id : undefined);
-    const inferred = requested ?? (candidates.length === 1
-      ? candidates[0].id
-      : undefined);
-    const id = validateUserId(inferred, "Point mark id");
-    const layer = findLayer(this, id);
-    if (layer?.mark?.type !== "point") {
-      throw new Error(`Unknown point mark "${id}".`);
-    }
-    if (Object.hasOwn(args, "shape") && layer.encoding?.shape !== undefined) {
-      throw new Error(
-        "editPointMark shape cannot be combined with a shape encoding."
-      );
-    }
-    if (Object.hasOwn(args, "fill") && layer.encoding?.color !== undefined) {
-      throw new Error(
-        "editPointMark fill cannot be combined with a color encoding."
-      );
-    }
-    const config = { ...this.markConfigs[id] };
-    if (Object.hasOwn(args, "shape")) {
-      config.shape = validatePointShape(args.shape);
-    }
-    if (Object.hasOwn(args, "fill")) {
-      config.fill = validateNonEmptyString(args.fill, "Point fill");
-    }
-    if (Object.hasOwn(args, "opacity")) {
-      config.opacity = validateUnitInterval(args.opacity, "Point opacity");
-    }
-    if (Object.hasOwn(args, "stroke")) {
-      config.stroke = validateNonEmptyString(args.stroke, "Point stroke");
-      config.strokeWidth ??= 1;
-    }
-    if (Object.hasOwn(args, "strokeWidth")) {
-      if (config.stroke === undefined) {
-        throw new Error("Point strokeWidth requires an active stroke.");
-      }
-      config.strokeWidth = validateNonNegativeFinite(
-        args.strokeWidth,
-        "Point strokeWidth"
-      );
-    }
-    const next = this
-      ._withMarkConfig(id, config)
-      .rematerializePointMark({ id });
-    const legend = next.guideConfigs.legend?.series;
-    return legend?.target === id && legend.channels.includes("shape")
-      ? rematerializeExistingLegend(next)
-      : next;
-  }
-);
-
-export function registerPointMarkActions(ProgramClass) {
-  ProgramClass.prototype.createPointMark = createPointMark;
-  ProgramClass.prototype.editPointMark = editPointMark;
-  ProgramClass.prototype.rematerializePointMark = rematerializePointMark;
-}

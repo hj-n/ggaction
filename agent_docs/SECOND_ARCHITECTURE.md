@@ -1718,6 +1718,10 @@ Ordinary mark family는 `actions/marks/<mark>/index.js`를 stable internal entry
 Registrar consumer는 이 entry만 import하고, mark-owned action implementation은 같은
 directory 안에 둔다. Mark 사이에서 재사용되는 inheritance, placement와 highlight
 lifecycle만 `actions/marks/` shared owner로 올린다.
+Point mark는 create, edit와 materialize orchestration을 각각 `create.js`, `edit.js`,
+`materialize.js`로 분리하고 deterministic jitter assignment는 `jitter.js`가 소유한다.
+이 분리는 wrapped action identity나 trace hierarchy를 바꾸지 않고 한 mark family 안의
+authoring lifecycle 책임만 분명하게 한다.
 
 각 action category의 `index.js`는 registrar boundary다. `actions/index.js`가 모든 built-in
 registrar를 한 번 조립하고 top-level `ChartProgram.js`가 이를 core program subclass에 등록한다.
