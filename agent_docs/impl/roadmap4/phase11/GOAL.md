@@ -13,7 +13,7 @@ backend-neutral path/line/text graphics만 소비한다.
 - [x] P9-Exit 사용자 승인
 - [x] Phase 10 skipped와 P-006 `Maybe Future` 이동
 - [x] Phase 11 GOAL, 전체 STEP과 candidate chart contract 작성
-- [ ] P11-A exact contract, independent oracle와 primitive visual 승인
+- [x] P11-A exact contract, independent oracle와 primitive visual 승인
 - [ ] Parallel coordinate/encoding/materialization 구현
 - [ ] Facade, guides, appearance와 selection lifecycle 구현
 - [ ] P11-B public visual/lifecycle 승인
@@ -38,7 +38,7 @@ backend-neutral path/line/text graphics만 소비한다.
 
 | Gate | 상태 | 승인 대상 | 승인 전 차단되는 작업 |
 | --- | --- | --- | --- |
-| P11-A | ready-for-review | exact API/default/error/state, independent oracle, Cars primitive source와 PNG | production grammar/action 구현 |
+| P11-A | approved | exact API/default/error/state, independent oracle, Cars primitive source와 PNG | production grammar/action 구현 |
 | P11-B | planned | facade hierarchy, primitive/public parity, guide/selection/edit lifecycle | public closeout |
 | P11-Exit | planned | Current inventory, architecture, docs/types/package와 cumulative verification | Phase 12 |
 

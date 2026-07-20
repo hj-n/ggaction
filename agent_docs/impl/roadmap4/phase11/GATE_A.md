@@ -3,11 +3,11 @@
 ## 상태
 
 - Gate: `P11-A`
-- 상태: `ready-for-review`
-- 승인: 대기 중
+- 상태: `approved`
+- 승인: 2026-07-21 사용자 명시 승인
 - Primitive source checkpoint: `55f5e0b` (`prepare parallel coordinates primitive gate`)
 - Remote: `origin/main`
-- 승인 전 차단: production Parallel coordinate grammar, action, materialization과 public declarations
+- 승인으로 해제: production Parallel coordinate grammar, action과 materialization
 
 현재 runtime, exact declarations, Current action catalog와 public docs에는 후보 API를 추가하지 않았다.
 
@@ -163,4 +163,5 @@ createParallelCoordinates
 5. 1970 Cars primitive source와 rendered visual
 6. P11-A 승인 후 production Parallel coordinate/action 구현을 여는 것
 
-P11-A 승인 전에는 production Parallel source와 public declarations를 변경하지 않는다.
+P11-A 승인으로 Step 3과 Step 4의 production Parallel coordinate/encoding/materialization 구현을 열었다.
+Public closeout은 P11-B 승인 전까지 시작하지 않는다.
