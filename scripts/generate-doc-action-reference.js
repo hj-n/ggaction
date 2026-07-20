@@ -211,7 +211,7 @@ export async function buildDocActionReference() {
     "",
     "# Action Reference",
     "",
-    "Every direct action accepts one option object and returns a new immutable `ChartProgram`. Choose a task family for readable behavior, defaults, inference, and errors; use the exact lookup when you already know the action name.",
+    "Every direct action accepts one option object and returns a new immutable `ChartProgram`. Choose a task family for readable behavior, defaults, inference, and errors; use the exact lookup when you already know the action name. The API-layer labels match the action catalog layers `user-facing`, `advanced`, and `primitive`, respectively.",
     "",
     '<div class="docs-entry-grid docs-entry-grid--two">',
     cards,

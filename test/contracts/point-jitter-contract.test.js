@@ -69,13 +69,13 @@ test("keeps both point jitter visual targets executable and equivalent", () => {
 
 test("documents and package-tests the additive point jitter contract", () => {
   const pointDocs = read("docs/api/marks/point.md");
-  const reference = read("docs/reference/actions.md");
+  const reference = read("docs/reference/actions/marks.md");
   const packageConsumer = read("scripts/package-consumer.js");
   assert.match(pointDocs, /maxOffset: \{ band: 0\.168 \}/);
   assert.match(pointDocs, /semantic x\/y values/);
   assert.match(pointDocs, /not collision-free packing or a beeswarm layout/);
   for (const action of ACTIONS) {
-    assert.match(reference, new RegExp("^### `" + action + "`$", "m"), action);
+    assert.match(reference, new RegExp("^## `" + action + "`$", "m"), action);
   }
   assert.match(packageConsumer, /type JitterPointsOptions/);
   assert.match(packageConsumer, /\.jitterPoints\(jitterOptions\)/);
