@@ -3,7 +3,8 @@
 ## 상태
 
 - Gate: `P5-D`
-- 상태: `ready-for-review`
+- 상태: `approved`
+- 사용자 승인: `2026-07-20`
 - 검토 대상 remote checkpoint: `3e77356` (`origin/main`)
 - 승인 전 차단: Phase 5 lifecycle/facet closeout와 P5-Exit
 
@@ -137,6 +138,6 @@ Primitive는 production `createBin2DData`를 호출하지 않는다. Independent
 
 ## 승인 후 작업
 
-P5-D가 승인되면 Step 6에서 active Gate slice를 stable chart/example/browser lifecycle로 승격하고 facet replay,
-declaration, Current inventory와 generated documentation parity를 누적 검증한다. P5-Exit 전에는 Phase 6으로
-진행하지 않는다.
+P5-D 승인으로 Step 6이 해제되었다. Active Gate slice를 stable chart/example/browser lifecycle로 승격하고 facet
+replay, declaration, Current inventory와 generated documentation parity를 누적 검증한다. P5-Exit 전에는 Phase
+6으로 진행하지 않는다.
