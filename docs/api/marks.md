@@ -48,7 +48,7 @@ each type infers its ID and current dataset when those choices are unambiguous.
 
 | Family | Create | Edit | Initial graphic |
 | --- | --- | --- | --- |
-| Point | `createPointMark` | `editPointMark` | Point collection |
+| Point | `createPointMark` | `editPointMark`, `jitterPoints`, `removeJitter` | Point collection |
 | Line | `createLineMark` | `editLineMark` | Path collection |
 | Area | `createAreaMark` | `editAreaMark` | Closed path collection |
 | Arc | `createArcMark` | `editArcMark` | Closed sector path collection |

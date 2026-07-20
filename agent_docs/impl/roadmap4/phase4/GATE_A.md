@@ -116,9 +116,10 @@ program
 
 ## 승인 전 경계
 
-이 Gate에는 independent oracle과 low-level primitive targets만 있다. `jitterPoints`와 `removeJitter`는 runtime,
-TypeScript declarations, `ACTION_INDEX`와 public docs에 아직 존재하지 않는다. 승인 후에만 public action,
-replacement/removal, dependency rematerialization과 selection/facet integration을 구현한다.
+P4-A 승인 당시에는 independent oracle과 low-level primitive targets만 있었고 `jitterPoints`와
+`removeJitter`는 runtime, TypeScript declarations, `ACTION_INDEX`와 public docs에 존재하지 않았다.
+`e3501bf`의 승인 기록 이후 public action, replacement/removal, dependency rematerialization과
+selection/facet integration 구현이 열렸다.
 
 ## Non-goals
 

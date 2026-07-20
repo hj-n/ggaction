@@ -6,7 +6,7 @@
   "actions": [
     {
       "name": "jitterPoints",
-      "status": "planned",
+      "status": "implemented",
       "required": ["channel", "maxOffset"],
       "optional": ["target", "seed", "key"],
       "replacement": "same action replaces the target policy from its semantic base position",
@@ -14,7 +14,7 @@
     },
     {
       "name": "removeJitter",
-      "status": "planned",
+      "status": "implemented",
       "required": [],
       "optional": ["target"],
       "replacement": "removes the target policy and restores semantic base positions",

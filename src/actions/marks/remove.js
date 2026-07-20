@@ -196,6 +196,7 @@ export const removeMark = action(
         next = next.editGraphics({ target: id, remove: true });
       }
       next = next._withoutMaterializationConfig(["marks", id]);
+      next = next._withoutMaterializationConfig(["jitters", id]);
     }
 
     next = cleanupPositionGuides(next, positionScales);

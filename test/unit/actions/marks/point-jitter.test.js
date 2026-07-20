@@ -1,0 +1,207 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+import { chart } from "../../../../src/index.js";
+
+const ROWS = Object.freeze([
+  Object.freeze({ id: "a", category: "A", group: "left", value: 2 }),
+  Object.freeze({ id: "b", category: "A", group: "left", value: 4 }),
+  Object.freeze({ id: "c", category: "B", group: "right", value: 6 }),
+  Object.freeze({ id: "d", category: "B", group: "right", value: 8 })
+]);
+
+function createProgram(rows = ROWS) {
+  return chart()
+    .createCanvas({ width: 320, height: 240, margin: 30 })
+    .createData({ id: "rows", values: rows })
+    .createPointMark({ id: "points", data: "rows" })
+    .encodeX({
+      target: "points",
+      field: "category",
+      fieldType: "nominal",
+      scale: { domain: ["A", "B"] }
+    })
+    .encodeY({
+      target: "points",
+      field: "value",
+      fieldType: "quantitative",
+      scale: { domain: [0, 10], zero: false }
+    });
+}
+
+function propertyValues(program, property) {
+  return program.graphicSpec.objects.points.items.map(
+    item => item.properties[property]
+  );
+}
+
+test("authors deterministic x jitter without changing semantic positions", () => {
+  const base = createProgram();
+  const jittered = base.jitterPoints({
+    channel: "x",
+    maxOffset: { band: 0.16 },
+    seed: "stable",
+    key: "id"
+  });
+  assert.deepEqual(jittered.semanticSpec, base.semanticSpec);
+  assert.deepEqual(propertyValues(jittered, "y"), propertyValues(base, "y"));
+  assert.notDeepEqual(propertyValues(jittered, "x"), propertyValues(base, "x"));
+  assert.equal(jittered.materializationConfigs.jitters.points.key, "id");
+  assert.equal(
+    jittered.materializationConfigs.jitters.points.resolved.itemCount,
+    ROWS.length
+  );
+  assert.equal(Object.isFrozen(jittered.materializationConfigs.jitters), true);
+  assert.deepEqual(
+    jittered.trace.children.at(-1).children.map(node => node.op),
+    ["rematerializePointMark"]
+  );
+  assert.deepEqual(base.materializationConfigs.jitters, undefined);
+});
+
+test("replaces jitter from semantic base positions and removes it exactly", () => {
+  const base = createProgram();
+  const first = base.jitterPoints({
+    channel: "x",
+    maxOffset: { band: 0.16 },
+    seed: 1,
+    key: "id"
+  });
+  const replacement = first.jitterPoints({
+    channel: "x",
+    maxOffset: { pixels: 0.5 },
+    seed: 2,
+    key: "id"
+  });
+  const baseX = propertyValues(base, "x");
+  const replacedX = propertyValues(replacement, "x");
+  assert.equal(
+    replacedX.every((value, index) => Math.abs(value - baseX[index]) <= 0.5),
+    true
+  );
+  assert.notDeepEqual(replacedX, propertyValues(first, "x"));
+  const restored = replacement.removeJitter();
+  assert.deepEqual(restored.graphicSpec, base.graphicSpec);
+  assert.equal(restored.materializationConfigs.jitters, undefined);
+  assert.deepEqual(
+    restored.trace.children.at(-1).children.map(node => node.op),
+    ["rematerializePointMark"]
+  );
+});
+
+test("keeps keyed offsets stable across source row order", () => {
+  const options = {
+    channel: "x",
+    maxOffset: { pixels: 8 },
+    seed: "order",
+    key: "id"
+  };
+  const originalBase = createProgram(ROWS);
+  const reversedBase = createProgram([...ROWS].reverse());
+  const original = originalBase.jitterPoints(options);
+  const reversed = reversedBase.jitterPoints(options);
+  const offsets = (program, base, rows) => new Map(rows.map((row, index) => [
+    row.id,
+    propertyValues(program, "x")[index] - propertyValues(base, "x")[index]
+  ]));
+  assert.deepEqual(
+    offsets(original, originalBase, ROWS),
+    offsets(reversed, reversedBase, [...ROWS].reverse())
+  );
+});
+
+test("converges through Canvas, shape, selection, and highlight rematerialization", () => {
+  const jittered = createProgram().jitterPoints({
+    channel: "x",
+    maxOffset: { band: 0.16 },
+    seed: "lifecycle",
+    key: "id"
+  });
+  const options = {
+    target: "points",
+    select: { field: "id", op: "eq", value: "b" },
+    offset: { x: 2, y: -1 },
+    dimOthers: false,
+    bringToFront: false
+  };
+  const direct = jittered
+    .editPointMark({ shape: "diamond", stroke: "black", strokeWidth: 2 })
+    .editCanvas({ width: 420 })
+    .highlightMarks(options);
+  const reordered = jittered
+    .highlightMarks(options)
+    .editPointMark({ shape: "diamond", stroke: "black", strokeWidth: 2 })
+    .editCanvas({ width: 420 });
+  assert.deepEqual(reordered.graphicSpec, direct.graphicSpec);
+  assert.deepEqual(
+    reordered.materializationConfigs.jitters.points.resolved.items.map(
+      item => item.identity
+    ),
+    ROWS.map(row => row.id)
+  );
+});
+
+test("replays jitter inside facet children and after mark filtering", () => {
+  const jittered = createProgram().jitterPoints({
+    channel: "x",
+    maxOffset: { band: 0.16 },
+    key: "id"
+  });
+  const filtered = jittered.filterMarks({
+    target: "points",
+    field: "value",
+    op: "gte",
+    value: 4
+  });
+  assert.equal(
+    filtered.materializationConfigs.jitters.points.resolved.itemCount,
+    3
+  );
+  const faceted = jittered.facet({ field: "group", columns: 2 });
+  assert.deepEqual(
+    Object.values(faceted.children).map(child =>
+      child.materializationConfigs.jitters.points.resolved.itemCount
+    ),
+    [2, 2]
+  );
+});
+
+test("cleans jitter with its mark and validates incompatible requests", () => {
+  const jittered = createProgram().jitterPoints({
+    channel: "x",
+    maxOffset: { pixels: 4 },
+    key: "id"
+  });
+  assert.equal(
+    jittered.removeMark({ target: "points" }).materializationConfigs.jitters,
+    undefined
+  );
+  assert.throws(
+    () => createProgram([
+      { id: "same", category: "A", value: 1 },
+      { id: "same", category: "A", value: 2 }
+    ]).jitterPoints({
+      channel: "x",
+      maxOffset: { pixels: 1 },
+      key: "id"
+    }),
+    /must be unique/
+  );
+  assert.throws(
+    () => createProgram().jitterPoints({
+      channel: "y",
+      maxOffset: { band: 0.1 }
+    }),
+    /categorical position scale/
+  );
+  const polar = chart()
+    .createCanvas()
+    .createData({ values: [{ theta: 0, radius: 1 }] })
+    .createPointMark()
+    .encodeTheta({ field: "theta", fieldType: "quantitative" })
+    .encodeR({ field: "radius", fieldType: "quantitative" });
+  assert.throws(
+    () => polar.jitterPoints({ channel: "x", maxOffset: { pixels: 1 } }),
+    /requires an eligible layer/
+  );
+});

@@ -5,7 +5,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { ChartProgram } from "../../src/ChartProgram.js";
-import { visualVariants } from "../gates/point-jitter/manifest.js";
+import { visualVariants } from "../charts/point-jitter/manifest.js";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const read = relative => readFileSync(path.join(root, relative), "utf8");
@@ -13,7 +13,7 @@ const proposals = JSON.parse(read(
   "agent_docs/impl/roadmap4/phase4/PROPOSALS.json"
 ));
 
-test("keeps the approved P4-A jitter contract exact before implementation", () => {
+test("keeps the approved P4-A jitter contract synchronized after implementation", () => {
   assert.equal(proposals.version, 1);
   assert.equal(proposals.phase, "roadmap4/phase4");
   assert.equal(proposals.gate, "P4-A");
@@ -25,11 +25,11 @@ test("keeps the approved P4-A jitter contract exact before implementation", () =
   const index = JSON.parse(read("agent_docs/contract/ACTION_INDEX.json"));
   const declarations = read("types/program.d.ts");
   for (const action of proposals.actions) {
-    assert.equal(action.status, "planned", action.name);
-    assert.equal(ChartProgram.prototype[action.name], undefined, action.name);
-    assert.equal(index.actions.some(item => item.name === action.name), false, action.name);
+    assert.equal(action.status, "implemented", action.name);
+    assert.equal(typeof ChartProgram.prototype[action.name], "function", action.name);
+    assert.equal(index.actions.some(item => item.name === action.name), true, action.name);
     assert.equal(index.plannedActions.some(item => item.name === action.name), false, action.name);
-    assert.doesNotMatch(
+    assert.match(
       declarations,
       new RegExp(`^  ${action.name}\\(`, "m"),
       action.name
@@ -37,7 +37,7 @@ test("keeps the approved P4-A jitter contract exact before implementation", () =
   }
 });
 
-test("registers two primitive-only P4-A targets with the approved API shape", () => {
+test("retains two approved P4-A visual targets with the exact API shape", () => {
   assert.deepEqual(
     visualVariants.map(variant => variant.artifact.capability),
     ["point-jitter", "point-jitter"]
@@ -47,7 +47,6 @@ test("registers two primitive-only P4-A targets with the approved API shape", ()
     ["phase4", "phase4"]
   );
   for (const variant of visualVariants) {
-    assert.equal(variant.userFacing, undefined);
     assert.match(variant.callChain, /\.jitterPoints\(\{/);
     assert.equal(variant.primitive().semanticSpec.layers[0].mark.type, "point");
   }

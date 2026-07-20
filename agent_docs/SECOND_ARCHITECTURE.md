@@ -198,6 +198,7 @@ materializationConfigs = {
   facets: { ... },
   selections: { ... },
   highlights: { ... },
+  jitters: { ... },
   canvas: { ... },
   title: { ... }
 };
@@ -1187,6 +1188,10 @@ planned contract이므로 시각 구현 승인을 받기 전에는 지원하지 
 - size는 equal-area 값이며 모든 12개 shape recipe가 같은 target area로 정규화된다.
 - field-driven mixed shape는 heterogeneous circle/rect/path collection을 만든다.
 - constant radius와 opacity는 mark materialization config에서 다시 적용한다.
+- Cartesian point jitter는 `materializationConfigs.jitters[target]`이 requested policy와 resolved metadata를
+  소유한다. Semantic x/y mapping 후, shape/radius/stroke extent를 포함해 plot과 categorical slot bounds 안에서
+  deterministic final center를 계산한다. 같은 action 재호출은 semantic base에서 교체하고 `removeJitter`는
+  assignment를 제거한다. Highlight의 concrete offset은 jitter 이후에 적용된다.
 
 ### Line
 

@@ -103,6 +103,60 @@ independent assembly and does not inherit position encodings.
 - No proposal: radius and field-driven opacity remain owned by their corresponding encoding actions.
 - Evidence: `test/unit/actions/marks/edit-point-mark.test.js`.
 
+## `jitterPoints`
+
+- Signature: `jitterPoints({ target?, channel, maxOffset, seed?, key? })`.
+- Lifecycle: Assignment. 같은 target에 다시 호출하면 기존 policy를 semantic base position에서 교체하며
+  이전 concrete offset을 누적하지 않는다. 제거는 `removeJitter`가 소유한다.
+- `target`: complete Cartesian x/y point mark. Current compatible mark, otherwise unique compatible mark로
+  infer하며 ambiguity는 explicit ID를 요구한다.
+- `channel`: closed vocabulary `"x" | "y"`. 지정 channel의 concrete center만 이동한다.
+- `maxOffset`: exactly one of `{ pixels: PositiveFinite }` or `{ band: PositiveFiniteAtMostHalf }`.
+  `band`는 categorical position scale의 effective slot width에 대한 비율이다.
+- `seed`: string 또는 finite number, default `0`. `key`는 optional non-empty source field이며 지정하면
+  materialized item에서 unique string/finite-number/boolean identity를 요구한다. 생략하면 source item index다.
+- State: requested policy와 resolved item offsets는
+  `materializationConfigs.jitters[target]`이 단독 소유한다. `semanticSpec`의 field, scale와 channel value는
+  변경하지 않고 final concrete centers만 `graphicSpec`에 materialize한다.
+- Geometry: point shape, area/radius와 stroke extent를 고려해 plot bounds 안에 유지한다. Categorical
+  channel은 category slot 안에도 유지한다. 들어갈 공간이 없으면 해당 item의 offset은 `0`이고 resolved
+  metadata에 unavailable 상태가 남는다.
+- Rematerialization: Canvas, scale, data/filter, point radius/shape/stroke, selection/highlight와 facet replay가
+  같은 stored assignment를 다시 적용한다. Highlight offset은 jitter 이후 final concrete geometry에 적용된다.
+- Non-goals: collision-free packing/beeswarm, density-aware displacement와 Polar point jitter는 구현하지 않는다.
+
+### Formal values — `jitterPoints`
+
+- Implemented: `jitterPoints({ target?: UserId; channel: "x" | "y"; maxOffset: { pixels: PositiveFinite } | { band: PositiveFiniteAtMostHalf }; seed?: string | FiniteNumber; key?: NonEmptyString })`.
+- Planned (NOT IMPLEMENTED): —
+- Proposed (NOT IMPLEMENTED): —
+
+### Value coverage — `jitterPoints`
+
+- ✅ Covered: exact deterministic hash vector, x/y, pixel/band offset, default/explicit seed and keyed reorder stability.
+- ✅ Covered: plot/category containment for every point shape extent, replacement from semantic base, removal and immutability.
+- ✅ Covered: Canvas, scale, filtering, appearance, highlight and facet rematerialization; primitive/public Canvas parity.
+- ✅ Covered: incomplete/ambiguous/Polar target, invalid offsets, incompatible band scale and duplicate/invalid key errors.
+- Evidence: `test/unit/grammar/layout/point-jitter.test.js`,
+  `test/unit/actions/marks/point-jitter.test.js`, and `test/charts/point-jitter/public.test.js`.
+
+## `removeJitter`
+
+- Signature: `removeJitter({ target? } = {})`.
+- Lifecycle: Assignment removal. Stored jitter가 있는 current/unique point target을 infer한다.
+- Effect: `materializationConfigs.jitters[target]`을 structural remove하고 wrapped point rematerialization으로
+  semantic scale position을 복구한다. Semantic encoding, data, scale, mark와 unrelated configs는 보존한다.
+
+### Formal values — `removeJitter`
+
+- Implemented: `removeJitter(options?: { target?: UserId })`.
+- Proposed (NOT IMPLEMENTED): —
+
+### Value coverage — `removeJitter`
+
+- ✅ Covered: inferred/explicit target, base-position restoration, config cleanup, nested trace and earlier-program immutability.
+- Evidence: `test/unit/actions/marks/point-jitter.test.js`.
+
 ## `removeMark`
 
 - Signature: `removeMark({ target? } = {})`.

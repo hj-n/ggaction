@@ -27,7 +27,7 @@ remain available for custom layering and editing.
 | Position | quantitative x/y | temporal x, aggregate y | binned x, count y | vertical or horizontal category/aggregate pair | two discrete bands or x/x2 + y/y2 ranges |
 | Nominal color | point fill | series stroke | five bar layouts | five bar layouts | cell fill |
 | Stroke dash | — | nominal or constant; 4 named styles | — | — | — |
-| Appearance | radius | stroke width, 8 curves | default bar geometry | band or logical-pixel width | encoded fill, opacity, outline |
+| Appearance | radius, deterministic bounded x/y jitter | stroke width, 8 curves | default bar geometry | band or logical-pixel width | encoded fill, opacity, outline |
 | Automatic guides | linear axes; horizontal grid | UTC time/linear axes; horizontal grid | bin-aligned/linear axes; horizontal grid | ordinal/linear axes; horizontal grid | discrete/continuous axes and color legend |
 | Legend | point color + shape | categorical | categorical | categorical | categorical or continuous color |
 | Selection/highlight | point | series | final bar | final bar | observed cell |
@@ -113,5 +113,9 @@ series, arc sector, and rule grain. Selector values explicitly distinguish data 
 pre-scale semantic channels, and concrete graphic properties.
 Highlight appearance supports point fill/shape/size/outline/offset, bar fill and
 outline, area/arc fill/outline/offset, and line/rule stroke/width/dash/offset.
+Cartesian point jitter supports deterministic pixel offsets and categorical
+band-relative offsets. It preserves semantic channel values, remains bounded
+by glyph extent and plot/category slots, and does not perform collision-free
+packing. Polar point jitter is not implemented.
 Polar charts may be direct or nested concat children. Faceting a Polar source is
 not implemented and fails before partial child state is created.

@@ -31,6 +31,19 @@ export type CurveInterpolation =
   | "natural";
 export type DashStyle = "solid" | "dashed" | "dotted" | "dashdot";
 export type DashPattern = readonly number[];
+export type JitterMaxOffset =
+  | { pixels: number; band?: never }
+  | { pixels?: never; band: number };
+export interface JitterPointsOptions {
+  target?: string;
+  channel: "x" | "y";
+  maxOffset: JitterMaxOffset;
+  seed?: string | number;
+  key?: string;
+}
+export interface RemoveJitterOptions {
+  target?: string;
+}
 export type ScaleType =
   | "linear"
   | "log"
@@ -1650,6 +1663,8 @@ export class ChartProgram {
     stroke?: string;
     strokeWidth?: number;
   }): ChartProgram;
+  jitterPoints(options: JitterPointsOptions): ChartProgram;
+  removeJitter(options?: RemoveJitterOptions): ChartProgram;
   createLineMark(options?: {
     id?: string;
     data?: string;

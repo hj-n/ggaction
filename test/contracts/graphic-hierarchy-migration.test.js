@@ -25,6 +25,16 @@ const LOADERS = Object.freeze({
 });
 
 const EXPECTED_DRAW_ORDER = Object.freeze({
+  "cars-origin-jitter": [
+    "canvas", "horizontalGridLines", "observations",
+    "xAxisLine", "xAxisTicks", "xAxisLabels", "xAxisTitle",
+    "yAxisLine", "yAxisTicks", "yAxisLabels", "yAxisTitle"
+  ],
+  "gapminder-cluster-jitter": [
+    "canvas", "verticalGridLines", "observations",
+    "xAxisLine", "xAxisTicks", "xAxisLabels", "xAxisTitle",
+    "yAxisLine", "yAxisTicks", "yAxisLabels", "yAxisTitle"
+  ],
   "cars-scatterplot": [
     "canvas", "horizontalGridLines", "points",
     "xAxisLine", "xAxisTicks", "xAxisLabels", "xAxisTitle",

@@ -8,8 +8,14 @@ import {
 import { getPointGraphicType } from "../../../grammar/schemas/mark.js";
 import {
   createPointShapeGraphic,
+  resolvePointShapeExtent,
   validatePointShape
 } from "../../../grammar/pointShapes.js";
+import {
+  canonicalJitterScalar,
+  normalizePointJitterPolicy,
+  resolvePointJitter
+} from "../../../grammar/jitter.js";
 import { polarToCartesian, resolvePolarFrame } from "../../../grammar/polar.js";
 import { resolveGraphicBounds } from "../../../layout/canvas.js";
 import {
@@ -157,6 +163,121 @@ function existingArea(child, parentType) {
   return undefined;
 }
 
+function resolvedPointArea(area, index, config, existingChildren, graphicType) {
+  return area?.[index] ?? (
+    config.radius === undefined
+      ? existingArea(existingChildren[index], graphicType) ??
+        Math.PI * DEFAULT_POINT_RADIUS ** 2
+      : Math.PI * config.radius ** 2
+  );
+}
+
+function resolveJitterEntries({
+  policy,
+  dataset,
+  x,
+  y,
+  area,
+  shapes,
+  config,
+  graphic,
+  existingChildren
+}) {
+  const seen = new Set();
+  return dataset.values.flatMap((row, index) => {
+    if (!Number.isFinite(x?.[index]) || !Number.isFinite(y?.[index])) return [];
+    const identity = policy.key === undefined ? index : row[policy.key];
+    const canonical = canonicalJitterScalar(
+      identity,
+      policy.key === undefined
+        ? "Point jitter source index"
+        : `Point jitter key field "${policy.key}"`
+    );
+    if (seen.has(canonical)) {
+      throw new Error(
+        `Point jitter key field "${policy.key}" must be unique for materialized items.`
+      );
+    }
+    seen.add(canonical);
+    const resolvedArea = resolvedPointArea(
+      area,
+      index,
+      config,
+      existingChildren,
+      graphic.type
+    );
+    const extent = resolvePointShapeExtent({
+      shape: shapes[index],
+      area: resolvedArea,
+      strokeWidth: config.stroke === undefined ? 0 : config.strokeWidth ?? 1
+    });
+    return [{
+      index,
+      identity,
+      base: policy.channel === "x" ? x[index] : y[index],
+      halfExtent: extent[policy.channel]
+    }];
+  });
+}
+
+function applyPointJitter(program, {
+  id,
+  layer,
+  dataset,
+  x,
+  y,
+  area,
+  shapes,
+  config,
+  graphic,
+  existingChildren
+}) {
+  const stored = program.materializationConfigs.jitters?.[id];
+  if (stored === undefined) return { program, x, y };
+  const policy = normalizePointJitterPolicy(stored);
+  const encoding = layer.encoding?.[policy.channel];
+  const scale = program.resolvedScales[encoding?.scale];
+  if (scale === undefined) {
+    throw new Error(
+      `Point jitter on "${id}" requires a resolved ${policy.channel} scale.`
+    );
+  }
+  const bounds = resolveGraphicBounds(program);
+  const entries = resolveJitterEntries({
+    policy,
+    dataset,
+    x,
+    y,
+    area,
+    shapes,
+    config,
+    graphic,
+    existingChildren
+  });
+  const resolution = resolvePointJitter({
+    target: id,
+    policy,
+    scale,
+    entries,
+    plotMinimum: policy.channel === "x" ? bounds.x : bounds.y,
+    plotMaximum: policy.channel === "x"
+      ? bounds.x + bounds.width
+      : bounds.y + bounds.height
+  });
+  const values = [...(policy.channel === "x" ? x : y)];
+  for (const item of resolution.items) {
+    values[item.index] += item.finalOffset;
+  }
+  return {
+    program: program._withMaterializationConfig(["jitters", id], {
+      ...policy,
+      resolved: resolution
+    }),
+    x: policy.channel === "x" ? values : x,
+    y: policy.channel === "y" ? values : y
+  };
+}
+
 const rematerializePointMark = action(
   {
     op: "rematerializePointMark",
@@ -186,7 +307,7 @@ const rematerializePointMark = action(
       throw new Error(`Point mark "${id}" requires an existing dataset.`);
     }
 
-    const { x, y } = resolvePointPositions(this, layer, dataset);
+    const positions = resolvePointPositions(this, layer, dataset);
     const mappedFill = resolveRowEncodingValues(this, layer, dataset, "color");
     const area = resolveRowEncodingValues(this, layer, dataset, "size");
     const encodedShape = resolveRowEncodingValues(this, layer, dataset, "shape");
@@ -200,6 +321,19 @@ const rematerializePointMark = action(
       encodedShape !== undefined ||
       graphic.type === "collection" ||
       getPointGraphicType(constantShape) !== graphic.type;
+    const jittered = applyPointJitter(this, {
+      id,
+      layer,
+      dataset,
+      x: positions.x,
+      y: positions.y,
+      area,
+      shapes,
+      config,
+      graphic,
+      existingChildren
+    });
+    const { x, y } = jittered;
 
     if (requiresMixedCollection) {
       const items = dataset.values.map((_, index) => {
@@ -208,11 +342,13 @@ const rematerializePointMark = action(
         const color = mappedFill?.[index] ?? config.fill ??
           existing.fill ?? DEFAULT_POINT_FILL;
         const opacity = encodedOpacity?.[index] ?? config.opacity ?? existing.opacity;
-        const resolvedArea = area?.[index] ??
-          (config.radius === undefined
-            ? existingArea(existingChildren[index], graphic.type) ??
-              Math.PI * DEFAULT_POINT_RADIUS ** 2
-            : Math.PI * config.radius ** 2);
+        const resolvedArea = resolvedPointArea(
+          area,
+          index,
+          config,
+          existingChildren,
+          graphic.type
+        );
         const centerX = x?.[index] ?? existing.x;
         const centerY = y?.[index] ?? existing.y;
         if (
@@ -240,12 +376,16 @@ const rematerializePointMark = action(
           opacity
         });
       });
-      return this.editGraphics({ target: id, property: "items", value: items });
+      return jittered.program.editGraphics({
+        target: id,
+        property: "items",
+        value: items
+      });
     }
 
     let next = graphic.items.length === dataset.values.length
-      ? this
-      : this.editGraphics({
+      ? jittered.program
+      : jittered.program.editGraphics({
           target: id,
           property: "length",
           value: dataset.values.length

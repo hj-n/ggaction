@@ -218,6 +218,42 @@
       }
     },
     {
+      "name": "jitterPoints",
+      "layer": "user-facing",
+      "domain": "marks",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Same action replaces the target jitter assignment; `removeJitter` removes it",
+      "audit": "Reassignment — Implemented",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/MARKS.md",
+        "anchor": "jitterpoints"
+      }
+    },
+    {
+      "name": "removeJitter",
+      "layer": "user-facing",
+      "domain": "marks",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Removes one target jitter assignment and restores semantic base positions",
+      "audit": "Reassignment — Implemented",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/MARKS.md",
+        "anchor": "removejitter"
+      }
+    },
+    {
       "name": "removeMark",
       "layer": "user-facing",
       "domain": "marks",

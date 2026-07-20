@@ -19,6 +19,8 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | user-facing | [`createTextMark`](current/MARKS.md#createtextmark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editTextMark`](current/MARKS.md#edittextmark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editPointMark`](current/MARKS.md#editpointmark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
+| user-facing | [`jitterPoints`](current/MARKS.md#jitterpoints) | marks | Assignment | Reassignment — Implemented | ✅ / ✅ / ✅ |
+| user-facing | [`removeJitter`](current/MARKS.md#removejitter) | marks | Assignment | Reassignment — Implemented | ✅ / ✅ / ✅ |
 | user-facing | [`removeMark`](current/MARKS.md#removemark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`createLineMark`](current/MARKS.md#createlinemark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editLineMark`](current/MARKS.md#editlinemark) | marks | Mutable resource | Complete | ✅ / ✅ / ✅ |

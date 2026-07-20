@@ -48,6 +48,8 @@ interface ChartProgramActions {
   createIntervalData(options: IntervalDataOptions): ChartProgram;
   createPointMark(options?: { id?: string; data?: string; shape?: PointShape; fill?: string; opacity?: number; stroke?: string; strokeWidth?: number; }): ChartProgram;
   editPointMark(options: { target?: string; shape?: PointShape; fill?: string; opacity?: number; stroke?: string; strokeWidth?: number; }): ChartProgram;
+  jitterPoints(options: JitterPointsOptions): ChartProgram;
+  removeJitter(options?: RemoveJitterOptions): ChartProgram;
   createLineMark(options?: { id?: string; data?: string; strokeWidth?: number; curve?: CurveInterpolation; stroke?: string; opacity?: number; closed?: boolean; }): ChartProgram;
   editLineMark(options: { target?: string; strokeWidth?: number; curve?: CurveInterpolation; stroke?: string; opacity?: number; closed?: boolean; }): ChartProgram;
   createBarMark(options?: { id?: string; data?: string; fill?: string; opacity?: number; stroke?: string; strokeWidth?: number; }): ChartProgram;
@@ -390,6 +392,25 @@ editPointMark({ target?, shape?, fill?, opacity?, stroke?, strokeWidth? })
 ```
 
 Change constant point shape, fill, opacity, or outline appearance and rematerialize its concrete items. [Marks](../api/marks.md)
+
+### `jitterPoints`
+
+```javascript
+jitterPoints({ target?, channel, maxOffset, seed?, key? })
+```
+
+Assign deterministic bounded graphical jitter to one Cartesian point mark. Use
+exactly one of `maxOffset.pixels` or `maxOffset.band`; calling the action again
+replaces the previous policy from the semantic base positions. [Point marks](../api/marks/point.md)
+
+### `removeJitter`
+
+```javascript
+removeJitter({ target? } = {})
+```
+
+Remove the target point mark's jitter assignment and restore positions derived
+directly from its semantic encodings. [Point marks](../api/marks/point.md)
 
 ### `removeMark`
 

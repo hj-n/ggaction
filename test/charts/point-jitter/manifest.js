@@ -8,6 +8,10 @@ import {
   createCarsOriginJitterPrimitives,
   createGapminderClusterJitterPrimitives
 } from "./primitive.program.js";
+import {
+  createCarsOriginJitterProgram,
+  createGapminderClusterJitterProgram
+} from "./public.program.js";
 
 const cars = loadCars();
 const gapminder = loadGapminder();
@@ -108,6 +112,7 @@ export const visualVariants = Object.freeze([
       capability: "point-jitter"
     },
     primitive: () => createCarsOriginJitterPrimitives(cars),
+    userFacing: () => createCarsOriginJitterProgram(cars),
     width: CARS_JITTER_LAYOUT.width,
     height: CARS_JITTER_LAYOUT.height,
     colors: ["#334155"],
@@ -131,6 +136,7 @@ export const visualVariants = Object.freeze([
       capability: "point-jitter"
     },
     primitive: () => createGapminderClusterJitterPrimitives(gapminder),
+    userFacing: () => createGapminderClusterJitterProgram(gapminder),
     width: GAPMINDER_JITTER_LAYOUT.width,
     height: GAPMINDER_JITTER_LAYOUT.height,
     colors: ["#334155"],

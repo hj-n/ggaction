@@ -162,3 +162,27 @@ export function createPointShapeGraphic({
     }
   };
 }
+
+export function resolvePointShapeExtent({ shape, area, strokeWidth = 0 }) {
+  const validated = validatePointShape(shape);
+  if (!Number.isFinite(area) || area < 0) {
+    throw new TypeError("Point shape area must be finite and non-negative.");
+  }
+  if (!Number.isFinite(strokeWidth) || strokeWidth < 0) {
+    throw new TypeError("Point shape strokeWidth must be finite and non-negative.");
+  }
+  const strokeExtent = strokeWidth / 2;
+  if (validated === "circle") {
+    const radius = Math.sqrt(area / Math.PI) + strokeExtent;
+    return cloneAndFreeze({ x: radius, y: radius });
+  }
+  if (validated === "square") {
+    const halfSide = Math.sqrt(area) / 2 + strokeExtent;
+    return cloneAndFreeze({ x: halfSide, y: halfSide });
+  }
+  const points = normalizePolygon(shapePolygon(validated), 0, 0, area);
+  return cloneAndFreeze({
+    x: Math.max(0, ...points.map(point => Math.abs(point.x))) + strokeExtent,
+    y: Math.max(0, ...points.map(point => Math.abs(point.y))) + strokeExtent
+  });
+}

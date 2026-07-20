@@ -9,6 +9,10 @@ import { createCarsTemporalBarLine } from
 import { createCarsRegressionScatterplot } from
   "./cars-regression-scatterplot/program.js";
 import { createCarsScatterplot } from "./cars-scatterplot/program.js";
+import {
+  createCarsOriginJitter,
+  createGapminderClusterJitter
+} from "./point-jitter/program.js";
 import { createAnnotatedImdbScatterplot } from
   "./annotated-imdb-scatterplot/program.js";
 import { createGapminderLifeExpectancyHeatmap } from
@@ -101,6 +105,24 @@ export const PUBLIC_CHARTS = Object.freeze([
     createProgram: createCarsScatterplot,
     docsGroup: "charts",
     browser: { path: "cars-scatterplot/", canvas: "#chart" }
+  }),
+  example({
+    id: "cars-origin-jitter",
+    data: "cars",
+    width: 640,
+    height: 440,
+    createProgram: createCarsOriginJitter,
+    programDirectory: "point-jitter",
+    testDirectory: "point-jitter"
+  }),
+  example({
+    id: "gapminder-cluster-jitter",
+    data: "gapminder",
+    width: 680,
+    height: 460,
+    createProgram: createGapminderClusterJitter,
+    programDirectory: "point-jitter",
+    testDirectory: "point-jitter"
   }),
   example({
     id: "annotated-imdb-scatterplot",
