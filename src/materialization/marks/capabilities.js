@@ -32,6 +32,16 @@ export function canMaterializePoint(_program, layer) {
 }
 
 export function canMaterializeLine(program, layer) {
+  const parallel = layer.encoding?.parallel;
+  if (parallel !== undefined) {
+    const coordinate = program.semanticSpec.coordinates.find(
+      item => item.id === layer.coordinate
+    );
+    return layer.mark?.type === "line" &&
+      coordinate?.type === "parallel" &&
+      parallel.dimensions?.length >= 2 &&
+      parallel.dimensions.every(dimension => dimension.scale !== undefined);
+  }
   const dataset = findDataset(program, layer.data);
   const interval = dataset?.transform?.some(item => item.type === "interval");
   if (hasPolarPositionScales(layer)) {

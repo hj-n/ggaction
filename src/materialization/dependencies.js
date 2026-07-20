@@ -22,6 +22,13 @@ function hasTitle(program) {
   );
 }
 
+function layerScaleIds(layer) {
+  return [
+    ...Object.values(layer.encoding ?? {}).map(encoding => encoding?.scale),
+    ...(layer.encoding?.parallel?.dimensions ?? []).map(dimension => dimension.scale)
+  ].filter(scale => scale !== undefined);
+}
+
 export function planCanvasRematerialization(program) {
   const marks = [];
   for (const layer of program.semanticSpec.layers) {
@@ -37,9 +44,7 @@ export function planCanvasRematerialization(program) {
     if (needsCanvasScaleRematerialization(program, scale)) {
       const deferredConsumers = program.semanticSpec.layers.filter(layer =>
         canDeferScaleConsumerApplication(layer) &&
-        Object.values(layer.encoding ?? {}).some(
-          encoding => encoding?.scale === scale.id
-        )
+        layerScaleIds(layer).includes(scale.id)
       );
       const canDeferMarks = deferredConsumers.length === 0 ||
         deferredConsumers.every(layer => deferredMarkIds.has(layer.id));
@@ -67,11 +72,7 @@ export function planCanvasRematerialization(program) {
 
 export function planLayerDataRematerialization(program, id) {
   const layer = requireLayer(program, id);
-  const scaleIds = [...new Set(
-    Object.values(layer.encoding ?? {})
-      .map(encoding => encoding?.scale)
-      .filter(scale => scale !== undefined)
-  )];
+  const scaleIds = [...new Set(layerScaleIds(layer))];
   const markStep = getMarkMaterializationStep(program, layer);
   const scales = scaleIds.map(scale => ({
       op: "rematerializeScale",

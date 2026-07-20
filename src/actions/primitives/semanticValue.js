@@ -24,6 +24,10 @@ import {
   validateSemanticScaleRange,
   validateSemanticScaleType
 } from "../../grammar/scales/index.js";
+import {
+  validateParallelDimensions,
+  validateParallelMissingPolicy
+} from "../../grammar/parallelCoordinates.js";
 
 function nonEmptyString(value, label) {
   if (typeof value !== "string" || value.length === 0) {
@@ -99,6 +103,15 @@ export function validateSemanticValue(program, parsed, value) {
     if (property.endsWith(".fieldType")) validateSemanticFieldType(value);
     if (property === "encoding.pathOrder.order") {
       validatePathOrderDirection(value);
+    }
+    if (property === "encoding.parallel.dimensions") {
+      validateParallelDimensions(value, { normalized: true });
+    }
+    if (property === "encoding.parallel.key") {
+      validateUserId(value, "Parallel key field");
+    }
+    if (property === "encoding.parallel.missing") {
+      validateParallelMissingPolicy(value);
     }
     if (property.endsWith(".aggregate")) validateAggregate(value);
     if (property.endsWith(".bin.maxBins")) normalizeHistogramBin({ maxBins: value });

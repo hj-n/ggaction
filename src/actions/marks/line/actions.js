@@ -34,6 +34,12 @@ import { canMaterializeLine } from "../../../materialization/marks/index.js";
 import { resolveMarkGraphicPlacement } from
   "../../../materialization/graphicHierarchy.js";
 import { rematerializeHighlightBaseline } from "../lifecycle.js";
+import {
+  materializeParallelRows,
+  validateParallelRows
+} from "../../../grammar/parallelCoordinates.js";
+import { mapScaleConsumerValues } from
+  "../../../materialization/scales/map.js";
 
 const DEFAULT_LINE_STROKE = DEFAULT_COLORS.mark;
 const DEFAULT_LINE_WIDTH = 2;
@@ -57,7 +63,17 @@ function isPolarLine(layer) {
     layer.encoding?.radius !== undefined;
 }
 
+function isParallelLine(layer) {
+  return layer.encoding?.parallel !== undefined;
+}
+
 function validatePolarLineConfig(layer, config) {
+  if (isParallelLine(layer)) {
+    if ((config.curve ?? "linear") !== "linear" || config.closed === true) {
+      throw new Error("Parallel lines require curve \"linear\" and closed false.");
+    }
+    return;
+  }
   if (!isPolarLine(layer)) return;
   if ((config.curve ?? "linear") !== "linear") {
     throw new Error("Polar line position currently requires curve \"linear\".");
@@ -179,6 +195,7 @@ const rematerializeLineMark = action(
     if (highlighted !== undefined) return highlighted;
     const { dataset, layer } = requireLine(this, id);
     const existingChildren = this.graphicSpec.objects[id].items;
+    const parallel = layer.encoding?.parallel;
     const xScaleId = layer.encoding?.x?.scale;
     const yScaleId = layer.encoding?.y?.scale;
     const thetaScaleId = layer.encoding?.theta?.scale;
@@ -186,6 +203,86 @@ const rematerializeLineMark = action(
     const polar = isPolarLine(layer);
     const config = this.markConfigs[id] ?? {};
     validatePolarLineConfig(layer, config);
+
+    if (parallel !== undefined) {
+      validateParallelRows(dataset.values, parallel.dimensions, parallel);
+      let resolved = this;
+      if (args.scales !== false) {
+        for (const dimension of parallel.dimensions) {
+          resolved = resolved.rematerializeScale({ id: dimension.scale });
+        }
+      }
+      for (const channel of args.scales === false
+        ? []
+        : ["color", "strokeDash", "strokeWidth"]) {
+        const scaleId = layer.encoding?.[channel]?.scale;
+        if (scaleId !== undefined) {
+          resolved = resolved.rematerializeScale({ id: scaleId });
+        }
+      }
+      const items = materializeParallelRows(
+        dataset.values,
+        parallel.dimensions,
+        resolved.resolvedScales,
+        resolveGraphicBounds(resolved),
+        parallel
+      );
+      const rows = items.map(item => dataset.values[item.sourceRowIndex]);
+      const mapAppearance = (channel, fallback) => {
+        const encoding = layer.encoding?.[channel];
+        if (encoding?.datum !== undefined) {
+          return items.map(() => channel === "strokeDash"
+            ? normalizeStrokeDashPattern(encoding.datum)
+            : encoding.datum);
+        }
+        if (encoding?.scale === undefined) return items.map(fallback);
+        return mapScaleConsumerValues(
+          rows.map(row => row[encoding.field]),
+          resolved.resolvedScales[encoding.scale],
+          channel
+        );
+      };
+      const strokes = mapAppearance(
+        "color",
+        (_, index) => config.stroke ??
+          existingChildren[index]?.properties.stroke ?? DEFAULT_LINE_STROKE
+      );
+      const strokeWidths = mapAppearance(
+        "strokeWidth",
+        (_, index) => config.strokeWidth ??
+          existingChildren[index]?.properties.strokeWidth ?? DEFAULT_LINE_WIDTH
+      );
+      const strokeDashes = mapAppearance(
+        "strokeDash",
+        (_, index) => existingChildren[index]?.properties.strokeDash ?? []
+      );
+      let next = resolved
+        .editGraphics({ target: id, property: "length", value: items.length })
+        .editGraphics({
+          target: id,
+          property: "commands",
+          value: items.map(item => item.commands)
+        })
+        .editGraphics({ target: id, property: "stroke", value: strokes })
+        .editGraphics({
+          target: id,
+          property: "strokeWidth",
+          value: strokeWidths
+        })
+        .editGraphics({
+          target: id,
+          property: "strokeDash",
+          value: strokeDashes
+        });
+      if (config.opacity !== undefined) {
+        next = next.editGraphics({
+          target: id,
+          property: "opacity",
+          value: config.opacity
+        });
+      }
+      return next;
+    }
 
     if (
       polar
@@ -343,12 +440,16 @@ const editLineMark = action(
       );
     }
     if (Object.hasOwn(args, "closed") && args.closed === true &&
-        layer.encoding?.x !== undefined) {
+        (layer.encoding?.x !== undefined || isParallelLine(layer))) {
       throw new Error("Line closed requires theta/radius Polar position encodings.");
     }
     if (Object.hasOwn(args, "curve") && isPolarLine(layer) &&
         args.curve !== "linear") {
       throw new Error("Polar line position currently requires curve \"linear\".");
+    }
+    if (Object.hasOwn(args, "curve") && isParallelLine(layer) &&
+        args.curve !== "linear") {
+      throw new Error("Parallel lines require curve \"linear\".");
     }
     const config = {
       ...this.markConfigs[layer.id],

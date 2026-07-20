@@ -1,6 +1,6 @@
 import { getPositionChannelDefinition } from "../core/vocabulary.js";
 
-const COORDINATE_TYPES = new Set(["cartesian", "polar"]);
+const COORDINATE_TYPES = new Set(["cartesian", "polar", "parallel"]);
 
 export function validateCoordinateType(value) {
   if (!COORDINATE_TYPES.has(value)) {

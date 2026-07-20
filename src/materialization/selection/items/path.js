@@ -4,7 +4,12 @@ import {
 } from "../../../grammar/areaSeries.js";
 import { deriveLineSeries } from "../../../grammar/lineSeries.js";
 import { findUpstreamTransform } from "../../dataProvenance.js";
-import { finalizeItems, uniqueFields } from "./common.js";
+import {
+  channelMapFromRow,
+  finalizeItems,
+  ownFields,
+  uniqueFields
+} from "./common.js";
 
 function rowsForSeries(rows, key) {
   const entries = Object.entries(key);
@@ -34,6 +39,27 @@ function seriesDefinitions(layer, rows, series) {
 }
 
 export function resolveLineItems(program, layer, dataset) {
+  if (layer.encoding?.parallel !== undefined) {
+    const parallel = layer.encoding.parallel;
+    const definitions = dataset.values.flatMap((row, index) => {
+      const incomplete = parallel.dimensions.some(dimension => {
+        const value = row[dimension.field];
+        return dimension.fieldType === "quantitative"
+          ? !Number.isFinite(value)
+          : typeof value !== "string" && !Number.isFinite(value);
+      });
+      if (incomplete && parallel.missing === "drop-row") return [];
+      return [{
+        key: parallel.key === undefined
+          ? `${layer.id}/row/source:${index}`
+          : `${layer.id}/row/${String(row[parallel.key])}`,
+        fields: ownFields(row),
+        channels: channelMapFromRow(row, layer),
+        members: [row]
+      }];
+    });
+    return finalizeItems(program, layer, "row", definitions, "path");
+  }
   const derived = deriveLineSeries(dataset.values, layer);
   return finalizeItems(
     program,

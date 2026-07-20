@@ -26,6 +26,9 @@ const ENCODING_PATHS = Object.freeze([
   "encoding.theta.aggregate",
   "encoding.theta.weight",
   "encoding.text.format",
+  "encoding.parallel.dimensions",
+  "encoding.parallel.key",
+  "encoding.parallel.missing",
   ...CARTESIAN_POSITION_CHANNELS.flatMap(channel => [
     `encoding.${channel}.aggregate`,
     `encoding.${channel}.stack`
@@ -40,7 +43,8 @@ const ENTITY_PATHS = Object.freeze({
   layer: {
     collection: "layers",
     removableContainers: new Set(
-      ENCODING_CHANNELS.map(channel => `encoding.${channel}`)
+      [...ENCODING_CHANNELS.map(channel => `encoding.${channel}`),
+        "encoding.parallel"]
     ),
     properties: new Set([
       "data",

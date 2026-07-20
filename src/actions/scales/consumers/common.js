@@ -19,6 +19,16 @@ export function findScaleConsumers(program, id) {
       const encoding = layer.encoding?.[channel];
       if (encoding?.scale === id) consumers.push({ layer, channel, encoding });
     }
+    for (const dimension of layer.encoding?.parallel?.dimensions ?? []) {
+      if (dimension.scale === id) {
+        consumers.push({
+          layer,
+          channel: "y",
+          encoding: dimension,
+          role: "parallelDimension"
+        });
+      }
+    }
   }
   return consumers;
 }
@@ -46,6 +56,14 @@ export function readConsumerFieldValues(
   scale = findScale(program, consumer.encoding.scale)
 ) {
   const allowUnknown = Object.hasOwn(scale, "unknown");
+  if (consumer.role === "parallelDimension") {
+    return readScaleField(
+      dataset.values,
+      consumer.encoding.field,
+      consumer.encoding.fieldType,
+      { allowUnknown: true }
+    );
+  }
   if (isDirectCategoricalConsumer(consumer)) {
     return allowUnknown
       ? readScaleField(
