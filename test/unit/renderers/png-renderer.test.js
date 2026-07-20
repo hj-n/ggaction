@@ -56,6 +56,37 @@ test("uses a 1x default and replaces an existing output deterministically", asyn
   assert.deepEqual(secondBytes, firstBytes);
 });
 
+test("writes an item-local linear gradient through the Node Canvas adapter", async () => {
+  const output = await outputPath();
+  const program = pngProgram()
+    .createGraphics({ id: "strip", type: "rect" })
+    .editGraphics({ target: "strip", property: "x", value: 2 })
+    .editGraphics({ target: "strip", property: "y", value: 1 })
+    .editGraphics({ target: "strip", property: "width", value: 8 })
+    .editGraphics({ target: "strip", property: "height", value: 6 })
+    .editGraphics({
+      target: "strip",
+      property: "fill",
+      value: {
+        type: "linear-gradient",
+        from: { x: 0, y: 0.5 },
+        to: { x: 1, y: 0.5 },
+        stops: [
+          { offset: 0, color: "rgba(207, 225, 242, 0)" },
+          { offset: 1, color: "rgba(10, 74, 144, 1)" }
+        ]
+      }
+    })
+    .editGraphics({ target: "strip", property: "stroke", value: "#0a4a90" })
+    .editGraphics({ target: "strip", property: "strokeWidth", value: 0 });
+
+  const result = await renderToPNG(program, { output, pixelRatio: 2 });
+
+  assert.equal(result.width, 24);
+  assert.equal(result.height, 16);
+  assert.ok(result.bytes > 80);
+});
+
 test("rejects a missing or empty output path", async () => {
   await assert.rejects(() => renderToPNG(pngProgram()), /non-empty output path/);
   await assert.rejects(

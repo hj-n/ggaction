@@ -90,6 +90,61 @@ test("distributes arrays and broadcasts scalar values to collection children", (
   assert.deepEqual(points.graphicSpec.objects.points.items[0].properties, {});
 });
 
+test("treats one linear gradient paint and its stops as a scalar fill value", () => {
+  const paint = {
+    type: "linear-gradient",
+    from: { x: 0, y: 0.5 },
+    to: { x: 1, y: 0.5 },
+    stops: [
+      { offset: 0, color: "#eff6ff" },
+      { offset: 1, color: "#1d4ed8" }
+    ]
+  };
+  const base = chart().createGraphics({ id: "bars", type: "rect", length: 2 });
+  const painted = base.editGraphics({
+    target: "bars",
+    property: "fill",
+    value: paint
+  });
+  const solid = painted.editGraphics({
+    target: "bars",
+    property: "fill",
+    value: "#2563eb"
+  });
+
+  paint.from.x = 0.5;
+  paint.stops[0].color = "black";
+
+  assert.deepEqual(
+    painted.graphicSpec.objects.bars.items.map(item => item.properties.fill),
+    [
+      {
+        type: "linear-gradient",
+        from: { x: 0, y: 0.5 },
+        to: { x: 1, y: 0.5 },
+        stops: [
+          { offset: 0, color: "#eff6ff" },
+          { offset: 1, color: "#1d4ed8" }
+        ]
+      },
+      {
+        type: "linear-gradient",
+        from: { x: 0, y: 0.5 },
+        to: { x: 1, y: 0.5 },
+        stops: [
+          { offset: 0, color: "#eff6ff" },
+          { offset: 1, color: "#1d4ed8" }
+        ]
+      }
+    ]
+  );
+  assert.deepEqual(
+    solid.graphicSpec.objects.bars.items.map(item => item.properties.fill),
+    ["#2563eb", "#2563eb"]
+  );
+  assert.equal(base.graphicSpec.objects.bars.items[0].properties.fill, undefined);
+});
+
 test("stores nested path commands intact and can target one child", () => {
   const paths = [
     [{ op: "M", x: 0, y: 1 }, { op: "L", x: 2, y: 3 }],

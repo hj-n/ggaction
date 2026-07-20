@@ -117,6 +117,55 @@ test("renders concrete children from a heterogeneous drawable collection", () =>
   ]);
 });
 
+test("renders an item-local linear gradient on a concrete rect", () => {
+  const graphicSpec = {
+    objects: {
+      canvas: {
+        type: "canvas",
+        properties: { width: 120, height: 90, background: "white" }
+      },
+      strip: {
+        type: "rect",
+        properties: {
+          x: 20,
+          y: 10,
+          width: 40,
+          height: 70,
+          fill: {
+            type: "linear-gradient",
+            from: { x: 0.5, y: 1 },
+            to: { x: 0.5, y: 0 },
+            stops: [
+              { offset: 0, color: "rgba(207, 225, 242, 0)" },
+              { offset: 0.5, color: "rgba(79, 142, 195, 0.7)" },
+              { offset: 1, color: "rgba(10, 74, 144, 1)" }
+            ]
+          },
+          stroke: "#cbd5e1",
+          strokeWidth: 1
+        }
+      }
+    },
+    order: ["canvas", "strip"]
+  };
+  const context = createMockCanvasContext();
+
+  render({ graphicSpec }, context);
+
+  assert.deepEqual(findCanvasCalls(context, "createLinearGradient")[0].args, [
+    40, 80, 40, 10
+  ]);
+  assert.deepEqual(
+    findCanvasCalls(context, "addColorStop").map(call => [call.offset, call.color]),
+    [
+      [0, "rgba(207, 225, 242, 0)"],
+      [0.5, "rgba(79, 142, 195, 0.7)"],
+      [1, "rgba(10, 74, 144, 1)"]
+    ]
+  );
+  assert.equal(findCanvasCalls(context, "fillRect").at(-1).fillStyle.type, "mock-linear-gradient");
+});
+
 test("renders attached named graphics in depth-first sibling order", () => {
   const graphicSpec = {
     objects: {

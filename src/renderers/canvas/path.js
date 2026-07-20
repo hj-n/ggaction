@@ -1,6 +1,8 @@
 import { requireFiniteProperty } from "./validation.js";
 import { validateConcreteGraphicProperties } from
   "../../grammar/schemas/concreteGraphic.js";
+import { resolvePathCommandBounds } from "../../grammar/schemas/graphicBounds.js";
+import { applyCanvasFill } from "./fill.js";
 
 function drawPath(context, child, collectionId) {
   const properties = child.properties ?? {};
@@ -18,9 +20,6 @@ function drawPath(context, child, collectionId) {
   const hasStroke = properties.stroke !== undefined;
   if (!hasFill && !hasStroke) {
     throw new Error(`Graphic "${graphicId}" requires a fill or stroke property.`);
-  }
-  if (hasFill && typeof properties.fill !== "string") {
-    throw new Error(`Graphic "${graphicId}" requires a string fill property.`);
   }
   if (hasFill && commands.at(-1).op !== "Z") {
     throw new Error(`Graphic "${graphicId}" requires a final Z command when filled.`);
@@ -75,7 +74,11 @@ function drawPath(context, child, collectionId) {
   }
 
   if (hasFill) {
-    context.fillStyle = properties.fill;
+    const bounds = resolvePathCommandBounds(commands);
+    if (bounds === undefined) {
+      throw new Error(`Graphic "${graphicId}" requires finite path fill bounds.`);
+    }
+    applyCanvasFill(context, properties.fill, bounds, graphicId);
     context.fill();
   }
   if (hasStroke) {

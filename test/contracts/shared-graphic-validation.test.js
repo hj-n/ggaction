@@ -50,3 +50,42 @@ test("renderers may add completeness checks without changing value rules", () =>
     /requires a finite radius/
   );
 });
+
+test("authoring and rendering share the structured rect fill contract", () => {
+  const invalid = {
+    type: "linear-gradient",
+    from: { x: 0, y: 0 },
+    to: { x: 1, y: 0 },
+    stops: [
+      { offset: 0.8, color: "red" },
+      { offset: 0.2, color: "blue" }
+    ]
+  };
+  const rect = chart().createGraphics({ id: "rect", type: "rect" });
+
+  assert.throws(
+    () => rect.editGraphics({ target: "rect", property: "fill", value: invalid }),
+    /offsets must be nondecreasing/
+  );
+  assert.throws(
+    () => render({
+      graphicSpec: {
+        objects: {
+          canvas: {
+            type: "canvas",
+            properties: { width: 100, height: 80, background: "white" }
+          },
+          rect: {
+            type: "rect",
+            properties: {
+              x: 10, y: 10, width: 20, height: 30,
+              fill: invalid, stroke: "black", strokeWidth: 0
+            }
+          }
+        },
+        order: ["canvas", "rect"]
+      }
+    }, createMockCanvasContext()),
+    /offsets must be nondecreasing/
+  );
+});

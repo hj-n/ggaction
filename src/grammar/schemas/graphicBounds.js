@@ -74,6 +74,17 @@ function pathPoints(commands) {
   return points;
 }
 
+export function resolvePathCommandBounds(commands) {
+  const points = pathPoints(commands);
+  if (points.length === 0) return undefined;
+  return {
+    left: Math.min(...points.map(point => point.x)),
+    right: Math.max(...points.map(point => point.x)),
+    top: Math.min(...points.map(point => point.y)),
+    bottom: Math.max(...points.map(point => point.y))
+  };
+}
+
 function primitiveBounds(type, properties = {}) {
   const strokeExtent = (properties.strokeWidth ?? 0) / 2;
   if (type === "circle") {
@@ -149,13 +160,13 @@ function primitiveBounds(type, properties = {}) {
   if (type === "path") {
     const commands = properties.commands;
     if (!Array.isArray(commands)) return undefined;
-    const points = pathPoints(commands);
-    if (points.length === 0) return undefined;
+    const bounds = resolvePathCommandBounds(commands);
+    if (bounds === undefined) return undefined;
     return {
-      left: Math.min(...points.map(point => point.x)) - strokeExtent,
-      right: Math.max(...points.map(point => point.x)) + strokeExtent,
-      top: Math.min(...points.map(point => point.y)) - strokeExtent,
-      bottom: Math.max(...points.map(point => point.y)) + strokeExtent
+      left: bounds.left - strokeExtent,
+      right: bounds.right + strokeExtent,
+      top: bounds.top - strokeExtent,
+      bottom: bounds.bottom + strokeExtent
     };
   }
   return undefined;

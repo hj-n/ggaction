@@ -55,6 +55,12 @@ text, and `M/L/C/Z` command-path graphics. Path and line strokes may use concret
 dash arrays. The renderer validates values with the same concrete property
 contract used by `editGraphics`.
 
+Rect and closed-path fills may be solid strings or item-local linear-gradient
+paint values. Gradient endpoints are normalized against the final fill geometry;
+path stroke width does not expand that coordinate box. The renderer creates the
+Canvas gradient only for the current draw call and never stores backend objects
+in `graphicSpec`.
+
 Line curve actions resolve interpolation into those commands before rendering.
 The Canvas renderer executes `L` and cubic `C` segments but does not read curve
 names or calculate control points.

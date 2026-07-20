@@ -2,6 +2,12 @@ import type { ActionOptions } from "./program.js";
 import { ChartProgram } from "./program.js";
 
 export { ChartProgram };
+export type {
+  FillPaint,
+  LinearGradientPaint,
+  LinearGradientPoint,
+  LinearGradientStop
+} from "./program.js";
 
 export interface ActionMetadata {
   op: string;

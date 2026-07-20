@@ -194,6 +194,42 @@ program
   .editGraphics({ target: "band", property: "opacity", value: 0.18 });
 ```
 
+Rect and closed-path `fill` also accept a backend-neutral `LinearGradientPaint`.
+The `from` and `to` coordinates are normalized to each item's own fill bounds,
+not the whole Canvas. Stops are ordered by offsets from `0` to `1`; repeated
+adjacent offsets create a hard transition. A paint object and its nested `stops`
+array are one scalar property value, so broadcasting it to a collection applies
+the complete paint to every item.
+
+```javascript
+const verticalDensityPaint = {
+  type: "linear-gradient",
+  from: { x: 0.5, y: 1 },
+  to: { x: 0.5, y: 0 },
+  stops: [
+    { offset: 0, color: "rgba(207, 225, 242, 0)" },
+    { offset: 0.5, color: "rgba(79, 142, 195, 0.7)" },
+    { offset: 1, color: "rgba(10, 74, 144, 1)" }
+  ]
+};
+
+program.editGraphics({
+  target: "distributionStrips",
+  property: "fill",
+  value: verticalDensityPaint
+});
+```
+
+TypeScript users can import `FillPaint`, `LinearGradientPaint`,
+`LinearGradientPoint`, and `LinearGradientStop` from `ggaction` or
+`ggaction/extension`. Structured paint is currently fill-only for rects and
+closed paths. Circle/text fills, strokes, radial or conic gradients, patterns,
+and Canvas-wide user-space coordinates are not supported.
+
+Only normalized paint data is stored in `graphicSpec`. The Canvas renderer
+resolves the final item-local coordinates and creates the backend gradient while
+drawing; no Canvas gradient object is retained in the immutable program.
+
 The complete low-level line-chart example is available in
 [`primitive.program.js`](https://github.com/ggaction/ggaction/blob/main/test/charts/cars-line-chart/primitive.program.js).
 It explicitly authors semantic line state, paths, axes, a combined legend, and
@@ -236,7 +272,8 @@ program.editGraphics({
 Authoring and rendering share the same concrete value contract. Numeric
 geometry must be finite, dimensions and stroke widths cannot be negative,
 opacity stays between `0` and `1`, text alignment uses the Canvas vocabulary,
-and appearance strings must be non-empty. Rendering additionally requires all
+and appearance strings must be non-empty. Structured rect/path fill follows the
+`FillPaint` contract described above. Rendering additionally requires all
 properties needed to draw the primitive to be present.
 
 ## Scale materialization

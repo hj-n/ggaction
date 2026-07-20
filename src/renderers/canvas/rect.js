@@ -1,6 +1,7 @@
 import { requireFiniteProperty } from "./validation.js";
 import { validateConcreteGraphicProperties } from
   "../../grammar/schemas/concreteGraphic.js";
+import { applyCanvasFill } from "./fill.js";
 
 function drawRect(context, child, collectionId) {
   const properties = child.properties ?? {};
@@ -21,8 +22,8 @@ function drawRect(context, child, collectionId) {
       `Graphic "${graphicId}" requires non-negative rect dimensions and strokeWidth.`
     );
   }
-  if (typeof properties.fill !== "string") {
-    throw new Error(`Graphic "${graphicId}" requires a string fill property.`);
+  if (properties.fill === undefined) {
+    throw new Error(`Graphic "${graphicId}" requires a fill property.`);
   }
   if (typeof properties.stroke !== "string") {
     throw new Error(`Graphic "${graphicId}" requires a string stroke property.`);
@@ -34,7 +35,12 @@ function drawRect(context, child, collectionId) {
   }
 
   context.globalAlpha = opacity;
-  context.fillStyle = properties.fill;
+  applyCanvasFill(context, properties.fill, {
+    left: x,
+    right: x + width,
+    top: y,
+    bottom: y + height
+  }, graphicId);
   context.fillRect(x, y, width, height);
   context.strokeStyle = properties.stroke;
   context.lineWidth = strokeWidth;

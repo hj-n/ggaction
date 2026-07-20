@@ -1,4 +1,15 @@
 import { action, ChartProgram } from "ggaction/extension";
+import type { FillPaint } from "ggaction/extension";
+
+const extensionFill: FillPaint = {
+  type: "linear-gradient",
+  from: { x: 0, y: 0.5 },
+  to: { x: 1, y: 0.5 },
+  stops: [
+    { offset: 0, color: "#eff6ff" },
+    { offset: 1, color: "#1d4ed8" }
+  ]
+};
 
 type SetPointOpacityOptions = Record<string, unknown> & {
   target: string;
@@ -45,3 +56,5 @@ MyProgram.prototype.markReady = markReadyAction;
 export const extensionProgram = new MyProgram()
   .setPointOpacity({ target: "points", value: 0.5 })
   .markReady();
+
+export const extensionPaint = extensionFill;

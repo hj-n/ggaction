@@ -135,6 +135,20 @@ export function createMockCanvasContext() {
       calls.push({ op: "bezierCurveTo", args });
     },
 
+    createLinearGradient(...args) {
+      const gradient = {
+        type: "mock-linear-gradient",
+        args,
+        stops: [],
+        addColorStop(offset, color) {
+          gradient.stops.push({ offset, color });
+          calls.push({ op: "addColorStop", offset, color, gradient });
+        }
+      };
+      calls.push({ op: "createLinearGradient", args, gradient });
+      return gradient;
+    },
+
     setLineDash(value) {
       calls.push({ op: "setLineDash", value: [...value] });
     },

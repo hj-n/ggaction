@@ -20,6 +20,25 @@ export type ConcretePathCommand =
       readonly y: number;
     }
   | { readonly op: "Z" };
+export interface LinearGradientPoint {
+  readonly x: number;
+  readonly y: number;
+}
+export interface LinearGradientStop {
+  readonly offset: number;
+  readonly color: string;
+}
+export interface LinearGradientPaint {
+  readonly type: "linear-gradient";
+  readonly from: LinearGradientPoint;
+  readonly to: LinearGradientPoint;
+  readonly stops: readonly [
+    LinearGradientStop,
+    LinearGradientStop,
+    ...LinearGradientStop[]
+  ];
+}
+export type FillPaint = string | LinearGradientPaint;
 export type CurveInterpolation =
   | "linear"
   | "step"

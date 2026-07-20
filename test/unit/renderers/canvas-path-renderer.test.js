@@ -145,6 +145,43 @@ test("fills then strokes a closed path", () => {
   assert.deepEqual(appearanceCalls, ["fill", "stroke"]);
 });
 
+test("resolves closed-path gradient bounds without stroke extent", () => {
+  const program = canvasProgram()
+    .createGraphics({ id: "area", type: "path" })
+    .editGraphics({
+      target: "area",
+      property: "commands",
+      value: [
+        { op: "M", x: 10, y: 80 },
+        { op: "L", x: 70, y: 20 },
+        { op: "L", x: 90, y: 70 },
+        { op: "Z" }
+      ]
+    })
+    .editGraphics({
+      target: "area",
+      property: "fill",
+      value: {
+        type: "linear-gradient",
+        from: { x: 0, y: 0.5 },
+        to: { x: 1, y: 0.5 },
+        stops: [
+          { offset: 0, color: "#eff6ff" },
+          { offset: 1, color: "#1d4ed8" }
+        ]
+      }
+    })
+    .editGraphics({ target: "area", property: "stroke", value: "black" })
+    .editGraphics({ target: "area", property: "strokeWidth", value: 12 });
+  const context = createMockCanvasContext();
+
+  render(program, context);
+
+  assert.deepEqual(findCanvasCalls(context, "createLinearGradient")[0].args, [
+    10, 50, 90, 50
+  ]);
+});
+
 test("rejects invalid primitive and incomplete rendered paths", () => {
   const paths = canvasProgram().createGraphics({
     id: "trends",

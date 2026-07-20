@@ -1,5 +1,6 @@
 import { isPlainObject } from "../../core/immutable.js";
 import { validatePathCommands } from "../pathCommands.js";
+import { validateFillPaint } from "../paint.js";
 import { validateGraphicProperty } from "./graphic.js";
 
 const FINITE_PROPERTIES = new Set([
@@ -10,7 +11,7 @@ const NON_NEGATIVE_PROPERTIES = new Set([
   "width", "height", "radius", "strokeWidth", "fontSize", "gap"
 ]);
 const STRING_PROPERTIES = new Set([
-  "background", "fill", "stroke", "fontFamily", "text", "textAlign",
+  "background", "stroke", "fontFamily", "text", "textAlign",
   "textBaseline"
 ]);
 const TEXT_ALIGNS = new Set(["left", "right", "center", "start", "end"]);
@@ -19,6 +20,15 @@ const TEXT_BASELINES = new Set([
 ]);
 
 export function validateConcreteGraphicValue(type, property, value) {
+  if (property === "fill") {
+    if (typeof value === "string") {
+      validateFillPaint(value, `${type}.fill`);
+    } else if (type === "rect" || type === "path") {
+      validateFillPaint(value, `${type}.fill`);
+    } else {
+      throw new TypeError(`${type}.fill must be a non-empty string.`);
+    }
+  }
   if (FINITE_PROPERTIES.has(property) && !Number.isFinite(value)) {
     throw new TypeError(`${type}.${property} must be a finite number.`);
   }
