@@ -4,7 +4,7 @@
 
 - Gate: `P8-A`
 - 상태: `ready-for-review`
-- Review source checkpoint: `a55b412` (`add categorical density primitive gate`)
+- Review source checkpoint: `563186c` (`fix violin axis title rotation`)
 - Remote: `origin/main`
 - 승인 전 차단: production density grammar/provenance, public placement branch와 `createViolinPlot`
 
@@ -147,15 +147,17 @@ Full:
 
 - `.artifacts/test/png/review/cars-acceleration-violins/full/primitive.png`
 - logical/physical `720×520` / `1440×1040`
-- SHA-256 `182d7fd08f8e162a7c97b3756d34fbfe38ae334ba1341ddc5b9c3701c050318a`
+- SHA-256 `faa8fc38543a408c47ce636cce79ed17d398b29f5a2adf6ec10a1933e1a97b60`
 
 Split:
 
 - `.artifacts/test/png/review/cars-acceleration-violins/split-era/primitive.png`
 - logical/physical `760×520` / `1520×1040`
-- SHA-256 `f953dd0d48d04a7d1a5bd0a181ac2a3753c6d64615a39e4666427392764ba908`
+- SHA-256 `51988afdec8702116559b696b1b1a38bfc63573fcaf32361c402afbe5f4032bc`
 
 Title은 Canvas가 아니라 actual plot bounds 중앙에 정렬한다. Grid는 path 아래, axes/title/legend는 위에 그린다.
+Y축 title의 concrete rotation은 degree가 아닌 renderer 계약 단위인 `-Math.PI / 2` radians로 고정하며 focused
+regression assertion으로 보호한다.
 
 ## 검증 증거
 
