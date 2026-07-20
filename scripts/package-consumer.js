@@ -86,6 +86,31 @@ async function testNodeConsumer(directory) {
     );
     assert.equal(typeof render, "function");
     assert.equal(program.graphicSpec.objects.point.items.length, 2);
+    const windowed = chart()
+      .createData({
+        id: "events",
+        values: [
+          { group: "A", order: 2, value: 3 },
+          { group: "A", order: 1, value: 2 },
+          { group: "B", order: 1, value: 4 }
+        ]
+      })
+      .createWindowData({
+        id: "windowedEvents",
+        partitionBy: "group",
+        sortBy: [{ field: "order" }],
+        operations: [
+          { op: "rowNumber", as: "rowNumber" },
+          { op: "cumulativeSum", field: "value", as: "runningValue" }
+        ]
+      });
+    const windowValues = windowed.semanticSpec.datasets.find(
+      dataset => dataset.id === "windowedEvents"
+    ).values;
+    assert.deepEqual(
+      windowValues.map(row => [row.rowNumber, row.runningValue]),
+      [[2, 5], [1, 2], [1, 4]]
+    );
     const scatterFacade = chart()
       .createCanvas({ width: 160, height: 120, margin: 20 })
       .createData({ values: [{ x: 1, y: 2 }, { x: 2, y: 4 }] })
@@ -372,7 +397,8 @@ async function testTypeScriptConsumer(directory) {
       type RemoveJitterOptions,
       type StrokeWidthEncodingOptions,
       type ThetaEncodingOptions,
-      type ThetaScaleOptions
+      type ThetaScaleOptions,
+      type WindowDataOptions
     } from "ggaction";
     import { action, ChartProgram as ExtensionProgram } from "ggaction/extension";
     import { renderToPNG, type PNGRenderResult } from "ggaction/png";
@@ -454,6 +480,27 @@ async function testTypeScriptConsumer(directory) {
     const derived = chart()
       .createData({ id: "source", values: [{ group: "A" }] })
       .createDerivedData(derivedOptions);
+    const windowOptions: WindowDataOptions = {
+      id: "ordered",
+      partitionBy: "group",
+      sortBy: [{ field: "order", order: "descending" }],
+      operations: [
+        { op: "rowNumber", as: "rowNumber" },
+        { op: "lag", field: "value", as: "previousValue" }
+      ]
+    };
+    const windowed: ChartProgram = chart()
+      .createData({
+        id: "events",
+        values: [{ group: "A", order: 1, value: 2 }]
+      })
+      .createWindowData(windowOptions);
+    const windowTransform: DatasetTransform = {
+      type: "window",
+      partitionBy: ["group"],
+      sortBy: [{ field: "order", order: "ascending" }],
+      operations: [{ op: "rowNumber", as: "rowNumber" }]
+    };
     const inspected = chart()
       .createCanvas()
       .createData({ values: [{ x: 1, y: 2 }] })
@@ -545,6 +592,8 @@ async function testTypeScriptConsumer(directory) {
     void nested;
     void faceted;
     void derived;
+    void windowed;
+    void windowTransform;
     void polar;
     void arcs;
     void weightedArcs;
@@ -595,6 +644,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
       "png",
       "numeric-font-weight",
       "point-jitter",
+      "window-data",
       "right-categorical-legend-offset",
       "sequential-palette-count",
       "typescript",

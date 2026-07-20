@@ -110,6 +110,9 @@
 - title: Statistical Data Transforms
   url: /api/data/statistical-transforms/
   parent: /api/data/
+- title: Window Data Transforms
+  url: /api/data/window/
+  parent: /api/data/
 - title: Marks
   url: /api/marks/
   parent: /api/

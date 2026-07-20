@@ -47,6 +47,9 @@ export type {
   DatasetFilterTransform,
   DatasetIntervalOutputFields,
   DatasetIntervalTransform,
+  DatasetWindowOperation,
+  DatasetWindowSort,
+  DatasetWindowTransform,
   DatasetRegressionTransform,
   DatasetScalar,
   DatasetTransform,
@@ -135,6 +138,10 @@ export type {
   TextMarkOptions,
   XAxisPosition,
   YAxisPosition,
+  WindowDataOptions,
+  WindowOperation,
+  WindowSort,
+  WindowSortOrder,
   XOffsetEncodingOptions
 } from "./program.js";
 

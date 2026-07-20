@@ -268,17 +268,17 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 - `id`: Implemented, 필수 새 dataset ID.
 - `source`: Implemented, 필수 existing dataset ID.
 - `transform`: Implemented, 정확히 하나의 transform definition을 가진 tuple. Public direct-authoring union은
-  filter/regression/density/interval schema이며 값 materialization은 해당 전용 action이 담당한다. Box summary,
+  filter/regression/density/interval/window schema이며 값 materialization은 해당 전용 action이 담당한다. Box summary,
   box outlier, mark filter provenance는 composite action이 생성하는 internal transform으로 public union에 넣지 않는다.
 - Effect: source와 transform provenance만 저장하고 values는 만들지 않는다.
 - 오류: duplicate ID, unknown source, invalid/empty/multiple transform schema를 거부한다.
-- Coverage: `test/unit/actions/data/derived-data.test.js`가 네 public branch의 direct call, 배열 cardinality,
+- Coverage: `test/unit/actions/data/derived-data.test.js`가 다섯 public branch의 direct call, 배열 cardinality,
   invalid discriminant와 caller-owned input immutability를 검증한다. Package consumer는 documented filter call과
   closed union을 strict TypeScript로 compile한다.
 
 ### Formal values — `createDerivedData`
 
-- Implemented: `createDerivedData({ id: UserId; source: UserId; transform: readonly [DatasetTransform] })`, where public `DatasetTransform = FilterTransform | RegressionTransform | DensityTransform | IntervalTransform`.
+- Implemented: `createDerivedData({ id: UserId; source: UserId; transform: readonly [DatasetTransform] })`, where public `DatasetTransform = FilterTransform | RegressionTransform | DensityTransform | IntervalTransform | WindowTransform`.
 - Planned (NOT IMPLEMENTED): —
 - Proposed (NOT IMPLEMENTED): —
 
@@ -287,10 +287,51 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 - `id`, `source`
   - ✅ Covered: valid IDs, duplicate output, unknown source.
 - `transform`
-  - ✅ Covered: filter/regression/density/interval direct schema, object/empty/multiple/unknown rejection,
+  - ✅ Covered: filter/regression/density/interval/window direct schema, object/empty/multiple/unknown rejection,
     one-element tuple acceptance와 deep immutable ownership.
   - Built-in value materializer는 owning high-level action이 만든 single-transform resource만 받는다.
 - Evidence: `test/unit/actions/data/derived-data.test.js`, `scripts/package-consumer.js`, 각 high-level data action test.
+
+## `createWindowData`
+
+- Signature: `createWindowData({ id, source?, partitionBy?, sortBy?, operations })`
+- Lifecycle: immutable create-only다. `id`는 새 derived dataset ID여야 하며 동일 ID를 다시 만들면 오류다.
+  기존 source나 consumer를 교체하거나 rebind하지 않는다.
+- `source`: existing dataset ID다. 생략하면 current data를 사용하고 유일하게 추론할 수 없으면 오류다.
+- `partitionBy`: field 이름 하나 또는 field 이름 array다. 기본은 `[]`이며 전체 source가 한 partition이다.
+- `sortBy`: `{ field, order? }` array다. 기본은 `[]`, order 기본은 `"ascending"`이다. 여러 field는
+  앞에서부터 비교하고 동률은 source row order로 안정적으로 해소한다. `null`/missing은 각 방향의 끝에 둔다.
+- `operations`: 비어 있지 않은 ordered array다. 앞 operation의 output을 뒤 operation의 `field`로 사용할 수 있다.
+  - `rowNumber`, `rank`, `denseRank`: `{ op, as }`; rank 계열은 non-empty `sortBy`가 필요하다.
+  - `cumulativeSum`: `{ op, field, as }`; field 값은 모두 finite number여야 한다.
+  - `lag`, `lead`: `{ op, field, as, offset?, default? }`; offset 기본은 `1`, default 기본은 `null`이다.
+- Effect: normalized provenance와 materialized values를 새 dataset에 저장한다. 계산은 partition마다 정렬된
+  순서로 수행하지만 최종 rows는 source row order를 보존한다. 모든 input과 output은 구조적으로 복사되고 freeze된다.
+- 오류: duplicate/invalid ID, unknown source, missing field, duplicate sort/output field, output collision,
+  incomparable sort values, invalid operation 또는 operation-specific option을 명확히 거부한다.
+- Coverage: grammar, public action, direct derived schema, trace, facet replay와 package consumer를 각각 검증한다.
+
+### Formal values — `createWindowData`
+
+- Implemented: `createWindowData({ id: UserId; source?: UserId; partitionBy?: FieldName | readonly FieldName[]; sortBy?: readonly { field: FieldName; order?: "ascending" | "descending" }[]; operations: readonly WindowOperation[] })`
+- `WindowOperation = { op: "rowNumber" | "rank" | "denseRank"; as: FieldName } | { op: "cumulativeSum"; field: FieldName; as: FieldName } | { op: "lag" | "lead"; field: FieldName; as: FieldName; offset?: PositiveInteger; default?: unknown }`
+- Planned (NOT IMPLEMENTED): edit/revision action, rolling frames, percent rank, ntile.
+- Proposed (NOT IMPLEMENTED): —
+
+### Value coverage — `createWindowData`
+
+- `partitionBy`, `sortBy`
+  - ✅ Covered: omitted/single/multiple partition fields, omitted/multiple sort fields, both directions,
+    stable ties, null/missing placement, invalid fields and mixed comparable types.
+- `operations`
+  - ✅ Covered: all six operations, defaults, explicit offsets/defaults, sequential dependency, output collision,
+    missing fields, invalid values and empty operation list.
+- Lifecycle and integration
+  - ✅ Covered: source inference, duplicate ID rejection, source immutability, trace hierarchy, registry dispatch,
+    facet replay, direct `createDerivedData` validation and packaged TypeScript/runtime consumption.
+- Evidence: `test/unit/grammar/transforms/window.test.js`, `test/unit/actions/data/window-data.test.js`,
+  `test/unit/actions/data/derived-data.test.js`, `test/gates/cars-binned-heatmap/window-public.test.js`,
+  `scripts/package-consumer.js`.
 
 ## `createCoordinate`
 

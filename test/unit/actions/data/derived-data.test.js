@@ -58,6 +58,15 @@ test("createDerivedData accepts each documented transform branch as an array", (
           upper: "yUpper"
         }
       }
+    },
+    {
+      id: "window",
+      transform: {
+        type: "window",
+        partitionBy: ["group"],
+        sortBy: [{ field: "x", order: "ascending" }],
+        operations: [{ op: "rowNumber", as: "position" }]
+      }
     }
   ];
 

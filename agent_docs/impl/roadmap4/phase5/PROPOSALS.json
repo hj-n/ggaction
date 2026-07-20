@@ -6,7 +6,7 @@
   "actions": [
     {
       "name": "createWindowData",
-      "status": "proposed",
+      "status": "implemented",
       "required": ["id", "operations"],
       "optional": ["source", "partitionBy", "sortBy"],
       "replacement": "immutable create-only; a duplicate id is rejected without changing consumers",

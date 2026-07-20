@@ -46,6 +46,7 @@ interface ChartProgramActions {
   createDensityData(options: DensityDataOptions): ChartProgram;
   createRegressionData(options: RegressionDataOptions): ChartProgram;
   createIntervalData(options: IntervalDataOptions): ChartProgram;
+  createWindowData(options: WindowDataOptions): ChartProgram;
   createPointMark(options?: { id?: string; data?: string; shape?: PointShape; fill?: string; opacity?: number; stroke?: string; strokeWidth?: number; }): ChartProgram;
   editPointMark(options: { target?: string; shape?: PointShape; fill?: string; opacity?: number; stroke?: string; strokeWidth?: number; }): ChartProgram;
   jitterPoints(options: JitterPointsOptions): ChartProgram;
@@ -376,6 +377,17 @@ createIntervalData({
 Create immutable grouped center/lower/upper summary rows. Mean supports
 standard error, sample standard deviation, and Student-t confidence intervals;
 median supports interquartile range. [Data](../api/data.md)
+
+### `createWindowData`
+
+```javascript
+createWindowData({ id, source?, partitionBy?, sortBy?, operations })
+```
+
+Create an immutable derived dataset by applying ordered row-number, rank,
+dense-rank, cumulative-sum, lag, or lead operations within optional partitions.
+The calculation follows a stable sort while the output preserves source row order.
+[Window data transforms](../api/data/window.md)
 
 ### `createPointMark`
 
@@ -1417,7 +1429,7 @@ See [Action authoring](../extension/action-authoring.md) and
 
 High-level actions call additional wrapped operations for data, scale, mark,
 guide, title, and layout materialization. Names such as
-`materializeDensityData`, `rematerializeScale`, `rematerializePointMark`,
+`materializeDensityData`, `materializeWindowData`, `rematerializeScale`, `rematerializePointMark`,
 `createCategoricalLegend`, `createSizeLegend`, `rematerializeSizeLegend`,
 `createLegendSymbols`, and `createTitleText` may appear in
 `program.trace`. They are deliberately absent from the public TypeScript

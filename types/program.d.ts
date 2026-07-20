@@ -250,11 +250,51 @@ export type DatasetIntervalTransform = {
       level?: never;
     }
 );
+export type WindowSortOrder = "ascending" | "descending";
+export interface WindowSort {
+  field: string;
+  order?: WindowSortOrder;
+}
+export type WindowOperation =
+  | { op: "rowNumber" | "rank" | "denseRank"; as: string }
+  | { op: "cumulativeSum"; field: string; as: string }
+  | {
+      op: "lag" | "lead";
+      field: string;
+      as: string;
+      offset?: number;
+      default?: unknown;
+    };
+export interface DatasetWindowSort {
+  readonly field: string;
+  readonly order: WindowSortOrder;
+}
+export type DatasetWindowOperation =
+  | { readonly op: "rowNumber" | "rank" | "denseRank"; readonly as: string }
+  | {
+      readonly op: "cumulativeSum";
+      readonly field: string;
+      readonly as: string;
+    }
+  | {
+      readonly op: "lag" | "lead";
+      readonly field: string;
+      readonly as: string;
+      readonly offset: number;
+      readonly default: unknown;
+    };
+export interface DatasetWindowTransform {
+  readonly type: "window";
+  readonly partitionBy: readonly string[];
+  readonly sortBy: readonly DatasetWindowSort[];
+  readonly operations: readonly DatasetWindowOperation[];
+}
 export type DatasetTransform =
   | DatasetFilterTransform
   | DatasetRegressionTransform
   | DatasetDensityTransform
-  | DatasetIntervalTransform;
+  | DatasetIntervalTransform
+  | DatasetWindowTransform;
 export interface CreateDerivedDataOptions {
   id: string;
   source: string;
@@ -852,6 +892,14 @@ export interface IntervalDataOptions {
   extent?: IntervalExtent;
   level?: number;
   as?: IntervalOutputFields;
+}
+
+export interface WindowDataOptions {
+  id: string;
+  source?: string;
+  partitionBy?: string | readonly string[];
+  sortBy?: readonly WindowSort[];
+  operations: readonly WindowOperation[];
 }
 
 export interface ErrorBarPositionChannel {
@@ -1645,6 +1693,7 @@ export class ChartProgram {
   createDensityData(options: DensityDataOptions): ChartProgram;
   createRegressionData(options: RegressionDataOptions): ChartProgram;
   createIntervalData(options: IntervalDataOptions): ChartProgram;
+  createWindowData(options: WindowDataOptions): ChartProgram;
 
   createPointMark(options?: {
     id?: string;

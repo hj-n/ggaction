@@ -2,11 +2,11 @@
 
 ## 진행 상태
 
-- [ ] schema/validation과 pure window grammar
-- [ ] transform registry와 immutable action
-- [ ] duplicate rejection, source inference와 facet replay
-- [ ] trace, runtime export, declarations와 package smoke
-- [ ] Window oracle parity와 error attribution
+- [x] schema/validation과 pure window grammar
+- [x] transform registry와 immutable action
+- [x] duplicate rejection, source inference와 facet replay
+- [x] trace, runtime export, declarations와 package smoke
+- [x] Window oracle parity와 error attribution
 - [ ] P5-B 사용자 승인
 
 Production 구현은 P5-A 승인 뒤 시작한다. Operation별로 action을 늘리지 않고 한 ordered `operations`

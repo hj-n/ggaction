@@ -183,6 +183,17 @@ to current data, steps to `100`, bandwidth to an automatic Scott-rule estimate,
 kernel to `"gaussian"`, and normalization to `"unit"`.
 [Data](../../api/data.md)
 
+## `createWindowData`
+
+```javascript
+createWindowData({ id, source?, partitionBy?, sortBy?, operations })
+```
+
+Create an immutable derived dataset by applying ordered row-number, rank,
+dense-rank, cumulative-sum, lag, or lead operations within optional partitions.
+The calculation follows a stable sort while the output preserves source row order.
+[Window data transforms](../../api/data/window.md)
+
 ## Related
 
 [Action Reference](../actions.md) · [Chart API](../../api/index.md) · [Supported Features](../../supported-features.md)

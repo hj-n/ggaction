@@ -2762,6 +2762,7 @@ operation; marks and renderers never mutate source values.
 | [Source and derived data](./data/source-and-derived.md) | `createData`, `createDerivedData` | Store source rows or explicit transform provenance |
 | [Filtering](./data/filtering.md) | `filterData`, `filterMarks` | Derive rows or rebind one visual layer from a selector |
 | [Statistical transforms](./data/statistical-transforms.md) | `createRegressionData`, `createIntervalData`, `createDensityData` | Materialize fitted, interval, or density rows |
+| [Window transforms](./data/window.md) | `createWindowData` | Compute ordered values within partitions while preserving source row order |
 
 ## Shared invariants
 
@@ -2850,12 +2851,15 @@ corresponding higher-level action when the library should materialize values:
 | `"regression"` | `{ type, method, x, y, groupBy?, ...methodParameters }` | `createRegressionData` |
 | `"density"` | `{ type, field, groupBy?, bandwidth, extent, steps, kernel?, normalization?, as, resolve: "shared", resolved? }` | `createDensityData` |
 | `"interval"` | `{ type, field, groupBy, center, extent, level?, as }` | `createIntervalData` |
+| `"window"` | `{ type, partitionBy, sortBy, operations }` | `createWindowData` |
 
 For regression, linear and polynomial transforms require `confidence` and
 `interval`; polynomial also requires `degree`. LOESS requires `span` and does
 not accept interval properties. Density `as` is a two-field tuple. Interval
 `as` contains distinct `center`, `lower`, and `upper` field names; mean CI
-requires `level`, while median pairs only with IQR. A materialized density
+requires `level`, while median pairs only with IQR. Window transforms require
+normalized arrays for `partitionBy`, `sortBy`, and `operations`; use
+`createWindowData` to apply defaults and materialize rows. A materialized density
 revision adds `resolved: { bandwidth, extent }` without replacing requested
 `"auto"` values. See the higher-level action
 sections below for accepted values and defaults before constructing normalized
@@ -3088,6 +3092,78 @@ group's valid sample count. Source values remain unchanged.
 ## Related
 
 [Data overview](../data.md) · [Chart API](../index.md) · [Action reference](../../reference/actions.md)
+
+<!-- Source: /api/data/window/ -->
+
+# Window Data Transforms
+
+  source rowsimmutable input
+  partition + sortcalculation order
+  operationsderived fields
+  source orderimmutable output
+
+`createWindowData` computes ordered values within optional partitions and stores
+the result as a new immutable dataset. It is useful when a later mark needs rank,
+running totals, or neighboring values without changing the source rows.
+
+## `createWindowData({ id, source?, partitionBy?, sortBy?, operations })`
+
+```javascript
+const program = chart()
+  .createData({
+    id: "sales",
+    values: [
+      { region: "East", month: 2, amount: 30 },
+      { region: "East", month: 1, amount: 20 },
+      { region: "West", month: 1, amount: 15 }
+    ]
+  })
+  .createWindowData({
+    id: "rankedSales",
+    partitionBy: "region",
+    sortBy: [{ field: "month" }],
+    operations: [
+      { op: "rowNumber", as: "monthOrder" },
+      { op: "cumulativeSum", field: "amount", as: "runningAmount" },
+      { op: "lag", field: "amount", as: "previousAmount" }
+    ]
+  });
+```
+
+| Option | Type | Default |
+| --- | --- | --- |
+| `id` | new dataset ID | required |
+| `source` | existing dataset ID | current dataset |
+| `partitionBy` | field name or array of field names | one partition |
+| `sortBy` | array of `{ field, order? }` | source order |
+| `operations` | non-empty array of window operations | required |
+
+`order` accepts `"ascending"` or `"descending"` and defaults to ascending.
+Sorting is stable. Missing sort values are placed after present values for an
+ascending sort and before them for a descending sort. Operations run in the
+declared order, so a later operation may read a field created by an earlier one.
+
+Supported operations are:
+
+| Operation | Shape | Notes |
+| --- | --- | --- |
+| row number | `{ op: "rowNumber", as }` | one-based position |
+| rank | `{ op: "rank", as }` | tied rows share a rank and leave gaps |
+| dense rank | `{ op: "denseRank", as }` | tied rows share a rank without gaps |
+| cumulative sum | `{ op: "cumulativeSum", field, as }` | requires finite numeric values |
+| lag | `{ op: "lag", field, as, offset?, default? }` | defaults to offset `1` and value `null` |
+| lead | `{ op: "lead", field, as, offset?, default? }` | defaults to offset `1` and value `null` |
+
+The action computes each partition in sorted order, then returns the materialized
+rows in their original source order. The source dataset remains unchanged. Output
+fields must be unique and cannot replace fields already present in the source.
+Dataset IDs are create-only: calling the action again with the same `id` throws
+instead of replacing or rebinding consumers.
+
+## Related
+
+[Data overview](../data.md) · [Source and derived data](./source-and-derived.md) ·
+[Action reference](../../reference/actions.md)
 
 <!-- Source: /api/marks/ -->
 
@@ -8155,6 +8231,7 @@ Use document search with `Ctrl+K` or scan the alphabetical list. Each action has
 | [`createThetaGrid`](./actions/guides.md#createthetagrid) | user-facing | grid |
 | [`createTitle`](./actions/guides.md#createtitle) | user-facing | legend_and_title |
 | [`createVerticalGrid`](./actions/advanced.md#directional-grids) | user-facing | grid |
+| [`createWindowData`](./actions/charts-data.md#createwindowdata) | user-facing | core |
 | [`createXAxis`](./actions/advanced.md#complete-single-channel-axes) | user-facing | axes |
 | [`createXAxisLabels`](./actions/advanced.md#axis-lines-ticks-and-labels) | user-facing | axes |
 | [`createXAxisLine`](./actions/advanced.md#axis-lines-ticks-and-labels) | user-facing | axes |
@@ -8443,6 +8520,17 @@ Create immutable KDE rows on one shared inclusive sample grid. Source defaults
 to current data, steps to `100`, bandwidth to an automatic Scott-rule estimate,
 kernel to `"gaussian"`, and normalization to `"unit"`.
 [Data](../../api/data.md)
+
+## `createWindowData`
+
+```javascript
+createWindowData({ id, source?, partitionBy?, sortBy?, operations })
+```
+
+Create an immutable derived dataset by applying ordered row-number, rank,
+dense-rank, cumulative-sum, lag, or lead operations within optional partitions.
+The calculation follows a stable sort while the output preserves source row order.
+[Window data transforms](../../api/data/window.md)
 
 ## Related
 
@@ -9556,7 +9644,7 @@ See [Action authoring](../../extension/action-authoring.md) and
 
 High-level actions call additional wrapped operations for data, scale, mark,
 guide, title, and layout materialization. Names such as
-`materializeDensityData`, `rematerializeScale`, `rematerializePointMark`,
+`materializeDensityData`, `materializeWindowData`, `rematerializeScale`, `rematerializePointMark`,
 `createCategoricalLegend`, `createSizeLegend`, `rematerializeSizeLegend`,
 `createLegendSymbols`, and `createTitleText` may appear in
 `program.trace`. They are deliberately absent from the public TypeScript
@@ -9615,6 +9703,7 @@ interface ChartProgramActions {
   createDensityData(options: DensityDataOptions): ChartProgram;
   createRegressionData(options: RegressionDataOptions): ChartProgram;
   createIntervalData(options: IntervalDataOptions): ChartProgram;
+  createWindowData(options: WindowDataOptions): ChartProgram;
   createPointMark(options?: { id?: string; data?: string; shape?: PointShape; fill?: string; opacity?: number; stroke?: string; strokeWidth?: number; }): ChartProgram;
   editPointMark(options: { target?: string; shape?: PointShape; fill?: string; opacity?: number; stroke?: string; strokeWidth?: number; }): ChartProgram;
   jitterPoints(options: JitterPointsOptions): ChartProgram;

@@ -417,6 +417,7 @@ Derived dataset은 source와 정확히 하나의 transform provenance를 먼저 
 - grouped or ungrouped linear or polynomial least-squares regression, with mean or prediction intervals
 - grouped or ungrouped LOESS regression with deterministic local neighborhoods and line-only output
 - grouped or ungrouped kernel density estimation with Gaussian, Epanechnikov, uniform, or triangular kernels
+- partitioned ordered window calculation with row number, rank, dense rank, cumulative sum, lag, and lead
 
 Transform은 source, input/output field, group, method 및 resolved parameter를 보존한다.
 Regression의 degree/span/confidence/interval과 density의 automatic bandwidth, kernel/normalization처럼 계산
@@ -433,6 +434,12 @@ reference를 explicit semantic action으로 rebind한다. `markFilter` provenanc
 선택 전 bin identity를 바꾸지 않게 한다. 원본과 다른 mark는 그대로 유지하며 scale, mark, guide를 ordered
 plan으로 rematerialize한다. 이미 만들어진 독립 statistical layer를 암묵적으로 rebind하지 않으므로 filtered
 statistic은 filter 이후에 생성한다.
+
+Window transform은 ordered `partitionBy`, `sortBy`, `operations` provenance를 저장한다. Partition 내부
+계산 순서는 stable multi-field sort를 따르지만 materialized output row order는 source order를 보존한다.
+Operation은 선언 순서대로 실행되어 앞 output을 뒤 input으로 사용할 수 있다. Public lifecycle은 immutable
+create-only이다. Window는 row 수를 보존해도 주변 row에 의존하므로 facet은 먼저 source를 partition한 뒤
+registry의 canonical materializer를 cell마다 다시 호출한다.
 
 Interval transform은 input field, ordered `groupBy`, `mean | median` center,
 `stderr | stdev | ci | iqr` extent, CI level과 distinct center/lower/upper output fields를 기록한다.
@@ -1275,7 +1282,7 @@ semantic state에 저장한다. 계산 가능한 candidate가 없는 final group
 대체하지 않고 생략한다.
 
 Dataset transform vocabulary와 capability registry는 `grammar/transforms.js`가 소유한다.
-Filter, mark filter, regression, density, interval, box summary/outlier의 상세 schema는 각
+Filter, mark filter, regression, density, interval, window, box summary/outlier의 상세 schema는 각
 grammar 모듈이 검증한다. `editSemantic` primitive는 transform별 property를 다시 구현하지
 않고 registry에 위임하므로 domain action과 primitive authoring이 같은 transform contract를
 사용한다. 같은 descriptor가 materializer operation, facet replay topology와 requested-transform

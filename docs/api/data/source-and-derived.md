@@ -71,12 +71,15 @@ corresponding higher-level action when the library should materialize values:
 | `"regression"` | `{ type, method, x, y, groupBy?, ...methodParameters }` | `createRegressionData` |
 | `"density"` | `{ type, field, groupBy?, bandwidth, extent, steps, kernel?, normalization?, as, resolve: "shared", resolved? }` | `createDensityData` |
 | `"interval"` | `{ type, field, groupBy, center, extent, level?, as }` | `createIntervalData` |
+| `"window"` | `{ type, partitionBy, sortBy, operations }` | `createWindowData` |
 
 For regression, linear and polynomial transforms require `confidence` and
 `interval`; polynomial also requires `degree`. LOESS requires `span` and does
 not accept interval properties. Density `as` is a two-field tuple. Interval
 `as` contains distinct `center`, `lower`, and `upper` field names; mean CI
-requires `level`, while median pairs only with IQR. A materialized density
+requires `level`, while median pairs only with IQR. Window transforms require
+normalized arrays for `partitionBy`, `sortBy`, and `operations`; use
+`createWindowData` to apply defaults and materialize rows. A materialized density
 revision adds `resolved: { bandwidth, extent }` without replacing requested
 `"auto"` values. See the higher-level action
 sections below for accepted values and defaults before constructing normalized

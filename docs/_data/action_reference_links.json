@@ -16,6 +16,7 @@
   "highlightMarks": "/reference/actions/charts-data/#highlightmarks",
   "createRegressionData": "/reference/actions/charts-data/#createregressiondata",
   "createDensityData": "/reference/actions/charts-data/#createdensitydata",
+  "createWindowData": "/reference/actions/charts-data/#createwindowdata",
   "createPointMark": "/reference/actions/marks/#createpointmark",
   "editPointMark": "/reference/actions/marks/#editpointmark",
   "jitterPoints": "/reference/actions/marks/#jitterpoints",

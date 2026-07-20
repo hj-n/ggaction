@@ -29,6 +29,11 @@
     "layer": "user-facing",
     "domain": "core"
   },
+  "createWindowData": {
+    "operation": "create",
+    "layer": "user-facing",
+    "domain": "core"
+  },
   "createIntervalData": {
     "operation": "create",
     "layer": "user-facing",

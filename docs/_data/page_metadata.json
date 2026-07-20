@@ -160,6 +160,10 @@
     "description": "Create deterministic regression predictions from an existing dataset. This is an advanced data action used by higher level regression chart actions.",
     "image": "/assets/images/cars-regression-scatterplot.png"
   },
+  "/api/data/window/": {
+    "title": "Window Data Transforms",
+    "description": "createWindowData computes ordered values within optional partitions and stores the result as a new immutable dataset."
+  },
   "/api/marks/": {
     "title": "Marks",
     "description": "Marks define the semantic form of a layer. Create a mark first, then connect it to data through position, grouping, and appearance encodings.",
