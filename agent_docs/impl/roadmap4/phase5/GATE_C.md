@@ -3,7 +3,8 @@
 ## 상태
 
 - Gate: `P5-C`
-- 상태: `ready-for-review`
+- 상태: `approved`
+- 사용자 승인: `2026-07-20`
 - 검토 대상 remote checkpoint: `0cc3cc3` (`origin/main`)
 - 승인 전 차단: binned `createHeatmap` facade와 Phase 5 후속 Step
 
@@ -116,4 +117,5 @@ primitive/public exact parity를 P5-D에서 다시 검토한다.
 
 ## 승인 후 작업
 
-P5-C가 승인되면 Step 5에서 기존 pre-gridded mode를 보존한 채 `createHeatmap({ bin })` facade를 구현한다.
+P5-C 승인으로 Step 5가 해제되었다. 기존 pre-gridded mode를 보존한 채 `createHeatmap({ bin })` facade를
+구현하고 P5-D에서 다시 멈춘다.
