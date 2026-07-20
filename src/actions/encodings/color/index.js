@@ -19,6 +19,8 @@ import { applyMaterializationPlan } from "../../../materialization/dependencies.
 import {
   planEncodingRematerialization
 } from "../../../materialization/encodings.js";
+import { findUpstreamTransform } from
+  "../../../materialization/dataProvenance.js";
 import { encodeContinuousColor } from "./continuous.js";
 import {
   applyColorLayoutCompanion,
@@ -64,11 +66,16 @@ const encodeColor = action(
       ? [densityTransform.groupBy, densityTransform.placement.split?.field]
           .filter(Boolean)
       : [];
+    const horizonTransform = findUpstreamTransform(this, dataset, "horizon");
+    const horizonColor = horizonTransform !== undefined &&
+      horizonTransform.as?.color === args.field &&
+      layer.encoding?.group?.field === horizonTransform.as?.group;
     if (
       layer.mark.type === "area" &&
       (layer.encoding?.group?.field === undefined ||
         layer.encoding.group.field !== args.field) &&
-      !densitySeriesFields.includes(args.field)
+      !densitySeriesFields.includes(args.field) &&
+      !horizonColor
     ) {
       throw new Error(
         "Area color encoding must match an existing group encoding."

@@ -94,12 +94,24 @@ test("builds exact monotone and natural cubic command fixtures", () => {
   ]);
 });
 
-test("falls back for short smooth series and validates monotone ordering", () => {
+test("keeps a valid two-point monotone cubic and falls back for other short curves", () => {
   const pair = [{ x: 0, y: 1 }, { x: 2, y: 3 }];
   const linear = buildCurvePathCommands(pair);
-  for (const curve of ["basis", "cardinal", "monotone", "natural"]) {
+  for (const curve of ["basis", "cardinal", "natural"]) {
     assert.deepEqual(buildCurvePathCommands(pair, curve), linear);
   }
+  assert.deepEqual(buildCurvePathCommands(pair, "monotone"), [
+    { op: "M", x: 0, y: 1 },
+    {
+      op: "C",
+      x1: 0.6666666666666666,
+      y1: 1.6666666666666665,
+      x2: 1.3333333333333335,
+      y2: 2.3333333333333335,
+      x: 2,
+      y: 3
+    }
+  ]);
   assert.throws(
     () => buildCurvePathCommands([
       { x: 0, y: 0 },

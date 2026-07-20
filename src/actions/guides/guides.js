@@ -5,6 +5,9 @@ import {
   resolveAutomaticGridOptions,
   resolveGuideApplicability
 } from "./applicability.js";
+import { findDataset } from "../../selectors/datasets.js";
+import { findUpstreamTransform } from
+  "../../materialization/dataProvenance.js";
 
 const OPTIONS = Object.freeze(["axes", "grid", "legend"]);
 
@@ -21,22 +24,68 @@ function validateOptions(args) {
   validateGuideOption(args.legend, "createGuides legend");
 }
 
-function inferAxesOptions(program) {
+function inferAxesOptions(program, applicability) {
   const horizontalInterval = program.semanticSpec.layers.some(layer =>
     layer.mark?.type === "rule" &&
     layer.encoding?.x?.fieldType === "quantitative" &&
     layer.encoding?.x2?.fieldType === "quantitative" &&
     ["nominal", "ordinal", "temporal"].includes(layer.encoding?.y?.fieldType)
   );
-  return horizontalInterval
+  const inferred = horizontalInterval
     ? { x: { ticksAndLabels: { count: 7 } } }
     : {};
+  const directions = applicability.axes.directions;
+  const hasStoredY = program.semanticSpec.layers.some(
+    layer => layer.encoding?.y !== undefined
+  );
+  if (!directions.y && hasStoredY) inferred.y = false;
+  const horizonLayers = program.semanticSpec.layers.filter(layer =>
+    findUpstreamTransform(
+      program,
+      findDataset(program, layer.data),
+      "horizon"
+    ) !== undefined
+  );
+  if (horizonLayers.length === 1 && directions.x && !directions.y) {
+    const scaleId = horizonLayers[0].encoding?.x?.scale;
+    const domain = program.resolvedScales?.[scaleId]?.domain;
+    if (
+      Array.isArray(domain) &&
+      domain.length === 2 &&
+      domain.every(Number.isFinite) &&
+      domain[0] !== domain[1]
+    ) {
+      const low = Math.min(...domain);
+      const high = Math.max(...domain);
+      inferred.x = {
+        ...(inferred.x ?? {}),
+        ticksAndLabels: {
+          values: Array.from(
+            { length: 6 },
+            (_, index) => low + (high - low) * index / 5
+          )
+        }
+      };
+    }
+  }
+  return inferred;
 }
 
 function selectOption(explicit, applicable) {
   if (explicit === false) return undefined;
   if (explicit !== undefined) return explicit;
   return applicable ? {} : undefined;
+}
+
+function mergeInferredOptions(inferred, explicit) {
+  if (!isPlainObject(inferred) || !isPlainObject(explicit)) return explicit;
+  const merged = { ...inferred };
+  for (const [key, value] of Object.entries(explicit)) {
+    merged[key] = isPlainObject(value) && isPlainObject(inferred[key])
+      ? mergeInferredOptions(inferred[key], value)
+      : value;
+  }
+  return merged;
 }
 
 const createGuides = action(
@@ -48,9 +97,14 @@ const createGuides = action(
     validateOptions(args);
     const applicability = resolveGuideApplicability(this);
     const hasAxes = applicability.axes.cartesian || applicability.axes.polar;
+    const inferredAxes = applicability.axes.cartesian
+      ? inferAxesOptions(this, applicability)
+      : {};
     const axes = args.axes === undefined && applicability.axes.cartesian
-      ? inferAxesOptions(this)
-      : selectOption(args.axes, hasAxes);
+      ? inferredAxes
+      : args.axes !== undefined && args.axes !== false && hasAxes
+        ? mergeInferredOptions(inferredAxes, args.axes)
+        : selectOption(args.axes, hasAxes);
     const grid = args.grid === undefined &&
         (applicability.grid.cartesian || applicability.grid.polar)
       ? resolveAutomaticGridOptions(this)

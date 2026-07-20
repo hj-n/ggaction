@@ -157,7 +157,9 @@ function encodeSecondaryPosition(program, channel, args, operation, types) {
     ? next.rematerializeBarMark({ id: target })
     : layer.mark.type === "rect"
       ? next.rematerializeRectMark({ id: target })
-      : next.rematerializeAreaMark({ id: target });
+      : canMaterializeArea(next, findLayer(next, target))
+        ? next.rematerializeAreaMark({ id: target })
+        : next;
 }
 
 const encodeX2 = action(

@@ -137,6 +137,10 @@ test("rejects ambiguous, destructive, and malformed Horizon inputs", () => {
   );
   assert.throws(() => deriveHorizon([], transform()), /at least one source row/);
   assert.throws(
+    () => deriveHorizon([{ x: 0, y: null }], transform()),
+    /at least one finite y value/
+  );
+  assert.throws(
     () => validateHorizonTransform(transform({ bands: 0 })),
     /positive integer/
   );

@@ -6,7 +6,8 @@ import {
   canMaterializePoint,
   canMaterializeRect,
   canMaterializeRule,
-  canMaterializeText
+  canMaterializeText,
+  isIntentionallyEmptyArea
 } from "./capabilities.js";
 
 const MARK_MATERIALIZATION_POLICIES = Object.freeze({
@@ -33,7 +34,10 @@ const MARK_MATERIALIZATION_POLICIES = Object.freeze({
     canMaterialize: canMaterializeArea,
     op: "rematerializeAreaMark",
     positionEncoding: Object.freeze({ incomplete: "scale", scaleFirst: true }),
-    encoding: Object.freeze({ sharedChannels: Object.freeze(["color"]) }),
+    encoding: Object.freeze({
+      sharedChannels: Object.freeze(["color"]),
+      skipRematerialization: isIntentionallyEmptyArea
+    }),
     scaleApplication: Object.freeze({ default: "defer" })
   }),
   arc: Object.freeze({

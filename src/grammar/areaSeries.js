@@ -15,7 +15,7 @@ export function deriveAreaSeries(rows, layer) {
   if (layer?.mark?.type !== "area") {
     throw new Error("Area series derivation requires a semantic area mark.");
   }
-  const { x, y, x2, y2, group } = layer.encoding ?? {};
+  const { x, y, x2, y2, group, color } = layer.encoding ?? {};
   const vertical =
     ["quantitative", "temporal"].includes(x?.fieldType) &&
     y?.fieldType === "quantitative" &&
@@ -48,6 +48,9 @@ export function deriveAreaSeries(rows, layer) {
   const groupValues = group === undefined
     ? rows.map(() => undefined)
     : readNominalField(rows, group.field);
+  const colorValues = color === undefined
+    ? rows.map(() => undefined)
+    : readNominalField(rows, color.field);
   const pathOrder = layer.encoding?.pathOrder;
   const orderValues = pathOrder === undefined
     ? undefined
@@ -57,9 +60,20 @@ export function deriveAreaSeries(rows, layer) {
   for (let index = 0; index < rows.length; index += 1) {
     const key = groupValues[index];
     const series = groups.get(key) ?? {
-      key: group === undefined ? {} : { [group.field]: key },
+      key: {
+        ...(group === undefined ? {} : { [group.field]: key }),
+        ...(color === undefined ? {} : { [color.field]: colorValues[index] })
+      },
       values: []
     };
+    if (
+      color !== undefined &&
+      !Object.is(series.key[color.field], colorValues[index])
+    ) {
+      throw new Error(
+        `Area series "${String(key)}" must have one color value.`
+      );
+    }
     series.values.push(vertical
       ? {
           x: independentValues[index],

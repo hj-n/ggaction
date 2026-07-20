@@ -62,6 +62,7 @@ export function canMaterializeArea(program, layer) {
   }
   const dataset = findDataset(program, layer.data);
   const densityTransform = findUpstreamTransform(program, dataset, "density");
+  if (isIntentionallyEmptyArea(program, layer)) return false;
   const completeDensity =
     densityTransform !== undefined &&
     (densityTransform.groupBy === undefined ||
@@ -71,6 +72,16 @@ export function canMaterializeArea(program, layer) {
     layer.encoding?.y2?.scale === layer.encoding.y.scale ||
     layer.encoding?.x2?.scale === layer.encoding.x.scale
   );
+}
+
+export function isIntentionallyEmptyArea(program, layer) {
+  if (
+    layer.mark?.type !== "area" ||
+    !Array.isArray(program.semanticSpec?.datasets)
+  ) return false;
+  const dataset = findDataset(program, layer.data);
+  return dataset?.values?.length === 0 &&
+    findUpstreamTransform(program, dataset, "horizon") !== undefined;
 }
 
 export function canMaterializeArc(_program, layer) {

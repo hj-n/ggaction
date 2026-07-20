@@ -7,9 +7,21 @@ import {
   POLAR_POSITION_CHANNELS
 } from "../../core/vocabulary.js";
 import { findSemanticScale } from "../../selectors/scales.js";
+import { findDataset } from "../../selectors/datasets.js";
+import { findUpstreamTransform } from
+  "../../materialization/dataProvenance.js";
+
+function isHorizonLayer(program, layer) {
+  return findUpstreamTransform(
+    program,
+    findDataset(program, layer.data),
+    "horizon"
+  ) !== undefined;
+}
 
 function hasEncoding(program, channel, { scaled = false, grid = false } = {}) {
   return program.semanticSpec.layers.some(layer => {
+    if (isHorizonLayer(program, layer) && channel !== "x") return false;
     const encoding = layer.encoding?.[channel];
     if (!scaled && !grid) return encoding !== undefined;
     if (encoding?.scale === undefined) return false;
@@ -33,22 +45,24 @@ function positionalApplicability(program, channels) {
 
 export function hasInferableLegend(program) {
   return program.semanticSpec.layers.some(layer =>
-    (layer.mark?.type === "point" &&
-      layer.encoding?.opacity?.scale !== undefined) ||
-    (layer.mark?.type === "point" &&
-      layer.encoding?.size?.scale !== undefined) ||
-    (layer.mark?.type === "point" &&
-      layer.encoding?.color?.scale !== undefined &&
-      (layer.encoding?.shape?.scale !== undefined ||
-        ["sequential", "quantize", "quantile", "threshold"].includes(
-          findSemanticScale(program, layer.encoding.color.scale)?.type
-        ))) ||
-    (layer.mark?.type === "line" &&
-      ["color", "strokeDash"].some(
-        channel => layer.encoding?.[channel]?.scale !== undefined
-      )) ||
-    (["bar", "area", "arc", "rect"].includes(layer.mark?.type) &&
-      layer.encoding?.color?.scale !== undefined)
+    !isHorizonLayer(program, layer) && (
+      (layer.mark?.type === "point" &&
+        layer.encoding?.opacity?.scale !== undefined) ||
+      (layer.mark?.type === "point" &&
+        layer.encoding?.size?.scale !== undefined) ||
+      (layer.mark?.type === "point" &&
+        layer.encoding?.color?.scale !== undefined &&
+        (layer.encoding?.shape?.scale !== undefined ||
+          ["sequential", "quantize", "quantile", "threshold"].includes(
+            findSemanticScale(program, layer.encoding.color.scale)?.type
+          ))) ||
+      (layer.mark?.type === "line" &&
+        ["color", "strokeDash"].some(
+          channel => layer.encoding?.[channel]?.scale !== undefined
+        )) ||
+      (["bar", "area", "arc", "rect"].includes(layer.mark?.type) &&
+        layer.encoding?.color?.scale !== undefined)
+    )
   );
 }
 
@@ -63,7 +77,13 @@ export function resolveGuideApplicability(program) {
       cartesian: CARTESIAN_POSITION_CHANNELS.some(
         channel => cartesian[channel].axis
       ),
-      polar: POLAR_POSITION_CHANNELS.some(channel => polar[channel].axis)
+      polar: POLAR_POSITION_CHANNELS.some(channel => polar[channel].axis),
+      directions: Object.freeze({
+        x: cartesian.x.axis,
+        y: cartesian.y.axis,
+        theta: polar.theta.axis,
+        radius: polar.radius.axis
+      })
     }),
     grid: Object.freeze({
       cartesian: CARTESIAN_POSITION_CHANNELS.some(
@@ -89,6 +109,9 @@ export function resolveAutomaticGridOptions(program) {
       ...(directions.theta ? { theta: {} } : {}),
       ...(directions.radial ? { radial: {} } : {})
     });
+  }
+  if (directions.vertical && !directions.horizontal) {
+    return Object.freeze({ horizontal: false, vertical: {} });
   }
 
   const barOrientations = program.semanticSpec.layers

@@ -3,6 +3,7 @@ import { registerBarWidthEncodingAction } from "./barWidth.js";
 import { registerColorEncodingAction } from "./color/index.js";
 import { registerDensityEncodingAction } from "./density.js";
 import { registerHistogramEncodingAction } from "./histogram.js";
+import { registerHorizonEncodingAction } from "./horizon.js";
 import { registerOffsetEncodingAction } from "./offset.js";
 import { registerPathOrderEncodingActions } from "./pathOrder.js";
 import { registerPositionEncodingActions } from "./position/index.js";
@@ -18,6 +19,7 @@ export function registerEncodingActions(ProgramClass) {
   registerPathOrderEncodingActions(ProgramClass);
   registerBarWidthEncodingAction(ProgramClass);
   registerHistogramEncodingAction(ProgramClass);
+  registerHorizonEncodingAction(ProgramClass);
   registerDensityEncodingAction(ProgramClass);
   registerColorEncodingAction(ProgramClass);
   registerStrokeDashEncodingActions(ProgramClass);

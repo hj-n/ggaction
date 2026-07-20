@@ -159,6 +159,13 @@ export function validateHorizonTransform(transform) {
     throw new Error(`Unknown Horizon overflow policy "${transform.overflow}".`);
   }
   const palette = validatePalette(transform.palette);
+  for (const [sign, value] of Object.entries(palette)) {
+    if (value.count !== undefined && value.count !== transform.bands) {
+      throw new Error(
+        `Horizon ${sign} palette count must equal bands (${transform.bands}).`
+      );
+    }
+  }
   const as = validateOutputFields(transform.as);
   if (transform.groupBy !== undefined && Object.values(as).includes(transform.groupBy)) {
     throw new Error("Horizon output fields must not collide with groupBy.");
@@ -426,6 +433,9 @@ export function deriveHorizon(rows, requested) {
       insertCrossings(segment, transform.baseline)
     )
   }));
+  if (!grouped.some(group => group.rows.some(row => !row.missing))) {
+    throw new Error("Horizon requires at least one finite y value.");
+  }
   const extents = resolvedExtents(grouped, transform);
   const groups = grouped.map((group, index) => ({
     ...(transform.groupBy === undefined ? {} : { group: group.group }),

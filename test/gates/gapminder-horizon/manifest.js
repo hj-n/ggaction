@@ -2,6 +2,7 @@ import { loadGapminder } from "../../support/data.js";
 import { defineVisualVariant } from "../../support/visual-variants.js";
 
 import { createGapminderHorizonPrimitives } from "./primitive.program.js";
+import { createGapminderHorizon } from "./public.program.js";
 import {
   HORIZON_COLORS,
   HORIZON_LAYOUT
@@ -25,10 +26,23 @@ export const horizonTargetCallChain = `chart()
     baseline: 55,
     palette: { positive: "blues", negative: "reds" }
   })
-  .createGuides()
+  .createGuides({
+    axes: {
+      x: {
+        ticksAndLabels: { labels: { offset: 14 } },
+        title: { offset: 44 }
+      },
+      y: false
+    }
+  })
   .createTitle({
     text: "Kenya Life Expectancy",
-    subtitle: "Blue above, red below · three folded bands around 55 years"
+    subtitle: "Blue above, red below · three folded bands around 55 years",
+    align: "center",
+    offset: -3,
+    gap: 9.5,
+    titleStyle: { fontWeight: 700 },
+    subtitleStyle: { fontSize: 13 }
   });`;
 
 export const visualVariants = Object.freeze([
@@ -39,6 +53,7 @@ export const visualVariants = Object.freeze([
     callChain: horizonTargetCallChain,
     artifact: { scope: "review" },
     primitive: () => createGapminderHorizonPrimitives(gapminder),
+    userFacing: () => createGapminderHorizon(gapminder),
     width: HORIZON_LAYOUT.width,
     height: HORIZON_LAYOUT.height,
     colors: [

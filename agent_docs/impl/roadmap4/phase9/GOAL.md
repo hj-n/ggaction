@@ -14,7 +14,7 @@ sign×band×segment rows로 변환하고, 기존 area path와 Canvas/PNG rendere
 - [x] independent Horizon oracle과 literal anchors
 - [x] Gapminder primitive target과 P9-A review package
 - [x] transform/provenance
-- [ ] `encodeHorizon`
+- [x] `encodeHorizon`
 - [ ] `editHorizon`, facet/consumer lifecycle과 P9-B
 - [ ] types/contracts/docs/package closeout와 P9-Exit
 

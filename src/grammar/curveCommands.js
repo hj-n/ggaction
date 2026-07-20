@@ -267,7 +267,9 @@ export function buildCurvePathCommands(points, curve = "linear") {
   const validatedPoints = validatePoints(points);
   const validatedCurve = validateCurveInterpolation(curve);
   if (validatedCurve === "linear" ||
-      (SMOOTH_CURVES.has(validatedCurve) && points.length < 3)) {
+      (SMOOTH_CURVES.has(validatedCurve) &&
+        validatedCurve !== "monotone" &&
+        points.length < 3)) {
     return buildLinearPathCommands(validatedPoints);
   }
   if (validatedCurve.startsWith("step")) {

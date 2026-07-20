@@ -96,6 +96,9 @@ export function getEncodingMaterializationStages(program, layer, channel, scale)
       )
     : [layer];
   const marks = candidates.flatMap(candidate => {
+    if (policy.encoding?.skipRematerialization?.(program, candidate) === true) {
+      return [];
+    }
     const step = policy.encoding?.completeOnly === true
       ? getMarkMaterializationStep(program, candidate)
       : getMarkRematerializationStep(candidate);
