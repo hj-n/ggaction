@@ -8,10 +8,10 @@ import { defineVisualVariant } from "../../support/visual-variants.js";
 import { createCrossFeatureDashboard } from
   "../../../examples/cross-feature-dashboard/program.js";
 import { createGapminderOuterGuideFacetPrimitives } from
-  "../../gates/facet-resolution/primitive.program.js";
+  "./variants/facet-resolution/primitive.program.js";
 import { createGapminderOuterGuideFacet } from
-  "../../gates/facet-resolution/public.program.js";
-import { outerGuidesTarget } from "../../gates/facet-resolution/manifest.js";
+  "./variants/facet-resolution/public.program.js";
+import { outerGuidesTarget } from "./variants/facet-resolution/manifest.js";
 
 import { createCrossFeatureDashboardPrimitives } from "./primitive.program.js";
 

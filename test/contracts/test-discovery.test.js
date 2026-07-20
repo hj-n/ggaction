@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readdirSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
@@ -89,6 +89,21 @@ test("requires every active gate to expose a complete reviewable slice", () => {
       files.some(file => /(?:manifest|primitive\.program)\.js$/.test(file)),
       true,
       `${gate.name} must contain a manifest or primitive program`
+    );
+  }
+});
+
+test("keeps stable tests independent from active gate implementations", () => {
+  const stableModules = walk(testRoot).filter(file =>
+    file.endsWith(".js") &&
+    !file.startsWith(path.join(testRoot, "gates") + path.sep)
+  );
+
+  for (const file of stableModules) {
+    assert.doesNotMatch(
+      readFileSync(file, "utf8"),
+      /(?:^|["'])[^"'\n]*\bgates\//m,
+      path.relative(testRoot, file)
     );
   }
 });

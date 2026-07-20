@@ -4,7 +4,7 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { visualVariants } from "../gates/field-stroke-width/manifest.js";
+import { visualVariants } from "../charts/cars-error-bar/variants/field-stroke-width/manifest.js";
 import { loadCars } from "../support/data.js";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));

@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 
 import { visualVariants as arcVariants } from "../charts/polar-arcs/manifest.js";
 import { visualVariants as widthVariants } from
-  "../gates/field-stroke-width/manifest.js";
+  "../charts/cars-error-bar/variants/field-stroke-width/manifest.js";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const ACTIONS = Object.freeze(["encodeTheta", "encodeStrokeWidth"]);

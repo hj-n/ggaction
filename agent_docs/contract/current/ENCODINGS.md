@@ -399,7 +399,7 @@ encodeX2(options: RulePositionAssignment | AreaSecondaryXAssignment): ChartProgr
 - Evidence: `test/unit/actions/encodings/rule-appearance-encodings.test.js`,
   `test/unit/actions/encodings/line-series-encodings.test.js`,
   `test/unit/actions/guides/stroke-width-legend.test.js`, and
-  `test/gates/field-stroke-width/`.
+  `test/charts/cars-error-bar/variants/field-stroke-width/`.
 
 ## `encodeYRange`
 

@@ -5,7 +5,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { chart, hconcat, vconcat } from "../../src/index.js";
-import { visualVariants } from "../gates/program-composition/manifest.js";
+import { visualVariants } from "../charts/program-composition/variants/layouts/manifest.js";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const index = JSON.parse(readFileSync(path.join(

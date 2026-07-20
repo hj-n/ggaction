@@ -5,7 +5,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { chart } from "../../src/index.js";
-import { visualVariants } from "../gates/direct-source-facet/manifest.js";
+import { visualVariants } from "../charts/cars-origin-scatterplot-facet/manifest.js";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const read = file => readFileSync(path.join(root, file), "utf8");

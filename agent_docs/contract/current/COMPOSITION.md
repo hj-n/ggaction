@@ -41,8 +41,8 @@
 - Evidence: `test/unit/grammar/facets.test.js`, `test/unit/grammar/facet-dependencies.test.js`,
   `test/unit/grammar/facet-scales.test.js`, `test/unit/actions/composition/facet-derivation.test.js`,
   `test/unit/actions/composition/facet.test.js`, `test/unit/actions/composition/facet-derived-families.test.js`,
-  `test/unit/actions/composition/facet-legend-families.test.js`, `test/gates/direct-source-facet/public.test.js`,
-  `test/gates/facet-resolution/public.test.js`.
+  `test/unit/actions/composition/facet-legend-families.test.js`, `test/charts/cars-origin-scatterplot-facet/facet-variants.test.js`,
+  `test/charts/cross-feature-integration/variants/facet-resolution/public.test.js`.
 
 ## `editFacetHeaders`
 
@@ -61,7 +61,7 @@
 
 - ✅ Covered: child-plot centering, partial edit, immutable prior state, layout-edit convergence, empty edit rejection,
   and non-facet rejection.
-- Evidence: `test/unit/actions/composition/facet.test.js`, `test/gates/direct-source-facet/public.test.js`.
+- Evidence: `test/unit/actions/composition/facet.test.js`, `test/charts/cars-origin-scatterplot-facet/facet-variants.test.js`.
 
 ## `editCompositionLayout`
 
@@ -85,7 +85,7 @@
 - ✅ Covered: scalar and partial padding, every alignment, gap, child preservation, immutable earlier program,
   complete rematerialization, facet compatibility, and invalid option rejection.
 - Evidence: `test/unit/actions/composition/concat.test.js`, `test/unit/actions/composition/facet.test.js`,
-  `test/gates/program-composition/public.test.js`.
+  `test/charts/program-composition/variants/layouts/public.test.js`.
 
 ## `replaceCompositionChild`
 
@@ -105,8 +105,8 @@
 
 - ✅ Covered: unit replacement, nested-child eligibility, slot/order preservation, immutable source and sibling
   identity, namespaced snapshot rebuilding, unknown target and incomplete child rejection.
-- Evidence: `test/unit/actions/composition/concat.test.js`, `test/gates/program-composition/public.test.js`,
-  `test/gates/program-composition/png.render.js`.
+- Evidence: `test/unit/actions/composition/concat.test.js`, `test/charts/program-composition/variants/layouts/public.test.js`,
+  `test/charts/program-composition/variants/layouts/png.render.js`.
 
 ## Cross-feature integration contract
 

@@ -4,7 +4,7 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { visualVariants } from "../gates/facet-resolution/manifest.js";
+import { visualVariants } from "../charts/cross-feature-integration/variants/facet-resolution/manifest.js";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const read = file => readFileSync(path.join(root, file), "utf8");

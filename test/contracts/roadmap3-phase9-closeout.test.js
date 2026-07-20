@@ -5,7 +5,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { visualVariants as annotationVariants } from
-  "../gates/annotated-imdb-scatterplot/manifest.js";
+  "../charts/annotated-imdb-scatterplot/manifest.js";
 import { visualVariants as horizontalBarVariants } from
   "../charts/jobs-horizontal-grouped-bar/manifest.js";
 import { visualVariants as heatmapVariants } from
