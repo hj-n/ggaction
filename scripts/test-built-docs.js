@@ -280,38 +280,24 @@ try {
   await mobile.screenshot({ path: path.join(artifactRoot, "mobile.png"), fullPage: true });
 
   await mobile.goto(`${baseUrl}reference/actions/`, { waitUntil: "networkidle" });
-  assert.equal(await mobile.locator(".docs-page-toc").getAttribute("open"), null);
-  assert.equal(await mobile.locator(".docs-copy-button").count() > 0, true);
-  assert.equal(
-    await mobile.locator('pre[tabindex="0"][aria-label="Scrollable code example"]').count() > 0,
-    true
-  );
+  assert.equal(await mobile.locator(".docs-entry-grid a").count(), 9);
   assert.equal(
     await mobile.locator('table[tabindex="0"][aria-label="Scrollable data table"]').count() > 0,
     true
   );
+  assert.equal(await mobile.locator("#docs-action-redirects").count(), 1);
+
+  await mobile.goto(`${baseUrl}reference/actions/encodings/`, { waitUntil: "networkidle" });
+  assert.equal(await mobile.locator(".docs-page-toc").getAttribute("open"), null);
+  assert.equal(await mobile.locator(".docs-copy-button").count() > 0, true);
+  assert.equal(
+    await mobile.locator('pre[tabindex="0"][aria-label="Scrollable code"]').count() > 0,
+    true
+  );
+  assert.equal(await mobile.locator(".docs-code-label").count() > 0, true);
   assert.equal(await mobile.locator(".docs-heading-anchor").count() > 0, true);
   const actionHeadingCount = await mobile.locator(".docs-action-heading").count();
-  assert.equal(actionHeadingCount > 0, true);
-  assert.deepEqual(
-    await mobile.locator(".docs-page-toc a").evaluateAll(links =>
-      links.map(link => link.getAttribute("href"))
-    ),
-    [
-      "#quick-navigation",
-      "#exact-typescript-signatures",
-      "#chart-authoring-api",
-      "#advanced-chart-api",
-      "#extension-api",
-      "#internal-trace-operations",
-      "#program-functions",
-      "#rendering-functions"
-    ]
-  );
-  assert.equal(
-    await mobile.locator('.docs-page-toc a[href="#exact-typescript-signatures"]').count(),
-    1
-  );
+  assert.equal(actionHeadingCount > 20, true);
   const actionFilter = mobile.locator("#docs-action-filter-input");
   assert.equal(await actionFilter.count(), 1);
   await actionFilter.fill("edit");
@@ -325,8 +311,8 @@ try {
   });
 
   await mobile.goto(`${baseUrl}api/marks/point/`, { waitUntil: "networkidle" });
-  assert.equal(await mobile.locator(".docs-action-heading").count(), 2);
-  assert.equal(await mobile.locator(".docs-action-signature").count(), 2);
+  assert.equal(await mobile.locator(".docs-action-heading").count(), 4);
+  assert.equal(await mobile.locator(".docs-action-signature").count(), 4);
   assert.equal(
     await mobile.locator(".docs-action-heading code").first().innerText(),
     "createPointMark"
@@ -335,6 +321,14 @@ try {
     (await mobile.locator(".docs-action-kind").first().innerText()).toLowerCase(),
     "create"
   );
+  assert.equal(
+    (await mobile.locator(".docs-action-kind").last().innerText()).toLowerCase(),
+    "remove"
+  );
+
+  await mobile.goto(`${baseUrl}reference/types/`, { waitUntil: "networkidle" });
+  assert.equal(await mobile.locator(".docs-code-label").first().innerText(), "Type contract");
+  assert.equal(await mobile.locator(".docs-copy-button").count(), 1);
   await mobile.close();
 } finally {
   await browser.close();

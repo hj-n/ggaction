@@ -7,8 +7,6 @@ title: Source and Derived Data
 
 {% include chart-example.html id="scatterplot" %}
 
-{% include chart-example.html id="scatterplot" %}
-
 ## `createData({ id?, values })`
 
 | Option | Type | Required |

@@ -141,7 +141,22 @@
   }
 
   for (const pre of content.querySelectorAll("pre")) {
-    const region = wrapScrollable(pre, "docs-code-block", "Scrollable code example");
+    const code = pre.querySelector("code");
+    const language = [...(code?.classList ?? [])]
+      .find(name => name.startsWith("language-"))?.slice("language-".length);
+    const role = ["bash", "shell", "sh"].includes(language)
+      ? "Command"
+      : ["text", "plaintext"].includes(language)
+        ? "Output"
+        : language === "typescript" && code.textContent.includes("interface ChartProgramActions")
+          ? "Type contract"
+          : "Code";
+    const region = wrapScrollable(pre, "docs-code-block", `Scrollable ${role.toLowerCase()}`);
+    const label = document.createElement("span");
+    label.className = "docs-code-label";
+    label.textContent = role;
+    region.prepend(label);
+    if (role === "Output") continue;
     const button = document.createElement("button");
     button.className = "docs-copy-button";
     button.type = "button";
@@ -165,7 +180,7 @@
         selection.addRange(range);
       }
     });
-    region.prepend(button);
+    label.after(button);
   }
 
   for (const table of content.querySelectorAll("table")) {

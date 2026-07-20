@@ -1,0 +1,447 @@
+{
+  "/": {
+    "title": "Overview",
+    "description": "Build charts as immutable, traceable action programs. Start with a complete example, then use the API pages when you need to customize one part."
+  },
+  "/getting-started/": {
+    "title": "Getting Started",
+    "description": "This walkthrough installs ggaction, creates a complete scatterplot from an inline dataset, and renders it to Browser Canvas.",
+    "image": "/assets/images/cars-scatterplot.png"
+  },
+  "/tutorials/": {
+    "title": "Tutorials",
+    "description": "Tutorials build complete, runnable charts and explain what each action adds. Choose the visual relationship that matches the question you want to answer."
+  },
+  "/tutorials/scatterplot/": {
+    "title": "Scatterplot Tutorial",
+    "description": "This tutorial uses the public npm package. The repository also contains a runnable browser example and its canonical program."
+  },
+  "/tutorials/polar-points/": {
+    "title": "Polar Point Tutorial",
+    "description": "This tutorial maps car acceleration to angle, horsepower to distance from the center, and origin to color.",
+    "image": "/assets/images/cars-polar-scatterplot.png"
+  },
+  "/tutorials/polar-lines/": {
+    "title": "Polar Line and Radar Tutorial",
+    "description": "Polar line marks use the same encodeTheta and encodeR actions as Polar points. The line stays open by default; closed: true turns each grouped series into a radar path.",
+    "image": "/assets/images/gapminder-polar-trends.png"
+  },
+  "/tutorials/polar-arcs/": {
+    "title": "Polar Arc Tutorial",
+    "description": "Arc marks turn Polar positions into closed sector paths. Use count or weighted sum aggregation for proportional donut sectors, or combine categorical theta bands with a…",
+    "image": "/assets/images/cars-origin-donut.png"
+  },
+  "/tutorials/line-chart/": {
+    "title": "Line Chart Tutorial",
+    "description": "This chart shows mean acceleration over time for each origin. The complete module below uses the public npm package."
+  },
+  "/tutorials/histogram/": {
+    "title": "Histogram Tutorial",
+    "description": "This chart bins car displacement, counts the rows in each bin, and stacks those counts by origin. The complete module uses the public npm package."
+  },
+  "/tutorials/grouped-bar/": {
+    "title": "Bar Chart Tutorial",
+    "description": "This tutorial uses a grouped bar chart as one concrete bar chart layout. It aggregates job percentages by year and places the mean for men and women side by side."
+  },
+  "/tutorials/regression-scatterplot/": {
+    "title": "Regression Scatterplot Tutorial",
+    "description": "This tutorial filters the cars dataset to Japan and the USA, maps point size to Acceleration and point color/shape to Origin, then adds one linear fit and 95% mean response…"
+  },
+  "/tutorials/density-area/": {
+    "title": "Density Area Tutorial",
+    "description": "This chart estimates the distribution of car acceleration separately for each Origin."
+  },
+  "/tutorials/error-bar/": {
+    "title": "Error-Bar Tutorial",
+    "description": "This chart keeps individual car observations visible while summarizing acceleration by Origin."
+  },
+  "/tutorials/error-band/": {
+    "title": "Error-Band Tutorial",
+    "description": "This chart summarizes life expectancy over time for each Gapminder cluster."
+  },
+  "/tutorials/mark-selection/": {
+    "title": "Mark Selection Tutorial",
+    "description": "Select final visual items by data field, semantic channel, or concrete graphic property, then filter, reuse, or highlight that selection."
+  },
+  "/recipes/": {
+    "title": "Chart Recipes",
+    "description": "Use a recipe when you know the chart type and want the shortest supported action flow."
+  },
+  "/recipes/scatterplot/": {
+    "title": "Scatterplot Recipe",
+    "description": "Add color: \"group\", size: \"amount\", or shape: \"category\" to the same call for field driven appearance. The default point radius is 3.",
+    "image": "/assets/images/cars-scatterplot.png"
+  },
+  "/recipes/line-chart/": {
+    "title": "Line Chart Recipe",
+    "description": "For multiple series, add color: \"group\", groupBy: \"group\", or strokeDash: { field: \"group\" } to the facade call.",
+    "image": "/assets/images/cars-line-chart.png"
+  },
+  "/recipes/histogram/": {
+    "title": "Histogram Recipe",
+    "description": "Add color: { field: \"group\", layout: \"stack\" } to the createHistogram options.",
+    "image": "/assets/images/cars-histogram.png"
+  },
+  "/recipes/bar-chart/": {
+    "title": "Bar Chart Recipe",
+    "description": "The current complete bar chart example uses grouped bars. Grouping is a layout choice inside the bar chart, not a separate top level chart type.",
+    "image": "/assets/images/jobs-grouped-bar.png"
+  },
+  "/recipes/heatmap/": {
+    "title": "Heatmap Recipe",
+    "description": "The current facade consumes observed, pre gridded rows. It does not create missing row/column combinations or perform two dimensional binning.",
+    "image": "/assets/images/gapminder-life-expectancy-heatmap.png"
+  },
+  "/recipes/regression-scatterplot/": {
+    "title": "Regression Scatterplot Recipe",
+    "description": "Use this pattern to layer grouped linear fits and mean response confidence bands over a point chart.",
+    "image": "/assets/images/cars-regression-scatterplot.png"
+  },
+  "/recipes/density-area/": {
+    "title": "Density Area Recipe",
+    "description": "Use createGuides({ grid: { horizontal: {}, vertical: {} } }) for both grid directions.",
+    "image": "/assets/images/cars-density-area.png"
+  },
+  "/recipes/error-bar/": {
+    "title": "Error-Bar Recipe",
+    "description": "When one compatible layer is already encoded, call createErrorBar() without options to reuse its fields, data, coordinate, and scales.",
+    "image": "/assets/images/cars-error-bar.png"
+  },
+  "/recipes/error-band/": {
+    "title": "Error-Band Recipe",
+    "description": "When one compatible layer is already encoded, omitted data, coordinate, position fields, scales, and explicit grouping are reused when the interval axis is unambiguous.",
+    "image": "/assets/images/gapminder-error-band.png"
+  },
+  "/recipes/box-plot/": {
+    "title": "Box-Plot Recipe",
+    "description": "Use whisker: { type: \"minmax\" } for observed minimum and maximum whiskers without an outlier layer.",
+    "image": "/assets/images/cars-box-plot.png"
+  },
+  "/troubleshooting/": {
+    "title": "Troubleshooting",
+    "description": "ggaction reports an error when stored state does not determine one safe action. It does not silently select the first mark, scale, dataset, or coordinate."
+  },
+  "/gallery/": {
+    "title": "Chart Gallery",
+    "description": "Browse complete ggaction charts by Cartesian, statistical, Polar, composition, and interaction task."
+  },
+  "/api/": {
+    "title": "Chart API",
+    "description": "Build a chart from a small set of domain actions. Start with the family that owns the decision you need to make; follow its focused pages only when the overview no longer provides…",
+    "image": "/assets/images/cars-scatterplot.png"
+  },
+  "/api/basic-charts/": {
+    "title": "Basic Charts",
+    "description": "Basic chart actions create a complete mark, its encodings, and applicable guides in one traceable call.",
+    "image": "/assets/images/cars-scatterplot.png"
+  },
+  "/api/canvas/": {
+    "title": "Canvas",
+    "description": "Creates the program's single canvas and establishes bounds for later position encodings.",
+    "image": "/assets/images/cars-scatterplot.png"
+  },
+  "/api/data/": {
+    "title": "Data",
+    "description": "Data actions own immutable source rows, explicit derivation provenance, and statistical result datasets.",
+    "image": "/assets/images/cars-regression-scatterplot.png"
+  },
+  "/api/data/source-and-derived/": {
+    "title": "Source and Derived Data",
+    "description": "Empty arrays are valid, and row properties may contain nested arrays or objects. The action copies and freezes the supplied data.",
+    "image": "/assets/images/cars-scatterplot.png"
+  },
+  "/api/data/filtering/": {
+    "title": "Data Filtering",
+    "description": "Create a named derived dataset without replacing or mutating its source.",
+    "image": "/assets/images/mark-selection-points.png"
+  },
+  "/api/data/statistical-transforms/": {
+    "title": "Statistical Data Transforms",
+    "description": "Create deterministic regression predictions from an existing dataset. This is an advanced data action used by higher level regression chart actions.",
+    "image": "/assets/images/cars-regression-scatterplot.png"
+  },
+  "/api/marks/": {
+    "title": "Marks",
+    "description": "Marks define the semantic form of a layer. Create a mark first, then connect it to data through position, grouping, and appearance encodings.",
+    "image": "/assets/images/cars-scatterplot.png"
+  },
+  "/api/marks/point/": {
+    "title": "Point Marks",
+    "description": "Point marks represent individual observations or derived items. Their semantic type is point; circle, square, diamond, and other symbols are graphical realizations of that meaning.",
+    "image": "/assets/images/cars-scatterplot.png"
+  },
+  "/api/marks/line-area/": {
+    "title": "Line and Area Marks",
+    "description": "Line and area marks materialize ordered backend neutral paths. Lines connect values; areas close two edges or one density edge against a baseline.",
+    "image": "/assets/images/cars-line-chart.png"
+  },
+  "/api/marks/bar/": {
+    "title": "Bar Marks",
+    "description": "Bar marks represent binned counts, aggregate categories, grouped or stacked partitions, and observed quantitative intervals.",
+    "image": "/assets/images/jobs-grouped-bar.png"
+  },
+  "/api/marks/rule/": {
+    "title": "Rule Marks",
+    "description": "Rule marks represent reference lines and intervals. They use concrete line primitives without exposing a renderer specific path format.",
+    "image": "/assets/images/cars-error-bar.png"
+  },
+  "/api/marks/text/": {
+    "title": "Text Marks",
+    "description": "Text marks turn data values into visible labels. Add one after a compatible point, bar, rect, or rule layer and ggaction persists that layer as the annotation source.",
+    "image": "/assets/images/annotated-imdb-scatterplot.png"
+  },
+  "/api/marks/rect/": {
+    "title": "Rect Marks",
+    "description": "Rect marks represent independent two dimensional cells. They are distinct from bars: rects do not infer aggregation, a zero baseline, stacking, or bar width.",
+    "image": "/assets/images/gapminder-life-expectancy-heatmap.png"
+  },
+  "/api/encodings/": {
+    "title": "Encodings",
+    "description": "Encoding actions connect data fields or constant values to chart channels.",
+    "image": "/assets/images/cars-regression-scatterplot.png"
+  },
+  "/api/regression/": {
+    "title": "Regression",
+    "description": "createRegression() layers grouped linear, polynomial, or LOESS fits over an existing quantitative point mark.",
+    "image": "/assets/images/cars-regression-scatterplot.png"
+  },
+  "/api/error-bars/": {
+    "title": "Error Bars",
+    "description": "createErrorBar() materializes vertical or horizontal intervals from either grouped statistics or existing center/lower/upper fields.",
+    "image": "/assets/images/cars-error-bar.png"
+  },
+  "/api/error-bands/": {
+    "title": "Error Bands",
+    "description": "createErrorBand() creates a vertical or horizontal confidence or interval ribbon as one ordinary area layer.",
+    "image": "/assets/images/gapminder-error-band.png"
+  },
+  "/api/box-plots/": {
+    "title": "Box Plots",
+    "description": "createBoxPlot creates vertical or horizontal box plots from one categorical field and one quantitative field.",
+    "image": "/assets/images/cars-box-plot.png"
+  },
+  "/api/guides/": {
+    "title": "Guides",
+    "description": "Creates the applicable axes, Cartesian or Polar grid, and categorical legend supported by the current semantic encodings.",
+    "image": "/assets/images/cars-histogram.png"
+  },
+  "/api/titles/": {
+    "title": "Titles",
+    "description": "Creates one chart title and an optional subtitle on any Canvas edge.",
+    "image": "/assets/images/cars-line-chart.png"
+  },
+  "/api/rendering/": {
+    "title": "Rendering",
+    "description": "Rendering consumes a completed program's graphicSpec. It does not read datasets, semantic encodings, context, or trace to infer missing output.",
+    "image": "/assets/images/cars-scatterplot.png"
+  },
+  "/api/composition/": {
+    "title": "Program Composition",
+    "description": "Combine already authored chart programs without merging their datasets, marks, scales, or guides.",
+    "image": "/assets/images/program-composition.png"
+  },
+  "/api/position-encodings/": {
+    "title": "Position Encodings",
+    "description": "Choose the position family from the semantic mark and field relationship.",
+    "image": "/assets/images/cars-scatterplot.png"
+  },
+  "/api/position/quantitative/": {
+    "title": "Quantitative Positions",
+    "description": "Automatic domains combine compatible fields that share a scale. Automatic ranges use plot bounds, and every encoded value must be finite.",
+    "image": "/assets/images/cars-scatterplot.png"
+  },
+  "/api/position/temporal/": {
+    "title": "Temporal Line Positions",
+    "description": "Parseable date strings and finite timestamps are normalized for scale resolution without changing the source dataset. The path remains empty until y is encoded.",
+    "image": "/assets/images/cars-line-chart.png"
+  },
+  "/api/position/ordinal-bars/": {
+    "title": "Ordinal Bar Positions",
+    "description": "Automatic domains preserve first appearance order. Automatic ranges use the horizontal plot bounds and resolve a shared step and bandwidth.",
+    "image": "/assets/images/jobs-grouped-bar.png"
+  },
+  "/api/position/histogram/": {
+    "title": "Histogram Positions",
+    "description": "Prefer the atomic action for ordinary chart authoring:",
+    "image": "/assets/images/cars-histogram.png"
+  },
+  "/api/position/offsets/": {
+    "title": "Ordinal Offsets",
+    "description": "That action calls encodeXOffset for a vertical bar or encodeYOffset for a horizontal bar as a wrapped child with the same field.",
+    "image": "/assets/images/jobs-grouped-bar.png"
+  },
+  "/api/series-encodings/": {
+    "title": "Series Encodings",
+    "description": "Series appearance is authored through color, stroke dash, and stroke width families.",
+    "image": "/assets/images/cars-line-chart.png"
+  },
+  "/api/series/color/": {
+    "title": "Color Encoding",
+    "description": "Map a nominal or ordinal field to point fills, line series strokes, area fills, bar fills, rect fills, or arc sector fills.",
+    "image": "/assets/images/cars-line-chart.png"
+  },
+  "/api/series/stroke-dash/": {
+    "title": "Stroke-Dash Encoding",
+    "description": "Map a nominal field to line series or rule dash patterns, or apply one constant pattern to every series.",
+    "image": "/assets/images/cars-line-chart.png"
+  },
+  "/api/appearance/": {
+    "title": "Appearance Encodings",
+    "description": "Appearance actions change final mark style without changing position. Use the focused pages below for selection, point appearance, and mark specific style.",
+    "image": "/assets/images/cars-regression-scatterplot.png"
+  },
+  "/api/appearance/selection-and-highlighting/": {
+    "title": "Selection and Highlighting",
+    "description": "selectMarks is the advanced reusable selection action. Selection by itself does not alter semanticSpec or graphicSpec:",
+    "image": "/assets/images/mark-selection-points.png"
+  },
+  "/api/appearance/point/": {
+    "title": "Point Appearance",
+    "description": "Broadcast a non negative finite graphical radius to a point mark.",
+    "image": "/assets/images/cars-regression-scatterplot.png"
+  },
+  "/api/appearance/mark-style/": {
+    "title": "Mark Style",
+    "description": "encodeStroke({ value, target? }) assigns a required non empty constant color string to a rule.",
+    "image": "/assets/images/jobs-grouped-bar.png"
+  },
+  "/api/scales/": {
+    "title": "Scale Options",
+    "description": "Scales map semantic field or datum values into concrete positions and appearance values.",
+    "image": "/assets/images/cars-density-area.png"
+  },
+  "/api/scales/position/": {
+    "title": "Position Scales",
+    "description": "The field type, channel, mark recipe, and all consumers of a shared scale must agree. editScale validates that complete matrix before applying any semantic or graphical change.",
+    "image": "/assets/images/cars-scatterplot.png"
+  },
+  "/api/scales/ordinal-and-dash/": {
+    "title": "Ordinal and Dash Scales",
+    "description": "Band/point position, color, and stroke dash encodings use ordered discrete domains. Automatic domains preserve first appearance order.",
+    "image": "/assets/images/cars-line-chart.png"
+  },
+  "/api/scales/continuous-color/": {
+    "title": "Continuous Color Scales",
+    "description": "Use a name directly or an object with optional sampling controls:",
+    "image": "/assets/images/cars-density-area.png"
+  },
+  "/api/scales/discretized-color/": {
+    "title": "Discretized Color Scales",
+    "description": "Quantitative point color can create concrete color classes instead of a continuous gradient:",
+    "image": "/assets/images/cars-scatterplot.png"
+  },
+  "/api/scales/missing-values/": {
+    "title": "Missing Scale Values",
+    "description": "Point encodings can provide an unknown fallback inside their scale options:",
+    "image": "/assets/images/cars-scatterplot.png"
+  },
+  "/api/coordinates/": {
+    "title": "Coordinates",
+    "description": "Position encoding actions normally manage coordinates automatically:",
+    "image": "/assets/images/cars-scatterplot.png"
+  },
+  "/api/axes/": {
+    "title": "Axes",
+    "description": "Creates complete axes for encoded Cartesian x/y or Polar theta/radius channels. This is the recommended axis action for ordinary chart authoring.",
+    "image": "/assets/images/cars-scatterplot.png"
+  },
+  "/api/grids/": {
+    "title": "Grids",
+    "description": "Creates Cartesian or Polar grid geometry from encoded scales. Cartesian defaults to horizontal only.",
+    "image": "/assets/images/cars-histogram.png"
+  },
+  "/api/legends/": {
+    "title": "Legends",
+    "description": "Legends are inferred from final mark encodings and materialized as concrete graphics.",
+    "image": "/assets/images/cars-density-area.png"
+  },
+  "/api/legends/categorical/": {
+    "title": "Categorical and Size Legends",
+    "description": "Creates inferred legend blocks. It supports combined line series, color stacked histogram, grouped ordinal bar, grouped area, composite point series, quantitative point size,…",
+    "image": "/assets/images/cars-line-chart.png"
+  },
+  "/api/legends/continuous/": {
+    "title": "Continuous Legends",
+    "description": "A point color encoding with a quantitative or temporal field produces a continuous gradient. Right/left positions orient it vertically; top/bottom orient it horizontally.",
+    "image": "/assets/images/cars-density-area.png"
+  },
+  "/api/legends/composite/": {
+    "title": "Composite Legend Symbols",
+    "description": "Legend symbols are graphical recipes composed from line, point, and swatch layers. The default line shorthand remains supported:",
+    "image": "/assets/images/cars-regression-scatterplot.png"
+  },
+  "/api/legends/editing/": {
+    "title": "Editing Legends",
+    "description": "editLegend() updates one existing stable legend. Omit target when exactly one legend target exists; otherwise pass its mark ID.",
+    "image": "/assets/images/cars-density-area.png"
+  },
+  "/concepts/chart-program/": {
+    "title": "ChartProgram and Immutability",
+    "description": "chart() returns an empty ChartProgram. A program contains the authored chart state and the history used to produce it."
+  },
+  "/concepts/semantic-and-graphics/": {
+    "title": "Semantic and Graphical State",
+    "description": "ggaction keeps chart meaning separate from its fully resolved graphics."
+  },
+  "/concepts/actions-and-trace/": {
+    "title": "Actions and Trace Trees",
+    "description": "Every chart authoring method is an action. Calling a high level action records that action and any wrapped actions it invokes as children."
+  },
+  "/advanced/axis-components/": {
+    "title": "Advanced Axis Components",
+    "description": "Use these actions when a complete createAxes call is not sufficient. All component actions require a resolved linear, time, or ordinal scale and Canvas bounds.",
+    "image": "/assets/images/cars-scatterplot.png"
+  },
+  "/supported-features/": {
+    "title": "Supported Features",
+    "description": "This page describes implemented behavior only. A dash means that the current chart authoring API does not support that combination."
+  },
+  "/reference/actions/": {
+    "title": "Complete Action Reference",
+    "description": "Find every public ggaction action by task, API layer, or exact action name."
+  },
+  "/reference/actions/charts-data/": {
+    "title": "Charts, Data, and Composition Actions",
+    "description": "Create complete charts, manage data, select marks, and compose complete programs."
+  },
+  "/reference/actions/marks/": {
+    "title": "Mark Actions",
+    "description": "Create, edit, jitter, and remove semantic chart marks."
+  },
+  "/reference/actions/encodings/": {
+    "title": "Encoding Actions",
+    "description": "Map fields and constants to position, grouping, color, shape, size, and appearance."
+  },
+  "/reference/actions/statistics/": {
+    "title": "Statistical Layer Actions",
+    "description": "Create and edit regression, density, interval, error, and box-plot layers."
+  },
+  "/reference/actions/guides/": {
+    "title": "Guide, Axis, Grid, and Title Actions",
+    "description": "Create, edit, and remove axes, grids, legends, and chart titles."
+  },
+  "/reference/actions/advanced/": {
+    "title": "Advanced Chart Actions",
+    "description": "Author explicit semantic resources and control individual Cartesian axis and grid components."
+  },
+  "/reference/actions/extension/": {
+    "title": "Extension Actions",
+    "description": "Use wrapped actions and low-level semantic, graphic, and scale primitives to extend ggaction."
+  },
+  "/reference/runtime/": {
+    "title": "Program and Rendering Functions",
+    "description": "Create, compose, render, and inspect programs without confusing package functions with chainable actions."
+  },
+  "/reference/types/": {
+    "title": "Exact TypeScript Contract",
+    "description": "Read the complete generated TypeScript interface for every chainable ChartProgram action."
+  },
+  "/extension/action-authoring/": {
+    "title": "Action Authoring",
+    "description": "The extension entry point is for developers adding traceable domain actions."
+  },
+  "/extension/primitives/": {
+    "title": "Primitive API",
+    "description": "These methods are the low level public extension layer, not the recommended chart authoring API."
+  }
+}

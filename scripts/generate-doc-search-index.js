@@ -6,6 +6,7 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 const docsRoot = path.join(root, "docs");
 const pagesFile = path.join(docsRoot, "_data/pages.yml");
 const actionCatalogFile = path.join(root, "agent_docs/contract/ACTION_INDEX.json");
+const pageMetadataFile = path.join(docsRoot, "_data/page_metadata.json");
 const outputFile = path.join(docsRoot, "search-index.json");
 
 function pageRegistry(source) {
@@ -89,20 +90,21 @@ function summary(text) {
 }
 
 export async function buildDocSearchIndex() {
-  const [pagesSource, catalogSource] = await Promise.all([
+  const [pagesSource, catalogSource, pageMetadataSource] = await Promise.all([
     readFile(pagesFile, "utf8"),
-    readFile(actionCatalogFile, "utf8")
+    readFile(actionCatalogFile, "utf8"),
+    readFile(pageMetadataFile, "utf8")
   ]);
   const actions = JSON.parse(catalogSource).actions;
+  const pageMetadata = JSON.parse(pageMetadataSource);
   const metadata = new Map(actions.map(action => [action.name, action]));
   const entries = [];
 
   for (const page of pageRegistry(pagesSource)) {
     const source = await readFile(await pathForUrl(page.url), "utf8");
     const sections = sourceSections(source);
-    const pageSummary = frontMatter(source, "description") ?? cleanText(
-      sections[0].body.join("\n")
-    );
+    const pageSummary = pageMetadata[page.url]?.description ??
+      frontMatter(source, "description") ?? cleanText(sections[0].body.join("\n"));
     entries.push({
       pageTitle: page.title,
       url: page.url,

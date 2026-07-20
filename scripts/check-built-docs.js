@@ -73,6 +73,9 @@ for (const file of htmlFiles) {
   assert.doesNotMatch(html, /{{|{%/, `${file} contains unrendered Liquid.`);
   assert.equal((html.match(/<h1(?:\s|>)/g) ?? []).length, 1, `${file} must have one h1`);
   assert.equal((html.match(/<main(?:\s|>)/g) ?? []).length, 1, `${file} must have one main`);
+  assert.match(html, /<link rel="canonical" href="https:\/\/ggaction\.github\.io\/ggaction\//, `${file} canonical`);
+  assert.match(html, /<meta name="description" content="[^"]{45,}"/, `${file} description`);
+  assert.match(html, /<meta property="og:image" content="https:\/\/ggaction\.github\.io\/ggaction\//, `${file} social image`);
   const ids = [...html.matchAll(/\sid=["']([^"']+)["']/g)].map(match => match[1]);
   assert.equal(new Set(ids).size, ids.length, `${file} contains duplicate ids`);
   for (const image of html.matchAll(/<img\b([^>]*)>/g)) {

@@ -25,6 +25,13 @@ import {
 import {
   generateDocActionReference
 } from "../../scripts/generate-doc-action-reference.js";
+import {
+  buildDocPageMetadata,
+  generateDocPageMetadata
+} from "../../scripts/generate-doc-page-metadata.js";
+import {
+  inspectDocsEnvironment
+} from "../../scripts/check-docs-environment.js";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const docsRoot = path.join(root, "docs");
@@ -213,6 +220,39 @@ test("keeps every Markdown page structurally readable", async () => {
       previous = level;
     }
   }
+});
+
+test("generates unique page metadata and canonical social tags", async () => {
+  await generateDocPageMetadata({ check: true });
+  const metadata = await buildDocPageMetadata();
+  assert.deepEqual(new Set(Object.keys(metadata)), new Set(pageRegistry().map(page => page.url)));
+  for (const [url, entry] of Object.entries(metadata)) {
+    assert.equal(entry.description.length >= 45, true, `${url} description`);
+  }
+  const head = read("docs/_includes/head.html");
+  assert.match(head, /rel="canonical"/);
+  assert.match(head, /property="og:image"/);
+  assert.match(head, /site\.data\.page_metadata\[page\.url\]/);
+  assert.match(read("docs/_config.yml"), /^url: https:\/\/ggaction\.github\.io$/m);
+  assert.match(read("docs/_config.yml"), /^baseurl: \/ggaction$/m);
+});
+
+test("reports documentation environment prerequisites before building", () => {
+  assert.deepEqual(inspectDocsEnvironment({
+    nodeVersion: "20.19.0",
+    rubyVersion: "3.2.4",
+    bundleAvailable: true,
+    chromiumAvailable: true
+  }), []);
+  const errors = inspectDocsEnvironment({
+    nodeVersion: "18.20.0",
+    rubyVersion: "2.6.10",
+    bundleAvailable: false,
+    chromiumAvailable: false
+  });
+  assert.equal(errors.length, 4);
+  assert.match(errors.join("\n"), /Node\.js 20\+/);
+  assert.match(errors.join("\n"), /Ruby 3\.2\+/);
 });
 
 test("keeps repository source links and raw images verifiable", async () => {
@@ -519,6 +559,8 @@ test("indexes documentation headings for section search", () => {
   assert.match(content, /docs-action-filter-input/);
   assert.match(content, /docs-action-metadata/);
   assert.doesNotMatch(content, /actionPrefixes/);
+  assert.match(content, /docs-code-label/);
+  assert.match(content, /role === "Output"/);
 
   const toc = read("docs/assets/js/docs-toc.js");
   assert.match(toc, /heading\.dataset\.tocLabel/);

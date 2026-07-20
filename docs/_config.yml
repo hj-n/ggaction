@@ -1,5 +1,9 @@
 title: ggaction
 description: Immutable, traceable chart authoring actions.
+url: https://ggaction.github.io
+baseurl: /ggaction
+lang: en
+social_image: /assets/images/cars-scatterplot-thumb.png
 version: 0.0.4
 repository_url: https://github.com/ggaction/ggaction
 theme: minima
