@@ -83,6 +83,10 @@
 - title: Troubleshooting
   url: /troubleshooting/
   nav_group: start
+  nav_order: 6
+- title: Chart Gallery
+  url: /gallery/
+  nav_group: start
   nav_order: 5
 - title: Chart API
   url: /api/

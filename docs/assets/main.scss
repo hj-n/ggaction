@@ -744,6 +744,41 @@ summary:focus-visible {
   font-size: 0.76rem;
 }
 
+.docs-gallery-link {
+  margin: 1.25rem 0 0;
+  text-align: right;
+}
+
+.docs-gallery-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+}
+
+.docs-gallery-filter button {
+  min-height: 2.5rem;
+  padding: 0.45rem 0.75rem;
+  color: #334155;
+  border: 1px solid var(--docs-border);
+  border-radius: 999px;
+  background: #fff;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.docs-gallery-filter button:hover,
+.docs-gallery-filter button.is-active {
+  color: #1d4ed8;
+  border-color: #93c5fd;
+  background: var(--docs-accent-soft);
+}
+
+.docs-chart-gallery--catalog > div > article {
+  height: 100%;
+}
+
 .docs-chart-gallery img {
   display: block;
   width: 100%;

@@ -174,7 +174,7 @@ test("keeps navigation and page order complete", async () => {
   assert.deepEqual(new Set(order), pageUrls);
   for (const url of navigation) assert.equal(pageUrls.has(url), true, url);
   assert.equal(navigation.includes("/api/"), true);
-  assert.equal(navigation.length, 16);
+  assert.equal(navigation.length, 17);
 
   const byUrl = new Map(registry.map(page => [page.url, page]));
   for (const page of registry) {
@@ -400,6 +400,12 @@ test("routes entry documentation to the canonical example indexes", () => {
   );
   assert.match(read("docs/tutorials/index.md"), /example\.tutorial_order/);
   assert.match(read("docs/recipes/index.md"), /example\.recipe_order/);
+  assert.match(read("docs/gallery.md"), /data-gallery-filter="statistical"/);
+  assert.equal(
+    [...catalog.values()].filter(example => example.featured === "true").length,
+    8
+  );
+  assert.match(read("docs/index.md"), /where: "featured", true/);
   assert.match(gettingStarted, /point color\s+encoding can produce/);
   assert.match(gettingStarted, /examples\/getting-started/);
 });

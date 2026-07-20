@@ -137,24 +137,12 @@ The source repository also contains complete modules for the
 
 ## Next
 
-- Start with the five [Basic Chart actions](./api/basic-charts.md), then use
-  resource-specific actions for advanced edits and layering.
-- Use the [cars scatterplot tutorial](./tutorials/scatterplot.md) with the
-  repository dataset.
-- Build temporal aggregate series in the
-  [cars line chart tutorial](./tutorials/line-chart.md).
-- Bin and stack quantitative values in the
-  [cars histogram tutorial](./tutorials/histogram.md).
-- Aggregate and group ordinal categories in the
-  [jobs grouped bar tutorial](./tutorials/grouped-bar.md).
-- Layer grouped fits and confidence bands in the
-  [regression scatterplot tutorial](./tutorials/regression-scatterplot.md).
-- Summarize grouped means and confidence intervals in the
-  [error-bar tutorial](./tutorials/error-bar.md).
-- Select, filter, and emphasize final visual items in the
-  [mark-selection tutorial](./tutorials/mark-selection.md).
-- Check the [action index](./reference/actions.md) for signatures and defaults.
-- Copy a minimal flow from the [chart recipes](./recipes/index.md).
-- Resolve common inference and layout errors with
-  [Troubleshooting](./troubleshooting.md).
-- Export the same program with [PNG rendering](./api/rendering.md#png-output).
+<div class="docs-entry-grid">
+  <a href="./recipes/"><strong>Copy a chart recipe</strong><span>Start from the shortest supported flow for a known chart type.</span></a>
+  <a href="./tutorials/"><strong>Learn a complete workflow</strong><span>Build a chart step by step and understand what each action adds.</span></a>
+  <a href="./reference/actions/"><strong>Find an exact action</strong><span>Look up canonical signatures, defaults, inference, and errors.</span></a>
+</div>
+
+Use [Troubleshooting](./troubleshooting.md) when inference or layout cannot make
+one safe choice. Render the same program to a file with
+[PNG output](./api/rendering.md#png-output).

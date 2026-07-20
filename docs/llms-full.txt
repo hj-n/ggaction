@@ -46,6 +46,8 @@ Compose ordinary marks and derived data into higher-level statistical views.
 Use Polar coordinates when angle and radial distance express the relationship
 more directly than Cartesian x and y.
 
+<p class="docs-gallery-link">Browse every chart in the gallery → </p>
+
 ## Go deeper
 
 Understand [immutable ChartProgram state](./concepts/chart-program.md),
@@ -195,27 +197,13 @@ The source repository also contains complete modules for the
 
 ## Next
 
-- Start with the five [Basic Chart actions](./api/basic-charts.md), then use
-  resource-specific actions for advanced edits and layering.
-- Use the [cars scatterplot tutorial](./tutorials/scatterplot.md) with the
-  repository dataset.
-- Build temporal aggregate series in the
-  [cars line chart tutorial](./tutorials/line-chart.md).
-- Bin and stack quantitative values in the
-  [cars histogram tutorial](./tutorials/histogram.md).
-- Aggregate and group ordinal categories in the
-  [jobs grouped bar tutorial](./tutorials/grouped-bar.md).
-- Layer grouped fits and confidence bands in the
-  [regression scatterplot tutorial](./tutorials/regression-scatterplot.md).
-- Summarize grouped means and confidence intervals in the
-  [error-bar tutorial](./tutorials/error-bar.md).
-- Select, filter, and emphasize final visual items in the
-  [mark-selection tutorial](./tutorials/mark-selection.md).
-- Check the [action index](./reference/actions.md) for signatures and defaults.
-- Copy a minimal flow from the [chart recipes](./recipes/index.md).
-- Resolve common inference and layout errors with
-  [Troubleshooting](./troubleshooting.md).
-- Export the same program with [PNG rendering](./api/rendering.md#png-output).
+  Copy a chart recipe Start from the shortest supported flow for a known chart type.
+  Learn a complete workflow Build a chart step by step and understand what each action adds.
+  Find an exact action Look up canonical signatures, defaults, inference, and errors.
+
+Use [Troubleshooting](./troubleshooting.md) when inference or layout cannot make
+one safe choice. Render the same program to a file with
+[PNG output](./api/rendering.md#png-output).
 
 <!-- Source: /tutorials/ -->
 
@@ -223,6 +211,9 @@ The source repository also contains complete modules for the
 
 Tutorials build complete, runnable charts and explain what each action adds.
 Choose the visual relationship that matches the question you want to answer.
+
+  New to ggaction? Install the package and render one complete browser chart first.
+  Need only the shortest code? Switch to recipes when you do not need the step-by-step explanation.
 
 The bar tutorial uses grouped bars as one layout of the general bar mark. The
 statistical tutorials compose ordinary data, marks, encodings, and guides rather
@@ -1845,6 +1836,9 @@ Use a recipe when you know the chart type and want the shortest supported
 action flow. Each recipe separates the decisions you must provide from the
 resources, defaults, and guides that ggaction can infer.
 
+  Want the reasoning? Use a tutorial for an ordered workflow and explanation of each action.
+  Choosing a chart? Browse complete results before selecting a minimal recipe.
+
 Every flow begins with `createCanvas`, `createData`, and a semantic mark or
 composite action. Add explicit IDs only when the current program contains more
 than one compatible resource.
@@ -2455,6 +2449,25 @@ final bin/category cells, and line or area items correspond to complete series.
 Use `program.semanticSpec.layers.find(layer => layer.id === markId)` to inspect
 the owning semantic layer. The map is named `graphicSpec.objects`, not
 `graphicSpec.graphics`.
+
+<!-- Source: /gallery/ -->
+
+# Chart Gallery
+
+Every card links to the canonical tutorial, recipe, or API page that owns the
+chart. Use the filters to narrow the relationship you want to express.
+
+  <button type="button" class="is-active" data-gallery-filter="all" aria-pressed="true">All</button>
+  <button type="button" data-gallery-filter="essentials" aria-pressed="false">Cartesian and composition</button>
+  <button type="button" data-gallery-filter="statistical" aria-pressed="false">Statistical layers</button>
+  <button type="button" data-gallery-filter="coordinates" aria-pressed="false">Polar coordinates</button>
+  <button type="button" data-gallery-filter="other" aria-pressed="false">Interaction</button>
+
+## Choose a next step
+
+- [Learn a complete workflow](./tutorials/index.md)
+- [Copy a minimal chart recipe](./recipes/index.md)
+- [Find an exact action](./reference/actions.md)
 
 <!-- Source: /api/ -->
 

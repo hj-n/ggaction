@@ -96,6 +96,24 @@
   const actionHeadings = enhanceActionHeadings();
   addActionFilter(actionHeadings);
 
+  const galleryFilter = content.querySelector(".docs-gallery-filter");
+  if (galleryFilter) {
+    const cards = [...content.querySelectorAll("[data-gallery-group]")];
+    galleryFilter.addEventListener("click", event => {
+      const button = event.target.closest("[data-gallery-filter]");
+      if (!button) return;
+      const selected = button.dataset.galleryFilter;
+      for (const candidate of galleryFilter.querySelectorAll("[data-gallery-filter]")) {
+        const active = candidate === button;
+        candidate.classList.toggle("is-active", active);
+        candidate.setAttribute("aria-pressed", String(active));
+      }
+      for (const card of cards) {
+        card.hidden = selected !== "all" && card.dataset.galleryGroup !== selected;
+      }
+    });
+  }
+
   function updateOverflow(region, element, label) {
     const overflowing = element.scrollWidth > element.clientWidth + 1;
     const atEnd = element.scrollLeft + element.clientWidth >= element.scrollWidth - 2;

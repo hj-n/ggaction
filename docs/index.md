@@ -37,7 +37,7 @@ Start with the most common Cartesian relationships before moving into
 statistical layers or alternate coordinates.
 
 <div class="docs-chart-gallery">
-  {% assign essential_charts = site.data.chart_examples | where: "home_group", "essentials" | sort: "home_order" %}
+  {% assign essential_charts = site.data.chart_examples | where: "home_group", "essentials" | where: "featured", true | sort: "home_order" %}
   {% for example in essential_charts %}
     {% include chart-gallery-card.html example=example eager=forloop.first %}
   {% endfor %}
@@ -48,7 +48,7 @@ statistical layers or alternate coordinates.
 Compose ordinary marks and derived data into higher-level statistical views.
 
 <div class="docs-chart-gallery docs-chart-gallery--secondary">
-  {% assign statistical_charts = site.data.chart_examples | where: "home_group", "statistical" | sort: "home_order" %}
+  {% assign statistical_charts = site.data.chart_examples | where: "home_group", "statistical" | where: "featured", true | sort: "home_order" %}
   {% for example in statistical_charts %}
     {% include chart-gallery-card.html example=example %}
   {% endfor %}
@@ -60,11 +60,13 @@ Use Polar coordinates when angle and radial distance express the relationship
 more directly than Cartesian x and y.
 
 <div class="docs-chart-gallery docs-chart-gallery--secondary">
-  {% assign coordinate_charts = site.data.chart_examples | where: "home_group", "coordinates" | sort: "home_order" %}
+  {% assign coordinate_charts = site.data.chart_examples | where: "home_group", "coordinates" | where: "featured", true | sort: "home_order" %}
   {% for example in coordinate_charts %}
     {% include chart-gallery-card.html example=example %}
   {% endfor %}
 </div>
+
+<p class="docs-gallery-link"><a href="./gallery/">Browse every chart in the gallery →</a></p>
 
 ## Go deeper
 
@@ -80,4 +82,3 @@ continue with [action authoring](./extension/action-authoring.md) and the
 
 Source, issues, and development history are available on
 [GitHub](https://github.com/ggaction/ggaction).
-
