@@ -121,7 +121,7 @@ existing createBoxPlot({ ... })
 | 1 | completed | B-002/B-001/B-004와 P1-A/P1-B/P1-C/P1-Exit 승인 |
 | 2 | completed | P2-A/P2-B/P2-C/P2-D/P2-Exit 승인, Basic Chart facade closeout 완료 |
 | 3 | completed | P-004 weighted theta와 P-008 field stroke width, P3-Exit 승인 완료 |
-| 4 | planned | NCP-003 deterministic jitter |
+| 4 | in-progress | NCP-003 deterministic bounded point jitter at P4-A review |
 | 5 | planned | P-001 window, P-002 2D bin과 binned heatmap |
 | 6 | planned | NCP-002 linear gradient fill과 gradient interval facade |
 | 7 | planned | P-003 ordered path |
@@ -381,6 +381,14 @@ NCP-003 `jitterPoints`를 원 x/y semantic encoding을 보존하는 graphical la
 - 진입: default point가 모든 renderer에서 안전하고 stable item identity가 확인됨.
 - Exit: source item 수와 semantic coordinate는 불변이고 모든 final offset/containment invariant가 통과함.
 - 위험: selection/highlight offset과 jitter intent 혼합, pixelRatio를 logical offset에 적용, jitter를 beeswarm으로 확대.
+
+### Phase 4 Gate
+
+- `P4-A`: exact API/lifecycle, portable hash와 containment 계약, Cars x-jitter와 Gapminder y-jitter primitive PNG.
+- `P4-B`: public action parity, replacement/removal과 dependency rematerialization, selection/facet integration.
+- `P4-Exit`: declarations, Current contracts, package/docs와 누적 회귀.
+
+모든 Gate는 hard pause다. `P4-A` 승인 전에는 public `jitterPoints` 또는 `removeJitter`를 구현하지 않는다.
 
 ## Phase 5 — Derived-data 기반과 binned heatmap
 

@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "phase": "roadmap4/phase4",
+  "gate": "P4-A",
+  "status": "ready-for-review",
+  "actions": [
+    {
+      "name": "jitterPoints",
+      "status": "proposed",
+      "required": ["channel", "maxOffset"],
+      "optional": ["target", "seed", "key"],
+      "replacement": "same action replaces the target policy from its semantic base position",
+      "stateOwner": "materializationConfigs.jitters[target]"
+    },
+    {
+      "name": "removeJitter",
+      "status": "proposed",
+      "required": [],
+      "optional": ["target"],
+      "replacement": "removes the target policy and restores semantic base positions",
+      "stateOwner": "materializationConfigs.jitters[target]"
+    }
+  ]
+}
