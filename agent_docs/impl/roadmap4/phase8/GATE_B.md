@@ -3,7 +3,8 @@
 ## 상태
 
 - Gate: `P8-B`
-- 상태: `ready-for-review`
+- 상태: `approved`
+- 승인: 2026-07-20 사용자 명시 승인
 - Review source checkpoint: `764ac90` (`implement categorical density placement`)
 - Remote: `origin/main`
 - 승인 전 차단: public TypeScript declaration, wiki/example/generated reference, package inventory, Phase 8 closeout
@@ -140,4 +141,5 @@ Chromium을 실행하는 두 browser 검증은 macOS sandbox의 loopback/IPC 제
 4. Wrapped action hierarchy와 one-coordinate materialization
 5. Full/split public output이 승인된 primitive target과 exact parity인 것
 
-승인 전에는 Step 6와 Phase 9 production source를 시작하지 않는다.
+P8-B 승인으로 Step 6 closeout을 열었다. P8-Exit 승인 전에는 Phase 9 production source를
+시작하지 않는다.

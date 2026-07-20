@@ -7,6 +7,6 @@
 - [x] optional split/color/area/guides behavior
 - [x] primitive/public semantic, graphic, Canvas-call과 pixel parity
 - [x] P8-B review package와 exact checkpoint commit/push
-- [ ] P8-B 사용자 승인
+- [x] P8-B 사용자 승인
 
 P8-A 승인 전에는 시작하지 않는다.
