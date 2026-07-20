@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "phase": "roadmap4/phase9",
+  "gate": "P9-A",
+  "status": "approved",
+  "actions": [
+    {
+      "name": "encodeHorizon",
+      "status": "approved",
+      "required": [],
+      "optional": [
+        "target", "source", "x", "y", "groupBy", "bands", "baseline",
+        "extent", "resolve", "missing", "overflow", "palette"
+      ],
+      "inference": "x and y are required only when compatible stored target encodings cannot determine them uniquely",
+      "stateOwner": "immutable horizon transform provenance and generated ordinary area encodings"
+    },
+    {
+      "name": "editHorizon",
+      "status": "approved",
+      "required": [],
+      "optional": [
+        "target", "source", "x", "y", "groupBy", "bands", "baseline",
+        "extent", "resolve", "missing", "overflow", "palette"
+      ],
+      "replacement": "partial edit creates a new deterministic derived-data revision from the original source",
+      "stateOwner": "existing horizon transform provenance and its connected area consumer"
+    }
+  ]
+}

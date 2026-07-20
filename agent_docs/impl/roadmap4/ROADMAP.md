@@ -127,8 +127,8 @@ existing createBoxPlot({ ... })
 | 5 | completed | P-001 window, P-002 2D bin과 binned heatmap; P5-Exit 승인 완료 |
 | 6 | completed | NCP-002 FillPaint linear-gradient variant와 categorical gradient-distribution facade; P6-Exit 승인 완료 |
 | 7 | completed | P-003 ordered path; P7-A/P7-B/P7-Exit 승인 완료 |
-| 8 | in-progress | NCP-001 categorical density placement; P8-Exit ready-for-review |
-| 9 | planned | NCP-005 Horizon encoding |
+| 8 | completed | NCP-001 categorical density placement; P8-Exit 승인 완료 |
+| 9 | in-progress | NCP-005 Horizon encoding; P9-A 계약·primitive 준비 중 |
 | 10 | planned | P-006 overlay/inset composition |
 | 11 | planned | NCP-004 parallel coordinate와 facade |
 | 12 | planned | P-005 label layout |
@@ -516,8 +516,9 @@ NCP-001을 기존 `encodeDensity`의 discriminated `placement: { type: "category
 
 ### 목표와 포함 ID
 
-NCP-005 `encodeHorizon`이 raw temporal signal에서 sign×band×segment derived data와 area series를
-원자적으로 소유하도록 구현한다.
+NCP-005 `encodeHorizon({ x, y })`이 ordered x와 quantitative y signal에서 sign×band×segment derived data와
+area series를 원자적으로 소유하도록 구현한다. Explicit x/y가 없으면 compatible target encoding에서 안전하게
+추론하며, transform-internal `time`/`field` alias는 public API로 노출하지 않는다.
 
 ### 의존 관계와 예상 수정 영역
 
