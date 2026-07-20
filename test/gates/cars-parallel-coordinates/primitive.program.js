@@ -226,16 +226,6 @@ export function createCarsParallelPrimitiveResult(cars) {
       property: "textBaseline",
       value: "middle"
     })
-    .createGraphics({ id: "originLegendTitle", parent: "canvas", type: "text" })
-    .editGraphics({ target: "originLegendTitle", property: "x", value: 742 })
-    .editGraphics({ target: "originLegendTitle", property: "y", value: 130 })
-    .editGraphics({ target: "originLegendTitle", property: "text", value: "Origin" })
-    .editGraphics({ target: "originLegendTitle", property: "fill", value: "#1e293b" })
-    .editGraphics({ target: "originLegendTitle", property: "fontSize", value: 13 })
-    .editGraphics({ target: "originLegendTitle", property: "fontFamily", value: "sans-serif" })
-    .editGraphics({ target: "originLegendTitle", property: "fontWeight", value: 600 })
-    .editGraphics({ target: "originLegendTitle", property: "textAlign", value: "left" })
-    .editGraphics({ target: "originLegendTitle", property: "textBaseline", value: "middle" })
     .createGraphics({
       id: "originLegendSymbols",
       parent: "canvas",
@@ -263,6 +253,16 @@ export function createCarsParallelPrimitiveResult(cars) {
     .editGraphics({ target: "originLegendLabels", property: "fontWeight", value: "normal" })
     .editGraphics({ target: "originLegendLabels", property: "textAlign", value: "left" })
     .editGraphics({ target: "originLegendLabels", property: "textBaseline", value: "middle" })
+    .createGraphics({ id: "originLegendTitle", parent: "canvas", type: "text" })
+    .editGraphics({ target: "originLegendTitle", property: "x", value: 742 })
+    .editGraphics({ target: "originLegendTitle", property: "y", value: 130 })
+    .editGraphics({ target: "originLegendTitle", property: "text", value: "Origin" })
+    .editGraphics({ target: "originLegendTitle", property: "fill", value: "#1e293b" })
+    .editGraphics({ target: "originLegendTitle", property: "fontSize", value: 13 })
+    .editGraphics({ target: "originLegendTitle", property: "fontFamily", value: "sans-serif" })
+    .editGraphics({ target: "originLegendTitle", property: "fontWeight", value: 600 })
+    .editGraphics({ target: "originLegendTitle", property: "textAlign", value: "left" })
+    .editGraphics({ target: "originLegendTitle", property: "textBaseline", value: "middle" })
     .createGraphics({ id: "chartTitle", parent: "canvas", type: "text" })
     .editGraphics({ target: "chartTitle", property: "x", value: values.title.x })
     .editGraphics({ target: "chartTitle", property: "y", value: 28 })

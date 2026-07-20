@@ -9,7 +9,9 @@ const TOP_OPTIONS = Object.freeze([
   "coordinate", "x", "y", "theta", "radius"
 ]);
 const COORDINATE_OPTIONS = Object.freeze(["id", "type"]);
-const COORDINATE_API_TYPES = new Set(["auto", "cartesian", "polar"]);
+const COORDINATE_API_TYPES = new Set([
+  "auto", "cartesian", "polar", "parallel"
+]);
 
 function validateAxisOption(value, channel) {
   if (value !== undefined && value !== false && !isPlainObject(value)) {
@@ -47,6 +49,9 @@ function inspectChannels(layers) {
     layer =>
       layer.encoding?.theta !== undefined || layer.encoding?.radius !== undefined
   );
+  const parallelLayers = layers.filter(
+    layer => layer.encoding?.parallel !== undefined
+  );
   const hasMixedLayer = layers.some(layer => {
     const hasCartesian =
       layer.encoding?.x !== undefined || layer.encoding?.y !== undefined;
@@ -61,7 +66,7 @@ function inspectChannels(layers) {
     );
   }
 
-  return { cartesianLayers, polarLayers };
+  return { cartesianLayers, polarLayers, parallelLayers };
 }
 
 function resolveCoordinate(program, descriptor, cartesianLayers) {
@@ -185,7 +190,7 @@ const createAxes = action(
   },
   function (args = {}) {
     const coordinateDescriptor = validateArgs(args);
-    const { cartesianLayers, polarLayers } = inspectChannels(
+    const { cartesianLayers, polarLayers, parallelLayers } = inspectChannels(
       this.semanticSpec.layers
     );
     const requestedCoordinateType = coordinateDescriptor.id === undefined
@@ -194,6 +199,35 @@ const createAxes = action(
     const explicitlyPolar = coordinateDescriptor.type === "polar" ||
       requestedCoordinateType === "polar" ||
       args.theta !== undefined || args.radius !== undefined;
+    const explicitlyParallel = coordinateDescriptor.type === "parallel" ||
+      requestedCoordinateType === "parallel";
+    if (parallelLayers.length > 0 && (
+      (cartesianLayers.length === 0 && polarLayers.length === 0) ||
+      explicitlyParallel
+    )) {
+      if (
+        args.x !== undefined || args.y !== undefined ||
+        args.theta !== undefined || args.radius !== undefined
+      ) {
+        throw new Error(
+          "createAxes channel options are not supported for Parallel axes."
+        );
+      }
+      const candidates = coordinateDescriptor.id === undefined
+        ? parallelLayers
+        : parallelLayers.filter(layer =>
+            layer.coordinate === coordinateDescriptor.id
+          );
+      if (candidates.length !== 1) {
+        throw new Error(
+          "createAxes requires coordinate.id when one Parallel layer cannot be inferred."
+        );
+      }
+      return this.createParallelAxes({
+        target: candidates[0].id,
+        coordinate: candidates[0].coordinate
+      });
+    }
     if (polarLayers.length > 0 &&
         (cartesianLayers.length === 0 || explicitlyPolar)) {
       if (coordinateDescriptor.type === "cartesian") {

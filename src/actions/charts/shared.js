@@ -62,15 +62,18 @@ export function normalizeEncoding(value, label) {
   return normalizeFieldEncoding(value, label);
 }
 
-export function normalizeStrokeDashEncoding(value) {
+export function normalizeStrokeDashEncoding(
+  value,
+  label = "createLinePlot strokeDash"
+) {
   if (value === undefined) return undefined;
   if (!isPlainObject(value)) {
     throw new TypeError(
-      "createLinePlot strokeDash must be an encodeStrokeDash option object."
+      `${label} must be an encodeStrokeDash option object.`
     );
   }
   if (Object.hasOwn(value, "target")) {
-    throw new Error("createLinePlot strokeDash target is owned by the chart facade.");
+    throw new Error(`${label} target is owned by the chart facade.`);
   }
   return { ...value };
 }

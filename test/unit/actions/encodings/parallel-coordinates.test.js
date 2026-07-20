@@ -95,6 +95,24 @@ test("supports missing policies and stable source-row identity", () => {
   );
 });
 
+test("treats the Parallel key as a dataset field rather than a resource id", () => {
+  const values = [
+    { "row key": "first", amount: 0, score: 5 },
+    { "row key": "second", amount: 10, score: 8 }
+  ];
+  const program = base(values).encodeParallelCoordinates({
+    target: "parallelLines",
+    dimensions: ["amount", "score"],
+    key: "row key"
+  });
+
+  assert.equal(
+    program.semanticSpec.layers[0].encoding.parallel.key,
+    "row key"
+  );
+  assert.equal(program.graphicSpec.objects.parallelLines.items.length, 2);
+});
+
 test("rejects invalid Parallel assignments without changing the prior program", () => {
   const before = base();
   const serialized = JSON.stringify(before);

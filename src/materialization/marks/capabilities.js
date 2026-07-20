@@ -1,5 +1,6 @@
 import { findDataset } from "../../selectors/datasets.js";
 import { findLayer } from "../../selectors/layers.js";
+import { findCoordinate } from "../../selectors/coordinates.js";
 import { isAggregate } from "../../grammar/aggregate.js";
 import {
   BAR_GRAINS,
@@ -34,9 +35,7 @@ export function canMaterializePoint(_program, layer) {
 export function canMaterializeLine(program, layer) {
   const parallel = layer.encoding?.parallel;
   if (parallel !== undefined) {
-    const coordinate = program.semanticSpec.coordinates.find(
-      item => item.id === layer.coordinate
-    );
+    const coordinate = findCoordinate(program, layer.coordinate);
     return layer.mark?.type === "line" &&
       coordinate?.type === "parallel" &&
       parallel.dimensions?.length >= 2 &&

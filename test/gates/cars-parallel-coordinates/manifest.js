@@ -2,6 +2,7 @@ import { loadCars } from "../../support/data.js";
 import { defineVisualVariant } from "../../support/visual-variants.js";
 
 import { createCarsParallelPrimitives } from "./primitive.program.js";
+import { createCarsParallelCoordinates } from "./user-facing.program.js";
 import {
   PARALLEL_COLORS,
   PARALLEL_LAYOUT
@@ -34,11 +35,23 @@ export const parallelTargetCallChain = `chart()
       fieldType: "nominal",
       scale: { palette: "tableau10" }
     },
-    line: { strokeWidth: 1.25, opacity: 0.48 }
+    line: { strokeWidth: 1.25, opacity: 0.48 },
+    guides: {
+      legend: {
+        offset: 42,
+        symbol: { length: 24, lineWidth: 3 },
+        titleStyle: { color: "#1e293b" }
+      }
+    }
   })
   .createTitle({
     text: "Cars of 1970",
-    subtitle: "Each path connects one car across four measurements"
+    subtitle: "Each path connects one car across four measurements",
+    align: "center",
+    offset: 1,
+    gap: 9.5,
+    titleStyle: { fontWeight: 700 },
+    subtitleStyle: { fontSize: 13 }
   });`;
 
 export const visualVariants = Object.freeze([
@@ -49,6 +62,7 @@ export const visualVariants = Object.freeze([
     callChain: parallelTargetCallChain,
     artifact: { scope: "review" },
     primitive: () => createCarsParallelPrimitives(cars),
+    userFacing: () => createCarsParallelCoordinates(cars),
     width: PARALLEL_LAYOUT.width,
     height: PARALLEL_LAYOUT.height,
     colors: Object.values(PARALLEL_COLORS),

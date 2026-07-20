@@ -3,6 +3,7 @@ import { validateUserId } from "../../core/identifiers.js";
 import { validateOptionObject } from "../../core/validation.js";
 import {
   normalizeParallelDimensions,
+  validateParallelKeyField,
   validateParallelMissingPolicy,
   validateParallelRows
 } from "../../grammar/parallelCoordinates.js";
@@ -83,7 +84,7 @@ export const encodeParallelCoordinates = action(
     );
     const key = args.key === undefined
       ? undefined
-      : validateUserId(args.key, "Parallel key field");
+      : validateParallelKeyField(args.key);
     const missing = validateParallelMissingPolicy(args.missing ?? "break");
     validateParallelRows(dataset.values, dimensions, { key, missing });
 

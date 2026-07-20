@@ -96,7 +96,8 @@ const createGuides = action(
   function (args = {}) {
     validateOptions(args);
     const applicability = resolveGuideApplicability(this);
-    const hasAxes = applicability.axes.cartesian || applicability.axes.polar;
+    const hasAxes = applicability.axes.cartesian || applicability.axes.polar ||
+      applicability.axes.parallel;
     const inferredAxes = applicability.axes.cartesian
       ? inferAxesOptions(this, applicability)
       : {};

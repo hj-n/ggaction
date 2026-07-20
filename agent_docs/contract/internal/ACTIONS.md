@@ -48,6 +48,7 @@ domain action을 통해서만 실행한다.
 | `rematerializeLineMark` | line mark and encoding actions |
 | `rematerializeMarkHighlights` | owning mark rematerializer reapplication of stored highlight assignments |
 | `rematerializeOpacityLegend` | field-opacity legend, scale, and Canvas actions |
+| `rematerializeParallelAxes` | Parallel dimension scales, axes, and Canvas actions |
 | `rematerializePointMark` | point mark and encoding actions |
 | `rematerializeRectMark` | rect mark and position/color encoding actions |
 | `rematerializeRuleMark` | rule mark, endpoint, appearance, scale, and Canvas actions |

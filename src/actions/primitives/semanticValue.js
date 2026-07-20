@@ -26,6 +26,7 @@ import {
 } from "../../grammar/scales/index.js";
 import {
   validateParallelDimensions,
+  validateParallelKeyField,
   validateParallelMissingPolicy
 } from "../../grammar/parallelCoordinates.js";
 
@@ -108,7 +109,7 @@ export function validateSemanticValue(program, parsed, value) {
       validateParallelDimensions(value, { normalized: true });
     }
     if (property === "encoding.parallel.key") {
-      validateUserId(value, "Parallel key field");
+      validateParallelKeyField(value);
     }
     if (property === "encoding.parallel.missing") {
       validateParallelMissingPolicy(value);
@@ -212,7 +213,12 @@ export function validateSemanticValue(program, parsed, value) {
     parsed.id.startsWith("grid.") || parsed.id.startsWith("axis.")
   )) {
     const property = parsed.path.at(-1);
-    if (property === "title") nonEmptyString(value, "Axis title");
+    if (parsed.id === "axis.parallel" && property === "scales") {
+      if (!Array.isArray(value) || value.length < 2) {
+        throw new TypeError("Parallel axis scales must contain at least two ids.");
+      }
+      value.forEach(id => validateUserId(id, "Parallel axis scale id"));
+    } else if (property === "title") nonEmptyString(value, "Axis title");
     else {
       const guideKind = parsed.id.startsWith("grid.") ? "Grid" : "Axis";
       validateUserId(value, `${guideKind} ${property} id`);

@@ -2325,6 +2325,7 @@
       "rematerializeLineMark",
       "rematerializeMarkHighlights",
       "rematerializeOpacityLegend",
+      "rematerializeParallelAxes",
       "rematerializePointMark",
       "rematerializeRadialGrid",
       "rematerializeRectMark",

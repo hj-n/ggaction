@@ -20,6 +20,10 @@ function nonEmptyString(value, label) {
   return value;
 }
 
+export function validateParallelKeyField(value) {
+  return nonEmptyString(value, "Parallel key field");
+}
+
 function inferFieldType(rows, field) {
   const values = rows
     .map(row => row[field])

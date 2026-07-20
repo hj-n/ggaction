@@ -12,6 +12,7 @@ import {
   removeXAxis,
   removeYAxis
 } from "./remove.js";
+import { registerParallelAxisActions } from "./parallel.js";
 
 export function registerGuideAxisActions(ProgramClass) {
   registerAxisLineActions(ProgramClass);
@@ -22,6 +23,7 @@ export function registerGuideAxisActions(ProgramClass) {
   registerAxisActions(ProgramClass);
   registerAxisCollectionActions(ProgramClass);
   registerCompleteAxisEditActions(ProgramClass);
+  registerParallelAxisActions(ProgramClass);
   ProgramClass.prototype.removeXAxis = removeXAxis;
   ProgramClass.prototype.removeYAxis = removeYAxis;
   ProgramClass.prototype.removeThetaAxis = removeThetaAxis;

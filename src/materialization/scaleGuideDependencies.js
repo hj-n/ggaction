@@ -21,6 +21,8 @@ function usesPositionalScale(program, id) {
   return program.semanticSpec.layers.some(layer =>
     POSITION_ENCODING_CHANNELS.some(
       channel => layer.encoding?.[channel]?.scale === id
+    ) || (layer.encoding?.parallel?.dimensions ?? []).some(
+      dimension => dimension.scale === id
     )
   );
 }
@@ -62,6 +64,12 @@ export function planScaleGuideRematerialization(program, id) {
   const guides = [];
   const objects = program.graphicSpec?.objects ?? {};
   const guideConfigs = program.guideConfigs ?? {};
+  if (guideConfigs.axis?.parallel?.axes?.scales?.includes(id)) {
+    guides.push({
+      op: "rematerializeParallelAxes",
+      args: { target: guideConfigs.axis.parallel.axes.target }
+    });
+  }
   for (const axis of CARTESIAN_AXES) {
     if (
       objects[axis.lineObject] &&

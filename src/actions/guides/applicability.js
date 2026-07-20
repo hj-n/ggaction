@@ -72,12 +72,16 @@ export function resolveGuideApplicability(program) {
     CARTESIAN_POSITION_CHANNELS
   );
   const polar = positionalApplicability(program, POLAR_POSITION_CHANNELS);
+  const parallel = program.semanticSpec.layers.some(layer =>
+    layer.encoding?.parallel?.dimensions?.length >= 2
+  );
   return Object.freeze({
     axes: Object.freeze({
       cartesian: CARTESIAN_POSITION_CHANNELS.some(
         channel => cartesian[channel].axis
       ),
       polar: POLAR_POSITION_CHANNELS.some(channel => polar[channel].axis),
+      parallel,
       directions: Object.freeze({
         x: cartesian.x.axis,
         y: cartesian.y.axis,

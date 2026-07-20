@@ -3,6 +3,7 @@ import { createHeatmap } from "./heatmap.js";
 import { createHistogram } from "./histogram.js";
 import { createLinePlot } from "./line.js";
 import { createScatterPlot } from "./scatter.js";
+import { createParallelCoordinates } from "./parallel.js";
 
 export function registerChartActions(ProgramClass) {
   ProgramClass.prototype.createBarPlot = createBarPlot;
@@ -10,4 +11,5 @@ export function registerChartActions(ProgramClass) {
   ProgramClass.prototype.createHistogram = createHistogram;
   ProgramClass.prototype.createScatterPlot = createScatterPlot;
   ProgramClass.prototype.createLinePlot = createLinePlot;
+  ProgramClass.prototype.createParallelCoordinates = createParallelCoordinates;
 }
