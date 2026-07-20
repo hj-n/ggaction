@@ -19,12 +19,17 @@ Apply these instructions to `docs/`, `README.md`, public documentation generator
 - Every public code sample must be directly runnable in its stated environment. Include the required imports, data-loading assumptions, and invocation context; when a deliberately incomplete excerpt is clearer, label it as a fragment and state its prerequisites explicitly.
 - When a tutorial demonstrates an edit action, continue from its canonical runnable program and choose values that produce the observable change being taught. Do not present a no-op option listing as an edit example.
 - Use one canonical public program for each documented chart and reuse it across the example, tutorial, acceptance test, and generated image whenever those artifacts demonstrate the same workflow. Do not maintain independently copied action chains that can drift.
-- Keep one canonical action reference with exact signatures for discovery by users and language models. Every action exported from a public entry point and declared in TypeScript must be classified as chart authoring, advanced chart authoring, or extension authoring and documented in the matching public API section.
+- Keep one canonical action-reference system with exact signatures for discovery by users and language models. The overview
+  is a routing and exact-lookup page; generated family pages own the readable action contracts. Every action exported from a
+  public entry point and declared in TypeScript must be classified as chart authoring, advanced chart authoring, or extension
+  authoring and documented in the matching public API section.
 - Whenever a public action is added, removed, renamed, reclassified, or changes signature, update its JavaScript export,
-  TypeScript declaration, `docs/reference/actions.md`, relevant API page, examples, and generated LLM documentation in the
-  same development phase.
+  TypeScript declaration, canonical action-reference source, relevant API page, examples, and generated LLM documentation in
+  the same development phase. Regenerate the action metadata and family pages instead of hand-editing their outputs.
 - Whenever the public scale vocabulary or mapping contract changes, update the implementation-facing type declaration, canonical compatibility/precedence/error tables, current contract inventory, and generated LLM documentation together. These surfaces must describe the same accepted values, consumer limits, fallback behavior, and transition errors.
-- Keep navigation generated from a consistent information architecture. Avoid arbitrary per-page menu exceptions, duplicated catalog entries, or navigation labels that expose repository structure instead of user tasks.
+- Keep navigation generated from a consistent information architecture. The page manifest owns hierarchy, order, breadcrumbs,
+  previous/next routing, and LLM-document order; do not maintain separate hand-authored trees. Avoid arbitrary per-page menu
+  exceptions, duplicated catalog entries, or navigation labels that expose repository structure instead of user tasks.
 - Organize documentation around user tasks and recognizable public API families rather than implementation-module boundaries. When a reference page becomes difficult to scan, split it by coherent feature family while retaining an overview page that explains the whole family and routes readers onward.
 - Present every documented action with a clearly distinguishable action name, complete signature, and API classification. On long action references, provide search or filtering instead of relying on an oversized table of contents.
 - Curate galleries as an intentional set of representative, complete charts rather than an inventory of every implemented example. Keep experimental, visually ambiguous, or incomplete-looking results away from the primary discovery path.
@@ -33,7 +38,13 @@ Apply these instructions to `docs/`, `README.md`, public documentation generator
 - Keep pages where visuals would add no explanatory value, such as exhaustive references, support matrices, or troubleshooting indexes, on an explicit and reviewed visual-coverage exception list.
 - Treat the built site as the documentation product. Documentation validation must render Jekyll and inspect the resulting HTML, links, assets, and scripts; source-Markdown checks alone are not sufficient.
 - Verify documentation interaction changes on desktop and mobile, including keyboard operation, focus behavior, Escape handling, visible labels, and appropriate ARIA state. Mouse-only success is not sufficient.
-- Build search indexes from rendered user-visible content. Do not index raw front matter, Liquid templates, source-only directives, or duplicate copies of the same page, and verify that search results route to the canonical page.
+- Build compact section-level search indexes from canonical user-visible content and generated page metadata. Do not ship or
+  parse the full documentation corpus at runtime, index raw front matter, Liquid templates, source-only directives, or duplicate
+  copies of the same page. Verify that search results route to the canonical page and section.
+- Generate page descriptions and social metadata from canonical documentation pages, then use that metadata for both HTML
+  discovery tags and search summaries. Do not maintain independent descriptions for those consumers.
+- Run the documentation environment preflight before the full local verification pipeline. Keep its Node, Ruby, dependency,
+  and browser requirements aligned with CI so an unsupported workstation fails early with an actionable message.
 - Treat every generated documentation artifact as having one canonical source and one reproducible generator. Regenerate public chart images with `npm run docs:images` and LLM documentation with `npm run docs:llms`; do not hand-edit generated outputs. Validate chart-image freshness through the platform-independent manifest rather than cross-platform PNG byte equality.
 - Keep `docs/llms.txt` as a concise routing index and regenerate `docs/llms-full.txt` from the canonical page order with `npm run docs:llms`.
 - A documentation change is not complete until Markdown contracts, the Jekyll build, built-link and asset checks, search-index checks, and desktop/mobile browser smoke tests pass.
