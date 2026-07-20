@@ -5,7 +5,7 @@
 - Gate: `P11-A`
 - 상태: `ready-for-review`
 - 승인: 대기 중
-- Primitive source checkpoint: commit/push 뒤 기록
+- Primitive source checkpoint: `55f5e0b` (`prepare parallel coordinates primitive gate`)
 - Remote: `origin/main`
 - 승인 전 차단: production Parallel coordinate grammar, action, materialization과 public declarations
 
