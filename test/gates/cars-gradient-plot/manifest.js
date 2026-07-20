@@ -2,6 +2,8 @@ import { loadCars } from "../../support/data.js";
 import { defineVisualVariant } from "../../support/visual-variants.js";
 
 import { GRADIENT_PLOT_LAYOUT } from "./fixture.js";
+import { createCarsGradientPlotActions } from "./action.program.js";
+import { createCarsGradientPlotExpanded } from "./expanded.program.js";
 import { createCarsGradientPlotPrimitives } from "./primitive.program.js";
 
 const cars = loadCars();
@@ -57,6 +59,36 @@ export const visualVariants = Object.freeze([
         x: 105,
         y: 85,
         width: 320,
+        height: 280,
+        minimumInkPixels: 13_000
+      },
+      {
+        name: "density legend",
+        x: 490,
+        y: 110,
+        width: 110,
+        height: 220,
+        minimumInkPixels: 1_000
+      }
+    ]
+  }),
+  defineVisualVariant({
+    chart: "cars-gradient-plot",
+    variant: "action-parity",
+    title: "Cars GradientPlot Expanded Action Parity",
+    callChain: gradientPlotTargetCallChain,
+    artifact: { scope: "review" },
+    primitive: () => createCarsGradientPlotExpanded(cars),
+    userFacing: () => createCarsGradientPlotActions(cars),
+    width: GRADIENT_PLOT_LAYOUT.width,
+    height: GRADIENT_PLOT_LAYOUT.height,
+    colors: ["#334155", "#0f172a"],
+    regions: [
+      {
+        name: "density strips",
+        x: 80,
+        y: 85,
+        width: 370,
         height: 280,
         minimumInkPixels: 13_000
       },

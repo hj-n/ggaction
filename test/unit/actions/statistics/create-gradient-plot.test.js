@@ -100,3 +100,19 @@ test("applies categorical color after profile materialization", () => {
   assert.notEqual(colors[0], colors[1]);
   assert.equal(program.semanticSpec.layers[0].encoding.color.scale, "color");
 });
+
+test("reverses the concrete gradient direction with the value scale", () => {
+  const normal = base().createGradientPlot({
+    x: { field: "group", fieldType: "nominal" },
+    y: { field: "value" },
+    density: { bandwidth: 0.5, steps: 8 },
+    guides: false
+  });
+  const reversed = normal.editScale({ id: "y", reverse: true });
+  const normalFill = normal.graphicSpec.objects.gradientPlot.items[0].properties.fill;
+  const reversedFill = reversed.graphicSpec.objects.gradientPlot.items[0].properties.fill;
+
+  assert.deepEqual(reversedFill.from, normalFill.to);
+  assert.deepEqual(reversedFill.to, normalFill.from);
+  assert.deepEqual(reversedFill.stops, normalFill.stops);
+});

@@ -201,6 +201,27 @@ async function testNodeConsumer(directory) {
         "encodeY", "encodeY2", "encodeColor"
       ]
     );
+    const gradientPlotFacade = chart()
+      .createCanvas({ width: 180, height: 140, margin: 20 })
+      .createData({ values: [
+        { group: "A", value: 1 },
+        { group: "A", value: 2 },
+        { group: "B", value: 3 },
+        { group: "B", value: 4 }
+      ] })
+      .createGradientPlot({
+        x: { field: "group", fieldType: "nominal" },
+        y: { field: "value" },
+        density: { bandwidth: 0.5, steps: 8 },
+        guides: false
+      })
+      .editGradientPlot({ gradient: { opacity: [0.1, 0.9] } });
+    assert.equal(gradientPlotFacade.graphicSpec.objects.gradientPlot.items.length, 2);
+    assert.equal(
+      gradientPlotFacade.graphicSpec.objects.gradientPlot.items[0]
+        .properties.fill.type,
+      "linear-gradient"
+    );
     const polar = chart()
       .createCanvas({ width: 160, height: 160, margin: 20 })
       .createData({ values: [{ angle: 0, distance: 1 }, { angle: 1, distance: 2 }] })
@@ -429,6 +450,7 @@ async function testTypeScriptConsumer(directory) {
       type CreateHeatmapOptions,
       type CreateHistogramOptions,
       type CreateLinePlotOptions,
+      type GradientPlotOptions,
       type CreateDerivedDataOptions,
       type CreateScatterPlotOptions,
       type DatasetTransform,
@@ -509,6 +531,20 @@ async function testTypeScriptConsumer(directory) {
       .createCanvas()
       .createData({ values: [{ x: 0, y: 0 }, { x: 4, y: 3 }] })
       .createHeatmap(binnedHeatmapOptions);
+    const gradientOptions: GradientPlotOptions = {
+      x: { field: "group", fieldType: "nominal" },
+      y: { field: "value" },
+      density: { bandwidth: 0.5, steps: 8 },
+      guides: false
+    };
+    const gradientFacade: ChartProgram = chart()
+      .createCanvas()
+      .createData({ values: [
+        { group: "A", value: 1 },
+        { group: "A", value: 2 }
+      ] })
+      .createGradientPlot(gradientOptions)
+      .editGradientPlot({ width: { band: 0.5 } });
     const composed: ChartProgram = hconcat({
       programs: [program, program]
     })
@@ -664,6 +700,7 @@ async function testTypeScriptConsumer(directory) {
     void barFacade;
     void histogramFacade;
     void heatmapFacade;
+    void gradientFacade;
     void png;
     void extensionProgram;
     void composed;

@@ -56,25 +56,29 @@ export function createGradientPlotPaint(profile, {
   const values = profile.values;
   const intensities = profile.intensities;
   const mapped = mapScaleConsumerValues(values, valueScale, "position");
-  const start = orientation === "vertical"
-    ? { x: 0.5, y: 1 }
-    : { x: 0, y: 0.5 };
-  const end = orientation === "vertical"
-    ? { x: 0.5, y: 0 }
-    : { x: 1, y: 0.5 };
   const startPosition = mapped[0];
   const endPosition = mapped.at(-1);
   if (!Number.isFinite(startPosition) || !Number.isFinite(endPosition) || startPosition === endPosition) {
     throw new Error("Gradient plot requires distinct mapped profile endpoints.");
   }
+  const increasing = startPosition < endPosition;
+  const start = orientation === "vertical"
+    ? { x: 0.5, y: increasing ? 0 : 1 }
+    : { x: increasing ? 0 : 1, y: 0.5 };
+  const end = orientation === "vertical"
+    ? { x: 0.5, y: increasing ? 1 : 0 }
+    : { x: increasing ? 1 : 0, y: 0.5 };
   const colors = baseColor === undefined
     ? resolveContinuousPalette(palette, 11)
     : categoricalRamp(baseColor);
   const maximum = intensityDomain[1];
   const stops = values.map((_, index) => {
     const fraction = intensities[index] / maximum;
+    const offset = Number(
+      ((mapped[index] - startPosition) / (endPosition - startPosition)).toFixed(12)
+    );
     return {
-      offset: (mapped[index] - startPosition) / (endPosition - startPosition),
+      offset: Object.is(offset, -0) ? 0 : offset,
       color: alphaColor(
         paletteColor(colors, fraction),
         opacity[0] + (opacity[1] - opacity[0]) * fraction

@@ -71,7 +71,7 @@ test("keeps caller data and previous programs immutable", () => {
   );
 });
 
-test("keeps unapproved GradientPlot facades out of runtime state", () => {
+test("keeps the primitive independent while the approved facade stays discoverable", () => {
   const program = createCarsGradientPlotPrimitives(loadCars());
   const declarations = readFileSync(
     new URL("../../../types/program.d.ts", import.meta.url),
@@ -82,16 +82,17 @@ test("keeps unapproved GradientPlot facades out of runtime state", () => {
     "utf8"
   ));
 
-  assert.equal(program.createGradientPlot, undefined);
-  assert.equal(program.editGradientPlot, undefined);
-  assert.doesNotMatch(declarations, /(?:create|edit)GradientPlot/);
+  assert.equal(typeof program.createGradientPlot, "function");
+  assert.equal(typeof program.editGradientPlot, "function");
+  assert.match(declarations, /createGradientPlot/);
+  assert.match(declarations, /editGradientPlot/);
   assert.deepEqual(
-    inventory.plannedActions
+    inventory.actions
       .filter(action => ["createGradientPlot", "editGradientPlot"].includes(action.name))
-      .map(action => [action.name, action.status, action.readiness]),
+      .map(action => [action.name, action.status]),
     [
-      ["createGradientPlot", "planned", "pending-parameter-review"],
-      ["editGradientPlot", "planned", "pending-parameter-review"]
+      ["createGradientPlot", "implemented"],
+      ["editGradientPlot", "implemented"]
     ]
   );
   assert.equal(program.trace.children.some(node =>
