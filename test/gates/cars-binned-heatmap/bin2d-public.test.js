@@ -48,7 +48,13 @@ test("public createBin2DData exactly matches the independent Cars oracle", () =>
     eligibleCount: expected.eligibleCount,
     occupiedCount: expected.occupiedCount
   });
-  assert.equal(actual.values.reduce((sum, row) => sum + row.count, 0), 398);
+  assert.equal(
+    actual.values.reduce(
+      (sum, row) => sum + row[BINNED_HEATMAP_FIELDS.count],
+      0
+    ),
+    398
+  );
   assert.deepEqual(
     program.trace.children.at(-1).children.map(node => node.op),
     ["createDerivedData", "materializeBin2DData"]

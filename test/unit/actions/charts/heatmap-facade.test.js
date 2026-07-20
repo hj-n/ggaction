@@ -157,3 +157,172 @@ test("uses current data and requires an explicit id after the stable role is occ
     /requires an explicit createheatmap id/
   );
 });
+
+test("creates the shortest binned heatmap through one generated 2D-bin dataset", () => {
+  const source = chart()
+    .createCanvas({ width: 400, height: 300, margin: 60 })
+    .createData({ values: [
+      { x: 0, y: 0 },
+      { x: 1, y: 1 }
+    ] });
+  const program = source.createHeatmap({
+    x: "x",
+    y: "y",
+    bin: {},
+    guides: false
+  });
+  const dataset = program.semanticSpec.datasets.find(
+    item => item.id === "heatmapBin2DData"
+  );
+  const layer = program.semanticSpec.layers[0];
+
+  assert.equal(dataset.values.length, 100);
+  assert.equal(
+    dataset.values.reduce(
+      (sum, row) => sum + row.__heatmapBin2DData_count,
+      0
+    ),
+    2
+  );
+  assert.equal(dataset.transform[0].includeEmpty, true);
+  assert.equal(layer.data, "heatmapBin2DData");
+  assert.deepEqual(Object.keys(layer.encoding), ["x", "x2", "y", "y2", "color"]);
+  assert.equal(program.graphicSpec.objects.heatmap.items.length, 100);
+  assert.deepEqual(program.trace.children.at(-1).children.map(child => child.op), [
+    "createBin2DData",
+    "createRectMark",
+    "encodeX",
+    "encodeX2",
+    "encodeY",
+    "encodeY2",
+    "encodeColor"
+  ]);
+  assert.equal(source.semanticSpec.datasets.length, 1);
+  assert.equal(source.semanticSpec.layers.length, 0);
+});
+
+test("forwards binned scale and appearance options without exposing generated fields", () => {
+  const program = chart()
+    .createCanvas({
+      width: 520,
+      height: 360,
+      margin: { top: 50, right: 140, bottom: 70, left: 70 }
+    })
+    .createData({ values: [
+      { weight: 0, economy: 0 },
+      { weight: 1, economy: 1 }
+    ] })
+    .createHeatmap({
+      x: { field: "weight", scale: { domain: "auto", reverse: true } },
+      y: "economy",
+      bin: {
+        bins: { x: 2, y: 2 },
+        extent: { x: [0, 1], y: [0, 1] }
+      },
+      color: { scale: { palette: "blues", domain: [0, 1] } },
+      rect: { opacity: 0.8, stroke: "white", strokeWidth: 1 },
+      guides: {
+        axes: {},
+        legend: { position: "right" }
+      }
+    });
+  const item = program.graphicSpec.objects.heatmap.items[0].properties;
+
+  assert.equal(program.resolvedScales.x.range[0] > program.resolvedScales.x.range[1], true);
+  assert.deepEqual(program.resolvedScales.x.domain, [0, 1]);
+  assert.equal(item.opacity, 0.8);
+  assert.equal(item.stroke, "white");
+  assert.equal(program.semanticSpec.guides.axis.x.title, "weight");
+  assert.equal(program.semanticSpec.guides.axis.y.title, "economy");
+  assert.equal(program.semanticSpec.guides.legend.color.title, "Count");
+  assert.equal(program.semanticSpec.guides.grid, undefined);
+});
+
+test("rejects mixed binned and pre-gridded ownership atomically", () => {
+  const source = chart()
+    .createCanvas({ width: 400, height: 300, margin: 60 })
+    .createData({ values: [{ x: 0, y: 0, value: 1 }] });
+  const before = source.trace.children.length;
+
+  assert.throws(
+    () => source.createHeatmap({ x: "x", y: "y", bin: null }),
+    /bin must be a plain object/
+  );
+  assert.throws(
+    () => source.createHeatmap({
+      x: { field: "x", fieldType: "ordinal" },
+      y: "y",
+      bin: {}
+    }),
+    /x requires a quantitative field/
+  );
+  assert.throws(
+    () => source.createHeatmap({
+      x: { field: "x", aggregate: "mean" },
+      y: "y",
+      bin: {}
+    }),
+    /Unknown createHeatmap x option "aggregate"/
+  );
+  assert.throws(
+    () => source.createHeatmap({
+      x: "x",
+      y: "y",
+      bin: {},
+      color: { field: "value" }
+    }),
+    /Unknown createHeatmap binned color option "field"/
+  );
+  assert.throws(
+    () => source.createHeatmap({
+      x: "x",
+      y: "y",
+      bin: {},
+      guides: { axes: true }
+    }),
+    /guides axes must be false or a plain object/
+  );
+  assert.equal(source.trace.children.length, before);
+  assert.equal(source.semanticSpec.layers.length, 0);
+});
+
+test("rematerializes a binned facade after Canvas, scale, and data revision changes", () => {
+  const program = chart()
+    .createCanvas({ width: 400, height: 300, margin: 60 })
+    .createData({ values: [
+      { x: 0, y: 0 },
+      { x: 1, y: 1 }
+    ] })
+    .createHeatmap({
+      x: "x",
+      y: "y",
+      bin: { bins: 2, extent: { x: [0, 1], y: [0, 1] } },
+      guides: false
+    });
+  const resized = program.editCanvas({ width: 500 });
+  const reversed = resized.editScale({ id: "color", reverse: true });
+  const revised = reversed.createBin2DData({
+    id: "heatmapBin2DData",
+    x: "x",
+    y: "y",
+    bins: 2,
+    extent: { x: [0, 1], y: [0, 1] },
+    includeEmpty: false
+  });
+
+  assert.notEqual(
+    resized.graphicSpec.objects.heatmap.items[0].properties.width,
+    program.graphicSpec.objects.heatmap.items[0].properties.width
+  );
+  assert.notEqual(
+    reversed.graphicSpec.objects.heatmap.items[0].properties.fill,
+    resized.graphicSpec.objects.heatmap.items[0].properties.fill
+  );
+  assert.equal(
+    revised.semanticSpec.layers[0].data,
+    "heatmapBin2DDataBin2DDataRevision1"
+  );
+  assert.equal(revised.graphicSpec.objects.heatmap.items.length, 2);
+  assert.equal(program.semanticSpec.layers[0].data, "heatmapBin2DData");
+  assert.equal(program.graphicSpec.objects.heatmap.items.length, 4);
+});

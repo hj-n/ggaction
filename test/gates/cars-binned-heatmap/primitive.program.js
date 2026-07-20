@@ -2,13 +2,35 @@ import { chart } from "../../../src/index.js";
 
 import {
   BINNED_HEATMAP_FIELDS,
+  BINNED_HEATMAP_DATA_ID,
   BINNED_HEATMAP_LAYOUT,
   createCarsBinnedHeatmapReference
 } from "./fixture.js";
 
 export function createCarsBinnedHeatmapPrimitives(cars) {
   const reference = createCarsBinnedHeatmapReference(cars);
-  const countMaximum = Math.max(...reference.rows.map(row => row.count));
+  const countMaximum = Math.max(
+    ...reference.rows.map(row => row[BINNED_HEATMAP_FIELDS.count])
+  );
+  const transform = {
+    type: "bin2d",
+    x: "Weight_in_lbs",
+    y: "Miles_per_Gallon",
+    bins: BINNED_HEATMAP_LAYOUT.bins,
+    extent: {
+      x: BINNED_HEATMAP_LAYOUT.xExtent,
+      y: BINNED_HEATMAP_LAYOUT.yExtent
+    },
+    includeEmpty: true,
+    members: false,
+    as: BINNED_HEATMAP_FIELDS,
+    resolved: {
+      extent: reference.extent,
+      edges: reference.edges,
+      eligibleCount: reference.eligibleCount,
+      occupiedCount: reference.occupiedCount
+    }
+  };
 
   return chart()
     .createCanvas({
@@ -16,10 +38,19 @@ export function createCarsBinnedHeatmapPrimitives(cars) {
       height: BINNED_HEATMAP_LAYOUT.height,
       margin: BINNED_HEATMAP_LAYOUT.margin
     })
-    .createData({ id: "carsWeightMpgCells", values: reference.rows })
+    .createData({ values: cars })
+    .createDerivedData({
+      id: BINNED_HEATMAP_DATA_ID,
+      source: "data",
+      transform: [transform]
+    })
+    .editSemantic({
+      property: `dataset[${BINNED_HEATMAP_DATA_ID}].values`,
+      value: reference.rows
+    })
     .createRectMark({
       id: "heatmap",
-      data: "carsWeightMpgCells",
+      data: BINNED_HEATMAP_DATA_ID,
       stroke: "#ffffff",
       strokeWidth: 1
     })

@@ -22,7 +22,7 @@
     },
     {
       "name": "createHeatmap",
-      "status": "proposed-extension",
+      "status": "implemented",
       "required": ["x", "y"],
       "optional": ["id", "data", "coordinate", "bin", "color", "rect", "guides"],
       "replacement": "bin omitted preserves the implemented pre-gridded contract",

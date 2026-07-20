@@ -89,7 +89,7 @@
   },
   "/recipes/heatmap/": {
     "title": "Heatmap Recipe",
-    "description": "The current facade consumes observed, pre gridded rows. It does not create missing row/column combinations or perform two dimensional binning.",
+    "description": "This mode derives rectangular x/y bounds and a count for each cell. It emits the complete grid by default, including zero count cells.",
     "image": "/assets/images/gapminder-life-expectancy-heatmap.png"
   },
   "/recipes/regression-scatterplot/": {

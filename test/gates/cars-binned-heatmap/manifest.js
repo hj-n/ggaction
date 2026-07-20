@@ -3,6 +3,7 @@ import { defineVisualVariant } from "../../support/visual-variants.js";
 
 import { BINNED_HEATMAP_LAYOUT } from "./fixture.js";
 import { createCarsBinnedHeatmapPrimitives } from "./primitive.program.js";
+import { createCarsBinnedHeatmap } from "./public.program.js";
 import { createCarsWindowRankScatterplot } from
   "../../../examples/cars-window-rank-scatterplot/program.js";
 import { createCarsWindowRankPrimitives } from
@@ -129,6 +130,7 @@ export const visualVariants = Object.freeze([
     callChain: binnedHeatmapTargetCallChain,
     artifact: { scope: "review" },
     primitive: () => createCarsBinnedHeatmapPrimitives(cars),
+    userFacing: () => createCarsBinnedHeatmap(cars),
     width: BINNED_HEATMAP_LAYOUT.width,
     height: BINNED_HEATMAP_LAYOUT.height,
     colors: ["#cfe1f2", "#0a4a90", "#334155"],

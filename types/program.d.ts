@@ -1182,13 +1182,10 @@ export type CreateHistogramOptions = BasicHistogramEncoding & {
   guides?: false | CreateGuidesOptions;
 };
 
-export interface CreateHeatmapOptions {
+export interface HeatmapBaseOptions {
   id?: string;
   data?: string;
   coordinate?: string;
-  x: BasicPositionChannel;
-  y: BasicPositionChannel;
-  color: BasicColorChannel;
   rect?: {
     opacity?: number;
     stroke?: string | false;
@@ -1196,6 +1193,41 @@ export interface CreateHeatmapOptions {
   };
   guides?: false | CreateGuidesOptions;
 }
+
+export interface PreGriddedHeatmapOptions extends HeatmapBaseOptions {
+  x: BasicPositionChannel;
+  y: BasicPositionChannel;
+  bin?: never;
+  color: BasicColorChannel;
+}
+
+export interface BinnedHeatmapPositionChannel {
+  field: string;
+  fieldType?: "quantitative";
+  scale?: ScaleOptions;
+}
+
+export interface BinnedHeatmapColorOptions {
+  scale?: ContinuousColorScaleOptions | DiscretizedColorScaleOptions;
+  palette?: Palette;
+}
+
+export interface HeatmapBinOptions {
+  bins?: number | Bin2DCounts;
+  extent?: Bin2DExtent;
+  includeEmpty?: boolean;
+}
+
+export interface BinnedHeatmapOptions extends HeatmapBaseOptions {
+  x: string | BinnedHeatmapPositionChannel;
+  y: string | BinnedHeatmapPositionChannel;
+  bin: HeatmapBinOptions;
+  color?: BinnedHeatmapColorOptions;
+}
+
+export type CreateHeatmapOptions =
+  | PreGriddedHeatmapOptions
+  | BinnedHeatmapOptions;
 
 export interface ErrorBandPositionChannel {
   field?: string;

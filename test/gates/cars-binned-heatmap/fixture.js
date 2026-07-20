@@ -10,16 +10,18 @@ export const BINNED_HEATMAP_LAYOUT = Object.freeze({
 });
 
 export const BINNED_HEATMAP_FIELDS = Object.freeze({
-  x0: "weight0",
-  x1: "weight1",
-  y0: "mpg0",
-  y1: "mpg1",
-  count: "count"
+  x0: "__heatmapBin2DData_x0",
+  x1: "__heatmapBin2DData_x1",
+  y0: "__heatmapBin2DData_y0",
+  y1: "__heatmapBin2DData_y1",
+  count: "__heatmapBin2DData_count"
 });
+
+export const BINNED_HEATMAP_DATA_ID = "heatmapBin2DData";
 
 export function createCarsBinnedHeatmapReference(cars) {
   return createBin2DReference(cars, {
-    id: "carsWeightMpg",
+    id: BINNED_HEATMAP_DATA_ID,
     x: "Weight_in_lbs",
     y: "Miles_per_Gallon",
     bins: BINNED_HEATMAP_LAYOUT.bins,

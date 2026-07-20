@@ -2051,7 +2051,7 @@ quantitative measure on x and the ordinal category on y.
 
 # Heatmap Recipe
 
-## Minimal flow
+## Pre-gridded flow
 
 ```javascript
 const program = chart()
@@ -2068,14 +2068,29 @@ const program = chart()
   });
 ```
 
+## Raw-row binned flow
+
+```javascript
+const program = chart()
+  .createCanvas({ margin: { right: 120 } })
+  .createData({ values: observations })
+  .createHeatmap({
+    x: "weight",
+    y: "economy",
+    bin: { bins: { x: 10, y: 8 } },
+    color: { scale: { palette: "blues" } }
+  });
+```
+
+This mode derives rectangular x/y bounds and a count for each cell. It emits
+the complete grid by default, including zero-count cells.
+
 ## You must decide
 
-- The two discrete cell-position fields
-- The field that owns cell color
-- Whether the rows are already at one-row-per-cell grain
-
-The current facade consumes observed, pre-gridded rows. It does not create
-missing row/column combinations or perform two-dimensional binning.
+- Whether rows are already at one-row-per-cell grain or require `bin`
+- The two position fields
+- The color field for pre-gridded rows; binned mode owns its generated count
+- Optional bin counts or explicit extents when the defaults are not appropriate
 
 ## The library infers
 
@@ -2083,6 +2098,10 @@ missing row/column combinations or perform two-dimensional binning.
 - One concrete rectangle per valid observed row
 - A categorical or continuous color scale and matching legend
 - Cartesian axes and horizontal grid
+
+In binned mode, the library instead infers quantitative position scales from
+the resolved bin extents, a continuous count scale, source-facing axis titles,
+and a `Count` legend. It disables separate chart grid lines unless requested.
 
 Use `rect: { opacity, stroke, strokeWidth }` for cell appearance. Cell fill is
 owned by the required color encoding. To show values, chain a text layer after
@@ -2097,6 +2116,7 @@ const labeled = program
 ## Continue
 
 [Basic Charts](../api/basic-charts.md#createheatmap) ·
+[Rectangular 2D bins](../api/data/bin2d.md) ·
 [Rect marks](../api/marks/rect.md) ·
 [Continuous color scales](../api/scales/continuous-color.md)
 
@@ -2652,9 +2672,10 @@ histogram, color, and bar contracts.
 createHeatmap(options: CreateHeatmapOptions): ChartProgram
 ```
 
-`x`, `y`, and `color` are required. The current action consumes pre-gridded
-rows and creates one cell for each valid observed row; it does not synthesize
-missing x/y combinations or perform two-dimensional binning.
+`createHeatmap` supports two explicit modes. Without `bin`, `x`, `y`, and
+`color` describe pre-gridded rows and the action creates one cell for each valid
+observed row. With `bin`, raw quantitative `x` and `y` fields are divided into a
+rectangular grid and cell color represents the generated count.
 
 ```javascript
 const heatmap = chart()
@@ -2672,10 +2693,47 @@ const heatmap = chart()
   });
 ```
 
-The stable default mark ID is `heatmap`. The color encoding is the sole cell
-fill owner, so `rect.fill` is rejected; `rect` accepts opacity and outline
-options. Text is not automatic. Add it afterward with
+```javascript
+const binnedHeatmap = chart()
+  .createCanvas({
+    width: 700,
+    height: 500,
+    margin: { top: 70, right: 140, bottom: 75, left: 85 }
+  })
+  .createData({ values: cars })
+  .createHeatmap({
+    x: "Weight_in_lbs",
+    y: "Miles_per_Gallon",
+    bin: {
+      bins: { x: 10, y: 8 },
+      extent: { x: [1500, 5200], y: [8, 48] }
+    },
+    color: { scale: { palette: "blues" } },
+    rect: { stroke: "white", strokeWidth: 1 }
+  });
+```
+
+The binned mode uses `10 × 10` bins by default. Its `includeEmpty` default is
+`true`, so the complete rectangular grid is visible; set it to `false` to emit
+only occupied cells. An omitted per-axis extent is inferred from finite x/y
+values. Explicit extents must contain every eligible value. Position scale
+domains default to the resolved bin extents, while an explicit position scale
+option takes precedence. `color` is optional in binned mode and may configure
+the generated quantitative count scale, but cannot supply another field.
+
+The stable default mark ID is `heatmap`. Binned mode owns a namespaced derived
+dataset and records `createBin2DData` as a wrapped child action. Default guide
+titles use the original x/y field names and `Count`, never generated field
+names. Automatic chart grid lines are disabled because the ranged cells already
+form a grid; pass an explicit `guides.grid` option to enable them.
+
+In both modes, the color encoding is the sole cell fill owner, so `rect.fill`
+is rejected; `rect` accepts opacity and outline options. Text is not automatic.
+Add it afterward with
 `createTextMark().encodeText()` when the rows contain display values.
+
+For direct control over the derived rows, use
+[`createBin2DData`](./data/bin2d.md) before authoring the ranged rect layer.
 
 ## Advanced authoring
 
@@ -8144,7 +8202,7 @@ screens.
 ### Cartesian charts
 
 The complete `createScatterPlot`, `createLinePlot`, `createBarPlot`,
-`createHistogram`, and pre-gridded `createHeatmap` facades compose the same
+`createHistogram`, and pre-gridded or raw-row binned `createHeatmap` facades compose the same
 mark, encoding, scale, and guide actions described below. Individual actions
 remain available for custom layering and editing.
 
@@ -8202,7 +8260,7 @@ remain available for custom layering and editing.
 | --- | --- |
 | Program model | Immutable unit or composition `ChartProgram`, hierarchical trace, nested Cartesian/Polar horizontal or vertical composition, stable child replacement, and Cartesian facet repetition |
 | Canvas | Create/edit width, height, background, margin |
-| Data | Immutable arrays of plain row objects, named filters, grouped interval summaries, grouped linear/polynomial/LOESS regression, and grouped kernel-density derivations |
+| Data | Immutable arrays of plain row objects, named filters, stable window operations, rectangular 2D bins, grouped interval summaries, grouped linear/polynomial/LOESS regression, and grouped kernel-density derivations |
 | Coordinates | Named Cartesian and Polar resources; x/y use Cartesian and theta/radius use Polar for points, lines, and arcs |
 | Scales | Linear/log/pow/sqrt/symlog position across compatible marks, UTC time, band/point position, ordinal/sequential/quantize/quantile/threshold color, point-item unknown fallbacks, named/direct stroke dash, and padded band-local xOffset/yOffset |
 | Aggregates | count, sum, mean, median, min/max, distinct/valid/missing, sample/population dispersion, quartiles, standard error, normal 95% mean endpoints, parameterized quantile, and ordered first/last |
@@ -8221,9 +8279,9 @@ Applicable guides are created by default and can be disabled with
 
 Transforms beyond the documented filters, regressions, density and interval
 derivations, as well as interactive legends, are not implemented.
-The current `createHeatmap` facade accepts pre-gridded observed rows only. It
-does not synthesize missing cells or perform two-dimensional binning, and cell
-text must be added as a separate text layer.
+Pre-gridded heatmaps do not synthesize missing cells. Binned heatmaps support
+fixed rectangular bins only; weighted, adaptive, hexagonal, and overflow bins
+are not implemented. Cell text must be added as a separate text layer.
 Categorical legends support all four edges; point composite and size legends
 support right and left side layouts.
 Error bars support vertical and horizontal statistical intervals, existing
@@ -8531,11 +8589,11 @@ be specified. [Basic Charts](../../api/basic-charts.md#createhistogram)
 ## `createHeatmap`
 
 ```javascript
-createHeatmap({ id?, data?, coordinate?, x, y, color, rect?, guides? })
+createHeatmap({ id?, data?, coordinate?, x, y, bin?, color?, rect?, guides? })
 ```
 
-Create one rect cell per valid pre-gridded row. The required color encoding owns
-cell fill. [Basic Charts](../../api/basic-charts.md#createheatmap)
+Create one rect cell per valid pre-gridded row, or bin raw quantitative x/y rows
+into ranged cells colored by count. [Basic Charts](../../api/basic-charts.md#createheatmap)
 
 ## `filterData`
 

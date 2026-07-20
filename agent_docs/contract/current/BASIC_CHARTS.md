@@ -192,18 +192,36 @@ createHeatmap({
   coordinate?: UserId;
   x: FieldName | RectPositionOptions;
   y: FieldName | RectPositionOptions;
-  color: FieldName | ColorEncodingOptionsWithoutTarget;
+  bin?: {
+    bins?: PositiveInteger | { x: PositiveInteger; y: PositiveInteger };
+    extent?: { x?: [Finite, Finite]; y?: [Finite, Finite] };
+    includeEmpty?: boolean;
+  };
+  color?: FieldName | ColorEncodingOptionsWithoutTarget | {
+    scale?: ContinuousColorScaleOptions;
+    palette?: Palette;
+  };
   rect?: { opacity?: number; stroke?: string | false; strokeWidth?: number };
   guides?: false | CreateGuidesOptions;
 }): ChartProgram;
 ```
 
 - Stable default ID is `heatmap`.
-- Hierarchy: `createRectMark`, `encodeX`, `encodeY`, `encodeColor`, optional `createGuides`.
-- Phase 2 accepts only pre-gridded rows with observed x/y/color values. It creates one rect per valid observed row and
-  never synthesizes missing combinations.
-- Required color is the only cell-fill owner. `rect` controls opacity and outline appearance; constant `rect.fill` is
-  rejected because it would always conflict with the required field-driven color.
+- Pre-gridded hierarchy: `createRectMark`, `encodeX`, `encodeY`, `encodeColor`, optional `createGuides`.
+- Binned hierarchy: `createBin2DData`, `createRectMark`, `encodeX`, `encodeX2`, `encodeY`, `encodeY2`, `encodeColor`,
+  optional `createGuides`.
+- Without `bin`, pre-gridded behavior is unchanged: x/y/color are required, only observed combinations are emitted, and
+  missing combinations are not synthesized.
+- With `bin`, x/y are raw quantitative fields and color field ownership moves to the generated count. `color` is optional
+  and may configure only the continuous/discretized scale or palette.
+- Binned `bins` defaults to `{ x: 10, y: 10 }`; `includeEmpty` defaults to `true`, unlike the low-level data action.
+- Omitted extents are resolved from finite eligible values. Position domains default to those resolved extents so the
+  final upper endpoints map to the plot boundary.
+- Generated dataset ID is `${heatmapId}Bin2DData`; default generated fields remain namespaced under that ID.
+- Binned default axis/legend titles are the source x field, source y field and `Count`. Automatic grid is disabled unless
+  explicitly requested.
+- Field-driven color is the only cell-fill owner. `rect` controls opacity and outline appearance; constant `rect.fill` is
+  rejected because it would conflict with color.
 - String color shorthand follows the existing nominal default. Quantitative/temporal color intent must use the object form.
 - Text labels are not automatic. They may be added afterward through `createTextMark().encodeText()` and remain below guides
   through the shared graphic attachment policy.
@@ -212,7 +230,9 @@ createHeatmap({
 ### Formal values — `createHeatmap`
 
 - Implemented: `createHeatmap(options: CreateHeatmapOptions): ChartProgram`.
-- Required: `x`, `y`, `color`; optional: `id`, `data`, `coordinate`, `rect`, `guides`.
+- Required in every mode: `x`, `y`.
+- Pre-gridded required: `color`; optional: `id`, `data`, `coordinate`, `rect`, `guides`.
+- Binned required: `bin`; optional: `id`, `data`, `coordinate`, `color`, `rect`, `guides`.
 - Planned (NOT IMPLEMENTED): —
 - Proposed (NOT IMPLEMENTED): —
 
@@ -223,6 +243,9 @@ createHeatmap({
 - ✅ Covered: observed-cell cardinality, missing-combination omission, Canvas/scale rematerialization and caller ownership.
 - ✅ Covered: required color, rejected fill/target conflicts and immutable failure.
 - ✅ Covered: Browser Canvas, Node PNG, post-facade text layering and approved primitive equality.
+- ✅ Covered: shortest binned call, scalar/per-axis bins, auto/explicit extent, empty-cell default, generated count color,
+  source-facing guide titles and wrapped child hierarchy.
+- ✅ Covered: binned primitive/public semantic, graphic, renderer-call and pixel equality.
 - Evidence: `test/unit/actions/charts/heatmap-facade.test.js`,
   `test/charts/gapminder-life-expectancy-heatmap/public.test.js`, and
   `test/charts/gapminder-life-expectancy-heatmap/png.render.js`.

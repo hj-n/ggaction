@@ -115,11 +115,11 @@ be specified. [Basic Charts](../../api/basic-charts.md#createhistogram)
 ## `createHeatmap`
 
 ```javascript
-createHeatmap({ id?, data?, coordinate?, x, y, color, rect?, guides? })
+createHeatmap({ id?, data?, coordinate?, x, y, bin?, color?, rect?, guides? })
 ```
 
-Create one rect cell per valid pre-gridded row. The required color encoding owns
-cell fill. [Basic Charts](../../api/basic-charts.md#createheatmap)
+Create one rect cell per valid pre-gridded row, or bin raw quantitative x/y rows
+into ranged cells colored by count. [Basic Charts](../../api/basic-charts.md#createheatmap)
 
 ## `filterData`
 

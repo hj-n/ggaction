@@ -185,7 +185,7 @@ createHeatmap(bin)
 | P5-A | approved | API/edge 규칙, independent oracle, Cars primitive PNG | production action 구현 |
 | P5-B | approved | Window public chain, state/trace, immutable lifecycle과 package parity | 2D bin production 구현 |
 | P5-C | approved | 2D bin public chain, lifecycle, numeric parity | heatmap facade 확장 |
-| P5-D | blocked | binned heatmap public/primitive parity와 browser/PNG | Phase closeout |
+| P5-D | ready-for-review | binned heatmap public/primitive parity와 browser/PNG | Phase closeout |
 | P5-Exit | blocked | declarations, Current inventory, docs와 누적 test | Phase 6 |
 
 모든 Gate는 hard pause다.

@@ -155,9 +155,10 @@ histogram, color, and bar contracts.
 createHeatmap(options: CreateHeatmapOptions): ChartProgram
 ```
 
-`x`, `y`, and `color` are required. The current action consumes pre-gridded
-rows and creates one cell for each valid observed row; it does not synthesize
-missing x/y combinations or perform two-dimensional binning.
+`createHeatmap` supports two explicit modes. Without `bin`, `x`, `y`, and
+`color` describe pre-gridded rows and the action creates one cell for each valid
+observed row. With `bin`, raw quantitative `x` and `y` fields are divided into a
+rectangular grid and cell color represents the generated count.
 
 ```javascript
 const heatmap = chart()
@@ -175,10 +176,47 @@ const heatmap = chart()
   });
 ```
 
-The stable default mark ID is `heatmap`. The color encoding is the sole cell
-fill owner, so `rect.fill` is rejected; `rect` accepts opacity and outline
-options. Text is not automatic. Add it afterward with
+```javascript
+const binnedHeatmap = chart()
+  .createCanvas({
+    width: 700,
+    height: 500,
+    margin: { top: 70, right: 140, bottom: 75, left: 85 }
+  })
+  .createData({ values: cars })
+  .createHeatmap({
+    x: "Weight_in_lbs",
+    y: "Miles_per_Gallon",
+    bin: {
+      bins: { x: 10, y: 8 },
+      extent: { x: [1500, 5200], y: [8, 48] }
+    },
+    color: { scale: { palette: "blues" } },
+    rect: { stroke: "white", strokeWidth: 1 }
+  });
+```
+
+The binned mode uses `10 × 10` bins by default. Its `includeEmpty` default is
+`true`, so the complete rectangular grid is visible; set it to `false` to emit
+only occupied cells. An omitted per-axis extent is inferred from finite x/y
+values. Explicit extents must contain every eligible value. Position scale
+domains default to the resolved bin extents, while an explicit position scale
+option takes precedence. `color` is optional in binned mode and may configure
+the generated quantitative count scale, but cannot supply another field.
+
+The stable default mark ID is `heatmap`. Binned mode owns a namespaced derived
+dataset and records `createBin2DData` as a wrapped child action. Default guide
+titles use the original x/y field names and `Count`, never generated field
+names. Automatic chart grid lines are disabled because the ranged cells already
+form a grid; pass an explicit `guides.grid` option to enable them.
+
+In both modes, the color encoding is the sole cell fill owner, so `rect.fill`
+is rejected; `rect` accepts opacity and outline options. Text is not automatic.
+Add it afterward with
 `createTextMark().encodeText()` when the rows contain display values.
+
+For direct control over the derived rows, use
+[`createBin2DData`](./data/bin2d.md) before authoring the ranged rect layer.
 
 ## Advanced authoring
 

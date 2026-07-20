@@ -7,7 +7,7 @@ title: Heatmap Recipe
 
 {% include chart-example.html id="heatmap" %}
 
-## Minimal flow
+## Pre-gridded flow
 
 ```javascript
 const program = chart()
@@ -24,14 +24,29 @@ const program = chart()
   });
 ```
 
+## Raw-row binned flow
+
+```javascript
+const program = chart()
+  .createCanvas({ margin: { right: 120 } })
+  .createData({ values: observations })
+  .createHeatmap({
+    x: "weight",
+    y: "economy",
+    bin: { bins: { x: 10, y: 8 } },
+    color: { scale: { palette: "blues" } }
+  });
+```
+
+This mode derives rectangular x/y bounds and a count for each cell. It emits
+the complete grid by default, including zero-count cells.
+
 ## You must decide
 
-- The two discrete cell-position fields
-- The field that owns cell color
-- Whether the rows are already at one-row-per-cell grain
-
-The current facade consumes observed, pre-gridded rows. It does not create
-missing row/column combinations or perform two-dimensional binning.
+- Whether rows are already at one-row-per-cell grain or require `bin`
+- The two position fields
+- The color field for pre-gridded rows; binned mode owns its generated count
+- Optional bin counts or explicit extents when the defaults are not appropriate
 
 ## The library infers
 
@@ -39,6 +54,10 @@ missing row/column combinations or perform two-dimensional binning.
 - One concrete rectangle per valid observed row
 - A categorical or continuous color scale and matching legend
 - Cartesian axes and horizontal grid
+
+In binned mode, the library instead infers quantitative position scales from
+the resolved bin extents, a continuous count scale, source-facing axis titles,
+and a `Count` legend. It disables separate chart grid lines unless requested.
 
 Use `rect: { opacity, stroke, strokeWidth }` for cell appearance. Cell fill is
 owned by the required color encoding. To show values, chain a text layer after
@@ -53,5 +72,6 @@ const labeled = program
 ## Continue
 
 [Basic Charts](../api/basic-charts.md#createheatmap) ·
+[Rectangular 2D bins](../api/data/bin2d.md) ·
 [Rect marks](../api/marks/rect.md) ·
 [Continuous color scales](../api/scales/continuous-color.md)

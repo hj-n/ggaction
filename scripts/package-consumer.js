@@ -181,6 +181,26 @@ async function testNodeConsumer(directory) {
         guides: false
       });
     assert.equal(heatmapFacade.graphicSpec.objects.heatmap.items.length, 2);
+    const binnedHeatmapFacade = chart()
+      .createCanvas({ width: 160, height: 120, margin: 20 })
+      .createData({ values: [
+        { x: 0, y: 0 },
+        { x: 1, y: 1 }
+      ] })
+      .createHeatmap({
+        x: "x",
+        y: "y",
+        bin: { bins: 2, extent: { x: [0, 1], y: [0, 1] } },
+        guides: false
+      });
+    assert.equal(binnedHeatmapFacade.graphicSpec.objects.heatmap.items.length, 4);
+    assert.deepEqual(
+      binnedHeatmapFacade.trace.children.at(-1).children.map(node => node.op),
+      [
+        "createBin2DData", "createRectMark", "encodeX", "encodeX2",
+        "encodeY", "encodeY2", "encodeColor"
+      ]
+    );
     const polar = chart()
       .createCanvas({ width: 160, height: 160, margin: 20 })
       .createData({ values: [{ angle: 0, distance: 1 }, { angle: 1, distance: 2 }] })
@@ -474,6 +494,21 @@ async function testTypeScriptConsumer(directory) {
       .createCanvas()
       .createData({ values: [{ x: "A", y: "one", value: 2 }] })
       .createHeatmap(heatmapOptions);
+    const binnedHeatmapOptions: CreateHeatmapOptions = {
+      x: "x",
+      y: { field: "y", scale: { reverse: true } },
+      bin: {
+        bins: { x: 4, y: 3 },
+        extent: { x: [0, 4], y: [0, 3] },
+        includeEmpty: true
+      },
+      color: { scale: { palette: "blues", domain: [0, 3] } },
+      guides: false
+    };
+    const binnedHeatmapFacade: ChartProgram = chart()
+      .createCanvas()
+      .createData({ values: [{ x: 0, y: 0 }, { x: 4, y: 3 }] })
+      .createHeatmap(binnedHeatmapOptions);
     const composed: ChartProgram = hconcat({
       programs: [program, program]
     })
@@ -689,6 +724,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
       "point-jitter",
       "window-data",
       "bin2d-data",
+      "binned-heatmap",
       "right-categorical-legend-offset",
       "sequential-palette-count",
       "typescript",

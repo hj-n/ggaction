@@ -17,7 +17,7 @@ screens.
 ### Cartesian charts
 
 The complete `createScatterPlot`, `createLinePlot`, `createBarPlot`,
-`createHistogram`, and pre-gridded `createHeatmap` facades compose the same
+`createHistogram`, and pre-gridded or raw-row binned `createHeatmap` facades compose the same
 mark, encoding, scale, and guide actions described below. Individual actions
 remain available for custom layering and editing.
 
@@ -75,7 +75,7 @@ remain available for custom layering and editing.
 | --- | --- |
 | Program model | Immutable unit or composition `ChartProgram`, hierarchical trace, nested Cartesian/Polar horizontal or vertical composition, stable child replacement, and Cartesian facet repetition |
 | Canvas | Create/edit width, height, background, margin |
-| Data | Immutable arrays of plain row objects, named filters, grouped interval summaries, grouped linear/polynomial/LOESS regression, and grouped kernel-density derivations |
+| Data | Immutable arrays of plain row objects, named filters, stable window operations, rectangular 2D bins, grouped interval summaries, grouped linear/polynomial/LOESS regression, and grouped kernel-density derivations |
 | Coordinates | Named Cartesian and Polar resources; x/y use Cartesian and theta/radius use Polar for points, lines, and arcs |
 | Scales | Linear/log/pow/sqrt/symlog position across compatible marks, UTC time, band/point position, ordinal/sequential/quantize/quantile/threshold color, point-item unknown fallbacks, named/direct stroke dash, and padded band-local xOffset/yOffset |
 | Aggregates | count, sum, mean, median, min/max, distinct/valid/missing, sample/population dispersion, quartiles, standard error, normal 95% mean endpoints, parameterized quantile, and ordered first/last |
@@ -94,9 +94,9 @@ Applicable guides are created by default and can be disabled with
 
 Transforms beyond the documented filters, regressions, density and interval
 derivations, as well as interactive legends, are not implemented.
-The current `createHeatmap` facade accepts pre-gridded observed rows only. It
-does not synthesize missing cells or perform two-dimensional binning, and cell
-text must be added as a separate text layer.
+Pre-gridded heatmaps do not synthesize missing cells. Binned heatmaps support
+fixed rectangular bins only; weighted, adaptive, hexagonal, and overflow bins
+are not implemented. Cell text must be added as a separate text layer.
 Categorical legends support all four edges; point composite and size legends
 support right and left side layouts.
 Error bars support vertical and horizontal statistical intervals, existing
