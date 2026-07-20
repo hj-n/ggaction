@@ -7,6 +7,7 @@
 - [x] approved chart slice와 active Gate/review artifact 정리
 - [x] `SECOND_ARCHITECTURE.md`와 Current contract 반영
 - [x] full normal/browser/render/coverage/package/docs verification
-- [ ] P8-Exit exact checkpoint commit/push와 사용자 승인
+- [x] P8-Exit exact checkpoint commit/push
+- [ ] P8-Exit 사용자 승인
 
 P8-B 승인 전에는 시작하지 않는다. P8-Exit 승인 전에는 Phase 9 production source를 변경하지 않는다.

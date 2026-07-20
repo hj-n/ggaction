@@ -7,7 +7,7 @@
 - 승인: 대기 중
 - Functional checkpoint: `27a24d5` (`promote violin plot public slice`)
 - Documentation checkpoint: `4fd9a7c` (`document violin plot workflow`)
-- Review checkpoint: closeout commit/push 뒤 이 문서에 기록
+- Review checkpoint: `0f5872c` (`prepare phase 8 exit review`)
 - Remote: `origin/main`
 - 승인 전 차단: Roadmap 4 Phase 9 production source
 
