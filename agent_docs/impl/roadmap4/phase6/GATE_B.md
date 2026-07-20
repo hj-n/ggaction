@@ -3,7 +3,8 @@
 ## 상태
 
 - Gate: `P6-B`
-- 상태: `ready-for-review`
+- 상태: `approved`
+- 승인: 2026-07-20 사용자 명시 승인
 - Review source checkpoint: `c7fd4c4` (`verify gradient plot facade parity`)
 - Remote: `origin/main`
 - 이후 차단: Step 5 consumer matrix, facet/filter replay, Phase 6 closeout와 P6-Exit
@@ -148,9 +149,9 @@ graphic tree under canvas
   함수 identity가 아니라 backend-neutral gradient 값으로 비교되게 했다.
 - 특수 Cars 스타일이나 데이터별 조건 분기는 추가하지 않았다.
 
-## 승인 질문
+## 승인 결과
 
-다음을 하나의 P6-B 결과로 승인하는가?
+다음 항목이 하나의 P6-B 결과로 승인되었다.
 
 1. 위 `createGradientPlot` public chain과 stable owner/resource hierarchy
 2. `editGradientPlot`의 appearance retention, statistical revision과 center remove/restore lifecycle

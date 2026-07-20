@@ -11,7 +11,7 @@
 - [x] primitive/public semantic/graphic/order/Canvas-call exact parity
 - [x] Browser Canvas와 high-resolution PNG
 - [x] source/code/image를 포함한 P6-B package
-- [ ] P6-B 사용자 승인
+- [x] P6-B 사용자 승인
 
 Facade는 profile 계산, position encoding, fill materialization 또는 guide validation을 복제하지 않고 각 wrapped
 owner를 호출한다.
