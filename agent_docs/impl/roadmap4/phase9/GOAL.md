@@ -11,8 +11,8 @@ sign×band×segment rows로 변환하고, 기존 area path와 Canvas/PNG rendere
 
 - [x] P8-Exit 사용자 승인
 - [x] x/y 중심 public candidate와 inference/default/error boundary 승인
-- [ ] independent Horizon oracle과 literal anchors
-- [ ] Gapminder primitive target과 P9-A
+- [x] independent Horizon oracle과 literal anchors
+- [x] Gapminder primitive target과 P9-A review package
 - [ ] transform/provenance와 `encodeHorizon`
 - [ ] `editHorizon`, facet/consumer lifecycle과 P9-B
 - [ ] types/contracts/docs/package closeout와 P9-Exit
@@ -41,7 +41,7 @@ sign×band×segment rows로 변환하고, 기존 area path와 Canvas/PNG rendere
 
 | Gate | 상태 | 승인 대상 | 승인 전 차단되는 작업 |
 | --- | --- | --- | --- |
-| P9-A | planned | exact API/default/error/state, independent oracle, primitive source와 PNG | production grammar/action 구현 |
+| P9-A | ready-for-review | exact API/default/error/state, independent oracle, primitive source와 PNG | production grammar/action 구현 |
 | P9-B | planned | public lifecycle, primitive/public parity, edit/facet consumer matrix | Phase closeout |
 | P9-Exit | planned | Current inventory, architecture, docs/types/package와 cumulative verification | Phase 10 |
 
