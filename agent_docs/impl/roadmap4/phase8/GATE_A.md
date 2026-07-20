@@ -3,7 +3,8 @@
 ## 상태
 
 - Gate: `P8-A`
-- 상태: `ready-for-review`
+- 상태: `approved`
+- 승인: 2026-07-20 사용자 명시 승인
 - Review source checkpoint: `563186c` (`fix violin axis title rotation`)
 - Remote: `origin/main`
 - 승인 전 차단: production density grammar/provenance, public placement branch와 `createViolinPlot`

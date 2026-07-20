@@ -13,7 +13,7 @@ facade `createViolinPlot({ x, y })`로 노출한다. Density 계산은 기존 im
 - [x] Phase 7 exit 승인과 density/area baseline 조사
 - [x] candidate lower-level/facade API와 state owner 설계
 - [x] independent categorical-density oracle와 full/split primitive
-- [ ] P8-A 사용자 승인
+- [x] P8-A 사용자 승인
 - [ ] category placement grammar/materialization과 P8-B 사용자 승인
 - [ ] lifecycle/consumer matrix, facade, docs/package와 P8-Exit 사용자 승인
 
@@ -105,7 +105,7 @@ createViolinPlot({
 
 | Gate | 상태 | 승인 대상 | 승인 전 차단되는 작업 |
 | --- | --- | --- | --- |
-| P8-A | ready-for-review | exact API/defaults/state, full/split primitive PNG | production grammar/action 구현 |
+| P8-A | approved | exact API/defaults/state, full/split primitive PNG | production grammar/action 구현 |
 | P8-B | planned | lower-level lifecycle/consumer matrix, facade chain과 primitive/public exact parity | Phase closeout |
 | P8-Exit | planned | Current inventory, architecture, docs/types/package와 cumulative verification | Phase 9 |
 
