@@ -66,15 +66,103 @@ order를 유지한다.
 - Window grammar/action/direct-derived/oracle focused tests: `16/16` pass.
 - Unit suite: `1103/1103` pass.
 - Contract suite: `121/121` pass.
-- Active Gate suite: `8/8` pass.
+- Active Gate suite: `9/9` pass.
 - Documentation source/generator suite: `32/32` pass.
-- Full cumulative suite: `1628/1628` pass.
+- Full cumulative suite: `1629/1629` pass.
 - Installed-package Node/TypeScript consumer: pass.
 - Package artifact: `ggaction@0.0.4`, SHA-256
   `86ccf718b56717902145ddd013f225d01306de4958f3f8c3c7a868b9209fb303`.
 - Generated signature, capability, action, reference, metadata와 search freshness checks: pass.
 - Full Jekyll verification은 repository failure가 아니라 현재 machine의 Ruby `2.6.10` 때문에 preflight에서
   실행되지 않았다. Locked Pages bundle은 Ruby `3.2+`를 요구한다.
+
+## 전용 예시 차트
+
+[Cars Window Rank Scatterplot](../../../../examples/cars-window-rank-scatterplot/program.js)은 일반 chart가
+Window 결과를 소비하는 complete vertical slice다. 유효한 Cars row `392`개를 Origin별 Horsepower 내림차순으로
+정렬해 `rank`와 `denseRank`를 계산하고, `rank <= 15`를 적용한 `47`개 point를 그린다. 최종 group 수는
+`USA 17`, `Europe 15`, `Japan 15`다. tie 때문에 한 partition이 15개보다 많아질 수 있다는 rank 의미도
+그대로 보존한다.
+
+핵심 public chain은 다음과 같다.
+
+```javascript
+chart()
+  .createCanvas({
+    width: 760,
+    height: 500,
+    margin: { top: 85, right: 155, bottom: 80, left: 80 }
+  })
+  .createData({ id: "cars", values: rows })
+  .createWindowData({
+    id: "rankedCars",
+    partitionBy: "Origin",
+    sortBy: [{ field: "Horsepower", order: "descending" }],
+    operations: [
+      { op: "rank", as: "horsepowerRank" },
+      { op: "denseRank", as: "horsepowerDenseRank" }
+    ]
+  })
+  .filterData({
+    id: "topHorsepowerCars",
+    source: "rankedCars",
+    field: "horsepowerRank",
+    predicate: { op: "lte", value: 15 }
+  })
+  .createScatterPlot({
+    id: "rankedCarsPlot",
+    data: "topHorsepowerCars",
+    x: {
+      field: "horsepowerRank",
+      fieldType: "quantitative",
+      scale: { domain: [0.5, 15.5], nice: false, zero: false }
+    },
+    y: {
+      field: "Miles_per_Gallon",
+      fieldType: "quantitative",
+      scale: { domain: [8, 35], nice: false, zero: false }
+    },
+    color: {
+      field: "Origin",
+      fieldType: "nominal",
+      scale: {
+        domain: ["USA", "Europe", "Japan"],
+        palette: "set2"
+      }
+    },
+    point: { opacity: 0.76, stroke: "#ffffff", strokeWidth: 0.8 },
+    guides: {
+      axes: {
+        x: {
+          ticksAndLabels: { values: [1, 3, 6, 9, 12, 15] },
+          title: { text: "Horsepower rank within origin" }
+        },
+        y: { title: { text: "Miles per gallon" } }
+      },
+      grid: { horizontal: true, vertical: false },
+      legend: { title: "Origin", position: "right" }
+    }
+  })
+  .encodePointRadius({ target: "rankedCarsPlot", value: 5 })
+  .createTitle({
+    text: "Fuel Economy among High-Horsepower Cars",
+    subtitle: "Top 15 horsepower ranks within each origin",
+    align: "center"
+  });
+```
+
+Primitive baseline은 production Window materializer를 재사용하지 않는다. 독립 oracle로 row를 계산한 뒤
+`createDerivedData + editSemantic`으로 같은 semantic target을 직접 author한다. 검증 결과는 다음과 같다.
+
+- Primitive/public `semanticSpec`, `graphicSpec`, renderer call: exact parity.
+- Node PNG primitive/public decoded pixels: exact parity.
+- Node PNG: logical `760×500`, physical `1520×1000`, SHA-256
+  `dd5358e8a386222489decd5276eec532cd1d74850b2588971f87dc06a378453a`.
+- Browser Canvas: logical `760×500`, backing store `1520×1000`, status `47 ranked cars rendered`.
+- Browser console error `0`, page error `0`.
+- Review artifacts:
+  `.artifacts/test/png/review/cars-window-rank-scatterplot/top-horsepower-by-origin/primitive.png`,
+  `user-facing.png`, `browser.png`.
 
 ## API와 문서 영향
 
@@ -83,6 +171,8 @@ order를 유지한다.
   generated action reference를 동기화했다.
 - Public [Window Data Transforms](../../../../docs/api/data/window.md) 페이지가 defaults, operation vocabulary,
   ordering, collision과 immutable lifecycle을 소유한다.
+- Runnable browser example은 public action chain을 그대로 import하고 `devicePixelRatio`로 고해상도 backing
+  store를 사용한다.
 - `SECOND_ARCHITECTURE.md`에는 facet replay가 필요한 dependent-row transform으로 기록했다.
 
 ## 승인 후 작업
