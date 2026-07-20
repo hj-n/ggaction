@@ -2415,8 +2415,9 @@ default instead of synthesizing zero values.
 ## `createGuides()` selects nothing
 
 `createGuides()` needs at least one supported encoded axis, grid, or legend.
-Create the relevant encodings first. Point color legends are currently
-unsupported, so a point color encoding alone does not select a legend.
+Create the relevant encodings first. A nominal point color encoding can create
+a categorical legend; field-driven shape and quantitative size may be combined
+with that legend when their resolved scales are compatible.
 
 ## Inspect the program
 

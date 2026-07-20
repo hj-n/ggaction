@@ -14,6 +14,10 @@ import {
   buildSignatureSection,
   declaredActionSignatures
 } from "../../scripts/generate-doc-signatures.js";
+import {
+  buildDocActionMetadata,
+  generateDocActionMetadata
+} from "../../scripts/generate-doc-action-metadata.js";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const docsRoot = path.join(root, "docs");
@@ -487,10 +491,38 @@ test("indexes documentation headings for section search", () => {
   assert.match(content, /docs-action-heading/);
   assert.match(content, /docs-action-signature/);
   assert.match(content, /docs-action-filter-input/);
+  assert.match(content, /docs-action-metadata/);
+  assert.doesNotMatch(content, /actionPrefixes/);
 
   const toc = read("docs/assets/js/docs-toc.js");
   assert.match(toc, /heading\.dataset\.tocLabel/);
   assert.match(toc, /headings\.length > 30/);
+});
+
+test("keeps every public action available to documentation interactions", async () => {
+  await generateDocActionMetadata({ check: true });
+  const metadata = await buildDocActionMetadata();
+  const catalog = JSON.parse(read("agent_docs/contract/ACTION_INDEX.json"));
+  assert.deepEqual(Object.keys(metadata), catalog.actions.map(action => action.name));
+  for (const name of declaredProgramMethods()) {
+    assert.notEqual(metadata[name], undefined, name);
+  }
+  for (const name of [
+    "facet", "jitterPoints", "removeMark", "removeLegend", "removeTitle",
+    "removeJitter", "replaceCompositionChild"
+  ]) {
+    assert.notEqual(metadata[name], undefined, name);
+  }
+});
+
+test("keeps point legend support consistent across public guidance", () => {
+  const troubleshooting = read("docs/troubleshooting.md");
+  const supported = read("docs/supported-features.md");
+  const legends = read("docs/api/legends.md");
+  assert.doesNotMatch(troubleshooting, /Point color legends are currently\s+unsupported/);
+  assert.match(troubleshooting, /nominal point color encoding can create/);
+  assert.match(supported, /point color \+ shape/);
+  assert.match(legends, /Categorical \| point, line, area, bar, rect, arc/);
 });
 
 test("classifies every declared ChartProgram action in the reference", async () => {

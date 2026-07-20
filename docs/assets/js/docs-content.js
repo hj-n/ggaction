@@ -2,13 +2,10 @@
   const content = document.querySelector(".docs-content");
   if (!content) return;
 
-  const actionPrefixes = Object.freeze([
-    "create", "edit", "encode", "filter", "highlight", "select", "render"
-  ]);
-
-  function actionKind(name) {
-    return actionPrefixes.find(prefix => name.startsWith(prefix));
-  }
+  const metadataNode = document.querySelector("#docs-action-metadata");
+  const actionMetadata = new Map(Object.entries(
+    metadataNode ? JSON.parse(metadataNode.textContent) : {}
+  ));
 
   function enhanceActionHeadings() {
     const actionHeadings = [];
@@ -17,16 +14,16 @@
       if (!code) continue;
       const signature = code.textContent.trim();
       const name = signature.match(/^([A-Za-z][A-Za-z0-9]*)/)?.[1];
-      const kind = name && actionKind(name);
-      if (!kind) continue;
+      const metadata = name && actionMetadata.get(name);
+      if (!metadata) continue;
 
       heading.classList.add("docs-action-heading");
       heading.dataset.tocLabel = name;
       code.textContent = name;
 
       const badge = document.createElement("span");
-      badge.className = `docs-action-kind docs-action-kind--${kind}`;
-      badge.textContent = kind;
+      badge.className = `docs-action-kind docs-action-kind--${metadata.operation}`;
+      badge.textContent = metadata.operation;
       heading.append(badge);
 
       if (signature.includes("(")) {
@@ -38,7 +35,7 @@
         signatureBlock.append(signatureCode);
         heading.after(signatureBlock);
       }
-      actionHeadings.push({ heading, name, kind });
+      actionHeadings.push({ heading, name, ...metadata });
     }
     return actionHeadings;
   }
@@ -77,7 +74,9 @@
       const query = input.value.trim().toLowerCase();
       let visible = 0;
       for (const region of regions) {
-        const matches = !query || `${region.name} ${region.kind}`.toLowerCase().includes(query);
+        const matches = !query || [
+          region.name, region.operation, region.layer, region.domain
+        ].join(" ").toLowerCase().includes(query);
         for (const node of region.nodes) node.hidden = !matches;
         if (matches) visible += 1;
       }

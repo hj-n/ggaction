@@ -53,6 +53,11 @@ test("keeps the generated capability pages synchronized", async () => {
     const source = await readFile(new URL(file, import.meta.url), "utf8");
     assert.doesNotMatch(source, /supports points only|limited to point marks|aggregate edit actions are not implemented/);
   }
+  const troubleshooting = await readFile(
+    new URL("../../docs/troubleshooting.md", import.meta.url),
+    "utf8"
+  );
+  assert.doesNotMatch(troubleshooting, /Point color legends are currently\s+unsupported/);
 });
 
 test("matches primary position capability rows to runtime compatibility", () => {
