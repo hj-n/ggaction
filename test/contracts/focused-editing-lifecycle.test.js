@@ -6,13 +6,9 @@ import { fileURLToPath } from "node:url";
 
 import { ChartProgram } from "../../src/ChartProgram.js";
 import { visualVariants } from
-  "../charts/cars-scatterplot/variants/focused-editing/manifest.js";
+  "../charts/cross-feature-integration/variants/focused-editing/manifest.js";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
-const inventory = JSON.parse(readFileSync(path.join(
-  root,
-  "agent_docs/impl/roadmap3/phase0/GATE_A_INVENTORY.json"
-), "utf8"));
 const index = JSON.parse(readFileSync(path.join(
   root,
   "agent_docs/contract/ACTION_INDEX.json"
@@ -62,27 +58,6 @@ const CAPABILITIES = Object.freeze([
   "exact-public-option-types",
   "api-layer-classification-alignment"
 ]);
-
-test("locks the approved focused-editing assignment", () => {
-  assert.deepEqual(
-    inventory.proposedActions
-      .filter(action => action.phase === "phase1")
-      .map(action => action.name),
-    DIRECT_ACTIONS
-  );
-  assert.deepEqual(
-    inventory.parameterExtensions
-      .filter(extension => extension.phase === "phase1")
-      .map(extension => extension.id),
-    EXTENSIONS
-  );
-  assert.deepEqual(
-    inventory.proposedCapabilities
-      .filter(capability => capability.phase === "phase1")
-      .map(capability => capability.id),
-    CAPABILITIES
-  );
-});
 
 test("promotes the approved focused guide actions and keeps later work Planned", () => {
   const planned = new Set(index.plannedActions.map(action => action.name));
@@ -136,8 +111,7 @@ test("covers every focused-editing action in an approved visual target", () => {
   }
   for (const [index, target] of visualVariants.entries()) {
     assert.deepEqual(target.artifact, {
-      roadmap: "roadmap3",
-      phase: "phase1",
+      scope: "charts",
       capability: target.artifact.capability
     });
     assert.equal(

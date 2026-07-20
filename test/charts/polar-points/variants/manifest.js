@@ -13,8 +13,6 @@ import {
 const cars = loadCars();
 const fashionRows = loadFashionTsne();
 const artifact = Object.freeze({
-  roadmap: "roadmap3",
-  phase: "phase2",
   capability: "polar-point"
 });
 

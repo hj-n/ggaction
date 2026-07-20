@@ -107,8 +107,6 @@ export const visualVariants = Object.freeze([
     title: "Cars Acceleration by Origin",
     callChain: carsJitterTargetCallChain,
     artifact: {
-      roadmap: "roadmap4",
-      phase: "phase4",
       capability: "point-jitter"
     },
     primitive: () => createCarsOriginJitterPrimitives(cars),
@@ -131,8 +129,6 @@ export const visualVariants = Object.freeze([
     title: "Gapminder Life Expectancy by Cluster",
     callChain: gapminderJitterTargetCallChain,
     artifact: {
-      roadmap: "roadmap4",
-      phase: "phase4",
       capability: "point-jitter"
     },
     primitive: () => createGapminderClusterJitterPrimitives(gapminder),

@@ -32,10 +32,8 @@ const cars = loadCars();
 const gapminder = loadGapminder();
 const jobs = loadJobs();
 
-const phase = "phase1";
-
 function artifact(capability) {
-  return Object.freeze({ roadmap: "roadmap3", phase, capability });
+  return Object.freeze({ capability });
 }
 
 const pointScaleCallChain = `chart()

@@ -49,8 +49,6 @@ export const visualVariants = Object.freeze([
     title: "Annotated IMDb Scatterplot",
     callChain: annotatedImdbTarget,
     artifact: {
-      roadmap: "roadmap3",
-      phase: "phase9",
       capability: "text-annotation"
     },
     primitive: () => createAnnotatedImdbPrimitives(rows),

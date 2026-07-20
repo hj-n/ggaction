@@ -5,7 +5,7 @@ import { loadJobs } from "../../support/data.js";
 import { createHorizontalGroupedBarPrimitives } from "./primitive.program.js";
 import { createHorizontalGroupedBarValues } from "./reference-values.js";
 
-test("authors the Gate J-A chart only through graphical primitives", () => {
+test("authors the horizontal grouped bar only through graphical primitives", () => {
   const values = createHorizontalGroupedBarValues(loadJobs());
   const program = createHorizontalGroupedBarPrimitives(loadJobs());
   const bars = program.graphicSpec.objects.bar;

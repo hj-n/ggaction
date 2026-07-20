@@ -51,8 +51,6 @@ export const visualVariants = Object.freeze([
     title: "Gapminder Life Expectancy Heatmap",
     callChain: gapminderHeatmapTarget,
     artifact: {
-      roadmap: "roadmap3",
-      phase: "phase9",
       capability: "rect-heatmap"
     },
     primitive: () => createGapminderHeatmapPrimitives(gapminder),

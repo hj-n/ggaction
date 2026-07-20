@@ -10,7 +10,7 @@ function operations(node) {
   return node.children.flatMap(child => [child.op, ...operations(child)]);
 }
 
-test("authors the Gate J-C heatmap from explicit concrete primitives", () => {
+test("authors the heatmap from explicit concrete primitives", () => {
   const rows = loadGapminder();
   const values = createHeatmapReference(rows);
   const program = createGapminderHeatmapPrimitives(rows);

@@ -1,17 +1,7 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
 import test from "node:test";
 
 import { chart, hconcat, vconcat } from "../../src/index.js";
-
-const matrixUrl = new URL(
-  "../../agent_docs/impl/roadmap3/phase10/INTEGRATION_MATRIX.json",
-  import.meta.url
-);
-const encodingContract = readFileSync(new URL(
-  "../../agent_docs/contract/current/ENCODINGS.md",
-  import.meta.url
-), "utf8");
 
 const rows = Object.freeze([
   Object.freeze({ angle: "A", radius: 1, group: "one" }),
@@ -45,22 +35,6 @@ function polarLegendProgram() {
     .encodePointRadius({ value: 4 })
     .createGuides({ axes: false, grid: false, legend: { position: "right" } });
 }
-
-test("keeps the Phase 10 integration matrix valid and evidence-addressable", () => {
-  const matrix = JSON.parse(readFileSync(matrixUrl, "utf8"));
-  const statuses = new Set([
-    "current-pass", "current-explicit-error", "gate-pending"
-  ]);
-
-  assert.equal(matrix.schemaVersion, 1);
-  assert.equal(matrix.phase, "phase10");
-  assert.equal(new Set(matrix.cases.map(entry => entry.id)).size, matrix.cases.length);
-  for (const entry of matrix.cases) {
-    assert.equal(statuses.has(entry.status), true, `${entry.id} status`);
-    assert.equal(existsSync(new URL(`../../${entry.evidence}`, import.meta.url)), true);
-  }
-  assert.match(encodingContract, /temporal aggregate bar bandwidth/);
-});
 
 test("retains Polar children in horizontal and nested concat compositions", () => {
   const polar = polarProgram();
@@ -96,7 +70,7 @@ test("rejects unsupported Polar facet before changing the source program", () =>
   assert.equal(polar.compositionSpec, undefined);
 });
 
-test("records the approved temporal bar-line shared-scale behavior", () => {
+test("shares a temporal aggregate scale across compatible layered marks", () => {
   const values = Object.freeze([
     Object.freeze({ Year: "1970-01-01", Acceleration: 12 }),
     Object.freeze({ Year: "1971-01-01", Acceleration: 15 })

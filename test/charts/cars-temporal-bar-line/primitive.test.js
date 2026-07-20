@@ -8,7 +8,7 @@ import { displayedActionOperations } from "../../support/visual-variants.js";
 import { carsTemporalBarLineTarget } from "./manifest.js";
 import { createCarsTemporalBarLinePrimitives } from "./primitive.program.js";
 
-test("authors Gate K-A only through semantic and graphic primitives", () => {
+test("authors the temporal bar-line chart only through semantic and graphic primitives", () => {
   const program = createCarsTemporalBarLinePrimitives(loadCars());
   const context = createMockCanvasContext();
   render(program, context);

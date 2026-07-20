@@ -29,7 +29,7 @@ import {
 const cars = loadCars();
 const shapeRows = createShapeVocabularyPrimitiveValues(cars).rows;
 const baselineArtifact = Object.freeze({
-  roadmap: "roadmap2",
+  capability: "point-marks",
   chart: "cars-scatterplot",
   variant: "baseline",
   title: "Baseline",
@@ -57,7 +57,7 @@ const baselineArtifact = Object.freeze({
 const scatterArtifacts = Object.freeze([
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "point-marks",
       chart: "cars-scatterplot",
       variant: "mirrored-axes-format",
       title: "Top X and Right Y Axes",
@@ -100,7 +100,7 @@ const scatterArtifacts = Object.freeze([
   }),
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "point-marks",
       chart: "cars-scatterplot",
       variant: "scale-reverse",
       title: "Reversed X Scale",
@@ -133,7 +133,7 @@ const scatterArtifacts = Object.freeze([
   }),
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "point-marks",
       chart: "cars-scatterplot",
       variant: "point-shape-diamond",
       title: "Constant Diamond Points",
@@ -166,7 +166,7 @@ const scatterArtifacts = Object.freeze([
   }),
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "point-marks",
       chart: "cars-scatterplot",
       variant: "shape-vocabulary",
       title: "Twelve Point Shapes",
@@ -215,7 +215,7 @@ const scatterArtifacts = Object.freeze([
   }),
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "point-marks",
       chart: "cars-scatterplot",
       variant: "categorical-palette",
       title: "Set2 Categorical Palette",
@@ -247,7 +247,7 @@ const scatterArtifacts = Object.freeze([
   }),
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "point-marks",
       chart: "cars-scatterplot",
       variant: "encoding-reassignment",
       title: "Encoding Reassignment",
@@ -277,7 +277,7 @@ const scatterArtifacts = Object.freeze([
   }),
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "point-marks",
       chart: "cars-scatterplot",
       variant: "continuous-color-gradient",
       title: "Continuous Acceleration Color",
@@ -309,7 +309,7 @@ const scatterArtifacts = Object.freeze([
   }),
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "point-marks",
       chart: "cars-scatterplot",
       variant: "field-opacity-legend",
       title: "Field-driven Acceleration Opacity",

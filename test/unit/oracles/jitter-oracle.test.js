@@ -20,10 +20,10 @@ test("locks portable jitter-uniform-v1 scalar and hash vectors", () => {
     jitterIdentityV1({
       target: "points",
       channel: "x",
-      seed: "gate-a",
+      seed: "stable-fixture",
       identity: 7
     }),
-    "string:6:points\0string:1:x\0string:6:gate-a\0number:7"
+    "string:6:points\0string:1:x\0string:14:stable-fixture\0number:7"
   );
 });
 
@@ -31,11 +31,11 @@ test("maps stable identities into a bounded signed displacement", () => {
   const options = {
     target: "points",
     channel: "x",
-    seed: "gate-a",
+    seed: "stable-fixture",
     identity: 7
   };
   const first = requestedJitterOffsetV1(options, 12);
-  assert.equal(first, 10.132016262039542);
+  assert.equal(first, 5.343984559178352);
   assert.equal(first, requestedJitterOffsetV1(options, 12));
   assert.equal(Math.abs(first) < 12, true);
   assert.notEqual(first, requestedJitterOffsetV1({ ...options, seed: "next" }, 12));

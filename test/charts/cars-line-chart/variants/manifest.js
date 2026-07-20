@@ -33,7 +33,7 @@ import {
 
 const cars = loadCars();
 const baselineArtifact = Object.freeze({
-  roadmap: "roadmap2",
+  capability: "line-marks",
   chart: "cars-line-chart",
   variant: "baseline",
   title: "Canonical Line Chart Baseline",
@@ -69,7 +69,7 @@ const baselineArtifact = Object.freeze({
 const curveArtifacts = Object.freeze([
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "line-marks",
       chart: "cars-line-chart",
       variant: "curve-step",
       title: "Step Curve",
@@ -104,7 +104,7 @@ const curveArtifacts = Object.freeze([
   }),
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "line-marks",
       chart: "cars-line-chart",
       variant: "curve-monotone-edit",
       title: "Monotone Curve Edit",
@@ -143,7 +143,7 @@ const curveArtifacts = Object.freeze([
 const dashPrimitiveArtifacts = Object.freeze([
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "line-marks",
       chart: "cars-line-chart",
       variant: "named-dash-vocabulary",
       title: "Named Dash Vocabulary",
@@ -172,7 +172,7 @@ const dashPrimitiveArtifacts = Object.freeze([
   }),
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "line-marks",
       chart: "cars-line-chart",
       variant: "constant-dash",
       title: "Constant Dotted Line",
@@ -199,7 +199,7 @@ const dashPrimitiveArtifacts = Object.freeze([
   }),
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "line-marks",
       chart: "cars-line-chart",
       variant: "group-reassignment",
       title: "Group Reassignment",
@@ -225,7 +225,7 @@ const dashPrimitiveArtifacts = Object.freeze([
   }),
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "line-marks",
       chart: "cars-line-chart",
       variant: "dash-reassignment",
       title: "Dash Reassignment",
@@ -283,7 +283,7 @@ function aggregateTargetCallChain(aggregate) {
 const aggregatePrimitiveArtifacts = Object.freeze([
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "line-marks",
       chart: "cars-line-chart",
       variant: "aggregate-median",
       title: "Median Acceleration",
@@ -294,7 +294,7 @@ const aggregatePrimitiveArtifacts = Object.freeze([
   }),
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "line-marks",
       chart: "cars-line-chart",
       variant: "aggregate-dispersion",
       title: "Acceleration Dispersion",
@@ -305,7 +305,7 @@ const aggregatePrimitiveArtifacts = Object.freeze([
   }),
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "line-marks",
       chart: "cars-line-chart",
       variant: "aggregate-quantile",
       title: "75th Percentile Acceleration",
@@ -318,7 +318,7 @@ const aggregatePrimitiveArtifacts = Object.freeze([
   }),
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "line-marks",
       chart: "cars-line-chart",
       variant: "aggregate-ordered",
       title: "Acceleration at Lowest Horsepower",
@@ -392,7 +392,7 @@ function compositeLegendTargetCallChain(position) {
 const compositeLegendPrimitiveArtifacts = Object.freeze([
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "line-marks",
       chart: "cars-line-chart",
       variant: "composite-legend-top",
       title: "Top Composite Line and Point Legend",
@@ -405,7 +405,7 @@ const compositeLegendPrimitiveArtifacts = Object.freeze([
   }),
   Object.freeze({
     artifact: Object.freeze({
-      roadmap: "roadmap2",
+      capability: "line-marks",
       chart: "cars-line-chart",
       variant: "composite-legend-bottom",
       title: "Bottom Composite Line and Point Legend",

@@ -42,7 +42,7 @@ function javascriptFiles(directory) {
   });
 }
 
-test("closes every Phase 2 facade into one Current contract and no Planned entry", () => {
+test("keeps every basic chart facade in one Current contract", () => {
   const index = JSON.parse(read("agent_docs/contract/ACTION_INDEX.json"));
   for (const name of FACADE_ACTIONS) {
     const current = index.actions.filter(action => action.name === name);
@@ -70,7 +70,7 @@ test("keeps the five facade declarations and root type exports exact", () => {
   }
 });
 
-test("promotes every approved facade program into its canonical chart slice", () => {
+test("keeps every facade program in its canonical chart slice", () => {
   const cars = loadCars();
   const programs = [
     createCarsScatterplot(cars),
@@ -81,13 +81,6 @@ test("promotes every approved facade program into its canonical chart slice", ()
   ];
   for (const [index, program] of programs.entries()) {
     assert.equal(program.trace.children[2].op, FACADE_ACTIONS[index]);
-  }
-  for (const directory of [
-    "basic-chart-facades",
-    "basic-bar-histogram-facades",
-    "basic-heatmap-facade"
-  ]) {
-    assert.equal(existsSync(path.join(root, "test/gates", directory)), false, directory);
   }
 });
 

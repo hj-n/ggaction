@@ -53,8 +53,6 @@ export const visualVariants = Object.freeze([
     title: "Jobs Horizontal Grouped Bar",
     callChain: horizontalGroupedBarTarget,
     artifact: {
-      roadmap: "roadmap3",
-      phase: "phase9",
       capability: "directional-offset"
     },
     primitive: () => createHorizontalGroupedBarPrimitives(rows),

@@ -1,17 +1,20 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { artifactTrackConfig } from "./artifact-schema.js";
+import { artifactScopeConfig } from "./artifact-schema.js";
 import { assertRenderedPNG } from "./png.js";
 
 function normalizeArtifactScope(artifact, label) {
   if (artifact === false) return false;
-  if (artifact === true) return Object.freeze({ roadmap: "roadmap2" });
+  if (artifact === true) {
+    return Object.freeze({ scope: "charts", capability: "chart-variants" });
+  }
   if (artifact === null || typeof artifact !== "object" || Array.isArray(artifact)) {
     throw new TypeError(`${label} artifact must be a boolean or object.`);
   }
-  const config = artifactTrackConfig(artifact.roadmap);
-  const allowed = new Set(["roadmap", ...config.scopeKeys]);
+  const scope = artifact.scope ?? "charts";
+  const config = artifactScopeConfig(scope);
+  const allowed = new Set(["scope", ...config.scopeKeys]);
   for (const key of Object.keys(artifact)) {
     if (!allowed.has(key)) {
       throw new TypeError(`${label} has unknown artifact option "${key}".`);
@@ -25,7 +28,7 @@ function normalizeArtifactScope(artifact, label) {
     }
   }
   return Object.freeze({
-    roadmap: artifact.roadmap,
+    scope,
     ...Object.fromEntries(config.scopeKeys.map(key => [key, artifact[key]]))
   });
 }

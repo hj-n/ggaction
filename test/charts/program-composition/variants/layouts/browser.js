@@ -7,9 +7,9 @@ import {
 } from "./primitive.program.js";
 
 const [carsResponse, jobsResponse, gapminderResponse] = await Promise.all([
-  fetch("../../../data/cars.json"),
-  fetch("../../../data/jobs.json"),
-  fetch("../../../data/gapminder.json")
+  fetch("../../../../../data/cars.json"),
+  fetch("../../../../../data/jobs.json"),
+  fetch("../../../../../data/gapminder.json")
 ]);
 const [cars, jobs, gapminder] = await Promise.all([
   carsResponse.json(),

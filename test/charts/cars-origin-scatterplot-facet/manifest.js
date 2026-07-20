@@ -14,8 +14,6 @@ import { createDirectFacetValues } from "./reference-values.js";
 const cars = loadCars();
 const values = createDirectFacetValues(cars);
 const artifact = Object.freeze({
-  roadmap: "roadmap3",
-  phase: "phase7",
   capability: "direct-source-facet"
 });
 

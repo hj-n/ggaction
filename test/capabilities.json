@@ -24,7 +24,8 @@
       "charts/polar-",
       "unit/actions/coordinates/",
       "unit/materialization/polar-",
-      "contracts/roadmap3-phase"
+      "contracts/visual-capability-",
+      "contracts/composition-integration.test.js"
     ],
     "rendering": [
       "unit/renderers/",

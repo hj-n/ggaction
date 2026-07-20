@@ -139,8 +139,6 @@ export const visualVariants = Object.freeze([
     title: "Gapminder Population by Cluster",
     callChain: gapminderWeightedDonutCallChain,
     artifact: {
-      roadmap: "roadmap4",
-      phase: "phase3",
       capability: "weighted-theta"
     },
     primitive: () => createGapminderWeightedDonutPrimitives(gapminder),
@@ -163,8 +161,6 @@ export const visualVariants = Object.freeze([
     title: "Cars Origin Donut",
     callChain: carsDonutTargetCallChain,
     artifact: {
-      roadmap: "roadmap3",
-      phase: "phase5",
       capability: "polar-arcs"
     },
     primitive: () => createCarsOriginDonutPrimitives(cars),
@@ -187,8 +183,6 @@ export const visualVariants = Object.freeze([
     title: "Nightingale Rose Chart",
     callChain: nightingaleTargetCallChain,
     artifact: {
-      roadmap: "roadmap3",
-      phase: "phase5",
       capability: "polar-arcs"
     },
     primitive: () => createNightingaleRosePrimitives(nightingale),
@@ -211,8 +205,6 @@ export const visualVariants = Object.freeze([
     title: "Gapminder Radial Bars",
     callChain: gapminderRadialTargetCallChain,
     artifact: {
-      roadmap: "roadmap3",
-      phase: "phase5",
       capability: "polar-arcs"
     },
     primitive: () => createGapminderRadialBarPrimitives(gapminder),

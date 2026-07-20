@@ -127,5 +127,5 @@
   state, centered unequal snapshots, Cartesian facet shared/independent scale and guide resolution, and explicit
   Polar-facet rejection.
 - Evidence: `test/charts/cross-feature-integration/`,
-  `test/contracts/roadmap3-phase10-baseline.test.js`, and
-  `test/contracts/roadmap3-phase10-closeout.test.js`.
+  `test/contracts/composition-integration.test.js`, and
+  `test/contracts/visual-capability-surface.test.js`.

@@ -4,7 +4,7 @@ import { createGapminderRegressionFacetPrimitives } from
 import { createGapminderOuterGuideFacetPrimitives } from
   "./primitive.program.js";
 
-const rows = await fetch("../../../data/gapminder.json").then(response => response.json());
+const rows = await fetch("../../../../../data/gapminder.json").then(response => response.json());
 const programs = {
   shared: createGapminderRegressionFacetPrimitives(rows),
   independent: createGapminderRegressionFacetPrimitives(rows, {

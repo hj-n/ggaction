@@ -21,8 +21,6 @@ const outer = createGapminderRegressionFacetValues(rows, {
   clusters: OUTER_GUIDE_CLUSTERS
 });
 const artifact = Object.freeze({
-  roadmap: "roadmap3",
-  phase: "phase8",
   capability: "facet-resolution"
 });
 

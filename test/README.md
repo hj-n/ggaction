@@ -55,10 +55,12 @@ Signatures catch major layout regressions without committing platform-sensitive
 full PNG snapshots; primitive and user-facing renders must still match
 pixel-for-pixel on the same platform.
 
-Artifact track shape is owned by `test/support/artifact-schema.js`. Paths,
+Artifact scope shape is owned by `test/support/artifact-schema.js`. Approved
+artifacts live under `charts/<capability>/<chart>/<variant>/`, while active
+review artifacts live under `review/<chart>/<variant>/`. Paths,
 metadata validation, render manifests, and gallery generation consume that
-registry so a later roadmap does not add independent conditionals across the
-test infrastructure.
+registry so new capabilities do not add independent conditionals across the
+test infrastructure. Run `npm run artifacts:clean` to remove generated output.
 
 Reference datasets are registered lazily in `test/support/data.js`. Use
 `fixtureRows(id)` for a shared frozen oracle and `loadDataset(id)` or the named

@@ -48,7 +48,7 @@ function operationCounts(context) {
   return counts;
 }
 
-test("authors the Gate A regression graphic hierarchy with raw primitives", () => {
+test("authors the regression graphic hierarchy with raw primitives", () => {
   const baseline = createCarsRegressionScatterplotPrimitives(cars, {
     hierarchy: false
   });

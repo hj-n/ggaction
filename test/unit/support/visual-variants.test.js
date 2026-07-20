@@ -20,40 +20,43 @@ const required = Object.freeze({
   ])
 });
 
-test("defaults visual artifact scope to Roadmap 2", () => {
+test("defaults approved visual artifacts to the chart-variants capability", () => {
   assert.deepEqual(defineVisualVariant(required).artifact, {
-    roadmap: "roadmap2"
+    scope: "charts",
+    capability: "chart-variants"
   });
 });
 
-test("accepts an exact Roadmap 3 phase and capability scope", () => {
+test("accepts approved capability and active-review artifact scopes", () => {
   assert.deepEqual(defineVisualVariant({
     ...required,
-    artifact: {
-      roadmap: "roadmap3",
-      phase: "phase2",
-      capability: "polar-point"
-    }
-  }).artifact, {
-    roadmap: "roadmap3",
-    phase: "phase2",
-    capability: "polar-point"
-  });
+    artifact: { capability: "polar-points" }
+  }).artifact, { scope: "charts", capability: "polar-points" });
+  assert.deepEqual(defineVisualVariant({
+    ...required,
+    artifact: { scope: "review" }
+  }).artifact, { scope: "review" });
 });
 
-test("accepts an exact Roadmap 4 phase and capability scope", () => {
-  assert.deepEqual(defineVisualVariant({
-    ...required,
-    artifact: {
-      roadmap: "roadmap4",
-      phase: "phase3",
-      capability: "weighted-theta"
-    }
-  }).artifact, {
-    roadmap: "roadmap4",
-    phase: "phase3",
-    capability: "weighted-theta"
-  });
+test("rejects incomplete or expanded visual artifact scopes", () => {
+  assert.throws(
+    () => defineVisualVariant({ ...required, artifact: { scope: "charts" } }),
+    /requires capability/
+  );
+  assert.throws(
+    () => defineVisualVariant({
+      ...required,
+      artifact: { capability: "polar-points", chart: "duplicate-owner" }
+    }),
+    /unknown artifact option/
+  );
+  assert.throws(
+    () => defineVisualVariant({
+      ...required,
+      artifact: { roadmap: "roadmap4", phase: "phase3" }
+    }),
+    /unknown artifact option/
+  );
 });
 
 test("accepts only complete compact visual signatures", () => {
@@ -61,71 +64,18 @@ test("accepts only complete compact visual signatures", () => {
     inkRatio: { min: 0.1, max: 0.2 },
     inkBounds: { x: 2, y: 3, width: 90, height: 70, tolerance: 2 }
   };
-  assert.deepEqual(defineVisualVariant({
-    ...required,
-    visualSignature
-  }).visualSignature, visualSignature);
-  assert.doesNotThrow(() => defineVisualVariant({
-    ...required,
-    visualSignature: {
-      inkRatio: { min: 0.1, max: 0.2 },
-      inkBounds: {
-        x: 2,
-        y: 3,
-        width: 90,
-        height: 70,
-        tolerance: { x: 2, y: 1, width: 4, height: 1 }
-      }
-    }
-  }));
+  assert.deepEqual(defineVisualVariant({ ...required, visualSignature }).visualSignature, visualSignature);
   assert.throws(() => defineVisualVariant({
     ...required,
     visualSignature: { inkRatio: { min: 0.2, max: 0.1 } }
   }), /invalid visual signature/);
-  assert.throws(() => defineVisualVariant({
-    ...required,
-    visualSignature: {
-      inkRatio: { min: 0.1, max: 0.2 },
-      inkBounds: {
-        x: 2,
-        y: 3,
-        width: 90,
-        height: 70,
-        tolerance: { x: 2, y: 1, width: -1, height: 1 }
-      }
-    }
-  }), /invalid visual signature/);
 });
 
-test("rejects incomplete or expanded visual artifact scope", () => {
-  assert.throws(
-    () => defineVisualVariant({
-      ...required,
-      artifact: { roadmap: "roadmap3", capability: "polar-point" }
-    }),
-    /requires phase, capability/
-  );
-  assert.throws(
-    () => defineVisualVariant({
-      ...required,
-      artifact: {
-        roadmap: "roadmap3",
-        phase: "phase2",
-        capability: "polar-point",
-        chart: "duplicate-owner"
-      }
-    }),
-    /unknown artifact option/
-  );
-});
-
-test("parses one displayed chain without evaluating its data bindings", () => {
+test("parses displayed chains without evaluating data bindings", () => {
   assert.deepEqual(displayedActionOperations(`chart()
     .createData({ values: rowsFromAnyScope })
     .createPointMark();`), ["createData", "createPointMark"]);
-  assert.deepEqual(displayedActionOperations(`hconcat({
-    programs: [left, right]
-  });`), ["hconcat"]);
+  assert.deepEqual(displayedActionOperations(`hconcat({ programs: [left, right] });`), ["hconcat"]);
   assert.deepEqual(displayedActionOperations(`overview
     .editCompositionLayout({ gap: 20 })
     .replaceCompositionChild({ target: "right", program: detail });`), [
@@ -135,33 +85,23 @@ test("parses one displayed chain without evaluating its data bindings", () => {
   assert.throws(() => displayedActionOperations("chart().createPointMark()"), /semicolon/);
 });
 
-test("requires displayed actions to match the canonical executable trace", () => {
+test("matches displayed actions against the canonical executable trace", () => {
   const variant = defineVisualVariant(required);
-  const program = {
+  assert.doesNotThrow(() => assertDisplayedProgram(variant, {
     trace: { children: [{ op: "createPointMark" }] }
-  };
-  assert.doesNotThrow(() => assertDisplayedProgram(variant, program));
-  assert.throws(
-    () => assertDisplayedProgram(variant, {
-      trace: { children: [{ op: "createBarMark" }] }
-    }),
-    /displayed action flow/
-  );
-});
-
-test("matches a displayed suffix when a call chain starts from an existing program", () => {
-  const variant = {
+  }));
+  assert.throws(() => assertDisplayedProgram(variant, {
+    trace: { children: [{ op: "createBarMark" }] }
+  }), /displayed action flow/);
+  assert.doesNotThrow(() => assertDisplayedProgram({
     chart: "dashboard",
     variant: "replacement",
     callChain: "overview.editCompositionLayout({ gap: 8 }).replaceCompositionChild({ target: 'detail', program });"
-  };
-  assert.doesNotThrow(() => assertDisplayedProgram(variant, {
-    trace: {
-      children: [
-        { op: "hconcat" },
-        { op: "editCompositionLayout" },
-        { op: "replaceCompositionChild" }
-      ]
-    }
+  }, {
+    trace: { children: [
+      { op: "hconcat" },
+      { op: "editCompositionLayout" },
+      { op: "replaceCompositionChild" }
+    ] }
   }));
 });

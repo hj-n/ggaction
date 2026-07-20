@@ -13,7 +13,7 @@ test("locks the production jitter-uniform-v1 grammar", () => {
   const policy = normalizePointJitterPolicy({
     channel: "x",
     maxOffset: { pixels: 12 },
-    seed: "gate-a",
+    seed: "stable-fixture",
     key: "id"
   });
   const resolved = resolvePointJitter({
@@ -26,8 +26,8 @@ test("locks the production jitter-uniform-v1 grammar", () => {
   });
   assert.equal(canonicalJitterScalar("é"), "string:2:é");
   assert.equal(stableUint32HashV1("hello"), 1335831723);
-  assert.equal(resolved.items[0].requestedOffset, 10.132016262039542);
-  assert.equal(resolved.items[0].finalOffset, 10.132016262039542);
+  assert.equal(resolved.items[0].requestedOffset, 5.343984559178352);
+  assert.equal(resolved.items[0].finalOffset, 5.343984559178352);
   assert.equal(resolved.algorithm, "jitter-uniform-v1");
   assert.equal(Object.isFrozen(resolved.items), true);
 });

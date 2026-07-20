@@ -13,7 +13,7 @@ import {
 import {
   createCategoricalPalettePrimitives,
   createMirroredAxesPrimitives
-} from "../primitive-programs.js";
+} from "../../../cars-scatterplot/variants/primitive-programs.js";
 import { createGapminderCurvedBoundaryPrimitives } from
   "../../../gapminder-error-band/variants/curved-boundary.primitive.program.js";
 import { createGapminderBandPointPrimitives } from

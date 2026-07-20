@@ -18,8 +18,6 @@ const jobs = loadJobs();
 const gapminder = loadGapminder();
 const values = createCompositionValues({ cars, jobs, gapminder });
 const artifact = Object.freeze({
-  roadmap: "roadmap3",
-  phase: "phase6",
   capability: "program-composition"
 });
 

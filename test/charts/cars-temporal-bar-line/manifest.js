@@ -42,8 +42,6 @@ export const visualVariants = Object.freeze([
     title: "Cars Temporal Bar and Line",
     callChain: carsTemporalBarLineTarget,
     artifact: {
-      roadmap: "roadmap3",
-      phase: "phase10",
       capability: "shared-position-scale"
     },
     primitive: () => createCarsTemporalBarLinePrimitives(rows),

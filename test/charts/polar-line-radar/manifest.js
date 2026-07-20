@@ -97,8 +97,6 @@ export const visualVariants = Object.freeze([
     title: "Gapminder Open Polar Trends",
     callChain: gapminderTargetCallChain,
     artifact: {
-      roadmap: "roadmap3",
-      phase: "phase4",
       capability: "polar-line-radar"
     },
     primitive: () => createGapminderPolarLinePrimitives(gapminder),
@@ -131,8 +129,6 @@ export const visualVariants = Object.freeze([
     title: "Jobs Closed Radar Chart",
     callChain: radarTargetCallChain,
     artifact: {
-      roadmap: "roadmap3",
-      phase: "phase4",
       capability: "polar-line-radar"
     },
     primitive: () => createJobsRadarPrimitives(jobs),

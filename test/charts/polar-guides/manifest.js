@@ -24,8 +24,6 @@ export const visualVariants = Object.freeze([
     title: "Cars Polar Guides",
     callChain: targetCallChain,
     artifact: {
-      roadmap: "roadmap3",
-      phase: "phase3",
       capability: "polar-guides"
     },
     primitive: () => createCarsPolarGuidePrimitives(cars),

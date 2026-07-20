@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 
-export async function openBrowserPage(browser, url, { waitFor } = {}) {
+export async function openBrowserPage(browser, url, { waitFor, waitForArg } = {}) {
   const page = await browser.newPage();
   const errors = [];
   page.on("console", message => {
@@ -10,7 +10,7 @@ export async function openBrowserPage(browser, url, { waitFor } = {}) {
 
   const response = await page.goto(url, { waitUntil: "networkidle" });
   assert.equal(response?.ok(), true, `${url} failed to load`);
-  if (waitFor) await page.waitForFunction(waitFor);
+  if (waitFor) await page.waitForFunction(waitFor, waitForArg);
   return { page, errors };
 }
 

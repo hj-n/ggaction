@@ -38,8 +38,6 @@ export const visualVariants = Object.freeze([
     title: "Cars Weighted Rules",
     callChain: weightedRuleCallChain,
     artifact: {
-      roadmap: "roadmap4",
-      phase: "phase3",
       capability: "field-stroke-width"
     },
     primitive: () => createCarsWeightedRulePrimitives(cars),

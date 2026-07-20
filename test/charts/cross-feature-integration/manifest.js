@@ -25,8 +25,6 @@ const dashboardCanvas = dashboardProbe.graphicSpec.objects.canvas.properties;
 const facetProbe = createGapminderOuterGuideFacetPrimitives(gapminder);
 const facetCanvas = facetProbe.graphicSpec.objects.canvas.properties;
 const artifact = Object.freeze({
-  roadmap: "roadmap3",
-  phase: "phase10",
   capability: "cross-feature-integration"
 });
 
@@ -58,7 +56,7 @@ export const visualVariants = Object.freeze([
   }),
   defineVisualVariant({
     chart: "gapminder-cluster-regression-facet",
-    variant: "phase10-outer-guides",
+    variant: "outer-guides",
     title: "Facet Outer Guides and Shared Legend",
     callChain: outerGuidesTarget,
     artifact,

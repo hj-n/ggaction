@@ -15,7 +15,7 @@ function read(relativePath) {
   return readFileSync(path.join(root, relativePath), "utf8");
 }
 
-test("closes every Phase 3 capability into Current and out of Planned", () => {
+test("keeps field-driven encodings Current and out of Planned", () => {
   const index = JSON.parse(read("agent_docs/contract/ACTION_INDEX.json"));
   for (const name of ACTIONS) {
     const current = index.actions.filter(action => action.name === name);
@@ -35,17 +35,9 @@ test("closes every Phase 3 capability into Current and out of Planned", () => {
     read("agent_docs/contract/planned/ENCODINGS.md"),
     /encodeStrokeWidth|aggregate:\s*"sum"|weight\?: FieldName/
   );
-  assert.match(
-    read("agent_docs/impl/roadmap4/ROADMAP.md"),
-    /\| 3 \| completed \| P-004 weighted theta와 P-008 field stroke width, P3-Exit 승인 완료 \|/
-  );
-  assert.match(
-    read("agent_docs/impl/roadmap4/phase3/GATE_EXIT.md"),
-    /Gate 상태: `approved`/
-  );
 });
 
-test("exports the complete Phase 3 strict option surface", () => {
+test("exports the complete strict field-driven option surface", () => {
   const programTypes = read("types/program.d.ts");
   const rootTypes = read("types/index.d.ts");
   for (const name of [
@@ -66,7 +58,7 @@ test("exports the complete Phase 3 strict option surface", () => {
   );
 });
 
-test("keeps both Phase 3 visual capabilities executable and equivalent", () => {
+test("keeps both field-driven visual capabilities executable and equivalent", () => {
   const weightedTheta = arcVariants.find(variant =>
     variant.artifact.capability === "weighted-theta"
   );
@@ -75,13 +67,12 @@ test("keeps both Phase 3 visual capabilities executable and equivalent", () => {
   );
   for (const variant of [weightedTheta, strokeWidth]) {
     assert.ok(variant);
-    assert.equal(variant.artifact.roadmap, "roadmap4");
-    assert.equal(variant.artifact.phase, "phase3");
+    assert.equal(variant.artifact.scope, "charts");
     assert.deepEqual(variant.userFacing().graphicSpec, variant.primitive().graphicSpec);
   }
 });
 
-test("documents both additive Phase 3 contracts and their limits", () => {
+test("documents both additive field-driven contracts and their limits", () => {
   const polar = read("docs/tutorials/polar-arcs.md");
   const appearance = read("docs/api/appearance/mark-style.md");
   assert.match(polar, /aggregate: "sum"/);

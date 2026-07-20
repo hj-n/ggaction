@@ -29,7 +29,7 @@ function canvas() {
   });
 }
 
-test("records the current and missing Roadmap 3 public surface", () => {
+test("keeps the implemented visual capability surface callable", () => {
   const program = chart();
   for (const name of [
     "encodeTheta",
