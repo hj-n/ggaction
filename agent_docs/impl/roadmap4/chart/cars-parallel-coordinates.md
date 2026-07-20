@@ -6,9 +6,10 @@
 비교한다. 약 35개 행만 사용해 교차 관계를 읽을 수 있으면서도 row identity, color legend, selection과
 missing segmentation을 실제로 검증한다.
 
-## Candidate user-facing API
+## Gate B runtime API
 
-P11-A에서 승인받기 전까지 아래 surface는 후보이며 Current API가 아니다.
+아래 runtime surface는 P11-B 검토 대상이다. Exact TypeScript, Current contract와 public docs 동기화는
+P11-B 승인 뒤 Step 6에서 수행하므로 아직 release-ready Current API는 아니다.
 
 ```javascript
 chart()
@@ -36,15 +37,27 @@ chart()
       fieldType: "nominal",
       scale: { palette: "tableau10" }
     },
-    line: { strokeWidth: 1.25, opacity: 0.48 }
+    line: { strokeWidth: 1.25, opacity: 0.48 },
+    guides: {
+      legend: {
+        offset: 42,
+        symbol: { length: 24, lineWidth: 3 },
+        titleStyle: { color: "#1e293b" }
+      }
+    }
   })
   .createTitle({
     text: "Cars of 1970",
-    subtitle: "Each path connects one car across four measurements"
+    subtitle: "Each path connects one car across four measurements",
+    align: "center",
+    offset: 1,
+    gap: 9.5,
+    titleStyle: { fontWeight: 700 },
+    subtitleStyle: { fontSize: 13 }
   });
 ```
 
-## Candidate action hierarchy
+## Gate B action hierarchy
 
 ```text
 createParallelCoordinates
@@ -62,7 +75,7 @@ createParallelCoordinates
 attachment를 소유하고, `encoding.parallel.dimensions`가 ordered field/scale/title assignment를 원자적으로
 소유한다.
 
-## Candidate advanced API
+## Gate B advanced API
 
 ```typescript
 type ParallelDimension = string | {
