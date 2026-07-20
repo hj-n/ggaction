@@ -149,3 +149,116 @@ test("replays gradient profiles inside immutable facet children", () => {
   assert.equal(base.markConfigs.gradientPlot.gradientPlot.profileId, "gradientPlotProfileData");
   assert.equal(base.graphicSpec.objects.gradientPlot.items.length, 2);
 });
+
+test("attaches text with an explicit fallback instead of inspecting gradient paint", () => {
+  const source = gradient();
+  const labeled = source
+    .createTextMark({ text: "profile" })
+    .editTextMark({ fill: "#0f172a" });
+  const textLayer = labeled.semanticSpec.layers.find(layer => layer.id === "text");
+  const items = labeled.graphicSpec.objects.text.items;
+
+  assert.equal(textLayer.source, "gradientPlot");
+  assert.equal(items.length, 2);
+  assert.equal(items.every(item => item.properties.fill === "#0f172a"), true);
+  assert.equal(
+    labeled.graphicSpec.objects["plot-main"].children.indexOf("text") <
+      labeled.graphicSpec.objects["plot-main"].children.indexOf("gradientPlotCenter"),
+    false
+  );
+
+  const edited = labeled.editGradientPlot({ width: { band: 0.5 } });
+  assert.equal(
+    edited.graphicSpec.objects.text.items[0].properties.x,
+    edited.graphicSpec.objects.gradientPlot.items[0].properties.x +
+      edited.graphicSpec.objects.gradientPlot.items[0].properties.width / 2
+  );
+  assert.equal(source.graphicSpec.objects.text, undefined);
+});
+
+test("creates default guides from the original semantic fields in drawing order", () => {
+  const program = chart()
+    .createCanvas({
+      width: 420,
+      height: 320,
+      margin: { top: 40, right: 90, bottom: 60, left: 60 }
+    })
+    .createData({ id: "rows", values: rows })
+    .createGradientPlot({
+      x: { field: "group", fieldType: "nominal" },
+      y: { field: "value" },
+      density: { bandwidth: 0.5, steps: 8 }
+    });
+  const children = program.graphicSpec.objects["plot-main"].children;
+
+  assert.equal(program.semanticSpec.guides.axis.x.title, "group");
+  assert.equal(program.semanticSpec.guides.axis.y.title, "value");
+  assert.ok(children.indexOf("horizontalGridLines") < children.indexOf("gradientPlot"));
+  assert.ok(children.indexOf("gradientPlot") < children.indexOf("gradientPlotCenter"));
+  assert.ok(children.indexOf("gradientPlotCenter") < children.indexOf("xAxisLine"));
+  assert.equal(program.graphicSpec.objects.gradientPlotDensityLegend.type, "rect");
+});
+
+test("supports horizontal orientation and deterministic lifecycle ordering", () => {
+  const horizontal = base => base.createGradientPlot({
+    x: { field: "value" },
+    y: { field: "group", fieldType: "nominal" },
+    density: { bandwidth: 0.5, steps: 8 },
+    guides: false
+  });
+  const source = chart()
+    .createCanvas({ width: 420, height: 320 })
+    .createData({ id: "rows", values: rows });
+  const program = horizontal(source);
+  const reversed = program.editScale({ id: "x", reverse: true });
+
+  assert.equal(program.markConfigs.gradientPlot.gradientPlot.orientation, "horizontal");
+  assert.equal(program.graphicSpec.objects.gradientPlot.items[0].properties.height > 0, true);
+  assert.deepEqual(
+    reversed.graphicSpec.objects.gradientPlot.items[0].properties.fill.from,
+    program.graphicSpec.objects.gradientPlot.items[0].properties.fill.to
+  );
+
+  const canvasThenProfile = program
+    .editCanvas({ width: 500 })
+    .editGradientPlot({ density: { steps: 10 } });
+  const profileThenCanvas = program
+    .editGradientPlot({ density: { steps: 10 } })
+    .editCanvas({ width: 500 });
+  assert.deepEqual(canvasThenProfile.semanticSpec, profileThenCanvas.semanticSpec);
+  assert.deepEqual(canvasThenProfile.graphicSpec, profileThenCanvas.graphicSpec);
+});
+
+test("builds profiles from an immutable filtered source", () => {
+  const source = chart()
+    .createCanvas({ width: 420, height: 320 })
+    .createData({ id: "rows", values: rows });
+  const filtered = source.filterData({
+    id: "onlyA",
+    source: "rows",
+    field: "group",
+    oneOf: ["A"]
+  });
+  const program = filtered.createGradientPlot({
+    x: { field: "group", fieldType: "nominal" },
+    y: { field: "value" },
+    density: { bandwidth: 0.5, steps: 8 },
+    guides: false
+  });
+
+  assert.equal(program.markConfigs.gradientPlot.gradientPlot.source, "onlyA");
+  assert.equal(program.graphicSpec.objects.gradientPlot.items.length, 1);
+  assert.equal(source.semanticSpec.datasets.length, 1);
+  assert.equal(source.semanticSpec.datasets[0].values.length, rows.length);
+});
+
+test("rejects partial composite mark filtering with source-filter guidance", () => {
+  const program = gradient();
+
+  assert.throws(
+    () => program.filterMarks({ field: "group", op: "eq", value: "A" }),
+    /filter its source dataset first/
+  );
+  assert.equal(program.semanticSpec.datasets.length, 2);
+  assert.equal(program.graphicSpec.objects.gradientPlot.items.length, 2);
+});

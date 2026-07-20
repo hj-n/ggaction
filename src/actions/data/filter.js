@@ -125,6 +125,11 @@ export const filterMarks = action(
         candidate.data !== undefined &&
         findSelectionPolicy(candidate.mark?.type) !== undefined
     });
+    if (this.markConfigs[layer.id]?.itemFilterable === false) {
+      throw new Error(
+        `filterMarks does not support composite mark "${layer.id}"; filter its source dataset first.`
+      );
+    }
     const derivedId = `${layer.id}FilteredData`;
     if (hasDataset(this, derivedId)) {
       throw new Error(`Dataset "${derivedId}" already exists.`);

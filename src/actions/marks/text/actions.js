@@ -27,11 +27,16 @@ const EDIT_OPTIONS = Object.freeze(["target", ...STYLE_OPTIONS]);
 const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);
 const SOURCE_TYPES = new Set(["point", "bar", "rule", "rect"]);
 
+function sourceMatchesData(program, layer, requestedData) {
+  if (requestedData === undefined || layer?.data === requestedData) return true;
+  return program.markConfigs[layer.id]?.gradientPlot?.source === requestedData;
+}
+
 function eligibleSource(program, layer, requestedData) {
   if (
     !SOURCE_TYPES.has(layer?.mark?.type) ||
     layer.data === undefined ||
-    (requestedData !== undefined && layer.data !== requestedData)
+    !sourceMatchesData(program, layer, requestedData)
   ) return false;
   const encodings = resolveCompatibleEncodings(program, layer, "text");
   return encodings.x !== undefined && encodings.y !== undefined;

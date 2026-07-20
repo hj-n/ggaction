@@ -73,6 +73,7 @@ export const createGradientPlot = action(
         center,
         guides
       },
+      itemFilterable: false,
       stroke: false,
       strokeWidth: 0
     });

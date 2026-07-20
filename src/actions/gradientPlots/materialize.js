@@ -6,6 +6,9 @@ import {
   mapContinuousScaleValues,
   mapOrdinalPositionValues
 } from "../../grammar/scales/index.js";
+import { applyMaterializationPlan } from "../../materialization/dependencies.js";
+import { getSourceDependentMarkSteps } from "../../materialization/marks/index.js";
+import { buildMaterializationPlan } from "../../materialization/planner.js";
 import { findDataset } from "../../selectors/datasets.js";
 import { findLayer } from "../../selectors/layers.js";
 import {
@@ -22,6 +25,34 @@ function position(values, scale) {
 
 function profileValue(row, key) {
   return row[GRADIENT_PROFILE_FIELDS[key]];
+}
+
+function axisWithTitle(option, text) {
+  if (option === false) return false;
+  const axis = option ?? {};
+  return {
+    ...axis,
+    title: {
+      ...(axis.title ?? {}),
+      ...(axis.title?.text === undefined ? { text } : {})
+    }
+  };
+}
+
+function gradientAxesOptions(config) {
+  if (config.guides.axes === false) return false;
+  const axes = config.guides.axes ?? {};
+  return {
+    ...axes,
+    x: axisWithTitle(
+      axes.x,
+      config.orientation === "vertical" ? config.category : config.measure
+    ),
+    y: axisWithTitle(
+      axes.y,
+      config.orientation === "vertical" ? config.measure : config.category
+    )
+  };
 }
 
 function bodyItems(program, layer, dataset, config) {
@@ -121,6 +152,12 @@ export const materializeGradientPlotFill = action(
       property: "items",
       value: bodyItems(next, findLayer(next, owner), dataset, config)
     });
+    next = applyMaterializationPlan(
+      next,
+      buildMaterializationPlan({
+        marks: getSourceDependentMarkSteps(next, owner)
+      })
+    );
     if (
       config.guides?.legend !== false &&
       config.guides?.legend !== undefined &&
@@ -231,7 +268,7 @@ export const materializeGradientPlot = action(
       const wantsStandard = guides.axes !== false || guides.grid !== false;
       if (wantsStandard) {
         next = next.createGuides({
-          axes: guides.axes,
+          axes: gradientAxesOptions(next.markConfigs[owner].gradientPlot),
           grid: guides.grid,
           legend: false
         });
