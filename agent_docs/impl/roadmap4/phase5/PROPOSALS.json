@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "phase": "roadmap4/phase5",
+  "gate": "P5-A",
+  "status": "preparing",
+  "actions": [
+    {
+      "name": "createWindowData",
+      "status": "proposed",
+      "required": ["id", "operations"],
+      "optional": ["source", "partitionBy", "sortBy"],
+      "replacement": "recreating the same derived id replaces its revision and rematerializes consumers",
+      "stateOwner": "named derived dataset and canonical transform registry"
+    },
+    {
+      "name": "createBin2DData",
+      "status": "proposed",
+      "required": ["id", "x", "y"],
+      "optional": ["source", "bins", "extent", "includeEmpty", "members", "as"],
+      "replacement": "recreating the same derived id replaces its revision and rematerializes consumers",
+      "stateOwner": "named derived dataset and canonical transform registry"
+    },
+    {
+      "name": "createHeatmap",
+      "status": "proposed-extension",
+      "required": ["x", "y"],
+      "optional": ["id", "data", "coordinate", "bin", "color", "rect", "guides"],
+      "replacement": "bin omitted preserves the implemented pre-gridded contract",
+      "stateOwner": "wrapped derived dataset, rect layer, encodings, scales and guides"
+    }
+  ]
+}
