@@ -13,6 +13,7 @@ test("keeps every stored dataset transform in the grammar registry", () => {
     markFilter: ["materializeMarkFilteredData", undefined],
     regression: ["materializeRegressionData", "statistical"],
     density: ["materializeDensityData", "statistical"],
+    horizon: ["materializeHorizonData", "statistical"],
     interval: ["materializeIntervalData", "statistical"],
     boxSummary: ["materializeBoxSummaryData", "statistical"],
     boxOutlier: ["materializeBoxOutlierData", "statistical"]
@@ -24,6 +25,7 @@ test("keeps every stored dataset transform in the grammar registry", () => {
   }
   assert.equal(findTransformPolicy("markFilter").provenanceTransparent, true);
   assert.equal(typeof findTransformPolicy("density").replayTransform, "function");
+  assert.equal(typeof findTransformPolicy("horizon").replayTransform, "function");
   assert.equal(findTransformPolicy("unknown"), undefined);
   assert.equal(findTransformValidator("unknown"), undefined);
   assert.throws(

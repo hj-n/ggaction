@@ -2,10 +2,10 @@
 
 ## 진행 상태
 
-- [ ] Horizon transform validator와 canonical registry
-- [ ] stable x sort, crossing interpolation과 missing segmentation
-- [ ] sign×band×segment rows와 deterministic identity
-- [ ] shared/independent extent와 overflow policy
-- [ ] immutable source/revision provenance
+- [x] Horizon transform validator와 canonical registry
+- [x] stable x sort, crossing interpolation과 missing segmentation
+- [x] sign×band×segment rows와 deterministic identity
+- [x] shared/independent extent와 overflow policy
+- [x] immutable source/revision provenance
 
-P9-A 승인 전에는 시작하지 않는다.
+P9-A 승인 후 independent oracle과 production grammar를 분리한 채 구현했다.

@@ -21,6 +21,7 @@ import {
   materializeGradientProfileData
 } from "./gradientProfile.js";
 import { createIntervalData, materializeIntervalData } from "./interval.js";
+import { createHorizonData, materializeHorizonData } from "./horizon.js";
 import { createWindowData, materializeWindowData } from "./window.js";
 import { createBin2DData, materializeBin2DData } from "./bin2d.js";
 import { createBoxSummaryData, createBoxOutlierData, materializeBoxSummaryData, materializeBoxOutlierData } from "./box.js";
@@ -45,6 +46,8 @@ export function registerDataActions(ProgramClass) {
   ProgramClass.prototype.createRegressionData = createRegressionData;
   ProgramClass.prototype.materializeIntervalData = materializeIntervalData;
   ProgramClass.prototype.createIntervalData = createIntervalData;
+  ProgramClass.prototype.createHorizonData = createHorizonData;
+  ProgramClass.prototype.materializeHorizonData = materializeHorizonData;
   ProgramClass.prototype.createWindowData = createWindowData;
   ProgramClass.prototype.materializeWindowData = materializeWindowData;
   ProgramClass.prototype.createBin2DData = createBin2DData;

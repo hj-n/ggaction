@@ -239,6 +239,7 @@ test("keeps primitives and internal wrapped actions in separate layers", () => {
     "createBoxOutliers",
     "createBoxSummaryData",
     "createGradientProfileData",
+    "createHorizonData",
     "createGradientPlotCenter",
     "createGradientPlotLegend",
     "createErrorBarCap",

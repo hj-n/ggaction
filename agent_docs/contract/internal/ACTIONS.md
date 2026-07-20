@@ -17,6 +17,7 @@ domain action을 통해서만 실행한다.
 | `materializeComposition` | `hconcat`, `vconcat`, and composition edits |
 | `materializeDensityData` | density data actions |
 | `materializeGradientProfileData` | gradient-plot profile data actions |
+| `materializeHorizonData` | `encodeHorizon` and `editHorizon` derived band data |
 | `materializeGradientPlot` | deferred `createGradientPlot` completion and position encodings |
 | `materializeGradientPlotFill` | gradient-plot body, scale, text, and density-legend consumers |
 | `materializeFilteredData` | filter data actions |
@@ -106,6 +107,7 @@ primitive edits로 저장하기 위해 호출하는 internal wrapped state trans
 | `createBoxMedian` | `createBoxPlot` | median rule spanning the concrete ranged-bar body |
 | `createBoxOutliers` | `createBoxPlot` | diamond point realization for existing outlier rows |
 | `createGradientProfileData` | `createGradientPlot`, `editGradientPlot` | immutable sampled category-profile revision |
+| `createHorizonData` | `encodeHorizon`, `editHorizon` | immutable sign×band×segment data revision |
 | `createGradientPlotCenter` | `createGradientPlot`, `editGradientPlot` | optional center rule for each category strip |
 | `createGradientPlotLegend` | `createGradientPlot`, `editGradientPlot` | neutral relative-density legend |
 | `createErrorBarCap` | `createErrorBar` | compose one namespaced fixed-pixel cap from rule and encoding child actions |

@@ -11,6 +11,10 @@ import {
   validateGradientProfileTransform
 } from "./gradientProfile.js";
 import { validateIntervalTransform } from "./interval.js";
+import {
+  requestedHorizonTransform,
+  validateHorizonTransform
+} from "./horizon.js";
 import { validateMarkFilterTransform } from "./markFilter.js";
 import { validateRegressionTransform } from "./regression/index.js";
 import { validateWindowTransform } from "./window.js";
@@ -53,6 +57,12 @@ const TRANSFORM_POLICIES = Object.freeze({
     materializeOp: "materializeGradientProfileData",
     facetTopology: "statistical",
     replayTransform: requestedGradientProfileTransform
+  }),
+  horizon: Object.freeze({
+    validate: validateHorizonTransform,
+    materializeOp: "materializeHorizonData",
+    facetTopology: "statistical",
+    replayTransform: requestedHorizonTransform
   }),
   interval: Object.freeze({
     validate: validateIntervalTransform,
