@@ -38,7 +38,7 @@ function validatePair(value, label) {
   return value;
 }
 
-function validateOutputs(as, occupied) {
+function validateOutputs(as, { category, field }) {
   if (!isPlainObject(as)) {
     throw new TypeError("Gradient profile as must be a plain object.");
   }
@@ -55,7 +55,12 @@ function validateOutputs(as, occupied) {
   if (new Set(values).size !== values.length) {
     throw new Error("Gradient profile output fields must be distinct.");
   }
-  if (values.some(value => occupied.has(value))) {
+  const inputCollisions = values.filter(value => value === category || value === field);
+  if (
+    inputCollisions.some(value => value !== category) ||
+    as.category !== category ||
+    values.slice(1).includes(category)
+  ) {
     throw new Error("Gradient profile output fields must not collide with input fields.");
   }
 }
@@ -98,7 +103,7 @@ export function validateGradientProfileTransform(value) {
   if (value.resolve !== "shared") {
     throw new Error(`Unsupported gradient profile resolve "${value.resolve}".`);
   }
-  validateOutputs(value.as, new Set([category, field]));
+  validateOutputs(value.as, { category, field });
   if (value.resolved !== undefined) {
     const resolved = value.resolved;
     if (
@@ -130,7 +135,7 @@ export function normalizeGradientProfileTransform(options = {}) {
     kernel: options.kernel ?? "gaussian",
     normalization: options.normalization ?? "unit",
     center: options.center ?? "median",
-    as: options.as ?? GRADIENT_PROFILE_FIELDS,
+    as: options.as ?? { ...GRADIENT_PROFILE_FIELDS, category: options.category },
     resolve: "shared"
   };
   validateGradientProfileTransform(transform);

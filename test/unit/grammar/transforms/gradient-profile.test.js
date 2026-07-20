@@ -30,6 +30,7 @@ test("derives one immutable profile row per first-appearance category", () => {
   assert.equal(result.values.length, 2);
   assert.deepEqual(result.extent, [1, 6]);
   assert.deepEqual(result.values.map(row => row[GRADIENT_PROFILE_FIELDS.count]), [3, 2]);
+  assert.deepEqual(result.values.map(row => row.group), ["A", "B"]);
   assert.deepEqual(result.values.map(row => row[GRADIENT_PROFILE_FIELDS.center]), [2, 5]);
   assert.equal(result.values.every(row =>
     row[GRADIENT_PROFILE_FIELDS.values].length === 5 &&

@@ -102,6 +102,9 @@ const rematerializeRectMark = action(
     if (graphic?.type !== "rect" || !Array.isArray(graphic.items)) {
       throw new Error(`Rect mark "${id}" requires rect collection graphics.`);
     }
+    if (this.markConfigs[id]?.gradientPlot?.materialized === true) {
+      return this.materializeGradientPlotFill({ id });
+    }
     const dataset = findDataset(this, layer.data);
     if (dataset === undefined) {
       throw new Error(`Rect mark "${id}" requires an existing dataset.`);

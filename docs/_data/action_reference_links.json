@@ -71,6 +71,8 @@
   "editErrorBandBoundary": "/reference/actions/statistics/#editerrorband-and-editerrorbandboundary",
   "createBoxPlot": "/reference/actions/statistics/#createboxplot",
   "editBoxPlot": "/reference/actions/statistics/#editboxplot",
+  "createGradientPlot": "/reference/actions/statistics/#creategradientplot",
+  "editGradientPlot": "/reference/actions/statistics/#editgradientplot",
   "createGuides": "/reference/actions/guides/#createguides",
   "createAxes": "/reference/actions/guides/#createaxes",
   "createThetaAxis": "/reference/actions/guides/#createthetaaxis",

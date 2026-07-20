@@ -1046,6 +1046,42 @@
       }
     },
     {
+      "name": "createGradientPlot",
+      "layer": "user-facing",
+      "domain": "statistics",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "`editGradientPlot`",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/GRADIENT_PLOTS.md",
+        "anchor": "creategradientplot"
+      }
+    },
+    {
+      "name": "editGradientPlot",
+      "layer": "user-facing",
+      "domain": "statistics",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Creates immutable profile revisions and edits owned components",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/GRADIENT_PLOTS.md",
+        "anchor": "editgradientplot"
+      }
+    },
+    {
       "name": "createAxes",
       "layer": "user-facing",
       "domain": "axes",
@@ -2157,50 +2193,8 @@
     ,{ "name": "createRectMark", "layer": "user-facing", "domain": "marks", "status": "implemented", "lifecycle": "Mutable resource", "update": "`editRectMark` and position/color encodings", "audit": "Complete", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/MARKS.md", "anchor": "createrectmark" } }
     ,{ "name": "editRectMark", "layer": "user-facing", "domain": "marks", "status": "implemented", "lifecycle": "Mutable resource", "update": "Edits rect appearance", "audit": "Complete", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/MARKS.md", "anchor": "editrectmark" } }
   ],
-  "plannedActions": [
-    {
-      "name": "createGradientPlot",
-      "status": "planned",
-      "readiness": "pending-parameter-review",
-      "contract": {
-        "file": "agent_docs/contract/planned/GRADIENT_PLOTS.md",
-        "anchor": "creategradientplot"
-      }
-    },
-    {
-      "name": "editGradientPlot",
-      "status": "planned",
-      "readiness": "pending-parameter-review",
-      "contract": {
-        "file": "agent_docs/contract/planned/GRADIENT_PLOTS.md",
-        "anchor": "editgradientplot"
-      }
-    }
-  ],
-  "plannedCapabilities": [
-    {
-      "id": "fill-paint-linear-gradient",
-      "name": "FillPaint with LinearGradientPaint variant",
-      "kind": "parameter",
-      "status": "planned",
-      "readiness": "pending-parameter-review",
-      "contract": {
-        "file": "agent_docs/contract/planned/GRADIENT_PLOTS.md",
-        "anchor": "fillpaint"
-      }
-    },
-    {
-      "id": "categorical-uncertainty-family",
-      "name": "Categorical uncertainty chart family",
-      "kind": "behavior",
-      "status": "planned",
-      "readiness": "accepted",
-      "contract": {
-        "file": "agent_docs/contract/planned/GRADIENT_PLOTS.md",
-        "anchor": "categorical-uncertainty-family"
-      }
-    }
-  ],
+  "plannedActions": [],
+  "plannedCapabilities": [],
   "internal": {
     "materialization": [
       "materializeBoxOutlierData",
@@ -2208,7 +2202,10 @@
       "materializeBoxSummaryData",
       "materializeBin2DData",
       "materializeComposition",
-      "materializeDensityData",
+    "materializeDensityData",
+    "materializeGradientProfileData",
+    "materializeGradientPlot",
+    "materializeGradientPlotFill",
       "materializeFilteredData",
       "materializeMarkFilteredData",
       "materializeIntervalData",
@@ -2220,7 +2217,8 @@
       "rematerializeBarMark",
       "rematerializeErrorBandBoundary",
       "rematerializeErrorBar",
-      "rematerializeGradientLegend",
+    "rematerializeGradientLegend",
+    "rematerializeGradientPlotLegend",
       "rematerializeIntervalLegend",
       "rematerializeGrid",
       "rematerializeHorizontalGrid",
@@ -2278,7 +2276,10 @@
       "createBoxMedian",
       "createBoxOutlierData",
       "createBoxOutliers",
-      "createBoxSummaryData",
+    "createBoxSummaryData",
+    "createGradientProfileData",
+    "createGradientPlotCenter",
+    "createGradientPlotLegend",
       "createErrorBarCap",
       "createErrorBandBoundary",
       "applyBarHighlight",

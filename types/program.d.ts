@@ -1103,6 +1103,49 @@ export interface EditBoxPlotOptions {
   };
 }
 
+export type GradientPlotPositionChannel = BoxPlotPositionChannel;
+
+export interface GradientPlotDensityOptions {
+  bandwidth?: "auto" | number;
+  extent?: "auto" | readonly [number, number];
+  steps?: number;
+  kernel?: DensityKernel;
+  normalization?: DensityNormalization;
+}
+
+export interface GradientPlotAppearanceOptions {
+  palette?: Palette;
+  opacity?: readonly [number, number];
+}
+
+export interface GradientPlotCenterOptions {
+  type?: "mean" | "median";
+  stroke?: string;
+  strokeWidth?: number;
+}
+
+export interface GradientPlotOptions {
+  id?: string;
+  target?: string;
+  data?: string;
+  x?: GradientPlotPositionChannel;
+  y?: GradientPlotPositionChannel;
+  coordinate?: string;
+  density?: GradientPlotDensityOptions;
+  width?: { band?: number };
+  gradient?: GradientPlotAppearanceOptions;
+  center?: false | GradientPlotCenterOptions;
+  guides?: false | CreateGuidesOptions;
+}
+
+export interface EditGradientPlotOptions {
+  target?: string;
+  density?: GradientPlotDensityOptions;
+  width?: { band?: number };
+  gradient?: GradientPlotAppearanceOptions;
+  center?: false | GradientPlotCenterOptions;
+}
+
 type BasicPositionChannel =
   | string
   | Omit<PositionEncodingOptions, "target" | "coordinate">;
@@ -1951,6 +1994,8 @@ export class ChartProgram {
   editErrorBandBoundary(options: EditErrorBandBoundaryOptions): ChartProgram;
   createBoxPlot(options?: BoxPlotOptions): ChartProgram;
   editBoxPlot(options: EditBoxPlotOptions): ChartProgram;
+  createGradientPlot(options?: GradientPlotOptions): ChartProgram;
+  editGradientPlot(options: EditGradientPlotOptions): ChartProgram;
   createScatterPlot(options: CreateScatterPlotOptions): ChartProgram;
   createLinePlot(options: CreateLinePlotOptions): ChartProgram;
   createBarPlot(options: CreateBarPlotOptions): ChartProgram;

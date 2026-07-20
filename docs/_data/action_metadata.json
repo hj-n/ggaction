@@ -284,6 +284,16 @@
     "layer": "user-facing",
     "domain": "statistics"
   },
+  "createGradientPlot": {
+    "operation": "create",
+    "layer": "user-facing",
+    "domain": "statistics"
+  },
+  "editGradientPlot": {
+    "operation": "edit",
+    "layer": "user-facing",
+    "domain": "statistics"
+  },
   "createAxes": {
     "operation": "create",
     "layer": "user-facing",

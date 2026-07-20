@@ -128,6 +128,34 @@ Revise box statistics, optional outlier topology, width, and component
 appearance through the stable box owner without addressing generated child
 IDs. [Box plots](../../api/box-plots.md#editing-a-box-plot)
 
+## `createGradientPlot`
+
+```javascript
+createGradientPlot({
+  id?, target?, data?, x?, y?, coordinate?, density?, width?, gradient?,
+  center?, guides?
+} = {})
+```
+
+Create one density-gradient strip per category from categorical and
+quantitative x/y roles. Positions can be explicit, inferred from one eligible
+encoded layer, or completed later. Defaults are Gaussian auto density, 64
+samples, width band `0.7`, no outline, a median center rule, and applicable
+guides. A categorical `encodeColor` owns strip hue while density continues to
+control lightness and opacity.
+[Statistical actions](../../reference/actions/statistics.md#creategradientplot)
+
+## `editGradientPlot`
+
+```javascript
+editGradientPlot({ target?, density?, width?, gradient?, center? })
+```
+
+Revise one stable gradient-plot owner. Statistical changes create and rebind
+one immutable raw-source profile revision; appearance-only edits retain it.
+`center: false` removes the optional rule and `center: {}` restores it.
+[Statistical actions](../../reference/actions/statistics.md#editgradientplot)
+
 ## Related
 
 [Action Reference](../actions.md) · [Chart API](../../api/index.md) · [Supported Features](../../supported-features.md)

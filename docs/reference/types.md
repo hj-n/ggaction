@@ -81,6 +81,8 @@ interface ChartProgramActions {
   editErrorBandBoundary(options: EditErrorBandBoundaryOptions): ChartProgram;
   createBoxPlot(options?: BoxPlotOptions): ChartProgram;
   editBoxPlot(options: EditBoxPlotOptions): ChartProgram;
+  createGradientPlot(options?: GradientPlotOptions): ChartProgram;
+  editGradientPlot(options: EditGradientPlotOptions): ChartProgram;
   createScatterPlot(options: CreateScatterPlotOptions): ChartProgram;
   createLinePlot(options: CreateLinePlotOptions): ChartProgram;
   createBarPlot(options: CreateBarPlotOptions): ChartProgram;

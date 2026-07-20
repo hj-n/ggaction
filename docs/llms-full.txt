@@ -8347,6 +8347,7 @@ Use document search with `Ctrl+K` or scan the alphabetical list. Each action has
 | [`createDerivedData`](./actions/advanced.md#semantic-resources-and-regression-layers) | user-facing | core |
 | [`createErrorBand`](./actions/statistics.md#createerrorband) | user-facing | statistics |
 | [`createErrorBar`](./actions/statistics.md#createerrorbar) | user-facing | statistics |
+| [`createGradientPlot`](./actions/statistics.md#creategradientplot) | user-facing | statistics |
 | [`createGraphics`](./actions/extension.md#extension-actions) | primitive | primitives |
 | [`createGrid`](./actions/guides.md#creategrid) | user-facing | grid |
 | [`createGuides`](./actions/guides.md#createguides) | user-facing | legend_and_title |
@@ -8397,6 +8398,7 @@ Use document search with `Ctrl+K` or scan the alphabetical list. Each action has
 | [`editErrorBandBoundary`](./actions/statistics.md#editerrorband-and-editerrorbandboundary) | user-facing | statistics |
 | [`editErrorBar`](./actions/statistics.md#editerrorbar) | user-facing | statistics |
 | [`editFacetHeaders`](./actions/charts-data.md#editfacetheaders) | user-facing | composition |
+| [`editGradientPlot`](./actions/statistics.md#editgradientplot) | user-facing | statistics |
 | [`editGraphics`](./actions/extension.md#extension-actions) | primitive | primitives |
 | [`editGrid`](./actions/advanced.md#directional-grids) | user-facing | grid |
 | [`editHorizontalGrid`](./actions/advanced.md#directional-grids) | user-facing | grid |
@@ -9320,6 +9322,34 @@ Revise box statistics, optional outlier topology, width, and component
 appearance through the stable box owner without addressing generated child
 IDs. [Box plots](../../api/box-plots.md#editing-a-box-plot)
 
+## `createGradientPlot`
+
+```javascript
+createGradientPlot({
+  id?, target?, data?, x?, y?, coordinate?, density?, width?, gradient?,
+  center?, guides?
+} = {})
+```
+
+Create one density-gradient strip per category from categorical and
+quantitative x/y roles. Positions can be explicit, inferred from one eligible
+encoded layer, or completed later. Defaults are Gaussian auto density, 64
+samples, width band `0.7`, no outline, a median center rule, and applicable
+guides. A categorical `encodeColor` owns strip hue while density continues to
+control lightness and opacity.
+[Statistical actions](../../reference/actions/statistics.md#creategradientplot)
+
+## `editGradientPlot`
+
+```javascript
+editGradientPlot({ target?, density?, width?, gradient?, center? })
+```
+
+Revise one stable gradient-plot owner. Statistical changes create and rebind
+one immutable raw-source profile revision; appearance-only edits retain it.
+`center: false` removes the optional rule and `center: {}` restores it.
+[Statistical actions](../../reference/actions/statistics.md#editgradientplot)
+
 ## Related
 
 [Action Reference](../actions.md) · [Chart API](../../api/index.md) · [Supported Features](../../supported-features.md)
@@ -9910,6 +9940,8 @@ interface ChartProgramActions {
   editErrorBandBoundary(options: EditErrorBandBoundaryOptions): ChartProgram;
   createBoxPlot(options?: BoxPlotOptions): ChartProgram;
   editBoxPlot(options: EditBoxPlotOptions): ChartProgram;
+  createGradientPlot(options?: GradientPlotOptions): ChartProgram;
+  editGradientPlot(options: EditGradientPlotOptions): ChartProgram;
   createScatterPlot(options: CreateScatterPlotOptions): ChartProgram;
   createLinePlot(options: CreateLinePlotOptions): ChartProgram;
   createBarPlot(options: CreateBarPlotOptions): ChartProgram;

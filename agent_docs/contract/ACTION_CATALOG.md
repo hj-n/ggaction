@@ -65,6 +65,8 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 | user-facing | [`editErrorBandBoundary`](current/STATISTICS.md#editerrorbandboundary) | statistics | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`createBoxPlot`](current/COMPOSITE_MARKS.md#createboxplot) | statistics | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`editBoxPlot`](current/COMPOSITE_MARKS.md#editboxplot) | statistics | Mutable resource | Complete | ✅ / ✅ / ✅ |
+| user-facing | [`createGradientPlot`](current/GRADIENT_PLOTS.md#creategradientplot) | statistics | Mutable resource | Complete | ✅ / ✅ / ✅ |
+| user-facing | [`editGradientPlot`](current/GRADIENT_PLOTS.md#editgradientplot) | statistics | Mutable resource | Complete | ✅ / ✅ / ✅ |
 | user-facing | [`createAxes`](current/AXES.md#createaxes) | axes | Aggregate create-only | Intentional | ✅ / ✅ / ⚠️ |
 | user-facing | [`createXAxis`](current/AXES.md#createxaxis) | axes | Aggregate create-only | Intentional | ✅ / ✅ / ⚠️ |
 | user-facing | [`createYAxis`](current/AXES.md#createyaxis) | axes | Aggregate create-only | Intentional | ✅ / ✅ / ✅ |
@@ -161,15 +163,11 @@ Contract conventions and shared formal notation live in [`README.md`](README.md)
 
 | Action | Readiness | Contract |
 | --- | --- | --- |
-| `createGradientPlot` | pending-parameter-review | [Open](planned/GRADIENT_PLOTS.md#creategradientplot) |
-| `editGradientPlot` | pending-parameter-review | [Open](planned/GRADIENT_PLOTS.md#editgradientplot) |
 
 ## Planned capabilities
 
 | Kind | Capability | Readiness | Contract |
 | --- | --- | --- | --- |
-| parameter | FillPaint with LinearGradientPaint variant | pending-parameter-review | [Open](planned/GRADIENT_PLOTS.md#fillpaint) |
-| behavior | Categorical uncertainty chart family | accepted | [Open](planned/GRADIENT_PLOTS.md#categorical-uncertainty-family) |
 
 ## Internal inventories
 

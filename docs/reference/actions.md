@@ -40,6 +40,7 @@ Use document search with `Ctrl+K` or scan the alphabetical list. Each action has
 | [`createDerivedData`](./actions/advanced.md#semantic-resources-and-regression-layers) | user-facing | core |
 | [`createErrorBand`](./actions/statistics.md#createerrorband) | user-facing | statistics |
 | [`createErrorBar`](./actions/statistics.md#createerrorbar) | user-facing | statistics |
+| [`createGradientPlot`](./actions/statistics.md#creategradientplot) | user-facing | statistics |
 | [`createGraphics`](./actions/extension.md#extension-actions) | primitive | primitives |
 | [`createGrid`](./actions/guides.md#creategrid) | user-facing | grid |
 | [`createGuides`](./actions/guides.md#createguides) | user-facing | legend_and_title |
@@ -90,6 +91,7 @@ Use document search with `Ctrl+K` or scan the alphabetical list. Each action has
 | [`editErrorBandBoundary`](./actions/statistics.md#editerrorband-and-editerrorbandboundary) | user-facing | statistics |
 | [`editErrorBar`](./actions/statistics.md#editerrorbar) | user-facing | statistics |
 | [`editFacetHeaders`](./actions/charts-data.md#editfacetheaders) | user-facing | composition |
+| [`editGradientPlot`](./actions/statistics.md#editgradientplot) | user-facing | statistics |
 | [`editGraphics`](./actions/extension.md#extension-actions) | primitive | primitives |
 | [`editGrid`](./actions/advanced.md#directional-grids) | user-facing | grid |
 | [`editHorizontalGrid`](./actions/advanced.md#directional-grids) | user-facing | grid |

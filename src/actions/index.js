@@ -9,6 +9,7 @@ import { registerErrorBarActions } from "./errorBars/index.js";
 import { registerFacetActions } from "./facets/index.js";
 import { registerBoxPlotActions } from "./boxPlots/index.js";
 import { registerGuideActions } from "./guides/index.js";
+import { registerGradientPlotActions } from "./gradientPlots/index.js";
 import { registerMarkActions } from "./marks/index.js";
 import { registerPrimitiveActions } from "./primitives/index.js";
 import { registerRegressionActions } from "./regression/index.js";
@@ -32,6 +33,7 @@ export function registerActions(ProgramClass) {
   registerErrorBarActions(ProgramClass);
   registerErrorBandActions(ProgramClass);
   registerBoxPlotActions(ProgramClass);
+  registerGradientPlotActions(ProgramClass);
   registerChartActions(ProgramClass);
   registerSelectionActions(ProgramClass);
 }

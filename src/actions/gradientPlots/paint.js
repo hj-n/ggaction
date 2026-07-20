@@ -1,0 +1,103 @@
+import { resolveContinuousPalette } from "../../grammar/palettes.js";
+import { mapScaleConsumerValues } from "../../materialization/scales/map.js";
+
+function parseHex(value) {
+  const match = value.match(/^#([0-9a-f]{6})$/i);
+  if (!match) throw new Error(`Gradient plot requires a six-digit hex color, received "${value}".`);
+  return [0, 2, 4].map(offset =>
+    Number.parseInt(match[1].slice(offset, offset + 2), 16)
+  );
+}
+
+function interpolate(left, right, amount) {
+  return left.map((channel, index) =>
+    Math.round(channel + (right[index] - channel) * amount)
+  );
+}
+
+function alphaColor(rgb, opacity) {
+  return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${Number(opacity.toFixed(6))})`;
+}
+
+function paletteColor(colors, amount) {
+  const bounded = Math.max(0, Math.min(1, amount));
+  const scaled = bounded * (colors.length - 1);
+  const left = Math.floor(scaled);
+  const right = Math.min(colors.length - 1, left + 1);
+  return interpolate(parseHex(colors[left]), parseHex(colors[right]), scaled - left);
+}
+
+function categoricalRamp(base) {
+  const rgb = parseHex(base);
+  const pale = interpolate([255, 255, 255], rgb, 0.2);
+  return [
+    `#${pale.map(value => value.toString(16).padStart(2, "0")).join("")}`,
+    base
+  ];
+}
+
+export function resolveGradientPlotCategoryColors(program, layer, categories) {
+  if (layer.encoding?.color === undefined) return undefined;
+  const scale = program.resolvedScales[layer.encoding.color.scale];
+  if (scale === undefined) {
+    throw new Error(`Gradient plot "${layer.id}" requires a resolved color scale.`);
+  }
+  return mapScaleConsumerValues(categories, scale, "color");
+}
+
+export function createGradientPlotPaint(profile, {
+  orientation,
+  valueScale,
+  intensityDomain,
+  palette,
+  opacity,
+  baseColor
+}) {
+  const values = profile.values;
+  const intensities = profile.intensities;
+  const mapped = mapScaleConsumerValues(values, valueScale, "position");
+  const start = orientation === "vertical"
+    ? { x: 0.5, y: 1 }
+    : { x: 0, y: 0.5 };
+  const end = orientation === "vertical"
+    ? { x: 0.5, y: 0 }
+    : { x: 1, y: 0.5 };
+  const startPosition = mapped[0];
+  const endPosition = mapped.at(-1);
+  if (!Number.isFinite(startPosition) || !Number.isFinite(endPosition) || startPosition === endPosition) {
+    throw new Error("Gradient plot requires distinct mapped profile endpoints.");
+  }
+  const colors = baseColor === undefined
+    ? resolveContinuousPalette(palette, 11)
+    : categoricalRamp(baseColor);
+  const maximum = intensityDomain[1];
+  const stops = values.map((_, index) => {
+    const fraction = intensities[index] / maximum;
+    return {
+      offset: (mapped[index] - startPosition) / (endPosition - startPosition),
+      color: alphaColor(
+        paletteColor(colors, fraction),
+        opacity[0] + (opacity[1] - opacity[0]) * fraction
+      )
+    };
+  });
+  return {
+    type: "linear-gradient",
+    from: start,
+    to: end,
+    stops
+  };
+}
+
+export function createDensityLegendPaint(opacity) {
+  const colors = ["#e2e8f0", "#334155"];
+  return {
+    type: "linear-gradient",
+    from: { x: 0.5, y: 1 },
+    to: { x: 0.5, y: 0 },
+    stops: colors.map((color, index) => ({
+      offset: index,
+      color: alphaColor(parseHex(color), opacity[index])
+    }))
+  };
+}

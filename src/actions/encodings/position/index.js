@@ -74,6 +74,16 @@ function encodePosition(program, channel, args, operation) {
     }
   }
 
+  if (layer.mark.type === "rect") {
+    const updated = findLayer(next, target);
+    const pendingGradient = next.markConfigs[target]?.gradientPlot;
+    if (pendingGradient !== undefined && !pendingGradient.materialized) {
+      return updated.encoding?.x !== undefined && updated.encoding?.y !== undefined
+        ? next.materializeGradientPlot({ id: target })
+        : next;
+    }
+  }
+
   const updated = findLayer(next, target);
   for (const step of getPositionEncodingMaterializationSteps(
     next,
