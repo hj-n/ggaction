@@ -6,10 +6,10 @@
 - [x] string fill compatibility와 별도 paint action을 만들지 않는 API boundary
 - [x] categorical/quantitative x/y 및 deferred inference contract
 - [x] density-profile requested/resolved provenance와 one-row-per-category schema
-- [ ] independent gradient sampling/color interpolation oracle
-- [ ] independent density/profile literal Cars vectors와 invariants
-- [ ] normal/reversed value scale의 sample→pixel→stop offset oracle
-- [ ] P6-A proposal inventory와 Current API non-leak contract
+- [x] independent gradient sampling/color interpolation oracle
+- [x] independent density/profile literal Cars vectors와 invariants
+- [x] normal/reversed value scale의 sample→pixel→stop offset oracle
+- [x] P6-A proposal inventory와 Current API non-leak contract
 
 Production renderer나 public facade보다 먼저 의미, 경계값, ownership과 numeric target을 고정한다.
 

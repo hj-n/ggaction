@@ -2,14 +2,14 @@
 
 ## 진행 상태
 
-- [ ] shared `FillPaint` validation, normalization과 immutable structural copy
-- [ ] `editGraphics` string→paint→string 및 paint-as-scalar collection distribution
-- [ ] final item bounds를 사용하는 rect/bar/area/closed-path Canvas fill adapter
-- [ ] mock renderer와 Node PNG parity
-- [ ] explicit primitive Cars gradient plot program
-- [ ] vertical/horizontal/reversed-scale/hard-stop/multi-stop focused variants
-- [ ] existing string fill snapshots와 unsupported open-path/stroke validation
-- [ ] Browser/PNG source와 image를 포함한 P6-A package
+- [x] shared `FillPaint` validation, normalization과 immutable structural copy
+- [x] `editGraphics` string→paint→string 및 paint-as-scalar collection distribution
+- [x] final item bounds를 사용하는 rect/bar/area/closed-path Canvas fill adapter
+- [x] mock renderer와 Node PNG parity
+- [x] explicit primitive Cars gradient plot program
+- [x] vertical/horizontal/reversed-scale/hard-stop/multi-stop focused variants
+- [x] existing string fill snapshots와 unsupported open-path/stroke validation
+- [x] Browser/PNG source와 image를 포함한 P6-A package
 - [ ] P6-A 사용자 승인
 
 Primitive target은 public `createGradientPlot`을 호출하지 않고 density/profile expected values와 low-level graphics를

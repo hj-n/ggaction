@@ -1,9 +1,9 @@
 # Planned categorical gradient plots
 
 이 문서는 Roadmap 4 Phase 6에서 승인된 API 방향과 P6-A에서 확정할 parameter contract를 분리한다.
-`createGradientPlot`/`editGradientPlot`의 이름, BoxPlot-compatible x/y family, stable edit owner와 범용 `FillPaint`
-경계는 Planned다. Exact paint validation과 visual defaults는 아직 구현되지 않았으며 P6-A parameter review 전까지
-Current가 아니다.
+`createGradientPlot`/`editGradientPlot`의 이름, BoxPlot-compatible x/y family와 stable edit owner는 Planned다.
+범용 `FillPaint` 경계와 첫 `LinearGradientPaint` variant는 public extension primitive/type로 구현되어 있다.
+GradientPlot의 exact parameter/default contract는 P6-A parameter review 전까지 Current가 아니다.
 
 ## FillPaint
 
@@ -41,7 +41,8 @@ type LinearGradientPaint = {
   Graphic state에는 backend object나 renderer command를 저장하지 않는다.
 - Existing resource-specific appearance action이 fill을 소유하면 string과 paint를 같은 property에서 교체한다. Advanced
   action author는 public extension primitive `editGraphics`로 같은 concrete value contract를 사용할 수 있다.
-- Exact validation, endpoint orientation과 hard-stop duplicate policy는 P6-A에서 primitive source와 image를 함께 승인한다.
+- Exact validation, endpoint orientation과 hard-stop duplicate policy는 구현되었으며 P6-A에서 primitive source와 image를
+  함께 검토한다.
 
 ### Exact P6-A candidate validation
 

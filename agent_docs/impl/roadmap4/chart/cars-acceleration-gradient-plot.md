@@ -20,9 +20,9 @@ inferential uncertainty를 나타낸다. Example과 public docs는 두 의미를
 ```javascript
 const program = chart()
   .createCanvas({
-    width: 520,
+    width: 620,
     height: 460,
-    margin: { top: 90, right: 105, bottom: 70, left: 75 }
+    margin: { top: 85, right: 170, bottom: 95, left: 80 }
   })
   .createData({ values: cars })
   .createGradientPlot({
@@ -41,7 +41,7 @@ const program = chart()
     },
     center: {
       type: "median",
-      stroke: "#111827",
+      stroke: "#0f172a",
       strokeWidth: 1.5
     },
     guides: {
@@ -53,8 +53,8 @@ const program = chart()
     }
   })
   .createTitle({
-    text: "Acceleration Distributions by Origin",
-    subtitle: "Gradient intensity shows estimated density",
+    text: "Acceleration Distribution by Origin",
+    subtitle: "Gradient intensity shows the within-origin density",
     align: "center"
   });
 ```
