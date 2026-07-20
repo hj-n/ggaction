@@ -59,7 +59,7 @@ program
   .jitterPoints({
     target: "observations",
     channel: "x",
-    maxOffset: { band: 0.42 },
+    maxOffset: { band: 0.168 },
     seed: "cars-origin-strip",
     key: "Name"
   });
@@ -85,7 +85,7 @@ program
   .jitterPoints({
     target: "observations",
     channel: "y",
-    maxOffset: { band: 0.4 },
+    maxOffset: { band: 0.16 },
     seed: "gapminder-cluster-strip",
     key: "country"
   });

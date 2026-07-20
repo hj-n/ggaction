@@ -52,9 +52,9 @@ test("registers two primitive-only P4-A targets with the approved API shape", ()
     assert.equal(variant.primitive().semanticSpec.layers[0].mark.type, "point");
   }
   assert.match(visualVariants[0].callChain, /channel: "x"/);
-  assert.match(visualVariants[0].callChain, /maxOffset: \{ band: 0\.42 \}/);
+  assert.match(visualVariants[0].callChain, /maxOffset: \{ band: 0\.168 \}/);
   assert.match(visualVariants[1].callChain, /channel: "y"/);
-  assert.match(visualVariants[1].callChain, /maxOffset: \{ band: 0\.4 \}/);
+  assert.match(visualVariants[1].callChain, /maxOffset: \{ band: 0\.16 \}/);
 });
 
 test("records the P4-A state, replacement, containment, and non-goal boundaries", () => {

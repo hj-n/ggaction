@@ -5,7 +5,7 @@ export const CARS_JITTER_LAYOUT = Object.freeze({
   plot: Object.freeze({ left: 70, top: 40, right: 610, bottom: 370 }),
   radius: 3.4,
   seed: "cars-origin-strip",
-  band: 0.42
+  band: 0.168
 });
 
 export const GAPMINDER_JITTER_LAYOUT = Object.freeze({
@@ -15,7 +15,7 @@ export const GAPMINDER_JITTER_LAYOUT = Object.freeze({
   plot: Object.freeze({ left: 80, top: 40, right: 650, bottom: 390 }),
   radius: 3.4,
   seed: "gapminder-cluster-strip",
-  band: 0.4
+  band: 0.16
 });
 
 export function createCarsJitterRows(cars) {
