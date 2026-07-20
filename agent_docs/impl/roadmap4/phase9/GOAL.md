@@ -42,7 +42,7 @@ sign×band×segment rows로 변환하고, 기존 area path와 Canvas/PNG rendere
 
 | Gate | 상태 | 승인 대상 | 승인 전 차단되는 작업 |
 | --- | --- | --- | --- |
-| P9-A | ready-for-review | exact API/default/error/state, independent oracle, primitive source와 PNG | production grammar/action 구현 |
+| P9-A | approved | exact API/default/error/state, independent oracle, primitive source와 PNG | production grammar/action 구현 |
 | P9-B | planned | public lifecycle, primitive/public parity, edit/facet consumer matrix | Phase closeout |
 | P9-Exit | planned | Current inventory, architecture, docs/types/package와 cumulative verification | Phase 10 |
 
