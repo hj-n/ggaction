@@ -34,7 +34,7 @@ chart()
   .createGuides()
   .createTitle({
     text: "Kenya Life Expectancy",
-    subtitle: "Three horizon bands relative to a 55-year baseline"
+    subtitle: "Blue above, red below · three folded bands around 55 years"
   });
 ```
 
