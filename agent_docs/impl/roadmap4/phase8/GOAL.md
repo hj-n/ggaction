@@ -16,7 +16,8 @@ facade `createViolinPlot({ x, y })`로 노출한다. Density 계산은 기존 im
 - [x] P8-A 사용자 승인
 - [x] category placement grammar/materialization과 P8-B review package
 - [x] P8-B 사용자 승인
-- [ ] lifecycle/consumer matrix, facade, docs/package와 P8-Exit 사용자 승인
+- [x] lifecycle/consumer matrix, facade, docs/package closeout
+- [ ] P8-Exit 사용자 승인
 
 ## 후보 public API
 
@@ -108,7 +109,7 @@ createViolinPlot({
 | --- | --- | --- | --- |
 | P8-A | approved | exact API/defaults/state, full/split primitive PNG | production grammar/action 구현 |
 | P8-B | approved | lower-level lifecycle/consumer matrix, facade chain과 primitive/public exact parity | Phase closeout |
-| P8-Exit | planned | Current inventory, architecture, docs/types/package와 cumulative verification | Phase 9 |
+| P8-Exit | ready-for-review | Current inventory, architecture, docs/types/package와 cumulative verification | Phase 9 |
 
 모든 Gate는 hard pause다.
 

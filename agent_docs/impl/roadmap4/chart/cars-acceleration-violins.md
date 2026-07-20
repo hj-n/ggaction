@@ -2,7 +2,8 @@
 
 ## 상태
 
-`in-progress` — P8-B review package에서 primitive/public exact parity를 검증한 categorical-density contract다.
+`ready-for-review` — P8-Exit package에서 public types, runnable example, docs와 package parity까지 검증한
+categorical-density contract다.
 
 ## 차트 목표
 

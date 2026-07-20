@@ -279,6 +279,10 @@ Density provenance는 requested policy와 materialized revision 결과를 분리
 `"auto"` intent는 transform에 그대로 남고, 해당 revision에서 계산한 concrete 값은
 `resolved: { bandwidth, extent }`에 저장된다. 따라서 derived replay와 `editDensity`는 새 source rows마다
 자동 policy를 다시 계산하면서도 각 immutable revision의 실제 계산값을 해석할 수 있다.
+Category placement는 같은 transform에 normalized category field, position channel, side, band-relative width,
+shared/independent resolution과 optional two-value split intent를 저장한다. Split domain을 추론한 revision은
+concrete first-appearance pair를 `resolved.splitDomain`에 저장한다. Category band center, resolved half-width와
+closed path commands는 `graphicSpec`에만 존재한다.
 
 Rectangular 2D-bin provenance도 requested grid policy와 materialized revision 결과를 분리한다. Transform은
 requested `bins`, per-axis automatic/explicit `extent`, output fields와 empty/member policy를 저장하고,
@@ -1097,7 +1101,8 @@ points
 └─ pointsRegressionColor
 ```
 
-Density도 target area ID에서 derived data ID를 만든다. 이렇게 해야 하나의 program에서
+Density도 target area ID에서 derived data ID를 만든다. Baseline과 category placement는 같은 namespace와
+revision lifecycle을 공유하며 category/split provenance만 transform branch로 구분한다. 이렇게 해야 하나의 program에서
 여러 point 또는 area에 같은 aggregate action을 적용해도 충돌하지 않는다.
 Density edit revision은 `${target}DensityDataRevision${n}`을 사용한다. Rebind 뒤 이전 revision이 다른
 layer나 derived dataset에서 참조되지 않을 때만 `releaseDerivedData`가 semantic resource 전체를 제거한다.
@@ -1514,7 +1519,7 @@ domain action을 제공한다.
 
 ```text
 encodeDensity
-├─ createDensityData
+├─ createDensityData | createCategoricalDensityData
 │  ├─ createDerivedData
 │  └─ materializeDensityData
 ├─ editSemantic(layer.data = derived dataset)
@@ -1524,7 +1529,11 @@ encodeDensity
 └─ rematerializeAreaMark
 ```
 
-`densityChannel`에 따라 value와 density field가 x/y 중 어느 쪽에 놓이는지 결정한다.
+Baseline placement에서는 `densityChannel`에 따라 value와 density field가 x/y 중 어느 쪽에 놓이는지 결정하고
+scale zero baseline에서 area를 닫는다. Category placement에서는 categorical band center와 quantitative value axis를
+같은 Cartesian coordinate에 연결하고 density magnitude를 band-relative full/half width로 바꾼다. Shared width는
+전체 profile maximum, independent width는 category-local maximum을 사용하며 split halves는 같은 category maximum을
+공유한다.
 
 ```text
 editDensity
@@ -1535,7 +1544,24 @@ editDensity
 ```
 
 Density edit은 source, output field, orientation과 scale binding을 유지한다. 전달된 statistical parameter만
-새 revision provenance에 적용하며 이전 derived values를 덮어쓰지 않는다.
+새 revision provenance에 적용하며 이전 derived values를 덮어쓰지 않는다. Baseline과 category mode를 전환할 때는
+새 position definition을 검증한 뒤 stale encoding과 scale을 제거하고 모든 연결 consumer를 deterministic plan으로
+다시 materialize한다.
+
+```text
+createViolinPlot
+├─ createAreaMark
+├─ configureAreaStrokeFromFill?
+├─ encodeDensity(category placement)
+├─ encodeColor?
+└─ createGuides?
+```
+
+`createViolinPlot({ x, y })`은 Box/Gradient plot과 같은 categorical/quantitative positional family facade다.
+Exactly one categorical role이 placement와 grouping을, one quantitative role이 density value axis를 소유한다.
+Facade는 child chart를 category마다 만들지 않고 ordinary area, density encoding, color와 guide action을 그대로
+호출한다. Facade 자체는 aggregate create-only이며 density revision은 `editDensity`, path appearance는
+`editAreaMark`, scale/guide revision은 각 owning resource action이 담당한다.
 
 ### Regression
 
@@ -1998,6 +2024,8 @@ interval containment을 deterministic invariant로 검증한다.
     Cars binned heatmap
 13. Category별 immutable density profile, backend-neutral linear-gradient `FillPaint`, optional center rule,
     source filtering, category-strip highlighting과 Cartesian facet replay를 가진 Cars gradient plot
+14. Category band 안에서 shared-width full density와 two-value split half density를 materialize하고
+    positional-family `createViolinPlot({ x, y })` facade와 exact parity를 갖는 Cars acceleration violin plot
 
 이 목록은 chart type별 별도 compiler가 있다는 뜻이 아니다. 같은 data, scale, mark,
 encoding, guide, layout, materialization primitive가 여러 vertical slice에서 재사용된다는
@@ -2093,6 +2121,9 @@ state, explicit materialization, action trace, package boundary와 충돌하지 
 - Concrete `fill`은 solid string 또는 immutable backend-neutral `LinearGradientPaint`를 받는 하나의
   `FillPaint` 계약이다. Gradient profile은 semantic derived data, palette/opacity intent는 owner config,
   normalized endpoints와 stops는 `graphicSpec`, backend gradient object는 renderer-local ephemeral state가 소유한다.
+- Categorical distribution/uncertainty facade는 `x`와 `y`의 semantic roles로 orientation을 추론한다. Box,
+  gradient-distribution과 violin은 exactly one categorical + one quantitative role, target/data/coordinate inference와
+  deferred position completion 규칙을 공유하고 family-specific statistics/appearance만 named nested option으로 둔다.
 - Statistical composite를 facet할 때 raw partition 뒤 registered transform을 cell-local ID로 replay하고,
   body/sibling layer뿐 아니라 owner의 private source/profile identity도 explicit wrapped transition으로 함께 rebind한다.
 

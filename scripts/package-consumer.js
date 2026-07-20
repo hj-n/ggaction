@@ -241,6 +241,25 @@ async function testNodeConsumer(directory) {
         .properties.fill.type,
       "linear-gradient"
     );
+    const violinPlotFacade = chart()
+      .createCanvas({ width: 180, height: 140, margin: 20 })
+      .createData({ values: [
+        { group: "A", value: 1 },
+        { group: "A", value: 2 },
+        { group: "B", value: 3 },
+        { group: "B", value: 4 }
+      ] })
+      .createViolinPlot({
+        x: { field: "group", fieldType: "nominal" },
+        y: { field: "value", fieldType: "quantitative" },
+        density: { bandwidth: 0.5, steps: 8 },
+        guides: false
+      });
+    assert.equal(violinPlotFacade.graphicSpec.objects.violinPlot.items.length, 2);
+    assert.equal(
+      violinPlotFacade.trace.children.at(-1).op,
+      "createViolinPlot"
+    );
     const polar = chart()
       .createCanvas({ width: 160, height: 160, margin: 20 })
       .createData({ values: [{ angle: 0, distance: 1 }, { angle: 1, distance: 2 }] })
@@ -479,6 +498,7 @@ async function testTypeScriptConsumer(directory) {
       type StrokeWidthEncodingOptions,
       type ThetaEncodingOptions,
       type ThetaScaleOptions,
+      type ViolinPlotOptions,
       type WindowDataOptions
     } from "ggaction";
     import { action, ChartProgram as ExtensionProgram } from "ggaction/extension";
@@ -575,6 +595,23 @@ async function testTypeScriptConsumer(directory) {
       ] })
       .createGradientPlot(gradientOptions)
       .editGradientPlot({ width: { band: 0.5 } });
+    const violinOptions: ViolinPlotOptions = {
+      x: { field: "group", fieldType: "nominal" },
+      y: { field: "value", fieldType: "quantitative" },
+      density: {
+        bandwidth: 0.5,
+        steps: 8,
+        width: { band: 0.8, resolve: "shared" }
+      },
+      guides: false
+    };
+    const violinFacade: ChartProgram = chart()
+      .createCanvas()
+      .createData({ values: [
+        { group: "A", value: 1 },
+        { group: "A", value: 2 }
+      ] })
+      .createViolinPlot(violinOptions);
     const composed: ChartProgram = hconcat({
       programs: [program, program]
     })
@@ -732,6 +769,7 @@ async function testTypeScriptConsumer(directory) {
     void histogramFacade;
     void heatmapFacade;
     void gradientFacade;
+    void violinFacade;
     void png;
     void extensionProgram;
     void composed;
@@ -794,6 +832,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
       "window-data",
       "bin2d-data",
       "binned-heatmap",
+      "violin-plot",
       "right-categorical-legend-offset",
       "sequential-palette-count",
       "typescript",
