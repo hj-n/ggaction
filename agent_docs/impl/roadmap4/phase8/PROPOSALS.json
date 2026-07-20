@@ -2,7 +2,7 @@
   "version": 1,
   "phase": "roadmap4/phase8",
   "gate": "P8-A",
-  "status": "proposed",
+  "status": "ready-for-review",
   "capabilities": [
     {
       "id": "NCP-001",
