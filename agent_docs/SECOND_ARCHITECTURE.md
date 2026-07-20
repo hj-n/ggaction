@@ -1728,6 +1728,16 @@ Scale edit의 완성된 후보 definition 계산과 모든 consumer/guide 호환
 primitive semantic edits와 materialization orchestration만 담당하며, 검증이 끝나기 전에
 부분 semantic update를 만들지 않는다.
 
+Legend kind별 semantic guide ownership, family, rematerialization action과 concrete graphic
+resource ids는 `materialization/guides/resources.js`의 resource policy registry가 소유한다.
+Legend removal, whole-legend rematerialization과 composition cleanup은 자체 kind switch를
+복제하지 않고 이 registry를 조회한다.
+
+Facet의 `legacyCategorical` path는 이미 materialized된 child legend를 승격하는 일반 경로와
+동일하지 않다. Legend 없이 작성된 direct-source unit chart의 compact point/rect recipe와
+기존 concrete rendering 계약을 보존하는 제한된 fallback이다. 일반 path로 대체하려면
+resource topology, symbol recipe, layout와 rendering equivalence를 먼저 증명해야 한다.
+
 각 action category의 `index.js`는 registrar boundary다. `actions/index.js`가 모든 built-in
 registrar를 한 번 조립하고 top-level `ChartProgram.js`가 이를 core program subclass에 등록한다.
 따라서 `core/`는 `actions/`를 import하지 않는다. `grammar/`는 core utility와 다른 pure grammar만,

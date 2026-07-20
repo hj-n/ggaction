@@ -6,6 +6,8 @@ import { findLayer } from "../../../../selectors/layers.js";
 import { findSemanticScale } from "../../../../selectors/scales.js";
 import { isSizeLegendPoint } from "../size.js";
 import { isStrokeWidthLegendLayer } from "../strokeWidth.js";
+import { legendResourcePolicies } from
+  "../../../../materialization/guides/resources.js";
 import {
   resolveCurrentDefinition,
   resolveDefinition,
@@ -81,20 +83,13 @@ export const rematerializeLegend = action(
       ).some(highlight => highlight.target === config.target);
       if (hasHighlight) next = next.rematerializeLegendHighlights();
     }
-    if (this.guideConfigs.legend?.size !== undefined) {
-      next = next.rematerializeSizeLegend();
-    }
-    if (this.guideConfigs.legend?.strokeWidth !== undefined) {
-      next = next.rematerializeStrokeWidthLegend();
-    }
-    if (this.guideConfigs.legend?.gradient !== undefined) {
-      next = next.rematerializeGradientLegend();
-    }
-    if (this.guideConfigs.legend?.interval !== undefined) {
-      next = next.rematerializeIntervalLegend();
-    }
-    if (this.guideConfigs.legend?.opacity !== undefined) {
-      next = next.rematerializeOpacityLegend();
+    for (const policy of legendResourcePolicies()) {
+      if (
+        policy.rematerializeOp !== undefined &&
+        this.guideConfigs.legend?.[policy.kind] !== undefined
+      ) {
+        next = next[policy.rematerializeOp]();
+      }
     }
     return next;
   }

@@ -5,31 +5,66 @@ const CATEGORICAL_COMPONENTS = Object.freeze([
   "Labels", "Title", "Background"
 ]);
 
-const LEGEND_GRAPHICS = Object.freeze({
-  series: Object.freeze(CATEGORICAL_COMPONENTS.map(
-    component => `seriesLegend${component}`
-  )),
-  color: Object.freeze(CATEGORICAL_COMPONENTS.map(
-    component => `colorLegend${component}`
-  )),
-  size: Object.freeze([
-    "sizeLegendSymbols", "sizeLegendLabels", "sizeLegendTitle"
-  ]),
-  gradient: Object.freeze([
-    "colorGradientBackground", "colorGradientStrips", "colorGradientTicks",
-    "colorGradientLabels", "colorGradientTitle"
-  ]),
-  interval: Object.freeze([
-    "colorLegendSymbols", "colorLegendLabels", "colorLegendTitle"
-  ]),
-  opacity: Object.freeze([
-    "opacityLegendBackground", "opacityLegendSymbols", "opacityLegendLabels",
-    "opacityLegendTitle"
-  ]),
-  strokeWidth: Object.freeze([
-    "strokeWidthLegendSymbols", "strokeWidthLegendLabels",
-    "strokeWidthLegendTitle"
-  ])
+const LEGEND_RESOURCE_POLICIES = Object.freeze({
+  series: Object.freeze({
+    semanticKind: "series",
+    family: "categorical",
+    rematerializeOp: undefined,
+    graphicIds: Object.freeze(CATEGORICAL_COMPONENTS.map(
+      component => `seriesLegend${component}`
+    ))
+  }),
+  color: Object.freeze({
+    semanticKind: "color",
+    family: "categorical",
+    rematerializeOp: undefined,
+    graphicIds: Object.freeze(CATEGORICAL_COMPONENTS.map(
+      component => `colorLegend${component}`
+    ))
+  }),
+  size: Object.freeze({
+    semanticKind: "size",
+    family: "size",
+    rematerializeOp: "rematerializeSizeLegend",
+    graphicIds: Object.freeze([
+      "sizeLegendSymbols", "sizeLegendLabels", "sizeLegendTitle"
+    ])
+  }),
+  gradient: Object.freeze({
+    semanticKind: "color",
+    family: "continuous",
+    rematerializeOp: "rematerializeGradientLegend",
+    graphicIds: Object.freeze([
+      "colorGradientBackground", "colorGradientStrips", "colorGradientTicks",
+      "colorGradientLabels", "colorGradientTitle"
+    ])
+  }),
+  interval: Object.freeze({
+    semanticKind: "color",
+    family: "interval",
+    rematerializeOp: "rematerializeIntervalLegend",
+    graphicIds: Object.freeze([
+      "colorLegendSymbols", "colorLegendLabels", "colorLegendTitle"
+    ])
+  }),
+  opacity: Object.freeze({
+    semanticKind: "opacity",
+    family: "continuous",
+    rematerializeOp: "rematerializeOpacityLegend",
+    graphicIds: Object.freeze([
+      "opacityLegendBackground", "opacityLegendSymbols", "opacityLegendLabels",
+      "opacityLegendTitle"
+    ])
+  }),
+  strokeWidth: Object.freeze({
+    semanticKind: "strokeWidth",
+    family: "strokeWidth",
+    rematerializeOp: "rematerializeStrokeWidthLegend",
+    graphicIds: Object.freeze([
+      "strokeWidthLegendSymbols", "strokeWidthLegendLabels",
+      "strokeWidthLegendTitle"
+    ])
+  })
 });
 
 export function axisGraphicIds(channel) {
@@ -38,11 +73,22 @@ export function axisGraphicIds(channel) {
 }
 
 export function legendGraphicIds(kind) {
-  const ids = LEGEND_GRAPHICS[kind];
-  if (ids === undefined) {
+  return legendResourcePolicy(kind).graphicIds;
+}
+
+export function legendResourcePolicy(kind) {
+  const policy = LEGEND_RESOURCE_POLICIES[kind];
+  if (policy === undefined) {
     throw new Error(`Unknown legend graphic kind "${kind}".`);
   }
-  return ids;
+  return policy;
+}
+
+export function legendResourcePolicies() {
+  return Object.entries(LEGEND_RESOURCE_POLICIES).map(([kind, policy]) => ({
+    kind,
+    ...policy
+  }));
 }
 
 export function allLegendGraphicIds(kinds) {

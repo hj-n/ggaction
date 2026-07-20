@@ -1,20 +1,10 @@
 import { action } from "../../../core/action.js";
 import { validateKeys } from "../../../core/validation.js";
-import { legendGraphicIds } from
+import { legendGraphicIds, legendResourcePolicy } from
   "../../../materialization/guides/resources.js";
 import { resolveLegendTarget } from "./target.js";
 
 const OPTIONS = Object.freeze(["target"]);
-
-const SEMANTIC_KIND = Object.freeze({
-  series: "series",
-  color: "color",
-  size: "size",
-  gradient: "color",
-  interval: "color",
-  opacity: "opacity",
-  strokeWidth: "strokeWidth"
-});
 
 export const removeLegend = action(
   { op: "removeLegend", description: "Remove every legend block owned by one mark." },
@@ -24,7 +14,9 @@ export const removeLegend = action(
     const kinds = Object.entries(this.guideConfigs.legend ?? {})
       .filter(([, config]) => config?.target === target)
       .map(([kind]) => kind);
-    const semanticKinds = new Set(kinds.map(kind => SEMANTIC_KIND[kind]));
+    const semanticKinds = new Set(
+      kinds.map(kind => legendResourcePolicy(kind).semanticKind)
+    );
     let next = this;
     for (const kind of semanticKinds) {
       if (next.semanticSpec.guides.legend?.[kind] !== undefined) {
