@@ -15,7 +15,7 @@ named dataset이며, `createHeatmap({ bin })`은 그 결과를 ranged rect와 co
 - [x] exact candidate API와 state owner 설계
 - [x] independent window/2D-bin oracle과 고정 numeric vector
 - [x] Cars Weight–MPG primitive binned heatmap
-- [ ] P5-A 사용자 승인
+- [x] P5-A 사용자 승인
 - [ ] `createWindowData` vertical slice와 P5-B 승인
 - [ ] `createBin2DData` lifecycle과 P5-C 승인
 - [ ] binned `createHeatmap` facade와 P5-D 승인
@@ -179,7 +179,7 @@ createHeatmap(bin)
 
 | Gate | 상태 | 승인 대상 | 승인 전 차단되는 작업 |
 | --- | --- | --- | --- |
-| P5-A | preparing | API/edge 규칙, independent oracle, Cars primitive PNG | production action 구현 |
+| P5-A | approved | API/edge 규칙, independent oracle, Cars primitive PNG | production action 구현 |
 | P5-B | blocked | Window public chain, state/trace, revision과 package parity | 2D bin production 구현 |
 | P5-C | blocked | 2D bin public chain, lifecycle, numeric parity | heatmap facade 확장 |
 | P5-D | blocked | binned heatmap public/primitive parity와 browser/PNG | Phase closeout |

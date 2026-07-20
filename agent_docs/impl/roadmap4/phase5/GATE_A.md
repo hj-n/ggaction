@@ -2,7 +2,7 @@
 
 ## 상태
 
-`ready-for-review`
+`approved` — 2026-07-20 사용자 승인
 
 Production `createWindowData`, `createBin2DData`와 binned `createHeatmap`은 아직 구현하지 않았다.
 

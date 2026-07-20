@@ -7,7 +7,7 @@
 - [x] 축, 연속 legend와 title을 포함한 Node PNG 생성
 - [x] Browser Canvas parity와 visual contract 검증
 - [x] P5-A exact checkpoint commit/push
-- [ ] 사용자 승인
+- [x] 사용자 승인
 
 ## 시각 목표
 
