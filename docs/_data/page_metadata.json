@@ -117,6 +117,11 @@
     "description": "Use whisker: { type: \"minmax\" } for observed minimum and maximum whiskers without an outlier layer.",
     "image": "/assets/images/cars-box-plot.png"
   },
+  "/recipes/violin-plot/": {
+    "title": "Violin-Plot Recipe",
+    "description": "Add color: \"category\" for category fills. Use split: { field } when the field has exactly two values, or provide an explicit two value domain when side assignment must be stable…",
+    "image": "/assets/images/cars-acceleration-violins.png"
+  },
   "/troubleshooting/": {
     "title": "Troubleshooting",
     "description": "ggaction reports an error when stored state does not determine one safe action. It does not silently select the first mark, scale, dataset, or coordinate."
@@ -232,6 +237,11 @@
     "title": "Gradient Plots",
     "description": "createGradientPlot compares a quantitative distribution across categories. Each category becomes one density filled strip plus an optional center rule.",
     "image": "/assets/images/cars-gradient-plot.png"
+  },
+  "/api/violin-plots/": {
+    "title": "Violin Plots",
+    "description": "Use createViolinPlot to compare kernel density profiles inside categorical bands.",
+    "image": "/assets/images/cars-acceleration-violins.png"
   },
   "/api/guides/": {
     "title": "Guides",

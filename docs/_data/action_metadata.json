@@ -304,6 +304,11 @@
     "layer": "user-facing",
     "domain": "statistics"
   },
+  "createViolinPlot": {
+    "operation": "create",
+    "layer": "user-facing",
+    "domain": "statistics"
+  },
   "createAxes": {
     "operation": "create",
     "layer": "user-facing",

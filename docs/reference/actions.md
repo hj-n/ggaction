@@ -67,6 +67,7 @@ Use document search with `Ctrl+K` or scan the alphabetical list. Each action has
 | [`createThetaGrid`](./actions/guides.md#createthetagrid) | user-facing | grid |
 | [`createTitle`](./actions/guides.md#createtitle) | user-facing | legend_and_title |
 | [`createVerticalGrid`](./actions/advanced.md#directional-grids) | user-facing | grid |
+| [`createViolinPlot`](./actions/statistics.md#createviolinplot) | user-facing | statistics |
 | [`createWindowData`](./actions/charts-data.md#createwindowdata) | user-facing | core |
 | [`createXAxis`](./actions/advanced.md#complete-single-channel-axes) | user-facing | axes |
 | [`createXAxisLabels`](./actions/advanced.md#axis-lines-ticks-and-labels) | user-facing | axes |

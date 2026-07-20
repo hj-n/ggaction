@@ -181,7 +181,7 @@ test("keeps navigation and page order complete", async () => {
   assert.deepEqual(new Set(order), pageUrls);
   for (const url of navigation) assert.equal(pageUrls.has(url), true, url);
   assert.equal(navigation.includes("/api/"), true);
-  assert.equal(navigation.length, 18);
+  assert.equal(navigation.length, 19);
 
   const byUrl = new Map(registry.map(page => [page.url, page]));
   for (const page of registry) {
@@ -419,6 +419,7 @@ test("routes entry documentation to the canonical example indexes", () => {
     "gapminder-life-expectancy-heatmap",
     "cars-regression-scatterplot",
     "cars-density-area",
+    "cars-acceleration-violins",
     "cars-error-bar",
     "gapminder-error-band",
     "cars-box-plot",
@@ -436,7 +437,7 @@ test("routes entry documentation to the canonical example indexes", () => {
   );
   assert.equal(
     [...catalog.values()].filter(example => example.recipe_order).length,
-    10
+    11
   );
   assert.match(read("docs/tutorials/index.md"), /example\.tutorial_order/);
   assert.match(read("docs/recipes/index.md"), /example\.recipe_order/);

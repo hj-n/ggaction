@@ -290,6 +290,23 @@
   url: /api/gradient-plots/
   home_group: statistical
   home_order: 5
+- id: violin
+  title: Violin plot
+  image: /assets/images/cars-acceleration-violins.png
+  alt: Three violin shapes comparing car acceleration distributions by origin
+  width: 1440
+  height: 1040
+  thumbnail: /assets/images/cars-acceleration-violins-thumb.png
+  thumbnail_width: 640
+  thumbnail_height: 462
+  caption: Category-centered kernel-density profiles with shared width resolution.
+  summary: Compare complete distribution shapes across categories with symmetric or split density areas.
+  actions: createViolinPlot · editDensity
+  url: /api/violin-plots/
+  recipe_url: /recipes/violin-plot/
+  home_group: statistical
+  home_order: 6
+  recipe_order: 10
 - id: polar
   title: Polar points
   title: Polar points

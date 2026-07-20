@@ -80,6 +80,9 @@
 - title: Box-Plot Recipe
   url: /recipes/box-plot/
   parent: /recipes/
+- title: Violin-Plot Recipe
+  url: /recipes/violin-plot/
+  parent: /recipes/
 - title: Troubleshooting
   url: /troubleshooting/
   nav_group: start
@@ -160,6 +163,10 @@
   url: /api/gradient-plots/
   nav_group: statistics
   nav_order: 5
+- title: Violin Plots
+  url: /api/violin-plots/
+  nav_group: statistics
+  nav_order: 6
 - title: Guides
   url: /api/guides/
   parent: /api/

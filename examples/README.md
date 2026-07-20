@@ -86,6 +86,13 @@ Open <http://localhost:8000/examples/cars-density-area/>. This chart derives
 Gaussian kernel-density values for acceleration by Origin, overlays three
 translucent area paths, and uses two-direction grids with a top legend.
 
+## Cars acceleration violin plot
+
+Open <http://localhost:8000/examples/cars-acceleration-violins/>. This chart
+uses `createViolinPlot` to center one acceleration density profile in each
+Origin band. The same program exports a split early/late variant with one half
+on each side of the category center.
+
 ## Cars error-bar chart
 
 Open <http://localhost:8000/examples/cars-error-bar/>. This chart derives mean

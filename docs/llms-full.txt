@@ -189,6 +189,7 @@ The source repository also contains complete modules for the
 [heatmap](https://github.com/ggaction/ggaction/tree/main/examples/gapminder-life-expectancy-heatmap/),
 [regression scatterplot](https://github.com/ggaction/ggaction/tree/main/examples/cars-regression-scatterplot/),
 [density area](https://github.com/ggaction/ggaction/tree/main/examples/cars-density-area/),
+[violin plot](https://github.com/ggaction/ggaction/tree/main/examples/cars-acceleration-violins/),
 [error bar](https://github.com/ggaction/ggaction/tree/main/examples/cars-error-bar/),
 [error band](https://github.com/ggaction/ggaction/tree/main/examples/gapminder-error-band/),
 [box plot](https://github.com/ggaction/ggaction/tree/main/examples/cars-box-plot/),
@@ -2337,6 +2338,46 @@ component appearance through the stable box-plot owner.
 [Bar marks](../api/marks/bar.md) ·
 [Error bars](../api/error-bars.md)
 
+<!-- Source: /recipes/violin-plot/ -->
+
+# Violin-Plot Recipe
+
+## Minimal flow
+
+```javascript
+const program = chart()
+  .createCanvas()
+  .createData({ values })
+  .createViolinPlot({
+    x: "category",
+    y: "value"
+  });
+```
+
+## You must decide
+
+- One categorical field and one quantitative field
+- Whether the category belongs on x or y
+- Whether to compare full profiles or two split halves
+
+## The library infers
+
+- The current dataset and Cartesian coordinate
+- Field types when the stored values determine them unambiguously
+- Gaussian unit density, automatic bandwidth and extent, and 100 sample steps
+- Category band and quantitative value scales
+- Shared `0.8` band-relative width, closed paths, axes, and horizontal grid
+
+Add `color: "category"` for category fills. Use `split: { field }` when the
+field has exactly two values, or provide an explicit two-value domain when
+side assignment must be stable independently of source order.
+
+## Continue
+
+[Violin-plot API](../api/violin-plots.md) ·
+[Density encoding](../api/encodings.md#atomic-density) ·
+[Scale options](../api/scales.md)
+
 <!-- Source: /troubleshooting/ -->
 
 # Troubleshooting
@@ -2513,6 +2554,7 @@ overview no longer provides enough control.
 - [Error bands](./error-bands.md)
 - [Box plots](./box-plots.md)
 - [Gradient plots](./gradient-plots.md)
+- [Violin plots](./violin-plots.md)
 
 ## Exact action lookup
 
@@ -4084,6 +4126,27 @@ defaults to `{ nice: true, zero: true }`. Explicit scale options override those
 defaults. Grouped density delegates to `encodeGroup`, so every observed group
 becomes one baseline-closed command path ending in `Z`.
 
+Set `placement: { type: "category" }` to use the group field as a categorical
+band and map density to concrete width around each band center:
+
+```javascript
+area.encodeDensity({
+  field: "Acceleration",
+  groupBy: "Origin",
+  placement: {
+    type: "category",
+    width: { band: 0.8, resolve: "shared" }
+  }
+});
+```
+
+Category placement defaults to density width on x, so the category maps to x
+and source values map to y. Use `densityChannel: "y"` for a horizontal shape.
+`side` accepts the compatible left/right or top/bottom half; alternatively,
+`split: { field, domain? }` assigns exactly two values to opposite halves.
+Category placement uses `placement.scale` for its band and does not accept
+`densityScale`.
+
 Use `editDensity` to revise an existing density without mutating its source or
 previous derived values:
 
@@ -4097,8 +4160,10 @@ const revised = area.editDensity({
 ```
 
 The target may be omitted when the current or only density area is
-unambiguous. At least one of `bandwidth`, `extent`, `steps`, `kernel`, or
-`normalization` is required. The action creates a deterministic namespaced
+unambiguous. At least one of `bandwidth`, `extent`, `steps`, `kernel`,
+`normalization`, or `placement` is required. Use
+`placement: { type: "baseline" }` to replace categorical placement with the
+ordinary zero-baseline density layout. The action creates a deterministic namespaced
 revision, rebinds the area, releases an unreferenced previous revision, and
 rematerializes shared scales, marks, axes, and grids. Earlier programs remain
 unchanged.
@@ -4115,7 +4180,8 @@ aggregate and ranged bars use an implicit `0.72` band width unless
 Area marks accept every layout except group and require color to match the
 existing semantic group field.
 On area marks, color fills an already grouped path collection and must use the
-same nominal field as `encodeGroup` or `encodeDensity({ groupBy })`.
+same nominal field as `encodeGroup` or `encodeDensity({ groupBy })`. A
+category-placed density may instead color its approved two-value split field.
 
 ```javascript
 program
@@ -4971,6 +5037,126 @@ legends are not implemented.
 [Box plots](./box-plots.md) · [Data filtering](./data/filtering.md) ·
 [Selection and highlighting](./appearance/selection-and-highlighting.md) ·
 [Statistical action reference](../reference/actions/statistics.md#creategradientplot)
+
+<!-- Source: /api/violin-plots/ -->
+
+# Violin Plots
+
+Use `createViolinPlot` to compare kernel-density profiles inside categorical
+bands. It accepts the same categorical/quantitative x/y role family as box and
+gradient plots, then infers orientation from the complete field pair.
+
+## Minimal vertical violin
+
+```javascript
+const program = chart()
+  .createCanvas()
+  .createData({ values })
+  .createViolinPlot({
+    x: "category",
+    y: "value"
+  });
+```
+
+The action creates an area mark, immutable density data, category and value
+scales, full closed paths, and applicable Cartesian guides. Field types are
+inferred when the current dataset makes one categorical and one quantitative
+role unambiguous.
+
+## Density width and orientation
+
+```javascript
+.createViolinPlot({
+  x: { field: "value", fieldType: "quantitative" },
+  y: { field: "category", fieldType: "nominal" },
+  density: {
+    bandwidth: 0.8,
+    extent: [0, 30],
+    steps: 80,
+    width: { band: 0.7, resolve: "independent" }
+  }
+})
+```
+
+`width.band` is the fraction of each categorical band available to the full
+shape. `resolve: "shared"` uses one density maximum across categories;
+`"independent"` gives each category its own maximum. The default is
+`{ band: 0.8, resolve: "shared" }`.
+
+## Split a category into two halves
+
+```javascript
+.createViolinPlot({
+  x: "category",
+  y: "value",
+  split: {
+    field: "period",
+    domain: ["early", "late"]
+  },
+  color: {
+    field: "period",
+    scale: { range: ["#4c78a8", "#e45756"] }
+  }
+})
+```
+
+A split must contain exactly two observed values. The first domain value owns
+the left or top half and the second owns the right or bottom half. When the
+domain is omitted, ggaction uses first-appearance order only if exactly two
+values are observed.
+
+## Appearance and guides
+
+```javascript
+.createViolinPlot({
+  x: "category",
+  y: "value",
+  color: "category",
+  area: { opacity: 0.7, strokeWidth: 1.5 },
+  guides: { legend: false }
+})
+```
+
+When `strokeWidth` is supplied without a constant stroke, each outline follows
+its materialized fill. A category-color legend is omitted by default because
+the categorical axis already identifies the same field; request
+`guides: { legend: {} }` to show it explicitly.
+
+## Editing
+
+`createViolinPlot` is an aggregate create action. Edit the resource owned by
+the decision you want to change:
+
+```javascript
+const revised = program
+  .editDensity({
+    bandwidth: 1.1,
+    placement: {
+      type: "category",
+      width: { band: 0.6, resolve: "shared" }
+    }
+  })
+  .editAreaMark({ opacity: 0.55 });
+```
+
+Use `{ type: "baseline" }` as the placement edit to return the area to the
+ordinary zero-baseline density layout. Canvas, scale, data, filtering,
+selection, highlighting, and facet changes rematerialize the complete density
+paths.
+
+## Current boundary
+
+- Exactly one categorical and one quantitative position role
+- At most two split values
+- Cartesian coordinates only
+- No raincloud raw-point/box components, adaptive bandwidth, or Polar violin
+
+## Related
+
+[Violin recipe](../recipes/violin-plot.md) ·
+[Density encoding](./encodings.md#atomic-density) ·
+[Area marks](./marks/line-area.md) ·
+[Box plots](./box-plots.md)
 
 <!-- Source: /api/guides/ -->
 
@@ -8383,15 +8569,15 @@ remain available for custom layering and editing.
 
 ### Intervals and distributions
 
-| Capability | Error bar | Error band | Box plot | Gradient plot |
-| --- | --- | --- | --- | --- |
-| Semantic marks | rule | area | bar + rule + point | rect + rule |
-| Position | categorical/temporal independent axis; interval on the other | quantitative/temporal independent axis; x/x2 or y/y2 interval | categorical axis; quantitative interval axis | categorical axis; sampled quantitative profile |
-| Nominal color | — | grouped area fill | body fill through ranged-bar color | category hue with density modulation |
-| Appearance | stroke, width, dash, opacity, optional caps | fill, opacity, 8 curves, styled boundaries | fixed defaults; 1.5px median/whiskers | structured gradient fill, width, optional center rule |
-| Automatic guides | interval and independent axes; perpendicular grid | interval and independent axes; perpendicular grid | categorical/linear axes; horizontal grid | categorical/linear axes, grid, density legend |
-| Legend | — | categorical | optional ranged-bar color legend | neutral density; categorical color when requested |
-| Selection/highlight | rule | series | component | category strip |
+| Capability | Error bar | Error band | Box plot | Gradient plot | Violin plot |
+| --- | --- | --- | --- | --- | --- |
+| Semantic marks | rule | area | bar + rule + point | rect + rule | area |
+| Position | categorical/temporal independent axis; interval on the other | quantitative/temporal independent axis; x/x2 or y/y2 interval | categorical axis; quantitative interval axis | categorical axis; sampled quantitative profile | categorical center; quantitative density profile |
+| Nominal color | — | grouped area fill | body fill through ranged-bar color | category hue with density modulation | category or two-value split fill |
+| Appearance | stroke, width, dash, opacity, optional caps | fill, opacity, 8 curves, styled boundaries | fixed defaults; 1.5px median/whiskers | structured gradient fill, width, optional center rule | fill, opacity, outline, 8 curves, shared/independent width |
+| Automatic guides | interval and independent axes; perpendicular grid | interval and independent axes; perpendicular grid | categorical/linear axes; horizontal grid | categorical/linear axes, grid, density legend | categorical/linear axes; horizontal grid |
+| Legend | — | categorical | optional ranged-bar color legend | neutral density; categorical color when requested | optional category or split legend |
+| Selection/highlight | rule | series | component | category strip | full or split profile |
 
 ### Polar charts
 
@@ -8450,6 +8636,12 @@ sampled profile revisions, configurable density/width/paint/center options,
 source-first filtering, category-strip highlighting, and Cartesian facet
 replay. Shared facet density legends and partial composite `filterMarks` are
 not implemented.
+Violin plots support the same category/measure orientation family, symmetric
+full profiles, one-sided placement, two-value split halves, shared or
+category-local density width, density revision, source filtering, profile
+selection/highlighting, Cartesian facet replay, and compatible overlay scales.
+Raincloud components, more than two split values, adaptive bandwidth, and
+Polar violin placement are not implemented.
 Mark selection supports point, final-bar item, stacked-bar group, line/area
 series, arc sector, and rule grain. Selector values explicitly distinguish data fields,
 pre-scale semantic channels, and concrete graphic properties.
@@ -8525,6 +8717,7 @@ Use document search with `Ctrl+K` or scan the alphabetical list. Each action has
 | [`createThetaGrid`](./actions/guides.md#createthetagrid) | user-facing | grid |
 | [`createTitle`](./actions/guides.md#createtitle) | user-facing | legend_and_title |
 | [`createVerticalGrid`](./actions/advanced.md#directional-grids) | user-facing | grid |
+| [`createViolinPlot`](./actions/statistics.md#createviolinplot) | user-facing | statistics |
 | [`createWindowData`](./actions/charts-data.md#createwindowdata) | user-facing | core |
 | [`createXAxis`](./actions/advanced.md#complete-single-channel-axes) | user-facing | axes |
 | [`createXAxisLabels`](./actions/advanced.md#axis-lines-ticks-and-labels) | user-facing | axes |
@@ -9523,6 +9716,23 @@ one immutable raw-source profile revision; appearance-only edits retain it.
 `center: false` removes the optional rule and `center: {}` restores it.
 [Statistical actions](../../reference/actions/statistics.md#editgradientplot)
 
+## `createViolinPlot`
+
+```javascript
+createViolinPlot({
+  id?, data?, coordinate?, x, y, split?, color?, density?, area?, guides?
+})
+```
+
+Create a vertical or horizontal categorical density plot from exactly one
+categorical and one quantitative x/y role. The action infers field types,
+orientation, data, scales, and applicable guides, then records an ordinary area
+mark, categorical `encodeDensity`, optional color, and guides as wrapped
+children. Density options own bandwidth, extent, kernel, normalization, and
+shared or independent band-relative width. An optional two-value split assigns
+one half to each side of the category center.
+[Violin plots](../../api/violin-plots.md)
+
 ## Related
 
 [Action Reference](../actions.md) · [Chart API](../../api/index.md) · [Supported Features](../../supported-features.md)
@@ -10117,6 +10327,7 @@ interface ChartProgramActions {
   editBoxPlot(options: EditBoxPlotOptions): ChartProgram;
   createGradientPlot(options?: GradientPlotOptions): ChartProgram;
   editGradientPlot(options: EditGradientPlotOptions): ChartProgram;
+  createViolinPlot(options: ViolinPlotOptions): ChartProgram;
   createScatterPlot(options: CreateScatterPlotOptions): ChartProgram;
   createLinePlot(options: CreateLinePlotOptions): ChartProgram;
   createBarPlot(options: CreateBarPlotOptions): ChartProgram;

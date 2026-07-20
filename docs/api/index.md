@@ -29,6 +29,7 @@ overview no longer provides enough control.
 - [Error bands](./error-bands.md)
 - [Box plots](./box-plots.md)
 - [Gradient plots](./gradient-plots.md)
+- [Violin plots](./violin-plots.md)
 
 ## Exact action lookup
 

@@ -98,6 +98,9 @@ or open the [runnable regression example](./examples/cars-regression-scatterplot
 To compare category distributions with density-filled strips, read the
 [gradient-plot guide](https://ggaction.github.io/ggaction/api/gradient-plots/)
 or open the [runnable example](./examples/cars-gradient-plot/).
+For symmetric or split density shapes centered on categories, use the
+[violin-plot API](https://ggaction.github.io/ggaction/api/violin-plots/) or the
+[runnable Cars example](./examples/cars-acceleration-violins/).
 
 ## What it supports
 

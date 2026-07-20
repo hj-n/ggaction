@@ -129,6 +129,7 @@ The source repository also contains complete modules for the
 [heatmap](https://github.com/ggaction/ggaction/tree/main/examples/gapminder-life-expectancy-heatmap/),
 [regression scatterplot](https://github.com/ggaction/ggaction/tree/main/examples/cars-regression-scatterplot/),
 [density area](https://github.com/ggaction/ggaction/tree/main/examples/cars-density-area/),
+[violin plot](https://github.com/ggaction/ggaction/tree/main/examples/cars-acceleration-violins/),
 [error bar](https://github.com/ggaction/ggaction/tree/main/examples/cars-error-bar/),
 [error band](https://github.com/ggaction/ggaction/tree/main/examples/gapminder-error-band/),
 [box plot](https://github.com/ggaction/ggaction/tree/main/examples/cars-box-plot/),

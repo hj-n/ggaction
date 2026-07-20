@@ -85,6 +85,7 @@ interface ChartProgramActions {
   editBoxPlot(options: EditBoxPlotOptions): ChartProgram;
   createGradientPlot(options?: GradientPlotOptions): ChartProgram;
   editGradientPlot(options: EditGradientPlotOptions): ChartProgram;
+  createViolinPlot(options: ViolinPlotOptions): ChartProgram;
   createScatterPlot(options: CreateScatterPlotOptions): ChartProgram;
   createLinePlot(options: CreateLinePlotOptions): ChartProgram;
   createBarPlot(options: CreateBarPlotOptions): ChartProgram;

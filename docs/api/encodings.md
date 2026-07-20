@@ -191,6 +191,27 @@ defaults to `{ nice: true, zero: true }`. Explicit scale options override those
 defaults. Grouped density delegates to `encodeGroup`, so every observed group
 becomes one baseline-closed command path ending in `Z`.
 
+Set `placement: { type: "category" }` to use the group field as a categorical
+band and map density to concrete width around each band center:
+
+```javascript
+area.encodeDensity({
+  field: "Acceleration",
+  groupBy: "Origin",
+  placement: {
+    type: "category",
+    width: { band: 0.8, resolve: "shared" }
+  }
+});
+```
+
+Category placement defaults to density width on x, so the category maps to x
+and source values map to y. Use `densityChannel: "y"` for a horizontal shape.
+`side` accepts the compatible left/right or top/bottom half; alternatively,
+`split: { field, domain? }` assigns exactly two values to opposite halves.
+Category placement uses `placement.scale` for its band and does not accept
+`densityScale`.
+
 Use `editDensity` to revise an existing density without mutating its source or
 previous derived values:
 
@@ -204,8 +225,10 @@ const revised = area.editDensity({
 ```
 
 The target may be omitted when the current or only density area is
-unambiguous. At least one of `bandwidth`, `extent`, `steps`, `kernel`, or
-`normalization` is required. The action creates a deterministic namespaced
+unambiguous. At least one of `bandwidth`, `extent`, `steps`, `kernel`,
+`normalization`, or `placement` is required. Use
+`placement: { type: "baseline" }` to replace categorical placement with the
+ordinary zero-baseline density layout. The action creates a deterministic namespaced
 revision, rebinds the area, releases an unreferenced previous revision, and
 rematerializes shared scales, marks, axes, and grids. Earlier programs remain
 unchanged.
@@ -222,7 +245,8 @@ aggregate and ranged bars use an implicit `0.72` band width unless
 Area marks accept every layout except group and require color to match the
 existing semantic group field.
 On area marks, color fills an already grouped path collection and must use the
-same nominal field as `encodeGroup` or `encodeDensity({ groupBy })`.
+same nominal field as `encodeGroup` or `encodeDensity({ groupBy })`. A
+category-placed density may instead color its approved two-value split field.
 
 ```javascript
 program

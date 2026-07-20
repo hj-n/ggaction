@@ -1045,6 +1045,23 @@ one immutable raw-source profile revision; appearance-only edits retain it.
 `center: false` removes the optional rule and `center: {}` restores it.
 [Statistical actions](../reference/actions/statistics.md#editgradientplot)
 
+### `createViolinPlot`
+
+```javascript
+createViolinPlot({
+  id?, data?, coordinate?, x, y, split?, color?, density?, area?, guides?
+})
+```
+
+Create a vertical or horizontal categorical density plot from exactly one
+categorical and one quantitative x/y role. The action infers field types,
+orientation, data, scales, and applicable guides, then records an ordinary area
+mark, categorical `encodeDensity`, optional color, and guides as wrapped
+children. Density options own bandwidth, extent, kernel, normalization, and
+shared or independent band-relative width. An optional two-value split assigns
+one half to each side of the category center.
+[Violin plots](../api/violin-plots.md)
+
 ### `createGuides`
 
 ```javascript
