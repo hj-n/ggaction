@@ -3,7 +3,8 @@
 ## 상태
 
 - Gate: `P6-A`
-- 상태: `ready-for-review`
+- 상태: `approved`
+- 승인: 2026-07-20 사용자 명시 승인
 - Review source checkpoint: `37ccae6` (`refine gradient plot color defaults`)
 - Remote: `origin/main`
 - 이후 차단: public `createGradientPlot`/`editGradientPlot`, stable owner lifecycle와 materializer

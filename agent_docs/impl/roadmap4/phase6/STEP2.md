@@ -10,7 +10,7 @@
 - [x] vertical/horizontal/reversed-scale/hard-stop/multi-stop focused variants
 - [x] existing string fill snapshots와 unsupported open-path/stroke validation
 - [x] Browser/PNG source와 image를 포함한 P6-A package
-- [ ] P6-A 사용자 승인
+- [x] P6-A 사용자 승인
 
 Primitive target은 public `createGradientPlot`을 호출하지 않고 density/profile expected values와 low-level graphics를
 명시적으로 author한다. P6-A 승인 전에는 facade를 구현하지 않는다.
