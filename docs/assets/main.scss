@@ -1173,7 +1173,7 @@ h3:hover .docs-heading-anchor,
     display: none;
   }
 
-  .docs-page-toc .is-nested:not(.is-current) {
+  .docs-page-toc .is-nested:not(.is-current):not(.is-in-current-group) {
     display: none;
   }
 

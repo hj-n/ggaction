@@ -69,16 +69,23 @@
       current = heading;
     }
     for (const item of items.values()) {
-      item.classList.remove("is-current", "is-parent-current");
+      item.classList.remove("is-current", "is-parent-current", "is-in-current-group");
     }
     items.get(current)?.classList.add("is-current");
-    if (current.tagName === "H3") {
-      const currentIndex = navigationHeadings.indexOf(current);
+    const currentIndex = navigationHeadings.indexOf(current);
+    let parentIndex = current.tagName === "H2" ? currentIndex : -1;
+    if (parentIndex === -1) {
       for (let index = currentIndex - 1; index >= 0; index -= 1) {
-        if (navigationHeadings[index].tagName === "H2") {
-          items.get(navigationHeadings[index])?.classList.add("is-parent-current");
-          break;
-        }
+        if (navigationHeadings[index].tagName !== "H2") continue;
+        parentIndex = index;
+        items.get(navigationHeadings[index])?.classList.add("is-parent-current");
+        break;
+      }
+    }
+    if (parentIndex >= 0) {
+      for (let index = parentIndex + 1; index < navigationHeadings.length; index += 1) {
+        if (navigationHeadings[index].tagName === "H2") break;
+        items.get(navigationHeadings[index])?.classList.add("is-in-current-group");
       }
     }
   }

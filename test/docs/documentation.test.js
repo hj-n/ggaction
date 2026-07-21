@@ -352,6 +352,7 @@ test("keeps the strict TypeScript extension example executable by package CI", (
 
 test("keeps task pages visual and chart figures canonical", async () => {
   const catalog = chartExampleCatalog();
+  assert.match(read("docs/_includes/chart-example.html"), /fetchpriority="high"/);
   const manifest = JSON.parse(read("docs/assets/images/manifest.json"));
   assert.equal(catalog.size >= 10, true);
 

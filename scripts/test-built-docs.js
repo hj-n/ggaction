@@ -249,6 +249,10 @@ try {
   await assertAccessible(desktop, "all chart examples");
   await desktop.goto(`${baseUrl}getting-started/`, { waitUntil: "networkidle" });
   assert.equal(await desktop.locator(".docs-example-figure img").count(), 1);
+  assert.equal(
+    await desktop.locator(".docs-example-figure img").getAttribute("fetchpriority"),
+    "high"
+  );
   await desktop.goto(baseUrl, { waitUntil: "networkidle" });
   await desktop.screenshot({ path: path.join(artifactRoot, "desktop.png"), fullPage: true });
   await desktop.close();
