@@ -16,7 +16,8 @@
 | 현재 개발 순서 확인 | [`impl/README.md`](impl/README.md) |
 
 현재 실행 계획은 **Roadmap 4**이지만 active Phase는 없다. **Phase 12 — collision-aware label layout**까지
-완료했으며 Phase 13은 별도 요청 전까지 planned 상태로 유지한다. 이 포인터의 machine-readable owner는
+완료했고 Phase 13 hierarchy layout은 `Maybe Future`로 이동해 건너뛰었다. Phase 14는 별도 요청 전까지 열지
+않는다. 이 포인터의 machine-readable owner는
 [`impl/ROADMAP_INDEX.json`](impl/ROADMAP_INDEX.json)이다.
 
 ## 작업별 읽기 경로
