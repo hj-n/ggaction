@@ -1,46 +1,31 @@
-# Test and Example Instructions
+# Test Instructions
 
-Apply these instructions to tests, fixtures, examples, generated chart artifacts, and test infrastructure in addition to the repository root instructions.
+Apply these instructions to tests, fixtures, examples, generated artifacts, and test infrastructure in addition to the repository root instructions.
 
-## Tests and Example Programs
+## Scoped Test Instructions
 
-- Encode mechanically verifiable architectural rules in focused contract tests rather than relying on prose documentation alone. At minimum, keep selector behavior, public package boundaries, shared concrete-graphic validation, and materialization-plan ordering and deduplication executable.
-- Write source code, test descriptions, fixtures, and example-program code in English. Implementation step documents remain in Korean.
-- Keep each public user-authored program under `examples/<chart>/program.js`; chart tests must import that same program instead of copying its action chain.
-- Keep each chart's primitive baseline, public contract tests, deterministic reference values, and PNG regression together under `test/charts/<chart>/`. Name the explicit primitive chain `primitive.program.js`.
-- One capability-oriented `test/charts/<capability>/` slice may own multiple public charts when they exercise variants of the same implementation boundary. Each chart must still have its own public program and independent primitive/public equivalence assertion, while registry contracts compare unique referenced slice directories rather than assuming one directory per chart.
-- For a new chart whose primitive has not yet received visual approval, stage its executable primitive, reference values, manifest, normal tests, and render test under `test/gates/<chart>/`. The `gates` suite must run in normal and render discovery. After approval and user-facing implementation, move the complete slice into `test/charts/<chart>/` and remove the gate directory; never place skipped or placeholder public tests in `test/charts/`.
-- Treat `test/gates/` as an active-review workspace only. Stable chart, contract, browser, render, support, and example modules must never import from it. When no review is active, it must contain no executable slice, and `npm run test:gates` must report that no active gates exist.
-- Treat optional active-review and generated directories as absent when they contain no tracked files. Tests and tooling must
-  not rely on an empty local directory surviving a clean Git checkout.
-- Keep development history out of stable test identity. Files, suite selectors, capability names, manifests, artifact paths, and durable test descriptions under `test/` must use current capability or chart names rather than roadmap, phase, or completed Gate names.
-- Do not make the current test suite depend on `agent_docs/impl/` roadmap plans, Gate records, or closeout prose. Extract durable assertions into capability-oriented contracts over source, declarations, current machine-readable contracts, examples, or concrete rendering, then remove the historical test when its phase closes.
-- Give shared chart inputs, expected geometry, displayed call chains, artifact locations, and variant metadata one canonical fixture or manifest owner. Tests and generators must consume that owner instead of maintaining synchronized copies.
-- Organize unit tests by reusable capability under `test/unit/`, not by implementation phase or a mechanically mirrored source tree. Keep cross-cutting architecture invariants under `test/contracts/`.
-- Split a large test module when it mixes distinct contract owners or lifecycle concerns, and move shared setup into a narrowly named fixture module. Do not split explicit primitive programs, declarative variant manifests, or independent mathematical oracles solely to satisfy a line-count target.
-- When progressively replacing a primitive contract with higher-level actions, preserve the primitive baseline and maintain one evolving high-level action program per chart development cycle. Do not create separate representative program files for every implementation unit unless the user explicitly requests snapshots.
-- Require a representative high-level program and its primitive baseline to converge on the same concrete `graphicSpec`, explicit rendering order, and renderer calls when they describe the same chart. Visual similarity alone is not sufficient regression evidence.
-- Co-locate each chart's PNG export test as `test/charts/<chart>/png.render.js`; write generated images to the gitignored `.artifacts/test/png/` directory.
-- Store approved visual artifacts by stable capability, chart, and variant identity. Reserve a separate `review/` artifact subtree for active Gates, and remove it when the Gate graduates. Never encode roadmap or phase numbers into approved artifact paths or metadata.
-- Use `.test.js` for the normal fast suite and `.render.js` for expensive renderer regressions. Keep both suites explicitly selected by package scripts so helper and program modules are never discovered as tests accidentally.
-- When a representative program is intended to demonstrate primitive usage, write one explicit method chain and do not hide primitive calls behind batching helpers or other syntactic sugar.
-- Keep the user program focused on realistic library usage. Assertions, mocks, and test-only inspection belong in the importing test file rather than in the user program.
-- For every high-level user-facing action, test its shortest valid call after the required prerequisites are present so the default API does not become progressively more verbose.
-- Complete each chart development cycle with one public vertical slice whose browser example, standalone user program, acceptance test, PNG regression, and tutorial use the same chart-authoring API flow.
-- Verify browser Canvas and PNG output separately. Every public browser example must expose the shared non-loading `#status` completion signal, an accessible Canvas label, logical Canvas dimensions, and no console/page errors. PNG checks must cover `pixelRatio` and physical output dimensions.
-- Register browser examples as independent per-chart tests rather than one long-running loop, so timeouts and failures identify the owning chart and adding examples does not exhaust one shared test deadline.
-- Route approved browser coverage through the public example registry and shared browser harness. A Gate-specific page or browser entry must be removed or promoted with the Gate; do not retain a second browser lifecycle for the same approved chart.
-- Establish deterministic numeric fixtures for statistical transforms before relying on graphical or PNG verification. Test quantities such as coefficients, confidence bounds, sample positions, and density values independently from their materialization.
-- Match option coverage to the layer it affects: use independent numeric oracles for statistical options, resource presence/absence and drawing-order assertions for structural options, concrete-property plus rematerialization assertions for geometry and style options, and primitive/public pixel pairs only for representative values that produce meaningfully distinct visuals.
-- Cover a complete scale or mapping vocabulary with exact pure fixtures, boundary cases, and mathematical invariants. Use primitive/public/render pairs for representative consumer combinations rather than multiplying PNG cases for every vocabulary value, while keeping every accepted value mechanically covered at its owning layer.
-- For selection, filtering, and highlighting examples, assert the exact selected item identities and grain as well as the visible result. The example description, selector, chosen items, and displayed emphasis must tell the same unambiguous story; replace an example that is technically valid but visually misleading.
-- Test selection meaning and visual realization as separate evidence layers. Cover normalized selector results, item keys and grain independently from concrete styles, legend symbols, drawing order, Canvas calls, and representative pixels.
-- Pair fixed numeric fixtures with deterministic mathematical invariants for continuous mappings, bins, densities, intervals, and ordering; examples include monotonicity, mass/count conservation, non-negativity, interval containment, and stable group order.
-- Do not rely on snapshots or example images alone. Pair them with focused assertions for invariants, selectors, package boundaries, shared validation, materialization plans, and critical-file coverage.
-- Keep the global source coverage threshold and explicit critical-file floors. Do not let high-coverage modules hide regressions in immutable state, statistical grammar, concrete schemas, renderer dispatch, or the PNG adapter.
-- Keep every JavaScript test module reachable from a discovered test, render entry, browser entry, or HTML module script. A helper or fixture that no executable entry imports is dead test code and must fail the discovery contract.
-- Keep named capability selectors in `test/capabilities.json`. Do not infer capability ownership from accidental filename substrings, and reject unknown capability names.
-- Keep reusable expected-value algorithms in `test/oracles/` independent from `src/`. Anchor those oracles with representative literal expectations so production and test implementations cannot share the same bug unnoticed.
-- Use the shared browser harness for readiness, HTTP status, and console/page error capture. Put public example-specific state probes in the example registry instead of creating a separate browser lifecycle for each probe.
-- Apply source coverage floors by critical family as well as by explicit file. A new module under a high-risk policy, selection, or renderer boundary must inherit a floor automatically; use explicit overrides only for stricter requirements.
-- Use compact ink-density and logical-bounds signatures only for representative approved charts. Keep a small tolerance for raster details, and continue to require exact primitive/user-facing pixel equivalence for the same chart contract.
+- Read `test/charts/AGENTS.md` for public chart programs, primitive baselines, PNG regressions, visual manifests, and chart slices.
+- Read `test/browser/AGENTS.md` for browser examples, Playwright harnesses, Canvas readiness, and browser accessibility checks.
+- Read `test/contracts/AGENTS.md` for architecture, package-boundary, coverage, discovery, and inventory contracts.
+- Apply every relevant nested file when one test change crosses several evidence layers. Do not copy one rule into several scopes.
+
+## Suite-Wide Rules
+
+- Write source code, test descriptions, fixtures, and example programs in English. Korean is reserved for implementation collaboration documents.
+- Organize tests by reusable capability and contract owner, not roadmap, Phase, Gate, or a mechanically mirrored source tree.
+- Keep development history out of durable suite names, selectors, manifests, artifact paths, and descriptions.
+- Do not make stable tests depend on roadmap plans, Gate records, or closeout prose. Move durable assertions to current contracts, source, declarations, examples, or concrete output.
+- Use `.test.js` for the normal suite and `.render.js` for expensive renderer regressions. Test discovery must select both intentionally and never discover helpers as tests.
+- Keep every JavaScript test module reachable from a discovered suite, render entry, browser entry, or HTML module script. Unreachable helpers and fixtures are dead test code.
+- Put reusable expected-value algorithms in `test/oracles/` and keep them independent from `src/`. Anchor each oracle with representative literal expectations.
+- Pair representative examples or images with focused semantic, geometric, mathematical, package, and architecture assertions. Visual output alone is not sufficient evidence.
+- Pair fixed numeric cases with invariants such as monotonicity, conservation, non-negativity, interval containment, and stable ordering for continuous or statistical behavior.
+- Match coverage to the affected layer: pure numeric oracles for computation, state and order assertions for structure, concrete properties plus rematerialization for geometry/style, and pixels only for representative visual differences.
+- Split a large test module by contract owner or lifecycle concern, not an arbitrary line target. Keep explicit primitive programs, declarative manifests, and independent oracles intact.
+
+## Active Review Gates
+
+- Use `test/gates/<chart>/` only for an active, unapproved visual slice. It must contain an executable primitive, reference values, manifest, normal tests, and render test.
+- Stable charts, contracts, browser tests, and examples must never import from `test/gates/`. When no review is active, the directory has no executable slice and tooling must tolerate its absence in a clean checkout.
+- After visual approval and public implementation, move the complete slice to its stable capability location and remove the Gate directory and review artifacts.
+- Never leave skipped or placeholder public tests in `test/charts/`, and never encode roadmap or completed Gate identity in approved tests or artifacts.
