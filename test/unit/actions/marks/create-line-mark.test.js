@@ -101,6 +101,10 @@ test("validates line mark options, ids, data, and conflicts", () => {
     /Unknown createLineMark option/
   );
   assert.throws(
+    () => program.createLineMark({ id: "trends", scales: false }),
+    /Unknown createLineMark option/
+  );
+  assert.throws(
     () => program.createLineMark({ id: "trends", curve: "smooth" }),
     /Unsupported curve interpolation/
   );

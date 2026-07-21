@@ -91,9 +91,6 @@ const createLineMark = action(
       args.strokeWidth ?? DEFAULT_LINE_WIDTH,
       "Line strokeWidth"
     );
-    if (args.scales !== undefined && typeof args.scales !== "boolean") {
-      throw new TypeError("rematerializeLineMark scales must be a boolean.");
-    }
     const curve = validateCurveInterpolation(args.curve ?? "linear");
     const closed = Object.hasOwn(args, "closed")
       ? validateClosed(args.closed)
