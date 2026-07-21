@@ -2,7 +2,8 @@ import { loadGapminder } from "../../support/data.js";
 import { defineVisualVariant } from "../../support/visual-variants.js";
 import { LABEL_LAYOUT } from "./fixture.js";
 import { createGapminderCountryLabelPrimitives } from "./primitive.program.js";
-import { createGapminderCountryLabels } from "./public.program.js";
+import { createGapminderCountryLabels } from
+  "../../../examples/gapminder-country-labels/program.js";
 
 const gapminder = loadGapminder();
 
@@ -68,7 +69,7 @@ export const visualVariants = Object.freeze([
     variant: "collision-aware",
     title: "Fertility and Life Expectancy",
     callChain: targetCallChain,
-    artifact: { scope: "review" },
+    artifact: { scope: "charts", capability: "label-layout" },
     primitive: () => createGapminderCountryLabelPrimitives(gapminder),
     userFacing: () => createGapminderCountryLabels(gapminder),
     width: LABEL_LAYOUT.width,

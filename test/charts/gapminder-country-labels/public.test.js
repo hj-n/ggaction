@@ -4,7 +4,8 @@ import test from "node:test";
 import { loadGapminder } from "../../support/data.js";
 import { assertChartProgramsEquivalent } from "../../support/chart-equivalence.js";
 import { createGapminderCountryLabelPrimitiveResult } from "./primitive.program.js";
-import { createGapminderCountryLabels } from "./public.program.js";
+import { createGapminderCountryLabels } from
+  "../../../examples/gapminder-country-labels/program.js";
 
 test("matches the approved primitive through the public label-layout action", () => {
   const gapminder = loadGapminder();

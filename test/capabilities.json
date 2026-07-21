@@ -43,7 +43,7 @@
       { "type": "prefix", "path": "charts/gapminder-horizon/" }
     ],
     "label-layout": [
-      { "type": "prefix", "path": "gates/gapminder-country-labels/" },
+      { "type": "prefix", "path": "charts/gapminder-country-labels/" },
       { "type": "file", "path": "unit/actions/marks/label-layout.test.js" },
       { "type": "file", "path": "unit/layout/labels.test.js" }
     ],
