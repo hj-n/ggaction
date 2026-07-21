@@ -1,10 +1,8 @@
 import { action } from "../../core/action.js";
 import { validateUserId } from "../../core/identifiers.js";
-import { isPlainObject } from "../../core/immutable.js";
 import {
   findDataset,
   findLayer,
-  findSemanticScale,
   hasDataset,
   resolveEligibleLayer
 } from "../../selectors/index.js";
@@ -16,6 +14,14 @@ import { planDerivedDataRevision } from
   "../../materialization/dataProvenance.js";
 import { validateOptions } from "./shared.js";
 import { normalizeDensityPlacement } from "../../grammar/density.js";
+import { scaleEditPatch } from "../scales/patch.js";
+import {
+  requireDensityField,
+  resolveDensityCategoryScaleOptions,
+  resolveDensityPositionDefinition,
+  resolveDensityScaleOptions,
+  resolveDensityTransitionScaleDefinitions
+} from "./density/resolve.js";
 
 const OPTIONS = Object.freeze([
   "field", "target", "source", "groupBy", "bandwidth", "extent", "steps",
@@ -47,121 +53,6 @@ function findArea(program, requested) {
   throw new Error("encodeDensity target is ambiguous; provide target.");
 }
 
-function requireField(value, label) {
-  if (typeof value !== "string" || value.length === 0) {
-    throw new TypeError(`${label} must be a non-empty string.`);
-  }
-  return value;
-}
-
-function scaleOptions(value, defaults, label) {
-  if (value !== undefined && !isPlainObject(value)) {
-    throw new TypeError(`${label} must be a plain object.`);
-  }
-  return { ...defaults, ...(value ?? {}) };
-}
-
-function categoryScaleOptions(value, fallbackId) {
-  const scale = scaleOptions(value, { type: "band" }, "Density placement scale");
-  if ((scale.type ?? "band") !== "band") {
-    throw new Error('Density category placement requires scale type "band".');
-  }
-  return {
-    ...(fallbackId === undefined ? {} : { id: fallbackId }),
-    ...scale,
-    type: "band"
-  };
-}
-
-const SCALE_EDIT_PROPERTIES = Object.freeze([
-  "type", "domain", "range", "nice", "zero", "clamp", "reverse",
-  "base", "exponent", "constant", "paddingInner", "paddingOuter",
-  "padding", "align", "interpolate", "unknown"
-]);
-
-function scaleEdit(id, definition) {
-  return {
-    id,
-    ...Object.fromEntries(SCALE_EDIT_PROPERTIES
-      .filter(property => Object.hasOwn(definition, property))
-      .map(property => [property, definition[property]]))
-  };
-}
-
-function valueScaleForTransition(program, layer, transform) {
-  const densityChannel = transform.placement?.channel ?? (
-    layer.encoding.x.field === transform.as[1] ? "x" : "y"
-  );
-  const valueChannel = densityChannel === "x" ? "y" : "x";
-  return findSemanticScale(program, layer.encoding[valueChannel].scale);
-}
-
-function transitionScaleDefinitions(program, layer, transform, placement, rawPlacement) {
-  const valueScale = valueScaleForTransition(program, layer, transform);
-  if (valueScale === undefined) {
-    throw new Error(`Density area "${layer.id}" requires its value scale.`);
-  }
-  const { id: _valueId, range: _valueRange, ...valueDefinition } = valueScale;
-  void _valueId;
-  void _valueRange;
-  const valueChannel = placement?.channel === "x" ? "y" : "x";
-  const companionChannel = valueChannel === "x" ? "y" : "x";
-  const companionDefinition = placement === undefined
-    ? { type: "linear", domain: "auto", range: "auto", nice: true, zero: true }
-    : categoryScaleOptions(rawPlacement.scale);
-  return {
-    [valueChannel]: {
-      ...valueDefinition,
-      range: "auto"
-    },
-    [companionChannel]: companionDefinition
-  };
-}
-
-function densityPositionDefinition({
-  layer,
-  output,
-  groupBy,
-  placement,
-  coordinate,
-  valueScale,
-  densityScale,
-  placementScale
-}) {
-  if (placement === undefined) {
-    const xIsDensity = layer.densityChannel === "x";
-    return {
-      x: {
-        field: output[xIsDensity ? 1 : 0],
-        fieldType: "quantitative",
-        scale: xIsDensity ? densityScale : valueScale,
-        coordinate
-      },
-      y: {
-        field: output[xIsDensity ? 0 : 1],
-        fieldType: "quantitative",
-        scale: xIsDensity ? valueScale : densityScale,
-        coordinate
-      }
-    };
-  }
-  const category = {
-    field: placement.categoryField,
-    fieldType: "nominal",
-    scale: placementScale,
-    coordinate
-  };
-  const value = {
-    field: output[0],
-    fieldType: "quantitative",
-    scale: valueScale,
-    coordinate
-  };
-  return placement.channel === "x"
-    ? { x: category, y: value }
-    : { x: value, y: category };
-}
-
 function applyDensityPosition(program, layerId, definition, groupBy) {
   const withCoordinate = value => ({
     target: layerId,
@@ -187,10 +78,10 @@ const encodeDensity = action(
   function (args = {}) {
     validateOptions(args, OPTIONS, "encodeDensity");
     const layer = findArea(this, args.target);
-    const field = requireField(args.field, "Density field");
+    const field = requireDensityField(args.field, "Density field");
     const groupBy = args.groupBy === undefined
       ? undefined
-      : requireField(args.groupBy, "Density groupBy");
+      : requireDensityField(args.groupBy, "Density groupBy");
     const source = validateUserId(
       args.source ?? layer.data,
       "Density source dataset id"
@@ -218,7 +109,7 @@ const encodeDensity = action(
     if (hasDataset(this, derivedId)) {
       throw new Error(`Dataset "${derivedId}" already exists.`);
     }
-    const valueScale = scaleOptions(
+    const valueScale = resolveDensityScaleOptions(
       args.valueScale,
       { nice: false, zero: false },
       "Density valueScale"
@@ -236,7 +127,7 @@ const encodeDensity = action(
       );
     }
     const densityScale = placement === undefined
-      ? scaleOptions(
+      ? resolveDensityScaleOptions(
           args.densityScale,
           { nice: true, zero: true },
           "Density densityScale"
@@ -244,7 +135,7 @@ const encodeDensity = action(
       : undefined;
     const placementScale = placement === undefined
       ? undefined
-      : categoryScaleOptions(args.placement.scale);
+      : resolveDensityCategoryScaleOptions(args.placement.scale);
 
     const dataArgs = {
       id: derivedId,
@@ -269,7 +160,7 @@ const encodeDensity = action(
         property: `layer[${layer.id}].data`,
         value: derivedId
       });
-    next = applyDensityPosition(next, layer.id, densityPositionDefinition({
+    next = applyDensityPosition(next, layer.id, resolveDensityPositionDefinition({
       layer: { densityChannel },
       output,
       groupBy,
@@ -369,7 +260,7 @@ const editDensity = action(
     if (changesPlacementMode) {
       const xScaleId = layer.encoding?.x?.scale;
       const yScaleId = layer.encoding?.y?.scale;
-      const scaleDefinitions = transitionScaleDefinitions(
+      const scaleDefinitions = resolveDensityTransitionScaleDefinitions(
         this,
         layer,
         transform,
@@ -380,12 +271,12 @@ const editDensity = action(
         .editSemantic({ property: `layer[${layer.id}].encoding.x`, remove: true })
         .editSemantic({ property: `layer[${layer.id}].encoding.y`, remove: true });
       next = next
-        .editScale(scaleEdit(xScaleId, scaleDefinitions.x))
-        .editScale(scaleEdit(yScaleId, scaleDefinitions.y));
+        .editScale(scaleEditPatch(xScaleId, scaleDefinitions.x))
+        .editScale(scaleEditPatch(yScaleId, scaleDefinitions.y));
       const densityChannel = requestedPlacement?.channel ?? (
         layer.encoding.x.field === transform.as[1] ? "x" : "y"
       );
-      const definition = densityPositionDefinition({
+      const definition = resolveDensityPositionDefinition({
         layer: { densityChannel },
         output: transform.as,
         groupBy: transform.groupBy,
@@ -415,11 +306,14 @@ const editDensity = action(
     ) {
       const channel = requestedPlacement.channel;
       const scaleId = layer.encoding[channel].scale;
-      const requestedScale = categoryScaleOptions(args.placement.scale, scaleId);
+      const requestedScale = resolveDensityCategoryScaleOptions(
+        args.placement.scale,
+        scaleId
+      );
       if (requestedScale.id !== scaleId) {
         throw new Error("editDensity placement scale cannot change its id.");
       }
-      next = next.editScale(scaleEdit(scaleId, requestedScale));
+      next = next.editScale(scaleEditPatch(scaleId, requestedScale));
     }
 
     next = applyMaterializationPlan(
