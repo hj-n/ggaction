@@ -120,13 +120,14 @@ function resolveSourceTextItems(program, layer, config) {
   }
   const items = resolveMarkItems(program, source.id);
   return items.flatMap(item => {
+    const anchor = sourceAnchor(program, source, item);
     const concrete = concreteItem(
       sourceTextConfig(config, source, item),
-      sourceAnchor(program, source, item),
+      anchor,
       contentValue(layer.encoding.text, item, source),
       layer.encoding.text.format
     );
-    return concrete === undefined ? [] : [concrete];
+    return concrete === undefined ? [] : [{ graphic: concrete, anchor }];
   });
 }
 
@@ -145,12 +146,19 @@ function resolveRowTextItems(program, layer, config) {
       contentValue(layer.encoding.text, row),
       layer.encoding.text.format
     );
-    return concrete === undefined ? [] : [concrete];
+    return concrete === undefined
+      ? []
+      : [{ graphic: concrete, anchor: { x: x[index], y: y[index] } }];
   });
 }
 
-export function resolveTextGraphicItems(program, layer, config) {
+export function resolveTextGraphicEntries(program, layer, config) {
   return layer.source === undefined
     ? resolveRowTextItems(program, layer, config)
     : resolveSourceTextItems(program, layer, config);
+}
+
+export function resolveTextGraphicItems(program, layer, config) {
+  return resolveTextGraphicEntries(program, layer, config)
+    .map(entry => entry.graphic);
 }

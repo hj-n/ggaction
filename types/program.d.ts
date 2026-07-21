@@ -1609,6 +1609,29 @@ export interface EditTextMarkOptions extends Omit<TextMarkOptions, "id" | "data"
   target?: string;
 }
 
+export type LabelLayoutAxis = "x" | "y" | "both";
+export type LabelLayoutBounds = "plot" | "canvas";
+
+export interface LabelLeaderOptions {
+  stroke?: string;
+  strokeWidth?: number;
+  strokeDash?: readonly number[];
+  opacity?: number;
+}
+
+export interface LabelLayoutOptions {
+  target?: string;
+  axis?: LabelLayoutAxis;
+  padding?: number;
+  maxDisplacement?: number;
+  bounds?: LabelLayoutBounds;
+  leader?: false | LabelLeaderOptions;
+}
+
+export interface RemoveLabelLayoutOptions {
+  target?: string;
+}
+
 export interface RectMarkOptions {
   id?: string;
   data?: string;
@@ -2153,6 +2176,8 @@ export class ChartProgram {
   createRuleMark(options?: { id?: string; data?: string }): ChartProgram;
   createTextMark(options?: TextMarkOptions): ChartProgram;
   editTextMark(options: EditTextMarkOptions): ChartProgram;
+  layoutLabels(options?: LabelLayoutOptions): ChartProgram;
+  removeLabelLayout(options?: RemoveLabelLayoutOptions): ChartProgram;
   editAreaMark(options: {
     target?: string;
     fill?: string;

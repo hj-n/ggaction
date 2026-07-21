@@ -24,7 +24,7 @@ const STYLE_OPTIONS = Object.freeze([
 ]);
 const CREATE_OPTIONS = Object.freeze(["id", "data", "text", ...STYLE_OPTIONS]);
 const EDIT_OPTIONS = Object.freeze(["target", ...STYLE_OPTIONS]);
-const REMATERIALIZE_OPTIONS = Object.freeze(["id"]);
+const REMATERIALIZE_OPTIONS = Object.freeze(["id", "replayLayout"]);
 const SOURCE_TYPES = new Set(["point", "bar", "rule", "rect"]);
 
 function sourceMatchesData(program, layer, requestedData) {
@@ -138,6 +138,10 @@ const rematerializeTextMark = action(
   function (args = {}) {
     validateMarkOptions(args, REMATERIALIZE_OPTIONS, "rematerializeTextMark");
     const id = validateUserId(args.id, "Text mark id");
+    const replayLayout = args.replayLayout ?? true;
+    if (typeof replayLayout !== "boolean") {
+      throw new TypeError("rematerializeTextMark replayLayout must be a boolean.");
+    }
     const layer = findLayer(this, id);
     const graphic = this.graphicSpec.objects[id];
     if (layer?.mark?.type !== "text") throw new Error(`Unknown text mark "${id}".`);
@@ -145,11 +149,14 @@ const rematerializeTextMark = action(
       throw new Error(`Text mark "${id}" requires text collection graphics.`);
     }
     if (!canMaterializeText(this, layer)) {
-      return graphic.items.length === 0
+      const next = graphic.items.length === 0
         ? this
         : this.editGraphics({ target: id, property: "length", value: 0 });
+      return replayLayout && next.materializationConfigs.labelLayouts?.[id] !== undefined
+        ? next.materializeLabelLayout({ id, rematerializeBase: false })
+        : next;
     }
-    return this.editGraphics({
+    const next = this.editGraphics({
       target: id,
       property: "items",
       value: resolveTextGraphicItems(
@@ -158,6 +165,9 @@ const rematerializeTextMark = action(
         this.markConfigs[id] ?? DEFAULT_TEXT_MARK
       )
     });
+    return replayLayout && next.materializationConfigs.labelLayouts?.[id] !== undefined
+      ? next.materializeLabelLayout({ id, rematerializeBase: false })
+      : next;
   }
 );
 

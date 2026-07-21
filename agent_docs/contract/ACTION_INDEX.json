@@ -236,6 +236,42 @@
       }
     },
     {
+      "name": "layoutLabels",
+      "layer": "user-facing",
+      "domain": "marks",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Repeated assignment replaces the complete policy; `removeLabelLayout` removes it",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/MARKS.md",
+        "anchor": "layoutlabels"
+      }
+    },
+    {
+      "name": "removeLabelLayout",
+      "layer": "user-facing",
+      "domain": "marks",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Removes one text mark's graphical label-layout policy",
+      "audit": "Implemented",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "partial"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/MARKS.md",
+        "anchor": "removelabellayout"
+      }
+    },
+    {
       "name": "editPointMark",
       "layer": "user-facing",
       "domain": "marks",
@@ -2322,6 +2358,7 @@
       "materializeRegressionData",
       "materializeWindowData",
       "materializeRuleSpan",
+      "materializeLabelLayout",
       "rematerializeArcMark",
       "rematerializeAreaMark",
       "rematerializeBarMark",

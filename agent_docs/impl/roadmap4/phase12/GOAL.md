@@ -6,7 +6,7 @@
 - [x] P-005 candidate API, state ownership과 failure policy 설계
 - [x] Independent oracle과 Gapminder primitive visual
 - [x] P12-A 사용자 승인
-- [ ] Production grammar, action과 rematerialization lifecycle
+- [x] Production grammar, action과 rematerialization lifecycle
 - [ ] P12-B public visual/lifecycle 승인
 - [ ] Current contract, declarations, docs와 cumulative closeout
 - [ ] P12-Exit 사용자 승인

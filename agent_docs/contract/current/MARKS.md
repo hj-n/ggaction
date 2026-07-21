@@ -503,12 +503,13 @@ independent assembly and does not inherit position encodings.
   zero rotation, and zero offsets.
 - Concrete children are backend-neutral text primitives. A source-owned annotation anchors to final point centers,
   bar measure endpoints, rect centers, or rule endpoints, so aggregate bars produce one label per final bar rather than one per row.
-- Collision avoidance is intentionally not automatic. Authors control filtering, alignment, rotation, `dx`, and `dy`.
+- Collision avoidance is not automatic. Authors may preserve explicit placement or assign it afterward with
+  `layoutLabels()`.
 
 ### Formal values — `createTextMark`
 
 - Implemented: `createTextMark({ id?: UserId; data?: UserId; text?: unknown; fill?: NonEmptyString; opacity?: UnitInterval; fontSize?: PositiveFinite; fontFamily?: NonEmptyString; fontWeight?: NonEmptyString | Finite; align?: "left" | "right" | "center" | "start" | "end"; baseline?: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom"; rotation?: Finite; dx?: Finite; dy?: Finite } = {})`.
-- Proposed (NOT IMPLEMENTED): automatic collision avoidance and interactive tooltips.
+- Proposed (NOT IMPLEMENTED): interactive tooltips.
 
 ### Value coverage — `createTextMark`
 
@@ -526,10 +527,60 @@ independent assembly and does not inherit position encodings.
 ### Formal values — `editTextMark`
 
 - Implemented: the appearance subset and value vocabularies of `createTextMark`, plus optional inferred/explicit target.
-- Proposed (NOT IMPLEMENTED): automatic placement and collision editing.
+- Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `editTextMark`
 
 - ✅ Covered: target inference, typography/alignment/rotation/offset edits, Canvas and scale rematerialization,
   validation, empty edit, and earlier-program immutability.
 - Evidence: `test/unit/actions/marks/text-mark.test.js`.
+
+## `layoutLabels`
+
+- Signature: `layoutLabels({ target?, axis?, padding?, maxDisplacement?, bounds?, leader? } = {})`.
+- Assigns one complete graphical layout policy to an existing text mark. Omitted target resolves the current complete
+  text mark, then one unique complete text mark; ambiguity and incomplete targets fail before state changes.
+- Defaults are `axis: "both"`, `padding: 3`, `maxDisplacement: 48`, `bounds: "plot"`, and `leader: false`.
+  `bounds: "canvas"` uses the concrete Canvas rectangle. `axis` constrains displacement to x, y, or both axes.
+- The action rematerializes semantic base text, visits concrete items in stable order, and selects the first in-bounds
+  zero-overlap candidate. If no candidate satisfies both constraints, it stores deterministic `overlap` or `bounds`
+  warnings and the best-effort result rather than silently claiming success.
+- A leader object enables target-owned line graphics from the stored source anchor to a displaced label. Its optional
+  `stroke`, `strokeWidth`, `strokeDash`, and `opacity` use ordinary line vocabularies. Repeated assignment replaces the
+  complete policy and recomputes from semantic base text.
+- Text semantics and source relations do not change. Requested policy and latest resolution summary live at
+  `materializationConfigs.labelLayouts[target]`; final text and leader geometry live in `graphicSpec`. Text, encoding,
+  data, scale, source-mark, and Canvas rematerialization replays the policy exactly once after base text.
+
+### Formal values — `layoutLabels`
+
+- Implemented: `layoutLabels({ target?: UserId; axis?: "x" | "y" | "both"; padding?: NonNegativeFinite; maxDisplacement?: NonNegativeFinite; bounds?: "plot" | "canvas"; leader?: false | { stroke?: NonEmptyString; strokeWidth?: NonNegativeFinite; strokeDash?: readonly NonNegativeFinite[]; opacity?: UnitInterval } } = {})`.
+- Proposed (NOT IMPLEMENTED): global force simulation, guide/title collision layout, automatic margin expansion, and
+  arbitrary nearby-mark source inference.
+
+### Value coverage — `layoutLabels`
+
+- ⚠️ Partial: covered target inference, complete-policy replacement, deterministic axis-constrained placement,
+  plot/Canvas bounds, leader geometry, impossible-layout warnings, state/trace ownership, replay, validation, and
+  immutability. Public primitive/PNG parity remains pending P12-B.
+- Evidence: `test/unit/layout/labels.test.js`, `test/unit/actions/marks/label-layout.test.js`, and
+  `test/gates/gapminder-country-labels/`.
+
+## `removeLabelLayout`
+
+- Signature: `removeLabelLayout({ target? } = {})`.
+- Resolves only a text mark with an assigned label-layout policy. It removes the private policy and target-owned leader
+  collection, then rematerializes semantic base text positions and typography.
+- Removal does not change text semantics, its stored source relation, or unrelated graphics. Removing the owning mark
+  also removes its policy and leader collection.
+
+### Formal values — `removeLabelLayout`
+
+- Implemented: `removeLabelLayout({ target?: UserId } = {})`.
+- Proposed (NOT IMPLEMENTED): —
+
+### Value coverage — `removeLabelLayout`
+
+- ⚠️ Partial: covered explicit and inferred ownership, base-position restoration, leader cleanup, mark cleanup,
+  validation, trace, and immutability. Public visual parity remains pending P12-B.
+- Evidence: `test/unit/actions/marks/label-layout.test.js` and `test/gates/gapminder-country-labels/`.

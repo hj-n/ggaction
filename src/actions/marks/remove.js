@@ -191,6 +191,13 @@ export const removeMark = action(
     const selectionCleanup = cleanupSelectionState(next, ids);
     next = selectionCleanup.program;
     for (const id of ids) {
+      const labelLayout = next.materializationConfigs.labelLayouts?.[id];
+      if (
+        labelLayout?.leaderId !== undefined &&
+        next.graphicSpec.objects[labelLayout.leaderId] !== undefined
+      ) {
+        next = next.editGraphics({ target: labelLayout.leaderId, remove: true });
+      }
       if (findLayer(next, id) !== undefined) {
         next = next.editSemantic({ property: `layer[${id}]`, remove: true });
       }
@@ -199,6 +206,7 @@ export const removeMark = action(
       }
       next = next._withoutMaterializationConfig(["marks", id]);
       next = next._withoutMaterializationConfig(["jitters", id]);
+      next = next._withoutMaterializationConfig(["labelLayouts", id]);
     }
 
     next = cleanupPositionGuides(next, positionScales);

@@ -4,51 +4,25 @@ import {
   validateNonNegativeFinite,
   validateOptionObject
 } from "../core/validation.js";
-import { validateConcreteGraphicValue } from "../grammar/schemas/concreteGraphic.js";
 
 const AXES = new Set(["x", "y", "both"]);
 const BOUNDS = new Set(["plot", "canvas"]);
 const POLICY_OPTIONS = Object.freeze([
-  "axis", "padding", "maxDisplacement", "bounds", "leader"
-]);
-const LEADER_OPTIONS = Object.freeze([
-  "stroke", "strokeWidth", "strokeDash", "opacity"
+  "axis", "padding", "maxDisplacement", "bounds"
 ]);
 
-export const DEFAULT_LABEL_LAYOUT = cloneAndFreeze({
+export const DEFAULT_LABEL_LAYOUT_GEOMETRY = cloneAndFreeze({
   axis: "both",
   padding: 3,
   maxDisplacement: 48,
-  bounds: "plot",
-  leader: false
+  bounds: "plot"
 });
 
-function normalizeLeader(value) {
-  if (value === false) return false;
-  validateOptionObject(value, LEADER_OPTIONS, "label leader", {
-    allowEmpty: true
-  });
-  const normalized = {
-    stroke: "#94a3b8",
-    strokeWidth: 1,
-    strokeDash: [],
-    opacity: 1,
-    ...value
-  };
-  for (const [property, propertyValue] of Object.entries(normalized)) {
-    validateConcreteGraphicValue("line", property, propertyValue);
-  }
-  return cloneAndFreeze(normalized);
-}
-
-export function normalizeLabelLayoutPolicy(options = {}) {
+export function normalizeLabelLayoutGeometry(options = {}) {
   validateOptionObject(options, POLICY_OPTIONS, "label layout");
   const normalized = {
-    ...DEFAULT_LABEL_LAYOUT,
-    ...options,
-    leader: Object.hasOwn(options, "leader")
-      ? normalizeLeader(options.leader)
-      : DEFAULT_LABEL_LAYOUT.leader
+    ...DEFAULT_LABEL_LAYOUT_GEOMETRY,
+    ...options
   };
   if (!AXES.has(normalized.axis)) {
     throw new Error(`Unsupported label layout axis "${normalized.axis}".`);
@@ -122,7 +96,7 @@ function overflow(bounds, boundary) {
 }
 
 export function enumerateLabelOffsets({ axis, padding, maxDisplacement }) {
-  const policy = normalizeLabelLayoutPolicy({ axis, padding, maxDisplacement });
+  const policy = normalizeLabelLayoutGeometry({ axis, padding, maxDisplacement });
   const step = Math.max(2, policy.padding);
   const limit = Math.ceil(policy.maxDisplacement / step);
   const candidates = [];
@@ -199,7 +173,7 @@ export function resolveLabelLayout({ items, bounds, ...options } = {}) {
     throw new TypeError("Label layout requires an item array.");
   }
   validateBounds(bounds);
-  const policy = normalizeLabelLayoutPolicy(options);
+  const policy = normalizeLabelLayoutGeometry(options);
   const ids = new Set();
   for (const item of items) validateItem(item, ids);
   const candidates = enumerateLabelOffsets(policy);

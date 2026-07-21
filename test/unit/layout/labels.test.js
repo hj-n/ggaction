@@ -2,48 +2,34 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
-  DEFAULT_LABEL_LAYOUT,
+  DEFAULT_LABEL_LAYOUT_GEOMETRY,
   enumerateLabelOffsets,
-  normalizeLabelLayoutPolicy,
+  normalizeLabelLayoutGeometry,
   resolveLabelLayout,
   resolveLabelLeader
 } from "../../../src/layout/labels.js";
 
 const boundary = Object.freeze({ left: 0, right: 100, top: 0, bottom: 50 });
 
-test("normalizes the closed label-layout policy and leader appearance", () => {
-  assert.deepEqual(DEFAULT_LABEL_LAYOUT, {
+test("normalizes the closed label-layout geometry", () => {
+  assert.deepEqual(DEFAULT_LABEL_LAYOUT_GEOMETRY, {
     axis: "both",
     padding: 3,
     maxDisplacement: 48,
-    bounds: "plot",
-    leader: false
+    bounds: "plot"
   });
-  assert.deepEqual(normalizeLabelLayoutPolicy({
-    axis: "x",
-    leader: { stroke: "#111827", strokeDash: [3, 2] }
-  }), {
+  assert.deepEqual(normalizeLabelLayoutGeometry({ axis: "x" }), {
     axis: "x",
     padding: 3,
     maxDisplacement: 48,
-    bounds: "plot",
-    leader: {
-      stroke: "#111827",
-      strokeWidth: 1,
-      strokeDash: [3, 2],
-      opacity: 1
-    }
+    bounds: "plot"
   });
   assert.throws(
-    () => normalizeLabelLayoutPolicy({ axis: "radial" }),
+    () => normalizeLabelLayoutGeometry({ axis: "radial" }),
     /Unsupported label layout axis/
   );
   assert.throws(
-    () => normalizeLabelLayoutPolicy({ leader: { width: 2 } }),
-    /Unknown label leader option/
-  );
-  assert.throws(
-    () => normalizeLabelLayoutPolicy({ padding: -1 }),
+    () => normalizeLabelLayoutGeometry({ padding: -1 }),
     /must be a non-negative/
   );
 });
