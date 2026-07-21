@@ -71,4 +71,11 @@ test("rejects missing, forbidden, and oversized package manifests", () => {
     () => validatePackageManifest({ ...base, size: PACKAGE_LIMITS.packedBytes + 1 }),
     /Packed size/
   );
+  assert.throws(
+    () => validatePackageManifest({
+      ...base,
+      entryCount: PACKAGE_LIMITS.entries + 1
+    }),
+    /Package entry count/
+  );
 });
