@@ -3,7 +3,9 @@
 ## 상태
 
 - Gate: `P12-B`
-- 상태: `ready-for-review`
+- 상태: `approved`
+- 승인일: `2026-07-21`
+- 승인 근거: 사용자가 public lifecycle, replay/state ownership, parameter/failure 정책과 primitive/public visual을 명시적으로 승인
 - Production action checkpoint: `b3198a3` (`implement collision-aware label layout`)
 - Public visual checkpoint: `d62061b` (`add label layout public visual`)
 - Remote: `origin/main`
@@ -138,8 +140,8 @@ Full gallery browser verification은 macOS Mach IPC sandbox 제약으로 권한 
 - Public declarations, Current action contract, readable docs와 generated reference는 runtime과 동기화했다.
 - 새 source를 포함한 package bounded-size ceiling은 `1,600,000`에서 `1,625,000` bytes로만 조정했고 actual artifact는
   새 ceiling을 통과한다.
-- P12-B 승인 후 active Gate slice를 stable label-layout capability로 이동하고 Current coverage를 complete로 바꾸며,
-  architecture/roadmap closeout과 P12-Exit를 준비한다.
+- P12-B 승인으로 active Gate slice의 stable label-layout capability 이동, Current coverage complete 승격과
+  architecture/roadmap closeout이 해제되었다.
 
 ## 승인 요청 범위
 
@@ -147,4 +149,3 @@ Full gallery browser verification은 macOS Mach IPC sandbox 제약으로 권한 
 2. base-first, exactly-once replay와 state/graphic ownership
 3. parameter/failure/ambiguity 정책과 order convergence
 4. primitive/public exact parity와 Gapminder rendered visual
-

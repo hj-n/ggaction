@@ -8,4 +8,4 @@
 - [x] scale/Canvas/font/edit order convergence
 - [x] warning resolution, repeated replacement와 removal lifecycle
 - [x] P12-B remote checkpoint
-- [ ] P12-B 사용자 승인
+- [x] P12-B 사용자 승인
