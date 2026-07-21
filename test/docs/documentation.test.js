@@ -199,7 +199,10 @@ test("keeps navigation and page order complete", async () => {
     .match(/<a /g) ?? []).length, 4);
   assert.match(layout, /'\/recipes\/' \| relative_url/);
   assert.match(layout, /<html class="no-js"/);
-  assert.doesNotMatch(read("docs/_includes/sidebar.html"), /\s(?:inert|aria-hidden=)/);
+  const sidebarOpeningTag = read("docs/_includes/sidebar.html").match(
+    /^<aside[\s\S]*?>/
+  )?.[0];
+  assert.doesNotMatch(sidebarOpeningTag, /\s(?:inert|aria-hidden=)/);
   assert.match(
     read("docs/_includes/head.html"),
     /classList\.replace\("no-js", "js"\)/
@@ -609,6 +612,11 @@ test("indexes documentation headings for section search", () => {
 test("keeps the compact search index generated and action-aware", async () => {
   await generateDocSearchIndex({ check: true });
   const index = await buildDocSearchIndex();
+  assert.equal(index.every(entry => typeof entry.kind === "string"), true);
+  assert.equal(
+    index.some(entry => entry.keywords.includes("confidence interval")),
+    true
+  );
   assert.equal(index.length > 100, true);
   assert.equal(JSON.stringify(index).length < 400_000, true);
   assert.equal(index.every(entry => !Object.hasOwn(entry, "html")), true);

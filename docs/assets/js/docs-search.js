@@ -150,13 +150,18 @@
         link.setAttribute("aria-selected", "false");
         link.id = `docs-search-option-${index}`;
         link.href = match.url;
-        link.textContent = match.sectionTitle
+        const kind = document.createElement("span");
+        kind.className = "docs-search-kind";
+        kind.textContent = match.kind;
+        const title = document.createElement("span");
+        title.className = "docs-search-title";
+        title.textContent = match.sectionTitle
           ? `${match.pageTitle} › ${match.sectionTitle}`
           : match.pageTitle;
         const preview = document.createElement("span");
         preview.className = "docs-search-snippet";
         preview.textContent = excerpt(match.summary, query);
-        link.append(preview);
+        link.append(kind, title, preview);
         item.append(link);
         results.append(item);
       }

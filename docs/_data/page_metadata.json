@@ -258,7 +258,7 @@
   },
   "/api/encodings/": {
     "title": "Encodings",
-    "description": "Encoding actions connect data fields or constant values to chart channels.",
+    "description": "Encoding actions connect data fields or constants to chart channels. Ordinary authors choose the relationship; ggaction infers a unique target, coordinate, scale ID, and field…",
     "image": "/assets/images/cars-regression-scatterplot.png"
   },
   "/api/regression/": {

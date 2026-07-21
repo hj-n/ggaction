@@ -97,6 +97,109 @@ Create the relevant encodings first. A nominal point color encoding can create
 a categorical legend; field-driven shape and quantitative size may be combined
 with that legend when their resolved scales are compatible.
 
+## `createData()` rejects the dataset
+
+`values` must be an array of plain row objects:
+
+```javascript
+program.createData({
+  values: [
+    { category: "A", value: 12 },
+    { category: "B", value: 18 }
+  ]
+});
+```
+
+Dataset IDs are optional when the generated role is unused. The dataset is
+immutable after creation: use `filterData`, a derived-data action, or create a
+new program revision rather than mutating the caller-owned array.
+
+## Temporal values cannot be parsed
+
+Temporal fields accept finite timestamps, four-digit numeric or string years,
+and valid date strings. Four-digit values are interpreted as UTC years.
+
+```javascript
+program.encodeX({ field: "year", fieldType: "temporal" });
+```
+
+Use one consistent representation per field. Invalid or mixed ambiguous values
+fail before a time scale or partial graphic is created.
+
+## A filter produces an empty mark
+
+`filterData` creates a derived dataset and leaves the source unchanged. An empty
+result is valid, so confirm the exact field spelling, value type, and predicate:
+
+```javascript
+const filtered = program.filterData({
+  field: "Origin",
+  oneOf: ["Japan", "USA"]
+});
+```
+
+Then inspect the derived dataset row count and the final graphic item count.
+Filtering a numeric field with string values—or a date string with a `Date`
+object—does not coerce the comparison silently.
+
+## An encoding is incompatible with the mark
+
+Position and appearance channels are not universally interchangeable. For
+example, point marks support field-driven shape and size, while line paths use
+stroke width and stroke dash. Ranged intervals require a compatible primary and
+secondary position pair.
+
+Start with the generated [mark/channel matrix](./api/encodings.md#supported-markchannel-matrix),
+then open the focused family page for accepted field types and ordering rules.
+The action fails before storing partial state when the combination is unsupported.
+
+## A facet or composition cannot share a resource
+
+Composition snapshots complete child programs and never merges their resource
+namespaces. Facet sharing is narrower: every represented child scale and guide
+recipe must be concretely compatible.
+
+Use independent facet scales when panels need different policies:
+
+```javascript
+program.facet({
+  field: "group",
+  scales: { y: "independent" },
+  guides: { legend: false }
+});
+```
+
+Polar sources cannot currently be faceted. They can still be children of
+`hconcat` or `vconcat`.
+
+## Browser Canvas renders nothing
+
+Call the browser entry point with a real Canvas element and wait until the
+program is complete:
+
+```javascript
+import { render } from "ggaction";
+
+render(program, document.querySelector("#chart"));
+```
+
+If rendering succeeds but the result is blank, inspect `graphicSpec.objects`
+before changing the renderer. The renderer does not infer missing mark
+positions, sizes, or paths from `semanticSpec`.
+
+## Node PNG export is unavailable in the browser
+
+The PNG adapter is a Node-only package entry:
+
+```javascript
+import { renderToPNG } from "ggaction/png";
+
+await renderToPNG(program, { output: "chart.png", pixelRatio: 2 });
+```
+
+Use `render` from `ggaction` in the browser. Importing `ggaction/png` into a
+browser bundle is unsupported because it depends on the Node Canvas adapter.
+
 ## Inspect the program
 
 Use these public states to locate the last successful authoring step:

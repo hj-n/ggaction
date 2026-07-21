@@ -9,6 +9,33 @@ const actionCatalogFile = path.join(root, "agent_docs/contract/ACTION_INDEX.json
 const pageMetadataFile = path.join(docsRoot, "_data/page_metadata.json");
 const outputFile = path.join(docsRoot, "search-index.json");
 
+const SEARCH_ALIASES = new Map([
+  ["/api/axes/", ["axis label", "tick label", "axis title"]],
+  ["/api/error-bars/", ["confidence interval", "uncertainty"]],
+  ["/api/error-bands/", ["confidence interval", "uncertainty ribbon"]],
+  ["/api/composition/", ["dashboard", "small multiples", "facet"]],
+  ["/api/parallel-coordinates/", ["multivariate profile"]],
+  ["/api/position/offsets/", ["grouped bar", "side by side bars"]],
+  ["/tutorials/grouped-bar/", ["grouped bar", "side by side bars"]],
+  ["/recipes/bar-chart/", ["grouped bar", "side by side bars"]]
+]);
+
+function searchKind(url, sectionTitle) {
+  if (url.startsWith("/recipes/")) return "Recipe";
+  if (url.startsWith("/tutorials/")) return "Tutorial";
+  if (url.startsWith("/reference/actions/") && sectionTitle) return "Action";
+  if (url.startsWith("/reference/")) return "Reference";
+  if (url.startsWith("/api/")) return "API";
+  if (url.startsWith("/concepts/")) return "Concept";
+  return "Guide";
+}
+
+function aliases(url) {
+  return [...SEARCH_ALIASES.entries()]
+    .filter(([prefix]) => url.startsWith(prefix))
+    .flatMap(([, values]) => values);
+}
+
 function pageRegistry(source) {
   return [...source.matchAll(/^- title:\s+(.+)\n((?: {2}.+\n?)+)/gm)].map(match => ({
     title: match[1],
@@ -108,8 +135,9 @@ export async function buildDocSearchIndex() {
     entries.push({
       pageTitle: page.title,
       url: page.url,
+      kind: searchKind(page.url),
       summary: summary(pageSummary),
-      keywords: [page.title]
+      keywords: [page.title, ...aliases(page.url)]
     });
     for (const section of sections.slice(1)) {
       if (!section.heading?.id) continue;
@@ -119,10 +147,11 @@ export async function buildDocSearchIndex() {
         pageTitle: page.title,
         sectionTitle: section.heading.label,
         url: `${page.url}#${section.heading.id}`,
+        kind: searchKind(page.url, section.heading.label),
         summary: summary(cleanText(section.body.join("\n"))),
         keywords: action
-          ? [action.name, action.layer, action.domain]
-          : [page.title, section.heading.label]
+          ? [action.name, action.layer, action.domain, ...aliases(page.url)]
+          : [page.title, section.heading.label, ...aliases(page.url)]
       });
     }
   }

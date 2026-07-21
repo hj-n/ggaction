@@ -97,6 +97,7 @@ assert.equal(new Set(searchIndex.map(entry => entry.url)).size, searchIndex.leng
 for (const entry of searchIndex) {
   assert.equal(typeof entry.pageTitle === "string" && entry.pageTitle.length > 0, true);
   assert.equal(typeof entry.url === "string" && entry.url.length > 0, true);
+  assert.equal(typeof entry.kind === "string" && entry.kind.length > 0, true);
   assert.equal(typeof entry.summary === "string", true);
   assert.equal(Array.isArray(entry.keywords) && entry.keywords.length > 0, true);
 }

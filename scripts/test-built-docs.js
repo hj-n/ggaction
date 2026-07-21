@@ -159,6 +159,7 @@ try {
   const resultCount = await results.count();
   assert.equal(resultCount > 0 && resultCount <= 8, true);
   assert.equal(await desktop.locator(".docs-search-snippet").count(), resultCount);
+  assert.equal(await desktop.locator(".docs-search-kind").count(), resultCount);
   const urls = await results.evaluateAll(links => links.map(link => link.href));
   assert.equal(new Set(urls).size, urls.length);
   await search.fill("edit legend");
@@ -174,6 +175,7 @@ try {
   );
   await desktop.keyboard.press("Escape");
   assert.equal(await search.getAttribute("aria-expanded"), "false");
+  assert.equal(await desktop.locator(".docs-search__control kbd").isVisible(), true);
   assert.deepEqual(desktopErrors, []);
 
   const llmsResponse = await fetch(`${baseUrl}llms.txt`);
