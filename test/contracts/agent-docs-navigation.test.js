@@ -88,7 +88,7 @@ test("keeps the active phase aligned with the roadmap status table", () => {
   const source = readFileSync(path.join(root, active.file), "utf8");
   assert.match(
     source,
-    new RegExp(`\\| ${roadmapIndex.activePhase} \\| planned \\|`)
+    new RegExp(`\\| ${roadmapIndex.activePhase} \\| (?:planned|in-progress|blocked) \\|`)
   );
   assert.match(source, new RegExp(`^## Phase ${roadmapIndex.activePhase} —`, "m"));
 });

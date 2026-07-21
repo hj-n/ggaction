@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "phase": "roadmap4/phase12",
+  "gate": "P12-A",
+  "status": "ready-for-review",
+  "actions": [
+    {
+      "name": "layoutLabels",
+      "status": "candidate",
+      "required": [],
+      "optional": ["target", "axis", "padding", "maxDisplacement", "bounds", "leader"],
+      "replacement": "replaces one target text mark's complete graphical label-layout policy",
+      "stateOwner": "materializationConfigs.labelLayouts[target] and target-owned concrete text/leader graphics"
+    },
+    {
+      "name": "removeLabelLayout",
+      "status": "candidate",
+      "required": [],
+      "optional": ["target"],
+      "replacement": "removes the policy and leader collection and restores semantic base text positions",
+      "stateOwner": "existing text materializer and label-layout owner"
+    }
+  ]
+}
