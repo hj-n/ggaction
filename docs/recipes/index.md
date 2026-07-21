@@ -24,3 +24,7 @@ resources, defaults, and guides that ggaction can infer.
 Every flow begins with `createCanvas`, `createData`, and a semantic mark or
 composite action. Add explicit IDs only when the current program contains more
 than one compatible resource.
+
+Each recipe labels its primary snippet as runnable. Later snippets revise the
+named `program` produced by that primary flow unless they repeat an import and
+complete setup explicitly.

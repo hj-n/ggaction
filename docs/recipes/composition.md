@@ -9,6 +9,8 @@ title: Composition Recipe
 
 ## Minimal flow
 
+{% include runnable-recipe-note.html %}
+
 ```javascript
 import { chart, hconcat } from "ggaction";
 

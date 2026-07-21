@@ -459,6 +459,15 @@ summary:focus-visible {
   text-transform: uppercase;
 }
 
+.docs-code-contract {
+  margin: 0.9rem 0 0.45rem;
+  padding: 0.65rem 0.8rem;
+  color: #334155;
+  border-left: 3px solid #93c5fd;
+  background: #f8fafc;
+  font-size: 0.86rem;
+}
+
 .docs-action-filter {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

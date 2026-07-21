@@ -12,7 +12,11 @@ choice inside the bar chart, not a separate top-level chart type.
 
 ## Minimal grouped flow
 
+{% include runnable-recipe-note.html %}
+
 ```javascript
+import { chart } from "ggaction";
+
 const program = chart()
   .createCanvas({ margin: { right: 140 } })
   .createData({ values })

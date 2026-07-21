@@ -3,6 +3,7 @@ import { createServer } from "node:http";
 import { mkdir, readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 
+import AxeBuilder from "@axe-core/playwright";
 import { chromium } from "playwright";
 
 const siteRoot = path.resolve(process.argv[2] ?? "_site");
@@ -79,6 +80,21 @@ function llmReferences(source) {
   )].map(match => match[0]);
 }
 
+async function assertAccessible(page, label) {
+  const result = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+    .analyze();
+  assert.deepEqual(
+    result.violations.map(violation => ({
+      id: violation.id,
+      impact: violation.impact,
+      targets: violation.nodes.map(node => node.target)
+    })),
+    [],
+    `${label} accessibility violations`
+  );
+}
+
 async function assertResponsiveContainment(page, file, width) {
   const response = await page.goto(routeFor(file), { waitUntil: "networkidle" });
   assert.equal(response.ok(), true, `${file} at ${width}px`);
@@ -149,6 +165,7 @@ try {
     await desktop.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth),
     false
   );
+  await assertAccessible(desktop, "desktop home");
 
   await desktop.keyboard.press("Control+K");
   const search = desktop.locator("#docs-search-input");
@@ -225,6 +242,11 @@ try {
   );
   await desktop.goto(`${baseUrl}gallery/all/`, { waitUntil: "networkidle" });
   assert.equal(await desktop.locator(".docs-chart-gallery article").count(), expectedGalleryCount);
+  const lastGalleryImage = desktop.locator(".docs-chart-gallery img").last();
+  await lastGalleryImage.scrollIntoViewIfNeeded();
+  await lastGalleryImage.evaluate(image => image.decode());
+  assert.equal(await lastGalleryImage.evaluate(image => image.naturalWidth > 0), true);
+  await assertAccessible(desktop, "all chart examples");
   await desktop.goto(`${baseUrl}getting-started/`, { waitUntil: "networkidle" });
   assert.equal(await desktop.locator(".docs-example-figure img").count(), 1);
   await desktop.goto(baseUrl, { waitUntil: "networkidle" });
@@ -332,6 +354,7 @@ try {
   assert.equal(await visibleActions.count() > 0, true);
   assert.equal(await visibleActions.count() < actionHeadingCount, true);
   assert.match(await mobile.locator(".docs-action-filter__status").innerText(), /actions$/);
+  await assertAccessible(mobile, "mobile action reference");
   await mobile.screenshot({
     path: path.join(artifactRoot, "mobile-action-reference.png"),
     fullPage: false

@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { readdir } from "node:fs/promises";
 import path from "node:path";
@@ -528,6 +529,28 @@ test("keeps complete tutorial programs portable to package consumers", () => {
     read("docs/recipes/scatterplot.md"),
     /Point legends are not supported/
   );
+});
+
+test("keeps every primary recipe snippet labeled and syntactically runnable", () => {
+  const catalog = chartExampleCatalog();
+  const recipeUrls = [...catalog.values()]
+    .filter(example => example.recipe_order !== undefined)
+    .map(example => example.recipe_url);
+
+  for (const url of recipeUrls) {
+    const relative = url.replace(/^\//, "").replace(/\/$/, ".md");
+    const source = read(`docs/${relative}`);
+    assert.match(source, /\{% include runnable-recipe-note\.html %\}/, url);
+    const primary = source.match(/```javascript\n([\s\S]*?)```/)?.[1];
+    assert.notEqual(primary, undefined, `${url} primary JavaScript`);
+    assert.match(primary, /from "ggaction";/, `${url} public package import`);
+    const checked = spawnSync(
+      process.execPath,
+      ["--input-type=module", "--check", "-"],
+      { input: primary, encoding: "utf8" }
+    );
+    assert.equal(checked.status, 0, `${url} syntax: ${checked.stderr}`);
+  }
 });
 
 test("documents one shared numeric font-weight rendering policy", () => {

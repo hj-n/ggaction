@@ -1943,6 +1943,10 @@ Every flow begins with `createCanvas`, `createData`, and a semantic mark or
 composite action. Add explicit IDs only when the current program contains more
 than one compatible resource.
 
+Each recipe labels its primary snippet as runnable. Later snippets revise the
+named `program` produced by that primary flow unless they repeat an import and
+complete setup explicitly.
+
 <!-- Source: /recipes/scatterplot/ -->
 
 # Scatterplot Recipe
@@ -1950,6 +1954,8 @@ than one compatible resource.
 ## Minimal flow
 
 ```javascript
+import { chart } from "ggaction";
+
 const program = chart()
   .createCanvas()
   .createData({ values })
@@ -1990,6 +1996,8 @@ scale IDs.
 ## Minimal flow
 
 ```javascript
+import { chart } from "ggaction";
+
 const program = chart()
   .createCanvas({ margin: { right: 140 } })
   .createData({ values })
@@ -2060,6 +2068,8 @@ The accepted curve vocabulary is `linear`, `step`, `step-before`, `step-after`,
 ## Minimal flow
 
 ```javascript
+import { chart } from "ggaction";
+
 const program = chart()
   .createCanvas({ margin: { right: 140 } })
   .createData({ values })
@@ -2106,6 +2116,8 @@ choice inside the bar chart, not a separate top-level chart type.
 ## Minimal grouped flow
 
 ```javascript
+import { chart } from "ggaction";
+
 const program = chart()
   .createCanvas({ margin: { right: 140 } })
   .createData({ values })
@@ -2154,6 +2166,8 @@ quantitative measure on x and the ordinal category on y.
 ## Pre-gridded flow
 
 ```javascript
+import { chart } from "ggaction";
+
 const program = chart()
   .createCanvas({ margin: { right: 120 } })
   .createData({ values: cells })
@@ -2171,6 +2185,8 @@ const program = chart()
 ## Raw-row binned flow
 
 ```javascript
+import { chart } from "ggaction";
+
 const program = chart()
   .createCanvas({ margin: { right: 120 } })
   .createData({ values: observations })
@@ -2230,6 +2246,8 @@ bands over a point chart.
 ## Minimal flow
 
 ```javascript
+import { chart } from "ggaction";
+
 const program = chart()
   .createCanvas({
     width: 760,
@@ -2282,6 +2300,8 @@ Pass `target`, `x`, `y`, or `groupBy` only when inference is ambiguous.
 ## Minimal flow
 
 ```javascript
+import { chart } from "ggaction";
+
 const program = chart()
   .createCanvas({ margin: { top: 100, right: 140 } })
   .createData({ values })
@@ -2324,6 +2344,8 @@ options only when that composition is intentional.
 ## Minimal flow
 
 ```javascript
+import { chart } from "ggaction";
+
 const program = chart()
   .createCanvas()
   .createData({ values })
@@ -2362,6 +2384,8 @@ comparison is intentional.
 ## Minimal flow
 
 ```javascript
+import { chart } from "ggaction";
+
 const program = chart()
   .createCanvas()
   .createData({ values })
@@ -2400,6 +2424,8 @@ options to reuse its fields, data, coordinate, and scales.
 ## Minimal flow
 
 ```javascript
+import { chart } from "ggaction";
+
 const program = chart()
   .createCanvas()
   .createData({ values })
@@ -2442,6 +2468,8 @@ axis is unambiguous.
 ## Minimal flow
 
 ```javascript
+import { chart } from "ggaction";
+
 const program = chart()
   .createCanvas()
   .createData({ values })
@@ -2482,6 +2510,8 @@ component appearance through the stable box-plot owner.
 ## Minimal flow
 
 ```javascript
+import { chart } from "ggaction";
+
 const program = chart()
   .createCanvas()
   .createData({ values })

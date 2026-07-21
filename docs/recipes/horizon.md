@@ -9,7 +9,11 @@ title: Horizon Chart Recipe
 
 ## Minimal flow
 
+{% include runnable-recipe-note.html %}
+
 ```javascript
+import { chart } from "ggaction";
+
 const program = chart()
   .createCanvas()
   .createData({ values })

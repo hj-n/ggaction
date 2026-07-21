@@ -9,7 +9,11 @@ title: Heatmap Recipe
 
 ## Pre-gridded flow
 
+{% include runnable-recipe-note.html %}
+
 ```javascript
+import { chart } from "ggaction";
+
 const program = chart()
   .createCanvas({ margin: { right: 120 } })
   .createData({ values: cells })
@@ -26,7 +30,11 @@ const program = chart()
 
 ## Raw-row binned flow
 
+{% include runnable-recipe-note.html %}
+
 ```javascript
+import { chart } from "ggaction";
+
 const program = chart()
   .createCanvas({ margin: { right: 120 } })
   .createData({ values: observations })

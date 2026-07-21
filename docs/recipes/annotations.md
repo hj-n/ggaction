@@ -9,6 +9,8 @@ title: Annotation Recipe
 
 ## Minimal flow
 
+{% include runnable-recipe-note.html %}
+
 ```javascript
 import { chart } from "ggaction";
 
