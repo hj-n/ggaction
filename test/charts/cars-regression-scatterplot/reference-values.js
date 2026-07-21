@@ -3,6 +3,13 @@ import {
   niceDomain as niceLinearDomain,
   numericTicks as niceLinearTicks
 } from "../../oracles/numeric.js";
+import { selectRegressionFilterRows } from "./reference/filter.js";
+import {
+  createRegressionPointChild,
+  requireRegressionLayout
+} from "./reference/layout.js";
+
+export { selectRegressionFilterRows } from "./reference/filter.js";
 
 const LOWER_FIELD = "__regression_ci_lower";
 const UPPER_FIELD = "__regression_ci_upper";
@@ -10,101 +17,6 @@ const COLORS = ["#4c78a8", "#f58518", "#e45756"];
 const SHAPES = ["circle", "square", "diamond"];
 const DEFAULT_SIZE_RANGE = [24, 196];
 const DEFAULT_SIZE_LEGEND_COUNT = 5;
-
-function comparable(value, operand) {
-  return (
-    Number.isFinite(value) && Number.isFinite(operand)
-  ) || (
-    typeof value === "string" && typeof operand === "string"
-  );
-}
-
-function matchesFilter(value, filter) {
-  if (filter.oneOf !== undefined) return filter.oneOf.includes(value);
-  if (filter.predicate !== undefined) {
-    const { op, value: operand } = filter.predicate;
-    if (op === "eq") return value === operand;
-    if (op === "neq") return value !== operand;
-    if (!comparable(value, operand)) return false;
-    if (op === "lt") return value < operand;
-    if (op === "lte") return value <= operand;
-    if (op === "gt") return value > operand;
-    if (op === "gte") return value >= operand;
-    throw new Error(`Unsupported reference filter operator "${op}".`);
-  }
-  const { min, max, inclusive = true } = filter.range;
-  if (!comparable(value, min) || !comparable(value, max)) return false;
-  return inclusive
-    ? value >= min && value <= max
-    : value > min && value < max;
-}
-
-function validateReferenceFilter(filter) {
-  if (filter === null || typeof filter !== "object" || Array.isArray(filter)) {
-    throw new TypeError("Reference filter must be an object.");
-  }
-  if (typeof filter.field !== "string" || filter.field.length === 0) {
-    throw new TypeError("Reference filter field must be a non-empty string.");
-  }
-  const modes = ["oneOf", "predicate", "range"].filter(
-    mode => Object.hasOwn(filter, mode)
-  );
-  if (modes.length !== 1) {
-    throw new Error("Reference filter requires exactly one filter mode.");
-  }
-  if (
-    modes[0] === "oneOf" &&
-    (!Array.isArray(filter.oneOf) || filter.oneOf.length === 0)
-  ) {
-    throw new TypeError("Reference filter oneOf must be a non-empty array.");
-  }
-  if (modes[0] === "predicate") {
-    const predicate = filter.predicate;
-    if (
-      predicate === null ||
-      typeof predicate !== "object" ||
-      Array.isArray(predicate) ||
-      !["eq", "neq", "lt", "lte", "gt", "gte"].includes(predicate.op)
-    ) {
-      throw new TypeError("Reference filter predicate is invalid.");
-    }
-    if (
-      !["eq", "neq"].includes(predicate.op) &&
-      typeof predicate.value !== "string" &&
-      !Number.isFinite(predicate.value)
-    ) {
-      throw new TypeError("Reference ordered filter value is invalid.");
-    }
-  }
-  if (modes[0] === "range") {
-    const range = filter.range;
-    if (
-      range === null ||
-      typeof range !== "object" ||
-      Array.isArray(range) ||
-      (typeof range.min !== "string" && !Number.isFinite(range.min)) ||
-      typeof range.min !== typeof range.max ||
-      range.min > range.max ||
-      (range.inclusive !== undefined && typeof range.inclusive !== "boolean")
-    ) {
-      throw new TypeError("Reference filter range is invalid.");
-    }
-  }
-}
-
-export function selectRegressionFilterRows(rows, filter) {
-  if (!Array.isArray(rows)) {
-    throw new TypeError("Cars must be an array.");
-  }
-  validateReferenceFilter(filter);
-  return rows
-    .filter(row =>
-      row !== null &&
-      typeof row === "object" &&
-      matchesFilter(row[filter.field], filter)
-    )
-    .map(row => structuredClone(row));
-}
 
 function requireOptions({ groups, confidence }) {
   if (
@@ -465,110 +377,6 @@ function fitLoessRegression(rows, { xField, yField, span }) {
   return { count: rows.length, span, neighborCount, fits };
 }
 
-function requireLayout({ width, height, margin, sizeRange }) {
-  if (!Number.isFinite(width) || width <= 0 || !Number.isFinite(height) || height <= 0) {
-    throw new TypeError(
-      "Regression scatterplot layout requires positive finite dimensions."
-    );
-  }
-  if (
-    margin === null ||
-    typeof margin !== "object" ||
-    ![margin.top, margin.right, margin.bottom, margin.left].every(
-      value => Number.isFinite(value) && value >= 0
-    )
-  ) {
-    throw new TypeError(
-      "Regression scatterplot layout requires four non-negative margins."
-    );
-  }
-  if (
-    !Array.isArray(sizeRange) ||
-    sizeRange.length !== 2 ||
-    !sizeRange.every(value => Number.isFinite(value) && value >= 0) ||
-    sizeRange[0] > sizeRange[1]
-  ) {
-    throw new TypeError(
-      "Regression scatterplot sizeRange must be an ascending non-negative pair."
-    );
-  }
-
-  const bounds = {
-    x: margin.left,
-    y: margin.top,
-    width: width - margin.left - margin.right,
-    height: height - margin.top - margin.bottom
-  };
-  if (bounds.width <= 0 || bounds.height <= 0) {
-    throw new Error(
-      "Regression scatterplot margins must leave positive plot bounds."
-    );
-  }
-  return bounds;
-}
-
-function pointChild(row, index, config) {
-  const groupIndex = config.groupDomain.indexOf(row[config.groupField]);
-  const shape = config.shapeRange[groupIndex % config.shapeRange.length];
-  const fill = config.colorRange[groupIndex % config.colorRange.length];
-  const centerX = mapValue(row[config.xField], config.xDomain, config.xRange);
-  const centerY = mapValue(row[config.yField], config.yDomain, config.yRange);
-  const area = mapValue(row[config.yField], config.sizeDomain, config.sizeRange);
-  const shared = { fill, opacity: 0.27 };
-
-  if (shape === "circle") {
-    return {
-      row: index,
-      group: row[config.groupField],
-      value: row[config.yField],
-      type: "circle",
-      properties: {
-        x: centerX,
-        y: centerY,
-        radius: Math.sqrt(area / Math.PI),
-        ...shared
-      }
-    };
-  }
-
-  if (shape === "diamond") {
-    const radius = Math.sqrt(area / 2);
-    return {
-      row: index,
-      group: row[config.groupField],
-      value: row[config.yField],
-      type: "path",
-      properties: {
-        commands: [
-          { op: "M", x: centerX, y: centerY - radius },
-          { op: "L", x: centerX + radius, y: centerY },
-          { op: "L", x: centerX, y: centerY + radius },
-          { op: "L", x: centerX - radius, y: centerY },
-          { op: "Z" }
-        ],
-        ...shared
-      }
-    };
-  }
-
-  const side = Math.sqrt(area);
-  return {
-    row: index,
-    group: row[config.groupField],
-    value: row[config.yField],
-    type: "rect",
-    properties: {
-      x: centerX - side / 2,
-      y: centerY - side / 2,
-      width: side,
-      height: side,
-      ...shared,
-      stroke: fill,
-      strokeWidth: 0
-    }
-  };
-}
-
 export function createCarsRegressionScatterplotValues(
   cars,
   {
@@ -610,7 +418,7 @@ export function createCarsRegressionScatterplotValues(
   if (method === "loess" ? interval !== undefined : !["mean", "prediction"].includes(interval)) {
     throw new Error("Reference regression interval is incompatible with its method.");
   }
-  const bounds = requireLayout({ width, height, margin, sizeRange });
+  const bounds = requireRegressionLayout({ width, height, margin, sizeRange });
 
   const resolvedFilter = filter ?? {
     field: groupField,
@@ -710,7 +518,7 @@ export function createCarsRegressionScatterplotValues(
   const shapeRange = groupDomain.map(
     (_, index) => SHAPES[index % SHAPES.length]
   );
-  const pointChildren = filteredRows.map((row, index) => pointChild(row, index, {
+  const pointChildren = filteredRows.map((row, index) => createRegressionPointChild(row, index, {
     groupDomain,
     groupField,
     xField,
