@@ -1,4 +1,4 @@
-import { measureTextWidth, wrapText } from "./text.js";
+import { measureTextWidth, resolveTextBounds, wrapText } from "./text.js";
 
 function lineCenters(lines, style, lineHeight, start) {
   return lines.map((_, index) => start + style.fontSize / 2 + index * lineHeight);
@@ -62,25 +62,15 @@ export function alignedTextAnchor(start, length, align) {
 }
 
 function axisAlignedTextBounds({ x, y, text, style, align, rotation }) {
-  const width = measureTextWidth(text, style);
-  const left = align === "left" ? 0 : align === "center" ? -width / 2 : -width;
-  const right = left + width;
-  const top = -style.fontSize / 2;
-  const bottom = style.fontSize / 2;
-  const cosine = Math.cos(rotation);
-  const sine = Math.sin(rotation);
-  const corners = [
-    [left, top], [right, top], [right, bottom], [left, bottom]
-  ].map(([localX, localY]) => ({
-    x: x + localX * cosine - localY * sine,
-    y: y + localX * sine + localY * cosine
-  }));
-  return {
-    left: Math.min(...corners.map(point => point.x)),
-    right: Math.max(...corners.map(point => point.x)),
-    top: Math.min(...corners.map(point => point.y)),
-    bottom: Math.max(...corners.map(point => point.y))
-  };
+  return resolveTextBounds({
+    x,
+    y,
+    text,
+    ...style,
+    textAlign: align,
+    textBaseline: "middle",
+    rotation
+  });
 }
 
 function unionBounds(bounds) {

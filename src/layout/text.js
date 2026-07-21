@@ -1,6 +1,9 @@
 import { measureTextWidth } from "../core/textMetrics.js";
 
-export { measureTextWidth } from "../core/textMetrics.js";
+export {
+  measureTextWidth,
+  resolveTextBounds
+} from "../core/textMetrics.js";
 
 function wrapCodePoints(text, maxWidth, style) {
   const lines = [];

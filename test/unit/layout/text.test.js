@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { measureTextWidth, wrapText } from "../../../src/layout/text.js";
+import {
+  measureTextWidth,
+  resolveTextBounds,
+  wrapText
+} from "../../../src/layout/text.js";
 
 const style = Object.freeze({ fontSize: 14 });
 
@@ -9,6 +13,35 @@ test("measures text with deterministic code-point metrics", () => {
   assert.ok(Math.abs(measureTextWidth("abc", style) - 19.74) < 1e-12);
   assert.equal(measureTextWidth("한글", style), 28);
   assert.equal(measureTextWidth("", style), 0);
+});
+
+test("resolves aligned and rotated bounds from the shared text metrics", () => {
+  assert.deepEqual(resolveTextBounds({
+    x: 20,
+    y: 10,
+    text: "한글",
+    fontSize: 14,
+    textAlign: "center",
+    textBaseline: "middle"
+  }), {
+    left: 6,
+    right: 34,
+    top: 3,
+    bottom: 17
+  });
+  const rotated = resolveTextBounds({
+    x: 20,
+    y: 10,
+    text: "한글",
+    fontSize: 14,
+    textAlign: "center",
+    textBaseline: "middle",
+    rotation: Math.PI / 2
+  });
+  assert.ok(Math.abs(rotated.left - 13) < 1e-12);
+  assert.ok(Math.abs(rotated.right - 27) < 1e-12);
+  assert.ok(Math.abs(rotated.top + 4) < 1e-12);
+  assert.ok(Math.abs(rotated.bottom - 24) < 1e-12);
 });
 
 test("wraps words greedily and falls back for an oversized token", () => {

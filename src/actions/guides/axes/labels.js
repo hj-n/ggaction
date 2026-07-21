@@ -27,6 +27,7 @@ import {
 } from "./policy.js";
 import { findCanvasGraphic, resolvePlotGraphicPlacement } from
   "../../../materialization/graphicHierarchy.js";
+import { resolveTextBounds } from "../../../core/textMetrics.js";
 
 const OPTIONS = Object.freeze([
   "scale", "position", "count", "values", "offset", "format", "color",
@@ -122,14 +123,18 @@ function resolve(program, channel, config) {
     })
   };
   const canvas = findCanvasGraphic(program)?.properties;
-  const maximumTextWidth = Math.max(
-    0,
-    ...text.map(value => [...value].length * config.fontSize * 0.6)
-  );
+  const labelBounds = text.map((value, index) => resolveTextBounds({
+    x: Array.isArray(resolved.x) ? resolved.x[index] : resolved.x,
+    y: Array.isArray(resolved.y) ? resolved.y[index] : resolved.y,
+    text: value,
+    fontSize: config.fontSize,
+    textAlign: resolved.textAlign,
+    textBaseline: resolved.textBaseline
+  }));
   const fits = config.position === "top"
-    ? resolved.y - config.fontSize >= 0
+    ? labelBounds.every(item => item.top >= 0)
     : config.position === "right"
-      ? resolved.x + maximumTextWidth <= canvas?.width
+      ? labelBounds.every(item => item.right <= canvas?.width)
       : true;
   if (!canvas || !fits) {
     throw new Error(`The ${channel}-axis labels do not fit the Canvas margin.`);

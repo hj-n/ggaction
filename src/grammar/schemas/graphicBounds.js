@@ -1,4 +1,4 @@
-import { measureTextWidth } from "../../core/textMetrics.js";
+import { resolveTextBounds } from "../../core/textMetrics.js";
 import { findGraphic, requireGraphic } from "./graphicTree.js";
 
 function unionBounds(bounds) {
@@ -126,36 +126,7 @@ function primitiveBounds(type, properties = {}) {
       !Number.isFinite(properties.fontSize) ||
       typeof properties.text !== "string"
     ) return undefined;
-    const width = measureTextWidth(properties.text, properties);
-    const align = properties.textAlign ?? "left";
-    const left = align === "center" ? -width / 2 :
-      ["right", "end"].includes(align) ? -width : 0;
-    const baseline = properties.textBaseline ?? "alphabetic";
-    const [top, bottom] = baseline === "middle"
-      ? [-properties.fontSize / 2, properties.fontSize / 2]
-      : ["top", "hanging"].includes(baseline)
-        ? [0, properties.fontSize]
-        : ["bottom", "ideographic"].includes(baseline)
-          ? [-properties.fontSize, 0]
-          : [-properties.fontSize * 0.8, properties.fontSize * 0.2];
-    const rotation = properties.rotation ?? 0;
-    const cosine = Math.cos(rotation);
-    const sine = Math.sin(rotation);
-    const corners = [
-      [left, top],
-      [left + width, top],
-      [left + width, bottom],
-      [left, bottom]
-    ].map(([x, y]) => ({
-      x: properties.x + x * cosine - y * sine,
-      y: properties.y + x * sine + y * cosine
-    }));
-    return {
-      left: Math.min(...corners.map(point => point.x)),
-      right: Math.max(...corners.map(point => point.x)),
-      top: Math.min(...corners.map(point => point.y)),
-      bottom: Math.max(...corners.map(point => point.y))
-    };
+    return resolveTextBounds(properties);
   }
   if (type === "path") {
     const commands = properties.commands;

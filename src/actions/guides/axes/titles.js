@@ -24,6 +24,7 @@ import {
 } from "./policy.js";
 import { findCanvasGraphic, resolvePlotGraphicPlacement } from
   "../../../materialization/graphicHierarchy.js";
+import { resolveTextBounds } from "../../../core/textMetrics.js";
 
 const CREATE_OPTIONS = Object.freeze([
   "text", "scale", "position", "at", "offset", "rotation", "color",
@@ -132,17 +133,19 @@ function resolveGeometry(program, channel, config) {
     offset: config.offset
   });
   const text = program.semanticSpec.guides.axis?.[channel]?.title ?? "";
-  const width = [...text].length * config.fontSize * 0.6;
-  const height = config.fontSize;
-  const cosine = Math.cos(config.rotation);
-  const sine = Math.sin(config.rotation);
-  const extentX = Math.abs(cosine) * width / 2 + Math.abs(sine) * height / 2;
-  const extentY = Math.abs(sine) * width / 2 + Math.abs(cosine) * height / 2;
+  const titleBounds = resolveTextBounds({
+    ...geometry,
+    text,
+    fontSize: config.fontSize,
+    textAlign: "center",
+    textBaseline: "middle",
+    rotation: config.rotation
+  });
   const canvas = findCanvasGraphic(program)?.properties;
   const newEdgeFits = config.position === "top"
-    ? geometry.y - extentY >= 0
+    ? titleBounds.top >= 0
     : config.position === "right"
-      ? geometry.x + extentX <= canvas?.width
+      ? titleBounds.right <= canvas?.width
       : true;
   if (!canvas || !newEdgeFits) {
     throw new Error(`The ${channel}-axis title does not fit the Canvas margin.`);
