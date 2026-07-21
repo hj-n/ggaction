@@ -83,7 +83,7 @@ test("keeps the public release identity and legal metadata consistent", () => {
   const license = readFileSync(new URL("../../LICENSE", import.meta.url), "utf8");
 
   assert.equal(packageJson.name, "ggaction");
-  assert.equal(packageJson.version, "0.0.4");
+  assert.equal(packageJson.version, "0.0.5");
   assert.equal(lockfile.version, packageJson.version);
   assert.equal(lockfile.packages[""].version, packageJson.version);
   assert.equal(packageJson.license, "MIT");

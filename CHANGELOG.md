@@ -4,6 +4,35 @@ All notable changes to `ggaction` are recorded in this file.
 
 ## Unreleased
 
+## [0.0.5] - 2026-07-21
+
+### Added
+
+- Added complete `createScatterPlot`, `createLinePlot`, `createBarPlot`, `createHistogram`, `createHeatmap`, and
+  `createParallelCoordinates` facades that reuse ordinary mark, encoding, scale, coordinate, and guide actions.
+- Added deterministic point jitter, ordered line paths, collision-aware text labels, field-driven rule widths, and
+  weighted Polar sectors with immutable rematerialization across data, scale, Canvas, selection, and facet changes.
+- Added window and rectangular 2D-bin data actions, binned heatmaps, categorical density and violin plots, Horizon
+  charts, Parallel Coordinates, and density-filled gradient plots with Browser Canvas and Node PNG parity.
+- Added backend-neutral item-local gradient paint, expanded public declarations and action contracts, and runnable
+  chart examples for every new capability.
+
+### Changed
+
+- Aligned Box Plot with the shared facade inference, ambiguity, public option-type, and opt-in guide contracts while
+  preserving its existing omitted-guide behavior.
+- Reorganized source, test, documentation, and internal architecture ownership around explicit policies and capability
+  registries without changing the renderer's concrete `graphicSpec` boundary.
+- Expanded public documentation with task-oriented API routing, generated split action references, improved mobile and
+  no-JavaScript navigation, complete facade discovery, and release-scoped deployment checks.
+
+### Fixed
+
+- Materialized the documented default point radius, made direct quantitative line x/y authoring order-independent, and
+  made layered datum rules resolve to the expected full-span geometry instead of an empty result.
+- Kept sticky documentation deep links below the top bar by sharing one computed fragment offset between CSS and the
+  page table of contents.
+
 ## [0.0.4] - 2026-07-19
 
 ### Changed
@@ -82,6 +111,7 @@ All notable changes to `ggaction` are recorded in this file.
 - Cartesian charts are the complete current path. Polar semantic tokens exist only where explicitly documented and do
   not imply complete polar rendering.
 
+[0.0.5]: https://github.com/ggaction/ggaction/releases/tag/v0.0.5
 [0.0.4]: https://github.com/ggaction/ggaction/releases/tag/v0.0.4
 [0.0.3]: https://github.com/ggaction/ggaction/releases/tag/v0.0.3
 [0.0.2]: https://github.com/ggaction/ggaction/releases/tag/v0.0.2

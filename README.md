@@ -142,7 +142,7 @@ All entries include TypeScript declarations. The default entry is browser-safe; 
 
 ## Status and development
 
-> **Status:** `0.0.4` is the current experimental public release. APIs may change before `1.0.0`; changes are recorded in the [changelog](./CHANGELOG.md).
+> **Status:** `0.0.5` is the current experimental public release. APIs may change before `1.0.0`; changes are recorded in the [changelog](./CHANGELOG.md).
 
 ```bash
 npm install
