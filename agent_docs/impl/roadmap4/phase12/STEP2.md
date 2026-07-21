@@ -2,11 +2,11 @@
 
 ## 진행 상태
 
-- [ ] independent text-bound/candidate/overlap oracle와 literal anchors
-- [ ] Gapminder 2005 dense country-label fixture
-- [ ] primitive-only displacement와 leader collection
-- [ ] focused semantic/geometry/order tests
-- [ ] Browser-neutral Node PNG와 review artifact
+- [x] independent text-bound/candidate/overlap oracle와 literal anchors
+- [x] Gapminder 2005 dense country-label fixture
+- [x] primitive-only displacement와 leader collection
+- [x] focused semantic/geometry/order tests
+- [x] Browser-neutral Node PNG와 review artifact
 - [ ] P12-A remote checkpoint와 사용자 승인
 
 Primitive target은 future `layoutLabels`를 호출하지 않는다. Existing text materialization 뒤 exact final positions와
