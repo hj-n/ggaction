@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script>document.documentElement.classList.replace("no-js", "js");</script>
-  <title>{{ page_title }} | {{ site.title }}</title>
+  <title>{% if page.url == '/' %}{{ site.title }}{% else %}{{ page_title }} | {{ site.title }}{% endif %}</title>
   <meta name="description" content="{{ page_description | escape }}">
   <link rel="canonical" href="{{ page.url | absolute_url }}">
   <meta property="og:title" content="{{ page_title | escape }}">

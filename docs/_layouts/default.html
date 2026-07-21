@@ -6,10 +6,10 @@
 
     <header class="docs-topbar">
       <div class="docs-topbar__inner">
-        <a class="docs-brand" href="{{ '/' | relative_url }}">
-          <span>ggaction</span>
-          <span class="docs-version">{{ site.version }}</span>
-        </a>
+        <div class="docs-brand-lockup">
+          <a class="docs-brand" href="{{ '/' | relative_url }}">ggaction</a>
+          <a class="docs-version" href="https://www.npmjs.com/package/ggaction/v/{{ site.version }}" aria-label="ggaction {{ site.version }} on npm">{{ site.version }}</a>
+        </div>
 
         <nav class="docs-topnav" aria-label="Primary navigation">
           <a href="{{ '/getting-started/' | relative_url }}">Getting Started</a>

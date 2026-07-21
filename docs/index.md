@@ -1,6 +1,6 @@
 ---
 layout: default
-title: ggaction Documentation
+title: ggaction
 toc: false
 ---
 

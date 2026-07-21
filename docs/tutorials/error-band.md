@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Error-Band Chart Tutorial
+title: Error Band Chart Tutorial
 ---
 
-# Error-Band Chart Tutorial
+# Error Band Chart Tutorial
 
 ![Mean life expectancy by cluster with bounded confidence bands](../assets/images/gapminder-error-band.png)
 

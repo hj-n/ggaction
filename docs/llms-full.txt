@@ -1586,7 +1586,7 @@ Continue with [Encodings](../api/encodings.md#atomic-horizon),
 
 <!-- Source: /tutorials/error-bar/ -->
 
-# Error-Bar Chart Tutorial
+# Error Bar Chart Tutorial
 
 ![Car observations with grouped mean confidence intervals](../assets/images/cars-error-bar.png)
 
@@ -1691,7 +1691,7 @@ program
 
 <!-- Source: /tutorials/error-band/ -->
 
-# Error-Band Chart Tutorial
+# Error Band Chart Tutorial
 
 ![Mean life expectancy by cluster with bounded confidence bands](../assets/images/gapminder-error-band.png)
 
@@ -2382,7 +2382,7 @@ comparison is intentional.
 
 <!-- Source: /recipes/error-bar/ -->
 
-# Error-Bar Recipe
+# Error Bar Recipe
 
 ## Minimal flow
 
@@ -2422,7 +2422,7 @@ options to reuse its fields, data, coordinate, and scales.
 
 <!-- Source: /recipes/error-band/ -->
 
-# Error-Band Recipe
+# Error Band Recipe
 
 ## Minimal flow
 
@@ -2466,7 +2466,7 @@ axis is unambiguous.
 
 <!-- Source: /recipes/box-plot/ -->
 
-# Box-Plot Recipe
+# Box Plot Recipe
 
 ## Minimal flow
 
@@ -2508,7 +2508,7 @@ component appearance through the stable box-plot owner.
 
 <!-- Source: /recipes/violin-plot/ -->
 
-# Violin-Plot Recipe
+# Violin Plot Recipe
 
 ## Minimal flow
 
@@ -2649,7 +2649,7 @@ Use `editFacetHeaders` for repeated header appearance and
 
 <!-- Source: /recipes/parallel-coordinates/ -->
 
-# Parallel-Coordinates Recipe
+# Parallel Coordinates Recipe
 
 ## Minimal flow
 
@@ -2690,9 +2690,86 @@ path across the ordered dimensions.
 [Parallel Coordinates API](../api/parallel-coordinates.md) ·
 [Series encodings](../api/series-encodings.md)
 
+<!-- Source: /recipes/rose-chart/ -->
+
+# Rose Chart Recipe
+
+A rose chart compares several magnitudes inside equal categorical angle bands.
+The overlay layout draws larger sectors first so smaller sectors remain visible.
+
+## Minimal flow
+
+```javascript
+import { chart } from "ggaction";
+
+const monthOrder = [
+  "April", "May", "June", "July", "August", "September",
+  "October", "November", "December", "January", "February", "March"
+];
+const causeOrder = ["Zymotic Diseases", "Other Causes", "Wounds & Injuries"];
+
+const program = chart()
+  .createCanvas({
+    width: 780,
+    height: 640,
+    margin: { top: 80, right: 210, bottom: 80, left: 80 }
+  })
+  .createData({ values: nightingaleRows })
+  .createArcMark({ padAngle: 1, opacity: 0.9, strokeWidth: 0.5 })
+  .encodeTheta({
+    field: "month",
+    fieldType: "ordinal",
+    scale: { domain: monthOrder }
+  })
+  .encodeR({ field: "value", scale: { domain: [0, 6.5], zero: true } })
+  .encodeColor({
+    field: "cause",
+    layout: "overlay",
+    scale: {
+      domain: causeOrder,
+      range: ["#599ad3", "#727272", "#f1595f"]
+    }
+  })
+  .createGuides({
+    axes: {
+      theta: { title: false },
+      radius: {
+        ticksAndLabels: { values: [2, 4, 6] },
+        title: { text: "Mortality rate", position: "inside" }
+      }
+    },
+    grid: { theta: false, radial: { values: [2, 4, 6] } },
+    legend: { position: "right", title: "Cause" }
+  });
+```
+
+`nightingaleRows` is an array with `month`, `cause`, and finite numeric `value`
+properties. Each month/cause pair should appear at most once.
+
+## You must decide
+
+- The ordered categorical theta field and its complete domain
+- The quantitative radial field
+- The category that identifies overlaid sectors
+- An explicit overlay layout when multiple rows occupy one theta band
+
+## The library infers
+
+- One Polar coordinate shared by all sectors
+- Equal theta bands for the ordered categories
+- Concrete radial sector paths sorted larger-first inside each band
+- Applicable Polar axes, radial grid, and categorical legend
+
+## Continue
+
+[Polar arc tutorial](../tutorials/polar-arcs.md#rose-overlays) ·
+[Arc marks](../api/marks/line-area.md#arc-marks) ·
+[Polar positions](../api/position-encodings.md#polar-positions) ·
+[Guides](../api/guides.md)
+
 <!-- Source: /recipes/gradient-plot/ -->
 
-# Gradient-Plot Recipe
+# Gradient Plot Recipe
 
 ## Minimal flow
 
@@ -2783,7 +2860,7 @@ rows when every label still cannot fit.
 
 <!-- Source: /recipes/path-ordering/ -->
 
-# Path-Ordering Recipe
+# Path Ordering Recipe
 
 ## Minimal flow
 
@@ -3091,23 +3168,25 @@ owns the decision you need to make; follow its focused pages only when the
 overview no longer provides enough control.
 
   Basic charts Create scatter, line, bar, histogram, and heatmap charts from their minimum field decisions.
-  Canvas and data Create the drawing surface, immutable source data, and derived transforms.
+  Canvas Create and resize the drawing surface, background, and plot margins.
+  Data and transforms Create immutable source data, derived datasets, filters, bins, windows, and statistical transforms.
   Marks Create point, line, area, bar, and rule layers.
   Encodings Map fields and constants to position, grouping, and appearance.
-  Coordinates and scales Use Cartesian, Polar, or Parallel coordinates and customize their mappings.
+  Coordinates Use Cartesian, Polar, or Parallel coordinate systems.
+  Scales Control domains, ranges, mapping types, palettes, and missing values.
   Parallel coordinates Compare each source row across an ordered set of dimension-local scales.
   Guides and titles Create axes, grids, legends, and chart titles from existing encodings.
   Program composition Arrange complete chart programs horizontally or vertically and replace stable child slots.
   Rendering Render the fully materialized program to Browser Canvas or Node PNG.
 
-## Statistical layers
+## Statistical and distribution facades
 
-- [Regression](./regression.md)
-- [Error bars](./error-bars.md)
-- [Error bands](./error-bands.md)
-- [Box plots](./box-plots.md)
-- [Gradient plots](./gradient-plots.md)
-- [Violin plots](./violin-plots.md)
+  Regression Add grouped fitted lines and optional confidence bands to encoded observations.
+  Error bars Show observed values with explicit or derived interval endpoints.
+  Error bands Show continuous uncertainty ribbons with optional boundaries.
+  Box plots Summarize quartiles, whiskers, medians, and outliers by category.
+  Gradient plots Compare category distributions as compact density fills.
+  Violin plots Compare symmetric or split density shapes by category.
 
 ## Exact action lookup
 
@@ -3144,16 +3223,11 @@ second chart specification or compile semantics during rendering.
 | `createBarPlot` | `{ x, y }` | applicable guides |
 | `createHistogram` | `{ field }` | applicable guides |
 | `createHeatmap` | `{ x, y, color }`, or `{ x, y, bin: {} }` | applicable guides |
-| `createParallelCoordinates` | `{ dimensions }` | dimension axes and applicable legend |
-| [`createBoxPlot`](./box-plots.md) | `{ x, y }`, or no options after one eligible layer | none; pass `{}` to create them |
-| [`createGradientPlot`](./gradient-plots.md) | `{ x, y }`, or no options after one eligible layer | applicable guides |
 
-The first six facades create a complete ordinary chart from fields. Box and
-gradient plots are statistical facades that may instead infer their positions,
-data, coordinate, and scales from one compatible encoded layer. After creation,
-all eight hand editing back to the action that owns the decision; for example,
-use `encodeY`, `editScale`, `editBoxPlot`, or `editGradientPlot` rather than a
-generic facade editor.
+These five facades create a complete common Cartesian chart from fields. After
+creation, editing returns to the action that owns the decision; for example,
+use `encodeY`, `editScale`, `editBarMark`, or `editLegend` rather than a generic
+facade editor.
 
 ## Shared behavior
 
@@ -3351,37 +3425,14 @@ Add it afterward with
 For direct control over the derived rows, use
 [`createBin2DData`](./data/bin2d.md) before authoring the ranged rect layer.
 
-## `createParallelCoordinates`
+## Other complete chart facades
 
-```typescript
-createParallelCoordinates(options: CreateParallelCoordinatesOptions): ChartProgram
-```
-
-`dimensions` is the only required option. Each source row becomes one open
-path across ordered, independently scaled axes. Optional `color`,
-`strokeDash`, `line`, and `guides` values reuse the existing line, encoding,
-scale, and guide contracts.
-
-```javascript
-const parallel = chart()
-  .createCanvas({ width: 860, height: 500 })
-  .createData({ values: cars })
-  .createParallelCoordinates({
-    dimensions: [
-      "Miles_per_Gallon",
-      "Horsepower",
-      { field: "Weight_in_lbs", title: "Weight (lb)" },
-      "Acceleration"
-    ],
-    key: "Name",
-    color: "Origin"
-  });
-```
-
-The stable default mark ID is `parallelCoordinates`; the coordinate defaults
-to `parallel`. Omitted guides create one axis per dimension and an applicable
-legend. See [Parallel Coordinates](./parallel-coordinates.md) for the complete
-dimension, missing-value, lifecycle, and editing contract.
+- [Parallel coordinates](./parallel-coordinates.md) creates row-wise paths
+  across independently scaled dimensions.
+- [Box plots](./box-plots.md), [gradient plots](./gradient-plots.md), and
+  [violin plots](./violin-plots.md) summarize category distributions.
+- [Regression](./regression.md), [error bars](./error-bars.md), and
+  [error bands](./error-bands.md) add statistical or interval layers.
 
 ## Advanced authoring
 
@@ -7132,7 +7183,7 @@ not part of this contract.
 
 <!-- Source: /api/series/stroke-dash/ -->
 
-# Stroke-Dash Encoding
+# Stroke Dash Encoding
 
 ## `encodeStrokeDash(options)`
 
@@ -7748,7 +7799,7 @@ semantics are available.
 
 <!-- Source: /api/scales/ordinal-and-dash/ -->
 
-# Ordinal and Stroke-Dash Scales
+# Ordinal and Stroke Dash Scales
 
 ## Discrete and ordinal scales
 

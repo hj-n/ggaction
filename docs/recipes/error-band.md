@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Error-Band Recipe
+title: Error Band Recipe
 ---
 
-# Error-Band Recipe
+# Error Band Recipe
 
 {% include chart-example.html id="error-band" %}
 

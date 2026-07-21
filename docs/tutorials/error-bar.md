@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Error-Bar Chart Tutorial
+title: Error Bar Chart Tutorial
 ---
 
-# Error-Bar Chart Tutorial
+# Error Bar Chart Tutorial
 
 ![Car observations with grouped mean confidence intervals](../assets/images/cars-error-bar.png)
 

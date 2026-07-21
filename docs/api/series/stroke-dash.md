@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Stroke-Dash Encoding
+title: Stroke Dash Encoding
 ---
 
-# Stroke-Dash Encoding
+# Stroke Dash Encoding
 
 {% include chart-example.html id="line" %}
 

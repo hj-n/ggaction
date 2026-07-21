@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Violin-Plot Recipe
+title: Violin Plot Recipe
 ---
 
-# Violin-Plot Recipe
+# Violin Plot Recipe
 
 {% include chart-example.html id="violin" %}
 

@@ -31,16 +31,11 @@ second chart specification or compile semantics during rendering.
 | `createBarPlot` | `{ x, y }` | applicable guides |
 | `createHistogram` | `{ field }` | applicable guides |
 | `createHeatmap` | `{ x, y, color }`, or `{ x, y, bin: {} }` | applicable guides |
-| `createParallelCoordinates` | `{ dimensions }` | dimension axes and applicable legend |
-| [`createBoxPlot`](./box-plots.md) | `{ x, y }`, or no options after one eligible layer | none; pass `{}` to create them |
-| [`createGradientPlot`](./gradient-plots.md) | `{ x, y }`, or no options after one eligible layer | applicable guides |
 
-The first six facades create a complete ordinary chart from fields. Box and
-gradient plots are statistical facades that may instead infer their positions,
-data, coordinate, and scales from one compatible encoded layer. After creation,
-all eight hand editing back to the action that owns the decision; for example,
-use `encodeY`, `editScale`, `editBoxPlot`, or `editGradientPlot` rather than a
-generic facade editor.
+These five facades create a complete common Cartesian chart from fields. After
+creation, editing returns to the action that owns the decision; for example,
+use `encodeY`, `editScale`, `editBarMark`, or `editLegend` rather than a generic
+facade editor.
 
 ## Shared behavior
 
@@ -238,39 +233,14 @@ Add it afterward with
 For direct control over the derived rows, use
 [`createBin2DData`](./data/bin2d.md) before authoring the ranged rect layer.
 
-## `createParallelCoordinates`
+## Other complete chart facades
 
-{% include chart-example.html id="parallel-coordinates" %}
-
-```typescript
-createParallelCoordinates(options: CreateParallelCoordinatesOptions): ChartProgram
-```
-
-`dimensions` is the only required option. Each source row becomes one open
-path across ordered, independently scaled axes. Optional `color`,
-`strokeDash`, `line`, and `guides` values reuse the existing line, encoding,
-scale, and guide contracts.
-
-```javascript
-const parallel = chart()
-  .createCanvas({ width: 860, height: 500 })
-  .createData({ values: cars })
-  .createParallelCoordinates({
-    dimensions: [
-      "Miles_per_Gallon",
-      "Horsepower",
-      { field: "Weight_in_lbs", title: "Weight (lb)" },
-      "Acceleration"
-    ],
-    key: "Name",
-    color: "Origin"
-  });
-```
-
-The stable default mark ID is `parallelCoordinates`; the coordinate defaults
-to `parallel`. Omitted guides create one axis per dimension and an applicable
-legend. See [Parallel Coordinates](./parallel-coordinates.md) for the complete
-dimension, missing-value, lifecycle, and editing contract.
+- [Parallel coordinates](./parallel-coordinates.md) creates row-wise paths
+  across independently scaled dimensions.
+- [Box plots](./box-plots.md), [gradient plots](./gradient-plots.md), and
+  [violin plots](./violin-plots.md) summarize category distributions.
+- [Regression](./regression.md), [error bars](./error-bars.md), and
+  [error bands](./error-bands.md) add statistical or interval layers.
 
 ## Advanced authoring
 

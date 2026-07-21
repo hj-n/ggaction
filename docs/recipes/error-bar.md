@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Error-Bar Recipe
+title: Error Bar Recipe
 ---
 
-# Error-Bar Recipe
+# Error Bar Recipe
 
 {% include chart-example.html id="error-bar" %}
 

@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Parallel-Coordinates Recipe
+title: Parallel Coordinates Recipe
 ---
 
-# Parallel-Coordinates Recipe
+# Parallel Coordinates Recipe
 
 {% include chart-example.html id="parallel-coordinates" %}
 

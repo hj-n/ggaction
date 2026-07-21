@@ -1,4 +1,5 @@
-- title: Overview
+- title: ggaction
+  nav_title: Overview
   url: /
   nav_group: start
   nav_order: 1
@@ -40,10 +41,10 @@
 - title: Horizon Chart Tutorial
   url: /tutorials/horizon/
   parent: /tutorials/
-- title: Error-Bar Tutorial
+- title: Error Bar Tutorial
   url: /tutorials/error-bar/
   parent: /tutorials/
-- title: Error-Band Tutorial
+- title: Error Band Tutorial
   url: /tutorials/error-band/
   parent: /tutorials/
 - title: Mark Selection Tutorial
@@ -77,16 +78,16 @@
 - title: Horizon Chart Recipe
   url: /recipes/horizon/
   parent: /recipes/
-- title: Error-Bar Recipe
+- title: Error Bar Recipe
   url: /recipes/error-bar/
   parent: /recipes/
-- title: Error-Band Recipe
+- title: Error Band Recipe
   url: /recipes/error-band/
   parent: /recipes/
-- title: Box-Plot Recipe
+- title: Box Plot Recipe
   url: /recipes/box-plot/
   parent: /recipes/
-- title: Violin-Plot Recipe
+- title: Violin Plot Recipe
   url: /recipes/violin-plot/
   parent: /recipes/
 - title: Composition Recipe
@@ -95,16 +96,19 @@
 - title: Facet Recipe
   url: /recipes/facet/
   parent: /recipes/
-- title: Parallel-Coordinates Recipe
+- title: Parallel Coordinates Recipe
   url: /recipes/parallel-coordinates/
   parent: /recipes/
-- title: Gradient-Plot Recipe
+- title: Rose Chart Recipe
+  url: /recipes/rose-chart/
+  parent: /recipes/
+- title: Gradient Plot Recipe
   url: /recipes/gradient-plot/
   parent: /recipes/
 - title: Annotation Recipe
   url: /recipes/annotations/
   parent: /recipes/
-- title: Path-Ordering Recipe
+- title: Path Ordering Recipe
   url: /recipes/path-ordering/
   parent: /recipes/
 - title: Troubleshooting
@@ -233,7 +237,7 @@
 - title: Color Encoding
   url: /api/series/color/
   parent: /api/series-encodings/
-- title: Stroke-Dash Encoding
+- title: Stroke Dash Encoding
   url: /api/series/stroke-dash/
   parent: /api/series-encodings/
 - title: Appearance Encodings

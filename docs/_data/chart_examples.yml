@@ -13,10 +13,10 @@
   tasks: composition comparison
   url: /recipes/composition/
   recipe_url: /recipes/composition/
-  recipe_order: 13
+  recipe_order: 130
   gallery_featured: true
   home_group: essentials
-  home_order: 6
+  home_order: 110
 - id: facet
   title: Faceted scatterplot
   image: /assets/images/cars-origin-scatterplot-facet.png
@@ -32,9 +32,9 @@
   tasks: composition relationship
   url: /recipes/facet/
   recipe_url: /recipes/facet/
-  recipe_order: 14
+  recipe_order: 140
   home_group: essentials
-  home_order: 7
+  home_order: 120
 - id: scatterplot
   title: Scatterplot
   image: /assets/images/cars-scatterplot.png
@@ -51,9 +51,9 @@
   url: /tutorials/scatterplot/
   recipe_url: /recipes/scatterplot/
   home_group: essentials
-  home_order: 1
-  tutorial_order: 1
-  recipe_order: 1
+  home_order: 10
+  tutorial_order: 10
+  recipe_order: 10
   featured: true
   gallery_featured: true
 - id: line
@@ -72,9 +72,9 @@
   url: /tutorials/line-chart/
   recipe_url: /recipes/line-chart/
   home_group: essentials
-  home_order: 2
-  tutorial_order: 4
-  recipe_order: 2
+  home_order: 30
+  tutorial_order: 50
+  recipe_order: 20
   featured: true
   gallery_featured: true
 - id: temporal-bar-line
@@ -93,7 +93,7 @@
   url: /api/marks/line-area/#line-marks
   recipe_url: /recipes/line-chart/
   home_group: essentials
-  home_order: 2.25
+  home_order: 40
 - id: development-trajectories
   title: Development trajectories
   image: /assets/images/gapminder-development-trajectories.png
@@ -109,9 +109,9 @@
   tasks: trend relationship
   url: /recipes/path-ordering/
   recipe_url: /recipes/path-ordering/
-  recipe_order: 18
+  recipe_order: 190
   home_group: essentials
-  home_order: 2.3
+  home_order: 50
 - id: annotation
   title: Annotated scatterplot
   image: /assets/images/annotated-imdb-scatterplot.png
@@ -127,10 +127,10 @@
   tasks: relationship annotation
   url: /recipes/annotations/
   recipe_url: /recipes/annotations/
-  recipe_order: 17
+  recipe_order: 180
   gallery_featured: true
   home_group: essentials
-  home_order: 1.5
+  home_order: 20
 - id: heatmap
   title: Heatmap
   image: /assets/images/gapminder-life-expectancy-heatmap.png
@@ -147,8 +147,8 @@
   url: /recipes/heatmap/
   recipe_url: /recipes/heatmap/
   home_group: essentials
-  home_order: 2.5
-  recipe_order: 5
+  home_order: 60
+  recipe_order: 50
   featured: true
   gallery_featured: true
 - id: bar
@@ -167,9 +167,9 @@
   url: /tutorials/grouped-bar/
   recipe_url: /recipes/bar-chart/
   home_group: essentials
-  home_order: 3
-  tutorial_order: 6
-  recipe_order: 4
+  home_order: 70
+  tutorial_order: 70
+  recipe_order: 40
   featured: true
   gallery_featured: true
 - id: horizontal-grouped-bar
@@ -188,7 +188,7 @@
   url: /api/position/offsets/
   recipe_url: /recipes/bar-chart/
   home_group: essentials
-  home_order: 3.5
+  home_order: 80
 - id: histogram
   title: Histogram
   image: /assets/images/cars-histogram.png
@@ -205,9 +205,9 @@
   url: /tutorials/histogram/
   recipe_url: /recipes/histogram/
   home_group: essentials
-  home_order: 4
-  tutorial_order: 5
-  recipe_order: 3
+  home_order: 90
+  tutorial_order: 60
+  recipe_order: 30
   featured: true
   gallery_featured: true
 - id: density
@@ -226,9 +226,9 @@
   url: /tutorials/density-area/
   recipe_url: /recipes/density-area/
   home_group: essentials
-  home_order: 5
-  tutorial_order: 8
-  recipe_order: 6
+  home_order: 100
+  tutorial_order: 90
+  recipe_order: 70
 - id: regression
   title: Regression scatterplot
   image: /assets/images/cars-regression-scatterplot.png
@@ -245,9 +245,9 @@
   url: /tutorials/regression-scatterplot/
   recipe_url: /recipes/regression-scatterplot/
   home_group: statistical
-  home_order: 1
-  tutorial_order: 7
-  recipe_order: 5.5
+  home_order: 10
+  tutorial_order: 80
+  recipe_order: 60
   featured: true
   gallery_featured: true
 - id: horizon
@@ -266,9 +266,9 @@
   url: /tutorials/horizon/
   recipe_url: /recipes/horizon/
   home_group: statistical
-  home_order: 1.5
-  tutorial_order: 8.5
-  recipe_order: 6.5
+  home_order: 20
+  tutorial_order: 100
+  recipe_order: 80
 - id: error-bar
   title: Error bar
   image: /assets/images/cars-error-bar.png
@@ -285,9 +285,9 @@
   url: /tutorials/error-bar/
   recipe_url: /recipes/error-bar/
   home_group: statistical
-  home_order: 2
-  tutorial_order: 9
-  recipe_order: 7
+  home_order: 30
+  tutorial_order: 110
+  recipe_order: 90
 - id: error-band
   title: Error band
   image: /assets/images/gapminder-error-band.png
@@ -305,9 +305,9 @@
   url: /tutorials/error-band/
   recipe_url: /recipes/error-band/
   home_group: statistical
-  home_order: 3
-  tutorial_order: 10
-  recipe_order: 8
+  home_order: 40
+  tutorial_order: 120
+  recipe_order: 100
 - id: box
   title: Box plot
   image: /assets/images/cars-box-plot.png
@@ -324,8 +324,8 @@
   url: /recipes/box-plot/
   recipe_url: /recipes/box-plot/
   home_group: statistical
-  home_order: 4
-  recipe_order: 9
+  home_order: 50
+  recipe_order: 110
   featured: true
   gallery_featured: true
 - id: gradient
@@ -343,10 +343,10 @@
   tasks: distribution uncertainty
   url: /recipes/gradient-plot/
   recipe_url: /recipes/gradient-plot/
-  recipe_order: 16
+  recipe_order: 170
   gallery_featured: true
   home_group: statistical
-  home_order: 5
+  home_order: 60
 - id: violin
   title: Violin plot
   image: /assets/images/cars-acceleration-violins.png
@@ -363,8 +363,8 @@
   url: /api/violin-plots/
   recipe_url: /recipes/violin-plot/
   home_group: statistical
-  home_order: 6
-  recipe_order: 10
+  home_order: 70
+  recipe_order: 120
 - id: parallel-coordinates
   title: Parallel coordinates
   image: /assets/images/cars-parallel-coordinates.png
@@ -380,9 +380,9 @@
   tasks: multivariate
   url: /recipes/parallel-coordinates/
   recipe_url: /recipes/parallel-coordinates/
-  recipe_order: 15
+  recipe_order: 150
   home_group: coordinates
-  home_order: 0.5
+  home_order: 10
   featured: true
   gallery_featured: true
 - id: polar
@@ -400,8 +400,8 @@
   tasks: relationship coordinate
   url: /tutorials/polar-points/
   home_group: coordinates
-  home_order: 1
-  tutorial_order: 2
+  home_order: 30
+  tutorial_order: 20
   gallery_featured: true
 - id: polar-guides
   title: Polar guides
@@ -418,7 +418,7 @@
   tasks: coordinate
   url: /tutorials/polar-points/#add-polar-guides
   home_group: coordinates
-  home_order: 2
+  home_order: 40
 - id: polar-line
   title: Polar lines
   image: /assets/images/gapminder-polar-trends.png
@@ -434,8 +434,8 @@
   tasks: trend coordinate
   url: /tutorials/polar-lines/
   home_group: coordinates
-  home_order: 3
-  tutorial_order: 3
+  home_order: 50
+  tutorial_order: 30
 - id: radar
   title: Radar chart
   image: /assets/images/jobs-radar-chart.png
@@ -451,7 +451,7 @@
   tasks: multivariate coordinate
   url: /tutorials/polar-lines/#closed-radar-paths
   home_group: coordinates
-  home_order: 4
+  home_order: 60
 - id: donut
   title: Donut chart
   image: /assets/images/cars-origin-donut.png
@@ -468,8 +468,8 @@
   gallery_featured: true
   url: /tutorials/polar-arcs/
   home_group: coordinates
-  home_order: 5
-  tutorial_order: 3.5
+  home_order: 70
+  tutorial_order: 40
 - id: weighted-donut
   title: Weighted donut chart
   image: /assets/images/gapminder-population-donut.png
@@ -485,7 +485,7 @@
   tasks: part-to-whole coordinate
   url: /tutorials/polar-arcs/#sum-a-field-into-weighted-sectors
   home_group: coordinates
-  home_order: 6
+  home_order: 80
 - id: rose
   title: Rose chart
   image: /assets/images/nightingale-rose-chart.png
@@ -500,9 +500,11 @@
   actions: createArcMark · encodeTheta · encodeR
   tasks: comparison coordinate
   gallery_featured: true
-  url: /tutorials/polar-arcs/#rose-overlays
+  url: /recipes/rose-chart/
+  recipe_url: /recipes/rose-chart/
+  recipe_order: 160
   home_group: coordinates
-  home_order: 0.75
+  home_order: 20
   featured: true
 - id: radial-bars
   title: Radial bars
@@ -519,7 +521,7 @@
   tasks: comparison coordinate
   url: /tutorials/polar-arcs/#radial-bars
   home_group: coordinates
-  home_order: 8
+  home_order: 90
 - id: selection
   title: Mark selection and highlighting
   image: /assets/images/mark-selection-points.png
@@ -535,4 +537,4 @@
   tasks: interaction
   gallery_featured: true
   url: /tutorials/mark-selection/
-  tutorial_order: 11
+  tutorial_order: 130

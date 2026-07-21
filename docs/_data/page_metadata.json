@@ -1,6 +1,6 @@
 {
   "/": {
-    "title": "Overview",
+    "title": "ggaction",
     "description": "Most visualization grammars describe a finished chart. ggaction represents chart authoring itself as an immutable, traceable sequence of graphical actions."
   },
   "/getting-started/": {
@@ -56,11 +56,11 @@
     "description": "This chart folds Kenya's life expectancy above and below a 55 year baseline into three compact bands. The source rows stay immutable."
   },
   "/tutorials/error-bar/": {
-    "title": "Error-Bar Tutorial",
+    "title": "Error Bar Tutorial",
     "description": "This chart keeps individual car observations visible while summarizing acceleration by Origin."
   },
   "/tutorials/error-band/": {
-    "title": "Error-Band Tutorial",
+    "title": "Error Band Tutorial",
     "description": "This chart summarizes life expectancy over time for each Gapminder cluster."
   },
   "/tutorials/mark-selection/": {
@@ -112,22 +112,22 @@
     "image": "/assets/images/gapminder-horizon.png"
   },
   "/recipes/error-bar/": {
-    "title": "Error-Bar Recipe",
+    "title": "Error Bar Recipe",
     "description": "When one compatible layer is already encoded, call createErrorBar() without options to reuse its fields, data, coordinate, and scales.",
     "image": "/assets/images/cars-error-bar.png"
   },
   "/recipes/error-band/": {
-    "title": "Error-Band Recipe",
+    "title": "Error Band Recipe",
     "description": "When one compatible layer is already encoded, omitted data, coordinate, position fields, scales, and explicit grouping are reused when the interval axis is unambiguous.",
     "image": "/assets/images/gapminder-error-band.png"
   },
   "/recipes/box-plot/": {
-    "title": "Box-Plot Recipe",
+    "title": "Box Plot Recipe",
     "description": "Use whisker: { type: \"minmax\" } for observed minimum and maximum whiskers without an outlier layer.",
     "image": "/assets/images/cars-box-plot.png"
   },
   "/recipes/violin-plot/": {
-    "title": "Violin-Plot Recipe",
+    "title": "Violin Plot Recipe",
     "description": "Add color: \"category\" for category fills. Use split: { field } when the field has exactly two values, or provide an explicit two value domain when side assignment must be stable…",
     "image": "/assets/images/cars-acceleration-violins.png"
   },
@@ -142,12 +142,17 @@
     "image": "/assets/images/cars-origin-scatterplot-facet.png"
   },
   "/recipes/parallel-coordinates/": {
-    "title": "Parallel-Coordinates Recipe",
+    "title": "Parallel Coordinates Recipe",
     "description": "cars is an array of plain row objects. Every eligible row becomes one open path across the ordered dimensions.",
     "image": "/assets/images/cars-parallel-coordinates.png"
   },
+  "/recipes/rose-chart/": {
+    "title": "Rose Chart Recipe",
+    "description": "A rose chart compares several magnitudes inside equal categorical angle bands. The overlay layout draws larger sectors first so smaller sectors remain visible.",
+    "image": "/assets/images/nightingale-rose-chart.png"
+  },
   "/recipes/gradient-plot/": {
-    "title": "Gradient-Plot Recipe",
+    "title": "Gradient Plot Recipe",
     "description": "cars is an array of plain row objects with one categorical field and one quantitative measure.",
     "image": "/assets/images/cars-gradient-plot.png"
   },
@@ -157,7 +162,7 @@
     "image": "/assets/images/annotated-imdb-scatterplot.png"
   },
   "/recipes/path-ordering/": {
-    "title": "Path-Ordering Recipe",
+    "title": "Path Ordering Recipe",
     "description": "observations is an array of plain row objects. Source rows may be shuffled; the order field controls vertices independently inside each color/group series.",
     "image": "/assets/images/gapminder-development-trajectories.png"
   },
@@ -352,7 +357,7 @@
     "image": "/assets/images/cars-line-chart.png"
   },
   "/api/series/stroke-dash/": {
-    "title": "Stroke-Dash Encoding",
+    "title": "Stroke Dash Encoding",
     "description": "Map a nominal field to line series or rule dash patterns, or apply one constant pattern to every series.",
     "image": "/assets/images/cars-line-chart.png"
   },

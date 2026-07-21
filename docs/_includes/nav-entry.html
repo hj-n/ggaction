@@ -1,8 +1,9 @@
 {% assign child_items = site.data.pages | where: "parent", include.item.url %}
+{% assign item_label = include.item.nav_title | default: include.item.title %}
 {% if child_items.size > 0 %}
   <li class="docs-nav-branch-item">
     <details class="docs-nav-branch">
-      <summary>{{ include.item.title }}</summary>
+      <summary>{{ item_label }}</summary>
       <ul>
         <li>
           <a
@@ -21,6 +22,6 @@
     <a
       href="{{ include.item.url | relative_url }}"
       {% if page.url == include.item.url %}class="is-active" aria-current="page"{% endif %}
-    >{{ include.item.title }}</a>
+    >{{ item_label }}</a>
   </li>
 {% endif %}

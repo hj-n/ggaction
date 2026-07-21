@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Gradient-Plot Recipe
+title: Gradient Plot Recipe
 ---
 
-# Gradient-Plot Recipe
+# Gradient Plot Recipe
 
 {% include chart-example.html id="gradient" %}
 

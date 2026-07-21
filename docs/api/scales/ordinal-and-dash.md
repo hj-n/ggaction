@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Ordinal and Stroke-Dash Scales
+title: Ordinal and Stroke Dash Scales
 ---
 
-# Ordinal and Stroke-Dash Scales
+# Ordinal and Stroke Dash Scales
 
 {% include chart-example.html id="line" %}
 

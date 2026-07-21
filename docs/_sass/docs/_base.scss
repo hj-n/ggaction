@@ -66,10 +66,17 @@ summary:focus-visible {
   padding: 0 1.5rem;
 }
 
+.docs-brand-lockup,
 .docs-brand {
   display: inline-flex;
   align-items: center;
+}
+
+.docs-brand-lockup {
   gap: 0.6rem;
+}
+
+.docs-brand {
   color: #0f172a;
   font-size: 1.2rem;
   font-weight: 700;
@@ -82,6 +89,7 @@ summary:focus-visible {
 }
 
 .docs-version {
+  display: inline-flex;
   padding: 0.12rem 0.42rem;
   color: var(--docs-muted);
   background: #f1f5f9;
@@ -89,6 +97,11 @@ summary:focus-visible {
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0;
+}
+
+.docs-version:hover {
+  color: #1d4ed8;
+  text-decoration: none;
 }
 
 .docs-topnav {

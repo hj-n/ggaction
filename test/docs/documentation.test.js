@@ -217,10 +217,7 @@ test("keeps public facade and stabilization guidance cumulative", () => {
     "createLinePlot",
     "createBarPlot",
     "createHistogram",
-    "createHeatmap",
-    "createParallelCoordinates",
-    "createBoxPlot",
-    "createGradientPlot"
+    "createHeatmap"
   ]) {
     assert.equal(
       basicCharts.split("\n").some(line =>
@@ -230,6 +227,10 @@ test("keeps public facade and stabilization guidance cumulative", () => {
       `${action} facade map entry`
     );
   }
+  assert.match(basicCharts, /Other complete chart facades/);
+  assert.match(basicCharts, /Parallel coordinates/);
+  assert.match(basicCharts, /Box plots/);
+  assert.match(basicCharts, /gradient plots/i);
 
   assert.match(
     read("docs/api/marks/point.md"),
@@ -540,7 +541,7 @@ test("routes entry documentation to the canonical example indexes", () => {
   );
   assert.equal(
     [...catalog.values()].filter(example => example.recipe_order).length,
-    18
+    19
   );
   assert.match(read("docs/tutorials/index.md"), /example\.tutorial_order/);
   assert.match(read("docs/recipes/index.md"), /example\.recipe_order/);
@@ -564,6 +565,8 @@ test("routes entry documentation to the canonical example indexes", () => {
   assert.equal(catalog.get("heatmap").url, "/recipes/heatmap/");
   assert.equal(catalog.get("polar").featured, undefined);
   assert.equal(catalog.get("rose").featured, true);
+  assert.equal(catalog.get("rose").url, "/recipes/rose-chart/");
+  assert.equal(catalog.get("rose").recipe_url, "/recipes/rose-chart/");
   assert.match(gettingStarted, /point color\s+encoding can produce/);
   assert.match(gettingStarted, /examples\/getting-started/);
 });

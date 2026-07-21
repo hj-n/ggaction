@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Path-Ordering Recipe
+title: Path Ordering Recipe
 ---
 
-# Path-Ordering Recipe
+# Path Ordering Recipe
 
 {% include chart-example.html id="development-trajectories" %}
 

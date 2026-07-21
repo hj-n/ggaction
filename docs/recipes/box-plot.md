@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Box-Plot Recipe
+title: Box Plot Recipe
 ---
 
-# Box-Plot Recipe
+# Box Plot Recipe
 
 {% include chart-example.html id="box" %}
 
