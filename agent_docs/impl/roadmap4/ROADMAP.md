@@ -138,7 +138,7 @@ existing createBoxPlot({ ... })
 | 12 | completed | P-005 label layout; P12-A/P12-B/P12-Exit 승인 완료 |
 | 13 | skipped | P-007 hierarchy layout을 `Maybe Future`로 이동; public/API 구현 없음 |
 | 14 | completed | P14-A/P14-B/P14-Exit 승인; 8-facade consistency closeout 완료 |
-| 15 | in-progress | D-001과 public docs baseline 감사; P15-A 준비 |
+| 15 | in-progress | P15-A 승인; release readiness 검증 완료; P15-Exit review 대기 |
 
 ## 승인 Gate 운영
 
