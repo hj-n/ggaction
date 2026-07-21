@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
@@ -16,6 +16,31 @@ function roadmap(id) {
 function headings(source) {
   return [...source.matchAll(/^(#{2,4}) (.+)$/gmu)]
     .map(match => `${match[1]} ${match[2].trim()}`);
+}
+
+function markdownAnchors(source) {
+  const counts = new Map();
+  const anchors = new Set();
+  for (const match of source.matchAll(/^#{1,6}\s+(.+)$/gmu)) {
+    const base = match[1]
+      .trim()
+      .replace(/<[^>]*>/gu, "")
+      .replace(/[`*_~]/gu, "")
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}\s-]/gu, "")
+      .trim()
+      .replace(/\s+/gu, "-");
+    const count = counts.get(base) ?? 0;
+    counts.set(base, count + 1);
+    anchors.add(count === 0 ? base : `${base}-${count}`);
+  }
+  return anchors;
+}
+
+function localMarkdownLinks(source) {
+  return [...source.matchAll(/!?\[[^\]]*\]\(([^)]+)\)/gu)]
+    .map(match => match[1].trim().replace(/^<|>$/gu, ""))
+    .filter(link => !/^(?:https?:|mailto:)/u.test(link));
 }
 
 test("keeps one machine-readable active roadmap and phase", () => {
@@ -124,4 +149,40 @@ test("keeps the contract landing page lightweight and action-directed", () => {
   assert.doesNotMatch(readme, /type SemanticPropertyPath/);
   assert.match(formalTypes, /type SemanticPropertyPath/);
   assert.equal(Buffer.byteLength(readme) < 8_000, true);
+});
+
+test("keeps current agent-documentation routes and anchors valid", () => {
+  const contractRoot = path.join(agentDocsRoot, "contract");
+  const files = [
+    path.join(agentDocsRoot, "README.md"),
+    path.join(agentDocsRoot, "architecture", "README.md"),
+    path.join(agentDocsRoot, "SECOND_ARCHITECTURE.md"),
+    path.join(contractRoot, "README.md"),
+    path.join(contractRoot, "FORMAL_TYPES.md"),
+    path.join(contractRoot, "ACTION_CATALOG.md"),
+    path.join(agentDocsRoot, "impl", "README.md"),
+    path.join(agentDocsRoot, "impl", "HISTORY.md"),
+    ...readdirSync(path.join(contractRoot, "current"))
+      .filter(file => file.endsWith(".md"))
+      .map(file => path.join(contractRoot, "current", file))
+  ];
+
+  for (const file of files) {
+    const source = readFileSync(file, "utf8");
+    for (const link of localMarkdownLinks(source)) {
+      const hash = link.indexOf("#");
+      const rawPath = hash < 0 ? link : link.slice(0, hash);
+      const fragment = hash < 0 ? "" : decodeURIComponent(link.slice(hash + 1));
+      const target = path.resolve(
+        path.dirname(file),
+        decodeURIComponent(rawPath || path.basename(file))
+      );
+
+      assert.equal(existsSync(target), true, `${file}: ${link}`);
+      if (fragment && statSync(target).isFile() && target.endsWith(".md")) {
+        const anchors = markdownAnchors(readFileSync(target, "utf8"));
+        assert.equal(anchors.has(fragment.toLowerCase()), true, `${file}: ${link}`);
+      }
+    }
+  }
 });
