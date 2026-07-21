@@ -70,10 +70,53 @@ const revised = annotated.editTextMark({
 ```
 
 At least one property is required. Canvas and scale edits rematerialize both the
-source geometry and attached labels. ggaction does not perform automatic label
-collision avoidance; use filtering and explicit offsets for dense charts.
+source geometry and attached labels.
+
+## `layoutLabels(options?)`
+
+Use explicit offsets for intentional placement, or assign collision-aware
+placement after the text encoding is complete:
+
+```javascript
+const arranged = annotated.layoutLabels({
+  axis: "both",
+  padding: 3,
+  maxDisplacement: 48,
+  bounds: "plot",
+  leader: {
+    stroke: "#94a3b8",
+    strokeWidth: 0.8,
+    opacity: 0.9
+  }
+});
+```
+
+`target` resolves the current complete text mark, then one unique complete text
+mark. Defaults are `axis: "both"`, `padding: 3`, `maxDisplacement: 48`,
+`bounds: "plot"`, and `leader: false`. Use `axis: "x"` or `"y"` to constrain
+movement, or `bounds: "canvas"` to use the complete Canvas rectangle.
+
+The action visits labels in stable materialized order and keeps an existing
+position when it already fits. If the requested distance cannot eliminate all
+overlap or overflow, the program retains a deterministic best effort and stores
+`overlap` or `bounds` warnings in the label-layout resolution summary. It never
+expands margins, reduces font size, or searches for an unrelated nearby mark.
+
+Calling `layoutLabels()` again replaces the complete policy and recomputes from
+semantic base text rather than accumulating offsets. Text, data, scale, source
+mark, and Canvas changes replay that same policy.
+
+## `removeLabelLayout(options?)`
+
+```javascript
+const originalPlacement = arranged.removeLabelLayout();
+```
+
+The action removes the policy and any leader collection, then restores the
+current semantic base text positions. It does not remove the text mark or its
+source relation.
 
 ## Related
 
 [Point marks](./point.md) · [Bar marks](./bar.md) · [Rule marks](./rule.md) ·
-[Encodings](../encodings.md)
+[Encodings](../encodings.md) · [Annotation recipe](../../recipes/annotations.md)

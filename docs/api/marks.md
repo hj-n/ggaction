@@ -54,7 +54,7 @@ each type infers its ID and current dataset when those choices are unambiguous.
 | Arc | `createArcMark` | `editArcMark` | Closed sector path collection |
 | Bar | `createBarMark` | `editBarMark` | Rect collection |
 | Rule | `createRuleMark` | Encoding actions | Line collection |
-| Text | `createTextMark` | `editTextMark` | Text collection |
+| Text | `createTextMark` | `editTextMark`, `layoutLabels`, `removeLabelLayout` | Text collection |
 | Rect | `createRectMark` | `editRectMark` | Rect collection |
 
 Use `removeMark({ target? })` to remove one complete stable mark owner. It also

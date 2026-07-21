@@ -46,6 +46,8 @@ interface ChartProgramActions {
   createRuleMark(options?: { id?: string; data?: string }): ChartProgram;
   createTextMark(options?: TextMarkOptions): ChartProgram;
   editTextMark(options: EditTextMarkOptions): ChartProgram;
+  layoutLabels(options?: LabelLayoutOptions): ChartProgram;
+  removeLabelLayout(options?: RemoveLabelLayoutOptions): ChartProgram;
   editAreaMark(options: { target?: string; fill?: string; opacity?: number; stroke?: string | false; strokeWidth?: number; curve?: CurveInterpolation; }): ChartProgram;
   encodeX(options: PositionEncodingOptions | RulePositionEncodingOptions): ChartProgram;
   encodeY(options: PositionEncodingOptions | RulePositionEncodingOptions): ChartProgram;

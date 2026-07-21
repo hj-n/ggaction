@@ -59,6 +59,16 @@
     "layer": "user-facing",
     "domain": "marks"
   },
+  "layoutLabels": {
+    "operation": "edit",
+    "layer": "user-facing",
+    "domain": "marks"
+  },
+  "removeLabelLayout": {
+    "operation": "remove",
+    "layer": "user-facing",
+    "domain": "marks"
+  },
   "editPointMark": {
     "operation": "edit",
     "layer": "user-facing",

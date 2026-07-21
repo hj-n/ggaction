@@ -171,8 +171,10 @@ Use document search with `Ctrl+K` or scan the alphabetical list. Each action has
 | [`filterMarks`](./actions/charts-data.md#filtermarks) | user-facing | mark-selection |
 | [`highlightMarks`](./actions/charts-data.md#highlightmarks) | user-facing | mark-selection |
 | [`jitterPoints`](./actions/marks.md#jitterpoints) | user-facing | marks |
+| [`layoutLabels`](./actions/marks.md#layoutlabels) | user-facing | marks |
 | [`removeGrid`](./actions/advanced.md#directional-grids) | user-facing | grid |
 | [`removeJitter`](./actions/marks.md#removejitter) | user-facing | marks |
+| [`removeLabelLayout`](./actions/marks.md#removelabellayout) | user-facing | marks |
 | [`removeLegend`](./actions/guides.md#removelegend) | user-facing | legend_and_title |
 | [`removeMark`](./actions/marks.md#removemark) | user-facing | marks |
 | [`removePathOrder`](./actions/encodings.md#removepathorder) | user-facing | encodings |

@@ -2,6 +2,7 @@ import { loadGapminder } from "../../support/data.js";
 import { defineVisualVariant } from "../../support/visual-variants.js";
 import { LABEL_LAYOUT } from "./fixture.js";
 import { createGapminderCountryLabelPrimitives } from "./primitive.program.js";
+import { createGapminderCountryLabels } from "./public.program.js";
 
 const gapminder = loadGapminder();
 
@@ -33,6 +34,7 @@ export const targetCallChain = `chart()
   })
   .createTextMark({
     id: "countryLabels",
+    fill: "#0f172a",
     fontSize: 11,
     align: "left",
     baseline: "middle",
@@ -68,6 +70,7 @@ export const visualVariants = Object.freeze([
     callChain: targetCallChain,
     artifact: { scope: "review" },
     primitive: () => createGapminderCountryLabelPrimitives(gapminder),
+    userFacing: () => createGapminderCountryLabels(gapminder),
     width: LABEL_LAYOUT.width,
     height: LABEL_LAYOUT.height,
     colors: ["#2563eb", "#0f172a"],

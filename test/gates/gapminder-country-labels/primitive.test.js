@@ -88,7 +88,10 @@ test("authors the Gapminder primitive with bounded labels and exact leaders", ()
     result.resolution.items.map(item => [item.x, item.y])
   );
   const children = result.program.graphicSpec.objects["plot-main"].children;
-  assert.equal(children.indexOf("countryLabelLeaders") < children.indexOf("countries"), true);
+  assert.equal(
+    children.indexOf("countryLabels-label-leaders") < children.indexOf("countries"),
+    true
+  );
   assert.equal(children.indexOf("countries") < children.indexOf("countryLabels"), true);
   assert.equal(result.program.trace.children.some(node => node.op === "layoutLabels"), false);
 });

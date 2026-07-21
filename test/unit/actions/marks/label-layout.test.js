@@ -162,6 +162,45 @@ test("replays after text encoding, source filtering, and scale edits", () => {
   assert.equal(filtered.graphicSpec.objects["labels-label-leaders"], undefined);
 });
 
+test("converges across action order and constrains y-only displacement", () => {
+  const base = overlappingLabels();
+  const policy = {
+    target: "labels",
+    axis: "both",
+    padding: 4,
+    maxDisplacement: 72,
+    leader: { stroke: "#64748b" }
+  };
+  const configuredFirst = base
+    .editTextMark({ target: "labels", fontSize: 15 })
+    .editCanvas({ width: 400 })
+    .editScale({ id: "x", domain: [0, 4] })
+    .layoutLabels(policy);
+  const layoutFirst = base
+    .layoutLabels(policy)
+    .editTextMark({ target: "labels", fontSize: 15 })
+    .editCanvas({ width: 400 })
+    .editScale({ id: "x", domain: [0, 4] });
+  assert.deepEqual(layoutFirst.graphicSpec, configuredFirst.graphicSpec);
+  assert.deepEqual(
+    layoutFirst.materializationConfigs.labelLayouts.labels,
+    configuredFirst.materializationConfigs.labelLayouts.labels
+  );
+
+  const original = base.graphicSpec.objects.labels.items.map(
+    item => [item.properties.x, item.properties.y]
+  );
+  const yOnly = base.layoutLabels({
+    target: "labels",
+    axis: "y",
+    maxDisplacement: 48
+  });
+  assert.equal(yOnly.graphicSpec.objects.labels.items.every(
+    (item, index) => item.properties.x === original[index][0]
+  ), true);
+  assert.equal(yOnly.materializationConfigs.labelLayouts.labels.resolution.overlapAfter, 0);
+});
+
 test("infers only a current or unique complete text target", () => {
   const unique = overlappingLabels().layoutLabels();
   assert.ok(unique.materializationConfigs.labelLayouts.labels);

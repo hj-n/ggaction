@@ -83,46 +83,51 @@ export function createGapminderCountryLabelPrimitiveResult(gapminder) {
   if (leaders.length > 0) {
     program = program
       .createGraphics({
-        id: "countryLabelLeaders",
+        id: "countryLabels-label-leaders",
         type: "line",
         length: leaders.length,
         parent: "plot-main",
         before: "countries"
       })
       .editGraphics({
-        target: "countryLabelLeaders",
+        target: "countryLabels-label-leaders",
         property: "x1",
         value: leaders.map(line => line.x1)
       })
       .editGraphics({
-        target: "countryLabelLeaders",
+        target: "countryLabels-label-leaders",
         property: "y1",
         value: leaders.map(line => line.y1)
       })
       .editGraphics({
-        target: "countryLabelLeaders",
+        target: "countryLabels-label-leaders",
         property: "x2",
         value: leaders.map(line => line.x2)
       })
       .editGraphics({
-        target: "countryLabelLeaders",
+        target: "countryLabels-label-leaders",
         property: "y2",
         value: leaders.map(line => line.y2)
       })
       .editGraphics({
-        target: "countryLabelLeaders",
+        target: "countryLabels-label-leaders",
         property: "stroke",
         value: LABEL_LAYOUT.leader.stroke
       })
       .editGraphics({
-        target: "countryLabelLeaders",
+        target: "countryLabels-label-leaders",
         property: "strokeWidth",
         value: LABEL_LAYOUT.leader.strokeWidth
       })
       .editGraphics({
-        target: "countryLabelLeaders",
+        target: "countryLabels-label-leaders",
         property: "opacity",
         value: LABEL_LAYOUT.leader.opacity
+      })
+      .editGraphics({
+        target: "countryLabels-label-leaders",
+        property: "strokeDash",
+        value: leaders.map(() => [])
       });
   }
   program = program

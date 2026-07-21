@@ -2743,7 +2743,12 @@ const program = chart()
   .createData({ values: films })
   .createScatterPlot({ x: "Released_Year", y: "IMDB_Rating" })
   .createTextMark({ dx: 7, dy: -6, align: "left", baseline: "bottom" })
-  .encodeText({ field: "Series_Title" });
+  .encodeText({ field: "Series_Title" })
+  .layoutLabels({
+    padding: 3,
+    maxDisplacement: 48,
+    leader: { stroke: "#94a3b8", opacity: 0.8 }
+  });
 ```
 
 `films` is an array of plain row objects containing the two position fields and
@@ -2754,16 +2759,19 @@ resolved Cartesian anchors.
 
 - The field or constant text to display
 - Label offset, alignment, and typography
-- A sparse enough set of rows to remain readable
+- Whether labels should keep explicit offsets or use bounded collision-aware layout
 
 ## The library infers
 
 - The current compatible source layer and dataset
 - One text item per final point, bar, rect, or rule item
 - Updated anchors after Canvas or scale revisions
+- Stable collision-aware positions when `layoutLabels()` is present
 
-ggaction does not perform collision avoidance. Filter rows or use explicit
-`dx` and `dy` when labels overlap.
+`layoutLabels()` reduces label-to-label overlap within the requested plot or
+Canvas bounds. It is bounded best effort: dense impossible layouts store a
+warning summary instead of expanding margins or changing typography. Filter
+rows when every label still cannot fit.
 
 ## Continue
 
@@ -4090,7 +4098,7 @@ each type infers its ID and current dataset when those choices are unambiguous.
 | Arc | `createArcMark` | `editArcMark` | Closed sector path collection |
 | Bar | `createBarMark` | `editBarMark` | Rect collection |
 | Rule | `createRuleMark` | Encoding actions | Line collection |
-| Text | `createTextMark` | `editTextMark` | Text collection |
+| Text | `createTextMark` | `editTextMark`, `layoutLabels`, `removeLabelLayout` | Text collection |
 | Rect | `createRectMark` | `editRectMark` | Rect collection |
 
 Use `removeMark({ target? })` to remove one complete stable mark owner. It also
@@ -4568,13 +4576,56 @@ const revised = annotated.editTextMark({
 ```
 
 At least one property is required. Canvas and scale edits rematerialize both the
-source geometry and attached labels. ggaction does not perform automatic label
-collision avoidance; use filtering and explicit offsets for dense charts.
+source geometry and attached labels.
+
+## `layoutLabels(options?)`
+
+Use explicit offsets for intentional placement, or assign collision-aware
+placement after the text encoding is complete:
+
+```javascript
+const arranged = annotated.layoutLabels({
+  axis: "both",
+  padding: 3,
+  maxDisplacement: 48,
+  bounds: "plot",
+  leader: {
+    stroke: "#94a3b8",
+    strokeWidth: 0.8,
+    opacity: 0.9
+  }
+});
+```
+
+`target` resolves the current complete text mark, then one unique complete text
+mark. Defaults are `axis: "both"`, `padding: 3`, `maxDisplacement: 48`,
+`bounds: "plot"`, and `leader: false`. Use `axis: "x"` or `"y"` to constrain
+movement, or `bounds: "canvas"` to use the complete Canvas rectangle.
+
+The action visits labels in stable materialized order and keeps an existing
+position when it already fits. If the requested distance cannot eliminate all
+overlap or overflow, the program retains a deterministic best effort and stores
+`overlap` or `bounds` warnings in the label-layout resolution summary. It never
+expands margins, reduces font size, or searches for an unrelated nearby mark.
+
+Calling `layoutLabels()` again replaces the complete policy and recomputes from
+semantic base text rather than accumulating offsets. Text, data, scale, source
+mark, and Canvas changes replay that same policy.
+
+## `removeLabelLayout(options?)`
+
+```javascript
+const originalPlacement = arranged.removeLabelLayout();
+```
+
+The action removes the policy and any leader collection, then restores the
+current semantic base text positions. It does not remove the text mark or its
+source relation.
 
 ## Related
 
 [Point marks](./point.md) · [Bar marks](./bar.md) · [Rule marks](./rule.md) ·
-[Encodings](../encodings.md)
+[Encodings](../encodings.md) · [Annotation recipe](../../recipes/annotations.md)
 
 <!-- Source: /api/marks/rect/ -->
 
@@ -9394,8 +9445,10 @@ Use document search with `Ctrl+K` or scan the alphabetical list. Each action has
 | [`filterMarks`](./actions/charts-data.md#filtermarks) | user-facing | mark-selection |
 | [`highlightMarks`](./actions/charts-data.md#highlightmarks) | user-facing | mark-selection |
 | [`jitterPoints`](./actions/marks.md#jitterpoints) | user-facing | marks |
+| [`layoutLabels`](./actions/marks.md#layoutlabels) | user-facing | marks |
 | [`removeGrid`](./actions/advanced.md#directional-grids) | user-facing | grid |
 | [`removeJitter`](./actions/marks.md#removejitter) | user-facing | marks |
+| [`removeLabelLayout`](./actions/marks.md#removelabellayout) | user-facing | marks |
 | [`removeLegend`](./actions/guides.md#removelegend) | user-facing | legend_and_title |
 | [`removeMark`](./actions/marks.md#removemark) | user-facing | marks |
 | [`removePathOrder`](./actions/encodings.md#removepathorder) | user-facing | encodings |
@@ -9803,6 +9856,27 @@ editTextMark({ target?, fill?, opacity?, fontSize?, fontFamily?, fontWeight?, al
 
 Edit text typography and graphical offsets without changing its semantic
 source or position. [Text marks](../../api/marks/text.md)
+
+## `layoutLabels`
+
+```javascript
+layoutLabels({ target?, axis?, padding?, maxDisplacement?, bounds?, leader? } = {})
+```
+
+Assign deterministic collision-aware placement to one complete text mark.
+Displacement may use x, y, or both axes and remains inside plot or Canvas
+bounds when possible. Optional leaders connect displaced labels to their
+stored source anchors. Impossible layouts retain a stable best effort and a
+warning summary. [Text marks](../../api/marks/text.md)
+
+## `removeLabelLayout`
+
+```javascript
+removeLabelLayout({ target? } = {})
+```
+
+Remove one text mark's layout policy and leader collection, then restore its
+semantic base positions. [Text marks](../../api/marks/text.md)
 
 ### Position capability matrix
 
@@ -10918,6 +10992,8 @@ interface ChartProgramActions {
   createRuleMark(options?: { id?: string; data?: string }): ChartProgram;
   createTextMark(options?: TextMarkOptions): ChartProgram;
   editTextMark(options: EditTextMarkOptions): ChartProgram;
+  layoutLabels(options?: LabelLayoutOptions): ChartProgram;
+  removeLabelLayout(options?: RemoveLabelLayoutOptions): ChartProgram;
   editAreaMark(options: { target?: string; fill?: string; opacity?: number; stroke?: string | false; strokeWidth?: number; curve?: CurveInterpolation; }): ChartProgram;
   encodeX(options: PositionEncodingOptions | RulePositionEncodingOptions): ChartProgram;
   encodeY(options: PositionEncodingOptions | RulePositionEncodingOptions): ChartProgram;

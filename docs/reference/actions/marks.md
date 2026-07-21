@@ -181,6 +181,27 @@ editTextMark({ target?, fill?, opacity?, fontSize?, fontFamily?, fontWeight?, al
 Edit text typography and graphical offsets without changing its semantic
 source or position. [Text marks](../../api/marks/text.md)
 
+## `layoutLabels`
+
+```javascript
+layoutLabels({ target?, axis?, padding?, maxDisplacement?, bounds?, leader? } = {})
+```
+
+Assign deterministic collision-aware placement to one complete text mark.
+Displacement may use x, y, or both axes and remains inside plot or Canvas
+bounds when possible. Optional leaders connect displaced labels to their
+stored source anchors. Impossible layouts retain a stable best effort and a
+warning summary. [Text marks](../../api/marks/text.md)
+
+## `removeLabelLayout`
+
+```javascript
+removeLabelLayout({ target? } = {})
+```
+
+Remove one text mark's layout policy and leader collection, then restore its
+semantic base positions. [Text marks](../../api/marks/text.md)
+
 ### Position capability matrix
 
 <!-- action-capabilities:position:start -->

@@ -37,6 +37,8 @@
   "editRectMark": "/reference/actions/marks/#editrectmark",
   "createTextMark": "/reference/actions/marks/#createtextmark",
   "editTextMark": "/reference/actions/marks/#edittextmark",
+  "layoutLabels": "/reference/actions/marks/#layoutlabels",
+  "removeLabelLayout": "/reference/actions/marks/#removelabellayout",
   "encodeX": "/reference/actions/encodings/#encodex",
   "encodeY": "/reference/actions/encodings/#encodey",
   "encodeY2": "/reference/actions/encodings/#encodey2",

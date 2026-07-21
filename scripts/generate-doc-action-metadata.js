@@ -13,7 +13,11 @@ function operation(name) {
     if (name.startsWith(candidate)) return candidate;
   }
   if (name === "facet") return "compose";
-  if (name === "jitterPoints" || name === "replaceCompositionChild") return "edit";
+  if (
+    name === "jitterPoints" ||
+    name === "layoutLabels" ||
+    name === "replaceCompositionChild"
+  ) return "edit";
   throw new Error(`Public action ${name} needs a documentation operation classification.`);
 }
 
