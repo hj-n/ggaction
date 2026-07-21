@@ -17,7 +17,7 @@ backend-neutral path/line/text graphics만 소비한다.
 - [x] Parallel coordinate/encoding/materialization 구현
 - [x] Facade, guides, appearance와 selection lifecycle 구현
 - [x] P11-B public visual/lifecycle 승인
-- [ ] declarations/contracts/docs/package closeout
+- [x] declarations/contracts/docs/package closeout
 - [ ] P11-Exit 사용자 승인
 
 ## 핵심 Candidate 계약
@@ -40,7 +40,7 @@ backend-neutral path/line/text graphics만 소비한다.
 | --- | --- | --- | --- |
 | P11-A | approved | exact API/default/error/state, independent oracle, Cars primitive source와 PNG | production grammar/action 구현 |
 | P11-B | approved | facade hierarchy, primitive/public parity, guide/selection/edit lifecycle | public closeout |
-| P11-Exit | planned | Current inventory, architecture, docs/types/package와 cumulative verification | Phase 12 |
+| P11-Exit | ready-for-review | Current inventory, architecture, docs/types/package와 cumulative verification | Phase 12 |
 
 모든 Gate는 hard pause다.
 
