@@ -1,5 +1,4 @@
 import { action } from "../../core/action.js";
-import { validateUserId } from "../../core/identifiers.js";
 import { validateOptionObject } from "../../core/validation.js";
 import {
   normalizeParallelDimensions,
@@ -7,52 +6,13 @@ import {
   validateParallelMissingPolicy,
   validateParallelRows
 } from "../../grammar/parallelCoordinates.js";
-import { findCoordinate } from "../../selectors/coordinates.js";
 import { resolvePositionScaleDefinition } from "../scales/definitions.js";
 import { applyEncodingScale, resolveTarget } from "./shared.js";
+import { resolveParallelCoordinate } from "../coordinates/parallel.js";
 
 const OPTIONS = Object.freeze([
   "target", "coordinate", "dimensions", "key", "missing"
 ]);
-
-function resolveCoordinate(program, layer, requested) {
-  const explicit = requested === undefined
-    ? undefined
-    : validateUserId(requested, "Parallel coordinate id");
-  if (layer.coordinate !== undefined) {
-    if (explicit !== undefined && explicit !== layer.coordinate) {
-      throw new Error(
-        `Layer "${layer.id}" already uses coordinate "${layer.coordinate}".`
-      );
-    }
-    const coordinate = findCoordinate(program, layer.coordinate);
-    if (coordinate?.type !== "parallel") {
-      throw new Error(`Coordinate "${layer.coordinate}" is not Parallel.`);
-    }
-    return { id: layer.coordinate, create: false };
-  }
-  if (explicit !== undefined) {
-    const coordinate = findCoordinate(program, explicit);
-    if (coordinate !== undefined && coordinate.type !== "parallel") {
-      throw new Error(`Coordinate "${explicit}" is not Parallel.`);
-    }
-    return { id: explicit, create: coordinate === undefined };
-  }
-  const compatible = program.semanticSpec.coordinates.filter(
-    coordinate => coordinate.type === "parallel"
-  );
-  if (compatible.length > 1) {
-    throw new Error(
-      "encodeParallelCoordinates requires coordinate when multiple Parallel coordinates are available."
-    );
-  }
-  if (compatible.length === 1) return { id: compatible[0].id, create: false };
-  const conflict = findCoordinate(program, "parallel");
-  if (conflict !== undefined) {
-    throw new Error('Coordinate "parallel" already exists with a different type.');
-  }
-  return { id: "parallel", create: true };
-}
 
 export const encodeParallelCoordinates = action(
   {
@@ -76,7 +36,11 @@ export const encodeParallelCoordinates = action(
         `Parallel encoding cannot mix with existing position encodings on layer "${target}".`
       );
     }
-    const coordinate = resolveCoordinate(this, layer, args.coordinate);
+    const coordinate = resolveParallelCoordinate(this, {
+      requested: args.coordinate,
+      layer,
+      operation: "encodeParallelCoordinates"
+    });
     const dimensions = normalizeParallelDimensions(
       dataset.values,
       args.dimensions,

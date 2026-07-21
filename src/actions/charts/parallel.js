@@ -1,6 +1,5 @@
 import { action } from "../../core/action.js";
-import { validateUserId } from "../../core/identifiers.js";
-import { findCoordinate } from "../../selectors/coordinates.js";
+import { resolveParallelCoordinate } from "../coordinates/parallel.js";
 import {
   applyFacadeGuides,
   normalizeAppearance,
@@ -21,35 +20,6 @@ const LINE_OPTIONS = Object.freeze([
   "strokeWidth", "stroke", "opacity", "curve", "closed"
 ]);
 
-function resolveCoordinate(program, requested) {
-  if (requested !== undefined) {
-    const id = validateUserId(requested, "Parallel coordinate id");
-    const existing = findCoordinate(program, id);
-    if (existing !== undefined && existing.type !== "parallel") {
-      throw new Error(`Coordinate "${id}" is not Parallel.`);
-    }
-    return id;
-  }
-  const current = program.context.currentCoordinate;
-  if (current !== undefined && findCoordinate(program, current)?.type === "parallel") {
-    return current;
-  }
-  const compatible = program.semanticSpec.coordinates.filter(
-    coordinate => coordinate.type === "parallel"
-  );
-  if (compatible.length > 1) {
-    throw new Error(
-      "createParallelCoordinates requires coordinate when multiple Parallel coordinates are available."
-    );
-  }
-  if (compatible.length === 1) return compatible[0].id;
-  const conflict = findCoordinate(program, "parallel");
-  if (conflict !== undefined) {
-    throw new Error('Coordinate "parallel" already exists with a different type.');
-  }
-  return "parallel";
-}
-
 export const createParallelCoordinates = action(
   {
     op: "createParallelCoordinates",
@@ -62,7 +32,11 @@ export const createParallelCoordinates = action(
       operation: "createParallelCoordinates"
     });
     const data = resolveFacadeData(this, args.data, "createParallelCoordinates");
-    const coordinate = resolveCoordinate(this, args.coordinate);
+    const coordinate = resolveParallelCoordinate(this, {
+      requested: args.coordinate,
+      operation: "createParallelCoordinates",
+      useCurrent: true
+    }).id;
     const line = normalizeAppearance(
       args.line,
       LINE_OPTIONS,

@@ -7,6 +7,8 @@ export const DEFAULT_COLORS = Object.freeze({
   text: "#334155",
   strongText: "#0f172a",
   mutedText: "#64748b",
+  axis: "#475569",
+  axisTitle: "#1e293b",
   grid: "#e2e8f0",
   border: "#cbd5e1",
   sizeSymbol: "#94a3b8",
