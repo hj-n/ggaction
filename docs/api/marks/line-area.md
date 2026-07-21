@@ -28,6 +28,13 @@ as an empty path collection because later grouping determines series
 cardinality. Complete encodings materialize sorted commands; color and stroke
 dash may regroup them.
 
+For a direct quantitative line, `encodeX` and `encodeY` may be called in either
+order. The first action stores valid incomplete semantic and scale state while
+the path remains empty; the second completes the same final layer, resolved
+scales, and graphics in both orders. Aggregate y lines are different: their
+grain requires a compatible temporal x encoding and rejects a quantitative
+partial that would change the meaning of the line.
+
 When a line is layered immediately after a compatible encoded mark, omitted
 data and positions are inferred. Compatible aggregate grain is inferred too,
 so an aggregate trend over aggregate bars needs no repeated `encodeX` or

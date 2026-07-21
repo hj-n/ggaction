@@ -22,6 +22,26 @@ These actions are conveniences over the regular mark, encoding, and guide
 actions. They call those wrapped actions as trace children; they do not add a
 second chart specification or compile semantics during rendering.
 
+## Choose a facade
+
+| Facade | Shortest complete decision | Guides when omitted |
+| --- | --- | --- |
+| `createScatterPlot` | `{ x, y }` | applicable guides |
+| `createLinePlot` | `{ x, y }` | applicable guides |
+| `createBarPlot` | `{ x, y }` | applicable guides |
+| `createHistogram` | `{ field }` | applicable guides |
+| `createHeatmap` | `{ x, y, color }`, or `{ x, y, bin: {} }` | applicable guides |
+| `createParallelCoordinates` | `{ dimensions }` | dimension axes and applicable legend |
+| [`createBoxPlot`](./box-plots.md) | `{ x, y }`, or no options after one eligible layer | none; pass `{}` to create them |
+| [`createGradientPlot`](./gradient-plots.md) | `{ x, y }`, or no options after one eligible layer | applicable guides |
+
+The first six facades create a complete ordinary chart from fields. Box and
+gradient plots are statistical facades that may instead infer their positions,
+data, coordinate, and scales from one compatible encoded layer. After creation,
+all eight hand editing back to the action that owns the decision; for example,
+use `encodeY`, `editScale`, `editBoxPlot`, or `editGradientPlot` rather than a
+generic facade editor.
+
 ## Shared behavior
 
 - `data` is optional when there is a current dataset or exactly one dataset.

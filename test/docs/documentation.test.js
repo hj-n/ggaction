@@ -210,6 +210,49 @@ test("keeps navigation and page order complete", async () => {
   );
 });
 
+test("keeps public facade and stabilization guidance cumulative", () => {
+  const basicCharts = read("docs/api/basic-charts.md");
+  for (const action of [
+    "createScatterPlot",
+    "createLinePlot",
+    "createBarPlot",
+    "createHistogram",
+    "createHeatmap",
+    "createParallelCoordinates",
+    "createBoxPlot",
+    "createGradientPlot"
+  ]) {
+    assert.equal(
+      basicCharts.split("\n").some(line =>
+        line.startsWith("|") && line.includes(`\`${action}\``)
+      ),
+      true,
+      `${action} facade map entry`
+    );
+  }
+
+  assert.match(
+    read("docs/api/marks/point.md"),
+    /materialization uses\s+a radius of `3` logical pixels/
+  );
+  assert.match(
+    read("docs/api/marks/line-area.md"),
+    /direct quantitative line[\s\S]*`encodeX` and `encodeY` may be called in either\s+order/
+  );
+  assert.match(
+    read("docs/api/marks/rule.md"),
+    /datum y removes only inherited x[\s\S]*horizontal full-span/
+  );
+  assert.match(
+    basicCharts,
+    /Without `bin`[\s\S]*one cell for each valid\s+observed row/
+  );
+  assert.match(
+    basicCharts,
+    /Text is not automatic[\s\S]*`createTextMark\(\)\.encodeText\(\)`/
+  );
+});
+
 test("keeps the chart-example catalog strict and routable", async () => {
   const source = read("docs/_data/chart_examples.yml");
   const catalog = readDocChartCatalog(source);

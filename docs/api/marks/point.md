@@ -36,6 +36,12 @@ point is layered after one compatible source, omitted data, coordinate, x, and y
 encodings are inherited and persisted. Ambiguous sources require an explicit
 target or resource ID.
 
+Radius is an encoding-owned graphical value rather than a `createPointMark`
+option. Until a constant or field-driven size is authored, materialization uses
+a radius of `3` logical pixels without storing a synthetic semantic encoding.
+Use `encodePointRadius({ value })` for another constant radius or `encodeSize`
+for a field-driven area mapping.
+
 ## `editPointMark({ target?, shape?, fill?, opacity?, stroke?, strokeWidth? })`
 
 ```javascript

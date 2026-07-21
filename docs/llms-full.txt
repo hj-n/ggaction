@@ -3132,6 +3132,26 @@ These actions are conveniences over the regular mark, encoding, and guide
 actions. They call those wrapped actions as trace children; they do not add a
 second chart specification or compile semantics during rendering.
 
+## Choose a facade
+
+| Facade | Shortest complete decision | Guides when omitted |
+| --- | --- | --- |
+| `createScatterPlot` | `{ x, y }` | applicable guides |
+| `createLinePlot` | `{ x, y }` | applicable guides |
+| `createBarPlot` | `{ x, y }` | applicable guides |
+| `createHistogram` | `{ field }` | applicable guides |
+| `createHeatmap` | `{ x, y, color }`, or `{ x, y, bin: {} }` | applicable guides |
+| `createParallelCoordinates` | `{ dimensions }` | dimension axes and applicable legend |
+| [`createBoxPlot`](./box-plots.md) | `{ x, y }`, or no options after one eligible layer | none; pass `{}` to create them |
+| [`createGradientPlot`](./gradient-plots.md) | `{ x, y }`, or no options after one eligible layer | applicable guides |
+
+The first six facades create a complete ordinary chart from fields. Box and
+gradient plots are statistical facades that may instead infer their positions,
+data, coordinate, and scales from one compatible encoded layer. After creation,
+all eight hand editing back to the action that owns the decision; for example,
+use `encodeY`, `editScale`, `editBoxPlot`, or `editGradientPlot` rather than a
+generic facade editor.
+
 ## Shared behavior
 
 - `data` is optional when there is a current dataset or exactly one dataset.
@@ -4173,6 +4193,12 @@ point is layered after one compatible source, omitted data, coordinate, x, and y
 encodings are inherited and persisted. Ambiguous sources require an explicit
 target or resource ID.
 
+Radius is an encoding-owned graphical value rather than a `createPointMark`
+option. Until a constant or field-driven size is authored, materialization uses
+a radius of `3` logical pixels without storing a synthetic semantic encoding.
+Use `encodePointRadius({ value })` for another constant radius or `encodeSize`
+for a field-driven area mapping.
+
 ## `editPointMark({ target?, shape?, fill?, opacity?, stroke?, strokeWidth? })`
 
 ```javascript
@@ -4274,6 +4300,13 @@ to `2`, opacity defaults to `1`, and curve defaults to `"linear"`. A line begins
 as an empty path collection because later grouping determines series
 cardinality. Complete encodings materialize sorted commands; color and stroke
 dash may regroup them.
+
+For a direct quantitative line, `encodeX` and `encodeY` may be called in either
+order. The first action stores valid incomplete semantic and scale state while
+the path remains empty; the second completes the same final layer, resolved
+scales, and graphics in both orders. Aggregate y lines are different: their
+grain requires a compatible temporal x encoding and rejects a quantitative
+partial that would change the meaning of the line.
 
 When a line is layered immediately after a compatible encoded mark, omitted
 data and positions are inferred. Compatible aggregate grain is inferred too,
@@ -4486,6 +4519,14 @@ position or style. A single x or y encoding creates a full plot-span rule. Add
 `encodeY2` for a bounded vertical interval, `encodeX2` for a bounded horizontal
 interval, or both secondary endpoints for a diagonal rule. Every endpoint may
 use a field or constant datum.
+
+When a rule is layered without explicit `data`, it may first inherit a
+compatible source layer's x/y positions. A constant datum endpoint takes
+precedence over the inherited opposite position when no secondary endpoint
+exists: datum y removes only inherited x and creates a horizontal full-span
+rule, while datum x symmetrically creates a vertical full-span rule. Field
+endpoints preserve the orthogonal inherited channel for interval construction.
+Rules created with explicit `data` do not apply this provenance-based cleanup.
 
 Rule appearance is edited through encoding actions rather than a separate mark
 editor:

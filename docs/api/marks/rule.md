@@ -27,6 +27,14 @@ position or style. A single x or y encoding creates a full plot-span rule. Add
 interval, or both secondary endpoints for a diagonal rule. Every endpoint may
 use a field or constant datum.
 
+When a rule is layered without explicit `data`, it may first inherit a
+compatible source layer's x/y positions. A constant datum endpoint takes
+precedence over the inherited opposite position when no secondary endpoint
+exists: datum y removes only inherited x and creates a horizontal full-span
+rule, while datum x symmetrically creates a vertical full-span rule. Field
+endpoints preserve the orthogonal inherited channel for interval construction.
+Rules created with explicit `data` do not apply this provenance-based cleanup.
+
 Rule appearance is edited through encoding actions rather than a separate mark
 editor:
 
