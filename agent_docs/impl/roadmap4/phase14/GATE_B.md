@@ -3,7 +3,8 @@
 ## 상태
 
 - Gate: `P14-B`
-- 상태: `ready-for-review`
+- 상태: `approved`
+- 승인: 2026-07-21 사용자 승인
 - Implementation checkpoint: `94befe8` (`align box plot facade behavior`)
 - Gate package checkpoint: `2a0296a` (`prepare basic chart facade gate b`)
 - Remote: `origin/main`
