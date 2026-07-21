@@ -270,9 +270,13 @@ try {
   assert.equal(await noScriptDesktop.locator("#docs-sidebar").getAttribute("inert"), null);
   assert.equal(await noScriptDesktop.locator("#docs-sidebar").getAttribute("aria-hidden"), null);
   const noScriptGroup = noScriptDesktop.locator(".docs-nav-group").first();
-  assert.equal(await noScriptGroup.locator("summary").isVisible(), true);
-  await noScriptGroup.locator("summary").click();
-  assert.equal(await noScriptGroup.locator("a").first().isVisible(), true);
+  const noScriptSummary = noScriptGroup.locator(":scope > summary");
+  assert.equal(await noScriptSummary.isVisible(), true);
+  await noScriptSummary.click();
+  assert.equal(
+    await noScriptGroup.locator(":scope > ul > li > a").first().isVisible(),
+    true
+  );
   await noScriptDesktopContext.close();
 
   const htmlFiles = (await files(siteRoot))
