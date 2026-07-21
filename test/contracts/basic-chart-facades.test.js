@@ -5,6 +5,8 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { createCarsHistogram } from "../../examples/cars-histogram/program.js";
+import { createCarsBoxPlot } from "../../examples/cars-box-plot/program.js";
+import { createCarsGradientPlot } from "../../examples/cars-gradient-plot/program.js";
 import { createCarsLineChart } from "../../examples/cars-line-chart/program.js";
 import { createCarsParallelCoordinates } from
   "../../examples/cars-parallel-coordinates/program.js";
@@ -15,22 +17,17 @@ import { createJobsGroupedBar } from "../../examples/jobs-grouped-bar/program.js
 import { loadCars, loadGapminder, loadJobs } from "../support/data.js";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
-const FACADE_ACTIONS = Object.freeze([
-  "createScatterPlot",
-  "createLinePlot",
-  "createBarPlot",
-  "createHistogram",
-  "createHeatmap",
-  "createParallelCoordinates"
+const FACADE_CONTRACTS = Object.freeze([
+  ["createScatterPlot", "CreateScatterPlotOptions", "BASIC_CHARTS.md"],
+  ["createLinePlot", "CreateLinePlotOptions", "BASIC_CHARTS.md"],
+  ["createBarPlot", "CreateBarPlotOptions", "BASIC_CHARTS.md"],
+  ["createHistogram", "CreateHistogramOptions", "BASIC_CHARTS.md"],
+  ["createHeatmap", "CreateHeatmapOptions", "BASIC_CHARTS.md"],
+  ["createGradientPlot", "GradientPlotOptions", "GRADIENT_PLOTS.md"],
+  ["createBoxPlot", "BoxPlotOptions", "COMPOSITE_MARKS.md", { rootTypeExport: false }],
+  ["createParallelCoordinates", "CreateParallelCoordinatesOptions", "BASIC_CHARTS.md"]
 ]);
-const OPTION_TYPES = Object.freeze([
-  "CreateScatterPlotOptions",
-  "CreateLinePlotOptions",
-  "CreateBarPlotOptions",
-  "CreateHistogramOptions",
-  "CreateHeatmapOptions",
-  "CreateParallelCoordinatesOptions"
-]);
+const FACADE_ACTIONS = Object.freeze(FACADE_CONTRACTS.map(([name]) => name));
 
 function read(relativePath) {
   return readFileSync(path.join(root, relativePath), "utf8");
@@ -46,14 +43,14 @@ function javascriptFiles(directory) {
   });
 }
 
-test("keeps every basic chart facade in one Current contract", () => {
+test("keeps every basic chart facade in one canonical Current owner", () => {
   const index = JSON.parse(read("agent_docs/contract/ACTION_INDEX.json"));
-  for (const name of FACADE_ACTIONS) {
+  for (const [name, , owner] of FACADE_CONTRACTS) {
     const current = index.actions.filter(action => action.name === name);
     assert.equal(current.length, 1, name);
     assert.equal(current[0].status, "implemented", name);
     assert.equal(current[0].contract.file,
-      "agent_docs/contract/current/BASIC_CHARTS.md", name);
+      `agent_docs/contract/current/${owner}`, name);
     assert.equal(index.plannedActions.some(action => action.name === name), false, name);
     assert.equal(index.plannedCapabilities.some(capability =>
       capability.name === name || capability.actions?.includes(name)
@@ -65,12 +62,20 @@ test("keeps every basic chart facade in one Current contract", () => {
   )), false);
 });
 
-test("keeps every facade declaration and root type export exact", () => {
+test("keeps every facade declaration and current root type export exact", () => {
   const programTypes = read("types/program.d.ts");
   const rootTypes = read("types/index.d.ts");
-  for (const [index, name] of FACADE_ACTIONS.entries()) {
-    assert.match(programTypes, new RegExp(`^  ${name}\\(options: ${OPTION_TYPES[index]}\\)`, "m"));
-    assert.match(rootTypes, new RegExp(`^  ${OPTION_TYPES[index]},?$`, "m"));
+  for (const [name, optionType, , contract = {}] of FACADE_CONTRACTS) {
+    const optional = ["createGradientPlot", "createBoxPlot"].includes(name)
+      ? "\\?"
+      : "";
+    assert.match(programTypes, new RegExp(
+      `^  ${name}\\(options${optional}: ${optionType}\\)`,
+      "m"
+    ));
+    if (contract.rootTypeExport !== false) {
+      assert.match(rootTypes, new RegExp(`^  ${optionType},?$`, "m"));
+    }
   }
 });
 
@@ -82,6 +87,8 @@ test("keeps every facade program in its canonical chart slice", () => {
     createJobsGroupedBar(loadJobs()),
     createCarsHistogram(cars),
     createGapminderLifeExpectancyHeatmap(loadGapminder()),
+    createCarsGradientPlot(cars),
+    createCarsBoxPlot(cars),
     createCarsParallelCoordinates(cars)
   ];
   for (const [index, program] of programs.entries()) {

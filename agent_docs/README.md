@@ -15,9 +15,8 @@
 | 승인된 미래 계약 읽기 | [`contract/planned/`](contract/planned/) |
 | 현재 개발 순서 확인 | [`impl/README.md`](impl/README.md) |
 
-현재 실행 계획은 **Roadmap 4**이지만 active Phase는 없다. **Phase 12 — collision-aware label layout**까지
-완료했고 Phase 13 hierarchy layout은 `Maybe Future`로 이동해 건너뛰었다. Phase 14는 별도 요청 전까지 열지
-않는다. 이 포인터의 machine-readable owner는
+현재 실행 계획은 **Roadmap 4**, **Phase 14 — Basic Chart facade consistency closeout**이다. Phase 12까지
+완료했고 Phase 13 hierarchy layout은 `Maybe Future`로 이동해 건너뛰었다. 이 포인터의 machine-readable owner는
 [`impl/ROADMAP_INDEX.json`](impl/ROADMAP_INDEX.json)이다.
 
 ## 작업별 읽기 경로
