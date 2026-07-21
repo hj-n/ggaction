@@ -5,7 +5,7 @@
 - [x] Roadmap 4 P15-Exit 승인과 closeout
 - [x] Patch version `0.0.5` 추천 및 package/lock/docs version 정렬
 - [x] Changelog와 generated release notes 준비
-- [ ] Final candidate commit의 전체 qualification과 checksum
+- [x] Final candidate commit의 전체 qualification과 checksum
 - [ ] Annotated `v0.0.5` tag 생성
 - [ ] Protected Release workflow dispatch
 - [ ] npm/GitHub Release/Pages 결과 검증
@@ -15,6 +15,24 @@
 `0.0.4`는 이미 공개되었고 Roadmap 4의 surface는 additive capability와 backward-compatible repair다. 현재
 pre-1.0 release sequence와 일치하도록 다음 candidate를 `0.0.5`로 준비한다. Package, lockfile, docs version,
 README status, hard-coded package tests와 changelog가 같은 version을 사용한다.
+
+## Qualification 증거
+
+Package source candidate는 `1e8022bed372ae73ad00a3cbc2bbb5e2e567bd9c`다. 이 문서의 qualification
+checkpoint는 `agent_docs/`에만 검증 결과를 추가하므로 배포 tarball의 내용에는 영향을 주지 않는다. Release
+tag는 이 checkpoint를 포함한 clean `main` HEAD에만 생성한다.
+
+- 전체 테스트: `1,830/1,830` 통과
+- coverage: line `94.63%`, branch `89.95%`, function `98.72%`; critical floor `68/68` 통과
+- Browser Canvas: `47/47` 통과
+- Node PNG: `124/124` 통과; approved gallery `123`, active review `0`
+- 문서: source check `36/36`, 정적 페이지 `110`, 320/390/768px 브라우저 검증 통과
+- action catalog drift, package contents check, consumer installation과 private export rejection 통과
+- package: `ggaction-0.0.5.tgz`, entry `380`, packed `345,048` bytes, unpacked `1,616,242` bytes
+- SHA-256: `9658736bf4b4a16ffea54d462d6776907fcff5ba7e37065e4c8e4a94488e6d33`
+
+검증은 release workflow와 같은 package version에서 수행했으며, generated docs와 package artifact를 다시
+생성해도 tracked worktree가 변하지 않았다.
 
 ## Release 직전 경계
 
