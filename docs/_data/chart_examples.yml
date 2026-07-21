@@ -132,7 +132,7 @@
   home_group: essentials
   home_order: 1.5
 - id: heatmap
-  title: Life expectancy heatmap
+  title: Heatmap
   image: /assets/images/gapminder-life-expectancy-heatmap.png
   alt: Heatmap of life expectancy by country and year with values inside colored cells
   width: 1520
@@ -144,7 +144,7 @@
   summary: Map two discrete fields to cells and a quantitative field to color.
   actions: createHeatmap · createTextMark · encodeText
   tasks: relationship multivariate
-  url: /api/basic-charts/#createheatmap
+  url: /recipes/heatmap/
   recipe_url: /recipes/heatmap/
   home_group: essentials
   home_order: 2.5
@@ -402,7 +402,6 @@
   home_group: coordinates
   home_order: 1
   tutorial_order: 2
-  featured: true
   gallery_featured: true
 - id: polar-guides
   title: Polar guides
@@ -503,7 +502,8 @@
   gallery_featured: true
   url: /tutorials/polar-arcs/#rose-overlays
   home_group: coordinates
-  home_order: 7
+  home_order: 0.75
+  featured: true
 - id: radial-bars
   title: Radial bars
   image: /assets/images/gapminder-radial-bars.png

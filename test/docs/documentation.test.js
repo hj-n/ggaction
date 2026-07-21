@@ -381,7 +381,7 @@ test("keeps the published documentation version aligned with the package", () =>
   const packageJson = JSON.parse(read("package.json"));
   const configVersion = read("docs/_config.yml").match(/^version:\s*(\S+)$/m)?.[1];
   assert.equal(configVersion, packageJson.version);
-  assert.match(read("docs/index.md"), /experimental `\{\{ site\.version \}\}`/);
+  assert.match(read("docs/index.md"), /Experimental \{\{ site\.version \}\}/);
   assert.equal(
     read("README.md").includes(`**Status:** \`${packageJson.version}\``),
     true
@@ -552,6 +552,12 @@ test("routes entry documentation to the canonical example indexes", () => {
     9
   );
   assert.match(read("docs/index.md"), /where: "featured", true/);
+  assert.match(read("docs/index.md"), /toc: false/);
+  assert.match(read("docs/index.md"), /Common chart types/);
+  assert.equal(catalog.get("heatmap").title, "Heatmap");
+  assert.equal(catalog.get("heatmap").url, "/recipes/heatmap/");
+  assert.equal(catalog.get("polar").featured, undefined);
+  assert.equal(catalog.get("rose").featured, true);
   assert.match(gettingStarted, /point color\s+encoding can produce/);
   assert.match(gettingStarted, /examples\/getting-started/);
 });
@@ -825,11 +831,7 @@ test("keeps concise and full LLM documentation synchronized", async () => {
     .replaceAll(".", "\\.");
   assert.match(
     full,
-    new RegExp(
-      "This documentation describes the experimental `" +
-      packageVersion +
-      "`\\s+> release"
-    )
+    new RegExp("Experimental " + packageVersion)
   );
   assert.equal(
     sanitizeMarkdown('<div><strong>Scale</strong><span>maps values</span></div>'),

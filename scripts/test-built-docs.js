@@ -177,6 +177,22 @@ try {
   const response = await desktop.goto(baseUrl, { waitUntil: "networkidle" });
   assert.equal(response.ok(), true);
   assert.equal(await desktop.locator(".docs-topnav a").count(), 4);
+  assert.equal(await desktop.locator('.docs-topnav a[href$="/api/"]').innerText(), "API");
+  assert.equal(await desktop.locator(".docs-page-toc").count(), 0);
+  assert.deepEqual(
+    await desktop.locator(".docs-chart-gallery__title").allInnerTexts(),
+    [
+      "Scatterplot",
+      "Line chart",
+      "Heatmap",
+      "Bar chart",
+      "Histogram",
+      "Regression scatterplot",
+      "Box plot",
+      "Parallel coordinates",
+      "Rose chart"
+    ]
+  );
   assert.equal(
     await desktop.locator(".docs-chart-gallery article").count(),
     expectedFeaturedCount
@@ -253,6 +269,10 @@ try {
     expectedTutorialCount
   );
   await desktop.goto(`${baseUrl}gallery/`, { waitUntil: "networkidle" });
+  assert.deepEqual(
+    await desktop.locator(".docs-breadcrumbs li").allInnerTexts(),
+    ["Docs", "Chart Gallery"]
+  );
   assert.equal(
     await desktop.locator(".docs-chart-gallery article").count(),
     expectedGalleryFeaturedCount
@@ -285,6 +305,10 @@ try {
   await desktop.goto(`${baseUrl}api/basic-charts/#createlineplot`, {
     waitUntil: "networkidle"
   });
+  assert.deepEqual(
+    await desktop.locator(".docs-breadcrumbs li").allInnerTexts(),
+    ["Docs", "Chart API", "Basic Charts"]
+  );
   await assertFragmentPlacement(desktop, "#createlineplot", "desktop direct h2 fragment");
   await desktop.screenshot({
     path: path.join(artifactRoot, "fragment-desktop.png"),

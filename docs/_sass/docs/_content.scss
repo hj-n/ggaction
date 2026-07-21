@@ -51,6 +51,21 @@
   letter-spacing: -0.035em;
 }
 
+.docs-hero-tagline {
+  margin: 1.25rem 0 0.75rem;
+  color: #0f172a;
+  font-size: clamp(1.35rem, 3vw, 1.65rem);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.docs-release-status {
+  margin: 1.25rem 0 1.75rem;
+  color: var(--docs-muted);
+  font-size: 0.84rem;
+}
+
 .docs-content h2 {
   margin-top: 2.4rem;
   padding-top: 0.2rem;

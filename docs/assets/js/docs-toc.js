@@ -1,6 +1,7 @@
 (() => {
   const content = document.querySelector(".docs-content");
   if (!content) return;
+  if (content.dataset.pageToc === "false") return;
 
   const headings = [...content.querySelectorAll(":scope > h2, :scope > h3")]
     .filter(heading => heading.id);

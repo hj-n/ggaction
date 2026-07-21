@@ -1,11 +1,12 @@
 ---
 layout: default
 title: ggaction Documentation
+toc: false
 ---
 
 # ggaction
 
-## A grammar for how charts are made.
+<p class="docs-hero-tagline">A grammar for how charts are made.</p>
 
 Most visualization grammars describe a finished chart. **ggaction** represents
 chart authoring itself as an immutable, traceable sequence of graphical actions.
@@ -15,10 +16,7 @@ Build, inspect, select, and revise charts one meaningful action at a time.
 Start with a complete example, then use the API pages when you need to customize
 one part. The main, extension, and PNG entry points include TypeScript declarations.
 
-> **Release status:** This documentation describes the experimental `{{ site.version }}`
-> release. APIs may change before `1.0.0`; consult the
-> [changelog](https://github.com/ggaction/ggaction/blob/main/CHANGELOG.md) when
-> upgrading.
+<p class="docs-release-status"><strong>Experimental {{ site.version }}</strong> · APIs may change before 1.0.0. Review the <a href="https://github.com/ggaction/ggaction/blob/main/CHANGELOG.md">changelog</a> when upgrading.</p>
 
 ## Start here
 
@@ -37,10 +35,10 @@ one part. The main, extension, and PNG entry points include TypeScript declarati
   </a>
 </div>
 
-## Essential charts
+## Common chart types
 
-Start with the most common Cartesian relationships before moving into
-statistical layers or alternate coordinates.
+Start with common Cartesian charts for relationships, comparisons, trends,
+and distributions.
 
 <div class="docs-chart-gallery">
   {% assign essential_charts = site.data.chart_examples | where: "home_group", "essentials" | where: "featured", true | sort: "home_order" %}
@@ -49,7 +47,7 @@ statistical layers or alternate coordinates.
   {% endfor %}
 </div>
 
-## Statistical and layered charts
+## Statistics and uncertainty
 
 Compose ordinary marks and derived data into higher-level statistical views.
 
@@ -60,10 +58,10 @@ Compose ordinary marks and derived data into higher-level statistical views.
   {% endfor %}
 </div>
 
-## Coordinate extensions
+## Alternative coordinates
 
-Use Polar coordinates when angle and radial distance express the relationship
-more directly than Cartesian x and y.
+Use parallel axes or angle and radial distance when Cartesian x and y are not
+the clearest structure for the comparison.
 
 <div class="docs-chart-gallery docs-chart-gallery--secondary">
   {% assign coordinate_charts = site.data.chart_examples | where: "home_group", "coordinates" | where: "featured", true | sort: "home_order" %}
