@@ -14,13 +14,7 @@ import {
   needsCanvasScaleRematerialization,
   planScaleGuideRematerialization
 } from "./scaleGuideDependencies.js";
-
-function hasTitle(program) {
-  return (
-    program.semanticSpec.title.text !== undefined &&
-    program.titleConfig !== undefined
-  );
-}
+import { planLayoutRematerialization } from "./layout.js";
 
 function layerScaleIds(layer) {
   return [
@@ -66,7 +60,7 @@ export function planCanvasRematerialization(program) {
   if (hasMaterializedLegend(program)) {
     guides.push({ op: "rematerializeLegend" });
   }
-  const layout = hasTitle(program) ? [{ op: "rematerializeTitle" }] : [];
+  const layout = planLayoutRematerialization(program);
   return buildMaterializationPlan({ scales, marks, guides, layout });
 }
 

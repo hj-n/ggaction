@@ -13,6 +13,8 @@ import {
 } from "../../src/materialization/encodings.js";
 import { planDensityRematerialization } from
   "../../src/materialization/density.js";
+import { planLayoutRematerialization } from
+  "../../src/materialization/layout.js";
 
 test("executes materialization plans in order and deduplicates equivalent steps", () => {
   const calls = [];
@@ -126,6 +128,21 @@ test("builds one deterministic scale, mark, guide, layout, highlight plan", () =
     { op: "guide" },
     { op: "layout" },
     { op: "highlight" }
+  ]);
+});
+
+test("plans registered layout consumers without hard-coded planner branches", () => {
+  const untitled = {
+    semanticSpec: { title: {} }
+  };
+  const configured = {
+    semanticSpec: { title: { text: "Chart" } },
+    titleConfig: { align: "center" }
+  };
+
+  assert.deepEqual(planLayoutRematerialization(untitled), []);
+  assert.deepEqual(planLayoutRematerialization(configured), [
+    { op: "rematerializeTitle" }
   ]);
 });
 
