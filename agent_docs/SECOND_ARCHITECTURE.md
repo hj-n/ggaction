@@ -1,5 +1,9 @@
 # `ggaction` Second Architecture
 
+> 작업에 필요한 section만 빠르게 찾으려면
+> [`architecture/README.md`](architecture/README.md)의 작업별 경로에서 시작한다. 이 파일은 현재
+> macro-architecture의 canonical 원문으로 유지한다.
+
 ## 문서의 위치
 
 이 문서는 `ggaction`의 초기 차트 구현 단계가 끝난 뒤 실제 코드에서 확립된 현재
@@ -1245,7 +1249,7 @@ deferred scale application과 existing incomplete mark 복구도 같은 registry
 각 semantic mark type은 자신이 concrete output을 만들 준비가 되었는지를 mark
 materialization policy에 정의한다.
 
-### Bar
+### Bar geometry와 layout policy
 
 Bar는 mark type만으로 geometry를 결정하지 않는다. `grammar/bars/policy.js`가 현재
 semantic encoding을 하나의 canonical grain으로 분류한다.
@@ -1340,7 +1344,7 @@ planned contract이므로 시각 구현 승인을 받기 전에는 지원하지 
 - Composite cap은 ordinary x/y anchor encoding과 graphical `fixedSpan` config를 결합한다. Canvas 또는
   scale 변경 시 span을 다시 concrete endpoint로 계산하며 renderer는 cap role이나 pixel span을 모른다.
 
-### Bar
+### Aggregate bar provenance와 completeness
 
 - Histogram은 binned x, count y, zero stack이 함께 있어야 한다.
 - Grouped bar는 한 discrete category axis, perpendicular aggregate measure axis, null stack,

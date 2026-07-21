@@ -13,6 +13,11 @@ function roadmap(id) {
   return roadmapIndex.roadmaps.find(entry => entry.id === id);
 }
 
+function headings(source) {
+  return [...source.matchAll(/^(#{2,4}) (.+)$/gmu)]
+    .map(match => `${match[1]} ${match[2].trim()}`);
+}
+
 test("keeps one machine-readable active roadmap and phase", () => {
   assert.equal(roadmapIndex.version, 1);
   assert.equal(new Set(roadmapIndex.roadmaps.map(entry => entry.id)).size,
@@ -75,5 +80,34 @@ test("labels current and historical roadmap roots without rewriting history", ()
     } else {
       assert.match(source, /ROADMAP_INDEX\.json/, entry.id);
     }
+  }
+});
+
+test("routes architecture work without duplicating the canonical record", () => {
+  const architecture = readFileSync(
+    path.join(agentDocsRoot, "SECOND_ARCHITECTURE.md"),
+    "utf8"
+  );
+  const map = readFileSync(
+    path.join(agentDocsRoot, "architecture", "README.md"),
+    "utf8"
+  );
+  const architectureHeadings = headings(architecture);
+
+  assert.equal(new Set(architectureHeadings).size, architectureHeadings.length);
+  assert.match(architecture, /architecture\/README\.md/);
+  assert.match(map, /SECOND_ARCHITECTURE\.md/);
+  for (const route of [
+    "Public package boundary",
+    "ChartProgram",
+    "semanticSpec",
+    "graphicSpec",
+    "Action과 trace",
+    "materialization",
+    "Canvas renderer",
+    "Source ownership",
+    "Test architecture"
+  ]) {
+    assert.match(map, new RegExp(route), route);
   }
 });
