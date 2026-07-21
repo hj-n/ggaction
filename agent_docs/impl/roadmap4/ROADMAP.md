@@ -1,7 +1,8 @@
 # Roadmap 4 — Native Ownership and Advanced Static Charts
 
-> **문서 상태 — 현재 실행 계획.** Phase 15 public docs verification와 release readiness를 진행한다. Active Phase
-> 포인터는 [`ROADMAP_INDEX.json`](../ROADMAP_INDEX.json)이 소유하며, 완료되거나 skipped인 기록도 이 문서에 보존한다.
+> **문서 상태 — 현재 실행 계획.** Phase 0~15 실행과 모든 approval Gate를 완료했다. 다음 roadmap이 열리기
+> 전까지 active Phase는 없으며, 포인터는 [`ROADMAP_INDEX.json`](../ROADMAP_INDEX.json)이 소유한다. 현재
+> observable behavior는 [`ACTION_INDEX.json`](../../contract/ACTION_INDEX.json)에서 확인한다.
 
 ## 목표
 
@@ -138,7 +139,7 @@ existing createBoxPlot({ ... })
 | 12 | completed | P-005 label layout; P12-A/P12-B/P12-Exit 승인 완료 |
 | 13 | skipped | P-007 hierarchy layout을 `Maybe Future`로 이동; public/API 구현 없음 |
 | 14 | completed | P14-A/P14-B/P14-Exit 승인; 8-facade consistency closeout 완료 |
-| 15 | in-progress | P15-A 승인; release readiness 검증 완료; P15-Exit review 대기 |
+| 15 | completed | P15-A/P15-Exit 승인; public docs와 release readiness closeout 완료 |
 
 ## 승인 Gate 운영
 

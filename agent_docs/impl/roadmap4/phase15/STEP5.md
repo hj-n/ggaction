@@ -6,7 +6,7 @@
 - [x] Current commit, version와 canonical tarball SHA-256 report
 - [x] No version/tag/publish/deploy boundary 확인
 - [x] P15-Exit remote checkpoint 준비
-- [ ] P15-Exit 사용자 승인
+- [x] P15-Exit 사용자 승인
 
 P15-A 승인 전에는 시작하지 않는다.
 

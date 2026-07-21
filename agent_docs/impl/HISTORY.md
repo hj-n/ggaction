@@ -34,10 +34,10 @@ editing을 추가했다. 외부 평가 안정화와 organization transfer를 거
 
 ## Roadmap 4 — Native Ownership and Advanced Static Charts
 
-현재 실행 중인 Roadmap이다. Runtime bug 안정화, Basic Chart facade, jitter, window/2D bin, gradient
+현재 실행 계획 owner이며 Phase 0~15를 완료했다. Runtime bug 안정화, Basic Chart facade, jitter, window/2D bin, gradient
 distribution, ordered path, categorical density, horizon, parallel coordinates, collision-aware label layout과
-facade consistency를 완료했다. Phase 15는 public docs verification과 release-readiness 검증을 마치고 최종
-exit review를 기다린다.
+facade consistency를 완료했다. Phase 15에서 public docs verification과 release-readiness 검증을 닫았으며,
+다음 roadmap이 열리기 전까지 active Phase는 없다.
 
 - 현재 계획: [`roadmap4/ROADMAP.md`](roadmap4/ROADMAP.md)
 

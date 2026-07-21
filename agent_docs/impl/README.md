@@ -4,7 +4,7 @@
 
 ## 현재 작업
 
-- [`roadmap4/ROADMAP.md`](roadmap4/ROADMAP.md) — **active**, Phase 15 public docs verification와 release readiness
+- [`roadmap4/ROADMAP.md`](roadmap4/ROADMAP.md) — **active owner**, Phase 15까지 완료; active Phase 없음
 - [`ROADMAP_INDEX.json`](ROADMAP_INDEX.json) — Roadmap status, nullable active Phase와 마지막 완료 Phase의 machine-readable owner
 
 ## 개발 이력

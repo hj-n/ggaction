@@ -3,11 +3,12 @@
 ## 상태
 
 - Gate: `P15-Exit`
-- 상태: `ready-for-review`
+- 상태: `approved`
+- 승인: `2026-07-21` 사용자 명시 승인 (`승인해. release 직전으로 준비`)
 - Candidate checkpoint: `6f9411c` (`approve phase 15 public docs gate`)
 - Package: `ggaction@0.0.4`
 - Remote: `origin/main`
-- 승인 전 차단: Phase 15와 Roadmap 4 completed 전환
+- 승인 결과: Phase 15와 Roadmap 4 completed 전환, release preparation 허용
 
 ## 완료 범위
 
@@ -46,3 +47,6 @@ Full command/evidence detail: [RELEASE_READINESS.md](./RELEASE_READINESS.md).
 2. Candidate commit/version/tarball checksum과 누적 검증을 release-ready evidence로 채택
 3. Phase 15와 Roadmap 4를 completed로 닫고 active Phase를 비우는 것 승인
 4. 실제 publish/deploy는 별도 요청 전까지 수행하지 않는 경계 확인
+
+사용자 승인으로 위 네 항목을 확정했다. Release version/tag/publish/deploy는 별도 release-candidate
+체크포인트가 소유한다.
