@@ -1,9 +1,4 @@
 import { action } from "../../../core/action.js";
-import {
-  deriveLineSeries,
-  deriveLineSeriesFieldValues
-} from "../../../grammar/lineSeries.js";
-import { mapContinuousScaleValues, mapOrdinalValues } from "../../../grammar/scales/index.js";
 import { validateUserId } from "../../../core/identifiers.js";
 import {
   validateNonEmptyString,
@@ -22,24 +17,17 @@ import {
 import { DEFAULT_COLORS } from "../../../theme/defaults.js";
 import { findDataset } from "../../../selectors/datasets.js";
 import { findLayer, resolveEligibleLayer } from "../../../selectors/layers.js";
-import {
-  buildCurvePathCommands,
-  validateCurveInterpolation
-} from "../../../grammar/curveCommands.js";
-import { buildPolarLinePathCommands } from "../../../grammar/polarLineCommands.js";
-import { resolvePolarFrame } from "../../../grammar/polar.js";
+import { validateCurveInterpolation } from "../../../grammar/curveCommands.js";
 import { resolveGraphicBounds } from "../../../layout/canvas.js";
-import { normalizeStrokeDashPattern } from "../../../grammar/scales/index.js";
 import { canMaterializeLine } from "../../../materialization/marks/index.js";
 import { resolveMarkGraphicPlacement } from
   "../../../materialization/graphicHierarchy.js";
 import { rematerializeHighlightBaseline } from "../lifecycle.js";
+import { validateParallelRows } from "../../../grammar/parallelCoordinates.js";
 import {
-  materializeParallelRows,
-  validateParallelRows
-} from "../../../grammar/parallelCoordinates.js";
-import { mapScaleConsumerValues } from
-  "../../../materialization/scales/map.js";
+  resolveParallelLineMaterialization,
+  resolvePositionedLineMaterialization
+} from "./materialize.js";
 
 const DEFAULT_LINE_STROKE = DEFAULT_COLORS.mark;
 const DEFAULT_LINE_WIDTH = 2;
@@ -220,59 +208,37 @@ const rematerializeLineMark = action(
           resolved = resolved.rematerializeScale({ id: scaleId });
         }
       }
-      const items = materializeParallelRows(
-        dataset.values,
-        parallel.dimensions,
-        resolved.resolvedScales,
-        resolveGraphicBounds(resolved),
-        parallel
-      );
-      const rows = items.map(item => dataset.values[item.sourceRowIndex]);
-      const mapAppearance = (channel, fallback) => {
-        const encoding = layer.encoding?.[channel];
-        if (encoding?.datum !== undefined) {
-          return items.map(() => channel === "strokeDash"
-            ? normalizeStrokeDashPattern(encoding.datum)
-            : encoding.datum);
-        }
-        if (encoding?.scale === undefined) return items.map(fallback);
-        return mapScaleConsumerValues(
-          rows.map(row => row[encoding.field]),
-          resolved.resolvedScales[encoding.scale],
-          channel
-        );
-      };
-      const strokes = mapAppearance(
-        "color",
-        (_, index) => config.stroke ??
-          existingChildren[index]?.properties.stroke ?? DEFAULT_LINE_STROKE
-      );
-      const strokeWidths = mapAppearance(
-        "strokeWidth",
-        (_, index) => config.strokeWidth ??
-          existingChildren[index]?.properties.strokeWidth ?? DEFAULT_LINE_WIDTH
-      );
-      const strokeDashes = mapAppearance(
-        "strokeDash",
-        (_, index) => existingChildren[index]?.properties.strokeDash ?? []
-      );
+      const materialization = resolveParallelLineMaterialization({
+        rows: dataset.values,
+        parallel,
+        layer,
+        resolvedScales: resolved.resolvedScales,
+        bounds: resolveGraphicBounds(resolved),
+        config,
+        existingChildren,
+        defaults: { stroke: DEFAULT_LINE_STROKE, strokeWidth: DEFAULT_LINE_WIDTH }
+      });
       let next = resolved
-        .editGraphics({ target: id, property: "length", value: items.length })
+        .editGraphics({
+          target: id,
+          property: "length",
+          value: materialization.commands.length
+        })
         .editGraphics({
           target: id,
           property: "commands",
-          value: items.map(item => item.commands)
+          value: materialization.commands
         })
-        .editGraphics({ target: id, property: "stroke", value: strokes })
+        .editGraphics({ target: id, property: "stroke", value: materialization.strokes })
         .editGraphics({
           target: id,
           property: "strokeWidth",
-          value: strokeWidths
+          value: materialization.strokeWidths
         })
         .editGraphics({
           target: id,
           property: "strokeDash",
-          value: strokeDashes
+          value: materialization.strokeDashes
         });
       if (config.opacity !== undefined) {
         next = next.editGraphics({
@@ -313,89 +279,30 @@ const rematerializeLineMark = action(
       }
     }
 
-    const derived = deriveLineSeries(
-      dataset.values,
+    const materialization = resolvePositionedLineMaterialization({
+      rows: dataset.values,
       layer,
-      polar
-        ? { thetaDomain: resolved.resolvedScales[thetaScaleId].domain }
-        : undefined
-    );
-    const commands = polar
-      ? derived.series.map(series => buildPolarLinePathCommands({
-          series: series.values,
-          thetaFieldType: derived.thetaFieldType,
-          thetaScale: resolved.resolvedScales[thetaScaleId],
-          radiusScale: resolved.resolvedScales[radiusScaleId],
-          frame: resolvePolarFrame(resolveGraphicBounds(resolved)),
-          closed: config.closed ?? false
-        }))
-      : derived.series.map(series => {
-          const x = mapContinuousScaleValues(
-            series.values.map(value => value.x),
-            resolved.resolvedScales[xScaleId]
-          );
-          const y = mapContinuousScaleValues(
-            series.values.map(value => value.y),
-            resolved.resolvedScales[yScaleId]
-          );
-
-          return buildCurvePathCommands(
-            series.values.map((_, index) => ({ x: x[index], y: y[index] })),
-            config.curve ?? "linear"
-          );
-        });
-    const colorEncoding = layer.encoding?.color;
-    const dashEncoding = layer.encoding?.strokeDash;
-    const strokes = colorEncoding?.scale === undefined
-      ? commands.map(
-          (_, index) =>
-            config.stroke ??
-            existingChildren[index]?.properties.stroke ??
-            DEFAULT_LINE_STROKE
-        )
-      : mapOrdinalValues(
-          derived.series.map(series => series.key[colorEncoding.field]),
-          resolved.resolvedScales[colorEncoding.scale].domain,
-          resolved.resolvedScales[colorEncoding.scale].range
-        );
-    const widthEncoding = layer.encoding?.strokeWidth;
-    const strokeWidths = widthEncoding?.scale === undefined
-      ? commands.map(
-          (_, index) =>
-            config.strokeWidth ??
-            existingChildren[index]?.properties.strokeWidth ??
-            DEFAULT_LINE_WIDTH
-        )
-      : mapContinuousScaleValues(
-          deriveLineSeriesFieldValues(
-            dataset.values,
-            layer,
-            derived,
-            widthEncoding.field
-          ),
-          resolved.resolvedScales[widthEncoding.scale]
-        );
-    const strokeDashes = dashEncoding?.datum !== undefined
-      ? commands.map(() => normalizeStrokeDashPattern(dashEncoding.datum))
-      : dashEncoding?.scale === undefined
-      ? commands.map(
-          (_, index) => existingChildren[index]?.properties.strokeDash ?? []
-        )
-      : mapOrdinalValues(
-          derived.series.map(series => series.key[dashEncoding.field]),
-          resolved.resolvedScales[dashEncoding.scale].domain,
-          resolved.resolvedScales[dashEncoding.scale].range
-        );
+      resolvedScales: resolved.resolvedScales,
+      bounds: resolveGraphicBounds(resolved),
+      config,
+      existingChildren,
+      polar,
+      defaults: { stroke: DEFAULT_LINE_STROKE, strokeWidth: DEFAULT_LINE_WIDTH }
+    });
 
     let next = resolved
-      .editGraphics({ target: id, property: "length", value: commands.length })
-      .editGraphics({ target: id, property: "commands", value: commands })
-      .editGraphics({ target: id, property: "stroke", value: strokes })
-      .editGraphics({ target: id, property: "strokeWidth", value: strokeWidths })
+      .editGraphics({
+        target: id,
+        property: "length",
+        value: materialization.commands.length
+      })
+      .editGraphics({ target: id, property: "commands", value: materialization.commands })
+      .editGraphics({ target: id, property: "stroke", value: materialization.strokes })
+      .editGraphics({ target: id, property: "strokeWidth", value: materialization.strokeWidths })
       .editGraphics({
         target: id,
         property: "strokeDash",
-        value: strokeDashes
+        value: materialization.strokeDashes
       });
     if (config.opacity !== undefined) {
       next = next.editGraphics({

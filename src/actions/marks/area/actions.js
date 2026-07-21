@@ -6,12 +6,6 @@ import {
   validateUnitInterval
 } from "../../../core/validation.js";
 import {
-  deriveAreaSeries,
-  deriveDensityAreaSeries,
-  layoutDensityAreaSeries
-} from "../../../grammar/areaSeries.js";
-import { mapContinuousScaleValues, mapOrdinalValues } from "../../../grammar/scales/index.js";
-import {
   assertMarkAvailable,
   applyLayeredMarkInheritance,
   materializeInheritedMark,
@@ -23,19 +17,14 @@ import {
 import { DEFAULT_COLORS } from "../../../theme/defaults.js";
 import { findDataset } from "../../../selectors/datasets.js";
 import { findLayer } from "../../../selectors/layers.js";
-import {
-  buildAreaCurvePathCommands,
-  validateCurveInterpolation
-} from "../../../grammar/curveCommands.js";
-import { buildLinearPathCommands } from "../../../grammar/pathCommands.js";
+import { validateCurveInterpolation } from "../../../grammar/curveCommands.js";
 import { resolveEligibleLayer } from "../../../selectors/layers.js";
 import { canMaterializeArea } from "../../../materialization/marks/index.js";
 import { findUpstreamTransform } from "../../../materialization/dataProvenance.js";
 import { resolveMarkGraphicPlacement } from
   "../../../materialization/graphicHierarchy.js";
 import { rematerializeHighlightBaseline } from "../lifecycle.js";
-import { buildCategoricalDensityPaths } from
-  "../../../grammar/categoricalDensity.js";
+import { resolveAreaMaterialization } from "./materialize.js";
 
 const CREATE_OPTIONS = Object.freeze([
   "id", "data", "fill", "opacity", "stroke", "strokeWidth", "curve"
@@ -181,15 +170,7 @@ const rematerializeAreaMark = action(
           : `Density area mark "${id}" requires x and y scales.`
       );
     }
-    const rawDerived = densityTransform === undefined
-      ? deriveAreaSeries(dataset.values, layer)
-      : deriveDensityAreaSeries(dataset.values, layer, densityTransform);
     const colorEncoding = layer.encoding?.color;
-    const layout = colorEncoding?.layout ?? "overlay";
-    const categoricalDensity = densityTransform?.placement?.type === "category";
-    const derived = densityTransform === undefined || categoricalDensity
-      ? rawDerived
-      : layoutDensityAreaSeries(rawDerived, layout);
     let resolved = args.scales === false
       ? this
       : this
@@ -198,130 +179,14 @@ const rematerializeAreaMark = action(
     if (args.scales !== false && colorEncoding?.scale !== undefined) {
       resolved = resolved.rematerializeScale({ id: colorEncoding.scale });
     }
-    const xScale = resolved.resolvedScales[xScaleId];
-    const yScale = resolved.resolvedScales[yScaleId];
-    const densityScale = densityTransform === undefined || categoricalDensity
-      ? undefined
-      : derived.mode === "y-density" ? yScale : xScale;
-    if (
-      densityScale !== undefined &&
-      (densityScale.domain[0] > 0 || densityScale.domain[1] < 0)
-    ) {
-      throw new Error(`Density area mark "${id}" requires a scale domain containing zero.`);
-    }
-    const curve = this.markConfigs[id]?.curve ?? "linear";
-    const paths = categoricalDensity
-      ? buildCategoricalDensityPaths(derived, {
-          categoryScale: densityTransform.placement.channel === "x"
-            ? xScale
-            : yScale,
-          valueScale: densityTransform.placement.channel === "x"
-            ? yScale
-            : xScale,
-          curve
-        })
-      : derived.series.map(series => {
-      if (densityTransform === undefined && derived.orientation === "horizontal") {
-        const y = mapContinuousScaleValues(
-          series.values.map(value => value.y),
-          yScale
-        );
-        const lower = mapContinuousScaleValues(
-          series.values.map(value => value.x),
-          xScale
-        );
-        const upper = mapContinuousScaleValues(
-          series.values.map(value => value.x2),
-          xScale
-        );
-        return buildAreaCurvePathCommands(
-          y.map((value, index) => ({ x: lower[index], y: value })),
-          y.map((value, index) => ({ x: upper[index], y: value })),
-          curve,
-          { independentAxis: "y" }
-        );
-      }
-      if (densityTransform !== undefined && derived.mode === "x-density") {
-        const y = mapContinuousScaleValues(
-          series.values.map(value => value.y),
-          yScale
-        );
-        const upper = mapContinuousScaleValues(
-          series.values.map(value => value.x),
-          xScale
-        );
-        const baseline = mapContinuousScaleValues(
-          [0],
-          densityScale
-        )[0];
-        if (curve === "linear") {
-          return buildLinearPathCommands([
-            { x: baseline, y: y[0] },
-            ...y.map((value, index) => ({ x: upper[index], y: value })),
-            { x: baseline, y: y.at(-1) }
-          ], { close: true });
-        }
-        return buildAreaCurvePathCommands(
-          y.map(value => ({ x: baseline, y: value })),
-          y.map((value, index) => ({ x: upper[index], y: value })),
-          curve,
-          { independentAxis: "y" }
-        );
-      }
-      const x = mapContinuousScaleValues(
-        series.values.map(value => value.x),
-        xScale
-      );
-      const lowerValues = densityTransform === undefined
-        ? series.values.map(value => value.y)
-        : derived.mode === "y-density"
-          ? series.values.map(value => value.lower)
-          : series.values.map(value => value.y);
-      const lower = mapContinuousScaleValues(
-        lowerValues,
-        yScale
-      );
-      const upperValues = densityTransform === undefined
-        ? series.values.map(value => value.y2)
-        : series.values.map(value => value.upper);
-      const upper = mapContinuousScaleValues(
-        upperValues,
-        yScale
-      );
-      if (densityTransform !== undefined && layout === "overlay") {
-        const baseline = mapContinuousScaleValues(
-          [0],
-          yScale
-        )[0];
-        if (curve === "linear") {
-          return buildLinearPathCommands([
-            { x: x[0], y: baseline },
-            ...x.map((value, index) => ({ x: value, y: upper[index] })),
-            { x: x.at(-1), y: baseline }
-          ], { close: true });
-        }
-        return buildAreaCurvePathCommands(
-          x.map(value => ({ x: value, y: baseline })),
-          x.map((value, index) => ({ x: value, y: upper[index] })),
-          curve
-        );
-      }
-      return buildAreaCurvePathCommands(
-        x.map((value, index) => ({ x: value, y: lower[index] })),
-        x.map((value, index) => ({ x: value, y: upper[index] })),
-        curve
-      );
-      });
     const config = this.markConfigs[id];
-    const fills = config.errorBand?.fill !== undefined
-      ? paths.map(() => config.errorBand.fill)
-      : colorEncoding?.scale === undefined
-      ? paths.map(() => config.fill)
-      : mapOrdinalValues(
-          derived.series.map(series => series.key[colorEncoding.field]),
-          resolved.resolvedScales[colorEncoding.scale].domain,
-          resolved.resolvedScales[colorEncoding.scale].range
-        );
+    const { paths, fills } = resolveAreaMaterialization({
+      rows: dataset.values,
+      layer,
+      densityTransform,
+      resolvedScales: resolved.resolvedScales,
+      config
+    });
     const existingChildren = resolved.graphicSpec.objects[id].items ?? [];
     const hasOutline = config.stroke !== undefined || config.strokeFromFill === true;
     const removesOutline = !hasOutline && existingChildren.some(
