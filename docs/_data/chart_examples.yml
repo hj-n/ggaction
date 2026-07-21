@@ -219,7 +219,7 @@
   home_group: statistical
   home_order: 1
   tutorial_order: 7
-  recipe_order: 5
+  recipe_order: 5.5
   featured: true
 - id: horizon
   title: Horizon chart
@@ -343,7 +343,6 @@
   featured: true
 - id: polar
   title: Polar points
-  title: Polar points
   image: /assets/images/cars-polar-scatterplot.png
   alt: Cars Polar scatterplot using acceleration angle and horsepower radius
   width: 1040
@@ -420,7 +419,7 @@
   url: /tutorials/polar-arcs/
   home_group: coordinates
   home_order: 5
-  tutorial_order: 4
+  tutorial_order: 3.5
 - id: weighted-donut
   title: Weighted donut chart
   image: /assets/images/gapminder-population-donut.png

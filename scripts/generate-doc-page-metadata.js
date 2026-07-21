@@ -2,6 +2,8 @@ import { access, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { readDocChartCatalog } from "./doc-chart-catalog.js";
+
 const root = fileURLToPath(new URL("../", import.meta.url));
 const docsRoot = path.join(root, "docs");
 const pagesFile = path.join(docsRoot, "_data/pages.yml");
@@ -17,10 +19,7 @@ function registry(source) {
 }
 
 function charts(source) {
-  return new Map([...source.matchAll(/^- id:\s+([a-z][a-z0-9-]*)\n((?: {2}.+\n?)+)/gm)]
-    .map(match => [match[1], Object.fromEntries([
-      ...match[2].matchAll(/^ {2}([a-z_]+):\s*(.+)$/gm)
-    ].map(property => [property[1], property[2]]))]));
+  return new Map(readDocChartCatalog(source).map(chart => [chart.id, chart]));
 }
 
 async function pathForUrl(url) {

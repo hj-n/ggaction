@@ -32,6 +32,10 @@ import {
 import {
   inspectDocsEnvironment
 } from "../../scripts/check-docs-environment.js";
+import {
+  parseDocChartCatalog,
+  readDocChartCatalog
+} from "../../scripts/doc-chart-catalog.js";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const docsRoot = path.join(root, "docs");
@@ -81,14 +85,8 @@ function pageRegistry() {
 }
 
 function chartExampleCatalog() {
-  const source = read("docs/_data/chart_examples.yml");
-  return new Map([...source.matchAll(/^- id:\s+([a-z][a-z0-9-]*)\n((?: {2}.+\n?)+)/gm)]
-    .map(match => {
-      const values = Object.fromEntries([...match[2].matchAll(
-        /^ {2}([a-z_]+):\s*(.+)$/gm
-      )].map(property => [property[1], property[2]]));
-      return [match[1], { id: match[1], ...values }];
-    }));
+  return new Map(readDocChartCatalog(read("docs/_data/chart_examples.yml"))
+    .map(chart => [chart.id, chart]));
 }
 
 function headingIds(markdown) {
@@ -200,6 +198,36 @@ test("keeps navigation and page order complete", async () => {
   assert.equal((layout.match(/class="docs-topnav"[\s\S]*?<\/nav>/)?.[0]
     .match(/<a /g) ?? []).length, 4);
   assert.match(layout, /'\/recipes\/' \| relative_url/);
+});
+
+test("keeps the chart-example catalog strict and routable", async () => {
+  const source = read("docs/_data/chart_examples.yml");
+  const catalog = readDocChartCatalog(source);
+  const pageUrls = new Map(
+    (await files(docsRoot)).filter(isDocumentationMarkdown)
+      .map(file => [prettyUrl(file), file])
+  );
+
+  assert.equal(catalog.length >= 20, true);
+  assert.throws(
+    () => parseDocChartCatalog("- id: points\n  title: Points\n  title: Again\n"),
+    /repeats property "title"/
+  );
+  for (const chart of catalog) {
+    for (const key of ["url", "recipe_url"]) {
+      if (chart[key] === undefined) continue;
+      const [url, fragment] = chart[key].split("#");
+      const file = pageUrls.get(url);
+      assert.notEqual(file, undefined, `${chart.id} ${key} route`);
+      if (fragment) {
+        assert.equal(
+          headingIds(readFileSync(file, "utf8")).has(fragment),
+          true,
+          `${chart.id} ${key} fragment`
+        );
+      }
+    }
+  }
 });
 
 test("keeps every Markdown page structurally readable", async () => {
@@ -445,7 +473,7 @@ test("routes entry documentation to the canonical example indexes", () => {
   assert.match(read("docs/recipes/index.md"), /example\.recipe_order/);
   assert.match(read("docs/gallery.md"), /data-gallery-filter="statistical"/);
   assert.equal(
-    [...catalog.values()].filter(example => example.featured === "true").length,
+    [...catalog.values()].filter(example => example.featured === true).length,
     9
   );
   assert.match(read("docs/index.md"), /where: "featured", true/);
