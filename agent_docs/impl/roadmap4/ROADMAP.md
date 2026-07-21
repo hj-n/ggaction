@@ -1,5 +1,8 @@
 # Roadmap 4 — Native Ownership and Advanced Static Charts
 
+> **문서 상태 — 현재 실행 계획.** 현재 Phase 포인터는
+> [`ROADMAP_INDEX.json`](../ROADMAP_INDEX.json)이 소유하며, 완료된 Phase의 기록도 이 문서에 보존한다.
+
 ## 목표
 
 Roadmap 4는 `ggaction@0.0.4` 외부 평가에서 확인된 기능 제안 13개, runtime bug 3개,

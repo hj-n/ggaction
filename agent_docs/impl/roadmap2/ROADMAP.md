@@ -1,5 +1,8 @@
 # Roadmap 2 — Planned Contract Completion and Initial Release
 
+> **문서 상태 — 완료된 실행 기록.** 당시 계획과 결정을 보존한다. 현재 동작은
+> [`ACTION_INDEX.json`](../../contract/ACTION_INDEX.json)과 current contract를 기준으로 판단한다.
+
 ## 목표
 
 Roadmap 2는 `agent_docs/contract/ACTION_INDEX.json`에서 Planned로 승인된 direct action과

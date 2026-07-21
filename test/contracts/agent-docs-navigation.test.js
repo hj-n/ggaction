@@ -62,3 +62,18 @@ test("keeps the active phase aligned with the roadmap status table", () => {
   );
   assert.match(source, new RegExp(`^## Phase ${roadmapIndex.activePhase} —`, "m"));
 });
+
+test("labels current and historical roadmap roots without rewriting history", () => {
+  for (const entry of roadmapIndex.roadmaps) {
+    const source = readFileSync(path.join(root, entry.file), "utf8");
+    const expected = entry.status === "active"
+      ? "문서 상태 — 현재 실행 계획."
+      : "문서 상태 — 완료된 실행 기록.";
+    assert.match(source, new RegExp(expected), entry.id);
+    if (entry.status === "completed") {
+      assert.match(source, /ACTION_INDEX\.json/, entry.id);
+    } else {
+      assert.match(source, /ROADMAP_INDEX\.json/, entry.id);
+    }
+  }
+});

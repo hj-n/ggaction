@@ -1,5 +1,8 @@
 # Roadmap 1 — Initial Chart Foundations
 
+> **문서 상태 — 완료된 실행 기록.** 당시 계획과 결정을 보존한다. 현재 동작은
+> [`ACTION_INDEX.json`](../../contract/ACTION_INDEX.json)과 current contract를 기준으로 판단한다.
+
 ## 목적
 
 Roadmap 1은 primitive action부터 reusable chart-authoring API까지 구축한 최초 여섯 Phase의
