@@ -556,6 +556,21 @@ test("routes entry documentation to the canonical example indexes", () => {
   assert.match(gettingStarted, /examples\/getting-started/);
 });
 
+test("keeps the README and documentation home positioning aligned", () => {
+  const readme = read("README.md").replace(/\s+/g, " ");
+  const home = read("docs/index.md").replace(/\s+/g, " ");
+  const messages = [
+    "A grammar for how charts are made.",
+    "Most visualization grammars describe a finished chart. **ggaction** represents chart authoring itself as an immutable, traceable sequence of graphical actions.",
+    "Build, inspect, select, and revise charts one meaningful action at a time."
+  ];
+
+  for (const message of messages) {
+    assert.equal(readme.includes(message), true, `README is missing: ${message}`);
+    assert.equal(home.includes(message), true, `documentation home is missing: ${message}`);
+  }
+});
+
 test("keeps complete tutorial programs portable to package consumers", () => {
   const tutorials = {
     "scatterplot": "cars",

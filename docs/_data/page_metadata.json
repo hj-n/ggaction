@@ -1,7 +1,7 @@
 {
   "/": {
     "title": "Overview",
-    "description": "Build charts as immutable, traceable action programs. Start with a complete example, then use the API pages when you need to customize one part."
+    "description": "Most visualization grammars describe a finished chart. ggaction represents chart authoring itself as an immutable, traceable sequence of graphical actions."
   },
   "/getting-started/": {
     "title": "Getting Started",

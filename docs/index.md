@@ -3,11 +3,17 @@ layout: default
 title: ggaction Documentation
 ---
 
-# ggaction Documentation
+# ggaction
 
-Build charts as immutable, traceable action programs. Start with a complete
-example, then use the API pages when you need to customize one part.
-The main, extension, and PNG entry points include TypeScript declarations.
+## A grammar for how charts are made.
+
+Most visualization grammars describe a finished chart. **ggaction** represents
+chart authoring itself as an immutable, traceable sequence of graphical actions.
+
+Build, inspect, select, and revise charts one meaningful action at a time.
+
+Start with a complete example, then use the API pages when you need to customize
+one part. The main, extension, and PNG entry points include TypeScript declarations.
 
 > **Release status:** This documentation describes the experimental `{{ site.version }}`
 > release. APIs may change before `1.0.0`; consult the
