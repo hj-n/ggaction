@@ -5,7 +5,7 @@
 - [x] Phase 11과 deterministic text/bounds 기준선 확인
 - [x] P-005 candidate API, state ownership과 failure policy 설계
 - [x] Independent oracle과 Gapminder primitive visual
-- [ ] P12-A 사용자 승인
+- [x] P12-A 사용자 승인
 - [ ] Production grammar, action과 rematerialization lifecycle
 - [ ] P12-B public visual/lifecycle 승인
 - [ ] Current contract, declarations, docs와 cumulative closeout
@@ -76,7 +76,7 @@ Existing labels that already satisfy collision and bounds constraints remain unc
 
 | Gate | 상태 | 승인 대상 | 승인 전 차단되는 작업 |
 | --- | --- | --- | --- |
-| P12-A | ready-for-review | exact API/default/error/state, independent oracle, Gapminder primitive source와 PNG | production layout/action 구현 |
+| P12-A | approved | exact API/default/error/state, independent oracle, Gapminder primitive source와 PNG | production layout/action 구현 |
 | P12-B | planned | public action hierarchy, primitive/public parity, replay/removal/warning lifecycle | public closeout |
 | P12-Exit | planned | Current inventory, architecture, docs/types/package와 cumulative verification | Phase 13 |
 

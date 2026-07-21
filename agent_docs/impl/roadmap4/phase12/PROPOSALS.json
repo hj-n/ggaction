@@ -2,11 +2,11 @@
   "version": 1,
   "phase": "roadmap4/phase12",
   "gate": "P12-A",
-  "status": "ready-for-review",
+  "status": "approved",
   "actions": [
     {
       "name": "layoutLabels",
-      "status": "candidate",
+      "status": "approved",
       "required": [],
       "optional": ["target", "axis", "padding", "maxDisplacement", "bounds", "leader"],
       "replacement": "replaces one target text mark's complete graphical label-layout policy",
@@ -14,7 +14,7 @@
     },
     {
       "name": "removeLabelLayout",
-      "status": "candidate",
+      "status": "approved",
       "required": [],
       "optional": ["target"],
       "replacement": "removes the policy and leader collection and restores semantic base text positions",
