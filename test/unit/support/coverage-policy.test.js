@@ -76,4 +76,12 @@ test("keeps explicit critical overrides above family defaults", () => {
     CRITICAL_COVERAGE_FLOORS["grammar/regression/models.js"],
     { lines: 90, branches: 75, functions: 100 }
   );
+  assert.deepEqual(
+    CRITICAL_COVERAGE_FLOORS["actions/coordinates/parallel.js"],
+    { lines: 85, branches: 75, functions: 85 }
+  );
+  assert.deepEqual(
+    CRITICAL_COVERAGE_FLOORS["core/compositionState.js"],
+    { lines: 90, branches: 85, functions: 100 }
+  );
 });

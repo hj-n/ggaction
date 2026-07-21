@@ -5,6 +5,11 @@ import { fileURLToPath } from "node:url";
 const sourceRoot = fileURLToPath(new URL("../src/", import.meta.url));
 
 export const CRITICAL_COVERAGE_FAMILIES = Object.freeze({
+  "coordinate-policies": Object.freeze({
+    prefix: "actions/coordinates/",
+    floor: Object.freeze({ lines: 85, branches: 75, functions: 85 }),
+    rationale: "Coordinate ownership and inference must reject ambiguity consistently."
+  }),
   "position-policies": Object.freeze({
     prefix: "actions/encodings/position/policies/",
     floor: Object.freeze({ lines: 50, branches: 30, functions: 80 }),
@@ -28,6 +33,36 @@ export const CRITICAL_COVERAGE_FAMILIES = Object.freeze({
 });
 
 export const CRITICAL_COVERAGE_OVERRIDES = Object.freeze({
+  "actions/encodings/density/resolve.js": Object.freeze({
+    lines: 90,
+    branches: 80,
+    functions: 100
+  }),
+  "actions/encodings/horizon/resolve.js": Object.freeze({
+    lines: 80,
+    branches: 70,
+    functions: 90
+  }),
+  "actions/guides/axes/parallel/resolve.js": Object.freeze({
+    lines: 90,
+    branches: 80,
+    functions: 100
+  }),
+  "actions/marks/area/materialize.js": Object.freeze({
+    lines: 95,
+    branches: 90,
+    functions: 80
+  }),
+  "actions/marks/line/materialize.js": Object.freeze({
+    lines: 95,
+    branches: 90,
+    functions: 90
+  }),
+  "actions/scales/patch.js": Object.freeze({
+    lines: 95,
+    branches: 90,
+    functions: 100
+  }),
   "actions/selection/actions.js": Object.freeze({
     lines: 90,
     branches: 75,
@@ -39,6 +74,8 @@ export const CRITICAL_COVERAGE_OVERRIDES = Object.freeze({
     functions: 100
   }),
   "core/immutable.js": Object.freeze({ lines: 90, branches: 85, functions: 100 }),
+  "core/compositionState.js": Object.freeze({ lines: 90, branches: 85, functions: 100 }),
+  "core/textMetrics.js": Object.freeze({ lines: 90, branches: 85, functions: 100 }),
   "grammar/areaSeries.js": Object.freeze({ lines: 75, branches: 75, functions: 100 }),
   "grammar/markFilter.js": Object.freeze({ lines: 75, branches: 60, functions: 100 }),
   "grammar/markSelection.js": Object.freeze({ lines: 90, branches: 90, functions: 100 }),
@@ -73,6 +110,11 @@ export const CRITICAL_COVERAGE_OVERRIDES = Object.freeze({
   "materialization/planner.js": Object.freeze({
     lines: 95,
     branches: 95,
+    functions: 100
+  }),
+  "materialization/layout.js": Object.freeze({
+    lines: 100,
+    branches: 100,
     functions: 100
   }),
   "materialization/selection/filter.js": Object.freeze({
