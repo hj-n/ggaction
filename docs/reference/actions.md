@@ -22,7 +22,13 @@ Every direct action accepts one option object and returns a new immutable `Chart
 
 ## Exact action lookup
 
-Use document search with `Ctrl+K` or scan the alphabetical list. Each action has one canonical family entry.
+Use document search with `Ctrl+K`, or filter the alphabetical list by action name, API layer, or domain. Each action has one canonical family entry.
+
+<div class="docs-action-filter docs-action-lookup" data-action-lookup>
+  <label for="docs-action-lookup-input">Filter exact actions</label>
+  <input id="docs-action-lookup-input" type="search" placeholder="Try legend, primitive, or encodeColor" autocomplete="off">
+  <span class="docs-action-filter__status" aria-live="polite"></span>
+</div>
 
 | Action | API layer | Domain |
 | --- | --- | --- |

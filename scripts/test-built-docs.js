@@ -232,6 +232,12 @@ try {
   await search.fill("edit legend");
   await results.first().waitFor({ state: "visible" });
   assert.match(await results.first().getAttribute("href"), /#editlegend$/);
+  await search.fill("rose chart");
+  await results.first().waitFor({ state: "visible" });
+  assert.match(await results.first().getAttribute("href"), /\/recipes\/rose-chart\/$/);
+  await search.fill("polar points");
+  await results.first().waitFor({ state: "visible" });
+  assert.match(await results.first().getAttribute("href"), /\/tutorials\/polar-points\/$/);
   await desktop.keyboard.press("ArrowDown");
   assert.equal(await search.evaluate(element => element === document.activeElement), true);
   const activeResult = await search.getAttribute("aria-activedescendant");
@@ -244,6 +250,16 @@ try {
   assert.equal(await search.getAttribute("aria-expanded"), "false");
   assert.equal(await desktop.locator(".docs-search__control kbd").isVisible(), true);
   assert.deepEqual(desktopErrors, []);
+
+  await desktop.goto(`${baseUrl}reference/actions/`, { waitUntil: "networkidle" });
+  const actionLookup = desktop.locator("#docs-action-lookup-input");
+  await actionLookup.fill("encodeColor");
+  assert.equal(await desktop.locator("table tbody tr:not([hidden])").count(), 1);
+  assert.match(await desktop.locator(".docs-action-lookup .docs-action-filter__status").innerText(), /^1 of \d+ actions$/);
+  assert.match(await desktop.locator("table tbody tr:not([hidden])").innerText(), /encodeColor/);
+  await assertAccessible(desktop, "action reference filter");
+
+  await desktop.goto(baseUrl, { waitUntil: "networkidle" });
 
   const llmsResponse = await fetch(`${baseUrl}llms.txt`);
   assert.equal(llmsResponse.ok, true);

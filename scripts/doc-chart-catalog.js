@@ -129,6 +129,11 @@ export function validateDocChartCatalog(records) {
     for (const key of ["width", "height", "thumbnail_width", "thumbnail_height"]) {
       requirePositiveInteger(record[key], `Chart "${record.id}" ${key}`);
     }
+    for (const key of [...ORDER_KEYS, "home_order"]) {
+      if (record[key] !== undefined) {
+        requirePositiveInteger(record[key], `Chart "${record.id}" ${key}`);
+      }
+    }
     for (const key of ["url", "recipe_url"]) {
       if (record[key] !== undefined && !/^\/[^\s]*$/.test(record[key])) {
         throw new Error(`Chart "${record.id}" ${key} must be a site-absolute URL.`);
@@ -143,6 +148,12 @@ export function validateDocChartCatalog(records) {
       !["essentials", "statistical", "coordinates", "other"].includes(record.home_group);
     if (invalidFeatured || invalidGroup) {
       throw new Error(`Chart "${record.id}" has invalid discovery metadata.`);
+    }
+    if (
+      record.featured === true &&
+      (record.home_group === undefined || record.home_order === undefined)
+    ) {
+      throw new Error(`Featured chart "${record.id}" requires home_group and home_order.`);
     }
     if (
       typeof record.tasks !== "string" ||

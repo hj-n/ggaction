@@ -96,6 +96,31 @@
   const actionHeadings = enhanceActionHeadings();
   addActionFilter(actionHeadings);
 
+  function addActionLookupFilter() {
+    const filter = content.querySelector("[data-action-lookup]");
+    if (!filter) return;
+    const input = filter.querySelector("input[type='search']");
+    const status = filter.querySelector(".docs-action-filter__status");
+    let table = filter.nextElementSibling;
+    while (table && table.tagName !== "TABLE") table = table.nextElementSibling;
+    if (!input || !status || !table) return;
+
+    const rows = [...table.querySelectorAll("tbody tr")];
+    function update() {
+      const query = input.value.trim().toLowerCase();
+      let visible = 0;
+      for (const row of rows) {
+        row.hidden = query.length > 0 && !row.textContent.toLowerCase().includes(query);
+        if (!row.hidden) visible += 1;
+      }
+      status.textContent = `${visible} of ${rows.length} actions`;
+    }
+    input.addEventListener("input", update);
+    update();
+  }
+
+  addActionLookupFilter();
+
   const galleryFilter = content.querySelector(".docs-gallery-filter");
   if (galleryFilter) {
     const cards = [...content.querySelectorAll("[data-gallery-tasks]")];

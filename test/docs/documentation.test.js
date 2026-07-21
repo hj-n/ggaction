@@ -563,6 +563,7 @@ test("routes entry documentation to the canonical example indexes", () => {
   assert.match(read("docs/index.md"), /Common chart types/);
   assert.equal(catalog.get("heatmap").title, "Heatmap");
   assert.equal(catalog.get("heatmap").url, "/recipes/heatmap/");
+  assert.match(catalog.get("heatmap").tasks, /\bcomparison\b/);
   assert.equal(catalog.get("polar").featured, undefined);
   assert.equal(catalog.get("rose").featured, true);
   assert.equal(catalog.get("rose").url, "/recipes/rose-chart/");
@@ -715,6 +716,7 @@ test("indexes documentation headings for section search", () => {
   assert.match(content, /docs-action-heading/);
   assert.match(content, /docs-action-signature/);
   assert.match(content, /docs-action-filter-input/);
+  assert.match(content, /data-action-lookup/);
   assert.match(content, /docs-action-metadata/);
   assert.doesNotMatch(content, /actionPrefixes/);
   assert.match(content, /docs-code-label/);
@@ -729,6 +731,7 @@ test("keeps the compact search index generated and action-aware", async () => {
   await generateDocSearchIndex({ check: true });
   const index = await buildDocSearchIndex();
   assert.equal(index.every(entry => typeof entry.kind === "string"), true);
+  assert.equal(index.every(entry => entry.summary.length > 0), true);
   assert.equal(
     index.some(entry => entry.keywords.includes("confidence interval")),
     true
@@ -738,6 +741,17 @@ test("keeps the compact search index generated and action-aware", async () => {
   assert.equal(index.every(entry => !Object.hasOwn(entry, "html")), true);
   assert.equal(index.some(entry => entry.url === "/reference/actions/guides/#editlegend"), true);
   assert.equal(index.some(entry => entry.keywords.includes("removeLegend")), true);
+  assert.equal(
+    index.find(entry => entry.url === "/recipes/rose-chart/")?.keywords.includes("Rose chart"),
+    true
+  );
+  assert.equal(
+    index.find(entry => entry.url === "/tutorials/polar-points/")?.keywords.includes("Polar points"),
+    true
+  );
+  const actionReference = read("docs/reference/actions.md");
+  assert.match(actionReference, /data-action-lookup/);
+  assert.match(actionReference, /Filter exact actions/);
 });
 
 test("keeps every public action available to documentation interactions", async () => {

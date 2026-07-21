@@ -98,24 +98,29 @@
       .map(section => {
         const pageTitle = searchable(section.pageTitle);
         const sectionTitle = searchable(section.sectionTitle ?? "");
-        const keywords = searchable(section.keywords.join(" "));
+        const keywordValues = section.keywords.map(searchable);
+        const keywords = keywordValues.join(" ");
         const content = searchable(section.summary);
         const combined = `${sectionTitle} ${pageTitle} ${keywords} ${content}`;
         const compact = combined.replaceAll(" ", "");
         const allTokens = queryTokens.every(token => combined.includes(token));
+        const compactKeywordValues = keywordValues.map(value => value.replaceAll(" ", ""));
         const score = sectionTitle === query || sectionTitle.replaceAll(" ", "") === queryCompact
-          ? 8
-          : keywords.split(" ").includes(query) || keywords.replaceAll(" ", "").includes(queryCompact)
-            ? 7
-            : sectionTitle.includes(query) || sectionTitle.replaceAll(" ", "").includes(queryCompact)
-              ? 6
-              : pageTitle === query
-                ? 5
-                : pageTitle.includes(query)
-                  ? 4
-                  : allTokens || compact.includes(queryCompact)
-                    ? 2
-                    : 0;
+          ? 12
+          : pageTitle === query || pageTitle.replaceAll(" ", "") === queryCompact
+            ? 11
+            : keywordValues.includes(query) || compactKeywordValues.includes(queryCompact)
+              ? 10
+              : sectionTitle.includes(query) || sectionTitle.replaceAll(" ", "").includes(queryCompact)
+                ? 9
+                : pageTitle.includes(query) || pageTitle.replaceAll(" ", "").includes(queryCompact)
+                  ? 8
+                  : keywordValues.some(value => value.includes(query)) ||
+                      compactKeywordValues.some(value => value.includes(queryCompact))
+                    ? 7
+                    : allTokens || compact.includes(queryCompact)
+                      ? 2
+                      : 0;
         return { ...section, score };
       })
       .filter(section => section.score > 0)

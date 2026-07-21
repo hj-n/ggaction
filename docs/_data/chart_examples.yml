@@ -143,7 +143,7 @@
   caption: Observed discrete cells with continuous color and centered labels.
   summary: Map two discrete fields to cells and a quantitative field to color.
   actions: createHeatmap · createTextMark · encodeText
-  tasks: relationship multivariate
+  tasks: relationship comparison multivariate
   url: /recipes/heatmap/
   recipe_url: /recipes/heatmap/
   home_group: essentials

@@ -1,12 +1,14 @@
 import { access, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { readDocChartCatalog } from "./doc-chart-catalog.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const docsRoot = path.join(root, "docs");
 const pagesFile = path.join(docsRoot, "_data/pages.yml");
 const actionCatalogFile = path.join(root, "agent_docs/contract/ACTION_INDEX.json");
 const pageMetadataFile = path.join(docsRoot, "_data/page_metadata.json");
+const chartCatalogFile = path.join(docsRoot, "_data/chart_examples.yml");
 const outputFile = path.join(docsRoot, "search-index.json");
 
 const SEARCH_ALIASES = new Map([
@@ -34,6 +36,16 @@ function aliases(url) {
   return [...SEARCH_ALIASES.entries()]
     .filter(([prefix]) => url.startsWith(prefix))
     .flatMap(([, values]) => values);
+}
+
+function chartKeywords(chart) {
+  if (!chart) return [];
+  return [
+    chart.title,
+    chart.id,
+    ...chart.tasks.split(" "),
+    ...chart.actions.split(/\s*(?:,|·)\s*/)
+  ];
 }
 
 function pageRegistry(source) {
@@ -117,14 +129,20 @@ function summary(text) {
 }
 
 export async function buildDocSearchIndex() {
-  const [pagesSource, catalogSource, pageMetadataSource] = await Promise.all([
+  const [pagesSource, catalogSource, pageMetadataSource, chartCatalogSource] = await Promise.all([
     readFile(pagesFile, "utf8"),
     readFile(actionCatalogFile, "utf8"),
-    readFile(pageMetadataFile, "utf8")
+    readFile(pageMetadataFile, "utf8"),
+    readFile(chartCatalogFile, "utf8")
   ]);
   const actions = JSON.parse(catalogSource).actions;
   const pageMetadata = JSON.parse(pageMetadataSource);
   const metadata = new Map(actions.map(action => [action.name, action]));
+  const chartMetadata = new Map();
+  for (const chart of readDocChartCatalog(chartCatalogSource)) {
+    chartMetadata.set(chart.url, chart);
+    if (chart.recipe_url) chartMetadata.set(chart.recipe_url, chart);
+  }
   const entries = [];
 
   for (const page of pageRegistry(pagesSource)) {
@@ -137,7 +155,7 @@ export async function buildDocSearchIndex() {
       url: page.url,
       kind: searchKind(page.url),
       summary: summary(pageSummary),
-      keywords: [page.title, ...aliases(page.url)]
+      keywords: [page.title, ...chartKeywords(chartMetadata.get(page.url)), ...aliases(page.url)]
     });
     for (const section of sections.slice(1)) {
       if (!section.heading?.id) continue;
@@ -148,10 +166,21 @@ export async function buildDocSearchIndex() {
         sectionTitle: section.heading.label,
         url: `${page.url}#${section.heading.id}`,
         kind: searchKind(page.url, section.heading.label),
-        summary: summary(cleanText(section.body.join("\n"))),
+        summary: summary(cleanText(section.body.join("\n")) || pageSummary),
         keywords: action
-          ? [action.name, action.layer, action.domain, ...aliases(page.url)]
-          : [page.title, section.heading.label, ...aliases(page.url)]
+          ? [
+              action.name,
+              action.layer,
+              action.domain,
+              ...chartKeywords(chartMetadata.get(`${page.url}#${section.heading.id}`)),
+              ...aliases(page.url)
+            ]
+          : [
+              page.title,
+              section.heading.label,
+              ...chartKeywords(chartMetadata.get(`${page.url}#${section.heading.id}`)),
+              ...aliases(page.url)
+            ]
       });
     }
   }
