@@ -2,7 +2,7 @@
   "version": 1,
   "phase": "roadmap4/phase14",
   "gate": "P14-A",
-  "status": "candidate",
+  "status": "approved",
   "facades": [
     {
       "name": "createScatterPlot",
@@ -70,7 +70,7 @@
       "lifecycle": "mutable-composite",
       "minimalMeaning": ["one categorical and one quantitative position, explicit or inferred from target"],
       "fieldShorthand": [],
-      "dataInference": "source-explicit-current-unique",
+      "dataInference": "explicit-source-current-unique",
       "idInference": "stable-role",
       "guides": "default-or-false",
       "editHandoff": "editGradientPlot plus ordinary scale and guide actions",
@@ -82,9 +82,9 @@
       "lifecycle": "mutable-composite",
       "minimalMeaning": ["one categorical and one quantitative position, explicit or inferred from target"],
       "fieldShorthand": [],
-      "dataInference": "source-explicit-current",
+      "dataInference": "explicit-source-current",
       "idInference": "stable-role",
-      "guides": "always-default",
+      "guides": "none-unless-explicit",
       "editHandoff": "editBoxPlot plus ordinary scale and guide actions",
       "repairs": ["P14-R1", "P14-R2", "P14-R3", "P14-R4"]
     },
@@ -104,22 +104,22 @@
   "repairs": [
     {
       "id": "P14-R1",
-      "status": "candidate",
-      "scope": "createBoxPlot resolves data as source, explicit, current, then unique dataset and rejects ambiguity"
+      "status": "approved",
+      "scope": "createBoxPlot resolves data as explicit, source, current, then unique dataset and rejects ambiguity"
     },
     {
       "id": "P14-R2",
-      "status": "candidate",
-      "scope": "createBoxPlot accepts guides?: false | CreateGuidesOptions without changing existing defaults"
+      "status": "approved",
+      "scope": "createBoxPlot accepts guides?: false | CreateGuidesOptions; omission and false preserve no guides while an explicit object creates applicable guides"
     },
     {
       "id": "P14-R3",
-      "status": "candidate",
+      "status": "approved",
       "scope": "createBoxPlot reports ambiguous inferred source explicitly before authoring child state"
     },
     {
       "id": "P14-R4",
-      "status": "candidate",
+      "status": "approved",
       "scope": "BoxPlotOptions is exported from the package root like the other public facade option types"
     }
   ],

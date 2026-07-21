@@ -8,4 +8,4 @@
 - [x] repair와 non-goal 후보 고정
 - [x] stable contract test를 8개 facade inventory로 확장
 - [x] P14-A remote checkpoint 준비
-- [ ] P14-A 사용자 승인
+- [x] P14-A 사용자 승인

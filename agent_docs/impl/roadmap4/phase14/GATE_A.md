@@ -3,7 +3,8 @@
 ## 상태
 
 - Gate: `P14-A`
-- 상태: `ready-for-review`
+- 상태: `approved`
+- 승인: 2026-07-21 사용자 승인
 - Audit checkpoint: `b92d25d` (`audit basic chart facades`)
 - Remote: `origin/main`
 - 승인 전 차단: P14-R1~R4 production changes와 representative visual
@@ -25,13 +26,14 @@ inference, coordinate ownership, guide opt-out, immutable preflight, meaningful 
 
 ### P14-R1 — Box data inference
 
-`createBoxPlot`만 source/explicit/current 뒤 unique dataset fallback이 없다. Existing defaults를 바꾸지 않고 마지막
+`createBoxPlot`만 explicit/source/current 뒤 unique dataset fallback이 없다. Existing precedence를 바꾸지 않고 마지막
 fallback과 multi-dataset ambiguity error를 추가한다.
 
 ### P14-R2 — Box guide control
 
-`createBoxPlot`만 applicable axes/grid를 항상 만들고 `guides: false` 또는 nested guide options를 받을 수 없다.
-`guides?: false | CreateGuidesOptions`를 additive하게 추가하며 omission은 현재 default visual을 그대로 유지한다.
+`createBoxPlot`은 guide를 자동 생성하지 않고 canonical example이 뒤에서 `createGuides`를 별도로 호출한다.
+`guides?: false | CreateGuidesOptions`를 additive하게 추가하되 omission과 `false`는 현재처럼 guide를 만들지 않는다.
+명시적인 `{}` 또는 option object만 applicable guide를 owner action 안에서 생성한다.
 
 ### P14-R3 — Box source ambiguity
 
@@ -65,6 +67,9 @@ fallback과 multi-dataset ambiguity error를 추가한다.
 2. P14-R1 unique data inference, P14-R2 Box guides, P14-R3 source ambiguity, P14-R4 root type export repair
 3. Signature 강제 통일과 새 aggregate edit action을 만들지 않는 non-goals
 4. 위 matrix를 Phase 14 production/visual closeout의 기준으로 채택하는 것
+
+승인 후 source inspection에서 P14-R2의 기존 동작 기록 오류를 발견했다. 사용자는 호환성을 보존하는
+`omission = no guides`, explicit object = create guides 계약을 추가 승인했다.
 
 ## 검증 증거
 

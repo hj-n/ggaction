@@ -6,7 +6,7 @@
 - [x] 8개 facade runtime/type/contract/example inventory 감사
 - [x] Lifecycle 차이를 보존한 candidate parity matrix 작성
 - [x] P14-A remote checkpoint 준비
-- [ ] P14-A 사용자 승인
+- [x] P14-A 사용자 승인
 - [ ] Approved Box parity repairs 구현
 - [ ] Cross-facade edit handoff와 representative visual 검증
 - [ ] P14-B 사용자 승인
@@ -37,8 +37,9 @@ Gradient/Box plot은 generated data와 owned component를 가진 mutable composi
 
 정확한 현황과 repair ID는 [`PARITY_MATRIX.json`](./PARITY_MATRIX.json)이 소유한다.
 
-- `P14-R1`: `createBoxPlot` data inference를 source → explicit → current → unique로 완성한다.
-- `P14-R2`: `createBoxPlot({ guides })`에 existing default를 보존하는 `false | CreateGuidesOptions`를 추가한다.
+- `P14-R1`: `createBoxPlot` data inference를 explicit → source → current → unique로 완성한다.
+- `P14-R2`: `createBoxPlot({ guides })`에 `false | CreateGuidesOptions`를 추가한다. 생략과 `false`는 기존처럼
+  guide를 만들지 않고 명시적인 object만 applicable guide를 생성한다.
 - `P14-R3`: omitted target이 여러 compatible source 사이에서 ambiguous하면 partial action 전에 명확히 오류낸다.
 - `P14-R4`: public `BoxPlotOptions`를 다른 facade option type처럼 package root에서 export한다.
 
@@ -46,7 +47,7 @@ Gradient/Box plot은 generated data와 owned component를 가진 mutable composi
 
 | Gate | 상태 | 승인 대상 | 승인 전 차단되는 작업 |
 | --- | --- | --- | --- |
-| P14-A | ready-for-review | 8-facade matrix, lifecycle classes, P14-R1~R3와 non-goals | production repair |
+| P14-A | approved | 8-facade matrix, lifecycle classes, P14-R1~R4와 non-goals | — |
 | P14-B | planned | repaired runtime/types/trace, edit handoff matrix와 representative visual | public closeout |
 | P14-Exit | planned | Current inventory/docs/package와 cumulative verification | Phase 15 |
 
