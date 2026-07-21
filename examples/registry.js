@@ -44,6 +44,8 @@ import { createGapminderTransformedScaleScatterplot } from
   "./gapminder-transformed-scales/program.js";
 import { createGapminderDevelopmentTrajectories } from
   "./gapminder-development-trajectories/program.js";
+import { createGapminderCountryLabels } from
+  "./gapminder-country-labels/program.js";
 import { createCarsPolarScatterplot } from "./polar-points/program.js";
 import { createCarsPolarGuides } from "./polar-guides/program.js";
 import { createGapminderPolarTrends } from
@@ -233,6 +235,17 @@ export const PUBLIC_CHARTS = Object.freeze([
         global: "__gapminderDevelopmentTrajectories",
         expected: { width: 760, height: 500, paths: 3 }
       }
+    }
+  }),
+  example({
+    id: "gapminder-country-labels",
+    data: "gapminder",
+    width: 760,
+    height: 520,
+    createProgram: createGapminderCountryLabels,
+    browser: {
+      path: "browser-host/?chart=gapminder-country-labels",
+      canvas: "#chart"
     }
   }),
   example({

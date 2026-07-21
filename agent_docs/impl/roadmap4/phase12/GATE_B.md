@@ -119,7 +119,7 @@ removeLabelLayout
 - Logical/physical: `760×520` / `1520×1040`
 - 18 labels, initial overlap 4쌍 → final 0쌍, 4 displaced labels, 3 leaders, maximum displacement 약
   `15.2971px`
-- Draw order: grid → leaders → points → labels → axes → title
+- Draw order: leaders → grid → points → labels → axes → title
 
 ## 검증 증거
 
