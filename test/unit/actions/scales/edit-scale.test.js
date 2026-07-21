@@ -136,6 +136,7 @@ test("edits a color palette through the top-level palette alias", () => {
 test("rejects invalid, empty, unknown, incompatible, and ambiguous edits atomically", () => {
   const base = pointProgram();
   const ambiguous = base._clone({ context: {} });
+  const invalidOptions = { id: "x", reverse: "yes" };
   assertAtomicFailures(base, [
     { operation: () => base.editScale({ id: "x" }), error: /at least one/ },
     {
@@ -143,8 +144,9 @@ test("rejects invalid, empty, unknown, incompatible, and ambiguous edits atomica
       error: /Unknown scale/
     },
     {
-      operation: () => base.editScale({ id: "x", reverse: "yes" }),
-      error: /must be a boolean/
+      operation: () => base.editScale(invalidOptions),
+      error: /must be a boolean/,
+      inputs: [invalidOptions]
     },
     {
       operation: () => base.editScale({ id: "color", clamp: true }),

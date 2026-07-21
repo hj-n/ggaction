@@ -29,26 +29,48 @@ export function requireTestGraphic(program, id) {
 }
 
 function snapshotProgram(program) {
-  return {
-    semanticSpec: program.semanticSpec,
-    graphicSpec: program.graphicSpec,
-    context: program.context,
-    trace: program.trace,
-    actionStack: program.actionStack,
-    resolvedScales: program.resolvedScales
-  };
+  return new Map(Reflect.ownKeys(program).map(property => [
+    property,
+    {
+      reference: program[property],
+      value: structuredClone(program[property])
+    }
+  ]));
 }
 
 function assertProgramSnapshot(program, snapshot) {
-  for (const [property, value] of Object.entries(snapshot)) {
-    assert.strictEqual(program[property], value, `${property} changed after rejection`);
+  assert.deepEqual(
+    Reflect.ownKeys(program),
+    [...snapshot.keys()],
+    "Program state keys changed after rejection"
+  );
+  for (const [property, value] of snapshot) {
+    const label = String(property);
+    assert.strictEqual(
+      program[property],
+      value.reference,
+      `${label} reference changed after rejection`
+    );
+    assert.deepEqual(
+      program[property],
+      value.value,
+      `${label} value changed after rejection`
+    );
   }
 }
 
 export function assertAtomicFailures(program, cases) {
   const snapshot = snapshotProgram(program);
-  for (const { operation, error } of cases) {
+  for (const { operation, error, inputs = [] } of cases) {
+    const inputSnapshots = inputs.map(input => structuredClone(input));
     assert.throws(operation, error);
     assertProgramSnapshot(program, snapshot);
+    for (const [index, input] of inputs.entries()) {
+      assert.deepEqual(
+        input,
+        inputSnapshots[index],
+        `caller input ${index} changed after rejection`
+      );
+    }
   }
 }
