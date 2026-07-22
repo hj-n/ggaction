@@ -102,6 +102,8 @@ for (const entry of searchIndex) {
   assert.equal(Array.isArray(entry.keywords) && entry.keywords.length > 0, true);
 }
 assert.equal((await stat(path.join(siteRoot, "search-index.json"))).size < 400_000, true);
+const home = await readFile(path.join(siteRoot, "index.html"), "utf8");
+assert.match(home, /data-root-url="\/ggaction\/"/);
 
 for (const expected of [
   "index.html",

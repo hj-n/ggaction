@@ -234,7 +234,10 @@ try {
   assert.match(await results.first().getAttribute("href"), /#editlegend$/);
   await search.fill("rose chart");
   await results.first().waitFor({ state: "visible" });
-  assert.match(await results.first().getAttribute("href"), /\/recipes\/rose-chart\/$/);
+  assert.equal(
+    await results.first().evaluate(link => new URL(link.href).pathname),
+    "/ggaction/recipes/rose-chart/"
+  );
   await search.fill("polar points");
   await results.first().waitFor({ state: "visible" });
   assert.match(await results.first().getAttribute("href"), /\/tutorials\/polar-points\/$/);

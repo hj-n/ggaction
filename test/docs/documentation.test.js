@@ -673,9 +673,13 @@ test("indexes documentation headings for section search", () => {
   const layout = read("docs/_layouts/default.html");
 
   assert.match(index, /data-index-url/);
+  assert.match(index, /data-root-url="\{\{ '\/' \| relative_url \}\}"/);
   assert.doesNotMatch(index, /entry\.content \| markdownify/);
   assert.doesNotMatch(indexPage, /entry\.content \| markdownify|layout: null|<html/i);
   assert.match(search, /fetch\(config\.dataset\.indexUrl/);
+  assert.match(search, /config\.dataset\.rootUrl/);
+  assert.match(search, /link\.href = new URL\(match\.url/);
+  assert.doesNotMatch(search, /link\.href = match\.url/);
   assert.match(search, /input\.addEventListener\("focus"/);
   assert.match(search, /sectionTitle/);
   assert.match(search, /pageCounts/);

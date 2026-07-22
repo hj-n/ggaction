@@ -5,6 +5,7 @@
 
   if (!input || !results || !config) return;
 
+  const docsRoot = new URL(config.dataset.rootUrl, document.baseURI);
   let sections;
   let loading;
   let activeIndex = -1;
@@ -154,7 +155,7 @@
         link.setAttribute("role", "option");
         link.setAttribute("aria-selected", "false");
         link.id = `docs-search-option-${index}`;
-        link.href = match.url;
+        link.href = new URL(match.url.replace(/^\/+/, ""), docsRoot);
         const kind = document.createElement("span");
         kind.className = "docs-search-kind";
         kind.textContent = match.kind;
