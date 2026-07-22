@@ -16,7 +16,9 @@ import { materializeFacetGraphics } from "../../materialization/facets.js";
 const CONCAT_OPTIONS = Object.freeze([
   "id", "programs", "gap", "align", "padding"
 ]);
-const LAYOUT_EDIT_OPTIONS = Object.freeze(["gap", "align", "padding"]);
+const LAYOUT_EDIT_OPTIONS = Object.freeze([
+  "columns", "gap", "align", "padding"
+]);
 const REPLACEMENT_OPTIONS = Object.freeze(["target", "program"]);
 
 function normalizeChildEntry(entry, index) {
@@ -149,7 +151,7 @@ export const vconcatAction = concatAction("vertical", "vconcat");
 const editCompositionLayout = action(
   {
     op: "editCompositionLayout",
-    description: "Edit composition spacing and alignment.",
+    description: "Edit composition layout.",
     scope: "composition"
   },
   function (args = {}) {
@@ -164,7 +166,9 @@ const editCompositionLayout = action(
           ...childDescriptor({ id, program: this.children[id] }),
           value: current.facet.values[index]
         })),
-        columns: current.columns,
+        columns: Object.hasOwn(args, "columns")
+          ? args.columns
+          : current.columns,
         gap: Object.hasOwn(args, "gap") ? args.gap : current.gap,
         align: Object.hasOwn(args, "align") ? args.align : current.align,
         padding: Object.hasOwn(args, "padding")
@@ -176,11 +180,17 @@ const editCompositionLayout = action(
         children: this.children,
         compositionSpec: {
           ...current,
+          columns: layout.columns,
           gap: layout.gap,
           align: layout.align,
           padding: layout.padding
         }
       }).materializeComposition();
+    }
+    if (Object.hasOwn(args, "columns")) {
+      throw new Error(
+        "editCompositionLayout columns is available only on a facet composition."
+      );
     }
     const padding = Object.hasOwn(args, "padding")
       ? normalizeCompositionPadding(args.padding, current.padding)

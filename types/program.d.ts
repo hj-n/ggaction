@@ -96,6 +96,7 @@ export interface CompositionOptions {
   padding?: number | CompositionPadding;
 }
 export interface EditCompositionLayoutOptions {
+  columns?: number;
   gap?: number;
   align?: CompositionAlign;
   padding?: number | CompositionPadding;
@@ -2401,6 +2402,8 @@ export class ChartProgram {
   editCompositionLayout(options: EditCompositionLayoutOptions): ChartProgram;
   replaceCompositionChild(options: ReplaceCompositionChildOptions): ChartProgram;
   facet(options: FacetOptions): ChartProgram;
+  editFacetScales(options: FacetScaleResolutions): ChartProgram;
+  editFacetGuides(options: FacetGuideOptions): ChartProgram;
   editFacetHeaders(options: EditFacetHeadersOptions): ChartProgram;
 
   editSemantic(options: EditSemanticOptions): ChartProgram;
