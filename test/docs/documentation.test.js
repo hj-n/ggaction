@@ -336,6 +336,7 @@ test("generates unique page metadata and canonical social tags", async () => {
   assert.match(head, /site\.data\.page_metadata\[page\.url\]/);
   assert.match(read("docs/_config.yml"), /^url: https:\/\/ggaction\.github\.io$/m);
   assert.match(read("docs/_config.yml"), /^baseurl: \/ggaction$/m);
+  assert.match(read("docs/_config.yml"), /^  - jekyll-sitemap$/m);
 });
 
 test("reports documentation environment prerequisites before building", () => {

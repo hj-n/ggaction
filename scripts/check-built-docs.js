@@ -67,6 +67,7 @@ function llmReferences(source) {
 const builtFiles = await files(siteRoot);
 const htmlFiles = builtFiles.filter(file => file.endsWith(".html"));
 assert.equal(htmlFiles.length > 40, true, "Expected the complete documentation site.");
+const canonicalUrls = [];
 
 for (const file of htmlFiles) {
   const html = await readFile(file, "utf8");
@@ -74,6 +75,7 @@ for (const file of htmlFiles) {
   assert.equal((html.match(/<h1(?:\s|>)/g) ?? []).length, 1, `${file} must have one h1`);
   assert.equal((html.match(/<main(?:\s|>)/g) ?? []).length, 1, `${file} must have one main`);
   assert.match(html, /<link rel="canonical" href="https:\/\/ggaction\.github\.io\/ggaction\//, `${file} canonical`);
+  canonicalUrls.push(html.match(/<link rel="canonical" href="([^"]+)"/)?.[1]);
   assert.match(html, /<meta name="description" content="[^"]{45,}"/, `${file} description`);
   assert.match(html, /<meta property="og:image" content="https:\/\/ggaction\.github\.io\/ggaction\//, `${file} social image`);
   const ids = [...html.matchAll(/\sid=["']([^"']+)["']/g)].map(match => match[1]);
@@ -85,6 +87,17 @@ for (const file of htmlFiles) {
     await assertTarget(file, match[1]);
   }
 }
+
+const sitemap = await readFile(path.join(siteRoot, "sitemap.xml"), "utf8");
+const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)]
+  .map(match => match[1]);
+assert.equal(sitemapUrls.length, htmlFiles.length, "Sitemap must contain every HTML page.");
+assert.equal(new Set(sitemapUrls).size, sitemapUrls.length, "Sitemap URLs must be unique.");
+assert.deepEqual(
+  new Set(sitemapUrls),
+  new Set(canonicalUrls),
+  "Sitemap URLs must exactly match the canonical documentation pages."
+);
 
 const llmsFile = path.join(siteRoot, "llms.txt");
 const llmsTargets = llmReferences(await readFile(llmsFile, "utf8"));
@@ -110,6 +123,7 @@ for (const expected of [
   "getting-started/index.html",
   "reference/actions/index.html",
   "search-index.json",
+  "sitemap.xml",
   "llms.txt",
   "llms-full.txt",
   "assets/js/docs-navigation.js",
