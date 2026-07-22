@@ -1,5 +1,5 @@
 import { action } from "../../core/action.js";
-import { isPlainObject } from "../../core/immutable.js";
+import { freezeOwned, isPlainObject } from "../../core/immutable.js";
 import {
   validateNonEmptyString,
   validateNonNegativeFinite,
@@ -9,6 +9,7 @@ import {
 import { resolveFacetDefinition } from "../../grammar/facets/index.js";
 import { normalizeFacetScalePolicies } from
   "../../grammar/facets/scales.js";
+import { FACET_SCALE_CHANNELS } from "../../grammar/facets/scales.js";
 import { resolveFacetLayout } from "../../layout/facets.js";
 import { compositionChildDescriptor } from
   "../../materialization/composition.js";
@@ -71,6 +72,76 @@ function requireFacetProgram(program, operation) {
   if (program.compositionSpec.type !== "facet") {
     throw new Error(`${operation} requires a facet composition.`);
   }
+}
+
+function currentFacetDefinition(program) {
+  const current = program.compositionSpec;
+  return resolveFacetDefinition(program.semanticSpec, {
+    id: current.id,
+    data: current.facet.data,
+    field: current.facet.field,
+    values: current.facet.values
+  });
+}
+
+function facetUnitTemplate(program) {
+  const seed = program.children[program.compositionSpec.children[0]];
+  if (seed === undefined) {
+    throw new Error(`Facet "${program.compositionSpec.id}" requires a retained child.`);
+  }
+  const { facets: _facets, ...unitConfigs } = program.materializationConfigs;
+  return new program.constructor({
+    semanticSpec: program.semanticSpec,
+    graphicSpec: seed.graphicSpec,
+    resolvedScales: program.resolvedScales,
+    materializationConfigs: freezeOwned({
+      ...unitConfigs,
+      canvas: seed.materializationConfigs.canvas
+    }),
+    children: {},
+    context: program.context,
+    trace: program.trace,
+    actionStack: program.actionStack,
+    actionSequence: program._actionSequence
+  });
+}
+
+function applicableScaleRequest(program, channels) {
+  return Object.fromEntries(FACET_SCALE_CHANNELS.flatMap(channel =>
+    program.semanticSpec.layers.some(
+      layer => layer.encoding?.[channel]?.scale !== undefined
+    )
+      ? [[channel, channels[channel]]]
+      : []
+  ));
+}
+
+function rederiveFacet(program, { scales, guides }) {
+  const current = program.compositionSpec;
+  const definition = currentFacetDefinition(program);
+  const request = applicableScaleRequest(program, scales);
+  const normalized = normalizeFacetScalePolicies(program.semanticSpec, request);
+  const derived = deriveFacetChildren(facetUnitTemplate(program), definition, {
+    closeInheritedAction: true,
+    stripTitle: true,
+    scales: request
+  });
+  const compositionSpec = {
+    ...current,
+    facet: {
+      ...current.facet,
+      scales: normalized.channels,
+      guides
+    }
+  };
+  let next = program._withCompositionState({
+    children: derived.children,
+    compositionSpec
+  });
+  for (const id of compositionSpec.children) {
+    next = next.useProgram({ id });
+  }
+  return next.materializeComposition();
 }
 
 export const facet = action(
@@ -153,9 +224,73 @@ export const editFacetHeaders = action(
   }
 );
 
+export const editFacetScales = action(
+  {
+    op: "editFacetScales",
+    description: "Edit facet scale-resolution policies and rederive every cell.",
+    scope: "composition"
+  },
+  function (args = {}) {
+    requireFacetProgram(this, "editFacetScales");
+    validateOptionObject(args, FACET_SCALE_CHANNELS, "editFacetScales", {
+      allowEmpty: false,
+      emptyMessage: "editFacetScales requires at least one channel policy change."
+    });
+    for (const channel of Object.keys(args)) {
+      if (!this.semanticSpec.layers.some(
+        layer => layer.encoding?.[channel]?.scale !== undefined
+      )) {
+        throw new Error(
+          `Facet scale channel "${channel}" is not used by an affected layer.`
+        );
+      }
+    }
+    const current = this.compositionSpec.facet;
+    const scales = { ...current.scales, ...args };
+    if (FACET_SCALE_CHANNELS.every(
+      channel => scales[channel] === current.scales[channel]
+    )) {
+      throw new Error("editFacetScales requires at least one channel policy change.");
+    }
+    const request = applicableScaleRequest(this, scales);
+    const normalized = normalizeFacetScalePolicies(this.semanticSpec, request);
+    const applyEdit = program => rederiveFacet(program, {
+      scales: normalized.channels,
+      guides: current.guides
+    });
+    applyEdit(this);
+    return applyEdit(this);
+  }
+);
+
+export const editFacetGuides = action(
+  {
+    op: "editFacetGuides",
+    description: "Edit facet guide ownership and rederive every cell.",
+    scope: "composition"
+  },
+  function (args = {}) {
+    requireFacetProgram(this, "editFacetGuides");
+    validateOptionObject(args, GUIDE_OPTIONS, "editFacetGuides", {
+      allowEmpty: false,
+      emptyMessage: "editFacetGuides requires at least one guide policy."
+    });
+    const current = this.compositionSpec.facet;
+    const guides = normalizeGuides({ ...current.guides, ...args });
+    const applyEdit = program => rederiveFacet(program, {
+      scales: current.scales,
+      guides
+    });
+    applyEdit(this);
+    return applyEdit(this);
+  }
+);
+
 export function registerFacetActions(ProgramClass) {
   ProgramClass.prototype.replayDerivedData = replayDerivedData;
   ProgramClass.prototype.composeFacetGuides = composeFacetGuides;
   ProgramClass.prototype.facet = facet;
   ProgramClass.prototype.editFacetHeaders = editFacetHeaders;
+  ProgramClass.prototype.editFacetScales = editFacetScales;
+  ProgramClass.prototype.editFacetGuides = editFacetGuides;
 }

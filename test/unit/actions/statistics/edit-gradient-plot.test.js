@@ -105,3 +105,149 @@ test("rejects empty edits and preserves caller-owned options", () => {
     /mean or median/
   );
 });
+
+test("revises gradient source and roles with stable body, center, and guides", () => {
+  const alternate = Object.freeze([
+    Object.freeze({ team: "R", score: 3 }),
+    Object.freeze({ team: "R", score: 5 }),
+    Object.freeze({ team: "R", score: 8 }),
+    Object.freeze({ team: "S", score: 4 }),
+    Object.freeze({ team: "S", score: 7 }),
+    Object.freeze({ team: "S", score: 11 })
+  ]);
+  const before = chart()
+    .createCanvas({
+      width: 420,
+      height: 320,
+      margin: { top: 40, right: 90, bottom: 60, left: 60 }
+    })
+    .createData({ id: "rows", values: rows })
+    .createData({ id: "alternate", values: alternate })
+    .createGradientPlot({
+      id: "distribution",
+      data: "rows",
+      x: { field: "group", fieldType: "nominal" },
+      y: { field: "value" }
+    });
+  const sourceEdited = before.editGradientPlot({
+    data: "alternate",
+    x: { field: "team", fieldType: "nominal" },
+    y: { field: "score", fieldType: "quantitative" }
+  });
+  const flipped = sourceEdited.editGradientPlot({
+    x: { field: "score", fieldType: "quantitative" },
+    y: { field: "team", fieldType: "nominal" }
+  });
+
+  assert.equal(sourceEdited.markConfigs.distribution.gradientPlot.source, "alternate");
+  assert.equal(
+    sourceEdited.markConfigs.distribution.gradientPlot.profileId,
+    "distributionProfileDataRevision1"
+  );
+  assert.equal(flipped.markConfigs.distribution.gradientPlot.orientation, "horizontal");
+  assert.equal(
+    flipped.markConfigs.distribution.gradientPlot.profileId,
+    "distributionProfileDataRevision2"
+  );
+  assert.deepEqual(
+    flipped.semanticSpec.layers.map(layer => layer.id),
+    ["distribution", "distributionCenter"]
+  );
+  for (const id of ["distribution", "distributionCenter"]) {
+    const layer = flipped.semanticSpec.layers.find(item => item.id === id);
+    assert.equal(layer.data, "distributionProfileDataRevision2");
+    assert.equal(layer.encoding.x.scale, "y");
+    assert.equal(layer.encoding.y.scale, "x");
+    assert.equal(flipped.graphicSpec.objects[id].items.length, 2);
+  }
+  assert.equal(flipped.semanticSpec.guides.axis.x.scale, "y");
+  assert.equal(flipped.semanticSpec.guides.axis.x.title, "score");
+  assert.equal(flipped.semanticSpec.guides.axis.y.scale, "x");
+  assert.equal(flipped.semanticSpec.guides.axis.y.title, "team");
+  assert.equal(flipped.semanticSpec.guides.grid.horizontal, undefined);
+  assert.equal(flipped.semanticSpec.guides.grid.vertical.scale, "y");
+  assert.equal(
+    flipped.semanticSpec.datasets.some(dataset =>
+      dataset.id === "distributionProfileData"
+    ),
+    false
+  );
+  assert.equal(before.markConfigs.distribution.gradientPlot.source, "rows");
+});
+
+test("replays compatible gradient highlights and rejects stale selectors atomically", () => {
+  const highlighted = gradient().highlightMarks({
+    select: { field: "group", op: "eq", value: "B" },
+    opacity: 0.4,
+    bringToFront: false
+  });
+  const flipped = highlighted.editGradientPlot({
+    x: { field: "value", fieldType: "quantitative" },
+    y: { field: "group", fieldType: "nominal" }
+  });
+  assert.deepEqual(
+    flipped.graphicSpec.objects.gradientPlot.items.map(
+      item => item.properties.opacity
+    ),
+    [1, 0.4]
+  );
+  assert.equal(
+    flipped.materializationConfigs.highlights.gradientPlotSelection.target,
+    "gradientPlot"
+  );
+  const staleSelection = chart()
+    .createCanvas({ width: 420, height: 320 })
+    .createData({
+      id: "dual",
+      values: rows.map(row => ({ ...row, team: `Team-${row.group}` }))
+    })
+    .createGradientPlot({
+      data: "dual",
+      x: { field: "group", fieldType: "nominal" },
+      y: { field: "value" },
+      guides: false
+    })
+    .highlightMarks({
+      select: { field: "group", op: "eq", value: "B" },
+      opacity: 0.4
+    });
+  assert.throws(
+    () => staleSelection.editGradientPlot({
+      x: { field: "value", fieldType: "quantitative" },
+      y: { field: "team", fieldType: "nominal" }
+    }),
+    /not uniquely defined/
+  );
+  assert.equal(
+    highlighted.markConfigs.gradientPlot.gradientPlot.orientation,
+    "vertical"
+  );
+});
+
+test("preflights invalid gradient role revisions and accepts equivalent calls", () => {
+  const before = gradient();
+  const equivalent = before.editGradientPlot({
+    data: "rows",
+    x: { field: "group", fieldType: "nominal" },
+    y: { field: "value", fieldType: "quantitative" }
+  });
+  assert.deepEqual(
+    equivalent.semanticSpec.datasets.map(dataset => dataset.id),
+    before.semanticSpec.datasets.map(dataset => dataset.id)
+  );
+  assert.throws(
+    () => before.editGradientPlot({
+      x: { field: "group", fieldType: "nominal" },
+      y: { field: "group", fieldType: "nominal" }
+    }),
+    /one categorical axis and one quantitative axis/
+  );
+  assert.throws(
+    () => before.editGradientPlot({ data: "missing" }),
+    /Unknown gradient-plot data/
+  );
+  assert.equal(
+    before.markConfigs.gradientPlot.gradientPlot.profileId,
+    "gradientPlotProfileData"
+  );
+});

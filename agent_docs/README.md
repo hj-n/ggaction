@@ -15,9 +15,10 @@
 | 승인된 미래 계약 읽기 | [`contract/planned/`](contract/planned/) |
 | 현재 개발 순서 확인 | [`impl/README.md`](impl/README.md) |
 
-현재 실행 계획 owner는 **Roadmap 4**이며 Phase 15까지 완료되어 active Phase는 없다. Phase 13 hierarchy
-layout은 `Maybe Future`로 이동해 건너뛰었다. 다음 roadmap이 열릴 때까지 마지막 완료 Phase는 15이며, 이
-포인터의 machine-readable owner는 [`impl/ROADMAP_INDEX.json`](impl/ROADMAP_INDEX.json)이다.
+**활성 Roadmap은 없다.** 마지막 완료 owner는 Roadmap 4.1 Phase 9다. Encoding, selection, guide,
+statistical owner와 facet의 edit/remove lifecycle, cross-capability regression, Current inventory, docs와
+package closeout을 R41-Exit에서 완료했다. Nullable active pointer와 마지막 완료 owner의 machine-readable
+source는 [`impl/ROADMAP_INDEX.json`](impl/ROADMAP_INDEX.json)이다.
 
 ## 작업별 읽기 경로
 
@@ -35,7 +36,8 @@ layout은 `Maybe Future`로 이동해 건너뛰었다. 다음 roadmap이 열릴 
 
 ### Roadmap 작업을 계속할 때
 
-1. `ROADMAP_INDEX.json`의 `activeRoadmap`, nullable `activePhase`와 `lastCompletedPhase`를 확인한다.
+1. `ROADMAP_INDEX.json`의 nullable `activeRoadmap`/`activePhase`, `lastCompletedRoadmap`과
+   `lastCompletedPhase`를 확인한다.
 2. Active Phase가 있을 때만 활성 `ROADMAP.md`의 해당 Phase를 읽는다.
 3. 존재한다면 해당 `phaseN/GOAL.md`, `STEPn.md`, Gate 기록만 추가로 읽는다.
 

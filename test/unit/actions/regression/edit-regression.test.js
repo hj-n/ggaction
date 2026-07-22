@@ -105,3 +105,127 @@ test("resolves owners and rejects invalid composite edits atomically", () => {
   );
   assert.equal(program.semanticSpec.datasets.at(-1).id, "pointsRegressionData");
 });
+
+test("revises regression data roles while preserving component and position identities", () => {
+  const before = regressionProgram().createData({
+    id: "observations",
+    values: [
+      { time: 1, value: 2 },
+      { time: 2, value: 5 },
+      { time: 3, value: 7 },
+      { time: 4, value: 10 }
+    ]
+  });
+  const ownerBefore = before.markConfigs.points.regression;
+  const after = before.editRegression({
+    data: "observations",
+    x: "time",
+    y: "value",
+    groupBy: false
+  });
+  const ownerAfter = after.markConfigs.points.regression;
+  const line = after.semanticSpec.layers.find(
+    layer => layer.id === "pointsRegressionLines"
+  );
+  const band = after.semanticSpec.layers.find(
+    layer => layer.id === "pointsRegressionBands"
+  );
+  const revised = after.semanticSpec.datasets.find(
+    dataset => dataset.id === "pointsRegressionDataRevision1"
+  );
+
+  assert.equal(revised.source, "observations");
+  assert.equal(revised.transform[0].x, "time");
+  assert.equal(revised.transform[0].y, "value");
+  assert.equal(revised.transform[0].groupBy, undefined);
+  assert.equal(line.data, revised.id);
+  assert.equal(band.data, revised.id);
+  assert.equal(line.encoding.x.field, "time");
+  assert.equal(line.encoding.y.field, "value");
+  assert.equal(line.encoding.group, undefined);
+  assert.equal(line.encoding.color, undefined);
+  assert.equal(band.encoding.x.field, "time");
+  assert.equal(band.encoding.group, undefined);
+  assert.equal(line.encoding.x.scale, ownerBefore.xScale);
+  assert.equal(line.encoding.y.scale, ownerBefore.yScale);
+  assert.equal(band.coordinate, ownerBefore.coordinate);
+  assert.equal(ownerAfter.lineId, ownerBefore.lineId);
+  assert.equal(ownerAfter.bandId, ownerBefore.bandId);
+  assert.equal(after.semanticSpec.layers.find(layer => layer.id === "points").data,
+    before.semanticSpec.layers.find(layer => layer.id === "points").data);
+  assert.equal(before.markConfigs.points.regression.source, "pointsFilteredData");
+});
+
+test("adds a revised regression group with a dedicated stable component scale", () => {
+  const before = regressionProgram({ groupBy: undefined });
+  const after = before.editRegression({ groupBy: "Cylinders" });
+  const owner = after.markConfigs.points.regression;
+  const line = after.semanticSpec.layers.find(
+    layer => layer.id === "pointsRegressionLines"
+  );
+  const band = after.semanticSpec.layers.find(
+    layer => layer.id === "pointsRegressionBands"
+  );
+
+  assert.equal(owner.colorScale, "pointsRegressionColor");
+  assert.equal(line.encoding.group.field, "Cylinders");
+  assert.equal(line.encoding.color.field, "Cylinders");
+  assert.equal(line.encoding.color.scale, "pointsRegressionColor");
+  assert.equal(band.encoding.group.field, "Cylinders");
+  assert.ok(after.semanticSpec.scales.some(
+    scale => scale.id === "pointsRegressionColor"
+  ));
+  assert.ok(after.graphicSpec.objects.pointsRegressionLines.items.length > 1);
+});
+
+test("rejects invalid regression data revisions before exposing a branch", () => {
+  const before = regressionProgram();
+  assert.throws(
+    () => before.editRegression({ data: "missing" }),
+    /Unknown source dataset/
+  );
+  assert.throws(
+    () => before.editRegression({ x: "missing" }),
+    /Field "missing" must contain a finite number/
+  );
+  assert.throws(
+    () => before.editRegression({ groupBy: "" }),
+    /Regression groupBy must be a non-empty string/
+  );
+  assert.equal(before.semanticSpec.datasets.at(-1).id, "pointsRegressionData");
+});
+
+test("replays regression-line selection and highlight after a data-role revision", () => {
+  const before = regressionProgram()
+    .createData({ id: "observations", values: [
+      { Origin: "Japan", time: 1, value: 2 },
+      { Origin: "Japan", time: 2, value: 4 },
+      { Origin: "Japan", time: 3, value: 7 },
+      { Origin: "USA", time: 1, value: 3 },
+      { Origin: "USA", time: 2, value: 5 },
+      { Origin: "USA", time: 3, value: 8 }
+    ] })
+    .highlightMarks({
+      target: "pointsRegressionLines",
+      select: { field: "Origin", op: "eq", value: "Japan" },
+      stroke: "#dc2626",
+      strokeWidth: 5,
+      dimOthers: { opacity: 0.2 }
+    });
+  const after = before.editRegression({
+    data: "observations",
+    x: "time",
+    y: "value"
+  });
+
+  assert.equal(
+    after.materializationConfigs.selections.pointsRegressionLinesSelection.target,
+    "pointsRegressionLines"
+  );
+  assert.equal(after.graphicSpec.objects.pointsRegressionLines.items.some(
+    item => item.properties.opacity === 0.2
+  ), true);
+  assert.equal(after.graphicSpec.objects.pointsRegressionLines.items.some(
+    item => item.properties.stroke === "#dc2626"
+  ), true);
+});

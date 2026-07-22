@@ -211,10 +211,11 @@ Edit Canvas properties and rematerialize connected consumers.
 ### `editCompositionLayout`
 
 ```javascript
-editCompositionLayout({ gap?, align?, padding? })
+editCompositionLayout({ columns?, gap?, align?, padding? })
 ```
 
 Edit spacing, cross-axis alignment, or outer padding on an existing composition.
+`columns` changes wrapping only on a facet composition and is rejected for concat.
 Omitted values are preserved, child identity is unchanged, and the parent snapshot
 is rebuilt from retained child programs.
 
@@ -249,6 +250,26 @@ editFacetHeaders({ fontSize?, fontFamily?, fontWeight?, color?, offset? })
 
 Edit the parent-owned repeated facet headers and rebuild the parent snapshot
 without changing child programs or facet value order.
+
+### `editFacetScales`
+
+```javascript
+editFacetScales({ x?, y?, xOffset?, yOffset?, color?, size?, shape?, opacity?, strokeDash? })
+```
+
+Partially change used facet channels between `"shared"` and `"independent"`.
+Every cell is rederived from the retained pre-facet program while field, data,
+value order, child IDs, layout, guides, headers, and title are preserved.
+
+### `editFacetGuides`
+
+```javascript
+editFacetGuides({ axes?, legend? })
+```
+
+Partially change axes between `"each"` and `"outer"`, or legend ownership
+between `false` and `"shared"`. Shared legend promotion requires concretely
+compatible child scales and guide recipes.
 
 ### `createData`
 
@@ -349,6 +370,16 @@ then apply mark-specific concrete emphasis, optional complement dimming, and
 selected-last order.
 [Mark selection and highlighting](../api/appearance/selection-and-highlighting.md#mark-selection-and-highlighting)
 
+### `removeMarkHighlight`
+
+```javascript
+removeMarkHighlight({ selection? } = {})
+```
+
+Remove one highlight assignment, restore the target mark and categorical
+legend baseline, and retain the reusable selection.
+[Selection lifecycle](../api/appearance/selection-and-highlighting.md#editing-and-removing-stored-intent)
+
 ### `createRegressionData`
 
 ```javascript
@@ -411,6 +442,19 @@ Aggregate finite x/y pairs into deterministic rectangular cell bounds and
 counts. Reusing the logical ID creates an immutable revision and rematerializes
 direct visual consumers. [Rectangular 2D bins](../api/data/bin2d.md)
 
+### `editBin2DData`
+
+```javascript
+editBin2DData({
+  target?, source?, x?, y?, bins?, extent?, includeEmpty?, members?, as?
+})
+```
+
+Partially revise the current or unique logical 2D-bin owner. Omitted top-level
+transform options are preserved; successful edits create an immutable revision,
+rebind direct visual consumers, and safely release the prior revision.
+[Rectangular 2D bins](../api/data/bin2d.md#editbin2ddata)
+
 ### `createPointMark`
 
 ```javascript
@@ -425,7 +469,8 @@ Create a semantic point mark with one of 12 equal-area shape realizations. [Mark
 editPointMark({ target?, shape?, fill?, opacity?, stroke?, strokeWidth? })
 ```
 
-Change constant point shape, fill, opacity, or outline appearance and rematerialize its concrete items. [Marks](../api/marks.md)
+Change constant point shape, fill, opacity, or outline appearance and rematerialize its concrete items.
+`stroke: false` disables the outline and its width. [Marks](../api/marks.md)
 
 ### `jitterPoints`
 
@@ -533,6 +578,7 @@ editArcMark({ target?, innerRadius?, padAngle?, fill?, opacity?, stroke?, stroke
 ```
 
 Edit arc geometry or appearance and rematerialize complete sector paths.
+`stroke: false` disables the outline and its width.
 [Marks](../api/marks/line-area.md#arc-marks)
 
 ### `createRuleMark`
@@ -729,6 +775,17 @@ removePathOrder({ target? } = {})
 Remove explicit path topology and restore the mark's automatic independent-
 position ordering. [Series encodings](../api/series-encodings.md)
 
+### `removeEncoding`
+
+```javascript
+removeEncoding({ target?, channel })
+```
+
+Remove one active semantic encoding, its generated companions, matching guide
+blocks, and stale concrete values. Named datasets, scales, and coordinates are
+retained; incomplete marks remain empty until later encoding completion.
+[Encodings](../api/encodings.md#removing-an-encoding)
+
 ### `encodeText`
 
 ```javascript
@@ -799,12 +856,16 @@ Pass `densityChannel: "x"` for a horizontal orientation.
 ### `editDensity`
 
 ```javascript
-editDensity({ target?, bandwidth?, extent?, steps?, kernel?, normalization? })
+editDensity({
+  target?, source?, field?, groupBy?, bandwidth?, extent?, steps?, kernel?,
+  normalization?, placement?
+})
 ```
 
 Create an immutable density-data revision, rebind the selected density area,
-and rematerialize its graphical consumers. Omitted density settings are
-preserved and at least one editable setting is required.
+and rematerialize its graphical consumers. `source`, `field`, and `groupBy`
+can revise create-time data roles; `groupBy: false` removes grouping. Output
+fields, density channel, coordinate, and position scale IDs are preserved.
 [Encodings](../api/encodings.md#atomic-density)
 
 ### `encodeHorizon`
@@ -920,6 +981,16 @@ Apply a constant point glyph radius through a traced `encodeRadius` child. This
 does not assign semantic Polar radial position.
 [Constant appearance](../api/appearance.md)
 
+### `removePointRadius`
+
+```javascript
+removePointRadius({ target? } = {})
+```
+
+Remove an explicit constant point glyph radius and restore the theme default.
+Semantic Polar radial position is unchanged.
+[Point appearance](../api/appearance/point.md)
+
 ### `encodeSize`
 
 ```javascript
@@ -997,13 +1068,15 @@ polynomial degree to `2`; LOESS span to `0.75`.
 
 ```javascript
 editRegression({
-  target?, method?, degree?, span?, confidence?, interval?, band?, line?
+  target?, data?, x?, y?, groupBy?, method?, degree?, span?, confidence?,
+  interval?, band?, line?
 })
 ```
 
-Revise the model through its stable point owner. Statistical changes create and
-rebind one immutable derived-data revision; component-only changes retain the
-current fitted rows. [Regression](../api/regression.md#editing-a-regression)
+Revise the model through its stable point owner. Data-role or statistical
+changes create and rebind one immutable derived-data revision; `groupBy: false`
+removes grouping. Component-only changes retain the current fitted rows.
+[Regression](../api/regression.md#editing-a-regression)
 
 ### `createErrorBar`
 
@@ -1023,12 +1096,14 @@ coordinate, and scales.
 
 ```javascript
 editErrorBar({
-  target?, caps?, capSize?, stroke?, strokeWidth?, strokeDash?, opacity?
+  target?, caps?, capSize?, stroke?, strokeWidth?, strokeDash?, opacity?,
+  statistics?
 })
 ```
 
-Partially edit one error bar and its owned caps. `caps: false` removes both
-caps; `caps: true` restores them without replacing interval data.
+Partially edit one error bar and its owned caps. `statistics` revises a
+statistical interval through immutable data; explicit interval owners reject
+that option. `caps: false` removes both caps and `caps: true` restores them.
 [Error bars](../api/error-bars.md#editing-error-bars)
 
 ### `createErrorBand`
@@ -1051,15 +1126,16 @@ is overridden.
 ### `editErrorBand` and `editErrorBandBoundary`
 
 ```javascript
-editErrorBand({ target?, fill?, opacity?, curve? })
+editErrorBand({ target?, fill?, opacity?, curve?, statistics?, boundaries? })
 editErrorBandBoundary({
   target?, boundary?, stroke?, strokeWidth?, strokeDash?, opacity?, curve?
 })
 ```
 
-Edit the band body or selected owned boundaries without addressing generated
-line IDs. Boundary selection is `"both"`, `"lower"`, or `"upper"`; omitted
-selection means both. Missing selected boundaries are created from the band.
+Edit the band body, statistical interval, or both owned boundary components
+without addressing generated line IDs. `boundaries: false` disables both;
+an object creates or edits both. The focused boundary action still accepts
+`"both"`, `"lower"`, or `"upper"` and creates missing selected boundaries.
 [Error bands](../api/error-bands.md#editing-the-band)
 
 ### `createBoxPlot`
@@ -1335,7 +1411,9 @@ editLegend({
 ```
 
 Partially edit one existing legend. `title` accepts a non-empty string,
-`"auto"`, or `false`; semantic channel bindings cannot be edited.
+`"auto"`, or `false`; semantic channel bindings cannot be edited. A
+stroke-width legend accepts the bounded `title`, `count`, `labels`, and
+`titleStyle` subset and remains right-positioned.
 [Legends](../api/legends.md)
 
 ### Focused legend edits
@@ -1361,11 +1439,13 @@ rematerialization as `editLegend`. At least one component change is required.
 ### `removeLegend`
 
 ```javascript
-removeLegend({ target? })
+removeLegend({ target?, channels? })
 ```
 
-Remove every legend block owned by one mark while preserving mark encodings and
-scales. [Legends](../api/legends.md)
+Remove every legend block owned by one mark when `channels` is omitted, or
+remove selected complete channel blocks while preserving mark encodings,
+scales, and unrelated blocks. Combined categorical blocks require their full
+represented channel set. [Legends](../api/legends.md)
 
 ### `createTitle`
 
@@ -1417,6 +1497,27 @@ support `"stack"`. Fields are data values, channels are pre-scale semantic
 values, and properties are concrete graphical values.
 [Mark selection and highlighting](../api/appearance/selection-and-highlighting.md#mark-selection-and-highlighting)
 
+### `editMarkSelection`
+
+```javascript
+editMarkSelection({ selection?, grain?, field | channel | property, op, ...operatorOptions })
+```
+
+Replace the complete selector while preserving the stored selection ID and
+mark target. Dependent highlights and exact categorical legend reflection are
+replayed from a clean baseline.
+[Selection lifecycle](../api/appearance/selection-and-highlighting.md#editing-and-removing-stored-intent)
+
+### `removeMarkSelection`
+
+```javascript
+removeMarkSelection({ selection? } = {})
+```
+
+Release one stored selection after removing its dependent highlight. Other
+selection and highlight assignments remain active.
+[Selection lifecycle](../api/appearance/selection-and-highlighting.md#editing-and-removing-stored-intent)
+
 ### Semantic resources and regression layers
 
 ```javascript
@@ -1456,13 +1557,18 @@ requirements in [Source and derived data](../api/data/source-and-derived.md#crea
 ```javascript
 createXAxis({ scale?, coordinate?, position?, line?, ticksAndLabels?, title? })
 createYAxis({ scale?, coordinate?, position?, line?, ticksAndLabels?, title? })
-editXAxis({ position?, line?, ticks?, labels?, ticksAndLabels?, title? })
-editYAxis({ position?, line?, ticks?, labels?, ticksAndLabels?, title? })
+editXAxis({ position?, line?: false | {...}, ticks?: false | {...},
+  labels?: false | {...}, ticksAndLabels?: false | {...}, title?: false | {...} })
+editYAxis({ position?, line?: false | {...}, ticks?: false | {...},
+  labels?: false | {...}, ticksAndLabels?: false | {...}, title?: false | {...} })
 ```
 
 Complete-axis edits update only the selected components of an existing axis.
-Use `ticksAndLabels` for a coordinated tick/label edit, or `ticks` and
-`labels` for independent edits; do not combine both forms.
+Each component accepts its edit object or `false` for removal. Use
+`ticksAndLabels` for a coordinated tick/label edit or removal, or `ticks` and
+`labels` for independent edits/removals; do not combine both forms. Removal
+preserves scale, coordinate, encoding, and data, while the last component also
+cleans the empty axis state.
 
 ### Complete axis removal
 

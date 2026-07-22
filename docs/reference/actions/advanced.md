@@ -23,6 +23,27 @@ support `"stack"`. Fields are data values, channels are pre-scale semantic
 values, and properties are concrete graphical values.
 [Mark selection and highlighting](../../api/appearance/selection-and-highlighting.md#mark-selection-and-highlighting)
 
+## `editMarkSelection`
+
+```javascript
+editMarkSelection({ selection?, grain?, field | channel | property, op, ...operatorOptions })
+```
+
+Replace the complete selector while preserving the stored selection ID and
+mark target. Dependent highlights and exact categorical legend reflection are
+replayed from a clean baseline.
+[Selection lifecycle](../../api/appearance/selection-and-highlighting.md#editing-and-removing-stored-intent)
+
+## `removeMarkSelection`
+
+```javascript
+removeMarkSelection({ selection? } = {})
+```
+
+Release one stored selection after removing its dependent highlight. Other
+selection and highlight assignments remain active.
+[Selection lifecycle](../../api/appearance/selection-and-highlighting.md#editing-and-removing-stored-intent)
+
 ## Semantic resources and regression layers
 
 ```javascript
@@ -62,13 +83,18 @@ requirements in [Source and derived data](../../api/data/source-and-derived.md#c
 ```javascript
 createXAxis({ scale?, coordinate?, position?, line?, ticksAndLabels?, title? })
 createYAxis({ scale?, coordinate?, position?, line?, ticksAndLabels?, title? })
-editXAxis({ position?, line?, ticks?, labels?, ticksAndLabels?, title? })
-editYAxis({ position?, line?, ticks?, labels?, ticksAndLabels?, title? })
+editXAxis({ position?, line?: false | {...}, ticks?: false | {...},
+  labels?: false | {...}, ticksAndLabels?: false | {...}, title?: false | {...} })
+editYAxis({ position?, line?: false | {...}, ticks?: false | {...},
+  labels?: false | {...}, ticksAndLabels?: false | {...}, title?: false | {...} })
 ```
 
 Complete-axis edits update only the selected components of an existing axis.
-Use `ticksAndLabels` for a coordinated tick/label edit, or `ticks` and
-`labels` for independent edits; do not combine both forms.
+Each component accepts its edit object or `false` for removal. Use
+`ticksAndLabels` for a coordinated tick/label edit or removal, or `ticks` and
+`labels` for independent edits/removals; do not combine both forms. Removal
+preserves scale, coordinate, encoding, and data, while the last component also
+cleans the empty axis state.
 
 ## Complete axis removal
 

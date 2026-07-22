@@ -119,6 +119,17 @@ removePathOrder({ target? } = {})
 Remove explicit path topology and restore the mark's automatic independent-
 position ordering. [Series encodings](../../api/series-encodings.md)
 
+## `removeEncoding`
+
+```javascript
+removeEncoding({ target?, channel })
+```
+
+Remove one active semantic encoding, its generated companions, matching guide
+blocks, and stale concrete values. Named datasets, scales, and coordinates are
+retained; incomplete marks remain empty until later encoding completion.
+[Encodings](../../api/encodings.md#removing-an-encoding)
+
 ## `encodeText`
 
 ```javascript
@@ -189,12 +200,16 @@ Pass `densityChannel: "x"` for a horizontal orientation.
 ## `editDensity`
 
 ```javascript
-editDensity({ target?, bandwidth?, extent?, steps?, kernel?, normalization? })
+editDensity({
+  target?, source?, field?, groupBy?, bandwidth?, extent?, steps?, kernel?,
+  normalization?, placement?
+})
 ```
 
 Create an immutable density-data revision, rebind the selected density area,
-and rematerialize its graphical consumers. Omitted density settings are
-preserved and at least one editable setting is required.
+and rematerialize its graphical consumers. `source`, `field`, and `groupBy`
+can revise create-time data roles; `groupBy: false` removes grouping. Output
+fields, density channel, coordinate, and position scale IDs are preserved.
 [Encodings](../../api/encodings.md#atomic-density)
 
 ## `encodeHorizon`
@@ -309,6 +324,16 @@ encodePointRadius({ value, target? })
 Apply a constant point glyph radius through a traced `encodeRadius` child. This
 does not assign semantic Polar radial position.
 [Constant appearance](../../api/appearance.md)
+
+## `removePointRadius`
+
+```javascript
+removePointRadius({ target? } = {})
+```
+
+Remove an explicit constant point glyph radius and restore the theme default.
+Semantic Polar radial position is unchanged.
+[Point appearance](../../api/appearance/point.md)
 
 ## `encodeSize`
 

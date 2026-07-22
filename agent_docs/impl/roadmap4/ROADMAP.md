@@ -1,7 +1,7 @@
 # Roadmap 4 — Native Ownership and Advanced Static Charts
 
-> **문서 상태 — 현재 실행 계획.** Phase 0~15 실행과 모든 approval Gate를 완료했다. 다음 roadmap이 열리기
-> 전까지 active Phase는 없으며, 포인터는 [`ROADMAP_INDEX.json`](../ROADMAP_INDEX.json)이 소유한다. 현재
+> **문서 상태 — 완료된 실행 기록.** Phase 0~15 실행과 모든 approval Gate를 완료했다. 후속 lifecycle
+> completeness work는 Roadmap 4.1이 소유하며, 포인터는 [`ROADMAP_INDEX.json`](../ROADMAP_INDEX.json)이 소유한다. 현재
 > observable behavior는 [`ACTION_INDEX.json`](../../contract/ACTION_INDEX.json)에서 확인한다.
 
 ## 목표

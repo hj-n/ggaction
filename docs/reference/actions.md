@@ -91,6 +91,7 @@ Use document search with `Ctrl+K`, or filter the alphabetical list by action nam
 | [`editArcMark`](./actions/marks.md#editarcmark) | user-facing | marks |
 | [`editAreaMark`](./actions/marks.md#editareamark) | user-facing | marks |
 | [`editBarMark`](./actions/marks.md#editbarmark) | user-facing | marks |
+| [`editBin2DData`](./actions/charts-data.md#editbin2ddata) | user-facing | core |
 | [`editBoxPlot`](./actions/statistics.md#editboxplot) | user-facing | statistics |
 | [`editCanvas`](./actions/charts-data.md#editcanvas) | user-facing | core |
 | [`editCompositionLayout`](./actions/charts-data.md#editcompositionlayout) | user-facing | composition |
@@ -98,7 +99,9 @@ Use document search with `Ctrl+K`, or filter the alphabetical list by action nam
 | [`editErrorBand`](./actions/statistics.md#editerrorband-and-editerrorbandboundary) | user-facing | statistics |
 | [`editErrorBandBoundary`](./actions/statistics.md#editerrorband-and-editerrorbandboundary) | user-facing | statistics |
 | [`editErrorBar`](./actions/statistics.md#editerrorbar) | user-facing | statistics |
+| [`editFacetGuides`](./actions/charts-data.md#editfacetguides) | user-facing | composition |
 | [`editFacetHeaders`](./actions/charts-data.md#editfacetheaders) | user-facing | composition |
+| [`editFacetScales`](./actions/charts-data.md#editfacetscales) | user-facing | composition |
 | [`editGradientPlot`](./actions/statistics.md#editgradientplot) | user-facing | statistics |
 | [`editGraphics`](./actions/extension.md#extension-actions) | primitive | primitives |
 | [`editGrid`](./actions/advanced.md#directional-grids) | user-facing | grid |
@@ -111,6 +114,7 @@ Use document search with `Ctrl+K`, or filter the alphabetical list by action nam
 | [`editLegendSymbols`](./actions/guides.md#focused-legend-edits) | user-facing | legend_and_title |
 | [`editLegendTitle`](./actions/guides.md#focused-legend-edits) | user-facing | legend_and_title |
 | [`editLineMark`](./actions/marks.md#editlinemark) | user-facing | marks |
+| [`editMarkSelection`](./actions/advanced.md#editmarkselection) | advanced | mark-selection |
 | [`editPointMark`](./actions/marks.md#editpointmark) | user-facing | marks |
 | [`editRadialAxis`](./actions/guides.md#editradialaxis) | user-facing | axes |
 | [`editRadialAxisLabels`](./actions/guides.md#editradialaxislabels) | user-facing | axes |
@@ -178,12 +182,16 @@ Use document search with `Ctrl+K`, or filter the alphabetical list by action nam
 | [`highlightMarks`](./actions/charts-data.md#highlightmarks) | user-facing | mark-selection |
 | [`jitterPoints`](./actions/marks.md#jitterpoints) | user-facing | marks |
 | [`layoutLabels`](./actions/marks.md#layoutlabels) | user-facing | marks |
+| [`removeEncoding`](./actions/encodings.md#removeencoding) | user-facing | encodings |
 | [`removeGrid`](./actions/advanced.md#directional-grids) | user-facing | grid |
 | [`removeJitter`](./actions/marks.md#removejitter) | user-facing | marks |
 | [`removeLabelLayout`](./actions/marks.md#removelabellayout) | user-facing | marks |
 | [`removeLegend`](./actions/guides.md#removelegend) | user-facing | legend_and_title |
 | [`removeMark`](./actions/marks.md#removemark) | user-facing | marks |
+| [`removeMarkHighlight`](./actions/charts-data.md#removemarkhighlight) | user-facing | mark-selection |
+| [`removeMarkSelection`](./actions/advanced.md#removemarkselection) | advanced | mark-selection |
 | [`removePathOrder`](./actions/encodings.md#removepathorder) | user-facing | encodings |
+| [`removePointRadius`](./actions/encodings.md#removepointradius) | user-facing | encodings |
 | [`removeRadialAxis`](./actions/guides.md#removeradialaxis) | user-facing | axes |
 | [`removeThetaAxis`](./actions/guides.md#removethetaaxis) | user-facing | axes |
 | [`removeTitle`](./actions/guides.md#removetitle) | user-facing | legend_and_title |

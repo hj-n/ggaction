@@ -174,6 +174,7 @@ layer IDs. The create action intentionally accepts one shared boundary recipe.
 
 ```javascript
 program.editErrorBand({
+  statistics: { extent: "ci", level: 0.9 },
   fill: "#7dd3fc",
   opacity: 0.34,
   curve: "cardinal"
@@ -182,7 +183,19 @@ program.editErrorBand({
 
 An explicit edit fill overrides concrete encoded colors while retaining the
 semantic color encoding and legend. The override persists through Canvas and
-scale rematerialization. Statistical interval rows are not replaced.
+scale rematerialization. `statistics: { center?, extent?, level? }` creates one
+immutable interval revision for statistical owners and rebinds the body and
+enabled boundaries. Explicit interval owners reject that option.
+
+Use `boundaries: false` on `editErrorBand()` to disable both boundaries; the
+call is also valid when they are already absent. A boundary appearance object
+creates or edits both owned lines:
+
+```javascript
+program.editErrorBand({
+  boundaries: { stroke: "#334155", strokeWidth: 1.5 }
+});
+```
 
 `editErrorBandBoundary()` edits or creates one or both owned boundaries:
 

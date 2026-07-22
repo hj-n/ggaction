@@ -96,6 +96,21 @@ async function testNodeConsumer(directory) {
     );
     assert.equal(typeof render, "function");
     assert.equal(program.graphicSpec.objects.point.items.length, 2);
+    const axisLifecycle = chart()
+      .createCanvas({ width: 240, height: 180, margin: 50 })
+      .createData({ values: [{ x: 1, y: 2 }, { x: 2, y: 4 }] })
+      .createPointMark()
+      .encodeX({ field: "x" })
+      .encodeY({ field: "y" })
+      .createAxes()
+      .editXAxis({ ticksAndLabels: false })
+      .editYAxis({ line: false, title: false });
+    assert.equal(axisLifecycle.graphicSpec.objects.xAxisTicks, undefined);
+    assert.equal(axisLifecycle.graphicSpec.objects.xAxisLabels, undefined);
+    assert.equal(axisLifecycle.graphicSpec.objects.yAxisLine, undefined);
+    assert.equal(axisLifecycle.graphicSpec.objects.yAxisTitle, undefined);
+    assert.ok(axisLifecycle.semanticSpec.layers[0].encoding.x);
+    assert.ok(axisLifecycle.resolvedScales.y);
     const windowed = chart()
       .createData({
         id: "events",
@@ -140,6 +155,16 @@ async function testNodeConsumer(directory) {
         .values.reduce((sum, row) => sum + row.count, 0),
       2
     );
+    const editedBinned = binned.editBin2DData({
+      target: "sampleCells",
+      bins: 1,
+      includeEmpty: false
+    });
+    assert.equal(
+      editedBinned.materializationConfigs.data.bin2d.sampleCells.current,
+      "sampleCellsBin2DDataRevision1"
+    );
+    assert.equal(editedBinned.semanticSpec.datasets.at(-1).values.length, 1);
     const scatterFacade = chart()
       .createCanvas({ width: 160, height: 120, margin: 20 })
       .createData({ values: [{ x: 1, y: 2 }, { x: 2, y: 4 }] })
@@ -528,6 +553,7 @@ async function testTypeScriptConsumer(directory) {
       vconcat,
       type ChartProgram,
       type Bin2DDataOptions,
+      type EditBin2DDataOptions,
       type CreateBarPlotOptions,
       type CreateHeatmapOptions,
       type CreateHistogramOptions,
@@ -536,6 +562,7 @@ async function testTypeScriptConsumer(directory) {
       type GradientPlotOptions,
       type HorizonEncodingOptions,
       type EditHorizonOptions,
+      type EditAxisOptions,
       type CreateDerivedDataOptions,
       type CreateScatterPlotOptions,
       type DatasetTransform,
@@ -553,6 +580,11 @@ async function testTypeScriptConsumer(directory) {
     import { renderToPNG, type PNGRenderResult } from "ggaction/png";
 
     const program: ChartProgram = chart().createCanvas({ width: 100, height: 100 });
+    const axisRemovalOptions: EditAxisOptions<"bottom" | "top"> = {
+      line: false,
+      ticksAndLabels: false,
+      title: false
+    };
     const scatterOptions: CreateScatterPlotOptions = {
       x: "x",
       y: { field: "y", scale: { zero: false } },
@@ -711,6 +743,19 @@ async function testTypeScriptConsumer(directory) {
       .editCompositionLayout({ gap: 8, padding: { left: 4 } })
       .replaceCompositionChild({ target: "view-2", program });
     const nested: ChartProgram = vconcat({ programs: [composed, program] });
+    const facetPolicyEdited: ChartProgram = chart()
+      .createCanvas({ width: 240, height: 180 })
+      .createData({ values: [
+        { group: "A", x: 1, y: 2 },
+        { group: "B", x: 3, y: 4 }
+      ] })
+      .createPointMark()
+      .encodeX({ field: "x" })
+      .encodeY({ field: "y" })
+      .facet({ field: "group", columns: 1 })
+      .editCompositionLayout({ columns: 2 })
+      .editFacetScales({ x: "independent" })
+      .editFacetGuides({ axes: "outer" });
     const draw: typeof render = render;
     const png: Promise<PNGRenderResult> = renderToPNG(program, { output: "chart.png" });
     const wrapped = action(
@@ -775,12 +820,21 @@ async function testTypeScriptConsumer(directory) {
     const binned: ChartProgram = chart()
       .createData({ id: "binSource", values: [{ x: 0, y: 0 }, { x: 2, y: 2 }] })
       .createBin2DData(binOptions);
+    const binEdit: EditBin2DDataOptions = {
+      target: "cells",
+      bins: 1,
+      includeEmpty: false
+    };
+    const editedBinned: ChartProgram = binned.editBin2DData(binEdit);
     const inspected = chart()
       .createCanvas()
       .createData({ values: [{ x: 1, y: 2 }] })
       .createPointMark({ id: "points" })
       .encodeX({ field: "x" })
       .encodeY({ field: "y" });
+    const withoutXAxis: ChartProgram = inspected
+      .createXAxis()
+      .editXAxis(axisRemovalOptions);
     const faceted: ChartProgram = inspected.facet({ field: "x", columns: 1 });
     const polar: ChartProgram = chart()
       .createCanvas()
@@ -880,6 +934,7 @@ async function testTypeScriptConsumer(directory) {
     void pointLayer;
     void pointItems;
     void lastAction;
+    void withoutXAxis;
     void invalidTransform;
   `);
   await writeFile(path.join(directory, "tsconfig.json"), `${JSON.stringify({

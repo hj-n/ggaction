@@ -13,8 +13,14 @@ import {
 
 export const ERROR_BAR_EDIT_OPTIONS = Object.freeze([
   "target", "caps", "capSize", "stroke", "strokeWidth",
-  "strokeDash", "opacity"
+  "strokeDash", "opacity", "statistics"
 ]);
+
+export const ERROR_BAR_APPEARANCE_OPTIONS = Object.freeze(
+  ERROR_BAR_EDIT_OPTIONS.filter(option =>
+    option !== "target" && option !== "statistics"
+  )
+);
 
 export function resolveErrorBarAppearance(args, {
   defaults,

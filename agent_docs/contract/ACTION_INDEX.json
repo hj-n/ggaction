@@ -164,6 +164,24 @@
       }
     },
     {
+      "name": "editBin2DData",
+      "layer": "user-facing",
+      "domain": "core",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Partially revises one logical owner through an immutable derived revision",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/CORE.md",
+        "anchor": "editbin2ddata"
+      }
+    },
+    {
       "name": "createIntervalData",
       "layer": "user-facing",
       "domain": "statistics",
@@ -722,6 +740,24 @@
       }
     },
     {
+      "name": "removePointRadius",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Removes explicit point glyph radius and restores the theme default",
+      "audit": "Removal — Implemented",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "removepointradius"
+      }
+    },
+    {
       "name": "encodeXOffset",
       "layer": "user-facing",
       "domain": "encodings",
@@ -884,6 +920,24 @@
       }
     },
     {
+      "name": "removeEncoding",
+      "layer": "user-facing",
+      "domain": "encodings",
+      "status": "implemented",
+      "lifecycle": "Assignment",
+      "update": "Removes one encoding and its owned companions, guides and concrete state",
+      "audit": "Removal — Implemented",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/ENCODINGS.md",
+        "anchor": "removeencoding"
+      }
+    },
+    {
       "name": "encodeText",
       "layer": "user-facing",
       "domain": "encodings",
@@ -943,7 +997,7 @@
       "domain": "encodings",
       "status": "implemented",
       "lifecycle": "Mutable resource",
-      "update": "Creates and rebinds an immutable density revision",
+      "update": "Revises density source, field, grouping, statistics, and placement through immutable data",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
@@ -1033,7 +1087,7 @@
       "domain": "statistics",
       "status": "implemented",
       "lifecycle": "Mutable resource",
-      "update": "Creates an immutable statistical revision and edits owned components",
+      "update": "Revises regression data roles and statistics through immutable data and edits owned components",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
@@ -1069,7 +1123,7 @@
       "domain": "statistics",
       "status": "implemented",
       "lifecycle": "Mutable resource",
-      "update": "Edits main-rule and owned-cap appearance",
+      "update": "Revises interval statistics and edits main-rule and owned-cap appearance",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
@@ -1105,7 +1159,7 @@
       "domain": "statistics",
       "status": "implemented",
       "lifecycle": "Mutable resource",
-      "update": "Edits error-band body appearance",
+      "update": "Revises interval statistics, boundary state, and body appearance",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
@@ -1159,7 +1213,7 @@
       "domain": "statistics",
       "status": "implemented",
       "lifecycle": "Mutable resource",
-      "update": "Creates immutable summary revisions and edits owned components",
+      "update": "Revises source/position roles through immutable summary siblings and edits owned components",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
@@ -1195,7 +1249,7 @@
       "domain": "statistics",
       "status": "implemented",
       "lifecycle": "Mutable resource",
-      "update": "Creates immutable profile revisions and edits owned components",
+      "update": "Revises source/position roles through immutable profiles and edits owned components",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
@@ -1645,7 +1699,7 @@
       "domain": "axes",
       "status": "implemented",
       "lifecycle": "Mutable resource",
-      "update": "Edits selected existing x-axis components",
+      "update": "Edits or removes selected existing x-axis components",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
@@ -1663,7 +1717,7 @@
       "domain": "axes",
       "status": "implemented",
       "lifecycle": "Mutable resource",
-      "update": "Edits selected existing y-axis components",
+      "update": "Edits or removes selected existing y-axis components",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
@@ -1718,7 +1772,7 @@
       "status": "implemented",
       "lifecycle": "Aggregate create-only",
       "update": "Directional grid children",
-      "audit": "Intentional; planned child edits",
+      "audit": "Intentional; directional child actions own edits and removal",
       "coverage": {
         "contract": "complete",
         "effects": "complete",
@@ -1861,12 +1915,12 @@
       "domain": "legend_and_title",
       "status": "implemented",
       "lifecycle": "Mutable resource",
-      "update": "Edits one stable legend",
+      "update": "Edits categorical, continuous, interval, size, and bounded stroke-width legend appearance",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
         "effects": "complete",
-        "tests": "partial"
+        "tests": "complete"
       },
       "contract": {
         "file": "agent_docs/contract/current/LEGEND_AND_TITLE.md",
@@ -1970,7 +2024,7 @@
       "status": "implemented",
       "lifecycle": "Aggregate create-only",
       "update": "Guide child actions",
-      "audit": "Intentional; child edit gaps remain",
+      "audit": "Intentional; guide child actions own edits and removal",
       "coverage": {
         "contract": "complete",
         "effects": "complete",
@@ -1987,7 +2041,7 @@
       "domain": "legend_and_title",
       "status": "implemented",
       "lifecycle": "Mutable resource",
-      "update": "Removes every legend block owned by one mark",
+      "update": "Removes every owned block or selected complete channel blocks",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
@@ -2234,6 +2288,60 @@
       }
     },
     {
+      "name": "editMarkSelection",
+      "layer": "advanced",
+      "domain": "mark-selection",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Replace a stored selector while preserving its ID and target",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/MARK_SELECTION.md",
+        "anchor": "editmarkselection"
+      }
+    },
+    {
+      "name": "removeMarkHighlight",
+      "layer": "user-facing",
+      "domain": "mark-selection",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Remove highlight appearance while preserving selection intent",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/MARK_SELECTION.md",
+        "anchor": "removemarkhighlight"
+      }
+    },
+    {
+      "name": "removeMarkSelection",
+      "layer": "advanced",
+      "domain": "mark-selection",
+      "status": "implemented",
+      "lifecycle": "Mutable resource",
+      "update": "Remove a stored selection and its dependent highlight",
+      "audit": "Complete",
+      "coverage": {
+        "contract": "complete",
+        "effects": "complete",
+        "tests": "complete"
+      },
+      "contract": {
+        "file": "agent_docs/contract/current/MARK_SELECTION.md",
+        "anchor": "removemarkselection"
+      }
+    },
+    {
       "name": "highlightMarks",
       "layer": "user-facing",
       "domain": "mark-selection",
@@ -2325,10 +2433,12 @@
     { "name": "createRadialGrid", "layer": "user-facing", "domain": "grid", "status": "implemented", "lifecycle": "Mutable resource", "update": "`editRadialGrid`", "audit": "Complete", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/GRID.md", "anchor": "createRadialGrid" } },
     { "name": "editThetaGrid", "layer": "user-facing", "domain": "grid", "status": "implemented", "lifecycle": "Mutable resource", "update": "Edits theta grid", "audit": "Complete", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/GRID.md", "anchor": "editThetaGrid" } },
     { "name": "editRadialGrid", "layer": "user-facing", "domain": "grid", "status": "implemented", "lifecycle": "Mutable resource", "update": "Edits radial grid", "audit": "Complete", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/GRID.md", "anchor": "editRadialGrid" } },
-    { "name": "editCompositionLayout", "layer": "user-facing", "domain": "composition", "status": "implemented", "lifecycle": "Mutable resource", "update": "Edits composition layout", "audit": "Complete", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/COMPOSITION.md", "anchor": "editCompositionLayout" } },
+    { "name": "editCompositionLayout", "layer": "user-facing", "domain": "composition", "status": "implemented", "lifecycle": "Mutable resource", "update": "Edits concat layout or facet columns/layout", "audit": "Complete", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/COMPOSITION.md", "anchor": "editCompositionLayout" } },
     { "name": "replaceCompositionChild", "layer": "user-facing", "domain": "composition", "status": "implemented", "lifecycle": "Mutable resource", "update": "Replaces one child slot", "audit": "Complete", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/COMPOSITION.md", "anchor": "replaceCompositionChild" } },
     { "name": "facet", "layer": "user-facing", "domain": "composition", "status": "implemented", "lifecycle": "Aggregate create-only", "update": "Creates immutable derived child views", "audit": "Complete", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/COMPOSITION.md", "anchor": "facet" } },
-    { "name": "editFacetHeaders", "layer": "user-facing", "domain": "composition", "status": "implemented", "lifecycle": "Mutable resource", "update": "Edits parent-owned facet headers", "audit": "Complete", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/COMPOSITION.md", "anchor": "editFacetHeaders" } }
+    { "name": "editFacetHeaders", "layer": "user-facing", "domain": "composition", "status": "implemented", "lifecycle": "Mutable resource", "update": "Edits parent-owned facet headers", "audit": "Complete", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/COMPOSITION.md", "anchor": "editFacetHeaders" } },
+    { "name": "editFacetScales", "layer": "user-facing", "domain": "composition", "status": "implemented", "lifecycle": "Mutable resource", "update": "Rederives facet children under edited scale policies", "audit": "Complete", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/COMPOSITION.md", "anchor": "editfacetscales" } },
+    { "name": "editFacetGuides", "layer": "user-facing", "domain": "composition", "status": "implemented", "lifecycle": "Mutable resource", "update": "Rederives facet children and edits guide ownership", "audit": "Complete", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/COMPOSITION.md", "anchor": "editfacetguides" } }
     ,{ "name": "createScatterPlot", "layer": "user-facing", "domain": "charts", "status": "implemented", "lifecycle": "Aggregate create-only", "update": "Existing point, encoding, scale and guide actions", "audit": "Intentional", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/BASIC_CHARTS.md", "anchor": "createscatterplot" } }
     ,{ "name": "createLinePlot", "layer": "user-facing", "domain": "charts", "status": "implemented", "lifecycle": "Aggregate create-only", "update": "Existing line, encoding, scale and guide actions", "audit": "Intentional", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/BASIC_CHARTS.md", "anchor": "createlineplot" } }
     ,{ "name": "createBarPlot", "layer": "user-facing", "domain": "charts", "status": "implemented", "lifecycle": "Aggregate create-only", "update": "Existing bar, encoding, scale and guide actions", "audit": "Intentional", "coverage": { "contract": "complete", "effects": "complete", "tests": "complete" }, "contract": { "file": "agent_docs/contract/current/BASIC_CHARTS.md", "anchor": "createbarplot" } }

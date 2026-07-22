@@ -111,6 +111,24 @@ const styled = program.editBoxPlot({
 });
 ```
 
+Revise the raw source or replace either complete positional role without
+recreating the plot:
+
+```javascript
+const horizontal = styled.editBoxPlot({
+  data: "observations",
+  x: { field: "value", fieldType: "quantitative" },
+  y: { field: "group", fieldType: "nominal" }
+});
+```
+
+Omitted `data`, `x`, and `y` retain the current source and role. The complete
+result must contain exactly one categorical and one quantitative position.
+Switching those roles changes orientation while retaining the stable box,
+whisker, cap, median, and applicable outlier IDs. Position axes and the
+continuous grid move to the new channels; incompatible shared-scale or stored
+selection state rejects the whole edit.
+
 Whisker or outlier-presence changes create an immutable summary revision and
 rebind the body, whiskers, caps, median, and optional outliers together. Width
 or appearance-only edits keep the current derived datasets. `outliers: false`
@@ -137,8 +155,8 @@ explicitly rematerialize boxes, medians, whiskers, caps, and outliers.
 
 ## Current limitations
 
-Category/measure reassignment, subgroup offsets, notches, variable-width
-boxes, and custom whisker appearance are not implemented.
+Subgroup offsets, notches, variable-width boxes, and custom whisker appearance
+are not implemented.
 
 ## Related
 

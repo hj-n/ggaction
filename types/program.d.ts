@@ -96,6 +96,7 @@ export interface CompositionOptions {
   padding?: number | CompositionPadding;
 }
 export interface EditCompositionLayoutOptions {
+  columns?: number;
   gap?: number;
   align?: CompositionAlign;
   padding?: number | CompositionPadding;
@@ -486,6 +487,12 @@ export type SelectMarksOptions = {
   id?: string;
   target?: string;
 } & MarkSelector;
+export type EditMarkSelectionOptions = {
+  selection?: string;
+} & MarkSelector;
+export interface RemoveMarkSelectionOptions {
+  selection?: string;
+}
 export type FilterMarksOptions = {
   target?: string;
 } & MarkSelector;
@@ -1116,6 +1123,18 @@ export interface Bin2DDataOptions {
   as?: Bin2DOutputFields;
 }
 
+export interface EditBin2DDataOptions {
+  target?: string;
+  source?: string;
+  x?: string;
+  y?: string;
+  bins?: number | Bin2DCounts;
+  extent?: Bin2DExtent;
+  includeEmpty?: boolean;
+  members?: boolean;
+  as?: DatasetBin2DOutputFields;
+}
+
 export interface ErrorBarPositionChannel {
   field?: string;
   fieldType?: "nominal" | "ordinal" | "temporal";
@@ -1165,6 +1184,11 @@ export interface EditErrorBarOptions {
   strokeWidth?: number;
   strokeDash?: DashStyle | DashPattern;
   opacity?: number;
+  statistics?: {
+    center?: IntervalCenter;
+    extent?: IntervalExtent;
+    level?: number;
+  };
 }
 
 export interface BoxPlotCategoryChannel {
@@ -1217,6 +1241,9 @@ export interface BoxPlotOptions {
 
 export interface EditBoxPlotOptions {
   target?: string;
+  data?: string;
+  x?: BoxPlotPositionChannel;
+  y?: BoxPlotPositionChannel;
   whisker?: BoxPlotWhisker;
   width?: { band?: number };
   outliers?: boolean;
@@ -1313,6 +1340,9 @@ export interface ViolinPlotOptions {
 
 export interface EditGradientPlotOptions {
   target?: string;
+  data?: string;
+  x?: GradientPlotPositionChannel;
+  y?: GradientPlotPositionChannel;
   density?: GradientPlotDensityOptions;
   width?: { band?: number };
   gradient?: GradientPlotAppearanceOptions;
@@ -1547,6 +1577,18 @@ export interface EditErrorBandOptions {
   fill?: string;
   opacity?: number;
   curve?: CurveInterpolation;
+  statistics?: {
+    center?: IntervalCenter;
+    extent?: IntervalExtent;
+    level?: number;
+  };
+  boundaries?: false | {
+    stroke?: string;
+    strokeWidth?: number;
+    strokeDash?: DashStyle | DashPattern;
+    opacity?: number;
+    curve?: CurveInterpolation;
+  };
 }
 
 export interface EditErrorBandBoundaryOptions {
@@ -1561,6 +1603,9 @@ export interface EditErrorBandBoundaryOptions {
 
 export interface EditDensityOptions {
   target?: string;
+  source?: string;
+  field?: string;
+  groupBy?: string | false;
   bandwidth?: "auto" | number;
   extent?: "auto" | readonly [number, number];
   steps?: number;
@@ -1890,6 +1935,10 @@ export type RegressionOptions = RegressionCommonOptions & (
 
 export interface EditRegressionOptions {
   target?: string;
+  data?: string;
+  x?: string;
+  y?: string;
+  groupBy?: string | false;
   method?: RegressionMethod;
   degree?: number;
   span?: number;
@@ -1913,6 +1962,7 @@ export interface RemoveGridOptions {
 
 export interface RemoveLegendOptions {
   target?: string;
+  channels?: readonly ("color" | "strokeDash" | "strokeWidth" | "shape" | "size" | "opacity")[];
 }
 
 export interface RemoveMarkOptions {
@@ -2023,11 +2073,11 @@ export interface EditLegendBorderOptions {
 
 export interface EditAxisOptions<P extends string> {
   position?: P;
-  line?: AxisLineStyleOptions;
-  ticks?: Omit<AxisTickOptions<P>, "scale" | "position">;
-  labels?: Omit<AxisLabelOptions<P>, "scale" | "position">;
-  ticksAndLabels?: Omit<AxisTicksAndLabelsOptions<P>, "scale" | "position">;
-  title?: Omit<AxisTitleOptions<P>, "scale" | "position">;
+  line?: false | AxisLineStyleOptions;
+  ticks?: false | Omit<AxisTickOptions<P>, "scale" | "position">;
+  labels?: false | Omit<AxisLabelOptions<P>, "scale" | "position">;
+  ticksAndLabels?: false | Omit<AxisTicksAndLabelsOptions<P>, "scale" | "position">;
+  title?: false | Omit<AxisTitleOptions<P>, "scale" | "position">;
 }
 
 export interface TitleTextStyleOptions {
@@ -2086,12 +2136,16 @@ export class ChartProgram {
   filterData(options: FilterDataOptions): ChartProgram;
   filterMarks(options: FilterMarksOptions): ChartProgram;
   selectMarks(options: SelectMarksOptions): ChartProgram;
+  editMarkSelection(options: EditMarkSelectionOptions): ChartProgram;
+  removeMarkHighlight(options?: RemoveMarkSelectionOptions): ChartProgram;
+  removeMarkSelection(options?: RemoveMarkSelectionOptions): ChartProgram;
   highlightMarks(options: HighlightMarksOptions): ChartProgram;
   createDensityData(options: DensityDataOptions): ChartProgram;
   createRegressionData(options: RegressionDataOptions): ChartProgram;
   createIntervalData(options: IntervalDataOptions): ChartProgram;
   createWindowData(options: WindowDataOptions): ChartProgram;
   createBin2DData(options: Bin2DDataOptions): ChartProgram;
+  editBin2DData(options: EditBin2DDataOptions): ChartProgram;
 
   createPointMark(options?: {
     id?: string;
@@ -2107,7 +2161,7 @@ export class ChartProgram {
     shape?: PointShape;
     fill?: string;
     opacity?: number;
-    stroke?: string;
+    stroke?: string | false;
     strokeWidth?: number;
   }): ChartProgram;
   jitterPoints(options: JitterPointsOptions): ChartProgram;
@@ -2169,7 +2223,7 @@ export class ChartProgram {
     padAngle?: number;
     fill?: string;
     opacity?: number;
-    stroke?: string;
+    stroke?: string | false;
     strokeWidth?: number;
   }): ChartProgram;
   createRectMark(options?: RectMarkOptions): ChartProgram;
@@ -2200,6 +2254,7 @@ export class ChartProgram {
   encodeOpacity(options: OpacityEncodingOptions): ChartProgram;
   encodeRadius(options: { value: number; target?: string }): ChartProgram;
   encodePointRadius(options: { value: number; target?: string }): ChartProgram;
+  removePointRadius(options?: { target?: string }): ChartProgram;
   encodeXOffset(options: XOffsetEncodingOptions): ChartProgram;
   encodeYOffset(options: YOffsetEncodingOptions): ChartProgram;
   encodeY2(options: SecondaryPositionEncodingOptions): ChartProgram;
@@ -2223,6 +2278,13 @@ export class ChartProgram {
   encodePathOrder(options: PathOrderEncodingOptions): ChartProgram;
   encodeParallelCoordinates(options: ParallelCoordinatesEncodingOptions): ChartProgram;
   removePathOrder(options?: RemovePathOrderOptions): ChartProgram;
+  removeEncoding(options: {
+    target?: string;
+    channel:
+      | "x" | "y" | "x2" | "y2" | "xOffset" | "yOffset"
+      | "theta" | "radius" | "color" | "strokeDash" | "strokeWidth"
+      | "size" | "shape" | "group" | "opacity" | "text";
+  }): ChartProgram;
   encodeText(options: TextEncodingOptions): ChartProgram;
   encodeHistogram(options: HistogramEncodingOptions): ChartProgram;
   encodeDensity(options: DensityEncodingOptions): ChartProgram;
@@ -2340,6 +2402,8 @@ export class ChartProgram {
   editCompositionLayout(options: EditCompositionLayoutOptions): ChartProgram;
   replaceCompositionChild(options: ReplaceCompositionChildOptions): ChartProgram;
   facet(options: FacetOptions): ChartProgram;
+  editFacetScales(options: FacetScaleResolutions): ChartProgram;
+  editFacetGuides(options: FacetGuideOptions): ChartProgram;
   editFacetHeaders(options: EditFacetHeadersOptions): ChartProgram;
 
   editSemantic(options: EditSemanticOptions): ChartProgram;

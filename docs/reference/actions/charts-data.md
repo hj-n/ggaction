@@ -28,10 +28,11 @@ Edit Canvas properties and rematerialize connected consumers.
 ## `editCompositionLayout`
 
 ```javascript
-editCompositionLayout({ gap?, align?, padding? })
+editCompositionLayout({ columns?, gap?, align?, padding? })
 ```
 
 Edit spacing, cross-axis alignment, or outer padding on an existing composition.
+`columns` changes wrapping only on a facet composition and is rejected for concat.
 Omitted values are preserved, child identity is unchanged, and the parent snapshot
 is rebuilt from retained child programs.
 
@@ -66,6 +67,26 @@ editFacetHeaders({ fontSize?, fontFamily?, fontWeight?, color?, offset? })
 
 Edit the parent-owned repeated facet headers and rebuild the parent snapshot
 without changing child programs or facet value order.
+
+## `editFacetScales`
+
+```javascript
+editFacetScales({ x?, y?, xOffset?, yOffset?, color?, size?, shape?, opacity?, strokeDash? })
+```
+
+Partially change used facet channels between `"shared"` and `"independent"`.
+Every cell is rederived from the retained pre-facet program while field, data,
+value order, child IDs, layout, guides, headers, and title are preserved.
+
+## `editFacetGuides`
+
+```javascript
+editFacetGuides({ axes?, legend? })
+```
+
+Partially change axes between `"each"` and `"outer"`, or legend ownership
+between `false` and `"shared"`. Shared legend promotion requires concretely
+compatible child scales and guide recipes.
 
 ## `createData`
 
@@ -166,6 +187,16 @@ then apply mark-specific concrete emphasis, optional complement dimming, and
 selected-last order.
 [Mark selection and highlighting](../../api/appearance/selection-and-highlighting.md#mark-selection-and-highlighting)
 
+## `removeMarkHighlight`
+
+```javascript
+removeMarkHighlight({ selection? } = {})
+```
+
+Remove one highlight assignment, restore the target mark and categorical
+legend baseline, and retain the reusable selection.
+[Selection lifecycle](../../api/appearance/selection-and-highlighting.md#editing-and-removing-stored-intent)
+
 ## `createRegressionData`
 
 ```javascript
@@ -215,6 +246,19 @@ createBin2DData({
 Aggregate finite x/y pairs into deterministic rectangular cell bounds and
 counts. Reusing the logical ID creates an immutable revision and rematerializes
 direct visual consumers. [Rectangular 2D bins](../../api/data/bin2d.md)
+
+## `editBin2DData`
+
+```javascript
+editBin2DData({
+  target?, source?, x?, y?, bins?, extent?, includeEmpty?, members?, as?
+})
+```
+
+Partially revise the current or unique logical 2D-bin owner. Omitted top-level
+transform options are preserved; successful edits create an immutable revision,
+rebind direct visual consumers, and safely release the prior revision.
+[Rectangular 2D bins](../../api/data/bin2d.md#editbin2ddata)
 
 ## Related
 

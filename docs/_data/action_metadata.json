@@ -39,6 +39,11 @@
     "layer": "user-facing",
     "domain": "core"
   },
+  "editBin2DData": {
+    "operation": "edit",
+    "layer": "user-facing",
+    "domain": "core"
+  },
   "createIntervalData": {
     "operation": "create",
     "layer": "user-facing",
@@ -194,6 +199,11 @@
     "layer": "user-facing",
     "domain": "encodings"
   },
+  "removePointRadius": {
+    "operation": "remove",
+    "layer": "user-facing",
+    "domain": "encodings"
+  },
   "encodeXOffset": {
     "operation": "encode",
     "layer": "user-facing",
@@ -235,6 +245,11 @@
     "domain": "encodings"
   },
   "removePathOrder": {
+    "operation": "remove",
+    "layer": "user-facing",
+    "domain": "encodings"
+  },
+  "removeEncoding": {
     "operation": "remove",
     "layer": "user-facing",
     "domain": "encodings"
@@ -614,6 +629,21 @@
     "layer": "advanced",
     "domain": "mark-selection"
   },
+  "editMarkSelection": {
+    "operation": "edit",
+    "layer": "advanced",
+    "domain": "mark-selection"
+  },
+  "removeMarkHighlight": {
+    "operation": "remove",
+    "layer": "user-facing",
+    "domain": "mark-selection"
+  },
+  "removeMarkSelection": {
+    "operation": "remove",
+    "layer": "advanced",
+    "domain": "mark-selection"
+  },
   "highlightMarks": {
     "operation": "highlight",
     "layer": "user-facing",
@@ -750,6 +780,16 @@
     "domain": "composition"
   },
   "editFacetHeaders": {
+    "operation": "edit",
+    "layer": "user-facing",
+    "domain": "composition"
+  },
+  "editFacetScales": {
+    "operation": "edit",
+    "layer": "user-facing",
+    "domain": "composition"
+  },
+  "editFacetGuides": {
     "operation": "edit",
     "layer": "user-facing",
     "domain": "composition"

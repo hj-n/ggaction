@@ -18,11 +18,19 @@ const TITLE_OPTIONS = Object.freeze([
   "text", "at", "offset", "rotation", "color", "fontSize",
   "fontFamily", "fontWeight"
 ]);
+const COMPONENTS = Object.freeze({
+  line: Object.freeze({ suffix: "Line", config: "line" }),
+  ticks: Object.freeze({ suffix: "Ticks", config: "ticks" }),
+  labels: Object.freeze({ suffix: "Labels", config: "labels" }),
+  title: Object.freeze({ suffix: "Title", config: "title" })
+});
 
-function validateNested(args, key, options, operation) {
+function validateNested(args, key, options, operation, { allowFalse = false } = {}) {
   if (!Object.hasOwn(args, key)) return;
+  if (allowFalse && args[key] === false) return;
   if (!isPlainObject(args[key])) {
-    throw new TypeError(`${operation}.${key} must be a plain object.`);
+    const accepted = allowFalse ? "false or a plain object" : "a plain object";
+    throw new TypeError(`${operation}.${key} must be ${accepted}.`);
   }
   validateKeys(args[key], options, `${operation}.${key}`);
 }
@@ -33,11 +41,12 @@ function validateArgs(args, operation) {
     emptyMessage: `${operation} requires at least one axis change.`,
     emptyError: Error
   });
-  validateNested(args, "line", LINE_OPTIONS, operation);
-  validateNested(args, "ticks", TICK_OPTIONS, operation);
-  validateNested(args, "labels", LABEL_OPTIONS, operation);
-  validateNested(args, "ticksAndLabels", GROUP_OPTIONS, operation);
-  validateNested(args, "title", TITLE_OPTIONS, operation);
+  const removable = { allowFalse: true };
+  validateNested(args, "line", LINE_OPTIONS, operation, removable);
+  validateNested(args, "ticks", TICK_OPTIONS, operation, removable);
+  validateNested(args, "labels", LABEL_OPTIONS, operation, removable);
+  validateNested(args, "ticksAndLabels", GROUP_OPTIONS, operation, removable);
+  validateNested(args, "title", TITLE_OPTIONS, operation, removable);
   if (args.ticksAndLabels !== undefined && (
     args.ticks !== undefined || args.labels !== undefined
   )) {
@@ -45,10 +54,10 @@ function validateArgs(args, operation) {
       `${operation} cannot combine ticksAndLabels with ticks or labels.`
     );
   }
-  if (args.ticksAndLabels?.ticks !== undefined) {
+  if (args.ticksAndLabels !== false && args.ticksAndLabels?.ticks !== undefined) {
     validateNested(args.ticksAndLabels, "ticks", ["length", "color", "lineWidth"], `${operation}.ticksAndLabels`);
   }
-  if (args.ticksAndLabels?.labels !== undefined) {
+  if (args.ticksAndLabels !== false && args.ticksAndLabels?.labels !== undefined) {
     validateNested(args.ticksAndLabels, "labels", [
       "offset", "format", "color", "fontSize", "fontFamily", "fontWeight"
     ], `${operation}.ticksAndLabels`);
@@ -63,8 +72,112 @@ function names(channel) {
     ticks: `edit${prefix}AxisTicks`,
     labels: `edit${prefix}AxisLabels`,
     group: `edit${prefix}AxisTicksAndLabels`,
-    title: `edit${prefix}AxisTitle`
+    title: `edit${prefix}AxisTitle`,
+    remove: `remove${prefix}Axis`
   };
+}
+
+function graphicId(channel, component) {
+  return `${channel}Axis${COMPONENTS[component].suffix}`;
+}
+
+function hasComponent(program, channel, component) {
+  return program.graphicSpec.objects[graphicId(channel, component)] !== undefined ||
+    program.guideConfigs.axis?.[channel]?.[COMPONENTS[component].config] !== undefined ||
+    (component === "title" &&
+      program.semanticSpec.guides.axis?.[channel]?.title !== undefined);
+}
+
+function assertRemovable(program, channel, component, operation) {
+  if (!hasComponent(program, channel, component)) {
+    throw new Error(
+      `${operation}.${component} requires an existing ${channel}-axis ${component}.`
+    );
+  }
+}
+
+function removeComponent(program, channel, component) {
+  const id = graphicId(channel, component);
+  let next = program;
+
+  if (
+    component === "title" &&
+    next.semanticSpec.guides.axis?.[channel]?.title !== undefined
+  ) {
+    next = next.editSemantic({
+      property: `guide.axis.${channel}.title`,
+      remove: true
+    });
+  }
+  if (next.graphicSpec.objects[id] !== undefined) {
+    next = next.editGraphics({ target: id, remove: true });
+  }
+  return next._withoutMaterializationConfig([
+    "guides", "axis", channel, COMPONENTS[component].config
+  ]);
+}
+
+function buildPlan(program, channel, args, operation) {
+  const shared = Object.hasOwn(args, "position")
+    ? { position: args.position }
+    : {};
+  const plan = [];
+  const addLeaf = (component, edit) => {
+    const value = args[component];
+    if (value === false) {
+      assertRemovable(program, channel, component, operation.operation);
+      plan.push({ kind: "remove", component });
+    } else if (value !== undefined) {
+      plan.push({ kind: "edit", operation: edit, args: { ...shared, ...value } });
+    } else if (args.position !== undefined && hasComponent(program, channel, component)) {
+      plan.push({ kind: "edit", operation: edit, args: shared });
+    }
+  };
+
+  addLeaf("line", operation.line);
+  if (args.ticksAndLabels === false) {
+    assertRemovable(program, channel, "ticks", operation.operation);
+    assertRemovable(program, channel, "labels", operation.operation);
+    plan.push(
+      { kind: "remove", component: "ticks" },
+      { kind: "remove", component: "labels" }
+    );
+  } else if (args.ticksAndLabels !== undefined) {
+    plan.push({
+      kind: "edit",
+      operation: operation.group,
+      args: { ...shared, ...args.ticksAndLabels }
+    });
+  } else {
+    addLeaf("ticks", operation.ticks);
+    addLeaf("labels", operation.labels);
+  }
+  addLeaf("title", operation.title);
+
+  if (plan.length === 0) {
+    throw new Error(`${operation.operation} requires an existing ${channel}-axis component.`);
+  }
+  return plan;
+}
+
+function applyPlan(program, channel, plan, operation) {
+  let next = program;
+  for (const step of plan) {
+    next = step.kind === "remove"
+      ? removeComponent(next, channel, step.component)
+      : next[step.operation](step.args);
+  }
+
+  const hasRetainedGraphic = Object.keys(COMPONENTS).some(
+    component => next.graphicSpec.objects[graphicId(channel, component)] !== undefined
+  );
+  if (!hasRetainedGraphic && (
+    next.semanticSpec.guides.axis?.[channel] !== undefined ||
+    next.guideConfigs.axis?.[channel] !== undefined
+  )) {
+    next = next[operation.remove]();
+  }
+  return next;
 }
 
 function makeEditAxis(channel) {
@@ -76,43 +189,12 @@ function makeEditAxis(channel) {
     },
     function (args = {}) {
       validateArgs(args, operation.operation);
-      const shared = Object.hasOwn(args, "position")
-        ? { position: args.position }
-        : {};
-      const has = id => this.graphicSpec.objects[id] !== undefined;
-      let next = this;
+      const plan = buildPlan(this, channel, args, operation);
 
-      if (args.line !== undefined || (args.position !== undefined && has(`${channel}AxisLine`))) {
-        next = next[operation.line]({ ...shared, ...(args.line ?? {}) });
-      }
-
-      if (args.ticksAndLabels !== undefined) {
-        next = next[operation.group]({
-          ...shared,
-          ...args.ticksAndLabels
-        });
-      } else if (args.ticks !== undefined || args.labels !== undefined) {
-        if (args.ticks !== undefined) {
-          next = next[operation.ticks]({ ...shared, ...args.ticks });
-        }
-        if (args.labels !== undefined) {
-          next = next[operation.labels]({ ...shared, ...args.labels });
-        }
-      } else if (args.position !== undefined) {
-        const hasTicks = has(`${channel}AxisTicks`);
-        const hasLabels = has(`${channel}AxisLabels`);
-        if (hasTicks && hasLabels) {
-          next = next[operation.group](shared);
-        } else {
-          if (hasTicks) next = next[operation.ticks](shared);
-          if (hasLabels) next = next[operation.labels](shared);
-        }
-      }
-
-      if (args.title !== undefined || (args.position !== undefined && has(`${channel}AxisTitle`))) {
-        next = next[operation.title]({ ...shared, ...(args.title ?? {}) });
-      }
-      return next;
+      // Run the complete proposal against an immutable speculative branch so a
+      // later leaf failure cannot begin the returned action trace or state.
+      applyPlan(this, channel, plan, operation);
+      return applyPlan(this, channel, plan, operation);
     }
   );
 }
