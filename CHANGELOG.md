@@ -4,6 +4,30 @@ All notable changes to `ggaction` are recorded in this file.
 
 ## Unreleased
 
+## [0.0.6] - 2026-07-23
+
+### Added
+
+- Added explicit edit and removal lifecycles for encodings, point appearance, selections, highlights, legends, and
+  Cartesian axis components while preserving immutable state and meaningful action traces.
+- Added revision workflows for 2D bins, interval statistics, regression, density, box plots, gradient plots, and facet
+  policies, including deterministic rematerialization after data-role and layout changes.
+
+### Changed
+
+- Expanded installed-package, Browser Canvas, Node PNG, TypeScript, action-contract, and cross-capability coverage for
+  the complete authoring lifecycle surface.
+- Improved documentation entry points, navigation, chart discovery, gallery filtering, responsive presentation, and
+  generated API routing for the completed lifecycle actions.
+
+### Fixed
+
+- Preserved unaffected shared-legend channels when selectively removing an encoding, and prevented removed resources
+  from returning after later rematerialization or facet replay.
+- Kept documentation search results under the deployed `/ggaction/` base path and improved gallery text contrast.
+- Allowed the approved Polar chart ink bounds to absorb the observed 1.5-pixel platform rasterization variance while
+  retaining exact primitive/public pixel comparisons and the existing density, color, and region checks.
+
 ## [0.0.5] - 2026-07-21
 
 ### Added
@@ -111,6 +135,7 @@ All notable changes to `ggaction` are recorded in this file.
 - Cartesian charts are the complete current path. Polar semantic tokens exist only where explicitly documented and do
   not imply complete polar rendering.
 
+[0.0.6]: https://github.com/ggaction/ggaction/releases/tag/v0.0.6
 [0.0.5]: https://github.com/ggaction/ggaction/releases/tag/v0.0.5
 [0.0.4]: https://github.com/ggaction/ggaction/releases/tag/v0.0.4
 [0.0.3]: https://github.com/ggaction/ggaction/releases/tag/v0.0.3

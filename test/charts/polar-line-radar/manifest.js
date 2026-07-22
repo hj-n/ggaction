@@ -111,7 +111,7 @@ export const visualVariants = Object.freeze([
         y: 41.25,
         width: 649,
         height: 555,
-        tolerance: { x: 3.5, y: 1, width: 11, height: 1 }
+        tolerance: { x: 3.5, y: 1.5, width: 11, height: 1.5 }
       }
     },
     regions: [{
