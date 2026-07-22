@@ -2,11 +2,11 @@
 
 ## 진행 상태
 
-- [ ] Box owner, source, summary/outlier and component ownership mapping
-- [ ] Complete data/x/y role and consumer preflight
-- [ ] Immutable summary/outlier revisions and component rebind
-- [ ] Vertical/horizontal scale and guide handoff
-- [ ] Selection/highlight, trace, atomicity and immutability tests
+- [x] Box owner, source, summary/outlier and component ownership mapping
+- [x] Complete data/x/y role and consumer preflight
+- [x] Immutable summary/outlier revisions and component rebind
+- [x] Vertical/horizontal scale and guide handoff
+- [x] Selection/highlight, trace, atomicity and immutability tests
 
 ## 실행 순서
 

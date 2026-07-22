@@ -2,12 +2,12 @@
 
 ## 진행 상태
 
-- [ ] Gradient owner, source, profile/body/center ownership mapping
-- [ ] Complete data/x/y role and consumer preflight
-- [ ] Immutable profile revision and component rebind
-- [ ] Vertical/horizontal scale and guide handoff
-- [ ] Contract/type/docs synchronization and cumulative verification
-- [ ] Gate evidence/commit/push
+- [x] Gradient owner, source, profile/body/center ownership mapping
+- [x] Complete data/x/y role and consumer preflight
+- [x] Immutable profile revision and component rebind
+- [x] Vertical/horizontal scale and guide handoff
+- [x] Contract/type/docs synchronization and cumulative verification
+- [x] Gate evidence/commit/push
 
 ## 실행 순서
 

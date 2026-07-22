@@ -12,13 +12,13 @@ materialize한다.
 
 - [x] R41-P6-A explicit approval과 active Phase 전환
 - [x] R41-P7-A Gate 선언
-- [ ] Shared distribution position-role vocabulary와 ownership mapping
-- [ ] Box data/x/y revision과 orientation handoff
-- [ ] Gradient data/x/y revision과 orientation handoff
-- [ ] Scale/axis/grid/legend 및 selection/highlight replay 검증
-- [ ] Types/current contracts/ACTION_INDEX/public docs 동기화
-- [ ] Focused/cumulative/Browser/PNG/package verification
-- [ ] R41-P7-A remote checkpoint
+- [x] Shared distribution position-role vocabulary와 ownership mapping
+- [x] Box data/x/y revision과 orientation handoff
+- [x] Gradient data/x/y revision과 orientation handoff
+- [x] Scale/axis/grid/legend 및 selection/highlight replay 검증
+- [x] Types/current contracts/ACTION_INDEX/public docs 동기화
+- [x] Focused/cumulative/Browser/PNG/package verification
+- [x] R41-P7-A remote checkpoint
 - [ ] 사용자 explicit approval
 
 ## Gate R41-P7-A
