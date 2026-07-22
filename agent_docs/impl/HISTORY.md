@@ -34,11 +34,17 @@ editing을 추가했다. 외부 평가 안정화와 organization transfer를 거
 
 ## Roadmap 4 — Native Ownership and Advanced Static Charts
 
-현재 실행 계획 owner이며 Phase 0~15를 완료했다. Runtime bug 안정화, Basic Chart facade, jitter, window/2D bin, gradient
+Phase 0~15를 완료했다. Runtime bug 안정화, Basic Chart facade, jitter, window/2D bin, gradient
 distribution, ordered path, categorical density, horizon, parallel coordinates, collision-aware label layout과
-facade consistency를 완료했다. Phase 15에서 public docs verification과 release-readiness 검증을 닫았으며,
-다음 roadmap이 열리기 전까지 active Phase는 없다.
+facade consistency를 완료했다. Phase 15에서 public docs verification과 release-readiness 검증을 닫았다.
 
-- 현재 계획: [`roadmap4/ROADMAP.md`](roadmap4/ROADMAP.md)
+- 기록: [`roadmap4/ROADMAP.md`](roadmap4/ROADMAP.md)
+
+## Roadmap 4.1 — Authoring Lifecycle and Compatibility Completion
+
+현재 실행 계획 owner다. 새 chart capability가 아니라 existing encoding, selection/highlight, guide, statistical
+owner, 2D-bin과 facet의 explicit edit/remove lifecycle을 완성한다.
+
+- 현재 계획: [`roadmap4.1/ROADMAP.md`](roadmap4.1/ROADMAP.md)
 
 Machine-readable 상태와 현재 Phase는 [`ROADMAP_INDEX.json`](ROADMAP_INDEX.json)이 소유한다.

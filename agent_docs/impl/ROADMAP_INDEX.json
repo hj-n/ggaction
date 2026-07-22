@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "activeRoadmap": "roadmap4",
-  "activePhase": null,
-  "lastCompletedPhase": 15,
+  "activeRoadmap": "roadmap4.1",
+  "activePhase": 0,
+  "lastCompletedPhase": null,
   "roadmaps": [
     {
       "id": "roadmap1",
@@ -39,9 +39,17 @@
     {
       "id": "roadmap4",
       "title": "Native Ownership and Advanced Static Charts",
+      "status": "completed",
+      "role": "historical-execution-record",
+      "file": "agent_docs/impl/roadmap4/ROADMAP.md",
+      "successor": "roadmap4.1"
+    },
+    {
+      "id": "roadmap4.1",
+      "title": "Authoring Lifecycle and Compatibility Completion",
       "status": "active",
       "role": "current-execution-plan",
-      "file": "agent_docs/impl/roadmap4/ROADMAP.md"
+      "file": "agent_docs/impl/roadmap4.1/ROADMAP.md"
     }
   ]
 }

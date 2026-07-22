@@ -15,8 +15,8 @@
 | 승인된 미래 계약 읽기 | [`contract/planned/`](contract/planned/) |
 | 현재 개발 순서 확인 | [`impl/README.md`](impl/README.md) |
 
-현재 실행 계획 owner는 **Roadmap 4**이며 Phase 15까지 완료되어 active Phase는 없다. Phase 13 hierarchy
-layout은 `Maybe Future`로 이동해 건너뛰었다. 다음 roadmap이 열릴 때까지 마지막 완료 Phase는 15이며, 이
+현재 실행 계획 owner는 **Roadmap 4.1**이며 active Phase 0이다. 새 chart capability가 아니라 encoding,
+selection, guide, statistical owner와 facet의 edit/remove lifecycle을 보강하는 contract Gate가 진행 중이다.
 포인터의 machine-readable owner는 [`impl/ROADMAP_INDEX.json`](impl/ROADMAP_INDEX.json)이다.
 
 ## 작업별 읽기 경로

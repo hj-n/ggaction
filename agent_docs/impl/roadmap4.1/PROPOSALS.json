@@ -1,0 +1,194 @@
+{
+  "version": 1,
+  "roadmap": "roadmap4.1",
+  "gate": "R41-P0-A",
+  "status": "proposed",
+  "source": "2026-07-22 lifecycle completeness audit",
+  "proposedActions": [
+    {
+      "name": "removeEncoding",
+      "phase": 1,
+      "layer": "user-facing",
+      "options": "{ target?: UserId; channel: RemovableEncodingChannel }",
+      "reason": "Field and datum assignments can be replaced but cannot be explicitly torn down."
+    },
+    {
+      "name": "removePointRadius",
+      "phase": 1,
+      "layer": "user-facing",
+      "options": "{ target?: UserId }",
+      "reason": "Constant point radius is graphical config and must not be confused with the Polar radius channel."
+    },
+    {
+      "name": "editMarkSelection",
+      "phase": 2,
+      "layer": "advanced",
+      "options": "{ selection?: UserId } & MarkSelector",
+      "reason": "A stable selection ID has no selector replacement path."
+    },
+    {
+      "name": "removeMarkHighlight",
+      "phase": 2,
+      "layer": "user-facing",
+      "options": "{ selection?: UserId }",
+      "reason": "Highlight assignment can be replaced but not returned to the clean mark baseline."
+    },
+    {
+      "name": "removeMarkSelection",
+      "phase": 2,
+      "layer": "advanced",
+      "options": "{ selection?: UserId }",
+      "reason": "Stable selection resources cannot be released independently of mark removal."
+    },
+    {
+      "name": "editBin2DData",
+      "phase": 5,
+      "layer": "user-facing",
+      "options": "{ target?: UserId; source?: UserId; x?: FieldName; y?: FieldName; bins?: Bin2DBins; extent?: Bin2DExtent; includeEmpty?: boolean; members?: boolean; as?: DatasetBin2DOutputFields }",
+      "reason": "Repeated create currently revises a logical owner but has no explicit partial-edit vocabulary."
+    },
+    {
+      "name": "editFacetScales",
+      "phase": 8,
+      "layer": "user-facing",
+      "options": "FacetScaleResolutions",
+      "reason": "Facet scale resolution is stable composition intent with no post-create edit path."
+    },
+    {
+      "name": "editFacetGuides",
+      "phase": 8,
+      "layer": "user-facing",
+      "options": "FacetGuideOptions",
+      "reason": "Outer axes and shared legend ownership cannot be revised after facet creation."
+    }
+  ],
+  "parameterExtensions": [
+    {
+      "id": "stroke-width-legend-edit",
+      "phase": 3,
+      "action": "editLegend",
+      "contract": "Dispatch stroke-width targets and support title, count, labels, and titleStyle; keep current right-side placement boundary."
+    },
+    {
+      "id": "selective-legend-block-removal",
+      "phase": 3,
+      "action": "removeLegend",
+      "contract": "Add channels?: LegendChannel[]; omission preserves whole-target removal and a combined block requires its complete channel set."
+    },
+    {
+      "id": "cartesian-axis-component-removal",
+      "phase": 4,
+      "action": "editXAxis/editYAxis",
+      "contract": "line, ticks, labels, ticksAndLabels, and title accept false to remove existing selected components."
+    },
+    {
+      "id": "error-bar-statistical-revision",
+      "phase": 6,
+      "action": "editErrorBar",
+      "contract": "Add statistics?: { center?: IntervalCenter; extent?: IntervalExtent; level?: number } for statistical owners only."
+    },
+    {
+      "id": "error-band-statistical-and-boundary-revision",
+      "phase": 6,
+      "action": "editErrorBand",
+      "contract": "Add statistics?: { center?: IntervalCenter; extent?: IntervalExtent; level?: number } and boundaries?: false | ErrorBandBoundaryAppearance."
+    },
+    {
+      "id": "density-source-field-group-revision",
+      "phase": 6,
+      "action": "editDensity",
+      "contract": "Add source?: UserId, field?: FieldName, groupBy?: FieldName | false while retaining density channel, output fields, coordinate and scale IDs."
+    },
+    {
+      "id": "regression-source-role-revision",
+      "phase": 6,
+      "action": "editRegression",
+      "contract": "Add data?: UserId, x?: FieldName, y?: FieldName, groupBy?: FieldName | false and retain owner/component IDs and coordinate/scale IDs."
+    },
+    {
+      "id": "box-plot-data-role-revision",
+      "phase": 7,
+      "action": "editBoxPlot",
+      "contract": "Add data?: UserId, x?: BoxPlotPositionChannel, y?: BoxPlotPositionChannel with complete orientation preflight."
+    },
+    {
+      "id": "gradient-plot-data-role-revision",
+      "phase": 7,
+      "action": "editGradientPlot",
+      "contract": "Add data?: UserId, x?: GradientPlotPositionChannel, y?: GradientPlotPositionChannel with complete orientation preflight."
+    },
+    {
+      "id": "facet-column-edit",
+      "phase": 8,
+      "action": "editCompositionLayout",
+      "contract": "Add columns?: PositiveInteger for facet compositions only; concat compositions reject it."
+    },
+    {
+      "id": "point-outline-removal",
+      "phase": 1,
+      "action": "editPointMark",
+      "contract": "stroke accepts false, removes stored stroke and width, and rejects simultaneous strokeWidth."
+    },
+    {
+      "id": "arc-outline-removal",
+      "phase": 1,
+      "action": "editArcMark",
+      "contract": "stroke accepts false, disables the default outline and stored width, and rejects simultaneous strokeWidth."
+    }
+  ],
+  "gateDecisions": [
+    {
+      "id": "encoding-removal-shape",
+      "recommended": "one-closed-dispatcher-plus-point-radius-reset",
+      "reason": "Avoid one mechanical action per channel while keeping graphical radius distinct from semantic Polar radius."
+    },
+    {
+      "id": "encoding-removal-cascade",
+      "recommended": "remove-owned-companions-preserve-user-resources",
+      "reason": "Remove dependent guide/layout/highlight state but preserve source datasets, coordinates and scale resources."
+    },
+    {
+      "id": "selection-edit-identity",
+      "recommended": "stable-id-and-target-replace-selector",
+      "reason": "Target replacement changes mark-specific grain and style compatibility and remains recreate-only."
+    },
+    {
+      "id": "selection-removal-cascade",
+      "recommended": "highlight-only-removal-preserves-selection-selection-removal-cascades-highlight",
+      "reason": "A highlight depends on a selection while a selection can exist without a highlight."
+    },
+    {
+      "id": "legend-selective-removal",
+      "recommended": "channel-selected-whole-blocks",
+      "reason": "Preserve current channel vocabulary without exposing internal legend config kinds or silently splitting a combined block."
+    },
+    {
+      "id": "derived-edit-policy",
+      "recommended": "immutable-revision-explicit-rebind-safe-release",
+      "reason": "All statistical and Bin2D changes preserve immutable datasets and visible dependency trace."
+    },
+    {
+      "id": "facet-edit-source",
+      "recommended": "rederive-from-parent-retained-prefacet-state",
+      "reason": "Avoid a persisted schema change and reuse the existing facet derivation/replay boundary."
+    },
+    {
+      "id": "missing-removal-policy",
+      "recommended": "missing-direct-removal-errors-explicit-false-is-idempotent-disable",
+      "reason": "Direct removal catches target mistakes while aggregate false expresses a desired disabled state."
+    }
+  ],
+  "nonGoals": [
+    "editMarkData",
+    "rebindMarkData",
+    "removeData",
+    "removeScale",
+    "removeCoordinate",
+    "editData",
+    "editDerivedData",
+    "editRuleMark",
+    "editGuides",
+    "facet field or data replacement",
+    "new chart or renderer capability"
+  ]
+}

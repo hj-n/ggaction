@@ -4,7 +4,7 @@
 
 ## 현재 작업
 
-- [`roadmap4/ROADMAP.md`](roadmap4/ROADMAP.md) — **active owner**, Phase 15까지 완료; active Phase 없음
+- [`roadmap4.1/ROADMAP.md`](roadmap4.1/ROADMAP.md) — **active owner**, Phase 0 lifecycle contract Gate
 - [`ROADMAP_INDEX.json`](ROADMAP_INDEX.json) — Roadmap status, nullable active Phase와 마지막 완료 Phase의 machine-readable owner
 
 ## 개발 이력
@@ -14,6 +14,7 @@
 - [`roadmap2/ROADMAP.md`](roadmap2/ROADMAP.md) — completed, Planned contract 구현과 초기 배포
 - [`roadmap2.1/ROADMAP.md`](roadmap2.1/ROADMAP.md) — completed, `0.0.2` 외부 평가 수정
 - [`roadmap3/ROADMAP.md`](roadmap3/ROADMAP.md) — completed, Polar·composition·facet과 `0.0.4`
+- [`roadmap4/ROADMAP.md`](roadmap4/ROADMAP.md) — completed, native ownership과 advanced static charts
 
 ## 재사용하는 개발 절차
 
