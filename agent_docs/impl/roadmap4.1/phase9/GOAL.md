@@ -12,12 +12,12 @@ point는 추가하지 않는다.
 
 - [x] R41-P8-A explicit approval과 active Phase 전환
 - [x] R41-Exit Gate 선언
-- [ ] 선택 범위 lifecycle과 explicit non-goal 감사
-- [ ] Roadmap-local executable dependency와 durable test ownership 감사
-- [ ] Cross-capability state/trace/atomicity regression
-- [ ] Contracts/declarations/docs/examples/architecture/package surface 정합성
-- [ ] Full normal/coverage/render/browser/package verification
-- [ ] R41-Exit remote checkpoint
+- [x] 선택 범위 lifecycle과 explicit non-goal 감사
+- [x] Roadmap-local executable dependency와 durable test ownership 감사
+- [x] Cross-capability state/trace/atomicity regression
+- [x] Contracts/declarations/docs/examples/architecture/package surface 정합성
+- [x] Full normal/coverage/render/browser/package verification
+- [x] R41-Exit remote checkpoint
 - [ ] 사용자 explicit approval
 
 ## Gate R41-Exit

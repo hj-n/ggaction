@@ -2,11 +2,11 @@
 
 ## 진행 상태
 
-- [ ] Current lifecycle, coverage ledger와 selected gap mapping 감사
-- [ ] Stable test ownership과 roadmap dependency 감사
-- [ ] Representative cross-capability regression 보강
-- [ ] Contract/declaration/docs/example/package surface synchronization
-- [ ] Full verification과 R41-Exit evidence 고정
+- [x] Current lifecycle, coverage ledger와 selected gap mapping 감사
+- [x] Stable test ownership과 roadmap dependency 감사
+- [x] Representative cross-capability regression 보강
+- [x] Contract/declaration/docs/example/package surface synchronization
+- [x] Full verification과 R41-Exit evidence 고정
 
 ## 실행 순서
 

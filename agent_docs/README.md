@@ -16,8 +16,8 @@
 | 현재 개발 순서 확인 | [`impl/README.md`](impl/README.md) |
 
 현재 실행 계획 owner는 **Roadmap 4.1**이며 active Phase 9이다. 새 chart capability가 아니라 encoding,
-selection, guide, statistical owner와 facet의 edit/remove lifecycle을 보강했다. 선택 범위의 cross-capability
-regression, Current inventory, docs와 package surface를 최종 정리한다.
+selection, guide, statistical owner와 facet의 edit/remove lifecycle을 보강했다. Cross-capability regression,
+Current inventory, docs와 package closeout을 완료했고 R41-Exit review를 기다린다.
 포인터의 machine-readable owner는 [`impl/ROADMAP_INDEX.json`](impl/ROADMAP_INDEX.json)이다.
 
 ## 작업별 읽기 경로
