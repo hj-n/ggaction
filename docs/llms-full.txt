@@ -4930,8 +4930,11 @@ owns the folded y/y2 positions and positive/negative palettes as one action.
 Horizon charts intentionally keep only the source-facing x guide.
 
 `editDensity` and `editHorizon` create immutable derived-data revisions and
-rematerialize their connected scales, paths, and guides. The exact option and
-error contracts live in the [Encoding Action Reference](../reference/actions/encodings.md).
+rematerialize their connected scales, paths, and guides. Density edits can
+also replace `source`, `field`, or `groupBy`; `groupBy: false` removes grouping
+while retaining output field names, density channel, coordinate, and position
+scale IDs. The exact option and error contracts live in the
+[Encoding Action Reference](../reference/actions/encodings.md).
 
 ## Removing an encoding
 
@@ -5084,11 +5087,24 @@ const revised = program.editRegression({
 });
 ```
 
+Create-time data roles can be revised through the same stable owner:
+
+```javascript
+const rebound = program.editRegression({
+  data: "observations",
+  x: "time",
+  y: "value",
+  groupBy: false
+});
+```
+
 `method`, `degree`, `span`, `confidence`, and `interval` follow the same
-method-specific rules as creation. A statistical change creates one new
-immutable fitted-data revision, rebinds every owned regression component, and
-releases the old revision when nothing references it. A request containing
-only `band` or `line` appearance retains the existing fitted rows.
+method-specific rules as creation. A data-role or statistical change creates
+one new immutable fitted-data revision, rebinds every owned regression
+component, and releases the old revision when nothing references it.
+`groupBy: false` removes line color/group and band grouping. Component IDs,
+coordinate, and position scale IDs remain stable. A request containing only
+`band` or `line` appearance retains the existing fitted rows.
 
 Set `band: false` or switch to LOESS to remove the owned band. Switching back
 to linear or polynomial regression recreates the band by default; a band
@@ -5308,6 +5324,7 @@ Use the stable error-bar owner instead of editing generated cap layers:
 
 ```javascript
 const edited = intervals.editErrorBar({
+  statistics: { center: "median", extent: "iqr" },
   caps: true,
   capSize: 16,
   stroke: "#d9485f",
@@ -5318,12 +5335,18 @@ const edited = intervals.editErrorBar({
 ```
 
 The options are `target`, `caps`, `capSize`, `stroke`, `strokeWidth`,
-`strokeDash`, and `opacity`. Omitted values retain their current setting.
+`strokeDash`, `opacity`, and `statistics`. Omitted values retain their current setting.
 Omit `target` when the current or unique error bar is unambiguous.
+
+`statistics` is a partial `{ center?, extent?, level? }` patch for statistical
+owners. It creates one immutable interval revision and rebinds the main rule
+and enabled caps. Median and IQR must be selected together; `level` is valid
+only for confidence intervals. Explicit center/lower/upper owners reject a
+statistics edit instead of converting modes.
 
 `caps: false` removes both owned cap resources. A later `caps: true` recreates
 them from the owner's stored data, fields, coordinate, and scales. The main
-interval and its immutable statistical or explicit dataset remain unchanged.
+interval retains its current dataset unless `statistics` is supplied.
 The complete request is validated before the wrapped rematerialization runs.
 
 ## Errors and current limitations
@@ -5333,8 +5356,8 @@ ambiguous channel roles, incomplete or non-quantitative explicit fields,
 invalid statistics or appearance values, and occupied generated IDs. Failed
 calls leave the earlier immutable program unchanged.
 
-Center symbols, per-row cap sizes, field-driven rule widths, and statistical
-parameter revision are not part of the current edit action.
+Center symbols, per-row cap sizes, and field-driven rule widths are not part of
+the current edit action.
 
 ## Related
 
@@ -5513,6 +5536,7 @@ layer IDs. The create action intentionally accepts one shared boundary recipe.
 
 ```javascript
 program.editErrorBand({
+  statistics: { extent: "ci", level: 0.9 },
   fill: "#7dd3fc",
   opacity: 0.34,
   curve: "cardinal"
@@ -5521,7 +5545,19 @@ program.editErrorBand({
 
 An explicit edit fill overrides concrete encoded colors while retaining the
 semantic color encoding and legend. The override persists through Canvas and
-scale rematerialization. Statistical interval rows are not replaced.
+scale rematerialization. `statistics: { center?, extent?, level? }` creates one
+immutable interval revision for statistical owners and rebinds the body and
+enabled boundaries. Explicit interval owners reject that option.
+
+Use `boundaries: false` on `editErrorBand()` to disable both boundaries; the
+call is also valid when they are already absent. A boundary appearance object
+creates or edits both owned lines:
+
+```javascript
+program.editErrorBand({
+  boundaries: { stroke: "#334155", strokeWidth: 1.5 }
+});
+```
 
 `editErrorBandBoundary()` edits or creates one or both owned boundaries:
 
@@ -10385,12 +10421,16 @@ Pass `densityChannel: "x"` for a horizontal orientation.
 ## `editDensity`
 
 ```javascript
-editDensity({ target?, bandwidth?, extent?, steps?, kernel?, normalization? })
+editDensity({
+  target?, source?, field?, groupBy?, bandwidth?, extent?, steps?, kernel?,
+  normalization?, placement?
+})
 ```
 
 Create an immutable density-data revision, rebind the selected density area,
-and rematerialize its graphical consumers. Omitted density settings are
-preserved and at least one editable setting is required.
+and rematerialize its graphical consumers. `source`, `field`, and `groupBy`
+can revise create-time data roles; `groupBy: false` removes grouping. Output
+fields, density channel, coordinate, and position scale IDs are preserved.
 [Encodings](../../api/encodings.md#atomic-density)
 
 ## `encodeHorizon`
@@ -10613,13 +10653,15 @@ polynomial degree to `2`; LOESS span to `0.75`.
 
 ```javascript
 editRegression({
-  target?, method?, degree?, span?, confidence?, interval?, band?, line?
+  target?, data?, x?, y?, groupBy?, method?, degree?, span?, confidence?,
+  interval?, band?, line?
 })
 ```
 
-Revise the model through its stable point owner. Statistical changes create and
-rebind one immutable derived-data revision; component-only changes retain the
-current fitted rows. [Regression](../../api/regression.md#editing-a-regression)
+Revise the model through its stable point owner. Data-role or statistical
+changes create and rebind one immutable derived-data revision; `groupBy: false`
+removes grouping. Component-only changes retain the current fitted rows.
+[Regression](../../api/regression.md#editing-a-regression)
 
 ## `createErrorBar`
 
@@ -10639,12 +10681,14 @@ coordinate, and scales.
 
 ```javascript
 editErrorBar({
-  target?, caps?, capSize?, stroke?, strokeWidth?, strokeDash?, opacity?
+  target?, caps?, capSize?, stroke?, strokeWidth?, strokeDash?, opacity?,
+  statistics?
 })
 ```
 
-Partially edit one error bar and its owned caps. `caps: false` removes both
-caps; `caps: true` restores them without replacing interval data.
+Partially edit one error bar and its owned caps. `statistics` revises a
+statistical interval through immutable data; explicit interval owners reject
+that option. `caps: false` removes both caps and `caps: true` restores them.
 [Error bars](../../api/error-bars.md#editing-error-bars)
 
 ## `createErrorBand`
@@ -10667,15 +10711,16 @@ is overridden.
 ## `editErrorBand` and `editErrorBandBoundary`
 
 ```javascript
-editErrorBand({ target?, fill?, opacity?, curve? })
+editErrorBand({ target?, fill?, opacity?, curve?, statistics?, boundaries? })
 editErrorBandBoundary({
   target?, boundary?, stroke?, strokeWidth?, strokeDash?, opacity?, curve?
 })
 ```
 
-Edit the band body or selected owned boundaries without addressing generated
-line IDs. Boundary selection is `"both"`, `"lower"`, or `"upper"`; omitted
-selection means both. Missing selected boundaries are created from the band.
+Edit the band body, statistical interval, or both owned boundary components
+without addressing generated line IDs. `boundaries: false` disables both;
+an object creates or edits both. The focused boundary action still accepts
+`"both"`, `"lower"`, or `"upper"` and creates missing selected boundaries.
 [Error bands](../../api/error-bands.md#editing-the-band)
 
 ## `createBoxPlot`

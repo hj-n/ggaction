@@ -1183,6 +1183,11 @@ export interface EditErrorBarOptions {
   strokeWidth?: number;
   strokeDash?: DashStyle | DashPattern;
   opacity?: number;
+  statistics?: {
+    center?: IntervalCenter;
+    extent?: IntervalExtent;
+    level?: number;
+  };
 }
 
 export interface BoxPlotCategoryChannel {
@@ -1565,6 +1570,18 @@ export interface EditErrorBandOptions {
   fill?: string;
   opacity?: number;
   curve?: CurveInterpolation;
+  statistics?: {
+    center?: IntervalCenter;
+    extent?: IntervalExtent;
+    level?: number;
+  };
+  boundaries?: false | {
+    stroke?: string;
+    strokeWidth?: number;
+    strokeDash?: DashStyle | DashPattern;
+    opacity?: number;
+    curve?: CurveInterpolation;
+  };
 }
 
 export interface EditErrorBandBoundaryOptions {
@@ -1579,6 +1596,9 @@ export interface EditErrorBandBoundaryOptions {
 
 export interface EditDensityOptions {
   target?: string;
+  source?: string;
+  field?: string;
+  groupBy?: string | false;
   bandwidth?: "auto" | number;
   extent?: "auto" | readonly [number, number];
   steps?: number;
@@ -1908,6 +1928,10 @@ export type RegressionOptions = RegressionCommonOptions & (
 
 export interface EditRegressionOptions {
   target?: string;
+  data?: string;
+  x?: string;
+  y?: string;
+  groupBy?: string | false;
   method?: RegressionMethod;
   degree?: number;
   span?: number;

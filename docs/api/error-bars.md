@@ -182,6 +182,7 @@ Use the stable error-bar owner instead of editing generated cap layers:
 
 ```javascript
 const edited = intervals.editErrorBar({
+  statistics: { center: "median", extent: "iqr" },
   caps: true,
   capSize: 16,
   stroke: "#d9485f",
@@ -192,12 +193,18 @@ const edited = intervals.editErrorBar({
 ```
 
 The options are `target`, `caps`, `capSize`, `stroke`, `strokeWidth`,
-`strokeDash`, and `opacity`. Omitted values retain their current setting.
+`strokeDash`, `opacity`, and `statistics`. Omitted values retain their current setting.
 Omit `target` when the current or unique error bar is unambiguous.
+
+`statistics` is a partial `{ center?, extent?, level? }` patch for statistical
+owners. It creates one immutable interval revision and rebinds the main rule
+and enabled caps. Median and IQR must be selected together; `level` is valid
+only for confidence intervals. Explicit center/lower/upper owners reject a
+statistics edit instead of converting modes.
 
 `caps: false` removes both owned cap resources. A later `caps: true` recreates
 them from the owner's stored data, fields, coordinate, and scales. The main
-interval and its immutable statistical or explicit dataset remain unchanged.
+interval retains its current dataset unless `statistics` is supplied.
 The complete request is validated before the wrapped rematerialization runs.
 
 ## Errors and current limitations
@@ -207,8 +214,8 @@ ambiguous channel roles, incomplete or non-quantitative explicit fields,
 invalid statistics or appearance values, and occupied generated IDs. Failed
 calls leave the earlier immutable program unchanged.
 
-Center symbols, per-row cap sizes, field-driven rule widths, and statistical
-parameter revision are not part of the current edit action.
+Center symbols, per-row cap sizes, and field-driven rule widths are not part of
+the current edit action.
 
 ## Related
 

@@ -835,12 +835,16 @@ Pass `densityChannel: "x"` for a horizontal orientation.
 ### `editDensity`
 
 ```javascript
-editDensity({ target?, bandwidth?, extent?, steps?, kernel?, normalization? })
+editDensity({
+  target?, source?, field?, groupBy?, bandwidth?, extent?, steps?, kernel?,
+  normalization?, placement?
+})
 ```
 
 Create an immutable density-data revision, rebind the selected density area,
-and rematerialize its graphical consumers. Omitted density settings are
-preserved and at least one editable setting is required.
+and rematerialize its graphical consumers. `source`, `field`, and `groupBy`
+can revise create-time data roles; `groupBy: false` removes grouping. Output
+fields, density channel, coordinate, and position scale IDs are preserved.
 [Encodings](../api/encodings.md#atomic-density)
 
 ### `encodeHorizon`
@@ -1043,13 +1047,15 @@ polynomial degree to `2`; LOESS span to `0.75`.
 
 ```javascript
 editRegression({
-  target?, method?, degree?, span?, confidence?, interval?, band?, line?
+  target?, data?, x?, y?, groupBy?, method?, degree?, span?, confidence?,
+  interval?, band?, line?
 })
 ```
 
-Revise the model through its stable point owner. Statistical changes create and
-rebind one immutable derived-data revision; component-only changes retain the
-current fitted rows. [Regression](../api/regression.md#editing-a-regression)
+Revise the model through its stable point owner. Data-role or statistical
+changes create and rebind one immutable derived-data revision; `groupBy: false`
+removes grouping. Component-only changes retain the current fitted rows.
+[Regression](../api/regression.md#editing-a-regression)
 
 ### `createErrorBar`
 
@@ -1069,12 +1075,14 @@ coordinate, and scales.
 
 ```javascript
 editErrorBar({
-  target?, caps?, capSize?, stroke?, strokeWidth?, strokeDash?, opacity?
+  target?, caps?, capSize?, stroke?, strokeWidth?, strokeDash?, opacity?,
+  statistics?
 })
 ```
 
-Partially edit one error bar and its owned caps. `caps: false` removes both
-caps; `caps: true` restores them without replacing interval data.
+Partially edit one error bar and its owned caps. `statistics` revises a
+statistical interval through immutable data; explicit interval owners reject
+that option. `caps: false` removes both caps and `caps: true` restores them.
 [Error bars](../api/error-bars.md#editing-error-bars)
 
 ### `createErrorBand`
@@ -1097,15 +1105,16 @@ is overridden.
 ### `editErrorBand` and `editErrorBandBoundary`
 
 ```javascript
-editErrorBand({ target?, fill?, opacity?, curve? })
+editErrorBand({ target?, fill?, opacity?, curve?, statistics?, boundaries? })
 editErrorBandBoundary({
   target?, boundary?, stroke?, strokeWidth?, strokeDash?, opacity?, curve?
 })
 ```
 
-Edit the band body or selected owned boundaries without addressing generated
-line IDs. Boundary selection is `"both"`, `"lower"`, or `"upper"`; omitted
-selection means both. Missing selected boundaries are created from the band.
+Edit the band body, statistical interval, or both owned boundary components
+without addressing generated line IDs. `boundaries: false` disables both;
+an object creates or edits both. The focused boundary action still accepts
+`"both"`, `"lower"`, or `"upper"` and creates missing selected boundaries.
 [Error bands](../api/error-bands.md#editing-the-band)
 
 ### `createBoxPlot`

@@ -997,7 +997,7 @@
       "domain": "encodings",
       "status": "implemented",
       "lifecycle": "Mutable resource",
-      "update": "Creates and rebinds an immutable density revision",
+      "update": "Revises density source, field, grouping, statistics, and placement through immutable data",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
@@ -1087,7 +1087,7 @@
       "domain": "statistics",
       "status": "implemented",
       "lifecycle": "Mutable resource",
-      "update": "Creates an immutable statistical revision and edits owned components",
+      "update": "Revises regression data roles and statistics through immutable data and edits owned components",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
@@ -1123,7 +1123,7 @@
       "domain": "statistics",
       "status": "implemented",
       "lifecycle": "Mutable resource",
-      "update": "Edits main-rule and owned-cap appearance",
+      "update": "Revises interval statistics and edits main-rule and owned-cap appearance",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
@@ -1159,7 +1159,7 @@
       "domain": "statistics",
       "status": "implemented",
       "lifecycle": "Mutable resource",
-      "update": "Edits error-band body appearance",
+      "update": "Revises interval statistics, boundary state, and body appearance",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
@@ -2451,7 +2451,6 @@
     { "name": "editFacetGuides", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/AUTHORING_LIFECYCLE.md", "anchor": "editfacetguides" } }
   ],
   "plannedCapabilities": [
-    { "id": "statistical-owner-revisions", "name": "Statistical owner revisions", "kind": "behavior", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/AUTHORING_LIFECYCLE.md", "anchor": "capability-statistical-owner-revisions" } },
     { "id": "distribution-owner-role-revisions", "name": "Distribution owner role revisions", "kind": "behavior", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/AUTHORING_LIFECYCLE.md", "anchor": "capability-distribution-owner-role-revisions" } },
     { "id": "facet-policy-editing", "name": "Facet policy editing", "kind": "behavior", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/AUTHORING_LIFECYCLE.md", "anchor": "capability-facet-policy-editing" } }
   ],

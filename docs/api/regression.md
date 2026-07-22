@@ -102,11 +102,24 @@ const revised = program.editRegression({
 });
 ```
 
+Create-time data roles can be revised through the same stable owner:
+
+```javascript
+const rebound = program.editRegression({
+  data: "observations",
+  x: "time",
+  y: "value",
+  groupBy: false
+});
+```
+
 `method`, `degree`, `span`, `confidence`, and `interval` follow the same
-method-specific rules as creation. A statistical change creates one new
-immutable fitted-data revision, rebinds every owned regression component, and
-releases the old revision when nothing references it. A request containing
-only `band` or `line` appearance retains the existing fitted rows.
+method-specific rules as creation. A data-role or statistical change creates
+one new immutable fitted-data revision, rebinds every owned regression
+component, and releases the old revision when nothing references it.
+`groupBy: false` removes line color/group and band grouping. Component IDs,
+coordinate, and position scale IDs remain stable. A request containing only
+`band` or `line` appearance retains the existing fitted rows.
 
 Set `band: false` or switch to LOESS to remove the owned band. Switching back
 to linear or polynomial regression recreates the band by default; a band

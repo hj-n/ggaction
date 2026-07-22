@@ -94,8 +94,11 @@ owns the folded y/y2 positions and positive/negative palettes as one action.
 Horizon charts intentionally keep only the source-facing x guide.
 
 `editDensity` and `editHorizon` create immutable derived-data revisions and
-rematerialize their connected scales, paths, and guides. The exact option and
-error contracts live in the [Encoding Action Reference](../reference/actions/encodings.md).
+rematerialize their connected scales, paths, and guides. Density edits can
+also replace `source`, `field`, or `groupBy`; `groupBy: false` removes grouping
+while retaining output field names, density channel, coordinate, and position
+scale IDs. The exact option and error contracts live in the
+[Encoding Action Reference](../reference/actions/encodings.md).
 
 ## Removing an encoding
 

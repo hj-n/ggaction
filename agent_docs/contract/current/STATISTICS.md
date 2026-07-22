@@ -81,22 +81,28 @@ Current direct-action contracts for this domain. Shared notation and lifecycle r
 
 ## `editErrorBar`
 
-- Signature: `editErrorBar({ target?, caps?, capSize?, stroke?, strokeWidth?, strokeDash?, opacity? })`.
+- Signature: `editErrorBar({ target?, caps?, capSize?, stroke?, strokeWidth?, strokeDash?, opacity?, statistics? })`.
 - `target` selects the stable main error-bar layer; omission uses current/unique eligible owner inference.
 - Omitted appearance leaves the stored value unchanged. `caps: false` removes both owned cap layers and graphics;
   `caps: true` restores missing caps from the owner's stored data, fields, coordinate and scales.
-- The edit retains the existing source or interval dataset and interval semantics. Main and cap appearance is
+- `statistics: { center?, extent?, level? }` is valid only for a statistical interval owner. It partially merges with
+  stored interval provenance, validates the complete center/extent/level combination, creates one namespaced immutable
+  interval revision, explicitly rebinds the main rule and enabled caps, rematerializes them, and safely releases the
+  old unreferenced dataset. Explicit center/lower/upper owners reject this option rather than changing modes.
+- Without `statistics`, the edit retains the existing source or interval dataset. Main and cap appearance is
   reconciled through one wrapped `rematerializeErrorBar` action; generated cap IDs are not public parameters.
 
 ### Formal values — `editErrorBar`
 
-- Implemented: `editErrorBar({ target?: UserId; caps?: boolean; capSize?: PositiveFinite; stroke?: NonEmptyString; strokeWidth?: NonNegativeFinite; strokeDash?: DashStyle | DashPattern; opacity?: UnitInterval })`.
-- Proposed (NOT IMPLEMENTED): statistical center/extent/level editing remains a derived-data revision concern.
+- Implemented: `editErrorBar({ target?: UserId; caps?: boolean; capSize?: PositiveFinite; stroke?: NonEmptyString; strokeWidth?: NonNegativeFinite; strokeDash?: DashStyle | DashPattern; opacity?: UnitInterval; statistics?: { center?: "mean" | "median"; extent?: "stderr" | "stdev" | "ci" | "iqr"; level?: UnitIntervalExclusive } })`.
+- Planned (NOT IMPLEMENTED): —
+- Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `editErrorBar`
 
 - ✅ Covered: inferred/explicit target, complete appearance patch, cap removal/restoration, cap-size geometry,
-  named/explicit dash, retained derived dataset, nested trace, immutability and atomic validation.
+  named/explicit dash, retained data for appearance edits, statistical revision/rebind/release, explicit-owner
+  rejection, nested trace, immutability and atomic validation.
 - ✅ Covered: approved primitive/public semantic, graphic and pixel parity.
 - Evidence: `test/unit/actions/error-bars/edit-error-bar.test.js` and Roadmap 3 focused-editing Gate.
 
@@ -166,20 +172,26 @@ without naming generated child layers.
 
 ## `editErrorBand`
 
-- Signature: `editErrorBand({ target?, fill?, opacity?, curve? })`.
+- Signature: `editErrorBand({ target?, fill?, opacity?, curve?, statistics?, boundaries? })`.
 - The stable owner is an error-band area created by `createErrorBand`; omission uses current/unique inference.
 - A focused fill is an explicit owner override and therefore remains constant even when the band retains a color
   encoding. Opacity and curve update the existing area materialization without replacing interval data.
+- `statistics` follows `editErrorBar`: it is statistical-owner-only, validates the complete partial merge, revisions
+  immutable interval data, and rebinds/rematerializes the body and every enabled boundary.
+- `boundaries: false` is a desired-state disable and succeeds when both are already absent. A boundary appearance
+  object creates or edits both owned lines; `{}` enables both with defaults. Body/data and stable child role IDs remain.
 
 ### Formal values — `editErrorBand`
 
-- Implemented: `editErrorBand({ target?: UserId; fill?: NonEmptyString; opacity?: UnitInterval; curve?: CurveInterpolation })`.
-- Proposed (NOT IMPLEMENTED): statistical center/extent/level editing remains a derived-data revision concern.
+- Implemented: `editErrorBand({ target?: UserId; fill?: NonEmptyString; opacity?: UnitInterval; curve?: CurveInterpolation; statistics?: { center?: "mean" | "median"; extent?: "stderr" | "stdev" | "ci" | "iqr"; level?: UnitIntervalExclusive }; boundaries?: false | ErrorBandBoundaryAppearance })`.
+- Planned (NOT IMPLEMENTED): —
+- Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `editErrorBand`
 
-- ✅ Covered: inferred/explicit owner, constant fill over encoded color, opacity/curve, Canvas persistence,
-  immutability, empty/invalid edit rejection and exact Gate parity.
+- ✅ Covered: inferred/explicit owner, constant fill over encoded color, opacity/curve, statistical revision,
+  both-boundary enable/edit/disable including repeated disable, Canvas persistence, immutability, empty/invalid edit
+  rejection and exact Gate parity.
 - Evidence: `test/unit/actions/error-bands/edit-error-band.test.js` and Roadmap 3 focused-editing Gate.
 
 ## `editErrorBandBoundary`
@@ -249,12 +261,15 @@ without naming generated child layers.
 
 ## `editRegression`
 
-- Signature: `editRegression({ target?, method?, degree?, span?, confidence?, interval?, band?, line? })`.
+- Signature: `editRegression({ target?, data?, x?, y?, groupBy?, method?, degree?, span?, confidence?, interval?, band?, line? })`.
 - `target` is the stable point owner passed to or inferred by `createRegression`; generated band and line IDs are not
   ordinary targets. Omission resolves the current owner, then one unique regression owner, and rejects ambiguity.
-- Method-specific values follow `createRegression`. A statistical change creates one deterministic immutable derived
-  dataset revision, rebinds the owned band and line to it, rematerializes them, and releases the old unreferenced
-  revision. Appearance-only `band`/`line` patches retain the current derived dataset.
+- `data`, `x`, and `y` partially replace fitted-data provenance. `groupBy` accepts a field or `false` to remove
+  grouping. Omitted data roles remain stored. Stable owner, line/band IDs, coordinate, and position scale IDs remain;
+  line/band encodings and band provenance are reconciled to the complete candidate.
+- Method-specific values follow `createRegression`. A data-role or statistical change creates one deterministic
+  immutable derived dataset revision, rebinds the owned band and line to it, rematerializes them, and releases the old
+  unreferenced revision. Appearance-only `band`/`line` patches retain the current derived dataset.
 - `band: false` removes the owned band. Switching to LOESS also removes it; switching back to linear/polynomial or
   passing a band object recreates it under the same stable owner role. `line` is always retained.
 - The complete patch is validated before any returned program state changes. Earlier programs and source data remain
@@ -262,13 +277,15 @@ without naming generated child layers.
 
 ### Formal values — `editRegression`
 
-- Implemented: `editRegression({ target?: UserId; method?: "linear" | "polynomial" | "loess"; degree?: PositiveInteger; span?: UnitIntervalExclusiveZero; confidence?: UnitIntervalExclusive; interval?: "mean" | "prediction"; band?: false | RegressionBandOptions; line?: { strokeWidth?: NonNegativeFinite; curve?: CurveInterpolation } })` with method-specific runtime validation.
-- Proposed (NOT IMPLEMENTED): changing source x/y/groupBy fields through this owner edit.
+- Implemented: `editRegression({ target?: UserId; data?: UserId; x?: FieldName; y?: FieldName; groupBy?: FieldName | false; method?: "linear" | "polynomial" | "loess"; degree?: PositiveInteger; span?: UnitIntervalExclusiveZero; confidence?: UnitIntervalExclusive; interval?: "mean" | "prediction"; band?: false | RegressionBandOptions; line?: { strokeWidth?: NonNegativeFinite; curve?: CurveInterpolation } })` with method-specific runtime validation.
+- Planned (NOT IMPLEMENTED): —
+- Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `editRegression`
 
-- ✅ Covered: linear→polynomial revision, exact derived rows and band/line graphics, appearance-only data retention,
-  LOESS band removal, later band restoration, owner inference, invalid nested options and immutable failure.
+- ✅ Covered: linear→polynomial and data/x/y/group revisions, exact derived rows and band/line graphics,
+  group removal/addition, stable component/position identities, appearance-only data retention, LOESS band removal,
+  later band restoration, owner inference, invalid data/fields/nested options and immutable failure.
 - ✅ Covered: approved regression owner-edit primitive/public and PNG parity.
 - Evidence: `test/unit/actions/regression/edit-regression.test.js` and Roadmap 3 focused-editing Gate.
 

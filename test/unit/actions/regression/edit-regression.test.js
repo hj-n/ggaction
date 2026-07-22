@@ -194,3 +194,38 @@ test("rejects invalid regression data revisions before exposing a branch", () =>
   );
   assert.equal(before.semanticSpec.datasets.at(-1).id, "pointsRegressionData");
 });
+
+test("replays regression-line selection and highlight after a data-role revision", () => {
+  const before = regressionProgram()
+    .createData({ id: "observations", values: [
+      { Origin: "Japan", time: 1, value: 2 },
+      { Origin: "Japan", time: 2, value: 4 },
+      { Origin: "Japan", time: 3, value: 7 },
+      { Origin: "USA", time: 1, value: 3 },
+      { Origin: "USA", time: 2, value: 5 },
+      { Origin: "USA", time: 3, value: 8 }
+    ] })
+    .highlightMarks({
+      target: "pointsRegressionLines",
+      select: { field: "Origin", op: "eq", value: "Japan" },
+      stroke: "#dc2626",
+      strokeWidth: 5,
+      dimOthers: { opacity: 0.2 }
+    });
+  const after = before.editRegression({
+    data: "observations",
+    x: "time",
+    y: "value"
+  });
+
+  assert.equal(
+    after.materializationConfigs.selections.pointsRegressionLinesSelection.target,
+    "pointsRegressionLines"
+  );
+  assert.equal(after.graphicSpec.objects.pointsRegressionLines.items.some(
+    item => item.properties.opacity === 0.2
+  ), true);
+  assert.equal(after.graphicSpec.objects.pointsRegressionLines.items.some(
+    item => item.properties.stroke === "#dc2626"
+  ), true);
+});

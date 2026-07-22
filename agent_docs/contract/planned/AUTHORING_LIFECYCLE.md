@@ -26,19 +26,6 @@ editFacetGuides(options: FacetGuideOptions): ChartProgram;
 - Facet field/data/value order, scale policy, layout, headers와 title은 보존한다.
 - Status: Planned, accepted.
 
-## Capability: statistical-owner-revisions
-
-- `editErrorBar`는 `statistics?: { center?, extent?, level? }`을 statistical owner에서만 지원한다.
-- `editErrorBand`는 같은 `statistics`와 `boundaries?: false | ErrorBandBoundaryAppearance`를 지원한다.
-  `false`는 already-disabled에서도 desired-state disable이며 object는 both boundaries를 create/edit한다.
-- `editDensity`는 `source?`, `field?`, `groupBy?: FieldName | false`를 추가하고 output fields, density channel,
-  coordinate와 scale IDs를 보존한다.
-- `editRegression`은 `data?`, `x?`, `y?`, `groupBy?: FieldName | false`를 추가하고 stable owner/component IDs,
-  coordinate와 position scale IDs를 보존한다.
-- 모든 data/statistical change는 immutable revision, explicit consumer rebind, deterministic rematerialization과
-  safe orphan release를 사용한다.
-- Status: Planned, accepted.
-
 ## Capability: distribution-owner-role-revisions
 
 - `editBoxPlot`과 `editGradientPlot`은 `data?`, `x?`, `y?`를 create-time position channel vocabulary로 받는다.

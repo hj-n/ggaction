@@ -332,9 +332,7 @@ const editDensity = action(
 
       if (changesGroup) {
         if (groupBy === undefined) {
-          if (next.semanticSpec.layers.find(
-            candidate => candidate.id === layer.id
-          ).encoding?.group !== undefined) {
+          if (findLayer(next, layer.id).encoding?.group !== undefined) {
             next = next.editSemantic({
               property: `layer[${layer.id}].encoding.group`,
               remove: true

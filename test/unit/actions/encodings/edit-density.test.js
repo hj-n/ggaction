@@ -381,3 +381,32 @@ test("removes group-owned color and rejects invalid density provenance atomicall
   );
   assert.equal(colored.semanticSpec.layers[0].data, "densitiesDensityData");
 });
+
+test("replays density selections and highlights after a source-field revision", () => {
+  const before = densityProgram()
+    .createData({ id: "observations", values: [
+      { Origin: "Japan", measure: 1 },
+      { Origin: "Japan", measure: 2 },
+      { Origin: "USA", measure: 3 },
+      { Origin: "USA", measure: 5 }
+    ] })
+    .highlightMarks({
+      target: "densities",
+      select: { field: "Origin", op: "eq", value: "Japan" },
+      fill: "#111111",
+      dimOthers: { opacity: 0.2 }
+    });
+  const after = before.editDensity({
+    source: "observations",
+    field: "measure"
+  });
+
+  assert.equal(after.materializationConfigs.selections.densitiesSelection.target,
+    "densities");
+  assert.equal(after.graphicSpec.objects.densities.items.some(
+    item => item.properties.fill === "#111111"
+  ), true);
+  assert.equal(after.graphicSpec.objects.densities.items.some(
+    item => item.properties.opacity === 0.2
+  ), true);
+});

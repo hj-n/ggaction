@@ -200,12 +200,16 @@ Pass `densityChannel: "x"` for a horizontal orientation.
 ## `editDensity`
 
 ```javascript
-editDensity({ target?, bandwidth?, extent?, steps?, kernel?, normalization? })
+editDensity({
+  target?, source?, field?, groupBy?, bandwidth?, extent?, steps?, kernel?,
+  normalization?, placement?
+})
 ```
 
 Create an immutable density-data revision, rebind the selected density area,
-and rematerialize its graphical consumers. Omitted density settings are
-preserved and at least one editable setting is required.
+and rematerialize its graphical consumers. `source`, `field`, and `groupBy`
+can revise create-time data roles; `groupBy: false` removes grouping. Output
+fields, density channel, coordinate, and position scale IDs are preserved.
 [Encodings](../../api/encodings.md#atomic-density)
 
 ## `encodeHorizon`
