@@ -80,12 +80,16 @@ const program = chart()
   .createScatterPlot({
     x: "displacement",
     y: "acceleration",
-    color: "origin"
+    color: "origin",
+    shape: "origin"
   });
 
 const context = document.querySelector("#chart").getContext("2d");
 render(program, context);
 ```
+
+Matching color and shape encodings give each origin a redundant visual cue and
+create a labeled categorical legend automatically.
 
 Use `createLinePlot`, `createBarPlot`, `createHistogram`, and `createHeatmap` for
 the other basic Cartesian charts. Each facade records the regular mark,

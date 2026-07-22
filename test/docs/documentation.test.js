@@ -571,7 +571,7 @@ test("routes entry documentation to the canonical example indexes", () => {
   assert.equal(catalog.get("rose").featured, true);
   assert.equal(catalog.get("rose").url, "/recipes/rose-chart/");
   assert.equal(catalog.get("rose").recipe_url, "/recipes/rose-chart/");
-  assert.match(gettingStarted, /point color\s+encoding can produce/);
+  assert.match(gettingStarted, /color and shape encodings\s+also create/);
   assert.match(gettingStarted, /examples\/getting-started/);
 });
 
