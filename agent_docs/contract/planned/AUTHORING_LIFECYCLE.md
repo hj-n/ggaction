@@ -26,15 +26,6 @@ editFacetGuides(options: FacetGuideOptions): ChartProgram;
 - Facet field/data/value order, scale policy, layout, headers와 title은 보존한다.
 - Status: Planned, accepted.
 
-## Capability: distribution-owner-role-revisions
-
-- `editBoxPlot`과 `editGradientPlot`은 `data?`, `x?`, `y?`를 create-time position channel vocabulary로 받는다.
-- Complete candidate는 exactly one categorical and one quantitative role을 가져야 하며 orientation change를
-  포함한 source fields/scales/components를 첫 state change 전에 검증한다.
-- Stable owner/component IDs를 유지하고 summary/outlier 또는 profile sibling revisions, bindings, scales,
-  guides와 selection/highlight를 한 plan으로 갱신한다.
-- Status: Planned, accepted.
-
 ## Capability: facet-policy-editing
 
 - `editCompositionLayout`은 facet에서만 `columns?: PositiveInteger`를 받고 concat에서는 거부한다.

@@ -1213,7 +1213,7 @@
       "domain": "statistics",
       "status": "implemented",
       "lifecycle": "Mutable resource",
-      "update": "Creates immutable summary revisions and edits owned components",
+      "update": "Revises source/position roles through immutable summary siblings and edits owned components",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
@@ -1249,7 +1249,7 @@
       "domain": "statistics",
       "status": "implemented",
       "lifecycle": "Mutable resource",
-      "update": "Creates immutable profile revisions and edits owned components",
+      "update": "Revises source/position roles through immutable profiles and edits owned components",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
@@ -2451,7 +2451,6 @@
     { "name": "editFacetGuides", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/AUTHORING_LIFECYCLE.md", "anchor": "editfacetguides" } }
   ],
   "plannedCapabilities": [
-    { "id": "distribution-owner-role-revisions", "name": "Distribution owner role revisions", "kind": "behavior", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/AUTHORING_LIFECYCLE.md", "anchor": "capability-distribution-owner-role-revisions" } },
     { "id": "facet-policy-editing", "name": "Facet policy editing", "kind": "behavior", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/AUTHORING_LIFECYCLE.md", "anchor": "capability-facet-policy-editing" } }
   ],
   "internal": {

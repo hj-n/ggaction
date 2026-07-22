@@ -83,28 +83,37 @@ createGradientPlot({
 
 ```typescript
 editGradientPlot({
-  target?, density?, width?, gradient?,
+  target?, data?, x?, y?, density?, width?, gradient?,
   center?: false | GradientPlotCenterOptions
 })
 ```
 
 - Omission preserves current state. Empty edits are rejected.
+- `data`, `x`, `y`는 create-time position vocabulary의 partial edit다. Supplied channel은 complete replacement이고
+  resulting pair는 exactly one categorical plus one quantitative role이어야 한다. Omitted source/role은 current owner
+  provenance를 보존한다.
 - Density and center-statistic edits create a new namespaced immutable profile revision, rebind every direct consumer, and
   release only the unreferenced previous revision.
+- Data/role edit은 raw source에서 new profile revision을 만들고 stable strip/center IDs에 explicit rebind한다.
+  Orientation change는 category/measure scale IDs를 새 channel로 handoff하고 axis title/tick mode와 continuous grid
+  direction을 갱신한 뒤 structured paint, optional center와 density legend를 rematerialize한다.
 - Width, palette, opacity, and center appearance retain the existing profile dataset.
 - `center: false` removes its semantic layer, graphic, and materialization config. A later center object recreates the same
   deterministic owned role.
 - Every edit rematerializes affected strips, center span, and the density legend while preserving previous programs and
-  caller-owned inputs.
+  caller-owned inputs. Stored selection/highlight는 current category-strip items에서 replay하고 stale selector,
+  shared-scale handoff 또는 downstream failure는 returned state/trace 없이 거부한다.
 
 ### Formal values — `editGradientPlot`
 
-- Implemented: `editGradientPlot({ target?: UserId; density?: GradientPlotDensityOptions; width?: { band?: UnitIntervalExclusive }; gradient?: GradientPlotAppearanceOptions; center?: false | GradientPlotCenterOptions })`.
-- Proposed (NOT IMPLEMENTED): category/measure reassignment and guide replacement through this resource edit.
+- Implemented: `editGradientPlot({ target?: UserId; data?: UserId; x?: GradientPlotPositionChannel; y?: GradientPlotPositionChannel; density?: GradientPlotDensityOptions; width?: { band?: UnitIntervalExclusive }; gradient?: GradientPlotAppearanceOptions; center?: false | GradientPlotCenterOptions })`.
+- Proposed (NOT IMPLEMENTED): arbitrary guide replacement through this resource edit.
 
 ### Value coverage — `editGradientPlot`
 
 - ✅ Covered: statistical revision, appearance-only retention, center removal/restoration, immutable options, and empty-edit rejection.
+- ✅ Covered: source/field/role and vertical↔horizontal revision, stable strip/center identity, axis/grid/density-legend
+  handoff, compatible highlight replay, stale-selector rejection and failed-call atomicity.
 - No proposal is required for the approved first implementation. Evidence: `test/unit/actions/statistics/edit-gradient-plot.test.js`.
 
 ## FillPaint boundary

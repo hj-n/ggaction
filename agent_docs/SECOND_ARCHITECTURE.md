@@ -2261,6 +2261,11 @@ state, explicit materialization, action trace, package boundary와 충돌하지 
 - Categorical distribution/uncertainty facade는 `x`와 `y`의 semantic roles로 orientation을 추론한다. Box,
   gradient-distribution과 violin은 exactly one categorical + one quantitative role, target/data/coordinate inference와
   deferred position completion 규칙을 공유하고 family-specific statistics/appearance만 named nested option으로 둔다.
+- Box/gradient stable owner edit은 같은 distribution-role revision policy를 사용한다. Omitted raw source와 x/y role을
+  current provenance에서 보존하고 complete candidate를 speculative branch에서 검증한 뒤 category/measure scale identity를
+  새 channel로 handoff한다. Box summary/outlier 또는 gradient profile은 immutable sibling revision으로 교체하며 stable
+  body/whisker/cap/median/outlier/center identity, axis tick mode, continuous grid direction과 stored selection/highlight를
+  explicit wrapped materialization으로 갱신한다. Shared-scale 또는 stale-selector incompatibility는 partial state 없이 거부한다.
 - Statistical composite를 facet할 때 raw partition 뒤 registered transform을 cell-local ID로 replay하고,
   body/sibling layer뿐 아니라 owner의 private source/profile identity도 explicit wrapped transition으로 함께 rebind한다.
 

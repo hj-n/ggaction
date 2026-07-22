@@ -1240,6 +1240,9 @@ export interface BoxPlotOptions {
 
 export interface EditBoxPlotOptions {
   target?: string;
+  data?: string;
+  x?: BoxPlotPositionChannel;
+  y?: BoxPlotPositionChannel;
   whisker?: BoxPlotWhisker;
   width?: { band?: number };
   outliers?: boolean;
@@ -1336,6 +1339,9 @@ export interface ViolinPlotOptions {
 
 export interface EditGradientPlotOptions {
   target?: string;
+  data?: string;
+  x?: GradientPlotPositionChannel;
+  y?: GradientPlotPositionChannel;
   density?: GradientPlotDensityOptions;
   width?: { band?: number };
   gradient?: GradientPlotAppearanceOptions;

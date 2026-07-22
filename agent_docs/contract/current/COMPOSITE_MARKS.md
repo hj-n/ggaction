@@ -82,6 +82,9 @@ createBoxPlot({
 ```typescript
 editBoxPlot({
   target?: UserId;
+  data?: UserId;
+  x?: PositionChannel;
+  y?: PositionChannel;
   whisker?: BoxPlotWhisker;
   width?: { band?: UnitIntervalExclusive };
   outliers?: boolean;
@@ -93,8 +96,16 @@ editBoxPlot({
 
 - `target` is the stable box owner, never a generated whisker, cap, median or outlier ID. Omission resolves current,
   then unique owner and rejects ambiguity.
+- `data`, `x`, `y`는 create-time position vocabulary의 partial edit다. Omitted option은 current raw source와 role을
+  보존하고 supplied position은 complete replacement다. Result는 exactly one categorical와 one quantitative role이어야
+  한다. Orientation change에서 category/measure scale identity가 새 channel로 handoff되고 explicit scale option은
+  create-time scale vocabulary를 사용한다.
 - Whisker or outlier-topology changes create one immutable summary revision and, when needed, one matching outlier
   revision. Body, whisker/caps, median and outlier consumers are rebound before old unreferenced revisions are released.
+- Data/role change도 raw source에서 immutable summary/outlier revision을 만들고 stable body, whisker/cap, median과
+  applicable outlier IDs를 그대로 유지한다. Position scales를 먼저 resolve한 뒤 axes, continuous grid direction,
+  every component와 selection/highlight를 새 final item에서 replay한다. Stale selector, shared-scale handoff 또는
+  downstream materialization failure는 speculative branch 전체를 버린다.
 - Width and appearance-only patches retain current derived datasets. Missing selected outlier resources are created
   only when the revised Tukey result contains outliers; disabled or empty outliers leave no dataset/layer/graphic shell.
 - Nested options use the same formal values as `createBoxPlot`. A constant `box.fill` is rejected when the body owns a
@@ -102,12 +113,14 @@ editBoxPlot({
 
 ### Formal values — `editBoxPlot`
 
-- Implemented: `editBoxPlot({ target?: UserId; whisker?: BoxPlotWhisker; width?: { band?: UnitIntervalExclusive }; outliers?: boolean; box?: BoxAppearance; median?: MedianAppearance; outlier?: OutlierAppearance })`.
-- Proposed (NOT IMPLEMENTED): category/measure reassignment, subgroup offsets, notches and variable-width boxes.
+- Implemented: `editBoxPlot({ target?: UserId; data?: UserId; x?: BoxPlotPositionChannel; y?: BoxPlotPositionChannel; whisker?: BoxPlotWhisker; width?: { band?: UnitIntervalExclusive }; outliers?: boolean; box?: BoxAppearance; median?: MedianAppearance; outlier?: OutlierAppearance })`.
+- Proposed (NOT IMPLEMENTED): subgroup offsets, notches and variable-width boxes.
 
 ### Value coverage — `editBoxPlot`
 
 - ✅ Covered: factor revision, all owned data rebindings, old revision release, exact body/whisker/median/outlier
   graphics, width and appearance-only retention, outlier disable/restore, owner and nested validation.
 - ✅ Covered: approved box owner-edit primitive/public and PNG parity.
+- ✅ Covered: source-only, field-role and vertical↔horizontal revisions, stable components, scale/axis/grid handoff,
+  highlight replay, equivalent calls, invalid candidate and immutable failure.
 - Evidence: `test/unit/actions/statistics/edit-box-plot.test.js` and Roadmap 3 focused-editing Gate.

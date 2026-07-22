@@ -86,6 +86,23 @@ const edited = colored.editGradientPlot({
 });
 ```
 
+The same owner can revise its raw source or complete positional roles:
+
+```javascript
+const horizontal = edited.editGradientPlot({
+  data: "observations",
+  x: { field: "value", fieldType: "quantitative" },
+  y: { field: "group", fieldType: "nominal" }
+});
+```
+
+Omitted `data`, `x`, and `y` retain current provenance. Exactly one resulting
+role must be categorical and the other quantitative. A role swap preserves the
+strip and center IDs, creates an immutable profile revision, moves axes and the
+continuous grid, rebuilds structured paints and the density legend, and
+replays compatible highlights. An incompatible stored selector or shared-scale
+handoff rejects the complete edit.
+
 Density or center-statistic changes create a new immutable profile revision.
 Width, palette, opacity, and center appearance retain the current profile.
 Canvas and scale edits rematerialize strips, paint direction, center rules,
@@ -104,8 +121,7 @@ legends outside the repeated chart.
 ## Current limitations
 
 Subgroup offsets, multiple overlaid profiles, independent per-category
-intensity domains, category/measure reassignment, and shared facet density
-legends are not implemented.
+intensity domains, and shared facet density legends are not implemented.
 
 ## Related
 

@@ -5686,6 +5686,24 @@ const styled = program.editBoxPlot({
 });
 ```
 
+Revise the raw source or replace either complete positional role without
+recreating the plot:
+
+```javascript
+const horizontal = styled.editBoxPlot({
+  data: "observations",
+  x: { field: "value", fieldType: "quantitative" },
+  y: { field: "group", fieldType: "nominal" }
+});
+```
+
+Omitted `data`, `x`, and `y` retain the current source and role. The complete
+result must contain exactly one categorical and one quantitative position.
+Switching those roles changes orientation while retaining the stable box,
+whisker, cap, median, and applicable outlier IDs. Position axes and the
+continuous grid move to the new channels; incompatible shared-scale or stored
+selection state rejects the whole edit.
+
 Whisker or outlier-presence changes create an immutable summary revision and
 rebind the body, whiskers, caps, median, and optional outliers together. Width
 or appearance-only edits keep the current derived datasets. `outliers: false`
@@ -5712,8 +5730,8 @@ explicitly rematerialize boxes, medians, whiskers, caps, and outliers.
 
 ## Current limitations
 
-Category/measure reassignment, subgroup offsets, notches, variable-width
-boxes, and custom whisker appearance are not implemented.
+Subgroup offsets, notches, variable-width boxes, and custom whisker appearance
+are not implemented.
 
 ## Related
 
@@ -5803,6 +5821,23 @@ const edited = colored.editGradientPlot({
 });
 ```
 
+The same owner can revise its raw source or complete positional roles:
+
+```javascript
+const horizontal = edited.editGradientPlot({
+  data: "observations",
+  x: { field: "value", fieldType: "quantitative" },
+  y: { field: "group", fieldType: "nominal" }
+});
+```
+
+Omitted `data`, `x`, and `y` retain current provenance. Exactly one resulting
+role must be categorical and the other quantitative. A role swap preserves the
+strip and center IDs, creates an immutable profile revision, moves axes and the
+continuous grid, rebuilds structured paints and the density legend, and
+replays compatible highlights. An incompatible stored selector or shared-scale
+handoff rejects the complete edit.
+
 Density or center-statistic changes create a new immutable profile revision.
 Width, palette, opacity, and center appearance retain the current profile.
 Canvas and scale edits rematerialize strips, paint direction, center rules,
@@ -5821,8 +5856,7 @@ legends outside the repeated chart.
 ## Current limitations
 
 Subgroup offsets, multiple overlaid profiles, independent per-category
-intensity domains, category/measure reassignment, and shared facet density
-legends are not implemented.
+intensity domains, and shared facet density legends are not implemented.
 
 ## Related
 
