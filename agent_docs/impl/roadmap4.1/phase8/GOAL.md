@@ -11,13 +11,13 @@ source data, value order, child IDs, headers, title와 omitted policy는 보존�
 
 - [x] R41-P7-A explicit approval과 active Phase 전환
 - [x] R41-P8-A Gate 선언
-- [ ] Parent/unit/child snapshot과 replay ownership mapping
-- [ ] Facet-only columns layout edit
-- [ ] Scale policy partial edit와 child rederivation
-- [ ] Guide policy partial edit와 parent promotion reconciliation
-- [ ] Types/current contracts/ACTION_INDEX/public docs 동기화
-- [ ] Focused/cumulative/Browser/PNG/package verification
-- [ ] R41-P8-A remote checkpoint
+- [x] Parent/unit/child snapshot과 replay ownership mapping
+- [x] Facet-only columns layout edit
+- [x] Scale policy partial edit와 child rederivation
+- [x] Guide policy partial edit와 parent promotion reconciliation
+- [x] Types/current contracts/ACTION_INDEX/public docs 동기화
+- [x] Focused/cumulative/Browser/PNG/package verification
+- [x] R41-P8-A remote checkpoint
 - [ ] 사용자 explicit approval
 
 ## Gate R41-P8-A

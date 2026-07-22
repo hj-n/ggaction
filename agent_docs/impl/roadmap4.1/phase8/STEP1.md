@@ -2,11 +2,11 @@
 
 ## 진행 상태
 
-- [ ] Parent retained unit state and current facet definition mapping
-- [ ] Facet-only columns validation and snapshot rematerialization
-- [ ] Complete scale/guide policy candidate preflight
-- [ ] Immutable child rederive/replay and parent snapshot replacement
-- [ ] Stable identity, selection/highlight, failure atomicity tests
+- [x] Parent retained unit state and current facet definition mapping
+- [x] Facet-only columns validation and snapshot rematerialization
+- [x] Complete scale/guide policy candidate preflight
+- [x] Immutable child rederive/replay and parent snapshot replacement
+- [x] Stable identity, selection/highlight, failure atomicity tests
 
 ## 실행 순서
 

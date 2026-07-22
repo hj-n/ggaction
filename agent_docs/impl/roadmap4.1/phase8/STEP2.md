@@ -2,11 +2,11 @@
 
 ## 진행 상태
 
-- [ ] Runtime/declaration/current contract and ACTION_INDEX synchronization
-- [ ] Generated reference/search/LLM docs and public composition API update
-- [ ] Exact Current Canvas/Node-PNG contract
-- [ ] Cumulative coverage/render/Browser/package verification
-- [ ] Gate evidence/commit/push
+- [x] Runtime/declaration/current contract and ACTION_INDEX synchronization
+- [x] Generated reference/search/LLM docs and public composition API update
+- [x] Exact Current Canvas/Node-PNG contract
+- [x] Cumulative coverage/render/Browser/package verification
+- [x] Gate evidence/commit/push
 
 ## 실행 순서
 
