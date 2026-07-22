@@ -1,7 +1,96 @@
 import { DEFAULT_TICK_COUNT } from "../guides/tickValues.js";
 import { findLayer } from "../../selectors/layers.js";
+import { findSemanticScale } from "../../selectors/scales.js";
+import { resolvePositionScaleDefinition } from "../scales/definitions.js";
 
 const POSITION_CHANNELS = Object.freeze(["x", "y", "x2", "y2"]);
+
+export function resolveDistributionScalePlan(program, {
+  channel,
+  fieldType,
+  requested,
+  fallback,
+  defaults
+}) {
+  const options = requested === undefined
+    ? { id: fallback }
+    : typeof requested === "string"
+      ? { id: requested }
+      : { ...requested, id: requested.id ?? fallback };
+  const existing = findSemanticScale(program, options.id);
+  return {
+    id: options.id,
+    definition: resolvePositionScaleDefinition(
+      program,
+      channel,
+      fieldType,
+      options,
+      defaults
+    ),
+    create: existing === undefined,
+    edit: existing !== undefined && typeof requested === "object" &&
+      Object.keys(requested).some(key => key !== "id")
+      ? options
+      : undefined
+  };
+}
+
+export function setCartesianPosition(program, id, channel, {
+  field,
+  fieldType,
+  scale,
+  title
+}) {
+  let next = program
+    .editSemantic({
+      property: `layer[${id}].encoding.${channel}.field`,
+      value: field
+    })
+    .editSemantic({
+      property: `layer[${id}].encoding.${channel}.fieldType`,
+      value: fieldType
+    })
+    .editSemantic({
+      property: `layer[${id}].encoding.${channel}.scale`,
+      value: scale
+    });
+  if (title !== undefined) {
+    next = next.editSemantic({
+      property: `layer[${id}].encoding.${channel}.title`,
+      value: title
+    });
+  }
+  return next;
+}
+
+export function setCartesianRange(
+  program,
+  id,
+  channel,
+  lower,
+  upper,
+  scale,
+  title
+) {
+  return setCartesianPosition(program, id, channel, {
+    field: lower,
+    fieldType: "quantitative",
+    scale,
+    title
+  })
+    .editSemantic({
+      property: `layer[${id}].encoding.${channel}2.field`,
+      value: upper
+    })
+    .editSemantic({
+      property: `layer[${id}].encoding.${channel}2.fieldType`,
+      value: "quantitative"
+    })
+    .editSemantic({
+      property: `layer[${id}].encoding.${channel}2.scale`,
+      value: scale
+    });
+}
 
 function axisMethods(channel) {
   const prefix = channel === "x" ? "X" : "Y";

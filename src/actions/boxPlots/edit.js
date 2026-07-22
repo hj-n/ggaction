@@ -8,12 +8,13 @@ import { planDerivedDataRevision } from
   "../../materialization/dataProvenance.js";
 import { findDataset } from "../../selectors/datasets.js";
 import { findLayer } from "../../selectors/layers.js";
-import { findSemanticScale } from "../../selectors/scales.js";
-import { resolvePositionScaleDefinition } from "../scales/definitions.js";
 import {
   assertDistributionScaleHandoff,
   clearCartesianPositions,
-  rebindDistributionGuides
+  rebindDistributionGuides,
+  resolveDistributionScalePlan,
+  setCartesianPosition,
+  setCartesianRange
 } from "../distributions/revision.js";
 import {
   resolveBoxAppearance,
@@ -139,33 +140,6 @@ function requirePositionField(position, label) {
   return { fieldType: position.fieldType ?? "quantitative", ...position };
 }
 
-function scalePlan(program, channel, fieldType, requested, fallback) {
-  const options = requested === undefined
-    ? { id: fallback }
-    : typeof requested === "string"
-      ? { id: requested }
-      : { ...requested, id: requested.id ?? fallback };
-  const existing = findSemanticScale(program, options.id);
-  const definition = resolvePositionScaleDefinition(
-    program,
-    channel,
-    fieldType,
-    options,
-    ["ordinal", "nominal"].includes(fieldType)
-      ? { discreteType: "band" }
-      : { nice: true, zero: false }
-  );
-  return {
-    id: options.id,
-    definition,
-    create: existing === undefined,
-    edit: existing !== undefined && typeof requested === "object" &&
-      Object.keys(requested).some(key => key !== "id")
-      ? options
-      : undefined
-  };
-}
-
 function roleCandidate(program, owner, current, args) {
   const previous = currentBoxPositions(owner, current);
   const x = requirePositionField(
@@ -192,8 +166,24 @@ function roleCandidate(program, owner, current, args) {
   const yRoleScale = orientation === "vertical"
     ? previous.measureScale
     : previous.categoryScale;
-  const xScale = scalePlan(program, "x", x.fieldType, x.scale, xRoleScale);
-  const yScale = scalePlan(program, "y", y.fieldType, y.scale, yRoleScale);
+  const xScale = resolveDistributionScalePlan(program, {
+    channel: "x",
+    fieldType: x.fieldType,
+    requested: x.scale,
+    fallback: xRoleScale,
+    defaults: ["ordinal", "nominal"].includes(x.fieldType)
+      ? { discreteType: "band" }
+      : { nice: true, zero: false }
+  });
+  const yScale = resolveDistributionScalePlan(program, {
+    channel: "y",
+    fieldType: y.fieldType,
+    requested: y.scale,
+    fallback: yRoleScale,
+    defaults: ["ordinal", "nominal"].includes(y.fieldType)
+      ? { discreteType: "band" }
+      : { nice: true, zero: false }
+  });
   return {
     source: Object.hasOwn(args, "data")
       ? validateUserId(args.data, "Box-plot data id")
@@ -208,56 +198,6 @@ function roleCandidate(program, owner, current, args) {
     measure: orientation === "vertical" ? y.field : x.field,
     previous
   };
-}
-
-function setPosition(program, id, channel, {
-  field,
-  fieldType,
-  scale,
-  title
-}) {
-  let next = program
-    .editSemantic({
-      property: `layer[${id}].encoding.${channel}.field`,
-      value: field
-    })
-    .editSemantic({
-      property: `layer[${id}].encoding.${channel}.fieldType`,
-      value: fieldType
-    })
-    .editSemantic({
-      property: `layer[${id}].encoding.${channel}.scale`,
-      value: scale
-    });
-  if (title !== undefined) {
-    next = next.editSemantic({
-      property: `layer[${id}].encoding.${channel}.title`,
-      value: title
-    });
-  }
-  return next;
-}
-
-function setRange(program, id, channel, lower, upper, scale, title) {
-  let next = setPosition(program, id, channel, {
-    field: lower,
-    fieldType: "quantitative",
-    scale,
-    title
-  });
-  return next
-    .editSemantic({
-      property: `layer[${id}].encoding.${channel}2.field`,
-      value: upper
-    })
-    .editSemantic({
-      property: `layer[${id}].encoding.${channel}2.fieldType`,
-      value: "quantitative"
-    })
-    .editSemantic({
-      property: `layer[${id}].encoding.${channel}2.scale`,
-      value: scale
-    });
 }
 
 function sameRoleCandidate(current, candidate) {
@@ -299,12 +239,12 @@ function updateBoxPositions(program, owner, current, candidate, {
   const measure = candidate.orientation === "vertical" ? candidate.y : candidate.x;
   const categoryChannel = candidate.orientation === "vertical" ? "x" : "y";
   const measureChannel = candidate.orientation === "vertical" ? "y" : "x";
-  next = setPosition(next, owner.id, categoryChannel, {
+  next = setCartesianPosition(next, owner.id, categoryChannel, {
     field: category.field,
     fieldType: category.fieldType,
     scale: category.scale
   });
-  next = setRange(
+  next = setCartesianRange(
     next,
     owner.id,
     measureChannel,
@@ -326,12 +266,12 @@ function updateBoxPositions(program, owner, current, candidate, {
       intervalScale: measure.scale
     }
   });
-  next = setPosition(next, current.whiskerId, categoryChannel, {
+  next = setCartesianPosition(next, current.whiskerId, categoryChannel, {
     field: category.field,
     fieldType: category.fieldType,
     scale: category.scale
   });
-  next = setRange(
+  next = setCartesianRange(
     next,
     current.whiskerId,
     measureChannel,
@@ -342,12 +282,12 @@ function updateBoxPositions(program, owner, current, candidate, {
   );
   for (const [index, capId] of capIds.entries()) {
     const field = index === 0 ? BOX_FIELDS.lowerWhisker : BOX_FIELDS.upperWhisker;
-    next = setPosition(next, capId, categoryChannel, {
+    next = setCartesianPosition(next, capId, categoryChannel, {
       field: category.field,
       fieldType: category.fieldType,
       scale: category.scale
     });
-    next = setPosition(next, capId, measureChannel, {
+    next = setCartesianPosition(next, capId, measureChannel, {
       field,
       fieldType: "quantitative",
       scale: measure.scale
@@ -361,23 +301,23 @@ function updateBoxPositions(program, owner, current, candidate, {
       }
     });
   }
-  next = setPosition(next, current.medianId, categoryChannel, {
+  next = setCartesianPosition(next, current.medianId, categoryChannel, {
     field: category.field,
     fieldType: category.fieldType,
     scale: category.scale
   });
-  next = setPosition(next, current.medianId, measureChannel, {
+  next = setCartesianPosition(next, current.medianId, measureChannel, {
     field: BOX_FIELDS.median,
     fieldType: "quantitative",
     scale: measure.scale
   });
   if (hasOutliers && findLayer(next, current.outlierId) !== undefined) {
-    next = setPosition(next, current.outlierId, categoryChannel, {
+    next = setCartesianPosition(next, current.outlierId, categoryChannel, {
       field: category.field,
       fieldType: category.fieldType,
       scale: category.scale
     });
-    next = setPosition(next, current.outlierId, measureChannel, {
+    next = setCartesianPosition(next, current.outlierId, measureChannel, {
       field: candidate.measure,
       fieldType: "quantitative",
       scale: measure.scale
