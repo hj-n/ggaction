@@ -17,7 +17,7 @@ legend reflection을 다시 계산한다.
 - [x] Types/current contracts/ACTION_INDEX/public docs 동기화
 - [x] Focused/cumulative/Browser/PNG/package verification
 - [x] R41-P2-A remote checkpoint
-- [ ] 사용자 explicit approval
+- [x] 사용자 explicit approval
 
 ## Gate R41-P2-A
 

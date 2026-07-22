@@ -2,7 +2,10 @@
 
 ## Gate state
 
-`ready-for-review`
+`approved`
+
+사용자가 2026-07-22에 Gate package `61703ad`와 functional checkpoint `14f4e1a`의 Phase 2 결과를
+명시적으로 승인했다. Phase 3 legend lifecycle implementation이 해제되었다.
 
 ## Review target
 
@@ -97,4 +100,4 @@ selective legend block removal 구현을 허용한다. PR creation, npm publishi
 
 ## Work unblocked by approval
 
-Phase 3 legend lifecycle implementation. 사용자 explicit approval 전에는 차단된다.
+Phase 3 legend lifecycle implementation.
