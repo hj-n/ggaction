@@ -4,7 +4,7 @@
 
 ## 현재 작업
 
-- [`roadmap4.1/ROADMAP.md`](roadmap4.1/ROADMAP.md) — **active owner**, Phase 6 statistical revisions and boundary lifecycle
+- [`roadmap4.1/ROADMAP.md`](roadmap4.1/ROADMAP.md) — **active owner**, Phase 7 box/gradient data and positional-role revisions
 - [`ROADMAP_INDEX.json`](ROADMAP_INDEX.json) — Roadmap status, nullable active Phase와 마지막 완료 Phase의 machine-readable owner
 
 ## 개발 이력

@@ -2,7 +2,10 @@
 
 ## Gate state
 
-`ready-for-review`
+`approved`
+
+사용자가 2026-07-22에 Gate package `621f3a41`와 functional checkpoint `c2c448b7`의 Phase 6 결과를
+명시적으로 승인하고 Phase 7 구현을 요청했다. Phase 7 box/gradient data and positional-role revisions가 해제되었다.
 
 ## Review target
 
