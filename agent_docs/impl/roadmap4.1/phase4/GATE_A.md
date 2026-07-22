@@ -2,7 +2,10 @@
 
 ## Gate state
 
-`ready-for-review`
+`approved`
+
+사용자가 2026-07-22에 Gate package `86cf7e0`와 functional checkpoint `52b26d8`의 Phase 4 결과를
+명시적으로 승인했다. Phase 5 `editBin2DData` partial revision facade implementation이 해제되었다.
 
 ## Review target
 

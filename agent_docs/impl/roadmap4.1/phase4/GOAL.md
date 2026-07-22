@@ -16,7 +16,7 @@ tick-label group과 title을 domain-aware하게 제거하도록 한다. Selected
 - [x] Types/current contracts/ACTION_INDEX/public docs 동기화
 - [x] Focused/cumulative/Browser/PNG/package verification
 - [x] R41-P4-A remote checkpoint
-- [ ] 사용자 explicit approval
+- [x] 사용자 explicit approval
 
 ## Gate R41-P4-A
 
