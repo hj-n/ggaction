@@ -50,4 +50,27 @@ test("keeps the first chart identifiable without color alone", () => {
     assert.match(source, /shape: "origin"/);
   }
   assert.match(read("docs/getting-started.md"), /redundant\s+visual cue/);
+
+  const accessibleCanvases = [
+    [
+      read("README.md"),
+      "Scatterplot of displacement versus acceleration by origin"
+    ],
+    [
+      read("docs/getting-started.md"),
+      "Scatterplot of horsepower versus mileage by origin"
+    ],
+    [
+      read("examples/getting-started/index.html"),
+      "Scatterplot of horsepower versus mileage by origin"
+    ]
+  ];
+  for (const [source, label] of accessibleCanvases) {
+    assert.equal(
+      source.includes(`<canvas id="chart" aria-label="${label}">`),
+      true
+    );
+    assert.equal(source.includes(`${label}.\n`), true);
+    assert.match(source, /<\/canvas>/);
+  }
 });

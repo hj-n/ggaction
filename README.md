@@ -61,6 +61,16 @@ const program = chart()
 npm install ggaction
 ```
 
+Add the Canvas element that the rendering code targets. Its accessible name and
+fallback text summarize the chart for contexts where Canvas pixels are not
+available:
+
+```html
+<canvas id="chart" aria-label="Scatterplot of displacement versus acceleration by origin">
+  Scatterplot of displacement versus acceleration by origin.
+</canvas>
+```
+
 ```javascript
 import { chart, render } from "ggaction";
 
