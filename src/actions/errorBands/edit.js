@@ -1,4 +1,5 @@
 import { action } from "../../core/action.js";
+import { isPlainObject } from "../../core/immutable.js";
 import { validateUserId } from "../../core/identifiers.js";
 import {
   validateOptionObject,
@@ -8,12 +9,15 @@ import {
 import { validateCurveInterpolation } from "../../grammar/curveCommands.js";
 import { findLayer, resolveEligibleLayer } from "../../selectors/layers.js";
 import { DEFAULT_COLORS } from "../../theme/defaults.js";
+import { planIntervalEdit } from "../data/intervalEdit.js";
 import {
   ERROR_BAND_BOUNDARY_OPTIONS,
   resolveBoundaryAppearance
 } from "./options.js";
 
-const EDIT_OPTIONS = Object.freeze(["target", "fill", "opacity", "curve"]);
+const EDIT_OPTIONS = Object.freeze([
+  "target", "fill", "opacity", "curve", "statistics", "boundaries"
+]);
 const BOUNDARY_EDIT_OPTIONS = Object.freeze([
   "target", "boundary", ...ERROR_BAND_BOUNDARY_OPTIONS
 ]);
@@ -49,13 +53,16 @@ function currentBoundaryAppearance(program, id) {
 }
 
 function defaultBoundaryAppearance(program, owner) {
-  return {
-    stroke: DEFAULT_COLORS.mark,
-    strokeWidth: 1,
-    strokeDash: "solid",
-    opacity: 1,
-    curve: program.markConfigs[owner]?.curve ?? "linear"
-  };
+  return resolveBoundaryAppearance({}, {
+    defaults: {
+      stroke: DEFAULT_COLORS.mark,
+      strokeWidth: 1,
+      strokeDash: "solid",
+      opacity: 1,
+      curve: program.markConfigs[owner]?.curve ?? "linear"
+    },
+    operation: "editErrorBand boundaries"
+  });
 }
 
 function createBoundary(program, owner, id, bound, appearance) {
@@ -80,6 +87,34 @@ function createBoundary(program, owner, id, bound, appearance) {
       bound: id === config.lowerBoundaryId ? "lower" : "upper"
     }
   });
+}
+
+function removeBoundary(program, id) {
+  if (findLayer(program, id) === undefined) return program;
+  const selectionIds = Object.entries(
+    program.materializationConfigs.selections ?? {}
+  ).filter(([, config]) => config.target === id).map(([selection]) => selection);
+  let next = program;
+  for (const [highlight, config] of Object.entries(
+    program.materializationConfigs.highlights ?? {}
+  )) {
+    if (config.target === id || selectionIds.includes(config.selection)) {
+      next = next._withoutMaterializationConfig(["highlights", highlight]);
+    }
+  }
+  for (const selection of selectionIds) {
+    next = next._withoutMaterializationConfig(["selections", selection]);
+  }
+  return next
+    .editSemantic({ property: `layer[${id}]`, remove: true })
+    .editGraphics({ target: id, remove: true })
+    ._withoutMaterializationConfig(["marks", id])
+    ._withContext({
+      ...(program.context.currentMark === id ? { currentMark: undefined } : {}),
+      ...(selectionIds.includes(program.context.currentSelection)
+        ? { currentSelection: undefined }
+        : {})
+    });
 }
 
 export const rematerializeErrorBandBoundary = action(
@@ -121,8 +156,9 @@ export const editErrorBand = action(
   },
   function (args = {}) {
     validateOptionObject(args, EDIT_OPTIONS, "editErrorBand");
-    if (!["fill", "opacity", "curve"].some(key => Object.hasOwn(args, key))) {
-      throw new Error("editErrorBand requires fill, opacity, or curve.");
+    if (!["fill", "opacity", "curve", "statistics", "boundaries"]
+      .some(key => Object.hasOwn(args, key))) {
+      throw new Error("editErrorBand requires at least one change.");
     }
     const owner = resolveOwner(this, args.target);
     const config = { ...this.markConfigs[owner.id] };
@@ -136,9 +172,81 @@ export const editErrorBand = action(
     if (Object.hasOwn(args, "curve")) {
       config.curve = validateCurveInterpolation(args.curve);
     }
-    return this
-      ._withMarkConfig(owner.id, { ...config, errorBand })
-      .rematerializeAreaMark({ id: owner.id });
+    const interval = Object.hasOwn(args, "statistics")
+      ? planIntervalEdit(this, {
+          owner: owner.id,
+          data: errorBand.data,
+          consumers: [
+            owner.id,
+            ...[errorBand.lowerBoundaryId, errorBand.upperBoundaryId]
+              .filter(id => findLayer(this, id) !== undefined)
+          ],
+          statistics: args.statistics,
+          operation: "editErrorBand"
+        })
+      : { changed: false };
+    if (
+      Object.hasOwn(args, "boundaries") &&
+      args.boundaries !== false &&
+      !isPlainObject(args.boundaries)
+    ) {
+      throw new TypeError(
+        "editErrorBand boundaries must be false or a plain object."
+      );
+    }
+
+    const applyEdit = program => {
+      let next = program;
+      if (interval.changed) {
+        next = next.createIntervalData(interval.dataArgs);
+        for (const rebind of interval.revision.rebinds) {
+          next = next.rebindLayerData(rebind);
+        }
+        errorBand.data = interval.revision.id;
+      }
+      next = next
+        ._withMarkConfig(owner.id, { ...config, errorBand })
+        .rematerializeAreaMark({ id: owner.id });
+      if (Object.hasOwn(args, "boundaries")) {
+        if (args.boundaries === false) {
+          next = removeBoundary(next, errorBand.lowerBoundaryId);
+          next = removeBoundary(next, errorBand.upperBoundaryId);
+        } else if (Object.keys(args.boundaries).length === 0) {
+          for (const [id, bound] of [
+            [errorBand.lowerBoundaryId, errorBand.lowerField],
+            [errorBand.upperBoundaryId, errorBand.upperField]
+          ]) {
+            next = findLayer(next, id) === undefined
+              ? createBoundary(
+                  next,
+                  owner.id,
+                  id,
+                  bound,
+                  defaultBoundaryAppearance(next, owner.id)
+                )
+              : interval.changed
+                ? next.rematerializeLineMark({ id })
+                : next;
+          }
+        } else {
+          next = next.editErrorBandBoundary({
+            target: owner.id,
+            ...args.boundaries
+          });
+        }
+      } else if (interval.changed) {
+        for (const id of [errorBand.lowerBoundaryId, errorBand.upperBoundaryId]) {
+          if (findLayer(next, id) !== undefined) {
+            next = next.rematerializeLineMark({ id });
+          }
+        }
+      }
+      return interval.changed
+        ? next.releaseDerivedData(interval.revision.release)
+        : next;
+    };
+    if (interval.changed || Object.hasOwn(args, "boundaries")) applyEdit(this);
+    return applyEdit(this);
   }
 );
 

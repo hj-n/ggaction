@@ -76,9 +76,54 @@ test("creates and edits selected optional boundary components", () => {
 
 test("validates boundary selection and appearance atomically", () => {
   const before = errorBand();
-  assert.throws(() => before.editErrorBand({}), /requires fill/);
+  assert.throws(() => before.editErrorBand({}), /requires at least one/);
   assert.throws(() => before.editErrorBandBoundary({ stroke: "red", boundary: "middle" }), /Unsupported/);
   assert.throws(() => before.editErrorBandBoundary({ strokeWidth: -1 }), /strokeWidth/);
   assert.throws(() => before.editErrorBandBoundary({ target: "missing", stroke: "red" }), /Unknown/);
   assert.equal(before.graphicSpec.objects.errorBandLowerBoundary, undefined);
+});
+
+test("revises statistical data and preserves stable boundary ownership", () => {
+  const before = errorBand().editErrorBand({ boundaries: {} });
+  const after = before.editErrorBand({
+    statistics: { extent: "ci", level: 0.9 },
+    boundaries: { stroke: "#334155", strokeWidth: 1.5 }
+  });
+
+  assert.equal(
+    after.markConfigs.errorBand.errorBand.data,
+    "errorBandIntervalDataRevision1"
+  );
+  assert.deepEqual(
+    after.semanticSpec.layers
+      .filter(layer => layer.id.startsWith("errorBand"))
+      .map(layer => [layer.id, layer.data]),
+    [
+      ["errorBand", "errorBandIntervalDataRevision1"],
+      ["errorBandLowerBoundary", "errorBandIntervalDataRevision1"],
+      ["errorBandUpperBoundary", "errorBandIntervalDataRevision1"]
+    ]
+  );
+  assert.equal(
+    after.semanticSpec.datasets.find(
+      dataset => dataset.id === "errorBandIntervalDataRevision1"
+    ).transform[0].level,
+    0.9
+  );
+  assert.equal(
+    after.graphicSpec.objects.errorBandLowerBoundary.items[0].properties.stroke,
+    "#334155"
+  );
+  assert.equal(before.semanticSpec.layers[0].data, "errorBandIntervalData");
+});
+
+test("treats boundaries false as an idempotent desired-state disable", () => {
+  const enabled = errorBand().editErrorBand({ boundaries: {} });
+  const disabled = enabled.editErrorBand({ boundaries: false });
+  const repeated = disabled.editErrorBand({ boundaries: false });
+
+  assert.equal(disabled.semanticSpec.layers.length, 1);
+  assert.equal(disabled.graphicSpec.objects.errorBandLowerBoundary, undefined);
+  assert.deepEqual(repeated.semanticSpec, disabled.semanticSpec);
+  assert.deepEqual(repeated.graphicSpec, disabled.graphicSpec);
 });

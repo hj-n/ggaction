@@ -72,3 +72,54 @@ test("resolves one owner and validates edits before changing state", () => {
   assert.equal(two.editErrorBar({ target: "second", opacity: 0.5 })
     .markConfigs.second.errorBar.opacity, 0.5);
 });
+
+test("revises statistical provenance and rebinds every error-bar consumer", () => {
+  const before = errorBar();
+  const after = before.editErrorBar({
+    statistics: { center: "median", extent: "iqr" }
+  });
+  const revised = after.semanticSpec.datasets.find(
+    dataset => dataset.id === "errorBarIntervalDataRevision1"
+  );
+
+  assert.deepEqual(revised.transform[0], {
+    type: "interval",
+    field: "value",
+    groupBy: ["group"],
+    center: "median",
+    extent: "iqr",
+    as: {
+      center: "__errorBar_center",
+      lower: "__errorBar_lower",
+      upper: "__errorBar_upper"
+    }
+  });
+  assert.deepEqual(
+    after.semanticSpec.layers
+      .filter(layer => layer.id.startsWith("errorBar"))
+      .map(layer => layer.data),
+    Array(3).fill("errorBarIntervalDataRevision1")
+  );
+  assert.equal(after.semanticSpec.datasets.some(
+    dataset => dataset.id === "errorBarIntervalData"
+  ), false);
+  assert.equal(before.semanticSpec.layers[0].data, "errorBarIntervalData");
+  assert.notDeepEqual(after.graphicSpec.objects.errorBar, before.graphicSpec.objects.errorBar);
+});
+
+test("rejects statistical edits for explicit error bars atomically", () => {
+  const explicit = chart()
+    .createCanvas({ width: 420, height: 300, margin: 50 })
+    .createData({
+      values: [{ group: "A", center: 2, lower: 1, upper: 3 }]
+    })
+    .createErrorBar({
+      x: { field: "group", fieldType: "nominal" },
+      y: { center: "center", lower: "lower", upper: "upper" }
+    });
+  assert.throws(
+    () => explicit.editErrorBar({ statistics: { extent: "stdev" } }),
+    /explicit interval fields cannot be converted/
+  );
+  assert.equal(explicit.semanticSpec.datasets.length, 1);
+});

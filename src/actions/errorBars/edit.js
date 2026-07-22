@@ -2,7 +2,9 @@ import { action } from "../../core/action.js";
 import { validateUserId } from "../../core/identifiers.js";
 import { validateKeys } from "../../core/validation.js";
 import { findLayer, resolveEligibleLayer } from "../../selectors/layers.js";
+import { planIntervalEdit } from "../data/intervalEdit.js";
 import {
+  ERROR_BAR_APPEARANCE_OPTIONS,
   ERROR_BAR_EDIT_OPTIONS,
   resolveErrorBarAppearance
 } from "./options.js";
@@ -112,19 +114,54 @@ export const editErrorBar = action(
     validateKeys(args, ERROR_BAR_EDIT_OPTIONS, "editErrorBar");
     const editable = ERROR_BAR_EDIT_OPTIONS.filter(option => option !== "target");
     if (!editable.some(option => Object.hasOwn(args, option))) {
-      throw new Error("editErrorBar requires at least one appearance change.");
+      throw new Error("editErrorBar requires at least one change.");
     }
     const owner = resolveOwner(this, args.target);
     const current = this.markConfigs[owner.id].errorBar;
-    const appearance = resolveErrorBarAppearance(args, {
+    const appearanceArgs = Object.fromEntries(
+      ERROR_BAR_APPEARANCE_OPTIONS
+        .filter(key => Object.hasOwn(args, key))
+        .map(key => [key, args[key]])
+    );
+    const appearance = resolveErrorBarAppearance(appearanceArgs, {
       defaults: current,
       operation: "editErrorBar"
     });
-    return this
-      ._withMarkConfig(owner.id, {
-        ...this.markConfigs[owner.id],
-        errorBar: { ...current, ...appearance }
-      })
-      .rematerializeErrorBar({ id: owner.id });
+    const interval = Object.hasOwn(args, "statistics")
+      ? planIntervalEdit(this, {
+          owner: owner.id,
+          data: current.data,
+          consumers: [
+            owner.id,
+            ...[current.lowerCapId, current.upperCapId]
+              .filter(id => findLayer(this, id) !== undefined)
+          ],
+          statistics: args.statistics,
+          operation: "editErrorBar"
+        })
+      : { changed: false };
+
+    const applyEdit = program => {
+      let next = program;
+      if (interval.changed) {
+        next = next.createIntervalData(interval.dataArgs);
+        for (const rebind of interval.revision.rebinds) {
+          next = next.rebindLayerData(rebind);
+        }
+      }
+      next = next._withMarkConfig(owner.id, {
+        ...next.markConfigs[owner.id],
+        errorBar: {
+          ...current,
+          ...appearance,
+          ...(interval.changed ? { data: interval.revision.id } : {})
+        }
+      }).rematerializeErrorBar({ id: owner.id });
+      return interval.changed
+        ? next.releaseDerivedData(interval.revision.release)
+        : next;
+    };
+    if (interval.changed) applyEdit(this);
+    return applyEdit(this);
   }
 );
