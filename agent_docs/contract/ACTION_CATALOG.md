@@ -185,7 +185,6 @@ Contract conventions live in [`README.md`](README.md); shared formal notation li
 
 | Kind | Capability | Readiness | Contract |
 | --- | --- | --- | --- |
-| behavior | Cartesian axis component removal | accepted | [Open](planned/AUTHORING_LIFECYCLE.md#capability-cartesian-axis-component-removal) |
 | behavior | Statistical owner revisions | accepted | [Open](planned/AUTHORING_LIFECYCLE.md#capability-statistical-owner-revisions) |
 | behavior | Distribution owner role revisions | accepted | [Open](planned/AUTHORING_LIFECYCLE.md#capability-distribution-owner-role-revisions) |
 | behavior | Facet policy editing | accepted | [Open](planned/AUTHORING_LIFECYCLE.md#capability-facet-policy-editing) |

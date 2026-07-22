@@ -2,12 +2,12 @@
 
 ## 진행 상태
 
-- [ ] Axis semantic/config/graphic ownership and aggregate dispatch mapping
-- [ ] Complete proposed-operation preflight
-- [ ] Leaf/group removal and retained-component reconciliation
-- [ ] Last-component cleanup and ordinary recreate
-- [ ] Contract/type/docs synchronization
-- [ ] Focused and cumulative verification
+- [x] Axis semantic/config/graphic ownership and aggregate dispatch mapping
+- [x] Complete proposed-operation preflight
+- [x] Leaf/group removal and retained-component reconciliation
+- [x] Last-component cleanup and ordinary recreate
+- [x] Contract/type/docs synchronization
+- [x] Focused and cumulative verification
 - [ ] Gate evidence/commit/push
 
 ## 실행 순서

@@ -1513,6 +1513,13 @@ Y도 같은 구조를 가진다. Tick value, label text, title text는 scale과 
 infer하고 concrete line/text collection을 만든다. Axis는 missing coordinate를 생성하거나
 encoding을 수리하지 않는다.
 
+Cartesian complete-axis edit는 component object와 `false`를 구분한다. Object는 existing wrapped leaf edit를,
+`false`는 matching materialization config와 concrete graphic removal을 조합하고 title이면 semantic title leaf도
+제거한다. Aggregate는 selected edit/removal 전체를 immutable speculative branch에서 preflight하고 retained component만
+current Canvas/scale dependency plan에 남긴다. 마지막 component가 사라지면 existing complete-axis removal이 empty
+semantic/config branch까지 정리한다. Scale, coordinate, mark encoding과 source data는 component lifecycle의 소유물이
+아니므로 보존한다.
+
 Parallel axis는 dimension마다 axis line, ticks, labels와 title을 만들고 dimension scale을 독립적으로
 설명한다. 현재 aggregate `createAxes`가 이 family를 dispatch하며 Cartesian channel별 axis option을 Parallel에
 재해석하지 않는다. Parallel grid는 현재 지원하지 않으므로 `createGuides`는 applicable axis와 categorical

@@ -12,8 +12,8 @@ title: Axes
 | Action | Shortest call | Inference/defaults | Result |
 | --- | --- | --- | --- |
 | `createAxes` | `createAxes()` | Stored coordinate family, position scales, titles | Complete x/y, theta/radius, or Parallel dimension axes |
-| `editXAxis` | `editXAxis({ line: { lineWidth: 2 } })` | Existing x-axis components | Selected x-axis components rematerialized |
-| `editYAxis` | `editYAxis({ position: "right" })` | Existing y-axis components | Existing y-axis components moved together |
+| `editXAxis` | `editXAxis({ ticks: false })` | Existing x-axis components | Selected components edited or removed |
+| `editYAxis` | `editYAxis({ position: "right" })` | Existing y-axis components | Retained components moved together |
 | `removeXAxis` / `removeYAxis` | `removeXAxis()` | Existing complete axis | Semantic, graphic, and stored axis state removed |
 
 ## `createAxes(options?)`
@@ -148,7 +148,7 @@ axis should change together:
 ```javascript
 program
   .editXAxis({
-    line: { color: "#334155", lineWidth: 2 },
+    line: false,
     ticksAndLabels: {
       count: 6,
       ticks: { length: 7 },
@@ -160,10 +160,18 @@ program
 ```
 
 The complete edit facade does not create an axis or change its scale and
-coordinate binding. It delegates to the existing line, tick, label, grouped
-tick/label, and title edit actions. Omitted component objects remain unchanged.
-Changing `position` updates every existing component on that axis, including
-components omitted from the call.
+coordinate binding. Each component accepts its existing edit object or `false`;
+`false` removes that component's stored materialization config and concrete
+graphic together; title removal also clears its semantic text. `ticksAndLabels:
+false` removes both components and cannot be combined with standalone `ticks`
+or `labels`. Omitted components remain unchanged unless `position` is present,
+which moves every retained component on that axis.
+
+Removing the last component also clears the empty complete-axis semantic and
+stored config. Recreate one component with its ordinary `create*AxisLine`,
+`create*AxisTicksAndLabels`, or `create*AxisTitle` action, or recreate the full
+axis with `createXAxis()`/`createYAxis()`. Later Canvas and scale edits do not
+restore removed components.
 
 Use `editThetaAxis()` for grouped theta component edits. Use
 `editRadialAxis({ angle: 180 })` to move the radial line, ticks, labels, and
@@ -190,11 +198,11 @@ axis throws before anything changes.
 | Option | Meaning |
 | --- | --- |
 | `position` | x: `"bottom"/"top"`; y: `"left"/"right"` |
-| `line` | `{ color?, lineWidth? }` |
-| `ticks` | `{ count?, values?, length?, color?, lineWidth? }` |
-| `labels` | `{ count?, values?, offset?, format?, color?, fontSize?, fontFamily?, fontWeight? }` |
-| `ticksAndLabels` | `{ count?, values?, ticks?, labels? }` |
-| `title` | `{ text?, at?, offset?, rotation?, color?, fontSize?, fontFamily?, fontWeight? }` |
+| `line` | `false` or `{ color?, lineWidth? }` |
+| `ticks` | `false` or `{ count?, values?, length?, color?, lineWidth? }` |
+| `labels` | `false` or `{ count?, values?, offset?, format?, color?, fontSize?, fontFamily?, fontWeight? }` |
+| `ticksAndLabels` | `false` or `{ count?, values?, ticks?, labels? }` |
+| `title` | `false` or `{ text?, at?, offset?, rotation?, color?, fontSize?, fontFamily?, fontWeight? }` |
 
 Axis label and title weights follow the shared
 [Canvas font-weight policy](./marks/text.md#font-weights).

@@ -22,7 +22,8 @@ test.before(async () => {
   await writeFile(path.join(consumer.directory, "index.html"), `<!doctype html>
     <html><body><p id="status">loading</p>
     <canvas id="chart" aria-label="Encoding removal lifecycle chart"></canvas>
-    <canvas id="legend" aria-label="Legend lifecycle chart"></canvas><script type="importmap">
+    <canvas id="legend" aria-label="Legend lifecycle chart"></canvas>
+    <canvas id="axis" aria-label="Axis component lifecycle chart"></canvas><script type="importmap">
     {"imports":{"ggaction":"/node_modules/ggaction/src/index.js"}}
     </script><script type="module">
       import { chart, render } from "ggaction";
@@ -74,10 +75,21 @@ test.before(async () => {
       const removedLegend = editedLegend.removeLegend({
         channels: ["strokeWidth"]
       });
+      const editedAxes = chart()
+        .createCanvas({ width: 240, height: 180, margin: 50 })
+        .createData({ values: [{ x: 0, y: 2 }, { x: 10, y: 8 }] })
+        .createPointMark({ id: "axisPoints" })
+        .encodeX({ field: "x" })
+        .encodeY({ field: "y" })
+        .createAxes()
+        .editXAxis({ ticksAndLabels: false })
+        .editYAxis({ line: false, title: false });
       const canvas = document.querySelector("#chart");
       render(program, canvas.getContext("2d"));
       const legendCanvas = document.querySelector("#legend");
       render(editedLegend, legendCanvas.getContext("2d"));
+      const axisCanvas = document.querySelector("#axis");
+      render(editedAxes, axisCanvas.getContext("2d"));
       document.querySelector("#status").textContent = "complete";
       window.__ggactionConsumer = {
         width: canvas.width,
@@ -108,7 +120,18 @@ test.before(async () => {
         selectiveLegendRemoved:
           removedLegend.guideConfigs.legend === undefined &&
           removedLegend.graphicSpec.objects.strokeWidthLegendSymbols === undefined &&
-          removedLegend.semanticSpec.layers[0].encoding.strokeWidth !== undefined
+          removedLegend.semanticSpec.layers[0].encoding.strokeWidth !== undefined,
+        axisCanvas: [axisCanvas.width, axisCanvas.height],
+        axisComponentsRemoved:
+          editedAxes.graphicSpec.objects.xAxisTicks === undefined &&
+          editedAxes.graphicSpec.objects.xAxisLabels === undefined &&
+          editedAxes.graphicSpec.objects.yAxisLine === undefined &&
+          editedAxes.graphicSpec.objects.yAxisTitle === undefined,
+        axisComponentsRetained:
+          editedAxes.graphicSpec.objects.xAxisLine !== undefined &&
+          editedAxes.graphicSpec.objects.xAxisTitle !== undefined &&
+          editedAxes.graphicSpec.objects.yAxisTicks !== undefined &&
+          editedAxes.graphicSpec.objects.yAxisLabels !== undefined
       };
     </script></body></html>`);
   server = await startStaticServer(consumer.directory);
@@ -138,7 +161,10 @@ test("imports and renders the packed default entry in a browser", async () => {
     legendCount: 3,
     legendTitle: "Weight",
     legendLabelColor: "#123456",
-    selectiveLegendRemoved: true
+    selectiveLegendRemoved: true,
+    axisCanvas: [240, 180],
+    axisComponentsRemoved: true,
+    axisComponentsRetained: true
   });
   assert.equal(await page.locator("#status").textContent(), "complete");
   assert.equal(
@@ -148,6 +174,10 @@ test("imports and renders the packed default entry in a browser", async () => {
   assert.equal(
     await page.locator("#legend").getAttribute("aria-label"),
     "Legend lifecycle chart"
+  );
+  assert.equal(
+    await page.locator("#axis").getAttribute("aria-label"),
+    "Axis component lifecycle chart"
   );
   assertNoBrowserErrors(errors, "packed consumer");
   await page.close();

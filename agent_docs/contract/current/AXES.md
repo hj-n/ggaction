@@ -775,39 +775,52 @@ Edits selected radius-axis components; `angle` rematerializes every existing com
 
 ## `editXAxis`
 
-- Signature: `editXAxis({ position?, line?, ticks?, labels?, ticksAndLabels?, title? })`.
-- Existing x-axis leaf resources만 선택해 편집하는 aggregate facade다. `position`은 존재하는 line,
-  ticks/labels와 title에 공유된다. `ticksAndLabels`는 standalone `ticks`/`labels`와 함께 쓸 수 없다.
-- Effect: 새로운 axis config를 만들지 않고 wrapped `editXAxisLine`, `editXAxisTicks`,
-  `editXAxisLabels`, `editXAxisTicksAndLabels`, `editXAxisTitle`만 호출한다.
-- Errors: empty/unknown/nested-invalid options, ambiguous tick API combination, requested missing leaf,
-  leaf value/layout validation failure.
+- Signature: `editXAxis({ position?, line?, ticks?, labels?, ticksAndLabels?, title? })`; each component accepts its
+  existing edit object or `false`.
+- Existing x-axis leaf resources를 선택해 편집하거나 제거하는 aggregate facade다. `position`은 제거되지 않은 existing
+  line, ticks/labels와 title 전체에 공유된다. `ticksAndLabels`는 standalone `ticks`/`labels`와 함께 쓸 수 없다.
+- `line: false`, `ticks: false`, `labels: false`, `title: false`는 matching materialization config와 concrete graphic을
+  함께 제거하며 title은 semantic title leaf도 제거한다. `ticksAndLabels: false`는 existing ticks와 labels 모두를
+  요구하고 함께 제거한다.
+- Aggregate는 complete operation plan을 immutable speculative branch에서 preflight한 뒤 실제 child trace를 한 번만
+  기록한다. Object edit는 wrapped leaf action, removal은 `editSemantic({ remove: true })`와
+  `editGraphics({ remove: true })`를 사용한다. 마지막 component 제거는 wrapped `removeXAxis`가 empty axis semantic과
+  config를 정리한다.
+- Retained scale, coordinate, mark encoding, source data와 opposite axis는 보존한다. Removed config/graphic은 Canvas 또는
+  scale rematerialization plan에 다시 들어가지 않으며 ordinary component/complete-axis create action으로 복원한다.
+- Errors: empty/unknown/nested-invalid options, group/leaf combination, requested missing edit/removal leaf,
+  leaf value/layout validation failure. 실패는 returned partial state나 trace를 만들지 않는다.
 
 ### Formal values — `editXAxis`
 
-- Implemented: `editXAxis(options: EditAxisOptions<AxisPositionX>)`.
+- Implemented: `editXAxis(options: EditAxisOptions<AxisPositionX>)`, where each component is `false | ExistingEditOptions`.
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `editXAxis`
 
 - ✅ Covered: shared top position, grouped label formatting, title offset, leaf trace and earlier-program immutability.
-- ✅ Covered: empty, unknown nested and mutually ambiguous tick options.
-- Evidence: `test/unit/actions/guides/axis-actions.test.js` and Roadmap 3 focused-editing Gate.
+- ✅ Covered: every x leaf/group removal, retained state, last-component cleanup, recreate and Canvas/scale replay.
+- ✅ Covered: empty, unknown nested, missing removal, mutually ambiguous tick options and aggregate failure atomicity.
+- No proposal; Evidence: `test/unit/actions/guides/axis-actions.test.js`,
+  `test/unit/actions/guides/axis-component-lifecycle.test.js` and axis lifecycle render/browser contracts.
 
 ## `editYAxis`
 
-- x facade와 같은 contract를 left/right y-axis에 적용한다.
+- x facade와 같은 object/`false` edit/removal, complete preflight, last-component cleanup과 recreate contract를
+  left/right y-axis에 적용한다.
 
 ### Formal values — `editYAxis`
 
-- Implemented: `editYAxis(options: EditAxisOptions<AxisPositionY>)`.
+- Implemented: `editYAxis(options: EditAxisOptions<AxisPositionY>)`, where each component is `false | ExistingEditOptions`.
 - Proposed (NOT IMPLEMENTED): —
 
 ### Value coverage — `editYAxis`
 
 - ✅ Covered: right position, standalone labels, title offset/text, leaf hierarchy and exact Gate parity.
+- ✅ Covered: every y leaf/group removal, retained resource preservation, complete cleanup, recreate and stale-replay absence.
 - No proposal: scale and coordinate rebinding remain outside the edit facade.
-- Evidence: `test/unit/actions/guides/axis-actions.test.js` and Roadmap 3 focused-editing Gate.
+- Evidence: `test/unit/actions/guides/axis-actions.test.js`,
+  `test/unit/actions/guides/axis-component-lifecycle.test.js` and axis lifecycle render/browser contracts.
 
 ## `removeXAxis`
 

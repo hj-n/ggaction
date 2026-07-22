@@ -2030,11 +2030,11 @@ export interface EditLegendBorderOptions {
 
 export interface EditAxisOptions<P extends string> {
   position?: P;
-  line?: AxisLineStyleOptions;
-  ticks?: Omit<AxisTickOptions<P>, "scale" | "position">;
-  labels?: Omit<AxisLabelOptions<P>, "scale" | "position">;
-  ticksAndLabels?: Omit<AxisTicksAndLabelsOptions<P>, "scale" | "position">;
-  title?: Omit<AxisTitleOptions<P>, "scale" | "position">;
+  line?: false | AxisLineStyleOptions;
+  ticks?: false | Omit<AxisTickOptions<P>, "scale" | "position">;
+  labels?: false | Omit<AxisLabelOptions<P>, "scale" | "position">;
+  ticksAndLabels?: false | Omit<AxisTicksAndLabelsOptions<P>, "scale" | "position">;
+  title?: false | Omit<AxisTitleOptions<P>, "scale" | "position">;
 }
 
 export interface TitleTextStyleOptions {

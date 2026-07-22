@@ -1681,7 +1681,7 @@
       "domain": "axes",
       "status": "implemented",
       "lifecycle": "Mutable resource",
-      "update": "Edits selected existing x-axis components",
+      "update": "Edits or removes selected existing x-axis components",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
@@ -1699,7 +1699,7 @@
       "domain": "axes",
       "status": "implemented",
       "lifecycle": "Mutable resource",
-      "update": "Edits selected existing y-axis components",
+      "update": "Edits or removes selected existing y-axis components",
       "audit": "Complete",
       "coverage": {
         "contract": "complete",
@@ -2434,7 +2434,6 @@
     { "name": "editFacetGuides", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/AUTHORING_LIFECYCLE.md", "anchor": "editfacetguides" } }
   ],
   "plannedCapabilities": [
-    { "id": "cartesian-axis-component-removal", "name": "Cartesian axis component removal", "kind": "behavior", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/AUTHORING_LIFECYCLE.md", "anchor": "capability-cartesian-axis-component-removal" } },
     { "id": "statistical-owner-revisions", "name": "Statistical owner revisions", "kind": "behavior", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/AUTHORING_LIFECYCLE.md", "anchor": "capability-statistical-owner-revisions" } },
     { "id": "distribution-owner-role-revisions", "name": "Distribution owner role revisions", "kind": "behavior", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/AUTHORING_LIFECYCLE.md", "anchor": "capability-distribution-owner-role-revisions" } },
     { "id": "facet-policy-editing", "name": "Facet policy editing", "kind": "behavior", "status": "planned", "readiness": "accepted", "contract": { "file": "agent_docs/contract/planned/AUTHORING_LIFECYCLE.md", "anchor": "capability-facet-policy-editing" } }

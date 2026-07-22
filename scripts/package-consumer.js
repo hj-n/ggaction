@@ -96,6 +96,21 @@ async function testNodeConsumer(directory) {
     );
     assert.equal(typeof render, "function");
     assert.equal(program.graphicSpec.objects.point.items.length, 2);
+    const axisLifecycle = chart()
+      .createCanvas({ width: 240, height: 180, margin: 50 })
+      .createData({ values: [{ x: 1, y: 2 }, { x: 2, y: 4 }] })
+      .createPointMark()
+      .encodeX({ field: "x" })
+      .encodeY({ field: "y" })
+      .createAxes()
+      .editXAxis({ ticksAndLabels: false })
+      .editYAxis({ line: false, title: false });
+    assert.equal(axisLifecycle.graphicSpec.objects.xAxisTicks, undefined);
+    assert.equal(axisLifecycle.graphicSpec.objects.xAxisLabels, undefined);
+    assert.equal(axisLifecycle.graphicSpec.objects.yAxisLine, undefined);
+    assert.equal(axisLifecycle.graphicSpec.objects.yAxisTitle, undefined);
+    assert.ok(axisLifecycle.semanticSpec.layers[0].encoding.x);
+    assert.ok(axisLifecycle.resolvedScales.y);
     const windowed = chart()
       .createData({
         id: "events",
@@ -536,6 +551,7 @@ async function testTypeScriptConsumer(directory) {
       type GradientPlotOptions,
       type HorizonEncodingOptions,
       type EditHorizonOptions,
+      type EditAxisOptions,
       type CreateDerivedDataOptions,
       type CreateScatterPlotOptions,
       type DatasetTransform,
@@ -553,6 +569,11 @@ async function testTypeScriptConsumer(directory) {
     import { renderToPNG, type PNGRenderResult } from "ggaction/png";
 
     const program: ChartProgram = chart().createCanvas({ width: 100, height: 100 });
+    const axisRemovalOptions: EditAxisOptions<"bottom" | "top"> = {
+      line: false,
+      ticksAndLabels: false,
+      title: false
+    };
     const scatterOptions: CreateScatterPlotOptions = {
       x: "x",
       y: { field: "y", scale: { zero: false } },
@@ -781,6 +802,9 @@ async function testTypeScriptConsumer(directory) {
       .createPointMark({ id: "points" })
       .encodeX({ field: "x" })
       .encodeY({ field: "y" });
+    const withoutXAxis: ChartProgram = inspected
+      .createXAxis()
+      .editXAxis(axisRemovalOptions);
     const faceted: ChartProgram = inspected.facet({ field: "x", columns: 1 });
     const polar: ChartProgram = chart()
       .createCanvas()
@@ -880,6 +904,7 @@ async function testTypeScriptConsumer(directory) {
     void pointLayer;
     void pointItems;
     void lastAction;
+    void withoutXAxis;
     void invalidTransform;
   `);
   await writeFile(path.join(directory, "tsconfig.json"), `${JSON.stringify({

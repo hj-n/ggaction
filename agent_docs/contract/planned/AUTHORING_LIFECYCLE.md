@@ -42,14 +42,6 @@ editFacetGuides(options: FacetGuideOptions): ChartProgram;
 - Facet field/data/value order, scale policy, layout, headers와 title은 보존한다.
 - Status: Planned, accepted.
 
-## Capability: cartesian-axis-component-removal
-
-- `editXAxis`/`editYAxis`의 `line`, `ticks`, `labels`, `ticksAndLabels`, `title`은 `false`를 받는다.
-- `ticksAndLabels: false`는 ticks와 labels를 함께 제거하며 existing group/leaf mutual exclusion을 유지한다.
-- Aggregate는 selected removals/edits를 전부 preflight하고 semantic/config/graphics를 atomic하게 정리한다.
-- Direct missing component removal은 오류이며 last component removal은 complete axis semantic/config를 정리한다.
-- Status: Planned, accepted.
-
 ## Capability: statistical-owner-revisions
 
 - `editErrorBar`는 `statistics?: { center?, extent?, level? }`을 statistical owner에서만 지원한다.

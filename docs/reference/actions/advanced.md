@@ -83,13 +83,18 @@ requirements in [Source and derived data](../../api/data/source-and-derived.md#c
 ```javascript
 createXAxis({ scale?, coordinate?, position?, line?, ticksAndLabels?, title? })
 createYAxis({ scale?, coordinate?, position?, line?, ticksAndLabels?, title? })
-editXAxis({ position?, line?, ticks?, labels?, ticksAndLabels?, title? })
-editYAxis({ position?, line?, ticks?, labels?, ticksAndLabels?, title? })
+editXAxis({ position?, line?: false | {...}, ticks?: false | {...},
+  labels?: false | {...}, ticksAndLabels?: false | {...}, title?: false | {...} })
+editYAxis({ position?, line?: false | {...}, ticks?: false | {...},
+  labels?: false | {...}, ticksAndLabels?: false | {...}, title?: false | {...} })
 ```
 
 Complete-axis edits update only the selected components of an existing axis.
-Use `ticksAndLabels` for a coordinated tick/label edit, or `ticks` and
-`labels` for independent edits; do not combine both forms.
+Each component accepts its edit object or `false` for removal. Use
+`ticksAndLabels` for a coordinated tick/label edit or removal, or `ticks` and
+`labels` for independent edits/removals; do not combine both forms. Removal
+preserves scale, coordinate, encoding, and data, while the last component also
+cleans the empty axis state.
 
 ## Complete axis removal
 

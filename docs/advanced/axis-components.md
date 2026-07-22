@@ -28,7 +28,9 @@ program.createXAxis({
 
 `createXAxis` and `createYAxis` call the line, tick-and-label, and title actions
 as trace children. `editXAxis` and `editYAxis` update several existing
-components atomically; use the focused edit actions below for one component.
+components atomically. Pass `false` for line, ticks, labels, ticksAndLabels, or
+title to remove that existing component without removing its scale, coordinate,
+encoding, or data; use the focused edit actions below for one component.
 
 <!-- action-capabilities:axes:start -->
 | Axis family | Create | Edit | Editable components |
