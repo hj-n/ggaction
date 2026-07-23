@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 
+import { measureMinimalBrowserBundle } from "./browser-bundle-size.js";
 import { createPackageArtifact } from "./package-artifact.js";
 import { testTutorialConsumers } from "./tutorial-consumer.js";
 
@@ -958,7 +959,8 @@ export async function testPackageConsumer(options) {
     await testNodeConsumer(consumer.directory);
     await testTypeScriptConsumer(consumer.directory);
     await testTutorialConsumers(consumer.directory);
-    return consumer;
+    const browserBundle = await measureMinimalBrowserBundle(consumer.directory);
+    return { ...consumer, browserBundle };
   } finally {
     await consumer.cleanup();
   }
@@ -971,6 +973,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
     package: `${result.installedManifest.name}@${result.installedManifest.version}`,
     source: packageSpec ?? result.artifact.filename,
     ...(result.artifact ? { sha256: result.artifact.sha256 } : {}),
+    browserBundle: result.browserBundle,
     checks: [
       "node",
       "extension",
@@ -988,6 +991,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
       "sequential-palette-count",
       "typescript",
       "tutorial-consumers",
+      "minimal-browser-bundle-measurement",
       "private-export-rejection"
     ]
   }, null, 2)}\n`);
