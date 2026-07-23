@@ -13,7 +13,7 @@ Canvas/PNG public behavior와 draw order를 보존하면서, Node PDF page conte
 - [x] Concrete tree drawing을 target-independent internal function으로 분리
 - [x] Context에 `.canvas`, `clearRect`, `scale`이 없는 vector target regression 추가
 - [x] Existing Canvas/PNG focused와 cumulative suite 통과
-- [ ] R42-P1-A review package commit/push
+- [x] R42-P1-A review package commit/push — `97025e92`
 - [ ] 사용자 explicit approval
 
 ## Gate R42-P1-A

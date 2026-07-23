@@ -2,7 +2,9 @@
 
 ## Gate state
 
-`planned`
+`ready-for-review`
+
+Complete source and evidence package is available at remote checkpoint `97025e92`.
 
 ## Review target
 
@@ -22,7 +24,7 @@ Phase 1 source와 evidence를 구현한 뒤 다음을 검토한다.
 - `npm run test:unit`: 1301/1301 pass
 - `npm run test:contracts`: 156/156 pass
 - Public export/package diff: none
-- Remote checkpoint: pending
+- Remote checkpoint: `97025e92` on `origin/codex/roadmap4-2-vector-renderers`
 
 ## Approval effect
 

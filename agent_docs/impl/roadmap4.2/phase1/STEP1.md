@@ -8,7 +8,7 @@
 - [x] Public Canvas adapter를 helper 위에 재구성
 - [x] PDF-like context fixture로 no-canvas/no-density boundary 검증
 - [x] Focused/cumulative validation
-- [ ] Remote checkpoint 기록
+- [x] Remote checkpoint `97025e92` 기록
 
 ## 변경 경계
 
