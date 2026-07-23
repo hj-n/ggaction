@@ -1,1 +1,4 @@
-export { registerRectMarkActions } from "./actions.js";
+export {
+  registerBasicRectMarkActions,
+  registerRectMarkActions
+} from "./actions.js";

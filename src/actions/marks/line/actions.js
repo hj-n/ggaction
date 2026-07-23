@@ -386,7 +386,11 @@ const editLineMark = action(
 );
 
 export function registerLineMarkActions(ProgramClass) {
-  ProgramClass.prototype.createLineMark = createLineMark;
   ProgramClass.prototype.editLineMark = editLineMark;
+  registerBasicLineMarkActions(ProgramClass);
+}
+
+export function registerBasicLineMarkActions(ProgramClass) {
+  ProgramClass.prototype.createLineMark = createLineMark;
   ProgramClass.prototype.rematerializeLineMark = rematerializeLineMark;
 }

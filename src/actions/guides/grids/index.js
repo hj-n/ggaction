@@ -1,1 +1,1 @@
-export { registerGridActions } from "./grid.js";
+export { registerBasicGridActions, registerGridActions } from "./grid.js";

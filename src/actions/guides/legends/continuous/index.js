@@ -15,11 +15,15 @@ export {
 export { createIntervalLegend, rematerializeIntervalLegend } from "./interval.js";
 
 export function registerContinuousLegendActions(ProgramClass) {
-  ProgramClass.prototype.createGradientLegend = createGradientLegend;
-  ProgramClass.prototype.rematerializeGradientLegend = rematerializeGradientLegend;
+  registerGradientLegendActions(ProgramClass);
   ProgramClass.prototype.createOpacityLegend = createOpacityLegend;
   ProgramClass.prototype.rematerializeOpacityLegend = rematerializeOpacityLegend;
   ProgramClass.prototype.removeOpacityLegend = removeOpacityLegend;
   ProgramClass.prototype.createIntervalLegend = createIntervalLegend;
   ProgramClass.prototype.rematerializeIntervalLegend = rematerializeIntervalLegend;
+}
+
+export function registerGradientLegendActions(ProgramClass) {
+  ProgramClass.prototype.createGradientLegend = createGradientLegend;
+  ProgramClass.prototype.rematerializeGradientLegend = rematerializeGradientLegend;
 }

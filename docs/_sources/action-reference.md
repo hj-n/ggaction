@@ -1707,6 +1707,7 @@ These package-level functions create programs but are not chainable actions.
 | Import | Signature |
 | --- | --- |
 | `ggaction` | `chart(): ChartProgram` |
+| `ggaction/basic` | `chart(): BasicChartProgram` |
 | `ggaction` | `hconcat(options: CompositionOptions): ChartProgram` |
 | `ggaction` | `vconcat(options: CompositionOptions): ChartProgram` |
 
@@ -1720,4 +1721,5 @@ Rendering functions are not actions and do not modify the trace.
 | Import | Signature |
 | --- | --- |
 | `ggaction` | `render(program, canvasContext, { pixelRatio? }?)` |
+| `ggaction/basic` | `render(program, canvasContext, { pixelRatio? }?)` |
 | `ggaction/png` | `renderToPNG(program, { output, pixelRatio? })` |

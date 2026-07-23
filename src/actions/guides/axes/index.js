@@ -14,7 +14,7 @@ import {
 } from "./remove.js";
 import { registerParallelAxisActions } from "./parallel.js";
 
-export function registerGuideAxisActions(ProgramClass) {
+export function registerBasicCartesianAxisActions(ProgramClass) {
   registerAxisLineActions(ProgramClass);
   registerAxisTickActions(ProgramClass);
   registerAxisLabelActions(ProgramClass);
@@ -22,10 +22,18 @@ export function registerGuideAxisActions(ProgramClass) {
   registerAxisTitleActions(ProgramClass);
   registerAxisActions(ProgramClass);
   registerAxisCollectionActions(ProgramClass);
+}
+
+export function registerCartesianAxisActions(ProgramClass) {
+  registerBasicCartesianAxisActions(ProgramClass);
   registerCompleteAxisEditActions(ProgramClass);
-  registerParallelAxisActions(ProgramClass);
   ProgramClass.prototype.removeXAxis = removeXAxis;
   ProgramClass.prototype.removeYAxis = removeYAxis;
+}
+
+export function registerGuideAxisActions(ProgramClass) {
+  registerCartesianAxisActions(ProgramClass);
+  registerParallelAxisActions(ProgramClass);
   ProgramClass.prototype.removeThetaAxis = removeThetaAxis;
   ProgramClass.prototype.removeRadialAxis = removeRadialAxis;
 }

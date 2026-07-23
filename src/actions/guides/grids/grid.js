@@ -343,13 +343,17 @@ const removeGrid = action(
 );
 
 export function registerGridActions(ProgramClass) {
-  ProgramClass.prototype.createGrid = createGrid;
-  ProgramClass.prototype.createHorizontalGrid = createHorizontalGrid;
-  ProgramClass.prototype.createVerticalGrid = createVerticalGrid;
+  registerBasicGridActions(ProgramClass);
   ProgramClass.prototype.editHorizontalGrid = editHorizontalGrid;
   ProgramClass.prototype.editVerticalGrid = editVerticalGrid;
   ProgramClass.prototype.editGrid = editGrid;
   ProgramClass.prototype.removeGrid = removeGrid;
+}
+
+export function registerBasicGridActions(ProgramClass) {
+  ProgramClass.prototype.createGrid = createGrid;
+  ProgramClass.prototype.createHorizontalGrid = createHorizontalGrid;
+  ProgramClass.prototype.createVerticalGrid = createVerticalGrid;
   ProgramClass.prototype.rematerializeGrid = rematerializeGrid;
   ProgramClass.prototype.rematerializeHorizontalGrid =
     rematerializeHorizontalGrid;

@@ -4,6 +4,11 @@ All notable changes to `ggaction` are recorded in this file.
 
 ## Unreleased
 
+### Added
+
+- Added the browser-safe `ggaction/basic` entry for creation-focused scatter, line, bar, histogram, and heatmap
+  programs, with matching TypeScript declarations and an enforced 120,000-byte gzip bundle budget.
+
 ## [0.0.6] - 2026-07-23
 
 ### Added

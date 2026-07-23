@@ -20,6 +20,7 @@
     "data-visualization"
   ],
   "type": "module",
+  "sideEffects": false,
   "files": [
     "src/",
     "!src/**/AGENTS.md",
@@ -33,6 +34,10 @@
     ".": {
       "types": "./types/index.d.ts",
       "default": "./src/index.js"
+    },
+    "./basic": {
+      "types": "./types/basic.d.ts",
+      "default": "./src/basic.js"
     },
     "./extension": {
       "types": "./types/extension.d.ts",
@@ -81,6 +86,7 @@
     "contracts:catalog:check": "node scripts/generate-action-catalog.js --check",
     "package:check": "node scripts/package-artifact.js --check",
     "package:pack": "node scripts/package-artifact.js --pack",
+    "package:bundle": "node scripts/measure-browser-bundle.js",
     "test:package": "node scripts/package-consumer.js",
     "release:notes": "node scripts/release-notes.js"
   },

@@ -50,9 +50,11 @@ test("rejects missing, forbidden, and oversized package manifests", () => {
       "README.md",
       "package.json",
       "src/index.js",
+      "src/basic.js",
       "src/extension.js",
       "src/renderers/png.js",
       "types/index.d.ts",
+      "types/basic.d.ts",
       "types/extension.d.ts",
       "types/png.d.ts",
       "types/program.d.ts"

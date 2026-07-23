@@ -48,7 +48,7 @@ Create `index.html`:
 Create `main.js`:
 
 ```javascript
-import { chart, render } from "ggaction";
+import { chart, render } from "ggaction/basic";
 
 const cars = [
   { horsepower: 88, mpg: 27, origin: "USA" },
@@ -93,6 +93,10 @@ grid from the position encodings. The renderer reads only concrete
 A nominal point color encoding can produce a categorical legend; adding a
 matching shape encoding produces a composite color-and-shape legend.
 
+This walkthrough uses the creation-focused `ggaction/basic` entry. Import from
+`ggaction` instead when the program needs editing, selection, composition,
+Polar or Parallel coordinates, or statistical layers.
+
 ## 3. Run it
 
 ```bash
@@ -106,13 +110,14 @@ created in `index.html`.
 
 | Import | Environment | Use |
 | --- | --- | --- |
-| `ggaction` | Modern ESM browsers and Node.js 20+ | Chart authoring and Browser Canvas rendering |
+| `ggaction` | Modern ESM browsers and Node.js 20+ | Complete chart authoring and Browser Canvas rendering |
+| `ggaction/basic` | Modern ESM browsers and Node.js 20+ | Smaller creation path for scatter, line, bar, histogram, and heatmap charts |
 | `ggaction/extension` | Modern ESM browsers and Node.js 20+ | Wrapped actions and public primitive authoring |
 | `ggaction/png` | Node.js 20+ only | PNG file output through the native Canvas adapter |
 
 All entries include TypeScript declarations. The package does not publish
-CommonJS entry points. Import `ggaction/png` only from Node code; the default
-browser entry does not load filesystem or native PNG modules.
+CommonJS entry points. Import `ggaction/png` only from Node code; neither
+browser entry loads filesystem or native PNG modules.
 
 The release artifact is tested by installing its exact tarball into fresh
 JavaScript and TypeScript consumer projects. It is also tested in a browser and

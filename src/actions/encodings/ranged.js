@@ -291,10 +291,14 @@ const encodeGroup = action(
   }
 );
 
-export function registerRangedEncodingActions(ProgramClass) {
+export function registerBasicRangedEncodingActions(ProgramClass) {
   ProgramClass.prototype.encodeX2 = encodeX2;
   ProgramClass.prototype.encodeY2 = encodeY2;
+  ProgramClass.prototype.encodeGroup = encodeGroup;
+}
+
+export function registerRangedEncodingActions(ProgramClass) {
+  registerBasicRangedEncodingActions(ProgramClass);
   ProgramClass.prototype.encodeXRange = encodeXRange;
   ProgramClass.prototype.encodeYRange = encodeYRange;
-  ProgramClass.prototype.encodeGroup = encodeGroup;
 }

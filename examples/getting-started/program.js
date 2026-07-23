@@ -1,4 +1,4 @@
-import { chart } from "../../src/index.js";
+import { chart } from "../../src/basic.js";
 
 export const cars = [
   { horsepower: 88, mpg: 27, origin: "USA" },

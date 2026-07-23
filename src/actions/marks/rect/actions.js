@@ -162,7 +162,11 @@ const editRectMark = action(
 );
 
 export function registerRectMarkActions(ProgramClass) {
-  ProgramClass.prototype.createRectMark = createRectMark;
   ProgramClass.prototype.editRectMark = editRectMark;
+  registerBasicRectMarkActions(ProgramClass);
+}
+
+export function registerBasicRectMarkActions(ProgramClass) {
+  ProgramClass.prototype.createRectMark = createRectMark;
   ProgramClass.prototype.rematerializeRectMark = rematerializeRectMark;
 }

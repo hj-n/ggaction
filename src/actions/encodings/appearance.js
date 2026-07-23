@@ -277,12 +277,16 @@ const encodeOpacity = action(
   }
 );
 
+export function registerBasicAppearanceEncodingActions(ProgramClass) {
+  ProgramClass.prototype.encodeSize = encodeSize;
+  ProgramClass.prototype.encodeShape = encodeShape;
+}
+
 export function registerAppearanceEncodingAction(ProgramClass) {
+  registerBasicAppearanceEncodingActions(ProgramClass);
   ProgramClass.prototype.encodeRadius = encodeRadius;
   ProgramClass.prototype.encodePointRadius = encodePointRadius;
   ProgramClass.prototype.removePointRadius = removePointRadius;
-  ProgramClass.prototype.encodeSize = encodeSize;
-  ProgramClass.prototype.encodeShape = encodeShape;
   ProgramClass.prototype.encodeOpacity = encodeOpacity;
   ProgramClass.prototype.clearOpacityEncoding = clearOpacityEncoding;
 }
