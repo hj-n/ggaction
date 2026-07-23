@@ -91,9 +91,11 @@ same fully materialized `program.graphicSpec`.
 - `.artifacts/test/png/charts/vector-renderers/cars-regression-scatterplot/pdf-parity/chart.svg`
 - `.artifacts/test/png/charts/vector-renderers/cars-regression-scatterplot/pdf-parity/chart.png`
 - `.artifacts/test/png/charts/vector-renderers/cars-regression-scatterplot/pdf-parity/comparison.html`
-- `.artifacts/test/png/charts/vector-renderers/cars-regression-scatterplot/pdf-parity/pdf-verification.json`
-- `.artifacts/test/png/charts/vector-renderers/cars-regression-scatterplot/pdf-parity/extracted-text.txt`
+- `.artifacts/test/png/charts/vector-renderers/cars-regression-scatterplot/pdf-parity/pdfinfo.txt`
 - `.artifacts/test/png/charts/vector-renderers/cars-regression-scatterplot/pdf-parity/variant.json`
+
+Phase 4에서 `npm run artifacts:renderers`를 stable regeneration owner로 추가했다. Approved visual target은
+동일하며 parser/operator assertion은 durable PDF unit/contract tests가 소유한다.
 
 ## Remote checkpoint
 

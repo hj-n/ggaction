@@ -8,15 +8,15 @@ installed consumer, browser dependency boundary, public documentation과 current
 
 ## 진행 상태
 
-- [ ] Concrete schema/render behavior consumer matrix 작성과 executable enforcement
-- [ ] All-public-chart Canvas/PNG/SVG/PDF evidence 연결
-- [ ] Runtime export/declaration/package export exact parity 확인
-- [ ] Browser-safe/Node-only dependency boundary 최종 확인
-- [ ] Installed JavaScript/TypeScript consumer 최종 확인
-- [ ] README/public docs/runtime reference/limitations 최종 audit
-- [ ] Architecture renderer/package boundary 최종 audit
-- [ ] Full unit/contract/browser/docs/package/coverage verification
-- [ ] R42-Exit review package commit/push
+- [x] Concrete schema/render behavior consumer matrix 작성과 executable enforcement
+- [x] All-public-chart Canvas/PNG/SVG/PDF evidence 연결
+- [x] Runtime export/declaration/package export exact parity 확인
+- [x] Browser-safe/Node-only dependency boundary 최종 확인
+- [x] Installed JavaScript/TypeScript consumer 최종 확인
+- [x] README/public docs/runtime reference/limitations 최종 audit
+- [x] Architecture renderer/package boundary 최종 audit
+- [x] Full unit/contract/browser/docs/package/coverage verification
+- [x] R42-Exit review package commit/push — `c2eb1b20`
 - [ ] 사용자 explicit closeout approval
 
 ## Gate R42-Exit
