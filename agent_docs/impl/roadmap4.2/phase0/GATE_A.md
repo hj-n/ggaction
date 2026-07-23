@@ -2,10 +2,10 @@
 
 ## Gate state
 
-`ready-for-review`
+`approved`
 
-Complete review package는 remote checkpoint `bcfe14b0`에 있다. 사용자의 명시적 승인 전에는 runtime 구현을
-시작하지 않는다.
+Approved by the user on 2026-07-23. The approved contract is the complete review package at remote checkpoint
+`bcfe14b0`; no entry, option, result, decision or non-goal was changed during approval.
 
 ## Review target
 

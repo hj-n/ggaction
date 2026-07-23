@@ -4,7 +4,8 @@
 
 ## 현재 작업
 
-- **활성 Roadmap은 Roadmap 4.2 Phase 0이다.** SVG/PDF public output contract Gate를 준비한다.
+- **활성 Roadmap은 Roadmap 4.2 Phase 1이다.** Canvas/PDF drawing-target boundary와 기존 renderer 회귀를
+  검증한다.
 - [`ROADMAP_INDEX.json`](ROADMAP_INDEX.json) — nullable active Roadmap/Phase와 마지막 완료 owner의 machine-readable source
 - [`roadmap4.2/ROADMAP.md`](roadmap4.2/ROADMAP.md) — active, SVG와 PDF vector renderer
 
