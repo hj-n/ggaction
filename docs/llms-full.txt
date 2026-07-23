@@ -1507,7 +1507,7 @@ program
 This chart folds Kenya's life expectancy above and below a 55-year baseline
 into three compact bands. The source rows stay immutable. `encodeHorizon`
 creates one derived dataset and ordinary closed area paths, so Browser Canvas
-and Node PNG use the same backend-neutral graphics.
+and the SVG, PNG, and PDF outputs use the same backend-neutral graphics.
 
 The repository contains a
 [runnable browser example](https://github.com/ggaction/ggaction/tree/main/examples/gapminder-horizon)
@@ -4701,7 +4701,7 @@ The `text` option is constant-content shorthand.
 ## Font weights
 
 `fontWeight` accepts a non-empty CSS weight string or a finite number. To keep
-Browser Canvas and Node PNG output consistent, numeric values are rounded to the
+Canvas, SVG, PNG, and PDF output consistent, numeric values are rounded to the
 nearest 100 and clamped to the backend-safe `100`–`900` range before rendering.
 For example, `650` renders as `700`. The authored value remains unchanged in the
 program state. Titles, facet headers, legends, and Cartesian or Polar axis text
@@ -6477,7 +6477,7 @@ nested compositions keep independent clipping and coordinate scopes.
 A complete Cartesian or Polar chart can be a direct or nested concat child.
 The composition does not reinterpret theta, radius, x, y, scales, guides, or
 selections. It snapshots each finished child into one namespaced concrete
-graphic tree, so Canvas and PNG renderers use the same result.
+graphic tree, so Canvas, SVG, PNG, and PDF renderers use the same result.
 
 When a nested child changes, replace it in each ancestor explicitly:
 
@@ -11498,6 +11498,8 @@ Rendering functions are not actions and do not modify the trace.
 | `ggaction` | `render(program, canvasContext, { pixelRatio? }?)` |
 | `ggaction/basic` | `render(program, canvasContext, { pixelRatio? }?)` |
 | `ggaction/png` | `renderToPNG(program, { output, pixelRatio? })` |
+| `ggaction/pdf` | `renderToPDF(program, { output, metadata? })` |
+| `ggaction/svg` | `renderToSVG(program, { title?, description? }?)` |
 
 <!-- Source: /reference/types/ -->
 

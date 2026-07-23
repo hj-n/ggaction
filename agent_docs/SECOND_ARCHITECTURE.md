@@ -23,7 +23,7 @@ agent가 다음을 빠르게 이해하기 위한 내부 아키텍처 문서다.
 - 의미와 그래픽이 어디에서 분리되는가
 - action이 어떻게 trace와 materialization을 만드는가
 - scale, mark, guide, transform이 어떤 책임 경계를 가지는가
-- Canvas와 PNG renderer가 무엇을 읽는가
+- Canvas, SVG, PNG와 PDF renderer가 무엇을 읽는가
 - 새로운 기능을 어느 계층에 추가해야 하는가
 
 ## 핵심 결론
@@ -69,8 +69,12 @@ Public package
 ├─ ggaction/extension
 │  ├─ ChartProgram
 │  └─ action()
-└─ ggaction/png
-   └─ renderToPNG()
+├─ ggaction/svg
+│  └─ renderToSVG()
+├─ ggaction/png
+│  └─ renderToPNG()
+└─ ggaction/pdf
+   └─ renderToPDF()
 
 Program execution
 ├─ ChartProgram assembly
@@ -1722,8 +1726,8 @@ encodeHorizon
 Horizon은 area target의 source x/y를 baseline 기준 signed amplitude로 바꾼 뒤 sign별 repeated band로 fold한다.
 Semantic layer에는 ordinary x/y/y2/group/color encoding을 저장하고 folded y scale을 `[0, 1]`로 고정한다.
 Automatic guide policy는 original x axis/grid만 허용하고 folded y axis와 internal sign/band color legend는 만들지
-않는다. Area materializer와 Canvas/PNG renderer는 Horizon-specific branch 없이 ordinary closed path collection을
-처리한다.
+않는다. Area materializer와 Canvas/PNG/SVG/PDF renderer는 Horizon-specific branch 없이 ordinary closed path
+collection을 처리한다.
 
 ```text
 editHorizon

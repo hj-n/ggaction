@@ -453,6 +453,10 @@ async function testNodeConsumer(directory) {
     await renderToPNG(fontWeightProgram, {
       output: ${JSON.stringify(fontWeightOutput)}
     });
+    assert.match(
+      renderToSVG(fontWeightProgram),
+      /font-weight="700"/
+    );
 
     const legendBase = chart()
       .createCanvas({
@@ -819,6 +823,15 @@ async function testTypeScriptConsumer(directory) {
     });
     const svgOptions: SVGRenderOptions = { title: "Typed SVG" };
     const svg: string = renderToSVG(program, svgOptions);
+    renderToPDF(program, {
+      output: "chart.pdf",
+      // @ts-expect-error PDF is vector output and has no pixelRatio option.
+      pixelRatio: 2
+    });
+    renderToSVG(program, {
+      // @ts-expect-error SVG is vector output and has no pixelRatio option.
+      pixelRatio: 2
+    });
     const wrapped = action(
       { op: "typed", description: "Compile one extension action." },
       function () { return this; }

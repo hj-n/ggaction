@@ -16,6 +16,7 @@ import {
   requireFiniteProperty,
   requireStringProperty
 } from "./canvas/validation.js";
+import { normalizeRendererFontWeight } from "./text.js";
 
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 const SVG_OPTIONS = new Set(["title", "description"]);
@@ -367,7 +368,7 @@ function serializeText(state, graphicId, properties) {
     ["fill", fill],
     ["font-family", fontFamily],
     ["font-size", formatNumber(fontSize)],
-    ["font-weight", fontWeight],
+    ["font-weight", normalizeRendererFontWeight(fontWeight)],
     ["text-anchor", TEXT_ANCHORS[textAlign]],
     ["dominant-baseline", DOMINANT_BASELINES[textBaseline]],
     ["opacity", formatNumber(opacity)],

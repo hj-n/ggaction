@@ -126,6 +126,7 @@ test("serializes the complete concrete primitive surface deterministically", () 
   assert.match(first, /<circle cx="30" cy="40" r="5"/);
   assert.match(first, /stroke-dasharray="4 2"/);
   assert.match(first, /d="M80 20 C90 10 100 30 110 20 L110 50 Z"/);
+  assert.match(first, /font-weight="600"/);
   assert.match(first, /transform="rotate\(45 80 90\)"/);
   assert.match(first, />A &lt; B &amp; C<\/text>/);
 
@@ -141,6 +142,18 @@ test("serializes the complete concrete primitive surface deterministically", () 
     pathIndex < textIndex,
     true
   );
+});
+
+test("normalizes numeric font weights consistently with Canvas-compatible targets", () => {
+  const graphicSpec = completeGraphicSpec();
+  graphicSpec.objects.plot.items.find(
+    item => item.id === "plot:text"
+  ).properties.fontWeight = 650;
+
+  const svg = renderToSVG({ graphicSpec });
+
+  assert.match(svg, /font-weight="700"/);
+  assert.doesNotMatch(svg, /font-weight="650"/);
 });
 
 test("serializes nested Canvas translation, clipping, and local background", () => {
