@@ -4,8 +4,9 @@
 
 ## 현재 작업
 
-- **활성 Roadmap은 없다.** 마지막 완료 owner는 Roadmap 4.1 Phase 9다.
+- **활성 Roadmap은 Roadmap 4.2 Phase 0이다.** SVG/PDF public output contract Gate를 준비한다.
 - [`ROADMAP_INDEX.json`](ROADMAP_INDEX.json) — nullable active Roadmap/Phase와 마지막 완료 owner의 machine-readable source
+- [`roadmap4.2/ROADMAP.md`](roadmap4.2/ROADMAP.md) — active, SVG와 PDF vector renderer
 
 ## 개발 이력
 
