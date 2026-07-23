@@ -12,6 +12,7 @@ import {
   sanitizeMarkdown
 } from "../../scripts/generate-llm-docs.js";
 import {
+  buildRuntimeSignatureSection,
   buildSignatureSection,
   declaredActionSignatures
 } from "../../scripts/generate-doc-signatures.js";
@@ -37,6 +38,9 @@ import {
   parseDocChartCatalog,
   readDocChartCatalog
 } from "../../scripts/doc-chart-catalog.js";
+import {
+  buildExamplesReadme
+} from "../../scripts/generate-examples-readme.js";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const docsRoot = path.join(root, "docs");
@@ -281,6 +285,24 @@ test("keeps the chart-example catalog strict and routable", async () => {
         );
       }
     }
+    assert.equal(
+      existsSync(path.join(root, chart.example.replace(/^\//, ""))),
+      true,
+      `${chart.id} example`
+    );
+  }
+  assert.equal(new Set(catalog.map(chart => chart.example)).size, catalog.length);
+});
+
+test("generates the public example index from the chart catalog", async () => {
+  const index = read("examples/README.md");
+  assert.equal(index, await buildExamplesReadme());
+  assert.match(index, /This index is generated from the canonical public chart catalog/);
+  assert.match(index, /Quarto and Observable JS/);
+  assert.match(index, /Development fixtures/);
+  for (const chart of readDocChartCatalog(read("docs/_data/chart_examples.yml"))) {
+    assert.match(index, new RegExp(`\\[${chart.title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\]`));
+    assert.match(index, new RegExp(chart.example.replace(/^\/examples\//, "\\.\\/")));
   }
 });
 
@@ -515,24 +537,10 @@ test("routes entry documentation to the canonical example indexes", () => {
   const gettingStarted = read("docs/getting-started.md");
   const catalog = chartExampleCatalog();
 
-  for (const name of [
-    "cars-scatterplot",
-    "cars-line-chart",
-    "cars-histogram",
-    "jobs-grouped-bar",
-    "gapminder-life-expectancy-heatmap",
-    "cars-regression-scatterplot",
-    "cars-density-area",
-    "cars-parallel-coordinates",
-    "cars-acceleration-violins",
-    "cars-error-bar",
-    "gapminder-error-band",
-    "cars-box-plot",
-    "mark-selection",
-    "program-composition"
-  ]) {
-    assert.match(gettingStarted, new RegExp(`examples/${name}`));
-  }
+  assert.match(gettingStarted, /examples\/README\.md/);
+  assert.match(gettingStarted, /\/gallery\//);
+  assert.match(gettingStarted, /examples\/quarto-ojs/);
+  assert.doesNotMatch(gettingStarted, /examples\/cars-scatterplot/);
   assert.match(readme, /\.\/examples\/README\.md/);
   assert.match(readme, /\/tutorials\//);
   assert.match(readme, /examples\/cars-regression-scatterplot/);
@@ -572,8 +580,7 @@ test("routes entry documentation to the canonical example indexes", () => {
   assert.equal(catalog.get("rose").featured, true);
   assert.equal(catalog.get("rose").url, "/recipes/rose-chart/");
   assert.equal(catalog.get("rose").recipe_url, "/recipes/rose-chart/");
-  assert.match(gettingStarted, /color and shape encodings\s+also create/);
-  assert.match(gettingStarted, /examples\/getting-started/);
+  assert.match(gettingStarted, /color and shape\s+encodings also create/);
 });
 
 test("keeps the README and documentation home positioning aligned", () => {
@@ -823,8 +830,56 @@ test("classifies every declared ChartProgram action in the reference", async () 
   }
 
   assert.match(landing, /^## Exact action lookup$/m);
-  assert.match(read("docs/reference/runtime.md"), /^## Internal trace operations$/m);
-  assert.match(read("docs/reference/runtime.md"), /absent from the public TypeScript\s+declaration/);
+  const runtime = read("docs/reference/runtime.md");
+  const generatedRuntime = await buildRuntimeSignatureSection();
+  const runtimeStart = runtime.indexOf("<!-- BEGIN GENERATED RUNTIME SIGNATURES -->");
+  const runtimeEnd = runtime.indexOf("<!-- END GENERATED RUNTIME SIGNATURES -->");
+  assert.notEqual(runtimeStart, -1);
+  assert.notEqual(runtimeEnd, -1);
+  assert.equal(
+    runtime.slice(
+      runtimeStart,
+      runtimeEnd + "<!-- END GENERATED RUNTIME SIGNATURES -->".length
+    ),
+    generatedRuntime
+  );
+  assert.equal(
+    runtime.indexOf("### Exact TypeScript signatures") <
+      runtime.indexOf("## Internal trace operations"),
+    true
+  );
+  assert.match(runtime, /Promise<PDFRenderResult>/);
+  assert.match(runtime, /Promise<PNGRenderResult>/);
+  assert.match(runtime, /\): string;/);
+  assert.match(runtime, /^## Internal trace operations$/m);
+  assert.match(runtime, /absent\s+from the public TypeScript\s+declaration/);
+});
+
+test("keeps rendering guidance executable and aligned with the Canvas contract", () => {
+  const rendering = read("docs/api/rendering.md");
+  const program = rendering.match(
+    /^## Complete example program[\s\S]*?```javascript\n([\s\S]*?)```/m
+  )?.[1];
+  assert.notEqual(program, undefined);
+  const executed = spawnSync(
+    process.execPath,
+    ["--input-type=module", "-"],
+    { input: program, encoding: "utf8", cwd: root }
+  );
+  assert.equal(executed.status, 0, executed.stderr);
+  assert.match(rendering, /Every rendering fragment below continues from/);
+  assert.match(rendering, /getContext\("2d"\)/);
+  assert.match(rendering, /document\.querySelector\("#svg-output"\)\.innerHTML = svg/);
+
+  const troubleshooting = read("docs/troubleshooting.md");
+  assert.match(
+    troubleshooting,
+    /const context = document\.querySelector\("#chart"\)\.getContext\("2d"\);\s+render\(program, context\);/
+  );
+  assert.doesNotMatch(
+    troubleshooting,
+    /render\(program, document\.querySelector\("#chart"\)\)/
+  );
 });
 
 test("keeps concise and full LLM documentation synchronized", async () => {
@@ -834,14 +889,16 @@ test("keeps concise and full LLM documentation synchronized", async () => {
     /\.\/(?:llms-full\.txt|(?:[A-Za-z0-9_-]+\/)*(?:#[A-Za-z0-9_-]+)?)/g
   )].map(match => match[0]);
 
-  assert.equal(lines.length < 100, true);
+  assert.equal(lines.length < 80, true);
   assert.match(index, /\.\/llms-full\.txt/);
   assert.match(index, /\.\/reference\/actions\/charts-data\//);
   assert.doesNotMatch(index, /\.md(?:#|\b)/);
-  assert.equal(targets.length, 44);
-  assert.match(index, /vertical or\s+horizontal grouped statistical\/explicit error bands/);
-  assert.match(index, /vertical or horizontal categorical and\s+quantitative pairings/);
-  assert.doesNotMatch(index, /Polar line\/arc marks/);
+  assert.equal(new Set(targets).size, targets.length);
+  assert.equal(targets.length < 50, true);
+  assert.match(index, /Canvas, SVG, PNG, and PDF rendering/);
+  assert.match(index, /Supported features and limitations/);
+  assert.match(index, /Exact program and renderer signatures/);
+  assert.doesNotMatch(index, /^## Current scope$/m);
   assert.equal(index, await buildConciseLlmDocumentation());
   assert.doesNotMatch(
     read(".github/workflows/ci.yml"),
