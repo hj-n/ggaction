@@ -2,7 +2,7 @@
 
 ## Gate state
 
-`planned`
+`ready-for-review`
 
 ## Review target
 
@@ -91,6 +91,11 @@ same fully materialized `program.graphicSpec`.
 - `.artifacts/test/png/review/vector-renderers/pdf-parity/pdf-verification.json`
 - `.artifacts/test/png/review/vector-renderers/pdf-parity/extracted-text.txt`
 - `.artifacts/test/png/review/vector-renderers/pdf-parity/variant.json`
+
+## Remote checkpoint
+
+- Implementation and review package: `86bd0168`
+- Branch: `codex/roadmap4-2-vector-renderers`
 
 ## Approval effect
 

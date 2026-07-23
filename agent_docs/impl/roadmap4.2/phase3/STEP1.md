@@ -10,7 +10,7 @@
 - [x] Structural/text/metadata/vector verification
 - [x] All-public-chart PDF contract 실행
 - [x] Poppler-rendered Canvas/SVG/PNG/PDF comparison 생성
-- [ ] Remote checkpoint 기록
+- [x] Remote checkpoint 기록 — `86bd0168`
 
 ## Output contract
 

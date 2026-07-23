@@ -16,7 +16,7 @@ vector operators와 Poppler-rendered appearance를 검증한다.
 - [x] `ggaction/pdf`, strict declaration, package/docs/architecture 동기화
 - [x] Unit/contract/package verification
 - [x] 같은 public chart의 Canvas/SVG/PNG/PDF 4-column review image 생성
-- [ ] R42-P3-A review package commit/push
+- [x] R42-P3-A review package commit/push — `86bd0168`
 - [ ] 사용자 explicit visual approval
 
 ## Gate R42-P3-A
