@@ -2,7 +2,10 @@
 
 ## Gate state
 
-`ready-for-review`
+`approved`
+
+Approved by the user on 2026-07-23. The approved PDF implementation and Canvas/SVG/PNG/PDF visual target are the
+complete review package at remote checkpoint `94b53484`.
 
 ## Review target
 
@@ -82,15 +85,15 @@ same fully materialized `program.graphicSpec`.
 
 ## Review artifacts
 
-- `.artifacts/test/png/review/vector-renderers/pdf-parity/canvas-svg-png-pdf-comparison.png`
-- `.artifacts/test/png/review/vector-renderers/pdf-parity/chart.pdf`
-- `.artifacts/test/png/review/vector-renderers/pdf-parity/pdf.png`
-- `.artifacts/test/png/review/vector-renderers/pdf-parity/chart.svg`
-- `.artifacts/test/png/review/vector-renderers/pdf-parity/chart.png`
-- `.artifacts/test/png/review/vector-renderers/pdf-parity/comparison.html`
-- `.artifacts/test/png/review/vector-renderers/pdf-parity/pdf-verification.json`
-- `.artifacts/test/png/review/vector-renderers/pdf-parity/extracted-text.txt`
-- `.artifacts/test/png/review/vector-renderers/pdf-parity/variant.json`
+- `.artifacts/test/png/charts/vector-renderers/cars-regression-scatterplot/pdf-parity/canvas-svg-png-pdf-comparison.png`
+- `.artifacts/test/png/charts/vector-renderers/cars-regression-scatterplot/pdf-parity/chart.pdf`
+- `.artifacts/test/png/charts/vector-renderers/cars-regression-scatterplot/pdf-parity/pdf.png`
+- `.artifacts/test/png/charts/vector-renderers/cars-regression-scatterplot/pdf-parity/chart.svg`
+- `.artifacts/test/png/charts/vector-renderers/cars-regression-scatterplot/pdf-parity/chart.png`
+- `.artifacts/test/png/charts/vector-renderers/cars-regression-scatterplot/pdf-parity/comparison.html`
+- `.artifacts/test/png/charts/vector-renderers/cars-regression-scatterplot/pdf-parity/pdf-verification.json`
+- `.artifacts/test/png/charts/vector-renderers/cars-regression-scatterplot/pdf-parity/extracted-text.txt`
+- `.artifacts/test/png/charts/vector-renderers/cars-regression-scatterplot/pdf-parity/variant.json`
 
 ## Remote checkpoint
 

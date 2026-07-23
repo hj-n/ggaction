@@ -55,8 +55,8 @@ program에 저장하지 않는다.
 | 0 | completed | Exact public API, compatibility와 evidence contract; R42-P0-A approved |
 | 1 | completed | Shared traversal/drawing target boundary와 Canvas/PNG regression; R42-P1-A approved |
 | 2 | completed | Browser-safe SVG renderer, deterministic output와 visual review; R42-P2-A approved |
-| 3 | in-progress | Node vector PDF renderer, metadata와 Poppler visual review; R42-P3-A |
-| 4 | planned | Full parity matrix, docs/types/package closeout; R42-Exit |
+| 3 | completed | Node vector PDF renderer, metadata와 Poppler visual review; R42-P3-A approved |
+| 4 | in-progress | Full parity matrix, docs/types/package closeout; R42-Exit |
 
 ## Approval Gates
 
