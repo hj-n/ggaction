@@ -17,7 +17,7 @@ installed consumer, browser dependency boundary, public documentation과 current
 - [x] Architecture renderer/package boundary 최종 audit
 - [x] Full unit/contract/browser/docs/package/coverage verification
 - [x] R42-Exit review package commit/push — `c2eb1b20`
-- [ ] 사용자 explicit closeout approval
+- [x] 사용자 explicit closeout approval — 2026-07-23
 
 ## Gate R42-Exit
 
@@ -44,6 +44,6 @@ installed consumer, browser dependency boundary, public documentation과 current
 
 ## Exit
 
-사용자가 전체 closeout package를 명시적으로 승인하면 Roadmap 4.2를 completed로 전환하고
-`ROADMAP_INDEX.json`의 active pointer를 해제한다. 이 승인은 PR, merge, publish, deploy 또는 release 권한을
+사용자가 전체 closeout package를 2026-07-23에 명시적으로 승인했다. Roadmap 4.2를 completed로 전환하고
+`ROADMAP_INDEX.json`의 active pointer를 해제했다. 이 승인은 PR, merge, publish, deploy 또는 release 권한을
 포함하지 않는다.

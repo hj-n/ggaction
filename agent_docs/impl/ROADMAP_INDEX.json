@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "activeRoadmap": "roadmap4.2",
-  "activePhase": 4,
-  "lastCompletedRoadmap": "roadmap4.1",
-  "lastCompletedPhase": 9,
+  "activeRoadmap": null,
+  "activePhase": null,
+  "lastCompletedRoadmap": "roadmap4.2",
+  "lastCompletedPhase": 4,
   "roadmaps": [
     {
       "id": "roadmap1",
@@ -56,8 +56,8 @@
     {
       "id": "roadmap4.2",
       "title": "SVG and PDF Vector Renderers",
-      "status": "active",
-      "role": "current-execution-plan",
+      "status": "completed",
+      "role": "historical-execution-record",
       "file": "agent_docs/impl/roadmap4.2/ROADMAP.md"
     }
   ]

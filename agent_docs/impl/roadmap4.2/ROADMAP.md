@@ -1,8 +1,8 @@
 # Roadmap 4.2 — SVG and PDF Vector Renderers
 
-> **문서 상태 — 현재 실행 계획.** Roadmap 4.2는 기존 `graphicSpec` renderer boundary를 유지하면서
-> browser-safe SVG string renderer와 Node-only vector PDF file renderer를 추가한다.
-> Machine-readable active owner는 [`../ROADMAP_INDEX.json`](../ROADMAP_INDEX.json)이 소유한다.
+> **문서 상태 — 완료된 실행 기록.** 2026-07-23 R42-Exit 승인을 받아 Phase 0~4와 Roadmap 4.2를
+> 완료했다. 현재 observable behavior는 [`ACTION_INDEX.json`](../../contract/ACTION_INDEX.json)이 소유하며,
+> roadmap 상태와 nullable active pointer는 [`../ROADMAP_INDEX.json`](../ROADMAP_INDEX.json)이 소유한다.
 
 ## 목표
 
@@ -56,7 +56,7 @@ program에 저장하지 않는다.
 | 1 | completed | Shared traversal/drawing target boundary와 Canvas/PNG regression; R42-P1-A approved |
 | 2 | completed | Browser-safe SVG renderer, deterministic output와 visual review; R42-P2-A approved |
 | 3 | completed | Node vector PDF renderer, metadata와 Poppler visual review; R42-P3-A approved |
-| 4 | in-progress | Full parity matrix, docs/types/package closeout; R42-Exit |
+| 4 | completed | Full parity matrix, docs/types/package closeout; R42-Exit approved |
 
 ## Approval Gates
 

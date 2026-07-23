@@ -2,7 +2,11 @@
 
 ## Gate state
 
-`ready-for-review`
+`approved`
+
+사용자가 2026-07-23에 Gate package `45704a0d`, renderer parity checkpoint `43feb8ab`와 architecture route
+correction `c2eb1b20`을 명시적으로 승인했다. Roadmap 4.2 완료 선언과 active Roadmap/Phase pointer closeout이
+해제되었다.
 
 ## Review target
 
@@ -87,7 +91,7 @@ Full `npm run test:render`가 generated artifact root를 초기화한 뒤에도 
 
 ## Approval effect
 
-Approval permits the documentation-only Roadmap completion transition. It does not authorize PR creation, merge,
+Approval permitted the documentation-only Roadmap completion transition. It did not authorize PR creation, merge,
 package publish, documentation deployment or release.
 
 ## Work blocked before approval
