@@ -6,7 +6,10 @@ import { fileURLToPath } from "node:url";
 
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 
-import { measureMinimalBrowserBundle } from "./browser-bundle-size.js";
+import {
+  BROWSER_BUNDLE_GZIP_LIMITS,
+  measureMinimalBrowserBundle
+} from "./browser-bundle-size.js";
 import { createPackageArtifact } from "./package-artifact.js";
 import { testTutorialConsumers } from "./tutorial-consumer.js";
 
@@ -71,6 +74,7 @@ async function testNodeConsumer(directory) {
   const source = `
     import assert from "node:assert/strict";
     import { chart, hconcat, render, vconcat } from "ggaction";
+    import { chart as basicChart, render as basicRender } from "ggaction/basic";
     import { action, ChartProgram } from "ggaction/extension";
     import { renderToPNG } from "ggaction/png";
 
@@ -175,6 +179,13 @@ async function testNodeConsumer(directory) {
       scatterFacade.trace.children.at(-1).children.map(node => node.op),
       ["createPointMark", "encodeX", "encodeY"]
     );
+    const basicScatter = basicChart()
+      .createCanvas({ width: 160, height: 120, margin: 20 })
+      .createData({ values: [{ x: 1, y: 2 }, { x: 2, y: 4 }] })
+      .createScatterPlot({ x: "x", y: "y", guides: false });
+    assert.equal(basicScatter.graphicSpec.objects.scatterPlot.items.length, 2);
+    assert.equal(basicScatter.createRegression, undefined);
+    assert.equal(typeof basicRender, "function");
     const horizon = chart()
       .createCanvas({ width: 180, height: 100, margin: 15 })
       .createData({
@@ -579,6 +590,11 @@ async function testTypeScriptConsumer(directory) {
     } from "ggaction";
     import { action, ChartProgram as ExtensionProgram } from "ggaction/extension";
     import { renderToPNG, type PNGRenderResult } from "ggaction/png";
+    import {
+      chart as basicChart,
+      render as basicRender,
+      type BasicChartProgram
+    } from "ggaction/basic";
 
     const program: ChartProgram = chart().createCanvas({ width: 100, height: 100 });
     const axisRemovalOptions: EditAxisOptions<"bottom" | "top"> = {
@@ -595,6 +611,11 @@ async function testTypeScriptConsumer(directory) {
       .createCanvas()
       .createData({ values: [{ x: 1, y: 2 }] })
       .createScatterPlot(scatterOptions);
+    const basicScatter: BasicChartProgram = basicChart()
+      .createCanvas()
+      .createData({ values: [{ x: 1, y: 2 }] })
+      .createScatterPlot(scatterOptions);
+    const basicDraw: typeof basicRender = basicRender;
     const horizonOptions: HorizonEncodingOptions = {
       x: { field: "time", fieldType: "temporal" },
       y: "value",
@@ -911,6 +932,8 @@ async function testTypeScriptConsumer(directory) {
     const invalidTransform: DatasetTransform = { type: "unknown" };
     void draw;
     void scatterFacade;
+    void basicScatter;
+    void basicDraw;
     void horizonFacade;
     void lineFacade;
     void orderedLineFacade;
@@ -959,8 +982,22 @@ export async function testPackageConsumer(options) {
     await testNodeConsumer(consumer.directory);
     await testTypeScriptConsumer(consumer.directory);
     await testTutorialConsumers(consumer.directory);
-    const browserBundle = await measureMinimalBrowserBundle(consumer.directory);
-    return { ...consumer, browserBundle };
+    const fullBundle = await measureMinimalBrowserBundle(consumer.directory);
+    const basicBundle = await measureMinimalBrowserBundle(consumer.directory, {
+      specifier: "ggaction/basic"
+    });
+    for (const bundle of [fullBundle, basicBundle]) {
+      const limit = BROWSER_BUNDLE_GZIP_LIMITS[bundle.specifier];
+      if (bundle.gzipBytes > limit) {
+        throw new Error(
+          `${bundle.specifier} gzip bundle ${bundle.gzipBytes} exceeds ${limit}.`
+        );
+      }
+    }
+    return {
+      ...consumer,
+      browserBundles: { full: fullBundle, basic: basicBundle }
+    };
   } finally {
     await consumer.cleanup();
   }
@@ -973,7 +1010,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
     package: `${result.installedManifest.name}@${result.installedManifest.version}`,
     source: packageSpec ?? result.artifact.filename,
     ...(result.artifact ? { sha256: result.artifact.sha256 } : {}),
-    browserBundle: result.browserBundle,
+    browserBundles: result.browserBundles,
     checks: [
       "node",
       "extension",
@@ -990,6 +1027,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
       "right-categorical-legend-offset",
       "sequential-palette-count",
       "typescript",
+      "basic-entry-runtime-and-types",
       "tutorial-consumers",
       "minimal-browser-bundle-measurement",
       "private-export-rejection"

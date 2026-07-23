@@ -4,8 +4,14 @@ import path from "node:path";
 
 import { build } from "vite";
 
-const MINIMAL_BROWSER_SOURCE = `
-import { chart, render } from "ggaction";
+export const BROWSER_BUNDLE_GZIP_LIMITS = Object.freeze({
+  ggaction: 215_000,
+  "ggaction/basic": 120_000
+});
+
+function minimalBrowserSource(specifier) {
+  return `
+import { chart, render } from ${JSON.stringify(specifier)};
 
 const observations = [
   { displacement: 97, acceleration: 14.5, origin: "Japan" },
@@ -25,14 +31,22 @@ const program = chart()
 const canvas = document.querySelector("#chart");
 render(program, canvas.getContext("2d"));
 `;
+}
 
 function buildOutputs(result) {
   const results = Array.isArray(result) ? result : [result];
   return results.flatMap(item => item.output ?? []);
 }
 
-export async function measureMinimalBrowserBundle(consumerDirectory) {
-  const requestedRoot = path.join(consumerDirectory, "minimal-browser-bundle");
+export async function measureMinimalBrowserBundle(
+  consumerDirectory,
+  { specifier = "ggaction" } = {}
+) {
+  const suffix = specifier === "ggaction" ? "full" : "basic";
+  const requestedRoot = path.join(
+    consumerDirectory,
+    `minimal-browser-bundle-${suffix}`
+  );
   await mkdir(requestedRoot, { recursive: true });
   const root = await realpath(requestedRoot);
   await writeFile(path.join(root, "index.html"), `<!doctype html>
@@ -43,7 +57,7 @@ export async function measureMinimalBrowserBundle(consumerDirectory) {
   </body>
 </html>
 `);
-  await writeFile(path.join(root, "main.js"), MINIMAL_BROWSER_SOURCE);
+  await writeFile(path.join(root, "main.js"), minimalBrowserSource(specifier));
 
   const result = await build({
     root,
@@ -75,6 +89,7 @@ export async function measureMinimalBrowserBundle(consumerDirectory) {
   );
 
   return Object.freeze({
+    specifier,
     chunks: chunks.length,
     modules: modules.size,
     minifiedBytes,

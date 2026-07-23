@@ -25,9 +25,8 @@ import {
 } from "./symbols.js";
 import { editLegend } from "../edit.js";
 
-export function registerCategoricalLegendActions(ProgramClass) {
+export function registerBasicCategoricalLegendActions(ProgramClass) {
   ProgramClass.prototype.createLegend = createLegend;
-  ProgramClass.prototype.editLegend = editLegend;
   ProgramClass.prototype.createCategoricalLegend = createCategoricalLegend;
   ProgramClass.prototype.removeCategoricalLegend = removeCategoricalLegend;
   ProgramClass.prototype.createLegendBackground = createLegendBackground;
@@ -46,4 +45,9 @@ export function registerCategoricalLegendActions(ProgramClass) {
   ProgramClass.prototype.createLegendTitle = createLegendTitle;
   ProgramClass.prototype.rematerializeLegendTitle = rematerializeLegendTitle;
   ProgramClass.prototype.rematerializeLegend = rematerializeLegend;
+}
+
+export function registerCategoricalLegendActions(ProgramClass) {
+  registerBasicCategoricalLegendActions(ProgramClass);
+  ProgramClass.prototype.editLegend = editLegend;
 }

@@ -3,12 +3,21 @@ import { readdirSync, readFileSync } from "node:fs";
 import test from "node:test";
 
 import { chart, hconcat, render, vconcat } from "../../src/index.js";
+import {
+  chart as basicChart,
+  render as basicRender
+} from "../../src/basic.js";
 
 const PUBLIC_ENTRIES = Object.freeze({
   ".": Object.freeze({
     runtime: "./src/index.js",
     types: "./types/index.d.ts",
     values: Object.freeze(["chart", "hconcat", "render", "vconcat"])
+  }),
+  "./basic": Object.freeze({
+    runtime: "./src/basic.js",
+    types: "./types/basic.d.ts",
+    values: Object.freeze(["chart", "render"])
   }),
   "./extension": Object.freeze({
     runtime: "./src/extension.js",
@@ -38,6 +47,30 @@ test("exports the public module boundaries", () => {
   assert.equal(typeof hconcat, "function");
   assert.equal(typeof render, "function");
   assert.equal(typeof vconcat, "function");
+  assert.equal(typeof basicChart, "function");
+  assert.equal(typeof basicRender, "function");
+});
+
+test("keeps the basic entry focused on common Cartesian charts", () => {
+  const program = basicChart();
+  for (const method of [
+    "createScatterPlot",
+    "createLinePlot",
+    "createBarPlot",
+    "createHistogram",
+    "createHeatmap"
+  ]) {
+    assert.equal(typeof program[method], "function", method);
+  }
+  for (const method of [
+    "createRegression",
+    "encodeTheta",
+    "facet",
+    "selectMarks",
+    "createParallelCoordinates"
+  ]) {
+    assert.equal(program[method], undefined, method);
+  }
 });
 
 test("maps every public entry point to a declaration file", () => {

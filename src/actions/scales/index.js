@@ -4,8 +4,12 @@ import { rematerializeScale } from "./materialize.js";
 import { setQuantitativeColorScale } from "./quantitativeColor.js";
 
 export function registerScaleActions(ProgramClass) {
-  ProgramClass.prototype.createScale = createScale;
   ProgramClass.prototype.editScale = editScale;
+  registerBasicScaleActions(ProgramClass);
+}
+
+export function registerBasicScaleActions(ProgramClass) {
+  ProgramClass.prototype.createScale = createScale;
   ProgramClass.prototype.rematerializeScale = rematerializeScale;
   ProgramClass.prototype.setQuantitativeColorScale = setQuantitativeColorScale;
 }

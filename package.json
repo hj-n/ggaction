@@ -20,6 +20,7 @@
     "data-visualization"
   ],
   "type": "module",
+  "sideEffects": false,
   "files": [
     "src/",
     "!src/**/AGENTS.md",
@@ -33,6 +34,10 @@
     ".": {
       "types": "./types/index.d.ts",
       "default": "./src/index.js"
+    },
+    "./basic": {
+      "types": "./types/basic.d.ts",
+      "default": "./src/basic.js"
     },
     "./extension": {
       "types": "./types/extension.d.ts",

@@ -24,10 +24,12 @@ test.before(async () => {
     <canvas id="chart" aria-label="Encoding removal lifecycle chart"></canvas>
     <canvas id="legend" aria-label="Legend lifecycle chart"></canvas>
     <canvas id="axis" aria-label="Axis component lifecycle chart"></canvas>
-    <canvas id="bin2d" aria-label="2D bin lifecycle chart"></canvas><script type="importmap">
-    {"imports":{"ggaction":"/node_modules/ggaction/src/index.js"}}
+    <canvas id="bin2d" aria-label="2D bin lifecycle chart"></canvas>
+    <canvas id="basic" aria-label="Basic entry scatterplot"></canvas><script type="importmap">
+    {"imports":{"ggaction":"/node_modules/ggaction/src/index.js","ggaction/basic":"/node_modules/ggaction/src/basic.js"}}
     </script><script type="module">
       import { chart, render } from "ggaction";
+      import { chart as basicChart, render as basicRender } from "ggaction/basic";
       const program = chart()
         .createCanvas({ width: 160, height: 120, margin: 20 })
         .createData({ values: [
@@ -106,6 +108,10 @@ test.before(async () => {
         .encodeY2({ target: "cellRects", field: "y1" })
         .encodeColor({ target: "cellRects", field: "count", fieldType: "quantitative" })
         .editBin2DData({ target: "cells", bins: 1, includeEmpty: false });
+      const basicProgram = basicChart()
+        .createCanvas({ width: 160, height: 120, margin: 20 })
+        .createData({ values: [{ x: 1, y: 2 }, { x: 2, y: 4 }] })
+        .createScatterPlot({ x: "x", y: "y", guides: false });
       const canvas = document.querySelector("#chart");
       render(program, canvas.getContext("2d"));
       const legendCanvas = document.querySelector("#legend");
@@ -114,6 +120,8 @@ test.before(async () => {
       render(editedAxes, axisCanvas.getContext("2d"));
       const bin2dCanvas = document.querySelector("#bin2d");
       render(editedBins, bin2dCanvas.getContext("2d"));
+      const basicCanvas = document.querySelector("#basic");
+      basicRender(basicProgram, basicCanvas.getContext("2d"));
       document.querySelector("#status").textContent = "complete";
       window.__ggactionConsumer = {
         width: canvas.width,
@@ -161,7 +169,10 @@ test.before(async () => {
         bin2dItems: editedBins.graphicSpec.objects.cellRects.items.length,
         bin2dRebound:
           editedBins.semanticSpec.layers[0].data ===
-          editedBins.materializationConfigs.data.bin2d.cells.current
+          editedBins.materializationConfigs.data.bin2d.cells.current,
+        basicCanvas: [basicCanvas.width, basicCanvas.height],
+        basicPoints: basicProgram.graphicSpec.objects.scatterPlot.items.length,
+        basicExcludesRegression: basicProgram.createRegression === undefined
       };
     </script></body></html>`);
   server = await startStaticServer(consumer.directory);
@@ -174,7 +185,7 @@ test.after(async () => {
   await consumer?.cleanup();
 });
 
-test("imports and renders the packed default entry in a browser", async () => {
+test("imports and renders the packed browser entries", async () => {
   const { page, errors } = await openBrowserPage(browser, server.baseUrl, {
     waitFor: () => window.__ggactionConsumer !== undefined
   });
@@ -198,7 +209,10 @@ test("imports and renders the packed default entry in a browser", async () => {
     bin2dCanvas: [200, 140],
     bin2dRevision: "cellsBin2DDataRevision1",
     bin2dItems: 1,
-    bin2dRebound: true
+    bin2dRebound: true,
+    basicCanvas: [160, 120],
+    basicPoints: 2,
+    basicExcludesRegression: true
   });
   assert.equal(await page.locator("#status").textContent(), "complete");
   assert.equal(
@@ -216,6 +230,10 @@ test("imports and renders the packed default entry in a browser", async () => {
   assert.equal(
     await page.locator("#bin2d").getAttribute("aria-label"),
     "2D bin lifecycle chart"
+  );
+  assert.equal(
+    await page.locator("#basic").getAttribute("aria-label"),
+    "Basic entry scatterplot"
   );
   assertNoBrowserErrors(errors, "packed consumer");
   await page.close();

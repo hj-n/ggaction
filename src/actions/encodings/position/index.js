@@ -135,9 +135,13 @@ const encodeR = action(
   }
 );
 
-export function registerPositionEncodingActions(ProgramClass) {
+export function registerCartesianPositionEncodingActions(ProgramClass) {
   ProgramClass.prototype.encodeX = encodeX;
   ProgramClass.prototype.encodeY = encodeY;
+}
+
+export function registerPositionEncodingActions(ProgramClass) {
+  registerCartesianPositionEncodingActions(ProgramClass);
   ProgramClass.prototype.encodeTheta = encodeTheta;
   ProgramClass.prototype.encodeR = encodeR;
 }

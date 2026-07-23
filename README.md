@@ -62,7 +62,7 @@ npm install ggaction
 ```
 
 ```javascript
-import { chart, render } from "ggaction";
+import { chart, render } from "ggaction/basic";
 
 const observations = [
   { displacement: 97, acceleration: 14.5, origin: "Japan" },
@@ -88,9 +88,11 @@ render(program, context);
 ```
 
 Use `createLinePlot`, `createBarPlot`, `createHistogram`, and `createHeatmap` for
-the other basic Cartesian charts. Each facade records the regular mark,
-encoding, and guide actions as trace children, and the same resource-specific
-actions remain available for later edits. See the
+the other basic Cartesian charts. The `ggaction/basic` entry keeps this common
+creation path below a 120,000-byte gzip bundle budget while each facade still
+records its mark, encoding, and guide actions as trace children. Import from
+`ggaction` when you need editing, selection, composition, alternative
+coordinates, or statistical layers. See the
 [Basic Charts API](https://ggaction.github.io/ggaction/api/basic-charts/).
 
 Use `createParallelCoordinates({ dimensions })` to connect each source row
@@ -127,10 +129,11 @@ The package is ESM-only and requires Node.js 20 or later.
 | Entry | Purpose |
 | --- | --- |
 | `ggaction` | Create chart programs and render them to Browser Canvas |
+| `ggaction/basic` | Create and render scatter, line, bar, histogram, and heatmap charts with a smaller browser bundle |
 | `ggaction/extension` | Author wrapped actions with public low-level primitives |
 | `ggaction/png` | Render a completed program to a PNG file in Node.js |
 
-All entries include TypeScript declarations. The default entry is browser-safe; the PNG adapter is Node-only.
+All entries include TypeScript declarations. The default and basic entries are browser-safe; the PNG adapter is Node-only.
 
 ## Documentation
 

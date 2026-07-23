@@ -1,4 +1,4 @@
-import { render } from "../../src/index.js";
+import { render } from "../../src/basic.js";
 
 import { createGettingStartedChart } from "./program.js";
 

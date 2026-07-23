@@ -146,3 +146,45 @@ export const createCanvas = action(
     });
   }
 );
+
+export const createBasicCanvas = action(
+  {
+    op: "createCanvas",
+    description: "Create and configure the chart canvas."
+  },
+  function (args = {}) {
+    validateOptions(args, "createCanvas", { allowEmpty: true });
+    assertCanvasHierarchyAvailable(this);
+    const state = {
+      width: Object.hasOwn(args, "width") ? args.width : DEFAULT_CANVAS.width,
+      height: Object.hasOwn(args, "height") ? args.height : DEFAULT_CANVAS.height,
+      background: Object.hasOwn(args, "background")
+        ? args.background
+        : DEFAULT_CANVAS.background,
+      margin: normalizeMargin(args.margin, DEFAULT_MARGIN),
+      size: {
+        width: Object.hasOwn(args, "width") ? "explicit" : "auto",
+        height: Object.hasOwn(args, "height") ? "explicit" : "auto"
+      }
+    };
+    validateCanvasState(state);
+    let next = this
+      .createGraphics({
+        id: CANVAS_GRAPHIC_ID,
+        type: "canvas"
+      })
+      .createGraphics({
+        id: PLOT_GRAPHIC_ID,
+        type: "collection",
+        parent: CANVAS_GRAPHIC_ID
+      });
+    for (const property of ["width", "height", "background"]) {
+      next = next.editGraphics({
+        target: CANVAS_GRAPHIC_ID,
+        property,
+        value: state[property]
+      });
+    }
+    return next._withCanvasConfig({ margin: state.margin, size: state.size });
+  }
+);

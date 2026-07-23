@@ -1,0 +1,64 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+import { chart } from "../../../../src/basic.js";
+
+const rows = Object.freeze([
+  Object.freeze({ x: 1, y: 2, category: "A", value: 3 }),
+  Object.freeze({ x: 2, y: 4, category: "B", value: 5 })
+]);
+
+function base(values = rows) {
+  return chart()
+    .createCanvas({
+      width: 360,
+      height: 260,
+      margin: { top: 50, right: 110, bottom: 50, left: 50 }
+    })
+    .createData({ values });
+}
+
+test("creates every chart facade exposed by the basic entry", () => {
+  const scatter = base().createScatterPlot({
+    x: "x",
+    y: "y",
+    point: { stroke: "#111111", strokeWidth: 1 }
+  });
+  const line = base().createLinePlot({
+    x: "x",
+    y: "y",
+    line: { strokeWidth: 2 }
+  });
+  const bars = base().createBarPlot({
+    x: { field: "category", fieldType: "ordinal" },
+    y: { field: "value", aggregate: "mean" },
+    bar: { opacity: 0.8 }
+  });
+  const histogram = base().createHistogram({ field: "value" });
+  const heatmap = base().createHeatmap({
+    x: { field: "category", fieldType: "ordinal" },
+    y: { field: "x", fieldType: "ordinal" },
+    color: { field: "value", fieldType: "quantitative" },
+    rect: { stroke: "#ffffff", strokeWidth: 1 }
+  });
+
+  assert.equal(scatter.graphicSpec.objects.scatterPlot.items.length, 2);
+  assert.equal(line.graphicSpec.objects.linePlot.items.length, 1);
+  assert.equal(bars.graphicSpec.objects.barPlot.items.length, 2);
+  assert.equal(histogram.graphicSpec.objects.histogram.items.length, 2);
+  assert.equal(heatmap.graphicSpec.objects.heatmap.items.length, 2);
+});
+
+test("supports the binned heatmap path without full-entry actions", () => {
+  const heatmap = base().createHeatmap({
+    x: "x",
+    y: "y",
+    bin: { bins: 2, extent: { x: [1, 2], y: [2, 4] } },
+    guides: false
+  });
+
+  assert.equal(heatmap.graphicSpec.objects.heatmap.items.length, 4);
+  assert.equal(heatmap.createRegression, undefined);
+  assert.equal(heatmap.encodeTheta, undefined);
+  assert.equal(heatmap.facet, undefined);
+});
